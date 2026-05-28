@@ -20,21 +20,29 @@ def reconstruct_ltl(aut):
     If that produces a language-equivalent pseudo-linear automaton, the
     rest of the reconstruction runs on the massaged automaton.
 
-    Returns (final_formula, state_formulas).
+    Returns:
+        (final_formula, state_formulas, technique)
+
+    `technique` is a string describing which methods were used:
+        - "sl"   : basic self-loop / semi-linear backward labeling
+        - "sl+f2": the above + successful size-2 fusion/absorption ("f2")
     """
     # --- Heuristic layer: try to absorb size-2 non-accepting SCCs ---
     massaged = try_absorb_size2_nonaccepting_scc(aut)
+    absorbed = False
     if massaged is not None:
         aut = massaged
+        absorbed = True   # trust the heuristic: do not re-apply the strict multi-state filter
 
-    # --- Structural safety filter ---
+    # --- Structural safety filter (skip if we just did absorption) ---
     si = spot.scc_info(aut)
     bad_states = set()
-    for scc_idx in range(si.scc_count()):
-        states = list(si.states_of(scc_idx))
-        if len(states) > 1:
-            for q in states:
-                bad_states.add(q)
+    if not absorbed:
+        for scc_idx in range(si.scc_count()):
+            states = list(si.states_of(scc_idx))
+            if len(states) > 1:
+                for q in states:
+                    bad_states.add(q)
 
     # --- Trivial acceptance normalization ---
     treat_all_as_accepting = (aut.acc().num_sets() == 0)
@@ -155,4 +163,5 @@ def reconstruct_ltl(aut):
         except Exception:
             pass
 
-    return final, state_formula
+    technique = "sl+f2" if absorbed else "sl"
+    return final, state_formula, technique

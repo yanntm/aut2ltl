@@ -12,7 +12,7 @@ This file keeps backward compatibility for simple usage like:
 import spot
 
 # Re-export the public API so old imports keep working
-from buchi2ltl import reconstruct_ltl, try_absorb_size2_nonaccepting_scc
+from buchi2ltl import reconstruct_ltl, try_absorb_size2_nonaccepting_scc, simplify_ltl
 
 # Also keep the small helper that many experiments still use
 def ltl_to_tgba(ltl_str):
@@ -35,11 +35,22 @@ if __name__ == "__main__":
     for original_str in test_cases:
         print("\n" + "=" * 80)
         aut, _ = ltl_to_tgba(original_str)
-        recovered, per_state = reconstruct_ltl(aut)
+
+        # Try the size-2 fusion heuristic first
+        massaged = try_absorb_size2_nonaccepting_scc(aut)
+        technique_parts = ["sl"]
+        work_aut = aut
+        if massaged is not None:
+            technique_parts.append("f2")
+            work_aut = massaged
+
+        recovered, per_state, _ = reconstruct_ltl(work_aut)
+        technique = "+".join(technique_parts)
 
         print(f"Original LTL : {original_str}")
         print(f"States       : {aut.num_states()}")
         print(f"Recovered    : {recovered}")
+        print(f"Technique    : {technique}")
 
         if recovered.startswith("UNSUPPORTED"):
             print("Status       : UNSUPPORTED")
@@ -48,3 +59,7 @@ if __name__ == "__main__":
             rec_f = spot.formula(recovered)
             eq = spot.are_equivalent(orig_f, rec_f)
             print(f"Equivalent?  : {eq}")
+
+            # Always show the version after Spot simplification (ltlfilt --simplify equivalent)
+            simplified = simplify_ltl(recovered)
+            print(f"After ltlfilt --simplify : {simplified}")
