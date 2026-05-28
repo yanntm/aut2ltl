@@ -24,8 +24,7 @@ buchi2ltl/                    # Main package
     __init__.py               # Public API
     reconstruction.py         # Core reconstruct_ltl + labeling logic
     heuristics/
-        fusion_heuristic.py   # Size-2 fusion / absorption heuristic (stable)
-        size2_absorption.py   # Thin wrapper exposing the public heuristic API
+        size2_overapprox.py   # Size-2 over-approximation heuristic (the "fusion" technique)
     utils.py                  # simplify_ltl() etc.
 evaluate.py                   # Random LTL round-trip tester (batch experiments)
 samples/                      # Interesting formulas and HOAs (for testing / regression)
@@ -51,7 +50,7 @@ Runs a small set of formulas and shows:
 ## Public API
 
 ```python
-from buchi2ltl import reconstruct_ltl, try_absorb_size2_nonaccepting_scc, simplify_ltl
+from buchi2ltl import reconstruct_ltl, try_size2_overapprox, simplify_ltl
 
 recovered, state_labels, technique = reconstruct_ltl(aut)
 ```
@@ -60,7 +59,7 @@ recovered, state_labels, technique = reconstruct_ltl(aut)
 
 - Many formulas will still return `"UNSUPPORTED: ..."` (especially those with complex SCCs).
 - The fusion heuristic (`f2`) is the main current way to handle certain formulas that would otherwise fail.
-- Debug traces in `testing/fusion_heuristic.py` are guarded behind `DEBUG_FUSION = False`.
+- Debug traces in the size-2 over-approximation heuristic are guarded behind `DEBUG_SIZE2_OVERAPPROX = False`.
 - Generated images and CSVs are gitignored.
 - Useful test data lives in `samples/`.
 
