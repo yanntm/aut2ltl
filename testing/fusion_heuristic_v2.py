@@ -1,7 +1,12 @@
 """
 Clean surgical implementation of the fusion test (size-2 absorption)
 following the user's precise instructions.
+
+Set DEBUG_FUSION = True at the top of this file to enable heavy tracing
+during debugging sessions.
 """
+
+DEBUG_FUSION = False
 
 import spot
 
@@ -38,7 +43,8 @@ def try_absorb_size2_v2(aut):
     if states is None:
         return None
 
-    print("  → Size-2 non-accepting SCC found. Applying precise fusion rule...")
+    if DEBUG_FUSION:
+        print("  → Size-2 non-accepting SCC found. Applying precise fusion rule...")
 
     A, B = states[0], states[1]
 
@@ -67,7 +73,8 @@ def try_absorb_size2_v2(aut):
         return None
 
     # === Required clear trace ===
-    print(f"  → Matched pattern: A = {initiator}, B = {other}")
+    if DEBUG_FUSION:
+        print(f"  → Matched pattern: A = {initiator}, B = {other}")
 
     true_bdd = get_true_bdd(aut)
 
@@ -96,33 +103,41 @@ def try_absorb_size2_v2(aut):
 
     # 1. Create the new state A' (copy of A / initiator)
     A_prime = new_aut.new_state()
-    print(f"  → Created new state A' with index {A_prime}")
+    if DEBUG_FUSION:
+        print(f"  → Created new state A' with index {A_prime}")
 
     # 2. Iterate transitions from A: copy ONLY those that do NOT lead to B into A'
-    print("  → Iterating transitions from A, copying only those not leading to B into A':")
+    if DEBUG_FUSION:
+        print("  → Iterating transitions from A, copying only those not leading to B into A':")
     for e in aut.out(initiator):
         if e.dst == other:
-            cond_str = spot.bdd_format_formula(aut.get_dict(), e.cond)
-            print(f"     [SKIP for A'] A --[{cond_str}]--> B   (per algorithm: only copy transitions from A that do not lead to B into A')")
+            if DEBUG_FUSION:
+                cond_str = spot.bdd_format_formula(aut.get_dict(), e.cond)
+                print(f"     [SKIP for A'] A --[{cond_str}]--> B   (per algorithm: only copy transitions from A that do not lead to B into A')")
             continue
         new_aut.new_edge(A_prime, state_map[e.dst], e.cond, e.acc)
-        cond_str = spot.bdd_format_formula(aut.get_dict(), e.cond)
-        print(f"     [COPY] A'={A_prime} --[{cond_str}]--> {e.dst}")
+        if DEBUG_FUSION:
+            cond_str = spot.bdd_format_formula(aut.get_dict(), e.cond)
+            print(f"     [COPY] A'={A_prime} --[{cond_str}]--> {e.dst}")
 
     # 3. Edit outgoing edge from B to A → point to A' instead
-    print("  → Editing outgoing edge from B to A to point to A' instead:")
+    if DEBUG_FUSION:
+        print("  → Editing outgoing edge from B to A to point to A' instead:")
     for e in aut.out(other):
         if e.dst == initiator:
-            cond_str = spot.bdd_format_formula(aut.get_dict(), e.cond)
-            print(f"     [EDIT] B={state_map[other]} --[{cond_str}]--> A   →   B --> A'={A_prime}")
+            if DEBUG_FUSION:
+                cond_str = spot.bdd_format_formula(aut.get_dict(), e.cond)
+                print(f"     [EDIT] B={state_map[other]} --[{cond_str}]--> A   →   B --> A'={A_prime}")
             new_aut.new_edge(state_map[other], A_prime, e.cond, e.acc)
 
     # 4. Edit outgoing edge from B to B (self-loop) → label with 1 (true)
-    print("  → Editing self-loop from B to B to label 1 (true):")
+    if DEBUG_FUSION:
+        print("  → Editing self-loop from B to B to label 1 (true):")
     for e in aut.out(other):
         if e.dst == other:
-            cond_str = spot.bdd_format_formula(aut.get_dict(), e.cond)
-            print(f"     [EDIT] B self-loop was [{cond_str}], now labeled 1 (true)")
+            if DEBUG_FUSION:
+                cond_str = spot.bdd_format_formula(aut.get_dict(), e.cond)
+                print(f"     [EDIT] B self-loop was [{cond_str}], now labeled 1 (true)")
             new_aut.new_edge(state_map[other], state_map[other], true_bdd, e.acc)
 
     new_aut.set_init_state(state_map[aut.get_init_state_number()])
@@ -130,13 +145,16 @@ def try_absorb_size2_v2(aut):
 
     try:
         if spot.are_equivalent(aut, new_aut):
-            print("  → Absorption succeeded (clean surgical version)!")
+            if DEBUG_FUSION:
+                print("  → Absorption succeeded (clean surgical version)!")
             return new_aut
         else:
-            print("  → Not yet equivalent.")
+            if DEBUG_FUSION:
+                print("  → Not yet equivalent.")
             return new_aut
     except Exception as e:
-        print(f"  → Equivalence error: {e}")
+        if DEBUG_FUSION:
+            print(f"  → Equivalence error: {e}")
         return new_aut
 
 

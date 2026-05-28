@@ -6,22 +6,31 @@ Experimental prototype for backward LTL reconstruction from Transition-based Gen
 
 This is research / exploration code. The reconstruction is **incomplete by design**.
 
-The current best version of the reconstruction lives in `buchi2ltl.py` (`reconstruct_ltl`).
+We now have a working **size-2 non-accepting SCC absorption heuristic** ("fusion test" / "f2"). When it succeeds, previously unsupported formulas become reconstructible.
 
-Key features of the current implementation:
-- Explicit recursion with a visiting set + hard depth limit (guaranteed finite recursion)
-- Early rejection of automata containing multi-state SCCs
-- Pragmatic normalization for trivial-acceptance automata (`Acceptance: t`): every transition is treated as accepting
-- Reconstruction rules based on manual backward labeling from accepting self-loops
+Key current capabilities:
+- Explicit recursion with visiting set + depth limit (finite recursion)
+- Early rejection of multi-state SCCs
+- Size-2 non-accepting SCC absorption (when language-equivalent)
+- Trivial acceptance normalization (treat all transitions as accepting when `Acceptance: t`)
+- "Technique" reporting: `sl` (basic) or `sl+f2` (basic + fusion heuristic)
+- Dual output: constructive formula + version after Spot simplification (`ltlfilt` equivalent)
 
 ## Project Organization
 
 ```
-buchi2ltl.py          # Core reconstruction logic + small manual test entry point
-testing/              # Experimental and debugging code (not part of the stable surface)
-    test_cases.py     # Collections of interesting formulas and HOAs
-    debug_empty_acc.py
-    test_safe_reconstruction.py
+buchi2ltl.py                  # Thin CLI / backward-compat entry point
+buchi2ltl/                    # Main package
+    __init__.py               # Public API
+    reconstruction.py         # Core reconstruct_ltl + labeling logic
+    heuristics/
+        size2_absorption.py   # Size-2 fusion / absorption heuristic
+    utils.py                  # simplify_ltl() etc.
+evaluate.py                   # Random LTL round-trip tester (batch experiments)
+testing/                      # Heavy debugging and experimental scripts
+    fusion_heuristic_v2.py    # Current best development version of the fusion heuristic
+    visualize_fusion.py       # Automaton visualization helper (before/after)
+    inspect_failures.py
     ...
 README.md
 ```
@@ -32,12 +41,25 @@ README.md
 python3 buchi2ltl.py
 ```
 
-This will run a few classic LTL formulas through `ltl_to_tgba` + `reconstruct_ltl` and report results.
+Runs a small set of formulas and shows:
+- Original vs recovered LTL
+- **Technique** used (`sl` or `sl+f2`)
+- Equivalence result
+- Constructive formula + simplified version
+
+## Public API
+
+```python
+from buchi2ltl import reconstruct_ltl, try_absorb_size2_nonaccepting_scc, simplify_ltl
+
+recovered, state_labels, technique = reconstruct_ltl(aut)
+```
 
 ## Notes
 
-- The main entry point is intentionally minimal. Most serious testing lives under `testing/`.
-- Many formulas will return `"UNSUPPORTED: ..."` or semantically incorrect results.
-- The empty-acceptance normalization (treating all transitions as accepting when there are 0 acceptance sets) was added to handle very-weak automata (e.g. those produced by weak until).
+- Many formulas will still return `"UNSUPPORTED: ..."` (especially those with complex SCCs).
+- The fusion heuristic (`f2`) is the main current way to handle certain formulas that would otherwise fail.
+- Debug traces in the heuristic are currently guarded in development versions; they can be enabled via flags when needed.
+- Generated images and CSVs are gitignored.
 
-This repository is currently used for interactive development and algorithm exploration.
+This repository is used for interactive development of the reconstruction technique.
