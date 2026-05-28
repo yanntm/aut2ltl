@@ -26,8 +26,8 @@ buchi2ltl/                    # Main package
     heuristics/
         size2_overapprox.py   # Size-2 over-approximation heuristic (the "fusion" technique)
     utils.py                  # simplify_ltl() etc.
-evaluate.py                   # Random LTL round-trip tester (batch experiments)
-samples/                      # Interesting formulas and HOAs (for testing / regression)
+evaluate.py                   # Evaluation harness (stable samples + random round-trip testing)
+samples/                      # Curated LTL formulas and HOAs (for regression / stable testing)
 testing/                      # Heavy debugging and experimental scripts
     visualize_fusion.py       # Automaton visualization helper (before/after)
     inspect_failures.py
@@ -47,6 +47,36 @@ Runs a small set of formulas and shows:
 - Equivalence result
 - Constructive formula + simplified version
 
+## Evaluation Harness
+
+`evaluate.py` is the main tool for batch testing the reconstruction.
+
+It supports **stable test sets** (important for regression work) in addition to random generation:
+
+```bash
+# Run only the curated samples from samples/formulas.py (stable set)
+python3 evaluate.py --samples --no-random -o stable.csv
+
+# Curated samples + 200 random formulas afterwards
+python3 evaluate.py --samples -n 200 --seed 42 -o mixed.csv
+
+# Load your own formulas (Python file with lists, or plain text one-per-line)
+python3 evaluate.py -f my_hard_cases.py --no-random -o custom.csv
+
+# Classic random-only mode (still fully supported)
+python3 evaluate.py -n 500 --seed 7 --aps 3 -o results.csv
+```
+
+Key features:
+- Explicit formulas are always processed **first** (stable ordering).
+- Output CSV includes a `source` column (`samples/formulas.py`, `random(seed=42)`, or `file:yourfile.txt`).
+- `UNSUPPORTED` cases are recorded cleanly as `equivalent=unsupported` instead of noisy errors.
+- Use `--only-failures` to collect interesting cases.
+
+See `python3 evaluate.py --help` for all options.
+
+The `samples/` directory contains hand-curated formulas (including cases that require the fusion heuristic) and example HOAs.
+
 ## Public API
 
 ```python
@@ -61,6 +91,7 @@ recovered, state_labels, technique = reconstruct_ltl(aut)
 - The fusion heuristic (`f2`) is the main current way to handle certain formulas that would otherwise fail.
 - Debug traces in the size-2 over-approximation heuristic are guarded behind `DEBUG_SIZE2_OVERAPPROX = False`.
 - Generated images and CSVs are gitignored.
-- Useful test data lives in `samples/`.
+- `samples/` contains the main stable test set used by `evaluate.py --samples`.
+- `testing/recovered_working_fusion_heuristic.py` holds the historical version of the fusion logic that successfully handled certain size-2 cases (kept for reference).
 
 This repository is used for interactive development of the reconstruction technique.
