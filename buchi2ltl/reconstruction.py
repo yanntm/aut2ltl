@@ -189,14 +189,21 @@ def reconstruct_ltl(aut):
                 # ------------------------------------------------------------------
                 # t2-aware successor handling (the most subtle part of the integration)
                 # ------------------------------------------------------------------
-                # When we have a validated terminal 2-state SCC downstream we want:
-                #   * states that merely exit *into* the SCC to build a clean
-                #     "cond & X(fragment)" term (the user's stated expectation)
-                #   * never to mark such a state UNSUPPORTED just because it has
-                #     one edge into a still-unlabeled part of a larger SCC
+                # Core principle (per user specification):
+                #   The sync-vs-delay decision is made *per transition* on the
+                #   specific edge whose label actually lands inside the t2 SCC.
                 #
-                # The logic below implements a "lenient" rule only when at least
-                # one successor leads to a known-good t2 fragment.
+                #   - For each individual crossing edge with label L into target s:
+                #       if L implies I(s)  → attach synchronously:  (L) & f
+                #       else               → attach with one-step shift: (L) & X(f)
+                #
+                #   Multiple arcs from the same state into the SCC are handled
+                #   independently; their terms are OR-ed in the normal way.
+                #
+                # When a validated terminal 2-state SCC is downstream we also want:
+                #   * never to mark a state UNSUPPORTED just because it has one
+                #     edge into a still-unlabeled part of a larger SCC (lenient rule
+                #     only when at least one successor leads to a known-good t2 fragment).
                 # ------------------------------------------------------------------
 
                 # Fast pre-check: does this state have *any* edge that we already
@@ -221,14 +228,21 @@ def reconstruct_ltl(aut):
                 # just grab the validated G(...) string.  This prevents the labeler
                 # from ever walking the internal cycle of the SCC.
                 #
-                # NEW (entry timing subtlety): when the edge is a *direct* crossing
-                # into a t2 SCC state, we check whether its label L logically
-                # implies the target's I(s) label (the steady-state "entry condition"
-                # computed from internal incoming edges).  If yes, the invariant f
-                # already holds on this letter, so we attach synchronously:
-                #     (cond) & f          instead of the usual delayed (cond) & X(f)
-                # This is what distinguishes "r U f" (second HOA) from "r & X f"
-                # (first HOA) even though they share the same core 2-SCC f.
+                # Per-transition entry timing (the key subtlety):
+                # When the edge from the current state is a *direct* crossing into
+                # a t2 SCC state, we perform a cheap BDD implication test:
+                #     does the edge label L logically imply the target's I(s)?
+                # (I(s) = the steady-state "state label" computed by the t2 heuristic
+                #  from internal incoming edges of the SCC.)
+                #
+                # If yes → the invariant already holds on this letter → synchronous
+                #     (cond) & f
+                # Else  → delayed
+                #     (cond) & X(f)
+                #
+                # This rule is applied independently to every direct crossing edge.
+                # It is what distinguishes "r U f" from "r & X f" (and more complex
+                # mixtures) even when they share the same core 2-SCC fragment.
                 direct_scc_sync_attach = False
                 if e.dst in scc_fragments:
                     succ_phi = scc_fragments[e.dst]
