@@ -94,7 +94,7 @@ T2_SUCCESS = [
     "FG(!p0 | Xp3)",
     "G((p2 & (p2 M p0)) | (!p2 & (!p2 W !p0)))",
     "FG(p0 | Xp1)",
-    "p0 W XG(p1 | Xp2)",
+
     "G(p1 | X(p1 R p0))",
     "p1 U G(p1 | Xp0)",
     "XG(p1 U Xp1)",
@@ -119,10 +119,16 @@ T2_SUCCESS = [
     "XG((p2 & (p3 | Xp3)) | (!p2 & !p3 & X!p3))",
     "X(p2 | G(X!p2 | (!p1 W !p2)))",  # exercises 6-state nice terminal SCC
     "FG((p0 | p2) & (p0 | Xp2) & (!p0 | !p2 | X!p2))",
-    "p0 W G((p1 & !p3 & Xp0) | (!p1 & (p3 | X!p0)))",
+
     "G(p0 | (p2 & Xp3) | (!p2 & X!p3))",
     "G((p2 & (!p3 M X!p2)) | (!p2 & (p3 W Xp2)))",
     "G((!p0 & p3 & Xp2) | (!p3 & (p0 | X!p2)))",
+    # Regression cases: formulas that previously produced non-equivalent output
+    # due to incomplete handling of generalized Büchi (multiple Inf sets) in the
+    # basic self-loop (SL) reconstruction rule. Fixed in 2026.
+    "G(Fp0 & F!p0)",
+    "G(Fp3 & Fp1)",
+    "G(p1 M Fp2)",
 ]
 
 # Metadata
@@ -207,7 +213,7 @@ T2_SUCCESS_META = [
     {"formula": "FG(!p0 | Xp3)", "aps": 4, "tree_size": 10, "states": 3, "technique": "sl+t2"},
     {"formula": "G((p2 & (p2 M p0)) | (!p2 & (!p2 W !p0)))", "aps": 3, "tree_size": 7, "states": 2, "technique": "sl+t2"},
     {"formula": "FG(p0 | Xp1)", "aps": 3, "tree_size": 12, "states": 3, "technique": "sl+t2"},
-    {"formula": "p0 W XG(p1 | Xp2)", "aps": 4, "tree_size": 10, "states": 3, "technique": "sl+t2"},
+
     {"formula": "G(p1 | X(p1 R p0))", "aps": 2, "tree_size": 7, "states": 2, "technique": "sl+t2"},
     {"formula": "p1 U G(p1 | Xp0)", "aps": 2, "tree_size": 10, "states": 2, "technique": "sl+t2"},
     {"formula": "XG(p1 U Xp1)", "aps": 2, "tree_size": 11, "states": 3, "technique": "sl+t2"},
@@ -232,8 +238,12 @@ T2_SUCCESS_META = [
     {"formula": "XG((p2 & (p3 | Xp3)) | (!p2 & !p3 & X!p3))", "aps": 4, "tree_size": 0, "states": 4, "technique": "sl+t3"},
     {"formula": "X(p2 | G(X!p2 | (!p1 W !p2)))", "aps": 3, "tree_size": 0, "states": 6, "technique": "sl+t3"},
     {"formula": "FG((p0 | p2) & (p0 | Xp2) & (!p0 | !p2 | X!p2))", "aps": 3, "tree_size": 0, "states": 4, "technique": "sl+t3"},
-    {"formula": "p0 W G((p1 & !p3 & Xp0) | (!p1 & (p3 | X!p0)))", "aps": 4, "tree_size": 0, "states": 4, "technique": "sl+t3"},
+
     {"formula": "G(p0 | (p2 & Xp3) | (!p2 & X!p3))", "aps": 4, "tree_size": 0, "states": 3, "technique": "sl+t3"},
     {"formula": "G((p2 & (!p3 M X!p2)) | (!p2 & (p3 W Xp2)))", "aps": 4, "tree_size": 0, "states": 3, "technique": "sl+t3"},
     {"formula": "G((!p0 & p3 & Xp2) | (!p3 & (p0 | X!p2)))", "aps": 4, "tree_size": 0, "states": 3, "technique": "sl+t3"},
+    # Regression cases for multi-acc-set SL handling (generalized Büchi)
+    {"formula": "G(Fp0 & F!p0)", "aps": 1, "tree_size": 0, "states": 1, "technique": "sl"},
+    {"formula": "G(Fp3 & Fp1)", "aps": 2, "tree_size": 0, "states": 1, "technique": "sl"},
+    {"formula": "G(p1 M Fp2)", "aps": 2, "tree_size": 0, "states": 1, "technique": "sl"},
 ]

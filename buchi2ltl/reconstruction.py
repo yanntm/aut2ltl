@@ -85,6 +85,7 @@ def reconstruct_ltl(aut):
 
     # --- Trivial acceptance normalization ---
     treat_all_as_accepting = (aut.acc().num_sets() == 0)
+    num_acc_sets = aut.acc().num_sets()
 
     state_formula = {}
     visiting = set()
@@ -181,12 +182,13 @@ def reconstruct_ltl(aut):
             cond = spot.bdd_format_formula(aut.get_dict(), e.cond)
 
             if treat_all_as_accepting:
-                carries = True
+                # No real acceptance sets (vacuously accepting)
+                acc_sets = frozenset()
             else:
-                carries = bool(list(e.acc.sets()))
+                acc_sets = frozenset(e.acc.sets())
 
             if e.src == e.dst:
-                self_loops.append((cond, carries))
+                self_loops.append((cond, acc_sets))
             else:
                 # ------------------------------------------------------------------
                 # t2-aware successor handling (the most subtle part of the integration)
@@ -327,23 +329,48 @@ def reconstruct_ltl(aut):
             or_all = " | ".join(f"({c})" for c, _ in self_loops)
             if len(self_loops) > 1:
                 or_all = f"({or_all})"
-            acc_cs = [c for c, carries in self_loops if carries]
-            if acc_cs:
-                or_acc = " | ".join(f"({c})" for c in acc_cs)
-                if len(acc_cs) > 1:
-                    or_acc = f"({or_acc})"
-                phi = f"G({or_all}) & GF({or_acc})"
+
+            # Compute how many distinct acc sets are actually touched by self-loops of *this* state
+            touched_sets = set()
+            for _, acc in self_loops:
+                touched_sets.update(acc)
+            local_num_sets = len(touched_sets)
+
+            if local_num_sets <= 1 or treat_all_as_accepting:
+                # Legacy behavior (exact string compatibility for 0/1 acc set cases)
+                acc_cs = [c for c, acc in self_loops if acc]
+                if acc_cs:
+                    or_acc = " | ".join(f"({c})" for c in acc_cs)
+                    if len(acc_cs) > 1:
+                        or_acc = f"({or_acc})"
+                    phi = f"G({or_all}) & GF({or_acc})"
+                else:
+                    phi = f"G({or_all})"
             else:
-                phi = f"G({or_all})"
+                # Generalized Büchi: this state has self-loops touching 2+ acc sets.
+                # Emit G(OR all) & GF(cover0) & GF(cover1) ...
+                gfs = []
+                for i in sorted(touched_sets):
+                    covering = [c for c, acc in self_loops if i in acc]
+                    if covering:
+                        or_i = " | ".join(f"({c})" for c in covering)
+                        if len(covering) > 1:
+                            or_i = f"({or_i})"
+                        gfs.append(f"GF({or_i})")
+                if gfs:
+                    phi = f"G({or_all}) & {' & '.join(gfs)}"
+                else:
+                    phi = f"G({or_all})"
 
         elif exit_terms:
             or_ex = " | ".join(exit_terms)
             if len(exit_terms) > 1:
                 or_ex = f"({or_ex})"
-            has_acc = any(carries for _, carries in self_loops)
+            has_acc = any(acc for _, acc in self_loops)
 
             if has_acc:
-                acc_cs = [c for c, carries in self_loops if carries]
+                # Legacy mixed-case logic kept exactly as before for safety
+                acc_cs = [c for c, acc in self_loops if acc]
                 or_acc = " | ".join(f"({c})" for c in acc_cs) if acc_cs else "true"
                 if len(acc_cs) > 1:
                     or_acc = f"({or_acc})"
