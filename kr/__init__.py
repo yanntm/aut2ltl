@@ -34,6 +34,7 @@ from .reachability import (
     reach_weak,
     fin_c,
 )
+from .reachability_operators import TRACE_ON  # for KR_TRACE=1 dev traces of inductive construction
 
 __all__ = [
     "Cascade",
@@ -61,4 +62,5 @@ __all__ = [
     "reach_strong",
     "reach_weak",
     "fin_c",
+    "TRACE_ON",
 ]
