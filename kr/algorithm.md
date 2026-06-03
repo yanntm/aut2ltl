@@ -1,123 +1,135 @@
 # KR Algorithm Description: Translation of Counter-Free Deterministic ω-Regular Automata to LTL via Krohn-Rhodes Cascades
 
-**Source**: Synthesis of the Boker–Lehtinen–Sickert FoSSaCS 2022 paper ("On the Translation of Automata to Linear Temporal Logic") with implementation-oriented clarifications for the `kr/` project.
+**Core Goal of kr/**: Implement *this* fully systematic, algebraic translation from the Boker–Lehtinen–Sickert FoSSaCS 2022 paper ("On the Translation of Automata to Linear Temporal Logic", full version). 
 
-**Core Goal of kr/**: Realize *this* fully systematic, algebraic translation. No ad-hoc pattern matching on specific SCC structures, terminal components, fusion opportunities, "nice" labelings, or other automaton-shape heuristics (those live in the separate `buchi2ltl/` engine). Everything must be driven uniformly by the algebraic structure of a Krohn-Rhodes reset cascade and the recursive definition of reachability formulas.
+**No pattern matching**: We explicitly do *not* want ad-hoc heuristics that inspect specific SCC structures, terminal components, "nice" labelings, fusion opportunities, or other shape-based rules on the original automaton (those belong in the separate `buchi2ltl/` engine). Everything must be driven uniformly by the algebraic structure of a Krohn-Rhodes reset cascade (holonomy decomposition) and a recursive syntactic definition of reachability formulas. The only data from the original automaton are the combinatorial objects produced by the decomposition (cascade components, Stay/Leave/Enter partitions of letters per level, configuration mapping).
 
-The paper gives the first *elementary* upper bound: for a counter-free deterministic ω-regular automaton with n states, an equivalent LTL formula of **double-exponential temporal nesting depth** and **triple-exponential length**. The construction also preserves the acceptance condition in the syntactic future hierarchy of LTL.
+The paper gives the first *elementary* upper bound: for a counter-free deterministic ω-regular automaton with n states (any acceptance condition), an equivalent LTL formula of **double-exponential temporal nesting depth** and **triple-exponential length**. The construction preserves the acceptance condition in the syntactic future hierarchy of LTL (safety/co-safety fragments etc.).
+
+This file is the canonical "our algorithm description" for the kr/ project. It is a synthesis of detailed algorithmic steps and explanatory motivation/relation to implementation.
 
 ## High-Level Algorithm: `TranslateToLTL(D)`
 
 **Input**: Counter-free deterministic ω-regular automaton  
-`D = (Σ = 2^{AP}, Q, ι, δ, α)` with |Q| = n (any acceptance condition α: Müller, Büchi, coBüchi, weak, looping, etc.).
+`D = (Σ = 2^{AP}, Q, ι, δ, α)` with |Q| = n (any acceptance condition α, e.g. Müller, Büchi, coBüchi, weak, looping).
 
-**Output**: Equivalent LTL formula ϕ over AP, with the complexity and hierarchy guarantees above.
+**Output**: Equivalent LTL formula ϕ over AP with the complexity and hierarchy guarantees.
 
-1. **Normalize to Müller form** (standard, polynomial)  
-   Produce an equivalent deterministic Müller automaton D' on the *same* semiautomaton (same Q, ι, δ). Every deterministic ω-regular language has a Müller automaton on the identical transition structure.
+1. **Normalize to Müller form** (standard, polynomial time)  
+   Obtain an equivalent deterministic Müller automaton D' on the *same* semiautomaton (same Q, ι, δ). Every deterministic ω-regular automaton is equivalent to a Müller one on the identical transition structure.
 
-2. **Krohn-Rhodes / Holonomy reset-cascade decomposition** (Proposition 6 + Eilenberg)  
+2. **Krohn-Rhodes-Holonomy reset-cascade decomposition** (Proposition 6 + Eilenberg)  
    Compute a reset cascade (wreath product / hierarchical product)  
    `A = ⟨Σ, A₁, A₂, …, Aₘ⟩`  
-   with m ≤ O(n) levels and ≤ O(n) states per level, together with a homomorphism h from configurations of A to states of D'.  
-   - Each level Aᵢ is a simple "reset" semiautomaton.  
+   with m ≤ O(n) levels and ≤ O(n) states per level, together with a homomorphism h from the configurations of A to the states of D'.  
+   - Each Aᵢ is a simple "reset" semiautomaton.  
    - The cascade is counter-free because D is.  
    - Total configurations of A: at most (O(n))^{O(n)}.  
-   Pick any initial configuration ι_A with h(ι_A) = ι.
+   Pick any initial configuration ι_A ∈ h⁻¹(ι).
 
-   (In the current `kr/` implementation this step is already performed by `decompose_aut` → SgpDec `HolonomyCascadeSemigroup` → parsed `Cascade` object whose `state_to_config` tuples are exactly the configurations and whose `levels` describe the per-level reset components.)
+   (In the current kr/ implementation this is performed by `decompose_aut` → SgpDec `HolonomyCascadeSemigroup` → parsed `Cascade` whose `state_to_config` tuples are the configurations and `levels` describe the per-level components. The existing pipeline already produces exactly this representation.)
 
-3. **Lift the acceptance condition to configurations of the cascade** (Propositions 7–8)  
-   - For Büchi / coBüchi / Rabin: direct lift (same number of pairs for Rabin).  
-   - For Müller: obtain an equivalent Müller condition α' on the configurations of A (at most 2^{O(mn)} accepting sets).  
-   - For weak / looping variants: special direct constructions (single sink SCC, etc.).
+3. **Lift the acceptance condition to the cascade** (Propositions 7–8)  
+   - For Büchi/coBüchi/Rabin: lift directly (preserving the number of pairs for Rabin).  
+   - For Müller: obtain an equivalent Müller condition α' on the configurations of A (≤ 2^{O(m n)} accepting sets).  
+   - For weak/looping variants: use the special direct constructions (e.g. single sink SCC for looping).
 
-4. **Build the family of reachability formulas (core inductive construction)**  
-   By induction on cascade level i, define five families of parameterized LTL formulas that express "reachability from configuration S to T while avoiding bad configuration B, under guard β, attaching tail τ".  
-   See the detailed inductive definition below (the five formulas of Section 4.2 / Table 1).  
-   The base (level 0) is ordinary Until. Higher levels case on whether the top component stays the same (Stay) or changes (Leave/Enter), using disjunctions over the appropriate letter sets and recursing to lower-level sub-configurations with adjusted guards (σ ∧ Xτ, ρ ∧ Xβ, etc.).
+4. **Construct the family of reachability formulas (core inductive construction, Section 4.2)**  
+   By induction on cascade level i, define five families of parameterized LTL formulas that express *reachability from configuration S to T while avoiding bad configuration B, under guard β, attaching tail τ when arriving at T*.  
+   These distinguish solid-arrow (top-level state unchanged) vs. dashed-arrow (top-level state changes) paths, with strong and weak (dual/release) versions, and ">0" variants that are indifferent to the first letter.  
+   See the detailed inductive definition and Table 1 (intended semantics) below. The base case (level 0) is ordinary Until. Higher levels case on source/bad/target equality at the current top level, use disjunctions/conjunctions over Stay(s)/Leave(s)/Enter(t) letters, and recurse to lower-level sub-configurations with adjusted guards (e.g. σ ∧ Xτ, ρ ∧ Xβ).
 
-5. **Encode "visit a configuration only finitely often" (Lemma 7)**  
-   For any configuration C of A define the unconditional reachability shorthands  
-   `S ↝ T` and `S^{>0} ↝ T` (the "main" and "after-first-letter" versions).  
-   Then  
+5. **Encode "visit configuration C only finitely often" (Lemma 7)**  
+   For any configuration C of A, define unconditional reachability shorthands:  
+   `S ↝ T`   :=  S ~_... T(false)  ▹  T(true)   (main version)  
+   `S^{>0} ↝ T` := disjunction over σ of (σ ∧ X (δ(S,σ) ↝ T))   (after first letter)  
+
+   Then:  
    `Fin(C) := ¬(ι_A ↝ C) ∨ ι_A ↝ C ( ¬ (C^{>0} ↝ C) )`  
-   `Fin(C) ∈ Σ₂` and holds on w exactly when the unique run of A on w starting at ι_A visits C only finitely often.
+
+   `Fin(C) ∈ Σ₂` and holds on w ⇔ the unique run of A on w from ι_A visits C only finitely often.
 
 6. **Assemble the final formula from the (lifted) acceptance condition**  
    For a Müller condition α' on configurations:  
    ϕ = ⋁_{M ∈ α'} ( ⋀_{C ∈ M} ¬Fin(C)  ∧  ⋀_{C ∉ M} Fin(C) )  
-   Each disjunct says "the set of configurations visited infinitely often is exactly M".
 
-   For weaker conditions the construction specializes (looping-Büchi → disjunction of reach-to-sink formulas in Σ₁, etc.).
+   Each disjunct asserts that the set of configurations visited infinitely often is exactly M.  
 
-7. **(Optional) Finite-word variant**  
-   Replace selected X operators by the weak next in the "stay-weak" auxiliary formula; the rest of the construction is identical and yields a formula in the corresponding finite-word safety/co-safety fragment.
+   For weaker conditions the construction specializes directly (e.g. looping-Büchi becomes a disjunction of reach-to-sink formulas in Σ₁).
 
-**Correctness** (by induction on cascade level + homomorphism properties):  
-- The reachability formulas have exactly the intended semantics w.r.t. the runs of the cascade (Lemma 4).  
-- They lie in the expected levels of the syntactic future hierarchy (Lemma 5).  
-- `Fin(C)` correctly captures finite visits.  
-- The Boolean combination exactly encodes the lifted Müller (or weaker) condition.  
-- The homomorphism h preserves runs and acceptance.  
-Hence L(D) = L(ϕ).
+7. **(Optional) Finite-word variant (Remark 2)**  
+   Replace selected X by the weak next in the "stay-weak" auxiliary; the rest is identical and yields a formula in the corresponding finite-word syntactic fragment.
 
-**Complexity** (Lemma 6 + Theorem 2)  
-- Depth of the main reachability formula at level i: ≤ d + 3i (linear in #levels).  
-- Length at level i: singly exponential in i (polynomial factor |Σ|·n per level, raised to 4^i).  
-- Overall for the full construction: double-exponential depth (O(2^{O(n)})) and triple-exponential length (2^{2^{O(2n)}}).  
-(The dominant cost is the exponential number of disjuncts at each level plus the recursive blow-up of the "change top level" case.)
+**Correctness**: By induction on cascade level (Lemma 4) the reachability formulas have the intended semantics w.r.t. cascade runs δ. They stay in the expected syntactic classes (Lemma 5). Fin(C) correctly captures finite visits. The Boolean combination encodes the lifted acceptance. The homomorphism h preserves runs and acceptance. Hence L(D) = L(ϕ).
 
-## The Five Reachability Formulas (Core of the Inductive Translation)
+**Complexity (Lemma 6 + Theorem 2)**:  
+- Depth of main reachability formula at level i: ≤ d + 3i (linear in #levels of cascade).  
+- Length at level i: singly exponential in i (polynomial factor in |Σ|·n per level).  
+- Overall: double-exponential depth (O(2^{O(n)})) and triple-exponential length (2^{2^{O(2n)}}).  
+(The cost comes from the number of disjuncts at each level and the recursive blow-up of the change-top-level case.)
 
-Fix a reset cascade A. Configurations of level i are tuples. For a state q of level i+1 let Stay(q), Leave(q), Enter(q) be the obvious partitions of combined letters.
+## The Five Reachability Formulas (Core Inductive Translation)
 
-For configurations S, B, T of level i and formulas β, τ the five formulas are defined by induction on i (see the paper's Table 1 for the exact intended semantics and the four-case distinctions for the "stay" and "change" auxiliaries).
+Fix a reset cascade A. Configurations of level i are tuples. For state q of level i+1, let Enter(q), Stay(q), Leave(q) be the partitions of combined letters.
 
-**Formula 1 (main strong reachability)**  
-S ∼_B(β)^X T (τ) :=  
-- if level 0: (¬β) U τ  
-- otherwise: (solid-arrow stay version) ∨ (dashed-arrow change version)
+For configurations S, B, T of level i and LTL formulas β, τ the five formulas (intended semantics in the paper's Table 1) are defined by induction on i. (Strong versions are co-safety Σ_i; weak are safety Π_i.)
 
-The solid-arrow version requires the top-level state to stay the same throughout the path (using Stay letters and lower-level reachability on the sub-configurations).  
-The dashed-arrow version allows (and requires) a change of the top-level state (using Enter/Leave letters).
+**Formula 1 (main – strong reachability)**:  
+S ~_B(β)^X T (τ) :=  
+- level 0: (¬β) U τ  
+- otherwise: (solid-arrow "stay top" version) ∨ (dashed-arrow "change top" version)  
 
-**Formula 2 (weak dual / release)**  
-The dual of Formula 1: "as long as we have not satisfied the target under τ, we must not hit the bad situation under β".
+The solid-arrow version requires the top-level state to remain unchanged throughout (disjunctions over Stay letters + lower-level reachability on sub-configs, with avoidance of bad).  
+The dashed-arrow version requires (and accounts for) a change of the top level (using Enter/Leave).
 
-**Formulas 3 & 4 (stay in top-level state – solid arrow)**  
-Strong (3) and weak (4) versions that enforce the top component never changes.  
-They case on the four possibilities (source == bad? source == target?) and differ only in whether β/τ must hold on the very first letter.  
-The common " >0 " sub-formula is a big disjunction over σ ∈ Stay(s) of lower-level reachability formulas on the projected sub-configurations, conjoined with avoidance of leaving s or hitting the bad pair (using the appropriate lower-level formula).
+**Formula 2 (weak dual)**:  
+The dual/release version of 1: "as long as we have not satisfied the target under τ, we must not hit the bad situation under β".
 
-**Formula 5 (change top-level state – dashed arrow, most complex)**  
-Requires:  
-- eventually seeing a combined letter that enters the new top state t (while avoiding bad so far),  
-- after that entry the new top state is preserved and bad is avoided,  
-- the path from S to the entry point itself avoided bad (using the weak stay formula),  
-- the top state actually did change (a final disjunct that forces a Leave).
+**Formulas 3 & 4 (stay in top-level state – solid arrow)**:  
+Strong (3) and weak (4) versions enforcing that the top component never changes. They case on the four possibilities (source == bad? source == target?) and differ in whether β/τ must hold on the very first letter. The common ">0" sub-formula is a disjunction over σ ∈ Stay(s) of lower-level reachability on the projected sub-configs, conjoined with constraints against leaving s or hitting bad (using the appropriate lower-level formula).
 
-All five formulas are mutually recursive; the recursion bottoms out at level 0 (plain Until). By construction they stay inside the expected syntactic classes (strong versions co-safety Σ_i, weak versions safety Π_i).
+**Formula 5 (change top-level state – dashed arrow, most complex)**:  
+Requires seeing a combined letter that enters the new top state t (while avoiding bad), after which the new top is preserved and bad avoided; the path to the entry itself avoided bad (using weak stay); and the top state actually changed (a final disjunct forcing Leave). Uses Formula 4 (weak stay) for part of the avoidance to ensure the overall formula can stay in a co-safety class.
 
-The exact case distinctions and the auxiliary ">0" / solid / dashed arrows are given in full in the paper (pages 10–13 of the extract). In an implementation they are generated by enumerating the Stay/Leave/Enter sets at the current top level (which are directly computable from the generators of the cascade / the `move_config` function) and recursing on the projected lower-level configurations.
+The formulas are mutually recursive; recursion bottoms at level 0 (plain Until). The exact case distinctions appear in the paper (pages 10–13 of the extract). In code they are generated by enumerating Stay/Leave/Enter sets at the current top level (directly computable from the cascade generators / `move_config`) and recursing on projected lower-level configurations.
 
-## Relation to the Current kr/ Code Base
+## Why This Is the "Right" Method for kr/ (No Pattern Matching)
 
-- `Cascade` + `state_to_config` tuples + per-level `levels` + `letter_valuations` + `build_config_transitions` / `move_config` already give us exactly the reset cascade + the Stay/Leave partitions per top-level state.
-- The existing 1-level operators (`one_level_reach_strong`, `build_1level_reachability`, guard helpers in `reachability_operators.py`) together with `build_infinitely_often_accepting` + the absorbing check are a first working approximation / special case of the base (level-0/1) reachability formulas plus the Fin(C) encoding of Lemma 7.
-- `decompose_aut` already performs the holonomy decomposition step.
-- The clean `reconstruct_ltl_1level_buchi` is already trying to be the "thin pure builder" on top of the operators (the ideal style demanded by the paper).
+- Everything is driven by the algebraic structure of the cascade (hierarchical reset components produced by holonomy).
+- The LTL is generated by a *uniform recursive syntactic translation* whose only inputs are the cascade components, the Stay/Leave/Enter partitions of letters per level, the configuration mapping, and the sub-formulas β/τ.
+- The only data used from the *original* automaton are the combinatorial objects from the decomposition. 
+- No need (and no desire) to inspect the original automaton for "nice" SCCs, terminal components with mutually exclusive labels, specific entry/exit patterns, fusion opportunities, or other shape-based rules. Those are ad-hoc and incomplete; the cascade already encodes the necessary control flow.
+- The cascade view makes "controlled movement between positions while satisfying guards" explicit, which maps directly onto Until/Release/X structure of LTL.
+- The 1-level base cases in the current kr/ code (one_level_reach_strong etc.) correspond exactly to the base (m=0) and level-1 cases of these formulas. The higher-level cases (four subcases for source/bad/target + >0 variants + Enter/Leave disjunctions + recursion) are what is needed to handle full multi-level cascades.
 
-The missing pieces for the full algorithm are precisely the higher-level cases of Formulas 3–5 (the four-case distinctions + >0 variants + Enter/Leave disjunctions + proper recursion on sub-configurations of lower levels), the general Fin(C) construction, and the final assembly from the lifted acceptance condition.
+This is the pure, systematic target for the kr/ folder.
 
-## Why This Approach (No Pattern Matching)
+## Relation to Current kr/ Implementation & Next Steps
 
-Every step is driven by the algebraic structure of the cascade:
-- The decomposition is canonical (holonomy).
-- The letter partitions Stay/Leave/Enter are combinatorial objects derived from the generators.
-- The LTL formulas are generated by a uniform recursive syntactic translation whose only data are the above objects plus the sub-formulas β and τ.
-- No inspection of the original automaton's SCC graph, no special cases for "terminal 2-SCC with mutually exclusive labels", no fusion heuristics, no ad-hoc entry/exit timing rules that look at the concrete shape of D. All such information is already compiled into the cascade and its Stay/Leave sets.
+- `Cascade` + `state_to_config` (coordinate tuples), `levels`, `letter_valuations`, `build_config_transitions`, `move_config` already give the cascade + ability to compute Stay/Leave per top-level state.
+- Existing 1-level operators in `reachability_operators.py` + `build_infinitely_often_accepting` (with absorbing check via trans dict) + the Fin/Inf placeholders are a first working approximation/specialization of the base reachability formulas + Lemma 7 `Fin(C)` encoding.
+- `decompose_aut` + gap bridge already perform the decomposition step (and we have stability via `bdd_utils` and focused parser in `kr/gap/parse.py`).
+- The clean `reconstruct_ltl_1level_buchi` is already the "thin pure builder" style the paper demands.
 
-This is the "pure" target for the kr/ folder.
+Missing pieces for the full algorithm (in priority order for progress):
+- Generalize the 1-level operators to the full 5 formulas (four-case distinctions, >0 variants, Enter/Leave disjunctions, proper recursion to lower-level sub-configs).
+- Implement the inductive construction on cascade depth (using per-level Stay/Leave partitions from the generators).
+- Implement the general `Fin(C)` construction (¬reach-to-C-i.o. or last-visit then never return).
+- Lift arbitrary acceptance conditions to the appropriate Boolean combination of Fin/reach formulas over configurations.
+- Add guard simplification (the formulas can produce long DNFs; use Spot to simplify).
+- Handle/collapse trivial (size-1) levels so more "simple" formulas appear as effective 1-level to the clean path.
+- Full end-to-end: use the holonomy decomposition + above to get aut → LTL, and prove it matches the paper bounds in practice.
+- Extend tests (kr/testing/) with the hierarchy preservation and more complex 1-level + multi-level cases.
+- (Later) finite-word variant, past operators, etc.
 
-(For the full proofs, the exact syntactic definitions of the auxiliary formulas, the unary warm-up bounds, and the detailed complexity recurrences, consult the original paper or the extracted text in `paper/Automata2LTL.txt`.)
+The size will be large (as predicted by the paper), but the result will be elementary, systematic, and free of pattern matching.
+
+## Additional Notes from the Paper
+
+- Unary alphabet warm-up (Section 3) gives *tight* bounds: det → linear, nondet → quadratic, alt → exponential (contrasting with LTL → automata bounds).
+- The construction also yields an elementary translation from LTL+past to pure-future LTL (once an elementary bound on determinization to counter-free automata is available).
+- No non-linear lower bound is currently known for the general case; closing the gap is open.
+
+(For full proofs, the exact syntactic definitions of Formulas 3–5, Table 2 recurrences, and the unary cases, see the original paper in `paper/Automata2LTL.pdf` (now under version control) or the extracted text `paper/Automata2LTL.txt`. The unary bounds and related work are omitted here for focus on the general case relevant to kr/.)
+
+This is now the single canonical algorithm description for the kr/ project.
