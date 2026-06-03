@@ -148,6 +148,49 @@ def _apply_downstream_invariants(aut, state_invariants):
     return new_aut
 
 
+def _inject_tn_fragments_and_compute_bad_states(aut, scc_fragments, state_formula, absorbed):
+    """Inject any pre-validated tN (terminal SCC) fragments and compute the
+    set of "bad" (multi-state SCC) states that the labeler should immediately
+    reject with UNSUPPORTED.
+
+    This was extracted from the middle of reconstruct_ltl so the main
+    orchestrator function is shorter and each phase has a name + docstring.
+    The logic itself is unchanged.
+    """
+    # ------------------------------------------------------------------
+    # Inject validated tN fragments into the global state_formula cache
+    # *before* we run the multi-state-SCC rejection pass.
+    # This is the key that lets the SCC states escape the "bad_states"
+    # treatment that would otherwise nuke any |SCC|>1 component.
+    # ------------------------------------------------------------------
+    for st, frag in scc_fragments.items():
+        state_formula[st] = frag
+
+    # --- Structural safety filter (multi-state SCC rejection) ---
+    # Any state that belongs to a non-trivial SCC and does *not* already have
+    # a formula (from tN, from f2 absorption, or from a previous successful
+    # recursion) is marked bad.  The label() function will immediately return
+    # UNSUPPORTED for them.
+    #
+    # Because we pre-populated the tN states above, the test
+    #     if q not in state_formula
+    # protects exactly those states (and any f2-absorbed ones).
+    si = spot.scc_info(aut)
+    bad_states = set()
+    if not absorbed:
+        for scc_idx in range(si.scc_count()):
+            states = list(si.states_of(scc_idx))
+            if len(states) > 1:
+                for q in states:
+                    if q not in state_formula:
+                        bad_states.add(q)
+
+    # Belt-and-suspenders: even if something went wrong above, never let a
+    # state that already carries a validated fragment be considered bad.
+    bad_states -= set(state_formula.keys())
+    return bad_states, state_formula
+
+
 def reconstruct_ltl(aut):
     """
     Backward LTL reconstruction from a TGBA.
@@ -314,42 +357,18 @@ def reconstruct_ltl(aut):
 
     # --- Trivial acceptance normalization ---
     treat_all_as_accepting = (aut.acc().num_sets() == 0)
-    num_acc_sets = aut.acc().num_sets()
 
+    # The heavy recursive labeling (the "label" closure + its 390 lines of
+    # self-loop/exit/tN/short-circuit logic) remains here for now because it
+    # is tightly coupled to many locals.  In a future pass we can move the
+    # whole labeling service to buchi2ltl/labeling.py (one focused module)
+    # the same way we extracted the GAP parser.
     state_formula = {}
     visiting = set()
 
-    # ------------------------------------------------------------------
-    # Inject validated t2 fragments into the global state_formula cache
-    # *before* we run the multi-state-SCC rejection pass.
-    # This is the key that lets the SCC states escape the "bad_states"
-    # treatment that would otherwise nuke any |SCC|>1 component.
-    # ------------------------------------------------------------------
-    for st, frag in scc_fragments.items():
-        state_formula[st] = frag
-
-    # --- Structural safety filter (multi-state SCC rejection) ---
-    # Any state that belongs to a non-trivial SCC and does *not* already have
-    # a formula (from t2, from f2 absorption, or from a previous successful
-    # recursion) is marked bad.  The label() function will immediately return
-    # UNSUPPORTED for them.
-    #
-    # Because we pre-populated the t2 states above, the test
-    #     if q not in state_formula
-    # protects exactly those two states (and any f2-absorbed ones).
-    si = spot.scc_info(aut)
-    bad_states = set()
-    if not absorbed:
-        for scc_idx in range(si.scc_count()):
-            states = list(si.states_of(scc_idx))
-            if len(states) > 1:
-                for q in states:
-                    if q not in state_formula:
-                        bad_states.add(q)
-
-    # Belt-and-suspenders: even if something went wrong above, never let a
-    # state that already carries a validated fragment be considered bad.
-    bad_states -= set(state_formula.keys())
+    bad_states, state_formula = _inject_tn_fragments_and_compute_bad_states(
+        aut, scc_fragments, state_formula, absorbed
+    )
 
     MAX_DEPTH = 10000
     depth = [0]
@@ -734,10 +753,22 @@ def reconstruct_ltl(aut):
         #
         # For now we leave the raw constructed string (after only the trivial replacements above).
 
+    technique = _compute_technique(absorbed, nice_terminal_sccs)
+    return final, state_formula, technique
+
+
+def _compute_technique(absorbed, nice_terminal_sccs):
+    """Build the human-readable technique tag (e.g. "sl+t2+t3+f2").
+
+    Extracted so the end of reconstruct_ltl stays short and focused on
+    "what do we return?" rather than "how do we name what we did?".
+    The long comment explaining the tN naming convention lives with the
+    implementation.
+    """
     # ------------------------------------------------------------------
     # Technique string now reflects all heuristics that fired.
     # Historical values: "sl", "sl+f2"
-    # t2 generalized: we emit "tN" for each distinct size N of validated
+    # tN generalized: we emit "tN" for each distinct size N of validated
     # terminal SCC(s) captured by the (now size-agnostic) nice-L-label rule.
     # Examples: "sl+t2", "sl+t3", "sl+t2+t3", "sl+f2+t4", ...
     # This makes larger SCC captures visible ("t3 or better") and searchable.
@@ -751,5 +782,4 @@ def reconstruct_ltl(aut):
         sizes = sorted({len(info["states"]) for info in nice_terminal_sccs})
         for sz in sizes:
             technique_parts.append(f"t{sz}")
-    technique = "+".join(technique_parts)
-    return final, state_formula, technique
+    return "+".join(technique_parts)
