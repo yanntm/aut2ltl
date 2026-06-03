@@ -12,7 +12,7 @@ See the top-level README for overall project context. This is separate from the 
 We have a working automated pipeline:
 
 Spot deterministic automaton  
-→ extract concrete generators (one per 2^|AP| letter, with dead-trap completion for incomplete auts)  
+→ extract concrete generators (one per 2^|AP| letter, from the Spot-normalized complete det aut)  
 → generate self-contained GAP script using SgpDec  
 → run via `gap`  
 → parse into `Cascade` (num_levels, per-level sizes + kinds, state → configuration mapping)
@@ -88,12 +88,12 @@ Example generated scripts live in `kr/examples/generated/`.
 
 See `kr/examples/spot_det.py`, `kr/examples/synthetic.py`, `kr/testing/test_kr_reconstruct.py`, and the generated/ .gap files.
 
-Note: Adding a dead rejecting trap for incomplete auts (language-preserving) often increases state count and can produce additional trivial (size-1) levels in the cascade compared to older snapshots.
+Note: The KR path now normalizes to a deterministic complete Buchi automaton via Spot before decomposition. Spot only adds states (e.g. sinks) when needed for completeness; sinks are treated as ordinary states. This often results in fewer artificial levels than the old manual dead-trap approach.
 
 Typical current behavior (after `./kr/install.sh`):
 - Trivial 1-state or simple safety cases often produce small/1-level cascades or degenerate results.
 - 1-level cases like Fa now go through the clean K-operator path and produce simple equivalent formulas (e.g. `F(((!a) U (a & true)))`).
-- Multi-level cases (common with dead trap) raise `NotImplemented` in the clean path and fall back to the heuristic.
+- Multi-level cases may still occur (Spot completion can add states); the clean path supports up to 2 levels (higher fall back).
 
 The generated GAP scripts are fully self-contained. They are deterministic given the input generators.
 
@@ -104,7 +104,7 @@ See `kr/testing/` (and its README) for the verification harnesses we use to comp
 - `install.sh` — convenience setup for GAP + SgpDec.
 - `gap_bridge.py` — orchestration, script generation, and execution. (Parser extracted to the focused service below for smaller files.)
 - `gap/parse.py` + `gap/__init__.py` — focused parser service (structured GAP output → `Cascade`). Re-exported from `gap_bridge` for compatibility.
-- `extract.py` — Spot aut → generators (with dead-trap completion for language correctness).
+- `extract.py` — Spot aut → generators (assumes the aut has been normalized to complete deterministic Buchi by the caller/decompose_aut).
 - `cascade.py` — `Cascade` dataclass + config automaton helpers (`build_configuration_automaton`, `move_config`, etc.).
 - `reachability_operators.py` — 1-level K operators (`one_level_reach_strong`, `build_1level_reachability`, guard helpers, etc.) + 1-level projection helpers. The core "intelligence".
 - `reachability.py` — thin high-level layer: `reconstruct_ltl_1level_buchi` (clean pure builder using the operators) + `_heuristic` (old ad-hoc for comparison) + `build_infinitely_often_accepting`.
