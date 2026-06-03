@@ -38,7 +38,7 @@ from .cascade import Cascade
 def reconstruct_ltl_1level_buchi_heuristic(casc: Cascade) -> str:
     """Old ad-hoc version (kept for comparison and fallback during the refactor).
 
-    Contains the structural ifs (1-state, dead, init-is-acc special, B choice from acc set,
+    Contains the structural ifs (1-state, init-is-acc special, B choice from acc set,
     early constant handling via original_aut, >2 unsupported string, etc.).
     Do not extend this; use it only to diff against the new clean version.
     """
@@ -250,7 +250,7 @@ def reconstruct_ltl_1level_buchi(casc: Cascade) -> str:
         return "true"
 
     if casc.num_levels > 2:
-        # Temporary: deep cascades (e.g. Xa 3-level with dead) can cause blowup in un-optimized
+        # Temporary: deep cascades (e.g. Xa 3-level) can cause blowup in un-optimized
         # disj/conj construction or entry recursion; fall back so tests/harnesses stay stable.
         # 2-level cases exercise the new inductive path.
         raise NotImplementedError(
