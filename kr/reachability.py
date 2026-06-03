@@ -25,6 +25,11 @@ from .reachability_operators import (  # noqa: F401
     inf_1level,
     _config_to_pos,
     _build_trans_for_pos,
+    simplify_ltl,
+    normalize_ltl,
+    reach_strong,
+    reach_weak,
+    fin_c,
 )
 
 from .cascade import Cascade
@@ -121,14 +126,12 @@ def reconstruct_ltl_1level_buchi_heuristic(casc: Cascade) -> str:
 # ---------------------------------------------------------------------------
 
 def build_infinitely_often_accepting(casc: Cascade) -> str:
-    """Core reusable piece for 1-level Büchi: from init, always eventually reach some accepting config.
+    """Core: from init, always eventually reach some accepting config (now general for any #levels).
 
-    Expressed as G( F(reach1) | F(reach2) | ... ) using one_level_reach_strong + tau="true".
-    This is the main 'intelligence' that should replace all the ad-hoc shape checks.
+    Uses the generalized reach_strong (inductive K operators) + tau="true".
+    For 1-level falls back to same via delegation inside reach_strong.
+    The F vs G(F) decision per acc (absorbing vs may escape) is kept (pure from config trans).
     """
-    if casc.num_levels != 1:
-        raise NotImplementedError("build_infinitely_often_accepting only for num_levels==1 (use induction for >1)")
-
     configs = casc.all_configs()
     if not configs:
         return "false"
@@ -144,94 +147,102 @@ def build_infinitely_often_accepting(casc: Cascade) -> str:
     if init_config is None:
         init_config = configs[0]
 
-    init_pos = _config_to_pos(init_config)
-
     acc_configs = casc.accepting_configs()
     if not acc_configs:
         return "false"
 
-    # Global acceptance check: if the original aut literally has no accepting transitions
-    # anywhere, there are no accepting runs (e.g. the "false" constant). Do not build a
-    # spurious liveness formula. This replaces the old early "constant case" structural test.
+    # Global acceptance check (constant false aut etc)
     if casc.original_aut is not None:
         aut = casc.original_aut
         has_any_acc = any(bool(list(e.acc.sets())) for s in range(aut.num_states()) for e in aut.out(s))
         if not has_any_acc:
             return "false"
 
+    # Immediate safety fix (for Ga / G!a family and similar 1-level or effective after decomp):
+    # If init config is itself accepting, emit G(stay_in_acc_set) -- prefers safety syntax G(guard)
+    # over recurrence GF framing. Derived purely from acc lift + config trans (no orig aut SCC inspection).
+    if casc.num_levels == 1 and init_config in acc_configs:
+        stay_is = []
+        for li in range(casc.num_letters()):
+            try:
+                nc = casc.move_config(init_config, li)
+                if nc in acc_configs:
+                    stay_is.append(li)
+            except Exception:
+                pass
+        if stay_is and len(stay_is) < casc.num_letters():
+            # only force G(stay) when not all letters keep (real constraint); if after simp is true, fallthrough
+            stay_g = make_guard([casc.letter_valuations[i] for i in stay_is], casc.aps)
+            sg_s = simplify_ltl(stay_g)
+            if sg_s not in ("false", "true", "1", "0"):
+                return f"G({sg_s})"
+
     reach_parts: List[str] = []
-    for acc_c in sorted(acc_configs):  # deterministic order
-        acc_pos = _config_to_pos(acc_c)
-        init_trans = _build_trans_for_pos(casc, init_pos)
-        reach_f = one_level_reach_strong(
-            S=init_pos,
-            B=0,
-            T=acc_pos,
+    for acc_c in sorted(acc_configs):
+        # Use general reach_strong (works for len=1 via delegate, and multi via induction)
+        reach_f = reach_strong(
+            S=init_config,
+            B=None,
+            beta="false",
+            T=acc_c,
             tau="true",
-            valuations=casc.letter_valuations,
-            aps=casc.aps,
-            trans=init_trans,
+            casc=casc,
         )
 
-        # Is this acc config absorbing (all letters from it stay in it)?
-        # If yes, reaching it *once* is sufficient for the Büchi obligation
-        # (you will visit it i.o. or the acceptance is satisfied by permanence).
-        # Expressed purely from the trans dict + K (no original aut shape inspection).
-        acc_trans = _build_trans_for_pos(casc, acc_pos)
-        is_absorbing = bool(acc_trans) and all(tgt == acc_pos for tgt in acc_trans.values())
+        # Absorbing check on the *config* (pure, from build_config_trans or move)
+        # Note: use full config move, not the old pos trans (works for multi)
+        try:
+            acc_trans_dict = {}
+            for li in range(casc.num_letters()):
+                nc = casc.move_config(acc_c, li)
+                acc_trans_dict[li] = nc
+            is_absorbing = bool(acc_trans_dict) and all(nc == acc_c for nc in acc_trans_dict.values())
+        except Exception:
+            is_absorbing = False
 
         if is_absorbing:
             reach_parts.append(f"F({reach_f})")
         else:
-            # May escape the acc, so we need to be able to return i.o.
             reach_parts.append(f"G(F({reach_f}))")
 
     if not reach_parts:
         return "false"
 
     inner = " | ".join(reach_parts)
-    # For a disjunction of obligations, the top-level for the run is usually just the inner
-    # (the G is already inside the non-absorbing terms; absorbing terms use F).
-    # If all terms were absorbing we may want an outer G? but for 1-level Büchi the
-    # disjunct of "eventually reach a permanent acc" is typically sufficient as the
-    # "recurrence" is guaranteed by absorption.
-    return inner if inner else "false"
+    if not inner:
+        return "false"
+    # normalize 0/1 from any sub-simplifies
+    if inner in ("0", "1"):
+        return "false" if inner == "0" else "true"
+    return inner
 
 
 def reconstruct_ltl_1level_buchi(casc: Cascade) -> str:
-    """New clean version.
+    """Clean reconstruction using generalized reach (now supports multi-level cascades via induction).
 
-    For a 1-level Büchi the main path is:
-        G( build_infinitely_often_accepting(...) )
+    The core is build_infinitely_often_accepting which uses reach_strong (the 5 formulas)
+    for arbitrary level. For 1-level delegates inside to the optimized one_level_* .
 
-    All special cases (dead, permanent sink, 1-config, until "q" filter, has_bad_self, etc.)
-    should be expressed implicitly by the valuations + the K operators (one_level_reach_strong etc.)
-    rather than by inspecting original_aut shape or hard-coded ifs.
-
-    For num_levels != 1 we raise (future: delegate to multi-level or heuristic).
+    Still framed around "infinitely often acc" (Büchi recurrence); full Muller/Fin/accept assembly
+    and safety framing come next (see roadmap in STATUS.md).
     """
     if casc.num_levels == 0:
-        # Degenerate constant (e.g. "true"/"false" auts with no states in the cascade)
         if casc.original_aut is not None:
             aut = casc.original_aut
             has_acc = any(bool(list(e.acc.sets())) for s in range(aut.num_states()) for e in aut.out(s))
             return "true" if has_acc else "false"
         return "true"
 
-    if casc.num_levels != 1:
-        # For now raise; the plan keeps the heuristic available for comparison on >1 cases
-        # (many current decomps with dead trap produce 2-3 levels even for simple formulas).
+    if casc.num_levels > 2:
+        # Temporary: deep cascades (e.g. Xa 3-level with dead) can cause blowup in un-optimized
+        # disj/conj construction or entry recursion; fall back so tests/harnesses stay stable.
+        # 2-level cases exercise the new inductive path.
         raise NotImplementedError(
-            f"Only 1-level supported in clean reconstruct (got {casc.num_levels}). "
+            f"Clean multi only up to 2 levels for now (got {casc.num_levels}). "
             "Use reconstruct_ltl_1level_buchi_heuristic(casc) for comparison/fallback."
         )
 
-    core = build_infinitely_often_accepting(casc)
-    if core in ("false", "true"):
-        return core
-    # For Büchi acceptance on 1-level, the recurrence "always eventually visit acc config"
-    # is typically wrapped in G(...) already inside the builder. Return as-is or adjust.
-    # Some cases may want just the core if the language doesn't require the outer G for safety prefix.
+    core = normalize_ltl(build_infinitely_often_accepting(casc))
     return core
 
 
@@ -239,5 +250,9 @@ __all__ = [
     "reconstruct_ltl_1level_buchi",
     "reconstruct_ltl_1level_buchi_heuristic",
     "build_infinitely_often_accepting",
+    "simplify_ltl",
+    "normalize_ltl",
+    "reach_strong",
+    "reach_weak",
     # plus the re-exports from operators
 ]
