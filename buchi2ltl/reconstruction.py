@@ -639,15 +639,45 @@ def reconstruct_ltl(aut):
             has_acc = any(acc for _, acc in self_loops) or (treat_all_as_accepting and bool(self_loops))
 
             if has_acc:
-                # Legacy mixed-case logic kept exactly as before for safety
-                acc_cs = [c for c, acc in self_loops if acc]
-                or_acc = " | ".join(f"({c})" for c in acc_cs) if acc_cs else "true"
-                if len(acc_cs) > 1:
-                    or_acc = f"({or_acc})"
+                # --- Generalized Büchi handling for the mixed (has-exits) case ---
+                # Previously this was always the legacy single-GF(or of any accepting self-loop).
+                # That was insufficient for >1 acc sets when self-loops carry partial marks
+                # (e.g. one loop only Inf(0), one only Inf(1), one both, one none).
+                # The correct "stay forever" must ensure each required Inf set is covered i.o.
+                # We now mirror the logic from the pure-self-loop case above.
+                #
+                # touched_sets = union of acc sets touched by *this state's* self-loops only.
+                # For each such set i we compute the disjunction of conds that provide i.
+                # This produces the proper G(OR all self conds) & GF(cover_for_0) & GF(cover_for_1) ...
+                # for the "stay" branch, while still allowing the (or_self U exit) "leave" option.
+                touched_sets = set()
+                for _, acc in self_loops:
+                    touched_sets.update(acc)
+                local_num_sets = len(touched_sets)
+
                 or_self = " | ".join(f"({c})" for c, _ in self_loops)
                 if len(self_loops) > 1:
                     or_self = f"({or_self})"
-                stay = f"G({or_self}) & GF({or_acc})"
+
+                if local_num_sets <= 1 or treat_all_as_accepting:
+                    # Legacy behavior (exact string compatibility for 0/1 acc set cases)
+                    acc_cs = [c for c, acc in self_loops if acc]
+                    or_acc = " | ".join(f"({c})" for c in acc_cs) if acc_cs else "true"
+                    if len(acc_cs) > 1:
+                        or_acc = f"({or_acc})"
+                    stay = f"G({or_self}) & GF({or_acc})"
+                else:
+                    # Generalized Büchi (multi acc sets): build per-set covering GFs
+                    gfs = []
+                    for i in sorted(touched_sets):
+                        covering = [c for c, acc in self_loops if i in acc]
+                        if covering:
+                            or_i = " | ".join(f"({c})" for c in covering)
+                            if len(covering) > 1:
+                                or_i = f"({or_i})"
+                            gfs.append(f"GF({or_i})")
+                    stay = f"G({or_self}) & {' & '.join(gfs)}" if gfs else f"G({or_self})"
+
                 inv = state_invariants.get(q, "")
                 if inv:
                     stay = f"({stay}) & ({inv})"
