@@ -115,7 +115,7 @@ try:
 
     print("RESULT_JSON:" + json.dumps(info))
 except Exception as e:
-    info = info if 'info' in dir() else {"formula": fs}
+    info = info if "info" in locals() else {{"formula": fs}}
     info["error"] = str(e)[:200]
     info["tb"] = traceback.format_exc()[-300:]
     print("RESULT_JSON:" + json.dumps(info))  # always emit RESULT so parent parser succeeds
@@ -146,6 +146,15 @@ except Exception as e:
         "error": "no RESULT_JSON marker",
         "stdout_head": out[:400],
         "rc": rc,
+    }
+
+
+def _always_emit_result_fallback(formula_str: str, e: Exception) -> dict:
+    """Helper to guarantee we can still report even if early exception before info dict."""
+    return {
+        "formula": formula_str,
+        "error": str(e)[:200],
+        "tb": "see child output",
     }
 
 
