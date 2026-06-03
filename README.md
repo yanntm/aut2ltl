@@ -35,11 +35,19 @@ samples/
 testing/
 kr/                           # Experimental algebraic path (Krohn-Rhodes via SgpDec/GAP)
     README.md
+    STATUS.md                 # Detailed current state + historical context + gaps
     install.sh                # One-shot setup for GAP + SgpDec on Linux
-    gap_bridge.py             # Script generator + runner + parser
-    extract.py                # Spot aut → transformation generators
-    cascade.py                # Cascade dataclass
+    gap_bridge.py             # Orchestration + script gen + execution (parser in kr/gap/)
+    gap/                      # Focused sub-services (parse.py for GAP output → Cascade)
+    extract.py                # Spot aut → generators (dead-trap completion)
+    bdd_utils.py              # Stability (precomputed buddy vars)
+    cascade.py                # Cascade dataclass + config automaton
+    reachability_operators.py # 1-level K operators (core "intelligence")
+    reachability.py           # Thin clean reconstruct (pure K builder) + _heuristic
     examples/
+    testing/                  # Verification harnesses (clean vs heuristic, stability)
+    README.md
+    STATUS.md
 README.md
 ```
 
@@ -125,6 +133,12 @@ This repository is used for interactive development of the reconstruction techni
 
 ## Experimental Algebraic Direction (kr/)
 
-A parallel, more ambitious line of work explores the *algebraic* route to Büchi → LTL via Krohn-Rhodes holonomy cascade decomposition (SgpDec + GAP), following the construction of Boker, Lehtinen & Sickert (FoSSaCS 2022). See the self-contained `kr/` subdirectory (and `kr/README.md`) for the current status, `install.sh`, and first-milestone code (Spot aut → generators → generated GAP script → structured `Cascade` object in Python).
+A parallel, more ambitious line of work explores the *algebraic* route to Büchi → LTL via Krohn-Rhodes holonomy cascade decomposition (SgpDec + GAP), following the construction of Boker, Lehtinen & Sickert (FoSSaCS 2022). See the self-contained `kr/` subdirectory (and `kr/README.md` + `kr/STATUS.md`) for the current status, `install.sh`, and the decomposition pipeline (Spot aut → generators → GAP/SgpDec → `Cascade`).
+
+Recent work includes:
+- File splits for smaller, focused modules ("one service per file") and stability (`bdd_utils.py`, `kr/gap/parse.py`, operator extraction).
+- 1-level clean reconstruction: thin pure builder (`reconstruct_ltl_1level_buchi` + `build_infinitely_often_accepting`) on top of the K operators, with the old ad-hoc version kept as `_heuristic` for comparison. No structural pattern matching in the main 1-level path.
 
 This path is currently independent of the heuristic `buchi2ltl/` engine. It targets the theoretically complete case for counter-free deterministic automata (at the cost of a heavy external dependency and very large formulas in the worst case). The two approaches may eventually be combined (use heuristics for the common "nice" cases; fall back to the cascade construction when the language is LTL-definable but structurally complex).
+
+See `kr/testing/` for verification harnesses that compare the clean vs heuristic paths and confirm stability.
