@@ -28,20 +28,18 @@ Key current capabilities:
 
 ```
 buchi2ltl.py                  # Thin CLI / backward-compat entry point
-buchi2ltl/                    # Main package
-    __init__.py               # Public API (reconstruct_ltl + both heuristics)
-    reconstruction.py         # Core reconstruct_ltl + labeling logic (now integrates f2 + t2 + invariants)
-    invariants.py             # Generic detection of atoms that are constant across a set of BDD formulas
-    heuristics/
-        size2_overapprox.py   # Size-2 non-accepting SCC absorption ("f2"/"fusion")
-        terminal_2scc.py      # Terminal SCC pattern (tN, generalized from t2) – heavily documented
-    utils.py                  # simplify_ltl() etc. (currently bypassed for raw debug output)
-evaluate.py                   # Evaluation harness (stable samples + random round-trip testing)
-samples/                      # Curated LTL formulas and HOAs (for regression / stable testing)
-testing/                      # Heavy debugging and experimental scripts
-    visualize_fusion.py       # Automaton visualization helper (before/after)
-    inspect_failures.py
+buchi2ltl/                    # Main (heuristic) package
     ...
+evaluate.py
+samples/
+testing/
+kr/                           # Experimental algebraic path (Krohn-Rhodes via SgpDec/GAP)
+    README.md
+    install.sh                # One-shot setup for GAP + SgpDec on Linux
+    gap_bridge.py             # Script generator + runner + parser
+    extract.py                # Spot aut → transformation generators
+    cascade.py                # Cascade dataclass
+    examples/
 README.md
 ```
 
@@ -124,3 +122,9 @@ nice = try_terminal_2scc_with_validation(aut)   # list of validated t2 fragments
 - The historical recovered fusion file is in `testing/`, not `samples/`.
 
 This repository is used for interactive development of the reconstruction technique. The tN pattern (generalized terminal-SCC labeling) is known to need further refinement (especially around prefix entry choice into the SCC and validation robustness for certain liveness-marked large SCCs).
+
+## Experimental Algebraic Direction (kr/)
+
+A parallel, more ambitious line of work explores the *algebraic* route to Büchi → LTL via Krohn-Rhodes holonomy cascade decomposition (SgpDec + GAP), following the construction of Boker, Lehtinen & Sickert (FoSSaCS 2022). See the self-contained `kr/` subdirectory (and `kr/README.md`) for the current status, `install.sh`, and first-milestone code (Spot aut → generators → generated GAP script → structured `Cascade` object in Python).
+
+This path is currently independent of the heuristic `buchi2ltl/` engine. It targets the theoretically complete case for counter-free deterministic automata (at the cost of a heavy external dependency and very large formulas in the worst case). The two approaches may eventually be combined (use heuristics for the common "nice" cases; fall back to the cascade construction when the language is LTL-definable but structurally complex).
