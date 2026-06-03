@@ -123,6 +123,63 @@ class Cascade:
                     raise ValueError(f"No config mapping for successor state {next_s}")
         raise ValueError(f"No original state found for config {config}")
 
+    def top_of(self, config: Tuple[int, ...]) -> int:
+        """Return the top-level (outermost, first) coordinate of the config."""
+        return config[0] if config else 0
+
+    def sub_config(self, config: Tuple[int, ...]) -> Tuple[int, ...]:
+        """Return the lower sub-configuration (tail after the top coordinate). For level-0 this is ().
+        This supports the inductive peeling for reachability formulas (top coord = current level's state).
+        """
+        return config[1:] if len(config) > 1 else ()
+
+    def compute_stay_leave_from(self, config: Tuple[int, ...]) -> Dict[str, List[Tuple[int, Tuple[int, ...]]]]:
+        """From this specific config (which encodes current top + current lower sub-config),
+        partition the letters into those that keep the current top (stay) vs change it (leave).
+
+        Returns {"stay": [(li, arrived_full_config), ...], "leave": [...] }
+        These are the relevant combined letters <σ, current_lower> for building solid/dashed cases
+        at this position. Derivable directly from move_config + generators (pure algebraic).
+        """
+        if not config:
+            return {"stay": [], "leave": []}
+        s = self.top_of(config)
+        stay: List[Tuple[int, Tuple[int, ...]]] = []
+        leave: List[Tuple[int, Tuple[int, ...]]] = []
+        for li in range(self.num_letters()):
+            try:
+                nc = self.move_config(config, li)
+                if self.top_of(nc) == s:
+                    stay.append((li, nc))
+                else:
+                    leave.append((li, nc))
+            except Exception:
+                pass
+        return {"stay": stay, "leave": leave}
+
+    def compute_enters_to_from(self, config: Tuple[int, ...], target_top: int) -> List[Tuple[int, Tuple[int, ...]]]:
+        """Letters from this config whose move changes top into exactly target_top (i.e. Enter for t from outside s).
+        Used for the dashed-arrow (change top) case in reachability.
+        """
+        if not config:
+            return []
+        enters: List[Tuple[int, Tuple[int, ...]]] = []
+        curr_top = self.top_of(config)
+        if curr_top == target_top:
+            return enters  # already there, not "enter"
+        for li in range(self.num_letters()):
+            try:
+                nc = self.move_config(config, li)
+                if self.top_of(nc) == target_top:
+                    enters.append((li, nc))
+            except Exception:
+                pass
+        return enters
+
+    def all_top_values(self) -> List[int]:
+        """All distinct top-coordinate values appearing in configs (for level of these configs)."""
+        return sorted({self.top_of(c) for c in self.all_configs()})
+
     def all_configs(self) -> List[Tuple[int, ...]]:
         """Return sorted list of distinct configurations that appear in the mapping."""
         return sorted(set(self.state_to_config.values()))
@@ -182,12 +239,18 @@ class Cascade:
             return set()
         aut = self.original_aut
         acc_configs = set()
-        d = aut.get_dict()
+        n_orig = aut.num_states()
         for s, c in self.state_to_config.items():
-            for e in aut.out(s):
-                if e.acc and list(e.acc.sets()):  # has some acc mark
-                    acc_configs.add(c)
-                    break
+            if s >= n_orig:
+                continue  # dead trap never acc
+            try:
+                for e in aut.out(s):
+                    if e.acc and list(e.acc.sets()):  # has some acc mark
+                        acc_configs.add(c)
+                        break
+            except Exception:
+                # out of range etc: skip
+                pass
         return acc_configs
 
 
