@@ -228,21 +228,23 @@ class Cascade:
         }
 
     def accepting_configs(self) -> set:
-        """Heuristic lift of accepting states/configs for Büchi.
+        """Lift of accepting states/configs for Büchi from the (completed) automaton.
 
-        A config is considered accepting if at least one original state mapped to it
+        A config is considered accepting if at least one state mapped to it
         has an accepting outgoing transition under some letter.
-        (For more precise, we can track acc on (config, letter) pairs.)
+        Since the input to the KR path is now always normalized by Spot to a
+        deterministic complete Buchi automaton, all states (including any
+        sinks Spot may have added for completeness) are part of the original
+        state space for this cascade. Non-accepting sinks are simply states
+        from which no accepting run is possible; they are handled uniformly
+        by the reachability construction (no special "dead trap" cases).
         """
         if self.original_aut is None:
             # Fallback: assume no acc info
             return set()
         aut = self.original_aut
         acc_configs = set()
-        n_orig = aut.num_states()
         for s, c in self.state_to_config.items():
-            if s >= n_orig:
-                continue  # dead trap never acc
             try:
                 for e in aut.out(s):
                     if e.acc and list(e.acc.sets()):  # has some acc mark
