@@ -4,11 +4,11 @@ kr/testing/diag_stability.py
 
 Repeated decomposition stability test.
 
-Historically, certain formulas (especially "Xa" which produces a 3-level cascade
-with the dead-trap state, and others with |AP|>=1) would cause sporadic
-segfaults (exit 139) inside the Spot/buddy C extensions during
-extract_generators (the _valuation_to_bdd hack that discovered buddy var ids
-by creating many tiny auts *interleaved* with bdd & operations on the main aut).
+Historically, certain formulas (especially "Xa" which produces a 3-level cascade,
+and others with |AP|>=1) would cause sporadic segfaults (exit 139) inside the
+Spot/buddy C extensions during extract_generators (the _valuation_to_bdd hack
+that discovered buddy var ids by creating many tiny auts *interleaved* with
+bdd & operations on the main aut).
 
 Fix: kr/bdd_utils.py now does get_ap_bdd_vars(aut) *once* before the letter loop,
 then re-uses the map for every point_bdd. This eliminates the interleaving hazard.
