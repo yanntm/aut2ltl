@@ -21,7 +21,7 @@ from kr import decompose_aut, extract_generators, is_deterministic, check_gap_av
 
 def main():
     # A formula whose "Deterministic" translation is small and deterministic.
-    # G(p -> X q) is a classic t2 / nice terminal SCC case in the heuristic path.
+    # G(p -> X q) is a 2-level cascade case under det parity normalization.
     f = spot.formula("G(p -> X q)")
     # Note: decompose_aut will normalize this to det parity min complete.
     # We can pass a loose aut; explicit "Buchi"+"Deterministic" not required.
