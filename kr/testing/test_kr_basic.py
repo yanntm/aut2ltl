@@ -13,7 +13,7 @@ Run:
   python3 kr/testing/test_kr_basic.py
   python3 kr/testing/test_kr_basic.py FGa "a U b"   # test specific formulas
 
-See also test_kr_reconstruct.py (for clean vs heuristic side-by-side) and diag_stability.py.
+See also test_kr_reconstruct.py (paper path verification) and diag_stability.py.
 
 Note: decompose_aut now normalizes internally to deterministic minimized parity
 complete automata (per paper); the test translate() calls are intentionally loose.
