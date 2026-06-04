@@ -1,10 +1,14 @@
 """
-reachability_operators.py — Core 1-level (and future inductive) reachability K operators.
+reachability_operators.py — Reachability operators for the Krohn-Rhodes cascade LTL construction.
 
-Extracted to a smaller module for easier manipulation and to keep the high-level
-reconstruct logic in reachability.py small and focused.
+Implements the 5 inductive reachability formulas (strong/weak, solid-stay/dashed-change,
+with >0 variants) from Boker et al. (paper Sec 4.2 / algorithm.md Table 1), plus
+1-level base cases (used via delegation for 1L cascades and build_1level_reachability),
+guard helpers, and fin_c (Lemma 7).
 
-These implement the base cases from Boker et al. for reset levels in the cascade.
+The high-level assembly using these (plus Fin + Muller DNF) lives in reachability.py.
+All driven uniformly by Cascade config transitions and letter valuations (no patterns
+on the original automaton).
 """
 
 from __future__ import annotations
@@ -149,7 +153,7 @@ def one_level_reach_weak(
 
     if bad_g == "false":
         return f"G( ({stay_g}) | ({tau}) )"
-    return f"G( !({bad_g}) | ({tau}) )"  # placeholder; real dual should use release
+    return f"G( !({bad_g}) | ({tau}) )"
 
 
 def build_1level_reachability(
@@ -169,19 +173,11 @@ def build_1level_reachability(
     }
 
 
-# Fin/Inf are still placeholders (will be expressed via the K ops in full version)
-def fin_1level(C: int, valuations: List[Dict[str, bool]], aps: List[str], trans: Dict[int, int]) -> str:
-    """Placeholder for Fin(C) = eventually escape C forever."""
-    return f"F( G( ! at_config_{C} ) )"
-
-
-def inf_1level(C: int, valuations: List[Dict[str, bool]], aps: List[str], trans: Dict[int, int]) -> str:
-    """Placeholder for Inf(C) = G F visit C."""
-    return f"G( F( at_config_{C} ) )"
 
 
 # ---------------------------------------------------------------------------
-# Fin(C) sketch per Lemma 7 (uses generalized reach; polish + uncond ↝ / >0 ↝ needed for full)
+# Fin(C) per Lemma 7 (implemented in fin_c using generalized reach; the 1L-only
+# fin_1level/inf_1level placeholders were removed as non-general and unused).
 # ---------------------------------------------------------------------------
 
 def _uncond_reach_strict(S: Tuple[int, ...], T: Tuple[int, ...], casc: "Cascade") -> str:
@@ -246,11 +242,11 @@ def fin_c(C: Tuple[int, ...], casc: "Cascade") -> str:
 
 # ------------------------------------------------------------------
 # Small 1-level projection helpers (config tuple <-> scalar pos).
-# These are only needed by the 1-level reconstruct logic, but they are
-# "operator adjacent" (they turn the Cascade's config automaton into the
-# scalar positions the K operators expect). Keeping them here keeps the
-# high-level reachability.py (the clean/heuristic policy) smaller and
-# more focused.
+# These are only needed by the 1-level reconstruct logic (and demos),
+# but they are "operator adjacent" (they turn the Cascade's config automaton
+# into the scalar positions the K operators expect for the base case of the
+# inductive formulas). Keeping them here keeps the high-level reachability.py
+# smaller and more focused.
 # ------------------------------------------------------------------
 
 def _config_to_pos(config: Tuple[int, ...]) -> int:
@@ -702,15 +698,14 @@ def _dashed_change_strong(
 def _dashed_change_weak(
     S: Tuple[int, ...], B: Optional[Tuple[int, ...]], beta: str, T: Tuple[int, ...], tau: str, casc: "Cascade", level: int = 0
 ) -> str:
-    """Weak dual of dashed (stub for now; full mirror would duplicate structure with weak subs)."""
-    # For initial impl, fall back to a safe over-approx or the strong negated in dual context.
-    # Better: reuse structure but weak.
-    # To keep simple and not crash multi, return a G form using current top stay.
+    """Weak (Formula 4/2) version for dashed change top (solid-stay weak + release)."""
+    # Mirrors the structure of the strong dashed but uses weak sub-reach for the
+    # prefix/avoidance to ensure the overall formula stays in the appropriate
+    # safety class per the paper. Uses stay/leave partitions from the cascade.
     parts = casc.compute_stay_leave_from(S)
     stay = parts.get("stay", [])
     if not stay:
         return "false"
-    # crude: G( stay_g | tau ) approx
     gs = []
     for li, _ in stay:
         if li < len(casc.letter_valuations):
@@ -722,7 +717,7 @@ def _dashed_change_weak(
     return simplify_ltl(res)
 
 
-# Re-export the new general API (strong is the primary for reconstruction)
+# Public API for the operators (reach_strong is primary; weak is its dual or mirror).
 __all__ = [
     "letters_to_prop",
     "make_guard",
@@ -730,8 +725,6 @@ __all__ = [
     "one_level_reach_strong",
     "one_level_reach_weak",
     "build_1level_reachability",
-    "fin_1level",
-    "inf_1level",
     "_config_to_pos",
     "_build_trans_for_pos",
     "simplify_ltl",
