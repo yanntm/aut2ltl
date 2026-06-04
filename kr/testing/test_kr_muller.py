@@ -105,10 +105,12 @@ def main():
             casc = decompose_aut(aut_b)  # will norm internally to parity
             print("\n--- After kr decompose_aut (internal parity norm) ---")
             print("casc num_levels:", casc.num_levels)
+            reach = casc.reachable_configs() if hasattr(casc, 'reachable_configs') else []
+            print("reachable_configs (BFS from init on config aut):", len(reach), "configs")
             acc_cfgs = casc.accepting_configs()
             print("accepting_configs():", acc_cfgs)
             good = _compute_good_muller_sets(casc)
-            print("good_muller_sets (from _compute):", [set(m) for m in good])
+            print("good_muller_sets (from _compute, now via pruned config graph SCC):", [set(m) for m in good])
         except Exception as e:
             print("decompose or good_ms err:", type(e).__name__, e)
 
