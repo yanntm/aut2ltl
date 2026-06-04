@@ -56,6 +56,15 @@ CASES = [
     "X a",
     "G (p -> X p)",
     "(p U q) & G F r",
+    "a U b",
+    "G F p",
+    "F G p",
+    "p & F q",
+    "G (p | X q)",
+    "X X a",
+    "G p & F q",
+    "F (p U q)",
+    "G (p -> X (p & q))",
 ]
 
 
