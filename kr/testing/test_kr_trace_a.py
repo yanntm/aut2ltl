@@ -156,9 +156,10 @@ def main():
     print("  - After norm to parity: 3 states, acc=Inf(0), specific accepting sink SCC")
     print("  - Cascade: 2 levels, 3 configs (bijective to states of D)")
     print("  - Reachable: all 3 (or subset)")
-    print("  - Accepting configs / good M: the one corresponding to the accepting sink")
-    print("  - Reconstruction currently produces 'false' (non-equiv)")
-    print("  - See the traces above for exact reach/fin/Muller steps.")
+    print("  - Accepting configs / good M: the one corresponding to the accepting sink (now via working pruned config SCC too)")
+    print("  - With solid-top guard + buddy.bddtrue fixes: reach for init->rej-sink is now !a (solid=false when tops differ); Fin(rej)=a, Fin(init)=true, !Fin(acc)=a")
+    print("  - Reconstruction produces 'a' and are_equivalent=True (roundtrips, as predicted by paper-faithful construction)")
+    print("  - See the [KR] + [TRACE_ASSEMBLY] traces above for exact inductive reach/fin/Muller steps (solid/dashed, gt0 disj/conj, r_to/r_gt0, terms).")
 
 if __name__ == "__main__":
     main()
