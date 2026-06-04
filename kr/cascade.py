@@ -400,8 +400,18 @@ class Cascade:
         """Good M on configs using SCC analysis on the pruned *config* automaton
         (reachable from init, acc lifted). This is the correct way to extract
         the possible i.o. config sets for accepting runs (pruned graph + scc
-        on configs, per paper/algo2). Falls back to (pruned) state-SCC mapping.
+        on configs, per paper/algo2).
+
+        We also support basin-based good Ms (using Spot's decompose-scc=aN style):
+        for each accepting SCC in the normalized D, compute the attraction basin
+        (states that can reach it, i.e. the "sub-automaton leading to" it), map
+        to configs. This gives precise per-accepting-component recurrent sets
+        via explicit BFS exploration (backward reachability).
+
+        Prefers config-graph SCCs (on pruned config aut). Falls back to basins
+        or pruned state-SCCs.
         """
+        # 1. Try the direct config-graph SCCs (best, on the lifted pruned structure)
         g = self.build_pruned_config_aut()
         if g is not None:
             try:
@@ -419,7 +429,16 @@ class Cascade:
                     return good
             except Exception:
                 pass
-        # fallback: old state scc logic, but intersected with reachable configs
+
+        # 2. Try basin-based (decompose-scc / aN idea on the state D, lifted to configs)
+        try:
+            basin_good = self.get_good_muller_sets_from_basins()
+            if basin_good:
+                return basin_good
+        except Exception:
+            pass
+
+        # 3. Fallback: pruned state-SCC mapping (old logic, now with reach prune)
         reach = set(self.reachable_configs())
         if self.original_aut is None:
             acc = self.accepting_configs()
@@ -441,6 +460,149 @@ class Cascade:
                               if s in self.state_to_config and self.state_to_config.get(s) in reach)
                 if m:
                     good.append(m)
+        return good
+
+    # ------------------------------------------------------------------
+    # Basin / "leading to accepting SCC" helpers, inspired by Spot's
+    # --decompose-scc=N / aN  (autfilt).
+    #
+    # These extract, for each accepting SCC (by index), the attraction basin:
+    # all states from which you can reach that SCC (prefix + the SCC itself).
+    # Then map to configs.
+    #
+    # This gives us per-accepting-component config sets that can flow into
+    # a specific recurrent accepting set. Perfect for good Ms in the Muller
+    # DNF (or for per-basin handling), and directly mirrors the "sub-automaton
+    # leading to the Nth accepting SCC" concept.
+    #
+    # Complements the pruned config aut + its SCCs: we can now also compute
+    # basins at the state level (or do analogous on config graph) and use
+    # the resulting config sets as precise good Ms.
+    # Uses scc_info + our BFS-style exploration (no fear of explosion for
+    # our sizes; user confirmed resources allow).
+    # ------------------------------------------------------------------
+
+    def get_accepting_scc_indices(self):
+        """Return list of 0-based indices of SCCs in the normalized D (original_aut)
+        that are non-rejecting and contain at least one accepting cycle/edge.
+        (Analogous to counting 'aN' accepting SCCs for decompose.)
+        """
+        if self.original_aut is None:
+            return []
+        import spot
+        aut = self.original_aut
+        try:
+            si = spot.scc_info(aut)
+            acc_sccs = []
+            for i in range(si.scc_count()):
+                if si.is_rejecting_scc(i):
+                    continue
+                states_in = [s for s in range(aut.num_states()) if si.scc_of(s) == i]
+                has_acc = False
+                for s in states_in:
+                    for e in aut.out(s):
+                        if e.dst in states_in and e.acc and list(e.acc.sets()):
+                            has_acc = True
+                            break
+                    if has_acc:
+                        break
+                if has_acc or len(states_in) > 1:
+                    acc_sccs.append(i)
+            return acc_sccs
+        except Exception:
+            return []
+
+    def states_in_basin_of_scc(self, scc_index):
+        """Return the set of states that can reach the given SCC (the 'leading to'
+        basin / attraction set, including the SCC itself).
+        This is the set of states in the sub-automaton that autfilt --decompose-scc=aN
+        or --decompose-scc=N would extract for that SCC.
+        Implemented with backward BFS from the SCC states (using predecessor lists).
+        """
+        if self.original_aut is None:
+            return set()
+        import spot
+        aut = self.original_aut
+        try:
+            si = spot.scc_info(aut)
+            target_states = {s for s in range(aut.num_states()) if si.scc_of(s) == scc_index}
+            if not target_states:
+                return set()
+            # build predecessors
+            preds = {s: [] for s in range(aut.num_states())}
+            for s in range(aut.num_states()):
+                for e in aut.out(s):
+                    preds[e.dst].append(s)
+            # backward BFS from targets
+            from collections import deque
+            visited = set(target_states)
+            q = deque(target_states)
+            while q:
+                s = q.popleft()
+                for p in preds.get(s, []):
+                    if p not in visited:
+                        visited.add(p)
+                        q.append(p)
+            return visited
+        except Exception:
+            return set()
+
+    def configs_in_basin_of_scc(self, scc_index):
+        """Map the basin states (states leading to + in the SCC) to their configs.
+        The full basin includes prefixes that flow into the SCC.
+        Returns a frozenset of config tuples. Useful for prefix analysis.
+        """
+        states = self.states_in_basin_of_scc(scc_index)
+        confs = []
+        for s in states:
+            c = self.state_to_config.get(s)
+            if c is not None:
+                confs.append(c)
+        return frozenset(confs)
+
+    def configs_in_scc(self, scc_index):
+        """Return only the configs whose states are exactly inside the given SCC
+        (the recurrent / terminal component itself, not the leading prefixes).
+        This is the precise set for a good M in the Muller DNF (the configs
+        that can be visited i.o. when the run enters this accepting SCC).
+        """
+        if self.original_aut is None:
+            return frozenset()
+        import spot
+        aut = self.original_aut
+        try:
+            si = spot.scc_info(aut)
+            states = {s for s in range(aut.num_states()) if si.scc_of(s) == scc_index}
+            confs = [self.state_to_config.get(s) for s in states if s in self.state_to_config]
+            return frozenset(c for c in confs if c is not None)
+        except Exception:
+            return frozenset()
+
+    def get_good_muller_sets_from_basins(self):
+        """Return good Ms derived from accepting SCCs (using the decompose-scc=aN
+        / basin idea, but taking the precise recurrent part: the SCC configs themselves).
+        For each accepting SCC index, the configs strictly inside that SCC
+        (via configs_in_scc) form a good M -- the set that can be visited i.o.
+        when a run enters this particular accepting component.
+        The full basin (configs_in_basin_of_scc) is available separately for
+        prefix/leading-to analysis.
+        Uses scc_info + our reachability exploration. Complements the pruned
+        config-graph SCC computation.
+        """
+        acc_indices = self.get_accepting_scc_indices()
+        if not acc_indices:
+            # fallback to pruned config SCCs if available
+            if hasattr(self, 'compute_good_muller_sets'):
+                try:
+                    return self.compute_good_muller_sets()
+                except:
+                    pass
+            return []
+        good = []
+        for idx in acc_indices:
+            m = self.configs_in_scc(idx)
+            if m:
+                good.append(m)
         return good
 
 
