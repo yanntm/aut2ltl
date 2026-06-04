@@ -362,7 +362,9 @@ class Cascade:
         idx = {c: i for i, c in enumerate(reach)}
         n = len(reach)
         g = spot.make_twa_graph()
-        g.set_acceptance(orig.get_acceptance())
+        # Copy acceptance condition properly (Spot API: use acc() for cond, then num + code)
+        acc = orig.acc()
+        g.set_acceptance( acc.num_sets() , acc.get_acceptance() )
         g.new_states(n)
         # init config
         init_c = None
