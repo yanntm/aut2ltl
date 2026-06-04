@@ -35,6 +35,8 @@ from kr import (
 )
 
 # Cases chosen to exercise 0/1/multi level cascades and the paper path.
+# Expanded for roundtrip analysis (LTL -> decomp -> pure reconstruct -> Spot equiv).
+# Only formulas that survive full algebraic path (no heuristics) are expected to roundtrip.
 CASES = [
     "true",
     "false",
@@ -44,6 +46,16 @@ CASES = [
     "Xa",
     "G(p -> X q)",
     "G(p -> (q U r))",
+    "G a",
+    "F a",
+    "a & X a",
+    "G(a & X a)",
+    "p U q",
+    "F G a",
+    "G F a",
+    "X a",
+    "G (p -> X p)",
+    "(p U q) & G F r",
 ]
 
 
