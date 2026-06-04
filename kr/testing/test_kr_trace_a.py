@@ -2,19 +2,23 @@
 """
 kr/testing/test_kr_trace_a.py
 
-Full trace for input formula "a" on the pure paper algebraic path.
-Run from subfolder:
-  cd kr/testing
-  python3 test_kr_trace_a.py
+Full trace / "zoom in" for a given LTL formula on the pure paper algebraic KR path
+(Boker-Lehtinen-Sickert FoSSaCS 2022 construction via cascade, reach ops, Fin, Muller assembly).
 
-This traces:
+Now reusable: pass formula as argument (default "Fa" to demonstrate).
+Run from project root:
+  python3 kr/testing/test_kr_trace_a.py
+  python3 kr/testing/test_kr_trace_a.py "Fa"
+  python3 kr/testing/test_kr_trace_a.py "G(p -> X q)"
+
+This traces (for the target formula):
 - Original aut from Spot translate()
 - After decompose_aut: normalized aut (our D), cascade details
 - Reachable configs (BFS on config aut)
 - Accepting configs
 - Muller sets (good Ms) via the current compute (config SCCs + basins)
 - The pruned config automaton structure
-- Reconstruction (with KR_TRACE for reach/fin details)
+- Reconstruction (with KR_TRACE=1 for reach/fin details)
 - Final LTL and equiv check
 
 All output via prints (no /tmp files).
@@ -23,9 +27,10 @@ Uses the kr/testing path discipline.
 
 import os
 import sys
+import argparse
 from pathlib import Path
 
-# Set trace early
+# Set trace early (before any kr imports that read KR_TRACE)
 os.environ['KR_TRACE'] = '1'
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -70,10 +75,22 @@ def describe_aut(aut, label):
         print(f"         has_acc_cycle={has_acc}")
 
 def main():
-    print("=== FULL TRACE FOR FORMULA 'a' (pure paper path) ===")
+    parser = argparse.ArgumentParser(
+        description="KR full trace/zoom-in script (pure paper algebraic path). "
+                    "Shows automata, cascade, muller sets, pruned config aut, "
+                    "reconstructions (with KR_TRACE), and equiv for the target formula."
+    )
+    parser.add_argument(
+        "formula", nargs="?", default="Fa",
+        help="LTL formula string to zoom in on (default: Fa for demonstration)"
+    )
+    args = parser.parse_args()
+    formula_str = args.formula
+
+    print(f"=== FULL TRACE FOR FORMULA '{formula_str}' (pure paper path) ===")
     print("Project root:", PROJECT_ROOT)
 
-    f = spot.formula('a')
+    f = spot.formula(formula_str)
     print("\n=== Input formula:", f)
 
     # 1. Original aut (pre-norm, what caller usually has)
@@ -150,16 +167,17 @@ def main():
     eq = spot.are_equivalent(orig_b, rec_b)
     print("are_equivalent(original Buchi, recovered):", eq)
 
-    print("\n=== END OF TRACE FOR 'a' ===")
-    print("Summary for 'a':")
-    print("  - Original aut: 2 states, acc=t (trivial), SCCs with one accepting transient?")
-    print("  - After norm to parity: 3 states, acc=Inf(0), specific accepting sink SCC")
-    print("  - Cascade: 2 levels, 3 configs (bijective to states of D)")
-    print("  - Reachable: all 3 (or subset)")
-    print("  - Accepting configs / good M: the one corresponding to the accepting sink (now via working pruned config SCC too)")
-    print("  - With solid-top guard + buddy.bddtrue fixes: reach for init->rej-sink is now !a (solid=false when tops differ); Fin(rej)=a, Fin(init)=true, !Fin(acc)=a")
-    print("  - Reconstruction produces 'a' and are_equivalent=True (roundtrips, as predicted by paper-faithful construction)")
-    print("  - See the [KR] + [TRACE_ASSEMBLY] traces above for exact inductive reach/fin/Muller steps (solid/dashed, gt0 disj/conj, r_to/r_gt0, terms).")
+    print(f"\n=== END OF TRACE FOR '{formula_str}' ===")
+    print(f"Summary for '{formula_str}':")
+    print("  - See full output above for: original+normed automata (describe_aut),")
+    print("    cascade details (levels, state_to_config, etc.), reachable_configs,")
+    print("    accepting_configs, good_muller_sets (_compute_good_muller_sets),")
+    print("    build_pruned_config_aut + its SCCs, reconstruction under KR_TRACE,")
+    print("    recovered LTL, and Spot are_equivalent check.")
+    print("  - The script is now reusable via command-line formula argument.")
+    print("  - For 'a' this previously demonstrated the solid-guard + bdd fixes; for 'Fa'")
+    print("    (and others) it shows the 1L or multi-level paper construction in detail.")
+    print("  - Traces from reach_strong/fin_c/assembly appear when KR_TRACE=1 (set at top).")
 
 if __name__ == "__main__":
     main()
