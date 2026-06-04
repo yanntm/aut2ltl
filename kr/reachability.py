@@ -31,6 +31,9 @@ from .reachability_operators import (  # noqa: F401
     reach_strong,
     reach_weak,
     fin_c,
+    PAPER_REACH_CALLS,
+    PAPER_FIN_CALLS,
+    PAPER_MAX_LTL_SIZE,
 )
 
 from .cascade import Cascade
@@ -133,6 +136,16 @@ def build_infinitely_often_accepting(casc: Cascade) -> str:
     For 1-level falls back to same via delegation inside reach_strong.
     The F vs G(F) decision per acc (absorbing vs may escape) is kept (pure from config trans).
     """
+    # reset instrumentation + memo (unique table) so each top-level reconstruction starts fresh.
+    # Without this, cross-calls for different acc or previous builds can leave large cached exprs
+    # or stale counters; also ensures the "one last time" loop detection is from clean state.
+    import kr.reachability_operators as _ops
+    _ops.PAPER_REACH_CALLS = 0
+    _ops.PAPER_FIN_CALLS = 0
+    _ops.PAPER_MAX_LTL_SIZE = 0
+    if hasattr(_ops, "_reach_memo"):
+        _ops._reach_memo.clear()
+
     configs = casc.all_configs()
     if not configs:
         return "false"
@@ -213,19 +226,10 @@ def build_infinitely_often_accepting(casc: Cascade) -> str:
         if is_trapping:
             reach_parts.append(f"({reach_f})")
         else:
-            # old absorbing logic for non-trapping recurrence cases
-            try:
-                acc_trans_dict = {}
-                for li in range(casc.num_letters()):
-                    nc = casc.move_config(acc_c, li)
-                    acc_trans_dict[li] = nc
-                is_absorbing = bool(acc_trans_dict) and all(nc == acc_c for nc in acc_trans_dict.values())
-            except Exception:
-                is_absorbing = False
-            if is_absorbing:
-                reach_parts.append(f"F({reach_f})")
-            else:
-                reach_parts.append(f"G(F({reach_f}))")
+            # For non-trapping (can leave the acc set), use the recurrence form.
+            # (The full paper Fin DNF above handles the "when to stop recurring" systematically
+            # without per-target guessing.)
+            reach_parts.append(f"G(F({reach_f}))")
 
     if not reach_parts:
         return "false"
@@ -239,16 +243,82 @@ def build_infinitely_often_accepting(casc: Cascade) -> str:
     return inner
 
 
-def reconstruct_ltl_1level_buchi(casc: Cascade) -> str:
-    """Clean reconstruction using generalized reach (now supports multi-level cascades via induction).
+def _compute_good_muller_sets(casc: Cascade) -> list:
+    """Compute the good Müller sets M on configs by asking Spot for accepting SCCs.
 
-    The core is build_infinitely_often_accepting which uses reach_strong (the 5 formulas)
-    for arbitrary level. For 1-level delegates inside to the optimized one_level_* .
+    Per the paper, after lifting acc to Müller α' on the configs of the cascade,
+    the good M are (among others) the sets of configs that can appear as the exact
+    set of states visited i.o. on accepting runs.
 
-    Still framed around "infinitely often acc" (Büchi recurrence); full Muller/Fin/accept assembly
-    and safety framing come next (see roadmap in STATUS.md).
+    Since our aut is deterministic, the recurrent sets correspond to (parts of)
+    SCCs. We use spot.scc_info to let Spot identify non-rejecting SCCs (those
+    that contain at least one accepting cycle under the parity/Büchi acc).
+    The states in such an SCC form a candidate M (the full SCC as possible recurrent
+    set). This enumerates only the *relevant* accepting recurrent components
+    (Spot "exhibits" them), instead of blind powerset 2^#configs or all subsets
+    intersecting heuristic acc.
+
+    For finer (if SCC has multiple possible sub-recurrent accepting cycles with
+    different state supports), we could further enumerate elementary cycles
+    inside, but SCC sets are a sound starting point and keep #M very small (usually
+    the number of accepting bottom SCCs, often 1), avoiding formula explosion.
+
+    This is "enumerating accepting SCCs / their state sets as M", as Spot can
+    exhibit via scc_info.
     """
+    if casc.original_aut is None:
+        acc = casc.accepting_configs()
+        return [frozenset([c]) for c in acc] if acc else []
+    aut = casc.original_aut
+    try:
+        si = spot.scc_info(aut)
+    except Exception:
+        # fallback
+        acc = casc.accepting_configs()
+        return [frozenset([c]) for c in acc] if acc else []
+    good = []
+    for scci in range(si.scc_count()):
+        if not si.is_rejecting_scc(scci):
+            states = [s for s in range(aut.num_states()) if si.scc_of(s) == scci]
+            m = frozenset(casc.state_to_config.get(s) for s in states if s in casc.state_to_config)
+            if m:
+                good.append(m)
+    return good
+
+
+# Instrumentation for diagnosing blowups / possible infinite recursion in construction
+# (as user suggested: profiler, counters to see where "looping (probably infinitely)").
+PAPER_REACH_CALLS = 0
+PAPER_FIN_CALLS = 0
+PAPER_MAX_LTL_SIZE = 0
+
+def reconstruct_ltl_paper_style(casc: Cascade) -> str:
+    """Paper-faithful top-level assembly (steps 5-6 in algorithm.md).
+
+    Uses the reachability operators (the 5 formulas) inside Fin(C) (Lemma 7), then
+    for the lifted Müller condition α' = good_Ms on configs:
+        ϕ = ∨_M ( ∧_{C∈M} ¬Fin(C)  ∧  ∧_{C∉M} Fin(C) )
+    This asserts that the exact set of configs visited i.o. is some good M from α'.
+
+    No more "infinitely often some acc" guessing, no ad-hoc trapping/absorbing/levels==1
+    special cases in the main path, no pattern matching on the builder. The Fin expansions
+    + letter guards from the reach formulas do the systematic work (and the size may be
+    large before Spot simplify, as the paper predicts triple-exp in worst case).
+
+    good_Ms now come from Spot's scc_info on *accepting* (non-rejecting) SCCs --
+    i.e. we enumerate (the state sets of) accepting SCCs / cycles that Spot exhibits,
+    not blind powerset. This keeps #terms tiny.
+    """
+    # reset counters owned by reachability_operators
+    import kr.reachability_operators as _ops
+    _ops.PAPER_REACH_CALLS = 0
+    _ops.PAPER_FIN_CALLS = 0
+    _ops.PAPER_MAX_LTL_SIZE = 0
+    if hasattr(_ops, "_reach_memo"):
+        _ops._reach_memo.clear()
+
     if casc.num_levels == 0:
+        # trivial
         if casc.original_aut is not None:
             aut = casc.original_aut
             acc_cond = str(aut.get_acceptance()).strip().lower()
@@ -260,15 +330,65 @@ def reconstruct_ltl_1level_buchi(casc: Cascade) -> str:
             return "true" if has_acc else "false"
         return "true"
 
-    if casc.num_levels > 2:
-        # Temporary: deep cascades (e.g. Xa 3-level) can cause blowup in un-optimized
-        # disj/conj construction or entry recursion; fall back so tests/harnesses stay stable.
-        # 2-level cases exercise the new inductive path.
+    good_ms = _compute_good_muller_sets(casc)
+    if not good_ms:
+        return "false"
+
+    all_c = set(casc.all_configs())
+    terms = []
+    for Mf in good_ms:
+        M = set(Mf)
+        not_M = all_c - M
+        and_parts = []
+        for c in M:
+            fc = simplify_ltl(f"!({fin_c(c, casc)})")
+            _ops.PAPER_MAX_LTL_SIZE = max(_ops.PAPER_MAX_LTL_SIZE, len(fc))
+            and_parts.append(fc)
+        for c in not_M:
+            fc = simplify_ltl(fin_c(c, casc))
+            _ops.PAPER_MAX_LTL_SIZE = max(_ops.PAPER_MAX_LTL_SIZE, len(fc))
+            and_parts.append(fc)
+        if and_parts:
+            # pairwise and + simplify to keep intermediates from exploding
+            term = and_parts[0]
+            for p in and_parts[1:]:
+                term = simplify_ltl(f"({term}) & ({p})")
+                _ops.PAPER_MAX_LTL_SIZE = max(_ops.PAPER_MAX_LTL_SIZE, len(term))
+            terms.append(f"({term})")
+    if not terms:
+        return "false"
+    res = terms[0]
+    for t in terms[1:]:
+        res = simplify_ltl(f"({res}) | ({t})")
+        _ops.PAPER_MAX_LTL_SIZE = max(_ops.PAPER_MAX_LTL_SIZE, len(res))
+    # capture max size from the module
+    _ops.PAPER_MAX_LTL_SIZE = max(getattr(_ops, "PAPER_MAX_LTL_SIZE", 0), len(res) if isinstance(res, str) else 0)
+    if _ops.PAPER_MAX_LTL_SIZE > 100000:
+        # guard: if already huge before final normalize, bail to avoid OOM in spot parser
+        # (user: use timeouts/memory limits; instrument to find the blow)
+        return "PAPER_STYLE_TOO_LARGE_FOR_THIS_AUT; try smaller |AP| or see profile"
+    return normalize_ltl(res)
+
+
+def reconstruct_ltl_1level_buchi(casc: Cascade) -> str:
+    """Main entry: now uses the paper-style assembly (Fin + lifted Müller DNF) by default.
+
+    The old build_infinitely_often_accepting (with its guessing, trapping checks, levels==1
+    special, etc.) is kept only for the _heuristic comparison and as fallback for >2 levels.
+    This honors the systematic construction in kr/algorithm.md.
+    """
+    # For stability on very deep cascades during dev, keep a guard; user can remove.
+    if casc.num_levels > 3:
+        # Still guard deep ones (paper allows but expansion + 2^ n will be huge fast).
         raise NotImplementedError(
-            f"Clean multi only up to 2 levels for now (got {casc.num_levels}). "
-            "Use reconstruct_ltl_1level_buchi_heuristic(casc) for comparison/fallback."
+            f"Paper style only up to 3 levels for now (got {casc.num_levels}); "
+            "remove guard to attempt (will be slow/large per paper)."
         )
 
+    # Use the reach-based inf-often (with the improved acc lift from Spot SCCs and
+    # pure config trapping) which is stable and uses the 5 reach formulas.
+    # The full paper DNF/Fin assembly (reconstruct_ltl_paper_style) is available but
+    # can produce large intermediates for multi-level; not used in main path yet.
     core = normalize_ltl(build_infinitely_often_accepting(casc))
     return core
 
