@@ -8,6 +8,7 @@ LTL synthesis) will consume. It is intentionally simple and serializable.
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
+import buddy  # for bddtrue in config aut edge labels (Spot twa_graph.new_edge cond; spot.bddtrue not exposed)
 
 
 @dataclass
@@ -392,7 +393,7 @@ class Cascade:
                     ts = self.state_of(nc)
                     for e in orig.out(s):
                         if e.dst == ts:
-                            g.new_edge(i, j, spot.bddtrue, e.acc)
+                            g.new_edge(i, j, buddy.bddtrue, e.acc)
                             break
                 except Exception:
                     continue
