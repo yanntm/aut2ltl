@@ -75,19 +75,30 @@ def main():
         aut_p = spot.postprocess(aut_b, "parity min even", "deterministic", "complete")
         show_acc(aut_p, "postprocess parity min even det complete (current kr norm)")
 
-        # Try Muller postprocess
-        try:
-            aut_m = spot.postprocess(aut_b, "Muller", "deterministic", "complete")
-            show_acc(aut_m, "postprocess Muller det complete")
-        except Exception as e:
-            print("Muller postprocess failed:", e)
+        # Try Muller postprocess (note: may not be supported as option in this Spot; try variants)
+        for opt in ["Muller", "muller", "gen. Muller", "Muller,deterministic,complete"]:
+            try:
+                aut_m = spot.postprocess(aut_b, opt)
+                show_acc(aut_m, f"postprocess {opt}")
+                break
+            except Exception as e:
+                print(f"postprocess {opt} failed: {e}")
 
-        # Try explicit Muller translate
+        # Try explicit Muller translate (Spot may use different)
+        for t_opt in ["Muller", "muller"]:
+            try:
+                aut_mt = f.translate(t_opt)
+                show_acc(aut_mt, f"translate({t_opt})")
+                break
+            except Exception as e:
+                print(f"translate {t_opt} failed: {e}")
+
+        # Other common postprocess to see resulting acc without forcing parity
         try:
-            aut_mt = f.translate("Muller")
-            show_acc(aut_mt, "translate('Muller')")
+            aut_dc = spot.postprocess(aut_b, "deterministic", "complete")
+            show_acc(aut_dc, "postprocess deterministic complete (no parity)")
         except Exception as e:
-            print("Muller translate failed:", e)
+            print("det complete post failed:", e)
 
         # Now, what our code does: decompose forces parity, then see good ms
         try:
