@@ -6,7 +6,7 @@ The holonomy decomposition (and the Boker et al. LTL construction) operate on
 such a Spot twa_graph into the list-of-images representation expected by SgpDec.
 
 The main entry point `decompose_aut` (in gap_bridge) now normalizes the input
-to a deterministic *complete* Buchi automaton using Spot before extraction.
+to a deterministic *complete* minimized parity automaton using Spot before extraction.
 Spot's completion is used; it does not always add a sink. Any sink state that
 appears is just a normal state of the automaton.
 
@@ -53,7 +53,7 @@ def extract_generators(
     Return (generators, letter_masks, valuations) for a deterministic *complete* automaton.
 
     The caller (decompose_aut) is responsible for normalizing the input to a
-    deterministic complete Buchi automaton via Spot first. This function assumes
+    deterministic complete minimized parity automaton via Spot first. This function assumes
     the aut is already complete and deterministic: every state has a defined
     successor for every letter. No manual dead-trap is added here anymore.
 
@@ -104,7 +104,7 @@ def extract_generators(
                 raise ExtractionError(
                     f"Automaton is not complete for state {s} under mask {mask}. "
                     "decompose_aut now ensures the input is a complete deterministic "
-                    "Buchi automaton via Spot before extraction."
+                    "parity automaton via Spot before extraction."
                 )
             images[s] = succ
         gens.append(images)
