@@ -11,8 +11,8 @@ Spot's completion is used; it does not always add a sink. Any sink state that
 appears is just a normal state of the automaton.
 
 We assume the input aut to `extract_generators` is already deterministic and
-complete (as ensured by the higher-level API). If it is not complete, extraction
-will now raise (no more automatic dead-trap injection).
+complete (as ensured by the higher-level API: the normalized det aut *is* our D).
+If it is not complete, extraction will now raise (no more automatic dead-trap injection).
 
 Letters are concrete valuations of the atomic propositions (2^|AP| possible
 letters).  For |AP| > ~5 we refuse or truncate (the semigroup becomes huge
