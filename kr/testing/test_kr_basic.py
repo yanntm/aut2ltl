@@ -14,6 +14,9 @@ Run:
   python3 kr/testing/test_kr_basic.py FGa "a U b"   # test specific formulas
 
 See also test_kr_reconstruct.py (for clean vs heuristic side-by-side) and diag_stability.py.
+
+Note: decompose_aut now normalizes internally to deterministic minimized parity
+complete automata (per paper); the test translate() calls are intentionally loose.
 """
 
 import argparse
@@ -47,7 +50,9 @@ from kr import decompose_aut, reconstruct_ltl_1level_buchi as rec_clean
 fs = {formula!r}
 try:
     f = spot.formula(fs)
-    aut = f.translate("Buchi", "Deterministic")
+    # Translate without forcing Buchi; decompose_aut will normalize to
+    # det complete minimized parity (the KR input contract).
+    aut = f.translate()
     casc = decompose_aut(aut)
     ltl = rec_clean(casc)
     print("LTL:", ltl)
