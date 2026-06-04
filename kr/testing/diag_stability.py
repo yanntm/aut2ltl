@@ -2,24 +2,15 @@
 """
 kr/testing/diag_stability.py
 
-Repeated decomposition stability test.
+Repeated decomposition stability test (buddies + isolation).
 
-Historically, certain formulas (especially "Xa" which produces a 3-level cascade,
-and others with |AP|>=1) would cause sporadic segfaults (exit 139) inside the
-Spot/buddy C extensions during extract_generators (the _valuation_to_bdd hack
-that discovered buddy var ids by creating many tiny auts *interleaved* with
-bdd & operations on the main aut).
-
-Fix: kr/bdd_utils.py now does get_ap_bdd_vars(aut) *once* before the letter loop,
-then re-uses the map for every point_bdd. This eliminates the interleaving hazard.
-
-This script runs the problematic cases multiple times in isolated subprocesses
-and reports any SEGV.
+This script runs potentially problematic cases (Xa etc. that produce multi-level
+cascades) multiple times in isolated subprocesses and reports any SEGV (rc 139).
 
 Run:
     python3 kr/testing/diag_stability.py
 
-(Note: now exercises the det parity normalization path inside decompose_aut.)
+(Note: exercises the det parity min complete normalization inside decompose_aut.)
 """
 
 import subprocess
