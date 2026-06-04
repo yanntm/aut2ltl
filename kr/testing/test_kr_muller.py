@@ -113,14 +113,14 @@ def main():
             print("decompose or good_ms err:", type(e).__name__, e)
 
     print("\n=== Observations / what stops Muller for non-SCC alpha ===")
+    print("(Updated design: the Spot-normed det aut *is* our D; we only keep pre-norm aside for caller's final equiv check. See gap_bridge.py and cascade.py comments.)")
     print("See code in cascade.py:accepting_configs and reachability.py:_compute_good_muller_sets")
-    print(" - Always forces parity norm in decompose_aut -> loses original alpha structure.")
-    print(" - Only special-cases 't'/'f' strings; else relies on scc_info.is_rejecting_scc + has_acc_on_cycle.")
-    print(" - is_rejecting_scc is defined for parity/Buchi/Rabin etc.; for general Muller (inf sets of sets) it may not directly give the exact Muller family.")
-    print(" - No code to take original aut.get_acceptance() as Muller sets and lift via h to configs.")
-    print(" - good_Ms are always 'full non-rejecting SCCs as sets', not arbitrary subsets or exact Muller condition on configs.")
-    print(" - For alpha that is 'not SCC' (general Muller where accepting depends on exact i.o. set, not just which SCC), scc-based is insufficient; need the full collection of good subsets of configs whose image under h is accepting in original alpha.")
-    print(" - Paper requires Muller on *identical* semiautomaton (same Q/delta); Spot postprocess to parity can add states for completion/det.")
+    print(" - decompose_aut always forces parity norm -> the D we work with has parity acc (Inf/Fin forms), not a general Muller set-of-sets.")
+    print(" - Only special-cases 't'/'f' on D's acc; else relies on scc_info.is_rejecting_scc + has_acc_on_cycle (tuned for parity).")
+    print(" - is_rejecting_scc works for parity/Buchi/Rabin; for a true general Muller alpha *on D* it may not directly enumerate the exact good subsets.")
+    print(" - good_Ms are always 'full non-rejecting SCCs of D as sets' (mapped via h to configs) -> not proper subsets of an SCC, and not obtained by enumerating possible i.o. config sets and testing the projected state set against D's alpha.")
+    print(" - For alpha that is 'not SCC' (general Muller on D where accepting depends on the exact i.o. set of states/configs, not just 'in a good SCC'), the current SCC-granular proxy is insufficient. We need the full family of good M' such that h(M') satisfies D's (Muller-equivalent) condition.")
+    print(" - Paper is fine with Spot normalization as long as the resulting det aut (with its acc) is the D fed to decomp + reach + Fin + assembly (h is defined on its states). The 'identical semiautomaton' is now w.r.t. this D.")
 
 if __name__ == "__main__":
     main()
