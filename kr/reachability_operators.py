@@ -19,6 +19,18 @@ import os
 # ---------------------------------------------------------------------------
 TRACE_ON = os.getenv("KR_TRACE", "0").lower() in ("1", "true", "yes", "on")
 
+# Instrumentation counters (for profiling blowups / possible infinite construction loops).
+# Incremented from reach_strong and fin_c. Exposed so callers/tests can read/print.
+PAPER_REACH_CALLS = 0
+PAPER_FIN_CALLS = 0
+PAPER_MAX_LTL_SIZE = 0
+
+# Simple memo for reach_strong subproblems during one construction.
+# Key includes id(casc) for safety. Acts as "unique table of visited" to avoid
+# exponential re-expansion of identical (S, B, beta, T, tau, level) subformulas.
+# This should prevent the work explosion that looks like "infinite loop".
+_reach_memo = {}
+
 def _trace(msg: str) -> None:
     if TRACE_ON:
         print("[KR] " + msg)
@@ -172,12 +184,47 @@ def inf_1level(C: int, valuations: List[Dict[str, bool]], aps: List[str], trans:
 # Fin(C) sketch per Lemma 7 (uses generalized reach; polish + uncond ↝ / >0 ↝ needed for full)
 # ---------------------------------------------------------------------------
 
-def fin_c(C: Tuple[int, ...], casc: "Cascade") -> str:
-    """Sketch Fin(C) := ¬(ι ↝ C) ∨ ι ↝ C ( ¬ (C^{>0} ↝ C) ).
-
-    Uses reach_strong for the uncond reach shorthands. Full correct >0 version + init lookup
-    and assembly per the paper remain for step 7.
+def _uncond_reach_strict(S: Tuple[int, ...], T: Tuple[int, ...], casc: "Cascade") -> str:
+    """S >0 ↝ T : eventually reach T after at least one strict step (used for C>0 ↝ C in Fin).
+    Uses full move + letter guards so that the expansion carries the paper's letter partitions.
     """
+    key = (S, T, id(casc))
+    if key in _reach_memo:
+        return _reach_memo[key]
+    if not S:
+        res = "false"
+        _reach_memo[key] = res
+        return res
+    disjs = []
+    for li in range(casc.num_letters()):
+        try:
+            arrived = casc.move_config(S, li)
+            g = letters_to_prop(casc.letter_valuations[li], casc.aps)
+            if g in ("false", "0"):
+                continue
+            # after this letter, from arrived (0-step ok if arrived==T)
+            sub = reach_strong(arrived, None, "false", T, "true", casc)
+            disjs.append(f"({g}) & (X({sub}))")
+        except Exception:
+            continue
+    if not disjs:
+        res = "false"
+    else:
+        res = simplify_ltl(" | ".join( f"({d})" for d in disjs ))
+    _reach_memo[key] = res
+    return res
+
+
+def fin_c(C: Tuple[int, ...], casc: "Cascade") -> str:
+    """Fin(C) := ¬(ι ↝ C) ∨ ι ↝ C ( ¬ (C>0 ↝ C) ) per Lemma 7 / algorithm.md.
+
+    Uses the reach operators for the uncond shorthands (beta=false, tau=true).
+    The >0 version forces progress so that when S==T the "return" requires a move.
+    """
+    global PAPER_FIN_CALLS
+    PAPER_FIN_CALLS += 1
+    if PAPER_FIN_CALLS > 10000:
+        raise RuntimeError("Too many fin_c calls -- repeated Fin on same C exploding the construction")
     # robust init
     init: Optional[Tuple[int, ...]] = None
     if casc.original_aut is not None:
@@ -188,11 +235,13 @@ def fin_c(C: Tuple[int, ...], casc: "Cascade") -> str:
     if init is None:
         cs = casc.all_configs()
         init = cs[0] if cs else C
-    # uncond ↝ approx: reach avoiding nothing (beta=false) to C with tau=true, or the "last then never"
-    r_to = reach_strong(init, None, "false", C, "true", casc)
-    # never-return after last: G( not able to reach C again from C )
-    never_again = f"G(!({reach_strong(C, None, 'false', C, 'true', casc)}))"
-    return simplify_ltl(f"!({r_to}) | ({r_to} & ({never_again}))")
+    # ι ↝ C (can be 0-step if init==C)
+    r_to = simplify_ltl(reach_strong(init, None, "false", C, "true", casc))
+    # C>0 ↝ C : strict progress return
+    r_gt0 = simplify_ltl(_uncond_reach_strict(C, C, casc))
+    # after arriving at (last) C, the future must not allow a >0 return to C
+    never_again = simplify_ltl(f"G(!({r_gt0}))")
+    return simplify_ltl(f"!({r_to}) | (({r_to}) & ({never_again}))")
 
 
 # ------------------------------------------------------------------
@@ -280,12 +329,30 @@ def reach_strong(
     (so move_config and partition helpers always see correct context for higher coords).
     Base: when level == num_levels, plain (¬β) U τ .
     """
+    # Instrumentation (per user): count to detect explosion / infinite recursion
+    # (no caching yet; repeated identical subproblems on same (S,T,level) can cause blowup).
+    global PAPER_REACH_CALLS
+    PAPER_REACH_CALLS += 1
+    if PAPER_REACH_CALLS > 100000:
+        raise RuntimeError("Too many reach_strong calls (>100k) -- likely explosion from lack of memoization on sub-reach or infinite rec on same-level moves")
+    # Normalize beta/tau *early* using simplify. This prevents the formula strings from
+    # growing "infinitely" (exponentially nested) when composing in >0, leave conjs, dashed,
+    # and especially when used inside Fin's G(!reach) and the DNF assembly.
+    # Many composed "(!a & X(true))" etc collapse, and equivalent subproblems share via memo.
+    beta = simplify_ltl(beta or "false")
+    tau = simplify_ltl(tau or "true")
+    # Memo lookup (unique table) using *normalized* beta/tau so sharing works across compositions.
+    key = (S, B if B is not None else (), beta, T, tau, level, id(casc))
+    if key in _reach_memo:
+        return _reach_memo[key]
     n = getattr(casc, "num_levels", 0)
     if level == n:
         b = beta or "false"
         negb = "true" if b == "false" else ("false" if b == "true" else f"!({b})")
         _trace(f"base level reached (level={level}): returning ({negb}) U ({tau})")
-        return f"({negb}) U ({tau})"
+        res = f"({negb}) U ({tau})"
+        _reach_memo[key] = res
+        return res
 
     _trace(f"reach_strong level={level}/{n} S={S} T={T} beta={beta} tau={tau}")
 
@@ -304,6 +371,7 @@ def reach_strong(
     suffix_T = T[level:]
     if suffix_S == suffix_T:
         _trace(f"  suffix from level {level} already matches target -> return tau early")
+        _reach_memo[key] = tau
         return tau
 
     # Current level's value (for solid/dashed decision at this layer)
@@ -318,7 +386,9 @@ def reach_strong(
     solid = _solid_stay_strong(S, B, beta, T, tau, casc, level)
     dashed = _dashed_change_strong(S, B, beta, T, tau, casc, level)
     res = f"({solid}) | ({dashed})"
-    return simplify_ltl(res)
+    res = simplify_ltl(res)
+    _reach_memo[key] = res
+    return res
 
 
 def reach_weak(
@@ -413,14 +483,15 @@ def _stay_gt0_strong(
             term = f"({g}) & (X({tau}))"
             _trace(f"      landing completes target at this step -> g & X(tau)  (g={g})")
         else:
-            sub_tau = f"({g}) & (X({tau}))"
-            sub_beta = f"({g}) & (X({beta}))" if beta not in ("true", "false") else (g if beta == "true" else "false")
+            sub_tau = simplify_ltl(f"({g}) & (X({tau}))")
+            sub_beta = simplify_ltl(f"({g}) & (X({beta}))") if beta not in ("true", "false") else (g if beta == "true" else "false")
             sub_f = reach_strong(arrived, B, sub_beta, T, sub_tau, casc, level + 1)
             term = f"({g}) & (X({sub_f}))"
             _trace(f"      normal sub step -> g & X(sub_f)")
         disjs.append(term)
 
     or_part = "(" + " | ".join(disjs) + ")" if disjs else "false"
+    or_part = simplify_ltl(or_part)
     _trace(f"    or_part at level {level}: {or_part[:80]}...")
 
     # Conjs ...
@@ -431,9 +502,10 @@ def _stay_gt0_strong(
         g = letters_to_prop(casc.letter_valuations[li], casc.aps)
         if g == "false":
             continue
-        sub_tau_l = f"({g}) & (X({tau}))"
+        sub_tau_l = simplify_ltl(f"({g}) & (X({tau}))")
         # forbid using full arrived for that leave, at next level
         forbid = reach_strong(arrived, B, "false", T, sub_tau_l, casc, level + 1)
+        forbid = simplify_ltl(forbid)
         conj.append(f"!(({g}) & (X({forbid})))")
 
     # bad landing conjs (using full)
@@ -446,12 +518,13 @@ def _stay_gt0_strong(
             g = letters_to_prop(casc.letter_valuations[li], casc.aps)
             if g == "false":
                 continue
-            sub_b = f"({g}) & (X({beta}))" if beta not in ("true", "false") else (g if beta == "true" else "false")
+            sub_b = simplify_ltl(f"({g}) & (X({beta}))") if beta not in ("true", "false") else (g if beta == "true" else "false")
             forbid_bad = reach_strong(arrived, B, "false", B, sub_b, casc, level + 1)
+            forbid_bad = simplify_ltl(forbid_bad)
             conj.append(f"!(({g}) & (X({forbid_bad})))")
 
     inner = " & ".join(conj)
-    res = f"({inner})" if inner else "false"
+    res = simplify_ltl( f"({inner})" if inner else "false" )
     _trace(f"    _stay_gt0 result level={level}: {res[:80]}...")
     return res
 
@@ -502,8 +575,8 @@ def _stay_gt0_weak(
         g = letters_to_prop(casc.letter_valuations[li], casc.aps)
         if g == "false":
             continue
-        sub_tau = f"({g}) & (X({tau}))"
-        sub_beta = f"({g}) & (X({beta}))" if beta not in ("true", "false") else (g if beta == "true" else "false")
+        sub_tau = simplify_ltl(f"({g}) & (X({tau}))")
+        sub_beta = simplify_ltl(f"({g}) & (X({beta}))") if beta not in ("true", "false") else (g if beta == "true" else "false")
         sub_f = reach_weak(arrived, B, sub_beta, T, sub_tau, casc, level + 1)
         disjs.append(f"({g}) & (X({sub_f}))")
 
@@ -516,8 +589,9 @@ def _stay_gt0_weak(
         g = letters_to_prop(casc.letter_valuations[li], casc.aps)
         if g == "false":
             continue
-        sub_tau_l = f"({g}) & (X({tau}))"
+        sub_tau_l = simplify_ltl(f"({g}) & (X({tau}))")
         forbid = reach_weak(arrived, B, "false", T, sub_tau_l, casc, level + 1)
+        forbid = simplify_ltl(forbid)
         conj.append(f"!(({g}) & (X({forbid})))")
 
     # extra release (simplified)
@@ -528,6 +602,7 @@ def _stay_gt0_weak(
         if g == "false":
             continue
         rel = reach_weak(arrived, B, "false", arrived, "false", casc, level + 1)
+        rel = simplify_ltl(rel)
         conj.append(f"(({g}) => (X({rel})))")
 
     if B is not None:
@@ -539,8 +614,9 @@ def _stay_gt0_weak(
             g = letters_to_prop(casc.letter_valuations[li], casc.aps)
             if g == "false":
                 continue
-            sub_b = f"({g}) & (X({beta}))" if beta not in ("true", "false") else (g if beta == "true" else "false")
+            sub_b = simplify_ltl(f"({g}) & (X({beta}))") if beta not in ("true", "false") else (g if beta == "true" else "false")
             forbid_bad = reach_weak(arrived, B, "false", B, sub_b, casc, level + 1)
+            forbid_bad = simplify_ltl(forbid_bad)
             conj.append(f"!(({g}) & (X({forbid_bad})))")
 
     inner = " & ".join(conj)
@@ -574,17 +650,31 @@ def _dashed_change_strong(
         # tail after entry: once at t, do solid stay at new top (avoiding orig B)
         tail = _solid_stay_strong(arrived, B, beta, T, tau, casc, level)
         entry_tau = f"({g}) & (X({tail}))"
-        # (1) entry path, B=S(false) i.e. no special avoid for entry, from S to arrived
-        entry1 = reach_strong(S, S, "false", arrived, entry_tau, casc, level)
-        # (2) entry while avoiding orig bad, using weak solid for after
-        w_tail = _solid_stay_weak(arrived, B, beta, T, tau, casc, level)
-        w_entry_tau = f"({g}) & (X({w_tail}))"
-        entry2 = reach_weak(S, B, beta, arrived, w_entry_tau, casc, level)
-        part12 = f"({entry1}) & ({entry2})"
-        # (3) landed cond
+        # (3) landed cond (common)
         landed_bad = (B is not None and arrived == B)
         cond3 = f"!({beta})" if landed_bad and beta not in ("true", "false") else "true"
-        term = f"({part12}) & ({cond3})" if cond3 != "true" else part12
+        # Critical: if this enter lands such that arrived's suffix from here matches T's,
+        # then arrived "completes" the target at this layer. We must NOT call reach_strong(S, arrived)
+        # (which would be reach(S, T, ...) since arrived completes to T) -- that would recurse on
+        # the exact same (S,T,level) with a wrapped tau, causing infinite nesting in the formula
+        # (as seen in logs for direct-landing enters to target top+lower).
+        # Instead, treat as "direct arrival by the enter step": use entry_tau directly (the g&X(tail~tau)).
+        # The outer & force_leave (computed below) will ensure a proper leave/enter happened.
+        # This matches the "if landed completes" early term pattern in _stay_gt0_strong.
+        arrived_suffix = arrived[level:]
+        target_suffix = T[level:]
+        if arrived_suffix == target_suffix:
+            term = f"({entry_tau}) & ({cond3})" if cond3 != "true" else entry_tau
+            _trace(f"      direct enter lands on target suffix -> use entry_tau directly (no sub-reach to T)")
+        else:
+            # (1) entry path, B=S(false) i.e. no special avoid for entry, from S to arrived
+            entry1 = reach_strong(S, S, "false", arrived, entry_tau, casc, level)
+            # (2) entry while avoiding orig bad, using weak solid for after
+            w_tail = _solid_stay_weak(arrived, B, beta, T, tau, casc, level)
+            w_entry_tau = f"({g}) & (X({w_tail}))"
+            entry2 = reach_weak(S, B, beta, arrived, w_entry_tau, casc, level)
+            part12 = f"({entry1}) & ({entry2})"
+            term = f"({part12}) & ({cond3})" if cond3 != "true" else part12
         disjs.append(term)
 
     or_enters = "(" + " | ".join(disjs) + ")" if disjs else "false"
