@@ -39,18 +39,30 @@ from .cascade import Cascade
 def _compute_good_muller_sets(casc: Cascade) -> list:
     """Compute the good Müller sets M on configs (w.r.t. our normalized D).
 
-    The aut in Cascade is the deterministic post-processed D (Spot transformations
-    are the starting point; we work with its acceptance). We use spot.scc_info
-    to identify non-rejecting SCCs (those that can contain an accepting cycle
-    under D's parity condition). The states in such an SCC map (via h) to a
-    candidate M of configs. This gives the recurrent accepting sets "exhibited"
-    by Spot on D, instead of blind powerset.
+    We now prefer the proper computation on the pruned configuration automaton:
+    reachable configs from init (BFS), build pruned config twa with lifted acc,
+    scc_info on the *config graph*, non-rejecting SCCs give the recurrent config
+    sets M that can occur i.o. on accepting paths from the initial config.
+    This actually uses the config automaton and does the reachability pruning +
+    enumeration of accepting recurrent components on the lifted structure
+    (as per paper/algo2).
 
-    (For general Muller alpha on D this is still an SCC-granular approximation;
-    full subset enumeration per the lifted alpha' would be more precise but expensive.)
+    Falls back to state-SCC mapping (pruned to reachable) if the config graph
+    analysis is not available.
     """
+    # Prefer the new config-graph based (pruned + actual use of config aut)
+    if hasattr(casc, 'compute_good_muller_sets'):
+        try:
+            res = casc.compute_good_muller_sets()
+            if res is not None:
+                return res
+        except Exception:
+            pass
+    # old fallback (with reachable prune)
+    reach = set(casc.reachable_configs()) if hasattr(casc, 'reachable_configs') else set(casc.all_configs())
     if casc.original_aut is None:
         acc = casc.accepting_configs()
+        acc = {c for c in acc if c in reach}
         return [frozenset([c]) for c in acc] if acc else []
     aut = casc.original_aut  # the normalized det D (our working automaton)
     try:
@@ -58,12 +70,13 @@ def _compute_good_muller_sets(casc: Cascade) -> list:
     except Exception:
         # fallback
         acc = casc.accepting_configs()
+        acc = {c for c in acc if c in reach}
         return [frozenset([c]) for c in acc] if acc else []
     good = []
     for scci in range(si.scc_count()):
         if not si.is_rejecting_scc(scci):
             states = [s for s in range(aut.num_states()) if si.scc_of(s) == scci]
-            m = frozenset(casc.state_to_config.get(s) for s in states if s in casc.state_to_config)
+            m = frozenset(casc.state_to_config.get(s) for s in states if s in casc.state_to_config and casc.state_to_config.get(s) in reach)
             if m:
                 good.append(m)
     return good
