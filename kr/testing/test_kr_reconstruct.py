@@ -17,6 +17,9 @@ Run from project root:
     python3 kr/testing/test_kr_reconstruct.py
 
 All paths are relative; no /tmp usage.
+
+Note: decompose_aut normalizes to deterministic minimized parity complete
+automata (the paper's contract); tests feed loose auts and validate via normal path.
 """
 
 import json
@@ -81,7 +84,8 @@ from kr import (
 fs = {formula_str!r}
 try:
     f = spot.formula(fs)
-    aut = f.translate("Buchi", "Deterministic")
+    # decompose_aut enforces det parity min complete norm internally
+    aut = f.translate()
     casc = decompose_aut(aut)
 
     info = {{
