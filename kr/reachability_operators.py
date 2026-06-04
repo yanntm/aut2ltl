@@ -234,11 +234,16 @@ def fin_c(C: Tuple[int, ...], casc: "Cascade") -> str:
         init = cs[0] if cs else C
     # ι ↝ C (can be 0-step if init==C)
     r_to = simplify_ltl(reach_strong(init, None, "false", C, "true", casc))
+    _trace(f"  fin_c for C={C}: r_to={r_to}")
     # C>0 ↝ C : strict progress return
     r_gt0 = simplify_ltl(_uncond_reach_strict(C, C, casc))
+    _trace(f"  fin_c for C={C}: r_gt0={r_gt0}")
     # after arriving at (last) C, the future must not allow a >0 return to C
     never_again = simplify_ltl(f"G(!({r_gt0}))")
-    return simplify_ltl(f"!({r_to}) | (({r_to}) & ({never_again}))")
+    _trace(f"  fin_c for C={C}: never_again={never_again}")
+    fin_expr = simplify_ltl(f"!({r_to}) | (({r_to}) & ({never_again}))")
+    _trace(f"  fin_c for C={C}: final={fin_expr}")
+    return fin_expr
 
 
 # ------------------------------------------------------------------
@@ -382,8 +387,11 @@ def reach_strong(
 
     solid = _solid_stay_strong(S, B, beta, T, tau, casc, level)
     dashed = _dashed_change_strong(S, B, beta, T, tau, casc, level)
+    _trace(f"    solid={solid[:120]}{'...' if len(solid)>120 else ''}")
+    _trace(f"    dashed={dashed[:120]}{'...' if len(dashed)>120 else ''}")
     res = f"({solid}) | ({dashed})"
     res = simplify_ltl(res)
+    _trace(f"    reach_strong res (pre-memo, post-simp)={res[:150]}{'...' if len(res)>150 else ''}")
     _reach_memo[key] = res
     return res
 
@@ -432,6 +440,14 @@ def _solid_stay_strong(
     suffix_S = S[level:]
     suffix_T = T[level:]
     source_is_target = (suffix_S == suffix_T)
+
+    if s_val != t_val:
+        # Solid-stay (Formulas 3/4) requires the top-level component at this layer to remain s throughout.
+        # If T requires a different top at this layer, solid is impossible; dashed (change) must be used.
+        # Without this, gt0's lower-suffix "landing completes" check + stay disjuncts can incorrectly
+        # contribute formulas when the current-layer top in arrived (preserved by stay) != target's.
+        _trace(f"  _solid_stay_strong level={level}: s_val({s_val}) != t_val({t_val}) -> solid impossible, return false")
+        return "false"
 
     _trace(f"  _solid_stay_strong level={level}: source_is_target={source_is_target} source_is_bad={source_is_bad}")
 
@@ -522,6 +538,7 @@ def _stay_gt0_strong(
 
     inner = " & ".join(conj)
     res = simplify_ltl( f"({inner})" if inner else "false" )
+    _trace(f"    _stay_gt0 conj parts: {conj}")
     _trace(f"    _stay_gt0 result level={level}: {res[:80]}...")
     return res
 
@@ -539,6 +556,10 @@ def _solid_stay_weak(
     b_val = B[level] if B is not None else None
     source_is_bad = (B is not None and s_val == b_val)
     source_is_target = (s_val == t_val)
+
+    if s_val != t_val:
+        _trace(f"  _solid_stay_weak level={level}: s_val({s_val}) != t_val({t_val}) -> solid impossible, return false")
+        return "false"
 
     gt0 = _stay_gt0_weak(S, B, beta, T, tau, casc, level)
 
