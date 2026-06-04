@@ -8,6 +8,7 @@ Per the refactoring plan:
 - Keep the old ad-hoc logic as reconstruct_ltl_1level_buchi_heuristic for comparison.
 - New reconstruct_ltl_1level_buchi is thin: mainly "from init, G F (reach some acc config)"
   built using the operators, with no (or minimal) structural pattern matching on the aut.
+  (Note: function names retain '_buchi' for compat; input auts are now det parity.)
 """
 
 from __future__ import annotations
