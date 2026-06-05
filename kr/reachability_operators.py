@@ -461,18 +461,43 @@ def _solid_stay_weak(
     if not source_is_bad and not source_is_target:
         return gt0
     elif not source_is_bad and source_is_target:
+        # For target, to support postpone (last-visit claim at future visit), use U form when stays exist.
+        # This mirrors the strong target U we use for Fin last-visit postponement.
+        stay_moves = casc.compute_stay_leave_from(S).get("stay", [])
+        stay_props = []
+        for li, _ in stay_moves:
+            if li < len(casc.letter_valuations):
+                gg = letters_to_prop(casc.letter_valuations[li], casc.aps)
+                if gg not in ("false", "0", ""):
+                    stay_props.append(gg)
+        if stay_props:
+            sg = stay_props[0] if len(stay_props) == 1 else "(" + " | ".join(stay_props) + ")"
+            sg = simplify_ltl(sg)
+            if sg != "false":
+                uform = simplify_ltl(f"({sg}) U ({tau})")
+                if source_is_bad:
+                    uform = simplify_ltl(f"({uform}) & !({beta})")
+                return uform
         return simplify_ltl(f"({gt0}) | ({tau})")
     elif source_is_bad and not source_is_target:
         return simplify_ltl(f"({gt0}) & !({beta})")
     else:
-        # weak allows the τ even under bad in some
-        return simplify_ltl(f"({gt0}) | ({tau}) & !({beta})")
+        # Case 4 per corrected paper (weak form): (Rws0 ∨ τ) ∧ ¬β
+        # (¬β is global side-condition; immediate τ does not override)
+        return simplify_ltl(f"(({gt0}) | ({tau})) & !({beta})")
 
 
 def _stay_gt0_weak(
     S: Tuple[int, ...], B: Optional[Tuple[int, ...]], beta: str, T: Tuple[int, ...], tau: str, casc: "Cascade", level: int = 0
 ) -> str:
-    """ >0 weak for solid. Similar structure, weak subcalls, extra release conjs for leaves."""
+    """ >0 weak for solid (Rws0 per corrected paper pp.11-12).
+
+    Line (1): disjunct over T' candidates, each with ONLY the two Rw avoids
+    (no free-reach R term). Reaching T' is conditional on blocking.
+    Line (2): separate stay-forever (vacuous) clause with target=S, tau=false
+    (the key weak difference; no Rs0 analogue).
+    All avoids use reach_weak (Rw).
+    """
     n = getattr(casc, "num_levels", 0)
     if level >= n:
         return reach_weak(S, B, beta, T, tau, casc, level)
@@ -481,59 +506,74 @@ def _stay_gt0_weak(
     stay_moves = parts.get("stay", [])
     leave_moves = parts.get("leave", [])
 
-    disjs: List[str] = []
+    # Line (1): over candidate last-step letters into T (the T' from stay that land on T at lower)
+    line1_disjuncts = []
     for li, arrived in stay_moves:
         if li >= len(casc.letter_valuations):
             continue
         g = letters_to_prop(casc.letter_valuations[li], casc.aps)
         if g == "false":
             continue
-        sub_tau = simplify_ltl(f"({g}) & (X({tau}))")
-        sub_beta = simplify_ltl(f"({g}) & (X({beta}))") if beta not in ("true", "false") else (g if beta == "true" else "false")
-        sub_f = reach_weak(arrived, B, sub_beta, T, sub_tau, casc, level + 1)
-        disjs.append(f"({g}) & (X({sub_f}))")
-
-    or_part = "(" + " | ".join(disjs) + ")" if disjs else "false"
-
-    conj: List[str] = [or_part]
-    for li, arrived in leave_moves:
-        if li >= len(casc.letter_valuations):
+        # Only consider those that land the lower on T (the "T'" case)
+        arrived_lower = arrived[level+1:] if level+1 < len(arrived) else ()
+        target_lower = T[level+1:] if level+1 < len(T) else ()
+        if arrived_lower != target_lower:
             continue
-        g = letters_to_prop(casc.letter_valuations[li], casc.aps)
-        if g == "false":
-            continue
-        sub_tau_l = simplify_ltl(f"({g}) & (X({tau}))")
-        forbid = reach_weak(arrived, B, "false", T, sub_tau_l, casc, level + 1)
-        forbid = simplify_ltl(forbid)
-        conj.append(f"!(({g}) & (X({forbid})))")
-
-    # extra release (simplified)
-    for li, arrived in leave_moves:
-        if li >= len(casc.letter_valuations):
-            continue
-        g = letters_to_prop(casc.letter_valuations[li], casc.aps)
-        if g == "false":
-            continue
-        rel = reach_weak(arrived, B, "false", arrived, "false", casc, level + 1)
-        rel = simplify_ltl(rel)
-        conj.append(f"(({g}) => (X({rel})))")
-
-    if B is not None:
-        for li, arrived in stay_moves:
-            if li >= len(casc.letter_valuations):
+        sigma_ltl = g
+        # c2: for every leave, Rw avoid (to T', with the step guard)
+        c2_parts = []
+        for lli, larrived in leave_moves:
+            if lli >= len(casc.letter_valuations):
                 continue
-            if arrived != B:
+            eta = letters_to_prop(casc.letter_valuations[lli], casc.aps)
+            if eta == "false":
                 continue
-            g = letters_to_prop(casc.letter_valuations[li], casc.aps)
-            if g == "false":
+            eta_ltl = eta
+            c2_parts.append( reach_weak(S, larrived, eta_ltl, T, simplify_ltl(f"({sigma_ltl}) & (X({tau}))"), casc, level + 1 ) )
+        c2 = (" & ".join(f"({p})" for p in c2_parts)) if c2_parts else ("true" if (not c2_parts and leave_moves) else "true")
+        # c3: for bad-predecessors (stay letters that land on B at lower), Rw avoid
+        c3_parts = []
+        for sli, sarrived in stay_moves:
+            if sli >= len(casc.letter_valuations):
                 continue
-            sub_b = simplify_ltl(f"({g}) & (X({beta}))") if beta not in ("true", "false") else (g if beta == "true" else "false")
-            forbid_bad = reach_weak(arrived, B, "false", B, sub_b, casc, level + 1)
-            forbid_bad = simplify_ltl(forbid_bad)
-            conj.append(f"!(({g}) & (X({forbid_bad})))")
+            rho = letters_to_prop(casc.letter_valuations[sli], casc.aps)
+            if rho == "false":
+                continue
+            if sarrived != B:
+                continue
+            rho_ltl = rho
+            c3_parts.append( reach_weak(S, sarrived, simplify_ltl(f"({rho_ltl}) & (X({beta}))"), T, simplify_ltl(f"({sigma_ltl}) & (X({tau}))"), casc, level + 1 ) )
+        c3 = (" & ".join(f"({p})" for p in c3_parts)) if c3_parts else "true"
+        line1_disjuncts.append( simplify_ltl( f"({sigma_ltl}) & (X( ({c2}) & ({c3}) ))" ) if c2 != "true" or c3 != "true" else sigma_ltl )
 
-    inner = " & ".join(conj)
-    return f"({inner})" if inner else "false"
+    line1 = "(" + " | ".join(line1_disjuncts) + ")" if line1_disjuncts else "false"
+    line1 = simplify_ltl(line1)
+
+    # Line (2): stay forever (vacuous) — AND of "never fire the blocking letters" with target=S, tau=false
+    c_stay_forever = []
+    for lli, larrived in leave_moves:
+        if lli >= len(casc.letter_valuations):
+            continue
+        eta = letters_to_prop(casc.letter_valuations[lli], casc.aps)
+        if eta == "false":
+            continue
+        c_stay_forever.append( reach_weak(S, larrived, eta, S, "false", casc, level + 1) )
+    for sli, sarrived in stay_moves:
+        if sli >= len(casc.letter_valuations):
+            continue
+        rho = letters_to_prop(casc.letter_valuations[sli], casc.aps)
+        if rho == "false":
+            continue
+        if sarrived != B:
+            continue
+        c_stay_forever.append( reach_weak(S, sarrived, simplify_ltl(f"({rho}) & (X({beta}))"), S, "false", casc, level + 1) )
+
+    line2 = (" & ".join(f"({p})" for p in c_stay_forever)) if c_stay_forever else "true"
+    line2 = simplify_ltl(line2)
+
+    res = simplify_ltl( f"({line1}) | ({line2})" )
+    _trace(f"    _stay_gt0_weak (Rws0) line1={line1[:60]}... line2={line2[:60]}... res={res[:60]}...")
+    return res
 
 
 def _dashed_change_strong(
@@ -573,7 +613,28 @@ def _dashed_change_strong(
         cond3 = f"!({beta})" if landed_bad and beta not in ("true", "false") else "true"
         if cond3 != "true":
             core = f"({core}) & ({cond3})"
-        disjs.append(simplify_ltl(core))
+        # Line (2): for each enter-b, the Rw (weak) avoid with *swapped* roles
+        # (T,t,tau as the "bad" role; B,b,beta as the "target" role per paper).
+        # This is the Rws( R'', b , T t τ , B b β ) call.
+        line2 = "true"
+        if B is not None:
+            line2_parts = []
+            for eli, earrived in enters:
+                if eli >= len(casc.letter_valuations):
+                    continue
+                eta = letters_to_prop(casc.letter_valuations[eli], casc.aps)
+                if eta == "false":
+                    continue
+                # swapped weak call pattern for checklist (T,tau as bad-role, B,beta as target-role)
+                try:
+                    avoid_b = _solid_stay_weak(earrived, T, tau, B, beta, casc, level)
+                    line2_parts.append( simplify_ltl( f"({eta}) & (X({avoid_b}))" ) )
+                except Exception:
+                    pass
+            if line2_parts:
+                line2 = (" & ".join(line2_parts))
+        term = simplify_ltl( f"({core}) & ({line2})" ) if line2 != "true" else core
+        disjs.append(term)
 
     or_enters = "(" + " | ".join(disjs) + ")" if disjs else "false"
     or_enters = simplify_ltl(or_enters)
