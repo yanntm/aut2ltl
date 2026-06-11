@@ -197,11 +197,11 @@ def check_5point_checklist():
     dashed_body = _get_func_body(src, "_dashed_change_strong")
 
     points = {
-        "1. Has Line-2 disjunct (stay forever) in weak >0?": ('S, "false"' in rws0_body or "S, false" in rws0_body or ", S, false" in rws0_body),
+        "1. Has Line-2 disjunct (stay forever) in weak >0?": ('S, "false"' in rws0_body or "_avoid_conjs(S, _ff())" in rws0_body or ", S, false" in rws0_body),
         "2. Line-1 omits free-reach R1/strong(S,S,false,...) ?": ("reach_strong(S, S," not in rws0_body and "reach_strong(S,S" not in rws0_body),
         "3. Bad-predecessor avoids use Rw (weak) not R?": ("reach_weak" in rws0_body),
         "4. Outer case 4 is (core | tau) & !beta (weak form)?": ("And( _Or(gt0_f, tau_f)" in rs_body or "And( _Or(gt0_f, tau_f) , _Not(beta_f)" in rs_body or "(Rws0 ∨ τ) ∧ ¬β" in rs_body),
-        "5. R5 line(2) Rws call has swapped roles (T,t,tau as 'bad', B,b,beta as target)?": ("_solid_stay_weak(earrived, T," in dashed_body or "_solid_stay_weak(earrived, T, _str_f" in dashed_body),
+        "5. R5 line(2) Rws call has swapped roles (T,t,tau as 'bad', B,b,beta as target)?": ("_solid_stay_weak(arrR, T," in dashed_body or "_solid_stay_weak(earrived, T," in dashed_body),
     }
     all_ok = True
     for desc, ok in points.items():
