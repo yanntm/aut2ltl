@@ -22,21 +22,38 @@ cover-aware (GTs on the config semiautomaton) with per-check Spot caps.
 Result: Ga|Gb and G(a->Xb) zero grounding contradictions; Fa/GFa/aUb/Fa|Gb
 equiv True; audit CLEAN.
 
+**Memo round (done, same day):** ladder re-ran — 21 equiv=True (incl. 3L
+`Xa`/`a&Xa`/`a|Xb`/`G(a->Xa)`), zero FALSE; new frontier was construction
+blowup on `(a U b)|Gc` / `FGa|FGb` / `GFa&GFb`. Fixed by (i) memoizing the
+five helpers (only reach was cached; 91.5% hit rate was tripping the
+raw-call guard → now counts distinct subproblems, `KR_REACH_GUARD`), and
+(ii) dropping tl_simplifier from the construction path (`_simp_f` identity
+by default; `KR_SIMP_TREE_LIMIT` 0/N/-1) — POLICY: we never wait on a
+stalled external call; Spot is hash-consing only in the hot path. All three
+now build (9.5s/1.6s/0.7s). Bonus fixes: narrowed the exception swallow in
+`_dashed_change_strong`, seeded GAP RNG (reproducible decompositions).
+
 **Exact next steps:**
-1. Re-run the full `survey_mp_cascade.py` ladder (phases now separated:
-   CONSTRUCT_TIMEOUT vs SPOT_EQUIV_TIMEOUT; previously-True must stay True;
-   `F(a & X b)` should now show WHICH phase blocked).
-2. P0-verify is now THE wall for everything ≥2L-nontrivial: Spot translation
+1. `(a U b)|Gc` end-to-end: construction builds in 9.5s but reconstruct's
+   FINAL FLAT-STRING serialization blows the 30s budget — the str() API
+   contract is now the bottleneck. Options: return/carry formula objects to
+   callers (str only on demand), DAG-aware output format, or down-stream
+   compositional consumption. Folds into P0-verify below.
+2. P0-verify remains THE wall for everything ≥2L-nontrivial: Spot translation
    of formulas with 100+ distinct temporal subformulas (32-acc-set fast
    error) or megabyte flat unfoldings (timeouts). Spot authors contacted
    about sharing-aware translation (our outputs: ~1000-node DAGs, >1200x
    unfolding — the ideal client). Meanwhile: vacuous-conjunct pruning,
-   equivalence-based interning of subterms, compositional checking
-   (trace_fin is the per-sub-term oracle), word sampling (pitfall #10).
+   OUR OWN cheap normalization (constructor-level; replaces what
+   tl_simplifier used to fold), equivalence-based interning, compositional
+   checking (trace_fin is the per-sub-term oracle), word sampling
+   (pitfall #10).
 3. With the cover in place, revisit P1 "Muller lift exactness": π-preimage
    handling in `accepting_configs`/fallback paths of config_graph.py still
    maps states through the lift only (primary pruned-config-aut path is
    already correct via `state_of` = π).
+4. Re-run the full survey ladder post-memo (expect: same 21 True; exploders
+   move from ERROR to construct-ok/serialization-bound).
 
 ## HANDOFF — where debugging stands (written at end of 2026-06-11 session)
 
