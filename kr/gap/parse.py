@@ -30,6 +30,24 @@ _LEVEL_LINE = re.compile(r"^LEVEL\s+(\d+)\s+SIZE\s+(\d+)\s+KIND\s+(\S+)(?:\s+STR
 _NUM_LEVELS = re.compile(r"^NUM_LEVELS:\s*(\d+)", re.MULTILINE)
 _NUM_STATES = re.compile(r"^NUM_STATES:\s*(\d+)", re.MULTILINE)
 _SEMI_SIZE = re.compile(r"^SEMI_GROUP_SIZE:\s*(\d+)", re.MULTILINE)
+_TRANS_LINE = re.compile(r"^TRANS\s+\[([^\]]*)\]\s+GEN\s+(\d+)\s+TO\s+\[([^\]]*)\]", re.MULTILINE)
+_PI_LINE = re.compile(r"^PI\s+\[([^\]]*)\]\s+POINT\s+(\d+)", re.MULTILINE)
+
+
+def _coords(s: str) -> tuple:
+    """Parse a GAP coordinate list body and REVERSE it.
+
+    SgpDec emits coords top-first (position i depends on positions 1..i-1,
+    i.e. on the UPPER prefix). The kr operators peel index 0 first and treat
+    the SUFFIX as the self-contained lower cascade (the paper peels the
+    DEEPEST level first). Reversing at the parse boundary makes the two
+    conventions coincide: python index 0 = deepest level, suffix = the
+    upper sub-cascade it depends on.
+    """
+    s = s.strip()
+    if not s:
+        return ()
+    return tuple(int(x.strip()) for x in reversed(s.split(",")))
 
 
 def parse_cascade_output(raw: str, generators: Optional[List[List[int]]] = None) -> Cascade:
@@ -56,20 +74,30 @@ def parse_cascade_output(raw: str, generators: Optional[List[List[int]]] = None)
     if not num_levels and levels:
         num_levels = len(levels)
 
+    # Levels are reversed like the coords (deepest-first on the python side).
+    levels = [LevelInfo(index=i, size=lv.size, kind=lv.kind, structure=lv.structure)
+              for i, lv in enumerate(reversed(levels))]
+
     state_to_config: dict[int, tuple[int, ...]] = {}
     for m in _STATE_LINE.finditer(raw):
-        s = int(m.group(1))
-        coord_str = m.group(2).strip()
-        if coord_str:
-            coords = tuple(int(x.strip()) for x in coord_str.split(","))
-        else:
-            coords = tuple()
-        state_to_config[s] = coords
+        state_to_config[int(m.group(1))] = _coords(m.group(2))
 
-    # Build reverse map (last write wins if collisions — rare)
+    # True cascade transitions (BFS closure of the state lifts) and the cover
+    # map pi: closure config -> original state. pi is many-to-one (holonomy
+    # coordinatization is a COVER, not an isomorphism): several configs may
+    # represent the same state, and the dynamics on configs is NOT the
+    # h-conjugated dynamics of D — it must come from these TRANS lines.
+    transitions: dict[tuple[int, ...], dict[int, tuple[int, ...]]] = {}
+    for m in _TRANS_LINE.finditer(raw):
+        src = _coords(m.group(1))
+        transitions.setdefault(src, {})[int(m.group(2))] = _coords(m.group(3))
+
     config_to_state: dict[tuple[int, ...], int] = {
-        cfg: st for st, cfg in state_to_config.items()
+        _coords(m.group(1)): int(m.group(2)) for m in _PI_LINE.finditer(raw)
     }
+    if not config_to_state:
+        # Legacy output (no PI lines): fall back to inverting the lift.
+        config_to_state = {cfg: st for st, cfg in state_to_config.items()}
 
     meta = {}
     m_ss = _SEMI_SIZE.search(raw)
@@ -89,4 +117,5 @@ def parse_cascade_output(raw: str, generators: Optional[List[List[int]]] = None)
         generator_images=generators or [],
         raw_output=raw,
         metadata=meta,
+        transitions=transitions,
     )
