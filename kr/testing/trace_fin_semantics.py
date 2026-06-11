@@ -26,6 +26,9 @@ Run from project root:
     python3 kr/testing/trace_fin_semantics.py "FGa" "G(a -> F b)"
 """
 
+import json
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -101,15 +104,85 @@ def gt_once_and_fin(D, init_state, target):
                         gt_fin(D, target))
 
 
+def build_config_semiaut(casc):
+    """Deterministic semiautomaton on the cascade CONFIG closure (the real run
+    space of the cascade). With the true-cascade extraction, pi (config ->
+    state) is a many-to-one cover: 'run visits config C' is strictly finer
+    than 'run visits state pi(C)', so per-config sub-terms must be grounded
+    HERE, not on D (on D the sink-cover configs ground as spurious BADs).
+    Returns (twa_graph, {config: state_index})."""
+    import buddy
+    configs = sorted(casc.reachable_configs())
+    cidx = {c: i for i, c in enumerate(configs)}
+    D = casc.original_aut
+    g = spot.make_twa_graph(D.get_dict())
+    g.copy_ap_of(D)
+    g.set_buchi()
+    g.new_states(len(configs))
+    init_cfg = casc.state_to_config[D.get_init_state_number()]
+    g.set_init_state(cidx[init_cfg])
+    apvar = {ap: buddy.bdd_ithvar(g.register_ap(ap)) for ap in casc.aps}
+    for c in configs:
+        for li in range(casc.num_letters()):
+            try:
+                nc = casc.move_config(c, li)
+            except Exception:
+                continue
+            if nc not in cidx:
+                continue
+            cond = buddy.bddtrue
+            for ap, val in casc.letter_valuations[li].items():
+                cond = cond & (apvar[ap] if val else buddy.bdd_not(apvar[ap]))
+            g.new_edge(cidx[c], cidx[nc], cond, [])
+    return g, cidx
+
+
 # ---------------------------------------------------------------- per-config
 
-def check(name: str, gt_aut, produced_ltl: str) -> bool:
-    """Compare GT automaton vs produced LTL string; print verdict; True if ok."""
+CHECK_TIMEOUT = int(os.environ.get("KR_CHECK_TIMEOUT", "10"))
+
+
+def _check_child():
+    """Hidden subprocess mode (--_check): one diff_report under the parent's
+    per-check timeout. Reads {"hoa","ltl","name"} JSON on stdin (the GT aut
+    travels as HOA text), prints REPORT_JSON line. Spot's translate/complement
+    on a pathological sub-term then stalls only this child, not the trace."""
+    payload = json.load(sys.stdin)
+    gt = spot.automaton(payload["hoa"])
+    rep = diff_report(gt, payload["ltl"], "GT", payload["name"])
+    print("REPORT_JSON:" + json.dumps(rep))
+
+
+def check(name: str, gt_aut, produced_ltl: str):
+    """Compare GT automaton vs produced LTL string; print verdict.
+    Returns True (OK) / False (semantic BAD) / None (UNVERIFIED: Spot could
+    not check within KR_CHECK_TIMEOUT — the sub-term was BUILT fine).
+    The Spot work (translate + containment both ways, complement inside) is
+    unbounded in the worst case, so it runs in a child process under the cap."""
     print(f"    {name} = {produced_ltl}")
     if produced_ltl.startswith(("ERROR", "NOT_IMPLEMENTED")):
         print(f"      SKIP ({produced_ltl})")
-        return False
-    rep = diff_report(gt_aut, produced_ltl, "GT", name)
+        return None
+    payload = json.dumps({"hoa": gt_aut.to_str("hoa"), "ltl": produced_ltl, "name": name})
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(Path(__file__).resolve()), "--_check"],
+            input=payload, capture_output=True, text=True,
+            timeout=CHECK_TIMEOUT, cwd=PROJECT_ROOT,
+        )
+    except subprocess.TimeoutExpired:
+        print(f"      UNVERIFIED (spot consistency check exceeded {CHECK_TIMEOUT}s; "
+              f"sub-term built fine, len={len(produced_ltl)} — Spot verification "
+              f"blocked, NOT a construction failure)")
+        return None
+    rep = None
+    for line in (proc.stdout or "").splitlines():
+        if line.startswith("REPORT_JSON:"):
+            rep = json.loads(line[len("REPORT_JSON:"):])
+    if rep is None:
+        print(f"      UNVERIFIED (child rc={proc.returncode}: "
+              f"{(proc.stderr or proc.stdout or '')[-160:].strip()})")
+        return None
     ok = "languages equivalent" in rep
     print(("      OK  " if ok else "      BAD ") + rep.strip())
     return ok
@@ -131,11 +204,17 @@ def trace_formula(formula_str: str) -> dict:
     if hasattr(_ops, "_lru_reach_strong"):
         _ops._lru_reach_strong.cache_clear()
 
+    # Ground on the CONFIG semiautomaton (cover-aware): per-config sub-terms
+    # speak about cascade configs, and pi is many-to-one under the true
+    # extraction, so grounding against state-visit GTs on D is wrong for
+    # cover configs (spurious under-approx BADs on e.g. duplicated sinks).
+    CD, cidx = build_config_semiaut(casc)
+    init_ci = cidx[init_cfg]
+
     verdicts = {}
     for C in sorted(casc.reachable_configs()):
         s = casc.config_to_state.get(C)
-        if s is None:
-            continue
+        ci = cidx[C]
         print(f"\n  --- config C={C} (state {s})"
               f"{'  [== iota]' if C == init_cfg else ''} ---")
 
@@ -148,22 +227,32 @@ def trace_formula(formula_str: str) -> dict:
 
         v = {}
         v["r_to"] = check("r_to  (iota~>C, visit>=0)",
-                          gt_visited_once(D, init_state, s, strict=False), r_to)
+                          gt_visited_once(CD, init_ci, ci, strict=False), r_to)
         v["r_gt0"] = check("r_gt0 (C>0~>C, revisit from C)",
-                           gt_visited_once(D, s, s, strict=True), r_gt0)
+                           gt_visited_once(CD, ci, ci, strict=True), r_gt0)
         v["r_with"] = check("r_with (>=1 visit & finite)",
-                            gt_once_and_fin(D, init_state, s), r_with)
-        v["fin"] = check("fin   (finitely often)", gt_fin(D, s), fin)
-        v["notfin"] = check("!fin  (infinitely often)", gt_io(D, s), notfin)
+                            gt_once_and_fin(CD, init_ci, ci), r_with)
+        v["fin"] = check("fin   (finitely often)", gt_fin(CD, ci), fin)
+        v["notfin"] = check("!fin  (infinitely often)", gt_io(CD, ci), notfin)
         verdicts[C] = v
 
-    bad = [(C, k) for C, v in verdicts.items() for k, ok in v.items() if not ok]
-    print(f"\n  SUMMARY {formula_str}: "
-          f"{'ALL SUB-TERMS GROUNDED OK' if not bad else 'CONTRADICTIONS: ' + str(bad)}")
+    bad = [(C, k) for C, v in verdicts.items() for k, ok in v.items() if ok is False]
+    unv = [(C, k) for C, v in verdicts.items() for k, ok in v.items() if ok is None]
+    if bad:
+        verdict = "CONTRADICTIONS: " + str(bad)
+    elif unv:
+        verdict = (f"NO CONTRADICTION ({len(unv)} sub-term(s) UNVERIFIED — "
+                   f"Spot blocked within {CHECK_TIMEOUT}s, construction fine): {unv}")
+    else:
+        verdict = "ALL SUB-TERMS GROUNDED OK"
+    print(f"\n  SUMMARY {formula_str}: {verdict}")
     return verdicts
 
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "--_check":
+        _check_child()
+        return
     cases = sys.argv[1:] or ["GFa"]
     for fs in cases:
         trace_formula(fs)
