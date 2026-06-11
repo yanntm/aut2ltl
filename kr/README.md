@@ -1,31 +1,60 @@
 # kr/ — Krohn-Rhodes / Holonomy Cascade Path
 
-This subtree implements the algebraic translation from (counter-free deterministic) automata to LTL following:
+This subtree implements the algebraic translation from counter-free deterministic
+ω-automata to LTL following:
 
-Udi Boker, Karoliina Lehtinen, Salomon Sickert.
-"On the Translation of Automata to Linear Temporal Logic". FoSSaCS 2022.
+> Udi Boker, Karoliina Lehtinen, Salomon Sickert.
+> "On the Translation of Automata to Linear Temporal Logic". FoSSaCS 2022.
 
-The approach is systematic and algebraic: no pattern matching on SCCs, terminal components, or other shape-based rules (those are in the separate heuristic engine under `buchi2ltl/`). Everything is driven by the Krohn-Rhodes reset cascade (holonomy decomposition via SgpDec + GAP), the Stay/Leave/Enter partitions of letters per level, the configuration mapping, and the inductive definition of the five reachability formulas + Fin(C) + Muller assembly.
+The approach is systematic and algebraic: **no pattern matching** on SCCs, terminal
+components, or other shape-based rules (those live in the separate heuristic engine
+under `buchi2ltl/`). Everything is driven by the reset cascade (holonomy decomposition
+via SgpDec + GAP), the per-level Enter/Stay/Leave letter partitions, the configuration
+mapping, and the inductive definition of the five reachability formulas + Fin(C) +
+acceptance assembly.
 
-See `kr/algorithm.md` for the authoritative construction description, `kr/STATUS.md` for gaps and current practical status.
+## Documentation map (read in this order)
+
+| doc | role |
+|---|---|
+| `paper/automata-to-ltl-construction.md` | **The construction reference.** Concise, self-contained: definitions, Table-1 semantics, the five formulas, Fin(C), per-acceptance assembly, worked example, pitfalls. Verified against the paper text. |
+| `paper/Automata2LTL.txt` (+ `.pdf`) | **Ground truth.** pdftotext extraction; Section 4.2 + Table 1 + Formulas 3/4/5 are around lines 440–1040. Any formula-fidelity question is settled HERE, not in any summary. |
+| `kr/algorithm.md` | Why this construction, scope/policy for kr/ (no pattern matching), complexity recap, mapping to modules. |
+| `kr/STATUS.md` | Current state: what works, what fails, with the current minimal failing cases. |
+| `kr/TODO.md` | Forward-looking work items only (history lives in git log). |
+
+Lesson learned (twice): LLM-generated paper summaries drift on case splits and guards.
+A previous 1767-line reference doc introduced two classes of formula errors
+(R4/Rws0 structure; a spurious `s ≠ t` guard on Formula 5) and was removed —
+see git history. When in doubt, read the paper text.
 
 ## Pipeline
 
+```
 Spot automaton
-→ normalize (inside `decompose_aut`) to deterministic complete minimized parity (min even)
-→ extract generators (one per concrete letter in 2^|AP|)
-→ self-contained GAP script (SgpDec HolonomyCascadeSemigroup + AsCoords; robust 1-state handling)
-→ run via `gap`
-→ parse (kr/gap/parse.py) to `Cascade`
+→ normalize (in decompose_aut): deterministic complete minimized parity (min even),
+  state-based acceptance ("sbacc" — required: the Muller condition is lifted over
+  configurations, so the set of infinitely-visited states must determine acceptance)
+→ extract generators (one per concrete letter in 2^|AP|)        kr/extract.py
+→ self-contained GAP script (SgpDec HolonomyCascadeSemigroup)   kr/gap_bridge.py
+→ parse to Cascade                                              kr/gap/parse.py
+→ reachability formulas + Fin(C) + assembly                     kr/reachability*.py
+```
 
-`Cascade` is the central object: levels, state↔config (1-based coords), letter valuations (for guards), `move_config`, `compute_stay_leave_from` / `compute_enters_to_from`, `build_configuration_automaton`, `accepting_configs` (Spot scc_info).
+## Modules
 
-## Reconstruction
-
-- `reachability_operators.py`: guard helpers, full inductive implementation of the 5 reachability formulas (strong/weak, solid/dashed, >0) with recursion to base, memo + early simplify, TRACE (KR_TRACE=1). (All 1L special case code deleted; pure paper for all depths.)
-- `fin_c` implements Lemma 7 (Fin(C) via unconditional reach + >0 return).
-- `reachability.py`: `reconstruct_ltl_1level_buchi` (public entry; name retained for compat) delegates to `reconstruct_ltl_paper_style` — the paper assembly using reach/fin_c + good Muller sets (from Spot) + DNF of ¬Fin/Fin conjunctions.
-- 1L cases often produce simple output; multi-level use the generalized operators (may be large or partial until formula details polished).
+- `cascade.py` — `Cascade` dataclass + `Config`: levels, state↔config (1-based coords),
+  letter valuations, `move_config`, Enter/Stay/Leave helpers. Config-graph analysis
+  (pruned config automaton, accepting configs, good Muller sets incl. the
+  strongly-connected-subset enumeration) delegates to `config_graph.py`.
+- `reachability_operators.py` — the five inductive reachability formulas
+  (strong/weak, solid/dashed, >0 variants) with recursion to the level-0 base,
+  memo + early simplify, `KR_TRACE=1` tracing; `fin_c` (Lemma 7).
+- `reachability.py` — `reconstruct_ltl_paper_style`: good-Muller-set DNF assembly of
+  ¬Fin/Fin conjunctions. `reconstruct_ltl_1level_buchi` is the public entry
+  (name kept for compat; thin wrapper).
+- `gap_bridge.py`, `extract.py`, `gap/parse.py`, `bdd_utils.py` — decomposition
+  pipeline and buddy-BDD stability.
 
 ## Usage
 
@@ -36,32 +65,38 @@ import spot
 aut = spot.formula("Fa").translate()
 casc = decompose_aut(aut)
 print(casc)                 # summary + levels
-print(casc.state_to_config)
 print(reconstruct_ltl_1level_buchi(casc))
 ```
 
-See also `reconstruct_ltl_paper_style`, the reach_*/fin_c operators, and `generate_gap_script` / `extract_generators` for inspection.
-
 ## Dependencies
 
-- `gap` on $PATH (GAP 4.12+).
-- SgpDec loadable in GAP (`LoadPackage("SgpDec")`).
+- `gap` on $PATH (GAP 4.12+) with SgpDec loadable (`LoadPackage("SgpDec")`).
+- Run `./kr/install.sh` once (user-local under ~/.gap/pkg).
 
-Run `./kr/install.sh` once for the SgpDec package (user-local under ~/.gap/pkg).
+## Verification (kr/testing/)
 
-## Verification
+All scripts run from the project root and use subprocess isolation (Spot/buddy can
+segfault on state accumulation; rc 139 = segv). Placed scripts only — no /tmp,
+no `python -c` one-liners.
 
-`kr/testing/`:
-- `test_kr_basic.py` — direct path + I/O + equiv + counters (argv supported).
-- `test_kr_reconstruct.py` — isolated per-case decomp + reconstruct + Spot equiv.
-- `diag_stability.py` — repeated decomp on multi-level cases.
+- `test_kr_reconstruct.py` — isolated per-case decomp + reconstruct + Spot equiv
+  (argv for specific formulas).
+- `survey_mp_cascade.py` — Manna-Pnueli class × cascade depth survey; finds the
+  smallest failing cases per class (drives targeted work, weakest class first).
+- `trace_fin_semantics.py` — grounds every fin_c sub-term per config against
+  ground-truth automata built from D's semiautomaton, with witness words.
+- `ltl_diff.py` — directional language comparison (containment each way + witness
+  word). Library + CLI.
+- `test_kr_r4_audit.py` — R4/R5 structural checklist + semantic drift grounding;
+  must report CLEAN before committing operator changes.
+- `test_kr_zoom.py` — full trace for one formula (aut, cascade, Muller, KR_TRACE
+  construction, equiv).
+- `test_kr_basic.py`, `test_kr_muller.py`, `test_kr_arch_adopt.py`,
+  `diag_stability.py`, `probe_sbacc.py` — basics, Muller helpers, arch prototypes,
+  stability, acceptance-marks probe.
 
-All use subprocess isolation.
+## Notes
 
-## Files
-
-(See kr/STATUS.md for gaps; algorithm.md for the spec.)
-
-This is PoC/experimental. Limited to small |AP| (explicit 2^|AP|). Formulas follow paper size bounds (large in worst case). Sinks from Spot completion are ordinary states.
-
-The generated GAP scripts are deterministic and self-contained.
+PoC/experimental. Limited to small |AP| (explicit 2^|AP| letters). Formula sizes
+follow the paper bounds (large in the worst case). Sinks from Spot completion are
+ordinary states. Generated GAP scripts are deterministic and self-contained.
