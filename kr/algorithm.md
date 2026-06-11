@@ -104,25 +104,16 @@ The formulas are mutually recursive; recursion bottoms at level 0 (plain Until).
 
 This is the pure, systematic target for the kr/ folder.
 
-## Relation to Current kr/ Implementation & Next Steps
+## Relation to Current kr/ Implementation
 
-- `Cascade` + `state_to_config` (coordinate tuples), `levels`, `letter_valuations`, `build_config_transitions`, `move_config` already give the cascade + ability to compute Stay/Leave per top-level state.
-- The operators in `reachability_operators.py` (generalized 5 formulas + dual weak + fin_c for Lemma 7) + `reconstruct_ltl_paper_style` (Muller DNF assembly) implement the core construction uniformly for all depths. The recursion bottoms at the paper's level-0 base case (plain Until on the empty config).
-- `decompose_aut` + gap bridge already perform the decomposition step (and we have stability via `bdd_utils` and focused parser in `kr/gap/parse.py`).
-- The clean `reconstruct_ltl_1level_buchi` is already the "thin pure builder" style the paper demands.
+- `Cascade` (cascade.py) provides the cascade representation: `state_to_config` coordinate tuples, `levels`, `letter_valuations`, `move_config`, Enter/Stay/Leave helpers. Config-graph analysis (pruned config automaton, good Muller sets) is in `config_graph.py`.
+- `reachability_operators.py` implements the 5 formulas (strong/weak, solid/dashed, >0 variants) uniformly for all depths, bottoming at the level-0 plain-Until base case, plus `fin_c` (Lemma 7).
+- `reachability.py` assembles the Muller DNF (`reconstruct_ltl_paper_style`); `reconstruct_ltl_1level_buchi` is the compat-named public entry.
+- `decompose_aut` + gap bridge perform the decomposition (stability via `bdd_utils`, parser in `kr/gap/parse.py`).
 
-Missing pieces for the full algorithm (in priority order for progress):
-- Generalize the 1-level operators to the full 5 formulas (four-case distinctions, >0 variants, Enter/Leave disjunctions, proper recursion to lower-level sub-configs).
-- Implement the inductive construction on cascade depth (using per-level Stay/Leave partitions from the generators).
-- Implement the general `Fin(C)` construction (¬reach-to-C-i.o. or last-visit then never return).
-- Lift arbitrary acceptance conditions to the appropriate Boolean combination of Fin/reach formulas over configurations.
-- Add guard simplification (the formulas can produce long DNFs; use Spot to simplify).
-- Handle/collapse trivial (size-1) levels so more "simple" formulas appear as effective 1-level to the clean path.
-- Full end-to-end: use the holonomy decomposition + above to get aut → LTL, and prove it matches the paper bounds in practice.
-- Extend tests (kr/testing/) with the hierarchy preservation and more complex 1-level + multi-level cases.
-- (Later) finite-word variant, past operators, etc.
+For current correctness state and remaining work, see `kr/STATUS.md` and `kr/TODO.md` (kept current; this file is the stable spec/motivation). The construction details are in `paper/automata-to-ltl-construction.md`; disputes are settled by `paper/Automata2LTL.txt`.
 
-The size will be large (as predicted by the paper), but the result will be elementary, systematic, and free of pattern matching.
+The size will be large (as predicted by the paper), but the result is elementary, systematic, and free of pattern matching.
 
 ## Additional Notes from the Paper
 
