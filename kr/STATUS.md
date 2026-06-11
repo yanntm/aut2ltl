@@ -133,6 +133,10 @@ subterms, compositional checking, word sampling).
 - `kr/testing/trace_fin_semantics.py` — per-config semantic grounding of fin_c
   sub-terms vs GTs on the config semiautomaton (cover-aware), witness words,
   per-check subprocess cap (`KR_CHECK_TIMEOUT` 10s; verdicts OK/BAD/UNVERIFIED).
+  Robust to monster flat forms: formula prints truncated at 400 chars (a
+  G(p->(qUr)) run once wrote a 324MB log), and sub-terms whose flat length
+  exceeds 2MB are marked UNVERIFIED immediately (no point shipping 108MB to
+  a child that cannot translate it).
 - `kr/testing/probe_reset_consistency.py` — checks every combined letter acts
   identity-or-reset per level under both context conventions (soundness
   precondition of the paper formulas; the Ga|Gb smoking gun).
@@ -143,7 +147,9 @@ subterms, compositional checking, word sampling).
   (gate for operator commits).
 - `kr/testing/measure_formula_dag.py` — DAG vs string size of the assembled
   formula (unique nodes, unfolded tree, distinct temporal subformulas, build
-  time); `--out` dumps the flat formula.
+  time); `--out` dumps the flat formula; `--no-str` skips stringification
+  (the only way to measure cases whose flat form is 100MB+; measured
+  G(p->(qUr)): 9k DAG nodes vs 64.8M tree, sharing 7179x).
 - `kr/testing/probe_memo_stats.py` — memo profiler: distinct subproblems vs
   raw calls (lru hits/misses), helper-memo size, alarm + watchdog stack dump
   (names the native call when stuck in C++).
