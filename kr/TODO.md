@@ -4,131 +4,61 @@ Forward-looking work items only. Current state: `kr/STATUS.md`. History: `git lo
 Construction reference: `paper/automata-to-ltl-construction.md`; ground truth:
 `paper/Automata2LTL.txt` (Sec 4.2 + Table 1 + Formulas 3/4/5 ≈ lines 440–1040).
 
-## HANDOFF 2 — true-cascade extraction (2026-06-11, later session)
+Context for prioritization: the FoSSaCS construction is implemented and
+semantically validated (see STATUS). The thesis we are now chasing is that the
+paper's double-exponential is a *flat-rendering* artifact: every case measured
+so far builds a small hash-consed DAG in fractions of a second while only the
+unfolded tree/string explodes. P0 below is the work that turns that
+observation into a usable pipeline (and a SOTA claim).
 
-**Root cause of `Ga | Gb` equiv=FALSE found and fixed — extraction, not
-operators.** Two stacked bridge bugs: (1) `AsCoords(s, hcs)` is
-`DomainOf(hcs)[s]` (an enumeration accident), the real lift is
-`AsHolonomyCoords(s, sk)`; (2) conjugating D's transitions through the lift
-is unsound — holonomy coordinatization is a many-to-one COVER π, the true
-successor is `OnCoordinates(c, AsHolonomyCascade(g, sk))`. Earlier passing
-cases were degenerate (per-letter actions context-free consistent).
-Fix: gap_bridge emits lifts + TRANS closure + PI (π); parse reverses coords
-(SgpDec top-first ↔ operators peel deepest-first); Cascade.move_config /
-all_configs use the explicit table. Diagnosis chain preserved in
-`probe_reset_consistency.py` (identity-or-reset check per level/context) and
-`probe_sgpdec_api.g` (API ground truth). trace_fin grounding made
-cover-aware (GTs on the config semiautomaton) with per-check Spot caps.
-Result: Ga|Gb and G(a->Xb) zero grounding contradictions; Fa/GFa/aUb/Fa|Gb
-equiv True; audit CLEAN.
+## P0 — practice beats the bound (active)
 
-**Memo round (done, same day):** ladder re-ran — 21 equiv=True (incl. 3L
-`Xa`/`a&Xa`/`a|Xb`/`G(a->Xa)`), zero FALSE; new frontier was construction
-blowup on `(a U b)|Gc` / `FGa|FGb` / `GFa&GFb`. Fixed by (i) memoizing the
-five helpers (only reach was cached; 91.5% hit rate was tripping the
-raw-call guard → now counts distinct subproblems, `KR_REACH_GUARD`), and
-(ii) dropping tl_simplifier from the construction path (`_simp_f` identity
-by default; `KR_SIMP_TREE_LIMIT` 0/N/-1) — POLICY: we never wait on a
-stalled external call; Spot is hash-consing only in the hot path. All three
-now build (9.5s/1.6s/0.7s). Bonus fixes: narrowed the exception swallow in
-`_dashed_change_strong`, seeded GAP RNG (reproducible decompositions).
-
-**Exact next steps:**
-1. `(a U b)|Gc` end-to-end: construction builds in 9.5s but reconstruct's
-   FINAL FLAT-STRING serialization blows the 30s budget — the str() API
-   contract is now the bottleneck. Options: return/carry formula objects to
-   callers (str only on demand), DAG-aware output format, or down-stream
-   compositional consumption. Folds into P0-verify below.
-2. P0-verify remains THE wall for everything ≥2L-nontrivial: Spot translation
-   of formulas with 100+ distinct temporal subformulas (32-acc-set fast
-   error) or megabyte flat unfoldings (timeouts). Spot authors contacted
-   about sharing-aware translation (our outputs: ~1000-node DAGs, >1200x
-   unfolding — the ideal client). Meanwhile: vacuous-conjunct pruning,
-   OUR OWN cheap normalization (constructor-level; replaces what
-   tl_simplifier used to fold), equivalence-based interning, compositional
-   checking (trace_fin is the per-sub-term oracle), word sampling
-   (pitfall #10).
-3. With the cover in place, revisit P1 "Muller lift exactness": π-preimage
-   handling in `accepting_configs`/fallback paths of config_graph.py still
-   maps states through the lift only (primary pruned-config-aut path is
-   already correct via `state_of` = π).
-4. Re-run the full survey ladder post-memo (expect: same 21 True; exploders
-   move from ERROR to construct-ok/serialization-bound).
-
-## HANDOFF — where debugging stands (written at end of 2026-06-11 session)
-
-**What just happened:** All five operators were rewritten to the LITERAL paper
-forms (see STATUS "Operators"). The former approximations (from-S letter
-enumeration, first-step recursion, bespoke weak forms, wrong weak base) were
-the 2L breakers — each was found by semantic grounding with witness words, and
-each fix was verified against `paper/Automata2LTL.txt` directly.
-
-**Examples used and why they fail/pass:**
-- `GFa` (1L, 2 states, ι==C) — the minimal Fin-postponement canary. GROUNDED OK.
-- `G(a -> X b)` (2L [2,2], safety; states: (1,1) init, (1,2) obligation, (2,1)
-  sink) — first 2L target. Diagnosis chain that fixed it: (i) `r_to((1,1)→(2,1))`
-  was `false` because no letter from S enters top 2 (entry fires only from
-  lower config (2)) → combined-letter enumeration over ALL configs + lower-level
-  prefix reach (solid⁺/Formula 5 literal); (ii) the remaining `r_with` failure
-  (witness `a&b; !a&b; !a&b; cycle{a&b}`) was in the leave-avoid conjuncts —
-  cursor-1 reaches with a REAL bad config exercising the weak cluster for the
-  first time (1L never passes B≠None at top) → literal wreach dual + wsolid⁺.
-  Now: ALL SUB-TERMS GROUNDED OK.
-- Probe script for that diagnosis: `kr/testing/probe_2l_rwith.py` (drills into
-  solid⁺ last-step disjuncts and checks each conjunct against the witness word).
-
-**P0-perf step 1 DONE (2026-06-11, this session):** operators + fin_c +
-assembly are `spot.formula` objects end-to-end (str accepted at entry for
-probes); one shared `spot.tl_simplifier` with persistent cache, at most one
-simplify per operator return; `_str_f` no longer simplifies; fin_c computed
-once per config in assembly; sentinel guard removed. Validated: GFa +
-G(a->Xb) ALL GROUNDED OK, audit CLEAN (patterns 1+5 updated to new shapes),
-probe witness passes, survey: `a U b`, `Fa|Gb`, `Fa&Gb`, `Ga|Fb` flip True.
-Measured (measure_formula_dag.py): G(a->Xb) builds in 0.08s, 781 DAG nodes,
-3.2MB only as flat string (1600x unfolding). A dedicated reach_weak memo
-looks unnecessary now (its inner reach_strong is lru-cached; ¬+simplify is
-amortized by the persistent simplifier) — revisit only if profiling says so.
-
-**Exact next steps (P0-verify — equiv checking, then semantics):**
-1. `G(a->Xb)` (and anything ≥ its size) cannot be equiv-checked by translation:
-   126 distinct temporal subformulas → Spot hard error "Too many acceptance
-   sets used. The limit is 32" (fast fail, not a stall). Reduce DISTINCT
-   temporal subterms: prune vacuous conjuncts (Enter(b)=∅, unreachable pre),
-   per-subformula equivalence-based interning (canonicalize language-equal
-   subterms to one representative); and/or check compositionally (trace_fin
-   grounding is already the per-sub-term oracle) or by word sampling
-   (u·v^ω, construction-ref pitfall #10).
-2. New minimal failing case from survey: **`Ga | Gb` equiv=FALSE** (safety,
-   sizes=[1,4], trivial size-1 top level — suspect the level-collapse /
-   trivial-level handling). Diagnose with ltl_diff (containment + witness)
-   then trace_fin grounding.
-3. `F(a & X b)`: TIMEOUT >45s — find out whether construction or translate;
-   if translate, same as item 1.
-4. Then: `G(p -> (q U r))` (user request), then 3L (`Xa`).
+1. **Own sharing-aware fold pass** (replaces nothing — Spot's tl_simplifier is
+   out of the hot path by policy). Constructor-level rewrites + vacuous-
+   structure pruning on the hash-consed DAG: dead/sink-routed tails, duplicate
+   avoid-conjuncts, Formula-5 early-outs (Enter(t)=∅ ⇒ dashed false,
+   Stay(s)=∅ ⇒ solid τ/false, unreachable pre-configs). Success metric:
+   distinct temporal subformulas of `G(p->(qUr))` (currently 4115 for a
+   3-state property) drop toward what its automaton warrants; secondary:
+   DAG nodes / unfolded size shrink across the ladder.
+2. **Output representation**: reconstruct's str() contract is the bottleneck
+   for the biggest cases (`(a U b)|Gc` builds in 9.5s, serialization blows the
+   budget; one `G(p->(qUr))` fin sub-term flattens to 108MB). Carry
+   `spot.formula` objects to callers (str on demand only), and/or a DAG-aware
+   output format.
+3. **Verification beyond Spot translation** (32-acc-set limit / timeouts on
+   100+ distinct temporal subterms): compositional checking (trace_fin is the
+   per-sub-term oracle), word-sampling validator (ultimately-periodic u·v^ω,
+   construction-ref pitfall #10), equivalence-based interning of subterms.
+   Spot authors are in the loop on sharing-aware translation — our DAGs are
+   the ideal client; revisit when they ship anything.
 
 ## P1 — coverage
 
-- Full acceptance dispatch per construction-ref §9.3 (looping-Büchi/coBüchi direct
-  Σ₁/Π₁ forms, Büchi/coBüchi Π₂/Σ₂ forms, weak Δ₁ end_in(G)) instead of always going
-  through the Muller DNF; keeps outputs in the matching hierarchy class.
-- Muller lift exactness for n>2 levels (h⁻¹ powerset lift with SCC pruning + dedup).
+- Full acceptance dispatch per construction-ref §9.3 (looping-Büchi/coBüchi
+  direct Σ₁/Π₁ forms, Büchi/coBüchi Π₂/Σ₂ forms, weak Δ₁ end_in(G)) instead of
+  always going through the Muller DNF; keeps outputs in the matching
+  hierarchy class.
+- π-preimage exactness in the non-primary paths: `accepting_configs` and the
+  config_graph fallbacks still map states through the lift only (the primary
+  pruned-config-aut path is already correct via `state_of` = π). With covers
+  real (duplicated sinks), the fallbacks should classify every closure config
+  through π.
 - Trivial (size-1) level collapse to reduce effective depth.
-- Remove/make-dynamic the >3L dev guard once multi-level is correct.
+- Remove/make-dynamic the >3L dev guard once P0.1 lands (the guard exists to
+  find issues at small depth first; 3L is green on the ladder).
 
 ## P2 — feasibility
 
-- Simplify at every construction step (inside R*/Fin builders), not only post-hoc.
-- Systematic early-outs (Enter(t)=∅ ⇒ dashed false; Stay(s)=∅ ⇒ solid τ/false).
-- Larger |AP| (on-demand letters or BDD guards instead of explicit 2^k).
+- Larger |AP| (on-demand letters or BDD guards instead of explicit 2^k —
+  8 letters already multiply the combined-letter fan-out visibly).
 - Hierarchy class tagging of outputs (Σᵢ/Πᵢ/Δᵢ per Lemma 5).
 
 ## P3 — testing & docs
 
 - Extend semantic grounding from fin_c sub-terms to arbitrary reach calls
-  (GT automaton for "reach T from S avoiding B" with β/τ obligations — needed for
-  the 2L ladder work above).
-- Word-sampling validator (ultimately-periodic u·v^ω: automaton acceptance ⇔ formula,
-  per construction-ref pitfall #10).
-- More multi-level round-trips + size/depth metrics vs paper bounds.
+  (GT automaton for "reach T from S avoiding B" with β/τ obligations).
+- More multi-level round-trips + size/depth metrics vs paper bounds (the
+  DAG-vs-tree table in STATUS is the seed of the empirical argument).
 - Finite-word variant (weak next in wsolid, construction-ref §10) — stretch.
 - Counter-free verification for external HOA inputs (GAP IsAperiodic) — stretch.
