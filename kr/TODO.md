@@ -13,6 +13,10 @@ observation into a usable pipeline (and a SOTA claim).
 
 ## P0 — practice beats the bound (active)
 
+Analysis, measurements and OPEN questions behind these items live in
+`kr/dag_folding.md` (item numbering there: plumbing → vacuity pruning →
+fold pass → interning). Items below are the actionable queue.
+
 1. **Own sharing-aware fold pass** (replaces nothing — Spot's tl_simplifier is
    out of the hot path by policy). Constructor-level rewrites + vacuous-
    structure pruning on the hash-consed DAG: dead/sink-routed tails, duplicate
