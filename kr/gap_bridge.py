@@ -257,7 +257,13 @@ def decompose_aut(
     """
     # Normalize to deterministic complete minimized parity using Spot.
     # This normalized det aut *is* our working D for decomp + reachability + Fin + assembly.
-    aut = spot.postprocess(aut, "parity min even", "deterministic", "complete")
+    # "sbacc" (state-based acceptance) is required for soundness: the Muller
+    # condition we lift is over configurations (states), so the set of
+    # infinitely-visited states must determine acceptance. With Spot's default
+    # transition-based marks, a state can carry both accepting and rejecting
+    # out-edges (e.g. the 1-state DPA for GFa), and the state-level Muller view
+    # cannot distinguish accepting from rejecting runs.
+    aut = spot.postprocess(aut, "parity min even", "deterministic", "complete", "sbacc")
 
     if not is_deterministic(aut):
         raise ExtractionError(
