@@ -11,8 +11,12 @@ are DAG size (real complexity) vs string size (unfolded form).
 
 Run from project root:
     python3 kr/testing/measure_formula_dag.py "G(a -> X b)"
+    python3 kr/testing/measure_formula_dag.py "G(a -> X b)" --out out.ltl
+                                  (also dump the flat formula string to a file,
+                                   re-parsed afterwards as a sanity check)
 """
 
+import argparse
 import sys
 import time
 from pathlib import Path
@@ -85,7 +89,11 @@ def tree_size(f: "spot.formula", limit: int = 50_000_000) -> int:
 
 
 def main():
-    formula_str = sys.argv[1] if len(sys.argv) > 1 else "G(a -> X b)"
+    parser = argparse.ArgumentParser(description="DAG vs string measurement of the assembled paper-style formula.")
+    parser.add_argument("formula", nargs="?", default="G(a -> X b)")
+    parser.add_argument("--out", help="write the flat formula string to this file (parse-checked after writing)")
+    args = parser.parse_args()
+    formula_str = args.formula
     print(f"=== DAG measurement for '{formula_str}' ===")
     f = spot.formula(formula_str)
     casc = decompose_aut(f.translate())
@@ -119,6 +127,14 @@ def main():
     print(f"sharing factor (tree/DAG) : {n_tree / max(stats['unique_nodes'], 1):.1f}x")
     print(f"distinct temporal binaries (U/M/R/W/F/G): {acc_relevant}")
     print("node kinds:", dict(sorted(stats["kinds"].items(), key=lambda kv: -kv[1])))
+
+    if args.out:
+        out_path = Path(args.out)
+        out_path.write_text(s + "\n", encoding="utf-8")
+        reparsed = spot.formula(out_path.read_text(encoding="utf-8").strip())
+        same = (reparsed == res_f)
+        print(f"formula written to        : {out_path} ({out_path.stat().st_size} bytes; "
+              f"parse-back == built object: {same})")
 
 
 if __name__ == "__main__":
