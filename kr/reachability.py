@@ -29,6 +29,7 @@ from .reachability_operators import (  # noqa: F401
     PAPER_MAX_LTL_SIZE,
 )
 from .fin import fin_c  # noqa: F401
+from .ltl_builders import _And, _Or, _Not, _simp_f, _str_f, _short_f, _normalize_ltl
 
 from .cascade import Cascade
 
@@ -124,47 +125,39 @@ def reconstruct_ltl_paper_style(casc: Cascade) -> str:
     if not good_ms:
         return "false"
 
+    trace_on = getattr(_ops, "TRACE_ON", False)
     all_c = set(casc.all_configs())
-    print("[TRACE_ASSEMBLY] good_ms=", [set(m) for m in good_ms])
-    print("[TRACE_ASSEMBLY] all_configs=", all_c)
-    terms = []
+    if trace_on:
+        print("[TRACE_ASSEMBLY] good_ms=", [set(m) for m in good_ms])
+        print("[TRACE_ASSEMBLY] all_configs=", all_c)
+    # Whole assembly on spot.formula objects (hash-consed DAG sharing): fin_c per
+    # config computed ONCE, reused across Muller terms; stringify only at the end.
+    fin_by_c = {c: fin_c(c, casc) for c in sorted(all_c)}
+    terms_f = []
     for Mf in good_ms:
         M = set(Mf)
         not_M = all_c - M
-        print(f"[TRACE_ASSEMBLY] for M={M} not_M={not_M}")
-        and_parts = []
-        for c in M:
-            fc = simplify_ltl(f"!({fin_c(c, casc)})")
-            print(f"[TRACE_ASSEMBLY]   !fin({c}) = {fc}")
-            _ops.PAPER_MAX_LTL_SIZE = max(_ops.PAPER_MAX_LTL_SIZE, len(fc))
-            and_parts.append(fc)
-        for c in not_M:
-            fc = simplify_ltl(fin_c(c, casc))
-            print(f"[TRACE_ASSEMBLY]   fin({c}) = {fc}")
-            _ops.PAPER_MAX_LTL_SIZE = max(_ops.PAPER_MAX_LTL_SIZE, len(fc))
-            and_parts.append(fc)
-        if and_parts:
-            # pairwise and + simplify to keep intermediates from exploding
-            term = and_parts[0]
-            for p in and_parts[1:]:
-                term = simplify_ltl(f"({term}) & ({p})")
-                _ops.PAPER_MAX_LTL_SIZE = max(_ops.PAPER_MAX_LTL_SIZE, len(term))
-            print(f"[TRACE_ASSEMBLY]   term for M = {term}")
-            terms.append(f"({term})")
-    if not terms:
+        if trace_on:
+            print(f"[TRACE_ASSEMBLY] for M={M} not_M={not_M}")
+            for c in M:
+                print(f"[TRACE_ASSEMBLY]   !fin({c}) = {_short_f(_Not(fin_by_c[c]), 200)}")
+            for c in not_M:
+                print(f"[TRACE_ASSEMBLY]   fin({c}) = {_short_f(fin_by_c[c], 200)}")
+        and_parts = [_Not(fin_by_c[c]) for c in M] + [fin_by_c[c] for c in not_M]
+        term_f = _simp_f(_And(*and_parts))
+        if trace_on:
+            print(f"[TRACE_ASSEMBLY]   term for M = {_short_f(term_f, 200)}")
+        terms_f.append(term_f)
+    if not terms_f:
         return "false"
-    res = terms[0]
-    for t in terms[1:]:
-        res = simplify_ltl(f"({res}) | ({t})")
-        _ops.PAPER_MAX_LTL_SIZE = max(_ops.PAPER_MAX_LTL_SIZE, len(res))
-    print("[TRACE_ASSEMBLY] final before norm=", res)
-    # capture max size from the module
-    _ops.PAPER_MAX_LTL_SIZE = max(getattr(_ops, "PAPER_MAX_LTL_SIZE", 0), len(res) if isinstance(res, str) else 0)
-    if _ops.PAPER_MAX_LTL_SIZE > 100000:
-        # guard: if already huge before final normalize, bail to avoid OOM in spot parser
-        # (user: use timeouts/memory limits; instrument to find the blow)
-        return "PAPER_STYLE_TOO_LARGE_FOR_THIS_AUT; try smaller |AP| or see profile"
-    return normalize_ltl(res)
+    res_f = _simp_f(_Or(*terms_f))
+    if trace_on:
+        print("[TRACE_ASSEMBLY] final =", _short_f(res_f, 200))
+    res = _str_f(res_f)
+    # report the serialized size (the formula DAG itself is shared and compact;
+    # the flat LTL string is the unfolded form — callers translate under timeouts)
+    _ops.PAPER_MAX_LTL_SIZE = len(res)
+    return res
 
 
 def reconstruct_ltl_1level_buchi(casc: Cascade) -> str:
