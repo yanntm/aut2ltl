@@ -55,12 +55,27 @@ construction-ref §7 (the former from-S / first-step approximations are gone):
 - `fin_c` per Lemma 7 with working ι==C postponement.
 - **No string round-trips (P0-perf step 1 done):** all operators + fin_c accept
   and return hash-consed `spot.formula` objects (str still accepted at entry
-  for probes); one shared `spot.tl_simplifier` (persistent cache) does at most
-  one simplify per operator return; `_str_f` is a pure stringifier; assembly
-  in `reconstruct_ltl_paper_style` builds formula objects (fin_c computed once
+  for probes); `_str_f` is a pure stringifier; assembly in
+  `reconstruct_ltl_paper_style` builds formula objects (fin_c computed once
   per config, reused across Muller terms) and stringifies only the final
   result. The `PAPER_STYLE_TOO_LARGE` sentinel guard is gone — the real
   formula is always returned; callers run equiv checks under timeouts.
+- **Full memoization + no Spot in the hot path (P0-perf step 2, 2026-06-11):**
+  the five helper formulas are memoized like reach_strong (decorator keyed
+  ⟨helper, casc, S, B, β, T, τ, level⟩ — only reach was cached before; the
+  dashed lines re-ran whole solid/wsolid enumerations per call site: 437k raw
+  calls / 91.5% hit rate profiled on (a U b)|Gc). The runaway guard counts
+  DISTINCT subproblems (lru misses; `KR_REACH_GUARD`, default 5M). `_simp_f`
+  is identity by default — tl_simplifier is NOT sharing-aware and stalled
+  >10s inside C++ even on <2000-node formulas; policy (user): we never wait
+  on a stalled external call. `KR_SIMP_TREE_LIMIT`: 0 never (default) / N
+  size-capped / -1 legacy-always (diagnostics on small 2L cases use -1).
+  Effect: `(a U b)|Gc` fin/Muller construction completes in 9.5s (284k
+  distinct subproblems), `FGa|FGb` 1.6s, `GFa&GFb` 0.7s — none ever finished
+  before. Also fixed: `_dashed_change_strong`'s bare `except Exception`
+  narrowed (it swallowed real TypeErrors + probe alarms); GAP RNG seeded in
+  the generated script (AsHolonomyCoords picks a RandomChain — runs are now
+  reproducible).
 
 ## Semantic validation state (trace_fin_semantics grounding)
 
@@ -94,8 +109,16 @@ subterms, compositional checking, word sampling).
 
 ## Survey snapshot (2026-06-11, post true-cascade extraction)
 
-- Spot-checked end-to-end equiv on the new pipeline: `Fa`, `GFa`, `a U b`,
-  `Fa | Gb` **True**; audit gate CLEAN.
+- Full 30-formula ladder (post true-cascade): **21 equiv=True**, including
+  the 3L flips `Xa`, `a & Xa`, `a | Xb`, `G(a->Xa)`; **zero equiv=FALSE**
+  anywhere. The 3 `err` cases (`G(a->Xb)`, `Ga|Gb`, `F(a&Xb)`) are the Spot
+  32-acc-set limit, all grounded NO CONTRADICTION. Post memo round (spot
+  checks): `GFa`, `a U b`, `Xa` stay True with unsimplified output; audit
+  CLEAN; groundings unchanged.
+- Former construction exploders `(a U b)|Gc`, `FGa|FGb`, `GFa&GFb` now build
+  (probe_memo_stats); `(a U b)|Gc` end-to-end reconstruct still exceeds 30s
+  in the FINAL FLAT-STRING serialization (the string API contract is the
+  bottleneck — P0-verify track, not reach recursion, not Spot).
 - **`Ga | Gb`: FIXED semantically** (zero grounding contradictions; true
   sizes [4,3], 5 closure configs). End-to-end equiv unverifiable by
   translation (32-acc-set fast error) pending P0-verify.
@@ -121,3 +144,6 @@ subterms, compositional checking, word sampling).
 - `kr/testing/measure_formula_dag.py` — DAG vs string size of the assembled
   formula (unique nodes, unfolded tree, distinct temporal subformulas, build
   time); `--out` dumps the flat formula.
+- `kr/testing/probe_memo_stats.py` — memo profiler: distinct subproblems vs
+  raw calls (lru hits/misses), helper-memo size, alarm + watchdog stack dump
+  (names the native call when stuck in C++).
