@@ -16,7 +16,7 @@ Factual snapshot of the current state. History lives in `git log`; work items in
   oracle, exact under sbacc; `KR_MULLER_SCC_LIMIT=12` gate, logged whole-SCC fallback).
 - Stability: `bdd_utils` buddy-var precompute + per-case subprocess isolation in tests.
 
-## Operators — now LITERAL paper forms (semantically validated; size blowup open)
+## Operators — LITERAL paper forms, spot.formula objects end-to-end
 
 All five formulas are now the literal constructions of paper Sec 4.2 /
 construction-ref §7 (the former from-S / first-step approximations are gone):
@@ -35,6 +35,14 @@ construction-ref §7 (the former from-S / first-step approximations are gone):
   no free-reach, wreach avoids); the s≠t early-false was removed (wrong for
   weak: degrades to "never blocked"). Case dispatches compare FULL configs.
 - `fin_c` per Lemma 7 with working ι==C postponement.
+- **No string round-trips (P0-perf step 1 done):** all operators + fin_c accept
+  and return hash-consed `spot.formula` objects (str still accepted at entry
+  for probes); one shared `spot.tl_simplifier` (persistent cache) does at most
+  one simplify per operator return; `_str_f` is a pure stringifier; assembly
+  in `reconstruct_ltl_paper_style` builds formula objects (fin_c computed once
+  per config, reused across Muller terms) and stringifies only the final
+  result. The `PAPER_STYLE_TOO_LARGE` sentinel guard is gone — the real
+  formula is always returned; callers run equiv checks under timeouts.
 
 ## Semantic validation state (trace_fin_semantics grounding)
 
@@ -43,20 +51,28 @@ construction-ref §7 (the former from-S / first-step approximations are gone):
   r_with, fin, !fin) for every config is language-equivalent to ground truth.
   This was the first 2L target; the level recursion is now semantically right.
 
-## Open problem: formula SIZE blowup (not non-termination)
+## Open problem: equiv-checking large outputs (size = serialization artifact)
 
-Construction terminates (Fa: 24 reach calls, unchanged), but G(a->Xb)'s
-assembled formula is ~3.2 MB (PAPER_MAX_LTL_SIZE). Spot translation of such
-formulas (for equiv checks in audit/survey) is what stalls — use 10s timeouts
-and treat TIMEOUT as a status. Root cause: operators round-trip STRINGS between
-every call (`_str_f` → parse → simplify), so there is no DAG sharing — each
-avoid conjunct physically copies the full nested tail σ∧Xτ, and `_str_f`
-re-simplifies on every conversion. Fix plan in TODO P0-perf.
+Measured after the object rewrite (`kr/testing/measure_formula_dag.py`):
+G(a->Xb) builds in **0.08s**; the formula is **781 unique DAG nodes** but
+unfolds to 1.26M tree nodes / **3.2MB string** (sharing factor ~1600x) — the
+blowup was always the *flat rendering*, never the construction. The remaining
+blocker is verification: the formula has **126 distinct temporal subformulas**,
+and Spot's tableau translation wants one acceptance set each → hard error
+"Too many acceptance sets used. The limit is 32" (fast fail, not a stall).
+Options (TODO P0-verify): shrink distinct temporal subterms (vacuous-conjunct
+pruning, equivalence-based interning), compositional checking (trace_fin
+already grounds every sub-term), or word-sampling validation.
 
-## Survey snapshot (pre-rewrite; re-run after the size fix)
+## Survey snapshot (2026-06-11, post object rewrite)
 
-1L cases all True; 2L ladder was failing for the now-fixed reasons; expect
-G(a->Xb) (and likely others) to flip once equiv checks can run.
+- 1L regressions hold: `Fa`, `GFa` True.
+- 2L now passing equiv end-to-end: `a U b`, `Fa | Gb`, `Fa & Gb`, `Ga | Fb`.
+- `G(a -> X b)`: semantically grounded OK (all sub-terms), but equiv check
+  infeasible (32-acc-set limit above).
+- `F(a & X b)`: TIMEOUT >45s (not yet diagnosed: construction vs translate).
+- **`Ga | Gb`: equiv=FALSE** — new minimal failing case (safety, sizes=[1,4],
+  trivial top level). Next semantic target.
 
 ## Tooling for targeted work
 
@@ -66,3 +82,6 @@ G(a->Xb) (and likely others) to flip once equiv checks can run.
 - `kr/testing/ltl_diff.py` — containment direction + witness words.
 - `kr/testing/test_kr_r4_audit.py` — structural checklist + drift grounding
   (gate for operator commits).
+- `kr/testing/measure_formula_dag.py` — DAG vs string size of the assembled
+  formula (unique nodes, unfolded tree, distinct temporal subformulas, build
+  time).
