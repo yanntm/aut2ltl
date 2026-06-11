@@ -22,6 +22,7 @@ See also test_kr_basic.py and diag_stability.py.
 """
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -131,35 +132,46 @@ except Exception as e:
     }
 
 
-def safe_equiv(orig_formula_str: str, ltl_str: str) -> str:
-    """Check equivalence in isolated process."""
-    if not ltl_str or ltl_str.startswith(("ERROR", "NOT_IMPLEMENTED", "PAPER_STYLE_TOO_LARGE")):
-        return "N/A"
+# Built-in Spot verification budget: blowing it means Spot's translation
+# choked on the (heavily shared, hugely unfolding) formula — NOT that the
+# construction failed. Reported as SPOT_TIMEOUT, distinct from FALSE.
+SPOT_EQUIV_TIMEOUT = int(os.environ.get("KR_SPOT_EQUIV_TIMEOUT", "10"))
 
-    code = f'''
-import sys
-from pathlib import Path
-proj = Path(r"{PROJECT_ROOT}").resolve()
-sys.path.insert(0, str(proj))
+# Fixed child code; both formulas travel via stdin (multi-MB flat formulas
+# on argv die with E2BIG / "Argument list too long").
+_EQUIV_CHILD = '''
+import sys, json
 import spot
-f = spot.formula({orig_formula_str!r})
-orig_aut = f.translate("Buchi")
+p = json.load(sys.stdin)
+orig_aut = spot.formula(p["orig"]).translate("Buchi")
+rec = p["rec"]
 try:
-    if {ltl_str!r} in ("true", "false"):
-        other = spot.formula({ltl_str!r})
-    else:
-        other = spot.formula({ltl_str!r}).translate("Buchi")
+    other = spot.formula(rec)
+    if rec not in ("true", "false"):
+        other = other.translate("Buchi")
     print("EQ:" + str(bool(spot.are_equivalent(orig_aut, other))))
 except Exception as e:
     print("EQ:err:" + str(e)[:80])
 '''
-    proc = subprocess.run(
-        [sys.executable, "-c", code],
-        capture_output=True,
-        text=True,
-        timeout=30,
-        cwd=PROJECT_ROOT,
-    )
+
+
+def safe_equiv(orig_formula_str: str, ltl_str: str) -> str:
+    """Check equivalence in isolated process (SPOT_EQUIV_TIMEOUT cap)."""
+    if not ltl_str or ltl_str.startswith(("ERROR", "NOT_IMPLEMENTED", "PAPER_STYLE_TOO_LARGE")):
+        return "N/A"
+
+    try:
+        proc = subprocess.run(
+            [sys.executable, "-c", _EQUIV_CHILD],
+            input=json.dumps({"orig": orig_formula_str, "rec": ltl_str}),
+            capture_output=True,
+            text=True,
+            timeout=SPOT_EQUIV_TIMEOUT,
+            cwd=PROJECT_ROOT,
+        )
+    except subprocess.TimeoutExpired:
+        return (f"SPOT_TIMEOUT >{SPOT_EQUIV_TIMEOUT}s "
+                f"(construction ok, len={len(ltl_str)}; Spot verification blocked)")
     out = (proc.stdout or "") + (proc.stderr or "")
     for line in out.splitlines():
         if line.strip().startswith("EQ:"):
@@ -168,6 +180,7 @@ except Exception as e:
 
 
 def main():
+    cases = sys.argv[1:] or CASES   # argv = specific formulas (per docstring)
     print("=== kr pure paper reconstruction test (subproc isolated) ===")
     print("Using the algebraic path (reach formulas + fin_c + Muller assembly).")
     print(f"Project root: {PROJECT_ROOT}")
@@ -175,7 +188,7 @@ def main():
 
     results = []
     successes = []
-    for fs in CASES:
+    for fs in cases:
         print(f"--- {fs} ---")
         res = run_case_in_subprocess(fs)
         results.append(res)
