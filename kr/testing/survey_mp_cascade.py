@@ -74,7 +74,9 @@ CANDIDATES = [
     # bottom / safety
     "true", "false", "a",
     "Ga", "G(a | b)", "G(a -> X b)", "a & X a", "G(a -> X a)", "G(a & X a)",
-    "X a", "X X a",
+    # depth ladder: each X adds a cascade level (Xa=3L, XXa=4L, XXXa=5L) —
+    # simple cases probing deep cascades now that the 3L dev guard is gone
+    "X a", "X X a", "X X X a", "X(a & X a)",
     # guarantee (co-safety)
     "Fa", "a U b", "F(a & b)", "F(a & X b)", "a | X b",
     # obligation (boolean comb. of safety+guarantee)
