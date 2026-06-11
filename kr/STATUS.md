@@ -29,11 +29,10 @@ Both 1L and multi use the generalized operators. TRACE + counters + memo keep co
 
 ## Current behavior (after parity min-even det complete sbacc norm)
 
-- 1L (Fa, Ga, constants, some compounds after Spot norm) often recover simple equivalent LTL (Ga, Fa, true/false).
-- 2L "a" now roundtrips (equiv True).
-- A survey tool (`kr/testing/survey_mp_cascade.py`) maps small formulas by Manna-Pnueli class x cascade depth; current ladder of failing 2L cases (weakest first): G(a->Xb), Ga|Gb (safety); a U b, F(a & Xb) (guarantee); Fa|Gb, Fa&Gb, Ga|Fb (obligation).
-- 1L recurrence/persistence (GFa, FGa, G(a->Fb), ...) produce real formulas post-sbacc but equiv False: the good-Muller-set computation only emits whole SCCs, never strongly-connected proper subsets (for GFa, M={(1,)} realized by a^w is missing). This is a P0 assembly bug, distinct from the R4 formula work.
-- 3L (Xa) and other deep cases produce formulas (often large DNF-ish) via the 5 formulas + Fin DNF; equiv frequently False.
+- **ALL 1-level survey cases roundtrip equiv True**: constants, Fa, Ga, G(a|b), G(a&Xa), F(a&b), and now all recurrence (GFa, G(a->Fb), G(a|Fb)) and persistence (FGa, F(a&Gb)) after the dashed s==t + line(3) fix. R4 audit fully CLEAN including the G(p|Fq) canary equiv PASS.
+- 2L "a" roundtrips (equiv True).
+- A survey tool (`kr/testing/survey_mp_cascade.py`) maps small formulas by Manna-Pnueli class x cascade depth; remaining failures are all multi-level. Ladder (weakest first): G(a->Xb), Ga|Gb (safety); a U b, F(a & Xb) (guarantee); Fa|Gb, Fa&Gb, Ga|Fb (obligation); then 3L cases (Xa, a&Xa, GFa&GFb, FGa|FGb, ...).
+- Semantic grounding tool `kr/testing/trace_fin_semantics.py` validates every fin_c sub-term (r_to, r_gt0, r_with, fin, !fin) per config against ground-truth automata built from D's semiautomaton (i.o./visited-once/seen-bit constructions), with containment direction + witness words via `kr/testing/ltl_diff.py`.
 - All core CASES in `kr/testing/` terminate with finite LTL and small call counts under the guards. Subproc isolation + bdd_utils = no segvs.
 - `KR_TRACE=1` shows the exact inductive steps.
 
@@ -41,7 +40,8 @@ See `kr/testing/test_kr_*` output and the paper for expected size.
 
 ## Gaps (for full general + precision)
 
-- **Muller subset lift: DONE.** `compute_good_muller_sets` now enumerates strongly-connected accepting *subsets* of non-rejecting SCCs of the pruned config aut via `_accepting_sc_subsets` (acc().accepting(union of in-M edge marks) oracle, sound under sbacc; KR_MULLER_SCC_LIMIT=12 gate with logged whole-SCC truncation). GFa good_ms now correctly [{(1,)}, {(1,),(2,)}] and its !fin((2,)) term is exactly GF!a. Remaining GFa failure isolated to !fin((1,)) = the Fin(C) construction for the transients iota==C case (one-shot release instead of recurrence; separating word !a a !a^w) -- this is the R4/Rws0 postponement logic, making GFa the minimal R4 canary.
+- **Muller subset lift: DONE.** `compute_good_muller_sets` now enumerates strongly-connected accepting *subsets* of non-rejecting SCCs of the pruned config aut via `_accepting_sc_subsets` (acc().accepting(union of in-M edge marks) oracle, sound under sbacc; KR_MULLER_SCC_LIMIT=12 gate with logged whole-SCC truncation).
+- **Dashed s==t + line(3): DONE (was the GFa/recurrence blocker).** Checked against the actual paper (pp. 11-13, freshly extracted to paper/Automata2LTL.txt): Formula 5 has NO s != t requirement (Table 1 semantics: exists leave position + exists enter position -- satisfiable with s == t as leave-and-return; Enter(q) ⊆ Stay(q) keeps dashed disjoint from solid via line(3)). The reference.md sketch's `if s == t: return F_false` is a REFERENCE ERROR (like the earlier R4 ones). Fixed `_dashed_change_strong`: removed the guard, added `_enter_letters_at_level` (genuine reset-to-t letters, distinguishing resets from identity/stay when the layer already equals t), and added the previously-missing line(3) (solid-stay reach to the Leave letter; it does NOT force an immediate change). Also fixed `compute_enters_to_from`-style level handling locally (S[level] vs top_of). Known remaining divergence (later increment): line(2) iterates Enter(t) instead of Enter(b) and lacks the paper's parameterized-bad reach shape; from-S lower-context approximation at deeper levels.
 - Polish of the 5 formulas (exact conj/negations for leave/bad, entry logic, >0 cases per paper Table 1 / Sec 4.2) so more multi-level cases are correct and equivalent. (P0 focus on R4/Rws0 structural per reference notes: Line(2), no free-reach, case 4 precedence, R5 swap.) Targeted via the survey ladder (weakest MP classes first).
 - Trivial (size-1) level collapse (to reduce effective depth).
 - Inside-construction guard simplification (beyond post-simp).
