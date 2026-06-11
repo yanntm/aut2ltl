@@ -18,12 +18,55 @@ Subprocess isolation per formula (Spot/buddy stability). Run from root:
 """
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
+
+# Phase budgets (separate, so a slow case tells us WHICH phase blocked):
+# construction (GAP decompose + formula build) vs Spot equiv verification.
+# Spot translation chokes on our heavily-shared formulas (the flat unfolding
+# has 100+ distinct temporal subformulas -> >32 acceptance sets); a blown
+# equiv budget is reported as equiv=SPOT_TIMEOUT, NOT as a case failure.
+CONSTRUCT_TIMEOUT = int(os.environ.get("KR_CONSTRUCT_TIMEOUT", "30"))
+SPOT_EQUIV_TIMEOUT = int(os.environ.get("KR_SPOT_EQUIV_TIMEOUT", "10"))
+
+# Fixed child for the equiv phase; formulas travel via stdin (a 5MB flat
+# formula on argv dies with E2BIG, and embedding it in code is as bad).
+_EQUIV_CHILD = '''
+import sys, json
+import spot
+p = json.load(sys.stdin)
+orig_aut = spot.formula(p["orig"]).translate("Buchi")
+rec = p["rec"]
+other = spot.formula(rec)
+if rec not in ("true", "false"):
+    other = other.translate("Buchi")
+print("EQ:" + str(bool(spot.are_equivalent(orig_aut, other))))
+'''
+
+
+def spot_equiv(orig: str, rec: str):
+    """True/False, or "SPOT_TIMEOUT" / "err:..." (verification blocked —
+    distinct from a semantic FALSE; the construction already succeeded)."""
+    try:
+        proc = subprocess.run(
+            [sys.executable, "-c", _EQUIV_CHILD],
+            input=json.dumps({"orig": orig, "rec": rec}),
+            capture_output=True, text=True,
+            timeout=SPOT_EQUIV_TIMEOUT, cwd=PROJECT_ROOT,
+        )
+    except subprocess.TimeoutExpired:
+        return "SPOT_TIMEOUT"
+    for line in (proc.stdout or "").splitlines():
+        if line.startswith("EQ:"):
+            return line[3:] == "True"
+    errtxt = (proc.stderr or proc.stdout or "no output").strip()
+    first = next((l.strip() for l in errtxt.splitlines() if l.strip()), "no output")
+    return "err:" + first[:100]
 
 # Small candidates spanning the Manna-Pnueli hierarchy. Kept tiny (1-2 APs,
 # small automata) so cascades stay tractable and failures are debuggable.
@@ -46,8 +89,11 @@ CANDIDATES = [
 ]
 
 
-def survey_one(formula_str: str, timeout: int = 45) -> dict:
-    """Classify + decompose + reconstruct + equiv in a fresh process."""
+def survey_one(formula_str: str, timeout: int = CONSTRUCT_TIMEOUT) -> dict:
+    """Classify + decompose + reconstruct in a fresh process (construction
+    phase only); the Spot equiv check runs in a SECOND subprocess with its
+    own SPOT_EQUIV_TIMEOUT so blocked-verification is distinguishable from
+    blocked-construction."""
     child_code = f'''
 import sys, json, traceback
 from pathlib import Path
@@ -68,18 +114,7 @@ try:
     info["level_sizes"] = [lv.size for lv in casc.levels]
     info["states"] = casc.num_states
     info["configs"] = len(casc.all_configs())
-    rec = reconstruct_ltl_1level_buchi(casc)
-    info["recovered"] = rec
-    if rec and not rec.startswith(("ERROR", "NOT_IMPLEMENTED", "PAPER_STYLE_TOO_LARGE")):
-        orig_aut = f.translate("Buchi")
-        other = spot.formula(rec)
-        other_aut = other if rec in ("true", "false") else other.translate("Buchi")
-        if rec in ("true", "false"):
-            info["equiv"] = bool(spot.are_equivalent(orig_aut, spot.formula(rec)))
-        else:
-            info["equiv"] = bool(spot.are_equivalent(orig_aut, other_aut))
-    else:
-        info["equiv"] = None
+    info["recovered"] = reconstruct_ltl_1level_buchi(casc)
 except Exception as e:
     info["error"] = str(e)[:200]
     info["tb"] = traceback.format_exc()[-300:]
@@ -91,15 +126,25 @@ print("RESULT_JSON:" + json.dumps(info))
             capture_output=True, text=True, timeout=timeout, cwd=PROJECT_ROOT,
         )
     except subprocess.TimeoutExpired:
-        return {"formula": formula_str, "error": f"TIMEOUT >{timeout}s"}
+        return {"formula": formula_str, "error": f"CONSTRUCT_TIMEOUT >{timeout}s"}
     out = (proc.stdout or "") + (proc.stderr or "")
+    res = None
     for line in out.splitlines():
         line = line.strip()
         if line.startswith("RESULT_JSON:"):
-            return json.loads(line[len("RESULT_JSON:"):])
-    if proc.returncode == 139:
-        return {"formula": formula_str, "error": "SEGV (rc 139)"}
-    return {"formula": formula_str, "error": "no marker", "head": out[:300]}
+            res = json.loads(line[len("RESULT_JSON:"):])
+            break
+    if res is None:
+        if proc.returncode == 139:
+            return {"formula": formula_str, "error": "SEGV (rc 139)"}
+        return {"formula": formula_str, "error": "no marker", "head": out[:300]}
+
+    rec = res.get("recovered")
+    if "error" not in res and rec and not rec.startswith(("ERROR", "NOT_IMPLEMENTED")):
+        res["equiv"] = spot_equiv(formula_str, rec)
+    else:
+        res["equiv"] = None
+    return res
 
 
 # Weakest-first display order for mp_class letters.
@@ -122,7 +167,7 @@ def main():
             print(f"  {fs:24s}  ERROR: {res['error']}")
         else:
             eq = res.get("equiv")
-            eqs = {True: "True ", False: "FALSE", None: "n/a  "}[eq]
+            eqs = {True: "True ", False: "FALSE", None: "n/a  "}.get(eq, str(eq)[:18])
             rec = (res.get("recovered") or "")[:48]
             print(f"  {fs:24s}  mp={res['mp']}({MP_NAME.get(res['mp'],'?'):11s}) "
                   f"L={res['levels']} sizes={res['level_sizes']} "
@@ -138,7 +183,8 @@ def main():
             cur = r["mp"]
             print(f"\n-- {MP_NAME.get(cur, cur)} ({cur}) --")
         mark = "**" if r["levels"] == 2 else "  "
-        eq = {True: "equiv=True", False: "equiv=FALSE", None: "equiv=n/a"}[r.get("equiv")]
+        eq = {True: "equiv=True", False: "equiv=FALSE",
+              None: "equiv=n/a"}.get(r.get("equiv"), f"equiv={r.get('equiv')}")
         print(f" {mark} L={r['levels']} sizes={r['level_sizes']} {eq:12s} {r['formula']}")
 
     two_l = [r for r in ok if r["levels"] == 2]
