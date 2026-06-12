@@ -110,7 +110,7 @@ from kr.ltl_builders import (
     normalize_ltl,
     _normalize_ltl,
     _tt, _ff, _ap, _And, _Or, _Not, _X, _U,
-    _to_f, _letters_to_f, _str_f, _short_f, _simp_f,
+    _to_f, _letters_to_f, _str_f, _short_f, _simp_f, _fuse_or,
 )
 
 # Fin(C) (Lemma 7) lives in kr/fin.py (one-way dependency: fin imports this
@@ -314,6 +314,42 @@ def _combined_letters_at_level(casc: "Cascade", level: int) -> List[Tuple[int, T
     return out
 
 
+# Letter fusion (dag_folding.md counter-measure B): at every enumeration
+# site the summand reads the letter ONLY through its guard, so letters with
+# an equal group key are fused into one summand whose guard is the
+# Minato-minimized OR. KR_FUSE_LETTERS=0 restores the per-letter literal
+# paper shape (grounding comparisons).
+_FUSE_LETTERS = os.getenv("KR_FUSE_LETTERS", "1").lower() not in ("0", "false", "no", "off")
+
+
+def _fuse_letters(
+    triples: List[Tuple[int, Tuple[int, ...], Tuple[int, ...]]],
+    casc: "Cascade",
+    level: int,
+    with_arr: bool = False,
+) -> List[Tuple["spot.formula", Tuple[int, ...], Tuple[int, ...]]]:
+    """Group (li, pre, arr) triples whose summand is identical up to the
+    guard. Key = the _dedupe key minus li (pre suffix; + arr when the
+    summand reads the arrival — enter_t/enter_b). Returns
+    [(fused_guard, pre, arr)] with the first triple of each group as the
+    structural representative (same convention as _dedupe). Soundness:
+    dag_folding.md "Letter fusion"."""
+    groups: dict = {}
+    for li, pre, arr in triples:
+        g_f = _letters_to_f(casc.letter_valuations[li], casc.aps)
+        if g_f.is_ff():
+            continue
+        key: tuple = (pre[level + 1:], arr) if with_arr else pre[level + 1:]
+        if not _FUSE_LETTERS:
+            key = (li, key)
+        ent = groups.get(key)
+        if ent is None:
+            groups[key] = ([g_f], pre, arr)
+        else:
+            ent[0].append(g_f)
+    return [(_fuse_or(gs), pre, arr) for (gs, pre, arr) in groups.values()]
+
+
 @_memo_reach_helper("ss0")
 def _stay_gt0_strong(
     S: Tuple[int, ...], B: Optional[Tuple[int, ...]], beta: "str | spot.formula", T: Tuple[int, ...], tau: "str | spot.formula", casc: "Cascade", level: int = 0
@@ -368,26 +404,23 @@ def _stay_gt0_strong(
     _trace(f"    _stay_gt0_strong level={level}: #stay={len(stay_s)} #leave={len(leave_s)} "
            f"#last_steps={len(last_steps)} #bad_pre={len(bad_pre)}")
 
+    # Letter fusion: one summand per outcome class, guards OR-ed (the
+    # avoid groups fuse by pre-config only — their summand never reads arr).
+    last_fused = _fuse_letters(last_steps, casc, level)
+    leave_fused = _fuse_letters(leave_s, casc, level)
+    bad_fused = _fuse_letters(bad_pre, casc, level)
+
     disjs_f: List[spot.formula] = []
-    for li, pre, arr in last_steps:
-        g_f = _letters_to_f(casc.letter_valuations[li], casc.aps)
-        if g_f.is_ff():
-            continue
+    for g_f, pre, arr in last_fused:
         tail_f = _simp_f(_And(g_f, _X(tau_f)))
         conj_f: List[spot.formula] = []
         # free reach of the pre-target T' (bad never triggers: beta=false)
         conj_f.append(reach_strong(S, None, _ff(), pre, tail_f, casc, level + 1))
         # Leave-avoid conjuncts
-        for lj, preL, arrL in leave_s:
-            eta_f = _letters_to_f(casc.letter_valuations[lj], casc.aps)
-            if eta_f.is_ff():
-                continue
+        for eta_f, preL, arrL in leave_fused:
             conj_f.append(reach_strong(S, preL, eta_f, pre, tail_f, casc, level + 1))
         # bad-predecessor conjuncts
-        for lk, preB, arrB in bad_pre:
-            rho_f = _letters_to_f(casc.letter_valuations[lk], casc.aps)
-            if rho_f.is_ff():
-                continue
+        for rho_f, preB, arrB in bad_fused:
             rb_f = _simp_f(_And(rho_f, _X(beta_f)))
             conj_f.append(reach_strong(S, preB, rb_f, pre, tail_f, casc, level + 1))
         disjs_f.append(_And(*conj_f))
@@ -486,27 +519,23 @@ def _stay_gt0_weak(
     _trace(f"    _stay_gt0_weak level={level}: #stay={len(stay_s)} #leave={len(leave_s)} "
            f"#last_steps={len(last_steps)} #bad_pre={len(bad_pre)}")
 
+    # Letter fusion: one summand per outcome class, guards OR-ed.
+    last_fused = _fuse_letters(last_steps, casc, level)
+    leave_fused = _fuse_letters(leave_s, casc, level)
+    bad_fused = _fuse_letters(bad_pre, casc, level)
+
     def _avoid_conjs(target_cfg: Tuple[int, ...], tail_f: "spot.formula") -> List[spot.formula]:
         conjs: List[spot.formula] = []
-        for lj, preL, arrL in leave_s:
-            eta_f = _letters_to_f(casc.letter_valuations[lj], casc.aps)
-            if eta_f.is_ff():
-                continue
+        for eta_f, preL, arrL in leave_fused:
             conjs.append(reach_weak(S, preL, eta_f, target_cfg, tail_f, casc, level + 1))
-        for lk, preB, arrB in bad_pre:
-            rho_f = _letters_to_f(casc.letter_valuations[lk], casc.aps)
-            if rho_f.is_ff():
-                continue
+        for rho_f, preB, arrB in bad_fused:
             rb_f = _simp_f(_And(rho_f, _X(beta_f)))
             conjs.append(reach_weak(S, preB, rb_f, target_cfg, tail_f, casc, level + 1))
         return conjs
 
     # line (1)
     line1_disjs_f: List[spot.formula] = []
-    for li, pre, arr in last_steps:
-        g_f = _letters_to_f(casc.letter_valuations[li], casc.aps)
-        if g_f.is_ff():
-            continue
+    for g_f, pre, arr in last_fused:
         tail_f = _simp_f(_And(g_f, _X(tau_f)))
         conjs = _avoid_conjs(pre, tail_f)
         line1_disjs_f.append(_And(*conjs) if conjs else _tt())
@@ -588,11 +617,14 @@ def _dashed_change_strong(
         # t never entered, or s never left: a dashed path is impossible.
         return _ff()
 
+    # Letter fusion: enter groups read the arrival (inner solid/wsolid from
+    # arr), so they fuse on (pre-suffix, arr); line-3 leaves fuse on pre only.
+    enter_t_fused = _fuse_letters(enter_t, casc, level, with_arr=True)
+    enter_b_fused = _fuse_letters(enter_b, casc, level, with_arr=True)
+    leave_fused = _fuse_letters(leave_s, casc, level)
+
     entry_disjs_f: List[spot.formula] = []
-    for li, pre, arr in enter_t:
-        g_f = _letters_to_f(casc.letter_valuations[li], casc.aps)
-        if g_f.is_ff():
-            continue
+    for g_f, pre, arr in enter_t_fused:
         # inner: after entering t at config arr, solid-stay at t to reach ⟨T,t⟩(τ)
         inner_f = _solid_stay_strong(arr, B, beta_f, T, tau_f, casc, level)
         tail_f = _simp_f(_And(g_f, _X(inner_f)))
@@ -603,10 +635,7 @@ def _dashed_change_strong(
         # line (2): same reach, but parameterized-bad on each potential entry into b:
         # never be about to enter b (η firing) with a weak-stay-at-b that reaches
         # ⟨B,b⟩(β) unreleased by ⟨T,t⟩(τ)  — the SWAPPED wsolid call per the paper.
-        for lj, preR, arrR in enter_b:
-            eta_f = _letters_to_f(casc.letter_valuations[lj], casc.aps)
-            if eta_f.is_ff():
-                continue
+        for eta_f, preR, arrR in enter_b_fused:
             # Narrow catch: only the "no valid weak form from this entry"
             # shapes. A bare `except Exception` here swallowed EVERYTHING
             # crossing the recursion — including real TypeErrors (heisenbug
@@ -628,10 +657,7 @@ def _dashed_change_strong(
     # up to the moment a Leave letter fires (target = the leave firing point
     # ⟨L,s⟩; does NOT force an immediate change).
     line3_parts_f: List[spot.formula] = []
-    for lj, preL, arrL in leave_s:
-        lg_f = _letters_to_f(casc.letter_valuations[lj], casc.aps)
-        if lg_f.is_ff():
-            continue
+    for lg_f, preL, arrL in leave_fused:
         tail_f = lg_f
         if B is not None and preL[level:] == B[level:] and not beta_f.is_ff():
             tail_f = _And(lg_f, _Not(beta_f))
