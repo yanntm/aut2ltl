@@ -91,6 +91,19 @@ def _entails_not(ctx, pos: FrozenSet, neg: FrozenSet, x: "spot.formula") -> bool
     return buddy.bdd_and(ctx, bx) == buddy.bddfalse
 
 
+def prop_minimize(f: "spot.formula") -> Optional["spot.formula"]:
+    """Minato-ISOP minimal form of a purely-propositional formula via the
+    BDD round-trip, or None when f isn't propositional / the round-trip
+    fails. Shares the module's process-lifetime bdd_dict."""
+    b = _prop_bdd(f)
+    if b is None:
+        return None
+    try:
+        return spot.bdd_to_formula(b, _bdd_dict)
+    except Exception:
+        return None
+
+
 def now_rewrite(node: "spot.formula", pos: FrozenSet, neg: FrozenSet) -> Optional["spot.formula"]:
     """One shrinking rewrite of a temporal head under the context, or None.
     The result is at the same instant as `node` (same context applies)."""
