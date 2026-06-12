@@ -36,8 +36,16 @@ fold pass → interning). Items below are the actionable queue.
      form) — syntactic, internal, targets the wrapping count directly;
      expected partially subsumed by B (fewer distinct tails by construction).
    - **E. budgeted semantic interning** of small subterms.
-1c. **Own syntactic rewrite pass (PARKED — user has a rule set from another
-   context to contribute; revisit after fusion lands).** Spot's
+1c. **Own syntactic rewrite pass — IN PROGRESS (kr/simplify/, 2026-06-12).**
+   Rule 1 (context pass: sibling-context propagation over the boolean
+   skeleton, identity domination incl. temporal nodes, Shannon at Or,
+   context reset at temporal boundaries) DONE + validated
+   (kr/simplify/testing/test_context_pass.py, 16/16 with per-case Spot
+   equivalence). Next: rule 2 now-evaluation (three-valued, one-step
+   unroll of G/F/U/R heads under boolean context, BDD-backed AP eval);
+   rule 3 partial factoring (the sound form). Then pipeline integration
+   into _simp_f + measurement on the fusion-neutral wall. Background
+   (user rule set, Java lineage): Spot's
    tl_simplifier, even at full strength on 5-node inputs, does NOT do
    present-literal cofactoring or guard factoring: `a & (!a | G(!a|Xa))`
    (≡ Ga) and `(!a & Xa) | (a & Xa)` (≡ Xa) both survive full simplify
