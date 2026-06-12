@@ -154,16 +154,14 @@ def main():
     # 6. Reconstruction
     print("\n=== Calling reconstruct_ltl_1level_buchi(casc) (with KR_TRACE=1 for steps) ===")
     print("(Traces from reach_strong, fin_c, etc. should appear above if enabled)")
-    ltl = reconstruct_ltl_1level_buchi(casc)
-    print("\n=== Recovered LTL:", ltl)
+    ltl = reconstruct_ltl_1level_buchi(casc)   # spot.formula DAG
+    from kr.ltl_builders import _str_f_gated
+    print("\n=== Recovered LTL:", _str_f_gated(ltl))
 
-    # 7. Equiv check
+    # 7. Equiv check (translate straight from the formula object)
     print("\n=== Equivalence check ===")
     orig_b = f.translate("Buchi")
-    if ltl in ("true", "false"):
-        rec_b = spot.formula(ltl)
-    else:
-        rec_b = spot.formula(ltl).translate("Buchi")
+    rec_b = ltl.translate("Buchi")
     eq = spot.are_equivalent(orig_b, rec_b)
     print("are_equivalent(original Buchi, recovered):", eq)
 
