@@ -15,7 +15,7 @@ only in traces (guarded) or by callers via _str_f/simplify_ltl.
 from __future__ import annotations
 from typing import Optional, Tuple
 
-from kr.ltl_builders import _And, _Or, _Not, _X, _ff, _tt, _letters_to_f, _simp_f, _short_f
+from kr.ltl_builders import _And, _Or, _Not, _X, _ff, _tt, _letters_to_f, _simp_f, _short_f, _fuse_or
 import kr.reachability_operators as _ops
 from kr.reachability_operators import reach_strong, _reach_memo, _trace, TRACE_ON
 
@@ -31,18 +31,24 @@ def _uncond_reach_strict(S: Tuple[int, ...], T: Tuple[int, ...], casc: "Cascade"
         res = _ff()
         _reach_memo[key] = res
         return res
-    disjs = []
+    # Letter fusion (dag_folding.md counter-measure B): one disjunct per
+    # arrival config, guard = Minato-minimized OR of the letters landing there.
+    groups: dict = {}
     for li in range(casc.num_letters()):
         try:
             arrived = casc.move_config(S, li)
-            g_f = _letters_to_f(casc.letter_valuations[li], casc.aps)
-            if g_f.is_ff():
-                continue
-            # after this letter, from arrived (0-step ok if arrived==T)
-            sub = reach_strong(arrived, None, _ff(), T, _tt(), casc)
-            disjs.append(_And(g_f, _X(sub)))
         except Exception:
             continue
+        g_f = _letters_to_f(casc.letter_valuations[li], casc.aps)
+        if g_f.is_ff():
+            continue
+        key = arrived if _ops._FUSE_LETTERS else (li, arrived)
+        groups.setdefault(key, (arrived, []))[1].append(g_f)
+    disjs = []
+    for arrived, gs in groups.values():
+        # after this letter class, from arrived (0-step ok if arrived==T)
+        sub = reach_strong(arrived, None, _ff(), T, _tt(), casc)
+        disjs.append(_And(_fuse_or(gs), _X(sub)))
     res = _simp_f(_Or(*disjs)) if disjs else _ff()
     _reach_memo[key] = res
     return res
