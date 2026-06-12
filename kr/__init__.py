@@ -24,6 +24,7 @@ from .extract import extract_generators, ExtractionError, is_deterministic
 from .reachability import (
     reconstruct_ltl_1level_buchi,
     reconstruct_ltl_paper_style,
+    reconstruct_ltl_str,
     simplify_ltl,
     normalize_ltl,
     reach_strong,
@@ -47,6 +48,7 @@ __all__ = [
     "is_deterministic",
     "reconstruct_ltl_1level_buchi",
     "reconstruct_ltl_paper_style",
+    "reconstruct_ltl_str",
     "simplify_ltl",
     "normalize_ltl",
     "reach_strong",
