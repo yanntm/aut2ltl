@@ -54,12 +54,17 @@ fold pass → interning). Items below are the actionable queue.
    Formula-5 subsumption; the census-reducing realization of the
    "eventuality-aware rewriting" item: F(a&Xa) census 55→33, G(a->Xb)
    flipped survey True; numbers in STATUS). Refinement queue:
-   - **eventuality census, remaining**: F(a&Xb) still 87 distinct
-     temporals (cap 32). The residual is the one-step-SHIFTED ladder
-     variants (X(c|X(cRd)) | G(c|X(c|Xd))), proven NOT pairwise
-     redundant (witness `!a; a; cycle{!a}`) — killing them needs either
-     context-aware subsumption (the bare-c disjunct often lives one Or
-     level up) or interning (item E).
+   ~~Context-aware subsumption~~ **DONE 2026-06-13** (initial-state
+   opening + ctx_subsume; F(a&Xa) UNDER the 32-acc cap, census 26;
+   numbers in STATUS). Remaining:
+   - **eventuality census, remaining**: F(a&Xb) still 74 distinct
+     temporals (cap 32). Next: deeper-shifted ladder forms (only the
+     one-step shift is matched), and the multi-AP variants.
+   - **opening flow direction**: one-way (earlier→later in canonical
+     child order) misses openings whose source sorts after the target;
+     alternating the direction across the pipeline's repeated context
+     passes is sound (each pass a fixed direction) and would double
+     coverage — needs the direction in the context-pass memo key.
    - giant nodes are skipped by the cap, so the X(a&Xa)/reactivity wall
      is barely moved — needs either O(n) factoring on big Ors or the
      C/D/E fold candidates. NB the cap measures UNFOLDED tree size; with
