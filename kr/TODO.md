@@ -107,10 +107,14 @@ fold pass → interning). Items below are the actionable queue.
 
 ## P1 — coverage
 
-- Full acceptance dispatch per construction-ref §9.3 (looping-Büchi/coBüchi
-  direct Σ₁/Π₁ forms, Büchi/coBüchi Π₂/Σ₂ forms, weak Δ₁ end_in(G)) instead of
-  always going through the Muller DNF; keeps outputs in the matching
-  hierarchy class.
+- **Full acceptance dispatch per construction-ref §9.3 — NOW EVIDENCE-BACKED
+  as the structural fix for the census wall (probe_muller_overlap,
+  2026-06-13, numbers in STATUS):** the Fin(C)/¬Fin terms carry ~100 of
+  G(p->(qUr))'s 84-census while the reach part (~25 census) already
+  contains a conjunct literally equivalent to the target body. Direct
+  Σ₁/Π₁ (looping), Π₂/Σ₂ (Büchi/coBüchi), Δ₁ (weak end_in(G)) forms
+  replace the Fin web for the matching input classes and keep outputs in
+  the right hierarchy class. Candidate next major iteration.
 - π-preimage exactness in the non-primary paths: `accepting_configs` and the
   config_graph fallbacks still map states through the lift only (the primary
   pruned-config-aut path is already correct via `state_of` = π). With covers
