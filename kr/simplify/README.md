@@ -20,6 +20,7 @@ Nets", PetriNets 2018).
 | 1. Context pass | `context_pass.py` | DONE | `a & (!a \| G(!a\|Xa))` → `a & G(!a\|Xa)`; `a \| (a&b)` → `a` |
 | 2. Now-evaluation | `now_eval.py` | DONE | `a & G(!a)` → `0`; `a & (!a U b)` → `a & b`; `b & (b R c)` → `b & c` |
 | 3. Partial factoring | `factor_pass.py` | DONE | `(a&Xb) \| (a&Xc) \| Xd` → `(a&(Xb\|Xc)) \| Xd`; `(a&b) \| (a&!b)` → `a` |
+| 4. Unroll-inverse folding | `fold_pass.py` | DONE | `a \| F(!a&Xa)` → `Fa`; `a & G(!a\|Xa)` → `Ga`; `b \| (a & X(aUb))` → `aUb`; S1/S2 subsumption |
 
 ### Rule 2 — now-evaluation (`now_rewrite`, hooked into the context pass)
 
@@ -47,10 +48,30 @@ disjunct count; the grouped inner Or is factored recursively. Purely
 propositional Or nodes (and factored guard groups) go through the
 BDD → Minato-ISOP round-trip, accepted only when not larger.
 
+### Rule 4 — unroll-inverse folding (`fold_simplify`)
+
+The kr/ construction emits temporal obligations in locally-unrolled form;
+Spot never folds them back. Eight pair-folds (the expansion laws backwards,
+valid for arbitrary subformulas): `c | XFc → Fc`, `c & XGc → Gc`,
+`g | (f & X(f U g)) → f U g` (same for W; duals for R/M), and the
+first-occurrence/induction forms `c | F(¬c & Xc) → Fc`,
+`c & G(¬c | Xc) → Gc` (¬c matched two-tier: hash-consed `Not(c)` identity,
+then BDD complement). Plus two sibling-subsumption rules (the Formula-5
+line redundancy): `c | X(c R d) | G(c | Xd) → c | X(c R d)` and the dual
+`c & X(c U d) & F(c & Xd) → c & X(c U d)` — soundness proofs in the module
+docstring; the M/W variants are unsound and excluded (regression-tested).
+Every rule shrinks the tree AND removes a distinct temporal subformula
+(the Couvreur acc-set driver), so folding is the canonical orientation;
+now-evaluation only returns constants/arms, so the passes cannot
+ping-pong. The one-step-SHIFTED variants (`X(c | X(c R d)) | G(...)`,
+the per-level X-ladder wrapping) are NOT redundant — witness
+`!a; a; cycle{!a}` — and are deliberately not matched.
+
 The combined entry `kr.simplify.simplify(f)` = context pass (+ now hook)
-→ factoring → one more context pass when factoring changed something.
-Closing rules like `XF!a | XFa → 1` (F-merge) are deliberately left to
-Spot's simplifier downstream of this package.
+→ folding → factoring → after a pass that changed something, one more
+context pass (and one more fold after factoring — factoring can expose
+fold partners). Closing rules like `XF!a | XFa → 1` (F-merge) are
+deliberately left to Spot's simplifier downstream of this package.
 
 ### Rule 1 — context pass (`context_simplify`)
 
@@ -92,8 +113,9 @@ f = spot.formula("a & (!a | G(!a | Xa))")
 print(context_simplify(f))   # a & G(!a | Xa)
 ```
 
-Not yet wired into the kr/ construction pipeline (`_simp_f`); that
-integration is a separate, measured step (TODO 1c).
+Wired into the kr/ construction pipeline since 2026-06-12: `_simp_f` calls
+`simplify_node` per DAG node (KR_SIMP_OWN, size cap KR_SIMP_OWN_LIMIT);
+KR_SIMP_OWN_FOLD=0 / KR_SIMP_OWN_FACTOR=0 disable rules 4 / 3.
 
 ## Testing (`kr/simplify/testing/`)
 
