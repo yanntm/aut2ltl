@@ -63,9 +63,21 @@ docstring; the M/W variants are unsound and excluded (regression-tested).
 Every rule shrinks the tree AND removes a distinct temporal subformula
 (the Couvreur acc-set driver), so folding is the canonical orientation;
 now-evaluation only returns constants/arms, so the passes cannot
-ping-pong. The one-step-SHIFTED variants (`X(c | X(c R d)) | G(...)`,
-the per-level X-ladder wrapping) are NOT redundant — witness
-`!a; a; cycle{!a}` — and are deliberately not matched.
+ping-pong.
+
+Two later additions (same module):
+- **G/F absorption**: a conjunct implied by a sibling `Gφ` (the unrolled
+  reading `Gφ ≡ φ ∧ XGφ` as an entailment oracle) is dropped; dually a
+  disjunct implying a sibling `Fφ`. Entailment is a small syntactic
+  recursion (X/F/G bodies, U/M right arms, W/R held arms, And all /
+  Or any — each clause a one-line implication), memoized per node pair.
+- **Context-aware S1/S2** (`ctx_subsume`, hooked into the context pass as
+  `bool_hook`): under a context refuting c, `X(cRd) ∨ G(c∨Xd) → X(cRd)`
+  and the one-step-SHIFTED form `X(c ∨ X(cRd)) ∨ G(c ∨ X(c ∨ Xd))` (the
+  per-level X-ladder wrapping) — without the context these are NOT
+  redundant (witness `!a; a; cycle{!a}`); the initial-state knowledge
+  discharges exactly the missing case. Duals at And under ctx ⊨ c.
+  This is the rule that pushed `F(a&Xa)` under Spot's 32-acc cap.
 
 The combined entry `kr.simplify.simplify(f)` = context pass (+ now hook)
 → folding → factoring → after a pass that changed something, one more
@@ -89,6 +101,18 @@ two context sets of asserted subformulas:
 - the context is **reset at every non-boolean operator**: knowledge about
   "now" never crosses X/U/G/F/R/W/M. Bodies are still visited (with an
   empty context), so nested boolean skeletons simplify everywhere;
+- temporal siblings are **opened** into now-knowledge (initial-state
+  reading): at And, `Gφ` asserts conj(φ) now, `f R g`/`f M g` assert
+  conj(g); at Or (Shannon), `Fφ` refutes disj(φ), `f U g`/`f W g` refute
+  disj(g) (g@0 alone satisfies U/W). Opened facts flow **ONE-WAY** along
+  the canonical child order (earlier → later): two siblings can derive
+  the same fact, and bidirectional opening builds circular support —
+  in `a & b & (a M b)` the opened b erased the sibling b while the M
+  consumed it (fuzz witness `!(b R (Gb & (b M Gb)))` collapsed to 0).
+  One-way flow is sound by sequential replacement: child i is rewritten
+  in the presence of the ORIGINAL siblings before it. The sibling nodes
+  themselves stay bidirectional (support cycles impossible — a node
+  cannot be its own subterm);
 - constants fold through Spot's constructors (`And([x, ff]) ≡ ff` etc.).
 
 Subsumed classics: unit propagation `a & (!a | φ) → a & φ`, both
