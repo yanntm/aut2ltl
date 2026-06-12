@@ -130,11 +130,48 @@ def _tree_size_f(f: "spot.formula") -> int:
     return total
 
 
+# Own rewrite pass (kr/simplify: context propagation, now-evaluation,
+# partial factoring — rules Spot does not have; see kr/simplify/README.md).
+# Runs per node AFTER Spot's pass; persistent memos in kr/simplify make
+# this amortized O(1) per distinct node. KR_SIMP_OWN=0 disables.
+# Size cap (same rationale as the hybrid full/basics policy): factoring and
+# sibling contexts on GIANT top-level nodes cost more than they fold —
+# uncapped, the 3-4L reactivity cases went from seconds to CONSTRUCT_TIMEOUT.
+# Bottom-up construction means small/mid nodes carry the reduction anyway.
+_SIMP_OWN = os.getenv("KR_SIMP_OWN", "1").lower() not in ("0", "false", "no", "off")
+_SIMP_OWN_LIMIT = int(os.getenv("KR_SIMP_OWN_LIMIT", "2000"))
+
+
+_own_dict_shared = False
+
+
+def _own_simp(f: "spot.formula") -> "spot.formula":
+    if not _SIMP_OWN:
+        return f
+    if 0 <= _SIMP_OWN_LIMIT < _tree_size_f(f):
+        return f
+    try:
+        global _guard_bdd_dict, _guard_bdd_owner, _own_dict_shared
+        from kr import simplify as _krs
+        if not _own_dict_shared:
+            # one bdd_dict per process: a second dict next to the fusion
+            # one corrupted the heap in equiv children (F(a&Xb) crash)
+            if _guard_bdd_dict is None:
+                _guard_bdd_dict = spot.make_bdd_dict()
+                _guard_bdd_owner = spot.make_twa_graph(_guard_bdd_dict)
+            _krs.now_eval.use_bdd_dict(_guard_bdd_dict, _guard_bdd_owner)
+            _own_dict_shared = True
+        return _krs.simplify_node(f)
+    except Exception:
+        return f
+
+
 def _simp_f(f: "spot.formula") -> "spot.formula":
     """Normalize a spot.formula for the construction path (no string
     round-trip). Default: per-DAG-node memoized tl_simplifier (see policy
-    note above). With KR_SIMP_NODE=0 falls back to the legacy tree-size
-    policy (_SIMP_TREE_LIMIT)."""
+    note above) followed by the kr/simplify own-rules pass. With
+    KR_SIMP_NODE=0 falls back to the legacy tree-size policy
+    (_SIMP_TREE_LIMIT)."""
     if f is None:
         return _ff()
     if _SIMP_NODE:
@@ -146,6 +183,15 @@ def _simp_f(f: "spot.formula") -> "spot.formula":
             res = _get_tl_simp(_want_full(f)).simplify(f)
         except Exception:
             res = f
+        res2 = _own_simp(res)
+        if res2 is not res and res2 != res:
+            # our rules fired: let Spot close what they exposed (X(0),
+            # F-merge, …) — one bounded extra pass, then fixpoint.
+            try:
+                res2 = _get_tl_simp(_want_full(res2)).simplify(res2)
+            except Exception:
+                pass
+        res = res2
         _simp_memo[gid] = res
         _simp_memo[res.id()] = res  # simplify is idempotent — fixpoint entry
         return res
