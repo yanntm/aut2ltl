@@ -48,14 +48,26 @@ fold pass → interning). Items below are the actionable queue.
    (test_factor_pass.py, 10/10 incl. the draft-bug regression).
    ~~Pipeline integration~~ **DONE 2026-06-12** (KR_SIMP_OWN per-node hook
    in _simp_f, persistent memos, size cap 2000, shared bdd_dict; numbers
-   in STATUS — gates green, fuzz 1500 ALL EQUIVALENT). Refinement queue:
-   - **eventuality-aware rewriting**: rewrites create temporal-body
-     variants that RAISE the distinct-eventuality census (F(a&Xb) back
-     over the 32-acc cap, G(a->Xb) 85→94); accept a rewrite only when it
-     does not add distinct temporal nodes, or intern variants (item E).
+   in STATUS — gates green, fuzz 1500 ALL EQUIVALENT).
+   ~~Rule 4: unroll-inverse folding~~ **DONE 2026-06-12** (fold_pass.py —
+   expansion-law pair folds + first-occurrence/induction + S1/S2
+   Formula-5 subsumption; the census-reducing realization of the
+   "eventuality-aware rewriting" item: F(a&Xa) census 55→33, G(a->Xb)
+   flipped survey True; numbers in STATUS). Refinement queue:
+   - **eventuality census, remaining**: F(a&Xb) still 87 distinct
+     temporals (cap 32). The residual is the one-step-SHIFTED ladder
+     variants (X(c|X(cRd)) | G(c|X(c|Xd))), proven NOT pairwise
+     redundant (witness `!a; a; cycle{!a}`) — killing them needs either
+     context-aware subsumption (the bare-c disjunct often lives one Or
+     level up) or interning (item E).
    - giant nodes are skipped by the cap, so the X(a&Xa)/reactivity wall
      is barely moved — needs either O(n) factoring on big Ors or the
-     C/D/E fold candidates.
+     C/D/E fold candidates. NB the cap measures UNFOLDED tree size; with
+     per-node memoized passes a DAG-size cap is the honest poly bound
+     and would let the top of big formulas be processed.
+   - fold pass changes memo keys → construction takes different paths
+     (X(a&Xa) unfolded count moved both ways across tools); re-baseline
+     the size censuses in kr/testing/logs/.
    - the 32-acc abort path in equiv children dies with free(): invalid
      pointer (teardown, cosmetic but masks the real verdict — make the
      harness report it as ACC_CAP). Background
