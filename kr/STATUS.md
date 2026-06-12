@@ -108,6 +108,26 @@ unfolding that DAG.
   census — `F(a&Xb)` went back over the 32-acc cap (its equiv child then
   dies in the abort path's teardown: `free(): invalid pointer` — infra,
   not semantic). Refinement item: eventuality-aware rewriting (TODO 1c).
+- **Unroll-inverse fold pass (2026-06-12, the "rule 4" iteration —
+  kr/simplify/fold_pass.py, KR_SIMP_OWN_FOLD=1 default).** Eight pair-folds
+  (expansion laws backwards, arbitrary subformulas): `c|XFc→Fc`,
+  `c&XGc→Gc`, U/W/R/M one-step forms, first-occurrence `c|F(¬c&Xc)→Fc`,
+  induction `c&G(¬c|Xc)→Gc`; plus S1/S2 sibling subsumption (Formula-5
+  line redundancy): `c|X(cRd)|G(c|Xd)→c|X(cRd)` and dual
+  `c&X(cUd)&F(c&Xd)→c&X(cUd)` (proofs in module docstring; M/W variants
+  UNSOUND, regression-tested; the one-step-SHIFTED ladder variants are
+  genuinely not redundant — witness `!a; a; cycle{!a}`). Validated:
+  test_fold_pass 26/26, all suites CLEAN, fuzz 3×500 ALL EQUIVALENT zero
+  growth, audit CLEAN. Measured (vs post-1c): `F(a&Xa)` census 55→33 /
+  tree 4611→901 / DAG 269→156; `F(a&Xb)` 109→87; `G(a|Xb)` 94→82;
+  `G(a->Xa)` 193→147, tree 2.0M→1.5M. Survey: **`G(a->Xb)` flipped
+  SPOT_TIMEOUT→True (25 True / 0 FALSE)**, `(aUb)|Gc` 7.7M→6.6M,
+  `X(a&Xa)` flatten-gate census 23.1G→13.3G (NB measure_formula_dag's
+  unfolded count for that case moved 52.6M→127M — fold changes memo keys
+  and thus the construction path; DAG and temporal census both improved).
+  Diagnosis tool: `kr/testing/probe_dag_dump.py` (let-binding DAG view +
+  temporal census; the F(a&Xa) dumps that drove the rules are in
+  `kr/testing/logs/faxa_dag_dump*.txt`).
 - **Per-DAG-node memoized simplification (2026-06-12, the "A" iteration).**
   `_simp_f` simplifies each hash-consed node ONCE (id-keyed memo + the shared
   tl_simplifier's internal cache); operators build bottom-up so every call
@@ -131,16 +151,15 @@ The ≥4-level dev guard is GONE (opt-in `KR_MAX_LEVELS` ceiling remains; the
 real runaway protection is the distinct-subproblem guard). Depth ladder
 added: `Xa` 3L → `XXa` 4L → `XXXa` 5L → `X(a & Xa)` 5L.
 
-- **MP ladder: 24 equiv=True, zero equiv=FALSE** (post fusion + own
-  rewrite pass) — including **`XXXa` at 5 levels** and
-  **`G(a->Xb)`/`Ga|Gb`** end-to-end. Non-True split, all
-  verification-bound, none semantic:
-  - SPOT_TIMEOUT: `G(a->Xa)` (2.0M, now under the flatten gate — Spot
-    slow), `(a U b)|Gc` (7.7M).
-  - 32-acc: `F(a&Xb)` (own-pass variant diversity — see the 1c bullet;
+- **MP ladder: 25 equiv=True, zero equiv=FALSE** (post fold pass) —
+  including **`XXXa` at 5 levels** and **`G(a->Xb)`/`Ga|Gb`**
+  end-to-end. Non-True split, all verification-bound, none semantic:
+  - SPOT_TIMEOUT: `G(a->Xa)` (1.5M, under the flatten gate — Spot slow).
+  - 32-acc: `F(a&Xb)` (census 87, down from 109 — still over the cap;
     the err string is the abort-path teardown crash in the child).
-  - UNVERIFIED_SIZE (flatten gate): `X(a&Xa)` 2.8×10¹⁰, `GFa&GFb`
-    1.1×10¹⁷, `FGa|FGb` / `(GFa&FGb)` 2⁶⁰-saturated.
+  - UNVERIFIED_SIZE (flatten gate): `(a U b)|Gc` 6.6M, `X(a&Xa)`
+    1.3×10¹⁰, `GFa&GFb` 9.5×10¹⁶, `FGa|FGb` / `(GFa&FGb)`
+    2⁶⁰-saturated.
 - **Semantic grounding (`trace_fin_semantics`, cover-aware — GTs on the config
   semiautomaton): zero contradictions across every probed case at every
   depth** (`GFa`, `a U b`, `Fa & Gb`, `Ga | Fb`, `Xa` fully OK; `G(a->Xb)`,
