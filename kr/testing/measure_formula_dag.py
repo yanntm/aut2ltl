@@ -28,25 +28,10 @@ import spot
 
 from kr import decompose_aut
 import kr.reachability_operators as _ops
-from kr.fin import fin_c
-from kr.ltl_builders import _And, _Or, _Not, _simp_f
-from kr.reachability import _compute_good_muller_sets
-
-
-def assemble_formula_obj(casc) -> "spot.formula":
-    """Same Muller-DNF assembly as reconstruct_ltl_paper_style, but returning
-    the spot.formula object (reconstruct stringifies at the top)."""
-    good_ms = _compute_good_muller_sets(casc)
-    if not good_ms:
-        return spot.formula.ff()
-    all_c = set(casc.all_configs())
-    fin_by_c = {c: fin_c(c, casc) for c in sorted(all_c)}
-    terms = []
-    for Mf in good_ms:
-        M = set(Mf)
-        parts = [_Not(fin_by_c[c]) for c in M] + [fin_by_c[c] for c in all_c - M]
-        terms.append(_simp_f(_And(*parts)))
-    return _simp_f(_Or(*terms))
+from kr.reachability import reconstruct_ltl_paper_style
+# reconstruct now returns the spot.formula DAG itself (no final str), so this
+# tool measures the REAL pipeline output — the former local re-implementation
+# of the Muller-DNF assembly is gone.
 
 
 def dag_stats(f: "spot.formula") -> dict:
@@ -102,16 +87,8 @@ def main():
     casc = decompose_aut(f.translate())
     print(f"cascade: {casc.num_levels} levels, sizes={[l.size for l in casc.levels]}")
 
-    _ops.PAPER_REACH_CALLS = 0
-    _ops.PAPER_FIN_CALLS = 0
-    _ops._reach_memo.clear()
-    _ops._clear_casc_registry()
-    _ops._register_casc(casc)
-    if hasattr(_ops, "_lru_reach_strong"):
-        _ops._lru_reach_strong.cache_clear()
-
     t0 = time.monotonic()
-    res_f = assemble_formula_obj(casc)
+    res_f = reconstruct_ltl_paper_style(casc)   # resets counters/memos itself
     t_build = time.monotonic() - t0
 
     stats = dag_stats(res_f)
