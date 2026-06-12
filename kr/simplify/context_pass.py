@@ -32,9 +32,25 @@ def _is_bool_node(f: "spot.formula") -> bool:
     return f._is(spot.op_And) or f._is(spot.op_Or)
 
 
-def context_simplify(f: "spot.formula") -> "spot.formula":
+def _const_fold(f: "spot.formula") -> "spot.formula":
+    """Trivial constant folds through unary temporal heads after a body
+    rewrite (X(0)→0, G(1)→1, F(0)→0, …). Anything richer is delegated to
+    Spot's basics downstream."""
+    if f._is(spot.op_X) or f._is(spot.op_F) or f._is(spot.op_G):
+        c = f[0]
+        if c.is_tt() or c.is_ff():
+            return c
+    return f
+
+
+def context_simplify(f: "spot.formula", now_hook=None) -> "spot.formula":
     """Simplify f using sibling-context propagation over the boolean
-    skeleton. Returns a formula language-equivalent to f."""
+    skeleton. Returns a formula language-equivalent to f.
+
+    `now_hook(node, pos, neg) -> formula | None` (rule 2, now_eval) is
+    tried on every non-boolean node sitting under a non-empty context,
+    BEFORE the boundary reset; a non-None replacement is at the same
+    instant, so it keeps simplifying under the same context."""
     memo: Dict[Tuple[int, FrozenSet, FrozenSet], "spot.formula"] = {}
 
     def walk(node: "spot.formula", pos: FrozenSet, neg: FrozenSet) -> "spot.formula":
@@ -82,12 +98,20 @@ def context_simplify(f: "spot.formula") -> "spot.formula":
             if out != node and _is_bool_node(out):
                 out = walk(out, pos, neg)
         else:
+            # Rule-2 hook: one-step unrolling of the temporal head under
+            # the context (same-instant replacement keeps the context).
+            if now_hook is not None and (pos or neg):
+                rep = now_hook(node, pos, neg)
+                if rep is not None and rep != node:
+                    out = walk(rep, pos, neg)
+                    memo[key] = out
+                    return out
             # Non-boolean operator: context boundary. Visit bodies with an
             # empty context, memoized on the node alone (the common case).
             ekey = (node, _EMPTY, _EMPTY)
             out = memo.get(ekey)
             if out is None:
-                out = node.map(lambda c: walk(c, _EMPTY, _EMPTY))
+                out = _const_fold(node.map(lambda c: walk(c, _EMPTY, _EMPTY)))
                 memo[ekey] = out
 
         memo[key] = out
