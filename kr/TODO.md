@@ -23,24 +23,12 @@ fold pass → interning). Items below are the actionable queue.
    85.5M→3.6M, `a&Xa` subproblems 752→311. Remaining candidates, in the
    order the tail-anatomy data suggests (probe_tail_anatomy.py: TAILS drive
    the explosion — ×2–10 distinct tails per level — not the avoid web):
-   - **B. letter fusion (ACTIVE — user-validated direction 2026-06-12).**
-     Equivalence classes of futures over the 2^AP letters: at every
-     enumeration site the summand depends on the letter ONLY through its
-     guard (structure fixed by the rest of the dedupe key), so fusion =
-     drop `li` from the existing `_dedupe` key and OR the guards
-     (`enter_t`/`enter_b` key on (pre-suffix, arr) — their inner solid
-     depends on the arrival). Guards accumulated as BDDs, emitted via
-     Minato ISOP (`spot.bdd_to_formula`; round-trip verified, minimal
-     guards confirmed — probe_guard_fusion). Measured site-local factor
-     ×1.6–×3.2 (grows with |AP|), compounding per level on the
-     distinct-tail population; plausible the eventuality count drops under
-     the 32-acc-set cap for mid cases (measurable hypothesis). Soundness:
-     quotient-alphabet argument for globally-equal letters; for site-local
-     grouping, guard-substitution into the summand spec (∃-position
-     ∨-distributes over the shared witnessing moment; avoid position is
-     U-left-conjunctivity (¬β₁Uτ)∧(¬β₂Uτ) ≡ ¬(β₁∨β₂)Uτ; weak by duality)
-     — short write-up goes to dag_folding.md with the change. Subsumes the
-     empty-guard half of the former vacuity-pruning candidate.
+   - ~~**B. letter fusion**~~ **DONE 2026-06-12** (soundness:
+     dag_folding.md "Letter fusion"; numbers: STATUS — XXa/XXXa collapse
+     to the literal formulas, 3 survey cases flip True, G(a->Xb) under
+     the acc cap). Remaining wall is fusion-neutral cases (1 AP, all
+     letters distinct futures): `X(a&Xa)` 3.1×10¹⁰, `G(a->Xa)` 11.3M —
+     they need C/D/E below or the 1c rewrite pass.
    - **C. cascade-aware vacuity pruning** of the combined-letter enumeration
      (unreachable pre-configs, empty Enter/Stay) — prunes memo keys at the
      b^k base; soundness argument needed (see dag_folding.md OPEN).
