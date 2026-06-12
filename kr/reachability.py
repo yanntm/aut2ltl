@@ -15,6 +15,8 @@ from __future__ import annotations
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
+import spot
+
 # Re-export the core operators so existing callers (examples, tests) continue to work.
 # All 1L special case code has been deleted; the implementation is the pure generalized
 # inductive 5 formulas for all depths.
@@ -30,7 +32,10 @@ from .reachability_operators import (  # noqa: F401
     PAPER_MAX_LTL_SIZE,
 )
 from .fin import fin_c  # noqa: F401
-from .ltl_builders import _And, _Or, _Not, _simp_f, _str_f, _short_f, _normalize_ltl
+from .ltl_builders import (
+    _And, _Or, _Not, _tt, _ff, _simp_f, _str_f, _short_f, _normalize_ltl,
+    _tree_size_f,
+)
 
 from .cascade import Cascade
 
@@ -80,7 +85,7 @@ def _compute_good_muller_sets(casc: Cascade) -> list:
     return good
 
 
-def reconstruct_ltl_paper_style(casc: Cascade) -> str:
+def reconstruct_ltl_paper_style(casc: Cascade) -> "spot.formula":
     """Paper-faithful top-level assembly (steps 5-6 / Lemma 7 in algorithm.md).
 
     Uses the reachability operators (the 5 formulas) inside fin_c / Fin(C), then
@@ -89,8 +94,11 @@ def reconstruct_ltl_paper_style(casc: Cascade) -> str:
         ϕ = ∨_M ( ∧_{C∈M} ¬Fin(C)  ∧  ∧_{C∉M} Fin(C) )
     This asserts that the exact set of configs visited i.o. is some good M from α'.
 
-    The Fin expansions + letter guards from the reach formulas do the systematic work
-    (size may be large before Spot simplify, as the paper predicts triple-exp in worst case).
+    Returns the hash-consed `spot.formula` DAG — the construction's native,
+    compact form. Flattening it (str) unfolds the sharing and is the one
+    operation whose cost tracks the paper's tree bound; callers that truly
+    need text use `reconstruct_ltl_str` (or `str()` on a sub-term) knowingly,
+    under their own budgets.
 
     good_Ms come from Spot's scc_info on non-rejecting SCCs of D (those with accepting
     cycles) -- enumerating the recurrent sets Spot exhibits on D, not blind powerset.
@@ -117,16 +125,16 @@ def reconstruct_ltl_paper_style(casc: Cascade) -> str:
             aut = casc.original_aut  # the normalized det D
             acc_cond = str(aut.get_acceptance()).strip().lower()
             if acc_cond in ("t", "true", "1", "0 t"):
-                return "true"
+                return _tt()
             if acc_cond in ("f", "false", "0 f"):
-                return "false"
+                return _ff()
             has_acc = any(bool(list(e.acc.sets())) for s in range(aut.num_states()) for e in aut.out(s))
-            return "true" if has_acc else "false"
-        return "true"
+            return _tt() if has_acc else _ff()
+        return _tt()
 
     good_ms = _compute_good_muller_sets(casc)
     if not good_ms:
-        return "false"
+        return _ff()
 
     trace_on = getattr(_ops, "TRACE_ON", False)
     all_c = set(casc.all_configs())
@@ -152,24 +160,32 @@ def reconstruct_ltl_paper_style(casc: Cascade) -> str:
             print(f"[TRACE_ASSEMBLY]   term for M = {_short_f(term_f, 200)}")
         terms_f.append(term_f)
     if not terms_f:
-        return "false"
+        return _ff()
     res_f = _simp_f(_Or(*terms_f))
     if trace_on:
         print("[TRACE_ASSEMBLY] final =", _short_f(res_f, 200))
-    res = _str_f(res_f)
-    # report the serialized size (the formula DAG itself is shared and compact;
-    # the flat LTL string is the unfolded form — callers translate under timeouts)
-    _ops.PAPER_MAX_LTL_SIZE = len(res)
-    return res
+    # Size metric is now the unfolded-tree node count (memoized O(DAG) walk),
+    # not the flat string length — the DAG is never serialized here.
+    _ops.PAPER_MAX_LTL_SIZE = _tree_size_f(res_f)
+    return res_f
 
 
-def reconstruct_ltl_1level_buchi(casc: Cascade) -> str:
+def reconstruct_ltl_str(casc: Cascade) -> str:
+    """Historical flat-string entry point. Unfolds the shared DAG into text —
+    O(tree), which on multi-level cases is the double-exp the DAG avoids.
+    Kept only for callers that genuinely need LTL text (file export, external
+    tools); everything in-process should consume the formula object."""
+    return _str_f(reconstruct_ltl_paper_style(casc))
+
+
+def reconstruct_ltl_1level_buchi(casc: Cascade) -> "spot.formula":
     """Main entry point for LTL reconstruction from a Cascade.
 
     Delegates to the paper-faithful implementation: reachability formulas
     (via fin_c for Lemma 7) + assembly of Muller DNF over good recurrent sets
     (reconstruct_ltl_paper_style). This is the systematic algebraic construction
     with no ad-hoc, no shape inspection, no inf-often approximations.
+    Returns the hash-consed spot.formula (see reconstruct_ltl_paper_style).
     """
     # Depth guard dropped (was 3 levels during find-issues-small-first dev):
     # the ladder is green through 3L and the construction is fully memoized
@@ -184,84 +200,29 @@ def reconstruct_ltl_1level_buchi(casc: Cascade) -> str:
     return reconstruct_ltl_paper_style(casc)
 
 
-# --- Full build_phi dispatch (architectural adoption item 3 from reference) ---
-# Handles all 6 acc types per paper (looping, buchi/cobuchi, muller, weak).
-# Uses existing fin_c / reach shorthands + muller sets.
-# per-step simplify + reachable prune already in fin/reconstruct.
-# backward compat: existing reconstruct still used for muller primary.
+# --- Acceptance-type dispatch (TODO P1: construction-ref §9.3) ---
 
-def build_phi(casc: Cascade, acceptance_type: str = "muller", acceptance_data=None) -> str:
-    """
-    Ref-style full dispatch for all acc types (item 3).
-    acceptance_type: 'muller' | 'buchi' | 'cobuchi' | 'looping_buchi' | 'looping_cobuchi' | 'weak'
-    acceptance_data: depends (e.g. muller sets, sink state, etc.)
-    Falls back to paper_style for muller.
-    """
-    from kr.cascade import Config as CascadeConfig
-    init_c = None
-    if casc.original_aut is not None:
-        try:
-            init_s = casc.original_aut.get_init_state_number()
-            init_c = casc.state_to_config.get(init_s)
-        except:
-            pass
-    if init_c is None:
-        cs = casc.all_configs()
-        init_c = cs[0] if cs else ()
-    init = CascadeConfig(init_c) if 'Config' in str(type(CascadeConfig)) else init_c  # compat
+def build_phi(casc: Cascade, acceptance_type: str = "muller", acceptance_data=None) -> "spot.formula":
+    """Acceptance-type dispatch. Muller — the primary, validated path —
+    delegates to reconstruct_ltl_paper_style (formula object out).
 
+    The direct hierarchy-preserving forms (looping-Büchi/coBüchi Σ₁/Π₁,
+    Büchi/coBüchi Π₂/Σ₂, weak Δ₁ end_in(G)) are TODO P1; the previous
+    string-pasting sketches for them were dropped with the str() API
+    (they were placeholders with `if ...` ellipsis conditions, never live).
+    """
     if acceptance_type in ("muller", None):
         return reconstruct_ltl_paper_style(casc)
-
-    # Use shorthands
-    def reach(init, target):
-        return reach_strong(init if isinstance(init, tuple) else init.states, None, "false", 
-                            target if isinstance(target,tuple) else target.states, "true", casc)
-
-    all_configs = [CascadeConfig(c) for c in casc.all_configs()]
-
-    if acceptance_type == "looping_cobuchi":
-        sink_state = acceptance_data
-        sink_cs = [c for c in all_configs if casc.state_to_config.get(0) == sink_state]  # rough
-        # better: use configs mapping to sink
-        sinks = [c for c in all_configs if any(casc.state_to_config.get(s, -1) == sink_state for s in [0] ) ] # placeholder
-        # use existing logic
-        return " | ".join( str(reach(init, c)) for c in all_configs if ... ) or "false"  # simplified
-
-    elif acceptance_type == "looping_buchi":
-        sink_state = acceptance_data
-        return " & ".join( f"!({reach(init, c)})" for c in all_configs if ... ) or "true"
-
-    elif acceptance_type == "cobuchi":
-        buchi_states = acceptance_data or set()
-        # Fin for those mapping to buchi
-        fins = []
-        for c in all_configs:
-            if any( casc.state_to_config.get(s,-1) in buchi_states for s in [0]): # rough
-                fins.append( fin_c( c.states if hasattr(c,'states') else c , casc) )
-        return " & ".join(fins) if fins else "true"
-
-    elif acceptance_type == "buchi":
-        return f"!({build_phi(casc, 'cobuchi', acceptance_data)})"
-
-    elif acceptance_type == "weak":
-        # H = configs to accepting SCCs, H' to successors not in
-        # placeholder using existing accepting
-        acc = casc.accepting_configs()
-        phi_parts = []
-        for g in acc:
-            h = [c for c in all_configs if c.states in [g] or str(c) in str(g)] # rough
-            hprime = []
-            phi_g = f" ( {' | '.join(reach(init, c) for c in h)} ) & ( {' & '.join( f'!({reach(init,c)})' for c in hprime)} ) "
-            phi_parts.append( f"({phi_g})" )
-        return " | ".join(phi_parts) if phi_parts else "false"
-
-    return reconstruct_ltl_paper_style(casc)
+    raise NotImplementedError(
+        f"build_phi acceptance_type={acceptance_type!r}: direct "
+        f"hierarchy-class forms are TODO P1 (construction-ref §9.3); "
+        f"use the Muller path.")
 
 
 __all__ = [
     "reconstruct_ltl_1level_buchi",
     "reconstruct_ltl_paper_style",
+    "reconstruct_ltl_str",
     "simplify_ltl",
     "normalize_ltl",
     "reach_strong",
