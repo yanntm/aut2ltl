@@ -9,10 +9,12 @@ import os as _os
 
 from . import context_pass as _cp
 from . import factor_pass as _fp
+from . import fold_pass as _dp
 from . import now_eval
 from .context_pass import context_simplify
 from .now_eval import now_rewrite, prop_minimize
 from .factor_pass import factor_simplify
+from .fold_pass import fold_simplify
 
 _node_memo: dict = {}
 
@@ -22,19 +24,33 @@ _node_memo: dict = {}
 # runs the pipeline with rules 1+2 only.
 _OWN_FACTOR = _os.getenv("KR_SIMP_OWN_FACTOR", "1").lower() not in ("0", "false", "no", "off")
 
+# Folding (rule 4) strictly shrinks AND lowers the distinct-temporal census;
+# KR_SIMP_OWN_FOLD=0 restores the rules-1..3 pipeline.
+_OWN_FOLD = _os.getenv("KR_SIMP_OWN_FOLD", "1").lower() not in ("0", "false", "no", "off")
+
 
 def simplify(f: "spot.formula") -> "spot.formula":
     """Combined pipeline: context pass (rule 1) with the now-evaluation
-    hook (rule 2), then partial factoring (rule 3, unless
-    KR_SIMP_OWN_FACTOR=0); one more context pass when factoring changed
-    something (composites can expose new absorptions).
+    hook (rule 2), then unroll-inverse folding (rule 4, unless
+    KR_SIMP_OWN_FOLD=0), then partial factoring (rule 3, unless
+    KR_SIMP_OWN_FACTOR=0); a pass that changed something is followed by
+    one more context pass (composites can expose new absorptions) and,
+    after factoring, one more fold (factoring can expose fold partners).
     Language-preserving."""
     g = context_simplify(f, now_hook=now_rewrite)
+    if _OWN_FOLD:
+        h = fold_simplify(g)
+        if h != g:
+            g = context_simplify(h, now_hook=now_rewrite)
     if not _OWN_FACTOR:
         return g
     h = factor_simplify(g)
     if h != g:
         h = context_simplify(h, now_hook=now_rewrite)
+        if _OWN_FOLD:
+            h2 = fold_simplify(h)
+            if h2 != h:
+                h = context_simplify(h2, now_hook=now_rewrite)
     return h
 
 
@@ -57,7 +73,9 @@ def reset_caches() -> None:
     _node_memo.clear()
     _cp.reset_cache()
     _fp.reset_cache()
+    _dp.reset_cache()
 
 
 __all__ = ["context_simplify", "now_rewrite", "prop_minimize",
-           "factor_simplify", "simplify", "simplify_node", "reset_caches"]
+           "factor_simplify", "fold_simplify", "simplify", "simplify_node",
+           "reset_caches"]
