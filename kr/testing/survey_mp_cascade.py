@@ -116,7 +116,20 @@ try:
     info["level_sizes"] = [lv.size for lv in casc.levels]
     info["states"] = casc.num_states
     info["configs"] = len(casc.all_configs())
-    info["recovered"] = reconstruct_ltl_1level_buchi(casc)
+    # reconstruct returns the hash-consed formula DAG; flatten ONLY under the
+    # tree-size gate (the flat string is the double-exp artifact — an oversized
+    # case reports its DAG/tree sizes instead and equiv shows UNVERIFIED_SIZE).
+    from kr.ltl_builders import _tree_size_f, _str_f
+    rec_f = reconstruct_ltl_1level_buchi(casc)
+    import os as _os
+    # 5M tree nodes ~ 40MB string: above every case Spot equiv has ever
+    # completed, below the 64M+ monsters whose str() alone blows the budget.
+    _lim = int(_os.environ.get("KR_FLATTEN_TREE_LIMIT", "5000000"))
+    info["tree_nodes"] = _tree_size_f(rec_f)
+    if info["tree_nodes"] <= _lim:
+        info["recovered"] = _str_f(rec_f)
+    else:
+        info["recovered"] = None
 except Exception as e:
     info["error"] = str(e)[:200]
     info["tb"] = traceback.format_exc()[-300:]
@@ -144,6 +157,9 @@ print("RESULT_JSON:" + json.dumps(info))
     rec = res.get("recovered")
     if "error" not in res and rec and not rec.startswith(("ERROR", "NOT_IMPLEMENTED")):
         res["equiv"] = spot_equiv(formula_str, rec)
+    elif "error" not in res and rec is None and res.get("tree_nodes"):
+        # construction succeeded; flat form gated off by KR_FLATTEN_TREE_LIMIT
+        res["equiv"] = f"UNVERIFIED_SIZE({res['tree_nodes']} tree nodes)"
     else:
         res["equiv"] = None
     return res
