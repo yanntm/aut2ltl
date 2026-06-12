@@ -55,6 +55,22 @@ CASES = [
      "S1: G line subsumed by the R line"),
     ("a & X(a U b) & F(a & Xb)", "a & X(a U b)", False,
      "S2: F conjunct subsumed by the U line"),
+    # G/F absorption (Gφ = φ ∧ XGφ as an entailment oracle)
+    ("Fb & G(a & Fb)", "G(a & Fb)", False, "G absorbs implied F sibling"),
+    ("XFb & G(a & Fb)", "G(a & Fb)", False, "G absorbs through X"),
+    ("GFb & G(a & Fb)", "G(a & Fb)", False, "G absorbs derived G"),
+    ("Gb | F(a | Gb)", "F(a | Gb)", False, "F absorbs implying G disjunct"),
+    ("X(b U a) | F(a | Gb)", "F(a | Gb)", False, "F absorbs X(U) via arm"),
+    # context-aware S1/S2 (initial-state knowledge discharges the bare-c
+    # case; the same shapes WITHOUT context are not redundant)
+    ("!a & (X(a R c) | G(a | Xc))", "!a & X(a R c)", True,
+     "ctx-S1: G dropped under !a"),
+    ("!a & (X(a | X(a R c)) | G(a | X(a | Xc)))", "!a & X(a | X(a R c))",
+     True, "ctx-S1 shifted (the per-level ladder shape)"),
+    ("a & ((X(a U c) & F(a & Xc)) | d)", "a & (X(a U c) | d)", True,
+     "ctx-S2: F dropped under a"),
+    ("a & (d | (X(a & X(a U c)) & F(a & X(a & Xc))))",
+     "a & (d | X(a & X(a U c)))", True, "ctx-S2 shifted"),
     # through the full pipeline
     ("c & (a | XFa) & (!c | a | XFa)", "c & Fa", True,
      "pipeline: context dedup + fold"),
@@ -67,10 +83,18 @@ CASES = [
      "S1 with M is UNSOUND (must not change)"),
     ("a & X(a W b) & F(a & Xb)", None, False,
      "S2 with W is UNSOUND (must not change)"),
+    ("X(a | X(a R c)) | G(a | X(a | Xc))", None, True,
+     "shifted S1 WITHOUT context is unsound (must not change)"),
+    ("Fb & G(a | Fb)", None, False,
+     "G body is Or, no entailment (must not change)"),
+    ("b & G(a & Fb)", None, False,
+     "bare b not implied by G (must not change)"),
 ]
 
 MUST_NOT_CHANGE = {"a & XFa", "!a | XFa", "b | (a & X(a U c))", "a | F(a & Xa)",
-                   "a | X(a M b) | G(a | Xb)", "a & X(a W b) & F(a & Xb)"}
+                   "a | X(a M b) | G(a | Xb)", "a & X(a W b) & F(a & Xb)",
+                   "X(a | X(a R c)) | G(a | X(a | Xc))",
+                   "Fb & G(a | Fb)", "b & G(a & Fb)"}
 
 
 def equiv(f: "spot.formula", g: "spot.formula") -> bool:
