@@ -38,6 +38,15 @@ CASES = [
     # contradiction / tautology via sibling context
     ("a & b & (!a | !b)", "0", "conjunction refutes the clause"),
     ("a | !a", "1", "tautology (spot constructor or context)"),
+    # temporal-sibling opening (initial-state reading, ONE-WAY flow);
+    # circularity soundness regressions: with bidirectional opening these
+    # collapsed to a / 0 (the fuzz witness) — they must keep all conjuncts
+    # (full M reduction needs the now-hook: see test_now_eval; opening flow
+    # is one-way along spot's canonical child order, so only shapes where
+    # the temporal sibling sorts first can fire here)
+    ("a & b & (a M b)", None, "M circularity regression (no collapse to a)"),
+    ("!(b R (Gb & (b M Gb)))", None, "fuzz witness: no mutual-support collapse"),
+    ("Ga & (!a | Xb)", "Ga & Xb", "G body opened: a kills the !a disjunct"),
     # identity domination on TEMPORAL subformulas
     ("Ga & (b | Ga)", "Ga", "temporal absorption"),
     ("(a U b) | ((a U b) & c)", "a U b", "temporal Or-absorption"),
