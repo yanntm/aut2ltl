@@ -117,6 +117,55 @@ O(depth), with ladder equiv/groundings unchanged.
    are largely the same obligation at different delays). Directly targets
    the 32-acc-set verification wall.
 
+## Letter fusion (counter-measure B, ACTIVE 2026-06-12)
+
+User-proposed, validated direction: **equivalence classes of futures over the
+2^|AP| letters**. Inspection of the five enumeration sites
+(`last_steps`/`leave_s`/`bad_pre` in solid⁺/wsolid⁺, `enter_t`/`enter_b`/
+line-3 `leave_s` in dashed) shows the summand depends on the concrete letter
+ONLY through its guard — the structure is fixed by the rest of the dedupe
+key. So fusion is: drop `li` from the existing `_dedupe` key, OR the guards
+of the group, emit the OR minimized via BDD + Minato ISOP
+(`spot.formula_to_bdd`/`bdd_to_formula`, verified in `probe_guard_fusion`).
+`enter_t`/`enter_b` additionally key on the arrival config (their inner
+solid reads it).
+
+Why it attacks the explosion at the root: each per-letter disjunct mints its
+own tail `σᵢ ∧ Xτ`; the distinct-tail population is the measured driver
+(probe_tail_anatomy: ×2–10 per level). Fusion mints ONE tail
+`(σ₁∨…∨σₘ) ∧ Xτ` per outcome class — and when a site's letters all agree,
+the guard collapses to `1` and the tail to `Xτ` (the `Xa`-family collapse).
+Measured site-local factors: ×1.6 (2–4 letters) to ×3.2 (8 letters),
+compounding per level through the recursion. Plausible side effect: the
+distinct-eventuality count (one `¬β U τ` base case per distinct tail) drops
+below Spot's 32-acc-set cap for mid cases, bringing translation-based
+verification back.
+
+**Soundness.** Two layers:
+- *Globally-equal letters* (same action on every closure config): pure
+  alphabet quotient. The construction never needs letters to be minterms —
+  only a deterministic action per letter; the class guard is the exact
+  characteristic formula of the class, so the input semiautomaton is
+  presented isomorphically.
+- *Site-local grouping*: within one of the paper's sums, summands for
+  σ₁, σ₂ with equal group key are identical formulas up to the guard slot.
+  The operator's proved semantics reads "∃ (resp. at no) position k
+  satisfying side conditions independent of σ, where σ holds at k".
+  Substituting the class guard g = ⋁σᵢ:
+  - disjunct position: `∃k: cond ∧ (σ₁∨σ₂)@k ≡ (∃k: cond ∧ σ₁@k) ∨ (∃k: …σ₂…)`
+    (same witnessing moment);
+  - avoid position: U-left-conjunctivity with shared right side,
+    `(¬β₁ U τ) ∧ (¬β₂ U τ) ≡ ¬(β₁∨β₂) U τ` (min-of-witnesses), lifted
+    through the recursion; weak forms by duality (`wreach = ¬reach(swapped)`).
+  The discipline point is mechanical: each site's group key must contain
+  everything the summand reads except the guard — auditable per site, and
+  the existing `_dedupe` keys are exactly that plus `li`.
+
+This subsumes the empty-guard half of vacuity pruning (2) and much of the
+tail-normalization target (counter-measure D in TODO numbering). Escape
+hatch `KR_FUSE_LETTERS=0` restores the per-letter literal paper shape (for
+grounding comparisons).
+
 ## OPEN questions
 
 - **Soundness boundary of pruning (2).** Which vacuity arguments are
