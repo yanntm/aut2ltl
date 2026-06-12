@@ -18,8 +18,26 @@ Nets", PetriNets 2018).
 | rule | module | status | example |
 |---|---|---|---|
 | 1. Context pass | `context_pass.py` | DONE | `a & (!a \| G(!a\|Xa))` → `a & G(!a\|Xa)`; `a \| (a&b)` → `a` |
-| 2. Now-evaluation | `now_eval.py` | planned | `a & (!a \| (b U !a))` → one-step unroll of U/G/F/R heads under the context |
+| 2. Now-evaluation | `now_eval.py` | DONE | `a & G(!a)` → `0`; `a & (!a U b)` → `a & b`; `b & (b R c)` → `b & c` |
 | 3. Partial factoring | planned | planned | `(g1&Xt) \| (g2&Xt) \| C` → `((g1\|g2)&Xt) \| C` + Minato guard minimize |
+
+### Rule 2 — now-evaluation (`now_rewrite`, hooked into the context pass)
+
+A boolean conjunct `A` in `A ∧ φ` is knowledge about the evaluation
+instant of φ — an "initial state" for that subformula, however deeply
+nested (LTL adaptation of the initial-state strategy of Bonneland et al.,
+PetriNets 2018). Temporal heads under a non-empty context are unrolled
+once at that instant; only **shrinking** rewrites apply (see the table in
+`now_eval.py`: G/F verdicts, dead-arm reductions `(¬f known) f U g → g`,
+`(f known) f R g → g`, and the four constant verdicts). Entailment is
+two-tier: hash-consed identity (works for temporal arms) + BDD
+implication for propositional nodes. `X` bodies are never touched — the
+context legitimately dies at `X`; each body builds its own contexts from
+its own skeleton. Trivial constant folds through unary temporal heads
+(`X(0)→0` etc.) are done locally; richer folding is Spot-basics
+territory downstream.
+
+The combined entry `kr.simplify.simplify(f)` = context pass + now hook.
 
 ### Rule 1 — context pass (`context_simplify`)
 
