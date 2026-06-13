@@ -115,6 +115,39 @@ fold pass → interning). Items below are the actionable queue.
   Σ₁/Π₁ (looping), Π₂/Σ₂ (Büchi/coBüchi), Δ₁ (weak end_in(G)) forms
   replace the Fin web for the matching input classes and keep outputs in
   the right hierarchy class. Candidate next major iteration.
+- **Decompose-and-recombine at the root — the implementable form of the
+  acceptance dispatch (NEXT, 2026-06-13).** Sound because kr is
+  language-faithful and a ROOT operator is a pure position-0 language op (no
+  temporal-placement / acceptance-coupling caveats — contrast the P4 internal
+  injection): `L(A)=⋃L(Aᵢ) ⟹ ⋁ kr(Aᵢ) ≡ L(A)`, and dually
+  `L(A)=⋂L(Aᵢ) ⟹ ⋀ kr(Aᵢ) ≡ L(A)`. Two splits, both run the EXISTING kr on
+  acceptance-trivial pieces (Fin web → singleton good-set per piece) and
+  recombine:
+  - **OR-decompose by STRENGTH** (Spot strength decomposition: weak / terminal
+    / strong sub-automata whose union is language-equivalent — Renkin &
+    Duret-Lutz, "decomposition of automata by strength"). Targets
+    disjunctive / mixed-strength: `Ga|Fb`, `FGa|FGb`, `(aUb)|Gc`.
+  - **AND-decompose by ACCEPTANCE SET** (generalized Büchi accepts iff it
+    visits every mark i.o.: `L(A)=⋂ᵢ L(A|only Sᵢ)`, each piece single-Büchi).
+    Targets conjunctive recurrence the union split can't (it's a product, not
+    a union): `GFa&GFb`, `(GFa&FGb)`.
+  This hoists the Muller disjunction/conjunction OUT of the Fin web up to the
+  root, instead of hand-coding the §9.3 Σ/Π/Δ forms above — cleaner, reuses
+  all of kr, composes with the P0 folds. SCOPE: attacks the ACCEPTANCE-driven
+  census (the reactivity/recurrence/persistence wall); does NOT help the
+  REACH/cascade-driven census (`G(a->Xb)` is pure safety, decomposes to ONE
+  piece, census 79 unchanged — that is the P0 fold/simplify job; right
+  division of labor). OPEN CHECKS before committing to it: (1) pin the exact
+  Spot strength-decomposition API and confirm the union is language-exact on
+  our normalized det parity D (not just on Büchi); (2) probe that kr on a
+  single-Büchi / single-strength piece actually yields a small census — split
+  `GFa&GFb` into its two single-Büchi pieces and compare total recombined
+  census vs the monolithic 9.1×10¹⁶-tree baseline; (3) decide where the split
+  lives (a front-end wrapper over decompose_aut + reconstruct, mirroring the
+  reverted invariant-peel front-end shape, with OR/AND assembly of the per-
+  piece DAGs). Lineage: this is the same root-soundness that makes `φ ∧ kr`
+  sound when the INITIAL state carries an arbitrary φ (position-0 assertion =
+  root conjunction); decomposition is that observation applied to ⋃/⋂.
 - π-preimage exactness in the non-primary paths: `accepting_configs` and the
   config_graph fallbacks still map states through the lift only (the primary
   pruned-config-aut path is already correct via `state_of` = π). With covers
