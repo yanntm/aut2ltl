@@ -62,13 +62,19 @@ def _reset_ops(casc: Cascade) -> None:
 
 def reconstruct_buchi(casc: Cascade) -> Optional["spot.formula"]:
     """Direct Büchi φ = ⋁_{C ∈ accepting configs} ¬Fin(C), or None if the
-    cascade is not Büchi. accepting_configs() gives the recurrent accepting
-    configs (reachable, on accepting cycles) — the tight α (transient accepting
-    configs would only add `false` disjuncts and cost a wasted fin_c)."""
+    cascade is not Büchi.
+
+    α comes from `buchi_accepting_configs()` — the COVER-AWARE reader off the
+    pruned config aut — NOT the lift-section `accepting_configs()`: on a genuine
+    holonomy cover (duplicated accepting sinks) the lift section returns only one
+    config per accepting state and the disjunction then UNDER-approximates
+    (witness `F(a & X b)`: lift α={(1,2)} gives L⊊L(orig); cover α={(1,1),(1,2)}
+    is exact). A transient accepting config only adds a `¬Fin(C)≡false` disjunct,
+    so the (possibly looser) cover set stays sound."""
     if not is_buchi_cascade(casc):
         return None
     _reset_ops(casc)
-    acc_cfgs = sorted(casc.accepting_configs())
+    acc_cfgs = sorted(casc.buchi_accepting_configs())
     if not acc_cfgs:
         return _ff()    # Büchi with no recurrent accepting config -> empty
     res = _simp_f(_Or(*[_Not(fin_c(c, casc)) for c in acc_cfgs]))
