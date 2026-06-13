@@ -234,6 +234,66 @@ escapes (a scalable language-equality oracle, or config-indexing) are
 respectively the core hard problem itself and off-thesis. **A stronger idea is
 needed** — neither structural key surgery nor formula-level rewriting reaches it.
 
+## Acc(c) config-indexing — resurrected, measured, kept (2026-06-13)
+
+The "config-indexing" escape the diagnosis above called off-thesis was rebuilt
+and wired (`KR_DISPATCH_ACC`, default ON; `kr/acceptance_dispatch.reconstruct_acc`),
+because it is the only thing that reaches the bounded reach wall. This section is
+the report on what it is, what it buys, and the experiment that bounds its scope.
+
+**Construction.** `φ := Acc(ι)`, the language of `D` from the initial config, by
+bounded unroll of the config graph, memoized per config:
+
+- **R1 (base):** `Acc(c) = ⊤` if `L(D from state_of(c))` is universal, `⊥` if
+  empty — a small Spot ⊤/⊥ **oracle on the INPUT automaton D** (lazy + cached,
+  `n` states; NOT on the output formula).
+- **R2 (unroll):** `Acc(c) = ⋁_σ guard(σ) ∧ X Acc(move_config(c,σ))`.
+- **Self-gating:** a non-⊤/⊥ config re-entered on the unroll path is RECURRENT ⇒
+  `Acc` declines (`None`) ⇒ caller falls back to the Büchi/coBüchi/Muller chain.
+  So it fires only on the bottom/bounded fragment (every path hits ⊤/⊥ within a
+  bounded horizon).
+
+It bypasses the reach machinery entirely — no `reach_to`, no `Fin`, no τ-tail —
+so it emits the literal formula where BLS pays the blow-up. **It cracks the
+standing wall:** `X(a&Xa)` BLS 11835 DAG / 5.1×10⁸ tree / 2069 temporals →
+**4 / 5 / 0**, equiv True; the whole X-ladder collapses to literals
+(`probe_acc_dispatch`). Complexity is low: `O(|configs| × |Σ|)` memoized builds
+plus `≤ n` bounded oracle calls on the tiny `D` — the expensive Spot operation
+(translating the large *output*) is exactly what it avoids.
+
+**The objection (it is a syntactic-fragment recogniser) and the experiment.**
+Acc was rejected once as "practically pattern matching": it recognises a narrow
+class and the cases where it *matters* (deep bounded nesting that makes BLS
+explode) may be rare. We quantified this — `probe_acc_fuzz` (kept), 3 seeds of 60
+`randltl` formulas (2 APs, tree 8–12), routed through the real
+`reconstruct_decomposed` workflow, counting per-piece gate firing:
+
+| seed | tree | gate rate | err/timeout |
+|---|---|---|---|
+| 1 | 8 | 13/60 = 21.7% | 0/0 |
+| 2 | 8 | 17/60 = 28.3% | 0/0 |
+| 3 | 12 | 13/60 = 21.7% | 0/0 |
+
+Stable at **~24%**. But the **composition** is the real result: the fired cases
+are almost entirely TRIVIAL — pure boolean (`p0`, `!p1`), single/double-X (`Xp1`,
+`XX!p0`), or a bounded *piece* of a decomposed mixed formula (`!p1 | Gp0` fires on
+the `!p1` arm). These are cases BLS already emits in a handful of nodes; Acc adds
+nothing there. The high-value case (deep bounded nesting → BLS blow-up, the
+`X(a&Xa)` situation) **did not occur in any seed**. So the ~24% breadth is
+illusory: Acc gates a quarter of formulas but its real payoff is confined to a
+rare tail that random sampling misses. The `X(a&Xa)` headline is real but
+unrepresentative.
+
+**Decision: kept ON despite the narrowness.** The argument for purity (no Spot
+oracle in the construction path, no syntactic-fragment recogniser) is real, but
+(i) Acc is cheap and self-declining, so the trivial gates are harmless; (ii) the
+deep-bounded wall it cracks is exactly the one nothing else in the cascade
+machinery reaches; (iii) a measured benchmark case (`X(a&Xa)`) flips
+UNVERIFIED→True with zero regressions. The narrowness is recorded honestly here;
+the capability is retained. Spin-offs (TODO): replace the Spot ⊤/⊥ oracle with a
+structural sink-reachability test on `D` (keep construction Spot-free); per-config
+(not whole) BLS fallback at recurrent configs (extend past the pure-bounded class).
+
 ## OPEN questions
 
 - **Soundness boundary of pruning (2).** PARTLY SETTLED (2026-06-13, see

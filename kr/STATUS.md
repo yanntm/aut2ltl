@@ -326,9 +326,15 @@ unfolding that DAG.
   (`logs/survey_wire_acc_2026-06-13`): the ONLY verdict change is `X(a&Xa)`
   UNVERIFIED→True; 0/35 FALSE, zero regressions; audit CLEAN.** After this the
   ONLY non-True case in the MP survey is `FGa|FGb` (persistence-union absorption,
-  recurrent, over the cap). Caveat: Spot ⊤/⊥ oracle in the construction path
-  (bounded, on the small input) — the one departure from "Spot for hash-consing
-  only"; a structural sink-reachability test could replace it (TODO).
+  recurrent, over the cap). **Scope measured** (`probe_acc_fuzz`, 3×60 randltl
+  through the real workflow; report in `dag_folding.md` "Acc(c) config-indexing"):
+  gate rate ~24% but the fired cases are almost all TRIVIAL (boolean / 1-2×X /
+  bounded decompose-pieces) where BLS is already tiny — the high-value
+  deep-bounded case (`X(a&Xa)`) is a rare tail random sampling misses. **Kept ON
+  despite the narrowness** (cheap, self-declining, and it is the only thing that
+  reaches the bounded reach wall). Caveat: Spot ⊤/⊥ oracle in the construction
+  path (bounded, on the small input) — the one departure from "Spot for
+  hash-consing only"; a structural sink-reachability test could replace it (TODO).
 - **Per-DAG-node memoized simplification (2026-06-12, the "A" iteration).**
   `_simp_f` simplifies each hash-consed node ONCE (id-keyed memo + the shared
   tl_simplifier's internal cache); operators build bottom-up so every call
