@@ -93,11 +93,12 @@ CANDIDATES = [
     # obligation (boolean comb. of safety+guarantee)
     "Fa | Gb", "Ga | Gb", "Fa & Gb", "(a U b) | Gc",
     "Ga | Fb",
-    # recurrence (Buchi / Pi2)
-    "GFa", "G(a -> F b)", "G(a | F b)", "GFa & GFb",
+    # recurrence (Buchi / Pi2) — conjunctive recurrence AND-splits by acc set
+    "GFa", "G(a -> F b)", "G(a | F b)", "GFa & GFb", "GFa & GFb & GFc",
+    "G(a -> F b) & G(c -> F d)",
     # persistence (coBuchi / Sigma2)
     "FGa", "F(a & G b)", "FGa | FGb",
-    # reactivity
+    # reactivity — (GFa & FGb) is a Rabin-pair conjunct Inf&Fin that AND-splits
     "GFa -> GFb", "(GFa & FGb)",
 ]
 
@@ -108,12 +109,17 @@ def survey_one(formula_str: str, timeout: int = CONSTRUCT_TIMEOUT) -> dict:
     own SPOT_EQUIV_TIMEOUT so blocked-verification is distinguishable from
     blocked-construction."""
     child_code = f'''
-import sys, json, traceback
+import sys, json, traceback, os as _os
 from pathlib import Path
 proj = Path(r"{PROJECT_ROOT}").resolve()
 sys.path.insert(0, str(proj))
 import spot
 from kr import decompose_aut, reconstruct_ltl_1level_buchi
+from kr.decompose_recombine import reconstruct_decomposed, split_report
+
+# The decompose-and-recombine front end is the GOTO path (KR_DECOMPOSE=1,
+# default); KR_DECOMPOSE=0 restores the monolithic path for A/B regression.
+USE_DECOMP = _os.environ.get("KR_DECOMPOSE", "1") == "1"
 
 fs = {formula_str!r}
 info = {{"formula": fs}}
@@ -122,17 +128,18 @@ try:
     info["mp"] = spot.mp_class(f)            # B/S/G/O/R/P/T
     info["mp_v"] = spot.mp_class(f, "v")     # verbose name
     aut = f.translate()
-    casc = decompose_aut(aut)
+    casc = decompose_aut(aut)                # cascade info (input structure)
     info["levels"] = casc.num_levels
     info["level_sizes"] = [lv.size for lv in casc.levels]
     info["states"] = casc.num_states
     info["configs"] = len(casc.all_configs())
+    kind, npieces = split_report(aut)
+    info["split"] = f"{{kind}}({{npieces}})"
     # reconstruct returns the hash-consed formula DAG; flatten ONLY under the
     # tree-size gate (the flat string is the double-exp artifact — an oversized
     # case reports its DAG/tree sizes instead and equiv shows UNVERIFIED_SIZE).
     from kr.ltl_builders import _tree_size_f, _str_f
-    rec_f = reconstruct_ltl_1level_buchi(casc)
-    import os as _os
+    rec_f = reconstruct_decomposed(aut) if USE_DECOMP else reconstruct_ltl_1level_buchi(casc)
     # 5M tree nodes ~ 40MB string: above every case Spot equiv has ever
     # completed, below the 64M+ monsters whose str() alone blows the budget.
     _lim = int(_os.environ.get("KR_FLATTEN_TREE_LIMIT", "5000000"))
@@ -200,7 +207,7 @@ def main():
             rec = (res.get("recovered") or "")[:48]
             print(f"  {fs:24s}  mp={res['mp']}({MP_NAME.get(res['mp'],'?'):11s}) "
                   f"L={res['levels']} sizes={res['level_sizes']} "
-                  f"equiv={eqs} rec={rec}")
+                  f"split={res.get('split','?'):8s} equiv={eqs} rec={rec}")
 
     # Group by MP class, weakest first; highlight 2L cases.
     print("\n=== By MP class (weakest first) — 2-level cases marked ** ===")
