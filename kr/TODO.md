@@ -29,22 +29,23 @@ fold pass → interning). Items below are the actionable queue.
      the acc cap). Remaining wall is fusion-neutral cases (1 AP, all
      letters distinct futures): `X(a&Xa)` 3.1×10¹⁰, `G(a->Xa)` 11.3M —
      they need C/D/E below or the 1c rewrite pass.
-   - ~~**F. absorbing-M Fin fold**~~ **DONE 2026-06-13**
-     (`config_graph.is_absorbing_config_set`, used in the Muller-DNF
-     assembly, default on, `KR_FOLD_ABSORBING_M=0` restores). When a good
-     Muller set M is absorbing (terminal SCC of the config graph — pure
-     graph check, no containment), the term ⋀_{C∈M}¬Fin(C) ∧ ⋀_{C∉M}Fin(C)
-     folds to ⋀_{C∈M}¬Fin(C): being trapped in M makes every Fin(C∉M)
-     implied. `a U b` 87→13 tree / 4→1 distinct temporals (collapses to the
-     literal formula); `(aUb)|Gc` 6.97M→5.65M, `F(a&Xb)` 4251→3747 (helps
-     unfolding only — distinct-temporal census 476/74 UNCHANGED, so the
-     32-acc cap cases do NOT flip). Scope: terminal-acceptance (guarantee/
-     reachability) class; no-op where M is the whole reachable set
-     (`G(a->Xb)` 0 change). Audit CLEAN, survey 0 fail / no regressions.
-     Next (per-conjunct generalization): even when M is NOT absorbing, an
-     individual Fin(C) with C∉M graph-unreachable from M is still implied
-     and droppable — a per-conjunct reachability cut that might chip the
-     recurrence cases. Investigate.
+   - ~~**F. per-conjunct Fin-reachability fold**~~ **DONE 2026-06-13**
+     (`config_graph.configs_reachable_from`, used in the Muller-DNF assembly,
+     default on, `KR_FOLD_FIN_REACH=0` restores). For a good Muller set M keep
+     `Fin(C∉M)` only for C reachable from M in the config graph (drop the rest):
+     `¬Fin(C∈M)` forces Inf⊇M, Inf is strongly connected, so C∈Inf ⟹ C∈reach(M)
+     — C off the cone is implied finite. Pure graph check, no containment.
+     **Subsumes the absorbing-M special case** (M absorbing ⟺ reach(M)=M) and,
+     unlike it, (i) prunes Fin(C) on non-bottom M and (ii) decides the kept set
+     BEFORE building `fin_c` (the explosive part) so dropped configs cost zero.
+     **Bites the distinct-temporal census, not just the tree**: no-fold→on
+     (absorbing-only in parens) — `a U b` 87→13 tree, 4→1 temporals (literal
+     formula); `F(a&Xb)` 4251→2739 / **74→64** (abs 74, no change); `(aUb)|Gc`
+     637→525 / 22→18; `Ga|Gb` 7026→6438 / 47→46; `Fa&Gb` 187→159 / 12→11;
+     `G(a->Xa)` →141; `X(a&Xa)` →4134. Audit CLEAN, survey 0 fail / no
+     regressions. Still over the 32-acc cap where they were (`F(a&Xb)` 64) —
+     the kept `¬Fin(M)`/reachable-`Fin` part dominates (census-anatomy);
+     deeper census reduction is the open P1 acceptance-dispatch job.
    - **C. cascade-aware vacuity pruning** of the combined-letter enumeration
      (unreachable pre-configs, empty Enter/Stay) — prunes memo keys at the
      b^k base; soundness argument needed (see dag_folding.md OPEN).
