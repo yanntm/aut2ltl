@@ -345,9 +345,15 @@ unfolding that DAG.
   the cascade; a declining node still splits below, so the heuristic also sees
   the pieces (the new idea: buchi2ltl was never combined WITH decomposition).
   - **Soundness is a composition of sound steps, NO per-call equiv check:**
-    arbitrary HOA →(Spot `postprocess` to TGBA, language-preserving)→ buchi2ltl
-    (sound-by-construction — its f2/t2 fragments self-validate by round-trip
-    equivalence and it returns UNSUPPORTED rather than a wrong formula). The
+    arbitrary HOA →(Spot `postprocess` to TGBA, language-preserving)→ buchi2ltl.
+    buchi2ltl's CORE is `sl` (self-loop backward labeling) — an EXACT
+    state-elimination translation, exact precisely on the very-weak (1-weak)
+    fragment (every cycle a self-loop) and DECLINING (`UNSUPPORTED`) elsewhere; its
+    f2/t2 layer is a separate verify-before-use guess-and-check (propose an SCC
+    fragment, validate by equivalence, then adopt). So adopted output is sound by
+    construction, NOT by post-hoc checking — full description in the
+    `kr/heuristic_gate.py` module docstring (authoritative; read it before
+    re-reasoning about sl). The
     bounded equiv check is kept only as an OPT-IN audit (`KR_GATE_VERIFY`,
     default OFF; on, the gate re-checks every adopted candidate against its
     small node automaton and counts `rejected`). **Audited at scale
