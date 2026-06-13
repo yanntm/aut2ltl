@@ -121,6 +121,33 @@ def buchi_accepting_configs(casc) -> set:
     return out
 
 
+def cobuchi_finite_configs(casc) -> set:
+    """The "must be visited finitely" configs for the direct coBüchi dispatch —
+    the DUAL of buchi_accepting_configs, read off the same cover-aware pruned
+    config aut. A config is in α iff the mark-union on its (sbacc) out-edges makes
+    `g.acc()` REJECT (where buchi_accepting_configs keeps the ones that make it
+    ACCEPT). This is the α for `φ_coBüchi = ⋀_{C∈α} Fin(C)`: coBüchi acceptance is
+    `Inf(ρ) ∩ Marked = ∅`, so the run accepts iff every marked config is visited
+    finitely — `⋀ Fin(C)`. A transient marked config only adds a `Fin(C)≡true`
+    conjunct (harmless). Cover-aware for the same reason as the Büchi reader (the
+    lift section would miss configs covering a marked state on a genuine cover).
+    Falls back to the empty set if the pruned config aut is unavailable."""
+    g = build_pruned_config_aut(casc)
+    if g is None:
+        return set()
+    import spot
+    reach = reachable_configs(casc)
+    acc = g.acc()
+    out = set()
+    for i in range(g.num_states()):
+        mk = spot.mark_t()
+        for e in g.out(i):
+            mk |= e.acc
+        if not acc.accepting(mk):
+            out.add(reach[i])
+    return out
+
+
 def reachable_configs(casc) -> list:
     """BFS from the initial config (using move_config over letters).
     Returns sorted list of reachable config tuples. Prunes irrelevant configs.

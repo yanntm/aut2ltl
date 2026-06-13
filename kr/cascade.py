@@ -360,6 +360,12 @@ class Cascade:
         from . import config_graph as _cg
         return _cg.buchi_accepting_configs(self)
 
+    def cobuchi_finite_configs(self) -> set:
+        """Cover-aware "visit finitely" configs (read off the pruned config aut)
+        for the direct coBüchi dispatch. See config_graph.cobuchi_finite_configs."""
+        from . import config_graph as _cg
+        return _cg.cobuchi_finite_configs(self)
+
     def summary(self) -> str:
         lv_str = ", ".join(f"L{i}:{lv.size}{('('+lv.structure+')' if lv.structure else '')}"
                            for i, lv in enumerate(self.levels))
