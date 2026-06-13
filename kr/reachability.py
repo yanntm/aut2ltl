@@ -116,6 +116,18 @@ def reconstruct_ltl_paper_style(casc: Cascade) -> "spot.formula":
     back here. Gate KR_DISPATCH_BUCHI (default ON); =0 restores the pure Muller
     form (e.g. for size A/B baselines).
     """
+    # Config-indexed Acc(c) for the BOUNDED / transient fragment (the X-ladder):
+    # bypasses the cascade reach machinery, emitting the literal small formula
+    # where BLS pays the reach τ-tail. SELF-GATING (declines → None on any
+    # recurrent config), so it is safe FIRST in the chain and gives the smallest
+    # output for bounded inputs. Cracks X(a&Xa): BLS 5.1e8 tree → 5. Gate
+    # KR_DISPATCH_ACC, default ON. (Uses a bounded Spot ⊤/⊥ oracle on the small
+    # INPUT automaton — not the output — see acceptance_dispatch.)
+    if os.environ.get("KR_DISPATCH_ACC", "1") != "0":
+        from .acceptance_dispatch import reconstruct_acc
+        phi = reconstruct_acc(casc)
+        if phi is not None:
+            return phi
     # Weak (Δ₁) / looping (Σ₁/Π₁): EXPERIMENTAL, OFF by default. Placed BEFORE
     # Büchi/coBüchi because weak languages are Büchi AND coBüchi recognizable —
     # those would otherwise claim them first — so weak only ever fires when its
