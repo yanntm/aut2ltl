@@ -71,6 +71,11 @@ under a small subprocess budget (a stall is reported, never waited on).
   acceptance condition (AND by acceptance set / OR by strength), runs `reconstruct_bls`
   on each acceptance-trivial piece, recombines with ⋀/⋁. Orthogonal to the core;
   collapses the recurrence/mixed-strength census walls. See STATUS + TODO P1.
+- `acceptance_dispatch.py` — **direct hierarchy-class φ per Theorem 2 / §9.3**,
+  orthogonal to the Muller DNF. `reconstruct_buchi(casc)` = `⋁_{C∈α}¬Fin(C)`
+  for Büchi cascades (else None → caller uses Muller); drops the `Fin(C∉G)` web.
+  Büchi DONE + probe-validated, not yet wired (`G(p->(qUr))` 84→14 temporals).
+  coBüchi/looping/weak are TODO P1 (the active front — see STATUS + TODO P1).
 - `gap_bridge.py`, `extract.py`, `gap/parse.py`, `bdd_utils.py` — decomposition
   pipeline and buddy-BDD stability.
 

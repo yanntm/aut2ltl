@@ -221,6 +221,27 @@ unfolding that DAG.
   reach-driven cases. Audit CLEAN; survey 0 fail / no regressions. Open: the
   cap cases need deeper census reduction (the kept `¬Fin(M)` / reachable-`Fin`
   part still dominates — census-anatomy finding).
+- **Acceptance dispatch — Büchi class LANDED as an orthogonal module,
+  probe-validated, NOT YET WIRED (2026-06-13). This is the structural fix the
+  census-anatomy finding pointed to.** `kr/acceptance_dispatch.py`
+  (`reconstruct_buchi(casc)`, orthogonal — reachability.py untouched). Per
+  Theorem 2 / §9.3, a deterministic **Büchi** cascade (recurrence, `Π₂`,
+  `acc=Inf(0)`) gets the DIRECT form `φ := ⋁_{C∈accepting configs} ¬Fin(C)` —
+  NO `Fin(C∉G)` web and NO good-set enumeration (the two Muller-DNF
+  explosions). Soundness: `¬Fin(C)` ≡ "C∈inf-set"; inf-set is strongly
+  connected, so Büchi `inf∩α≠∅` ≡ `⋁_{C∈α}¬Fin(C)` (transient accepting C ⇒
+  `¬Fin`≡false, harmless). `is_buchi_cascade` gates on `acc().is_buchi()`;
+  returns None otherwise (caller falls back to Muller). **Probe
+  (`kr/testing/probe_buchi_dispatch.py`, equiv-vs-ORIGINAL + size A/B):
+  `G(p->(qUr))` Muller 492/20291/**84** → Büchi 86/751/**14** — the challenge
+  case drops UNDER the 32-acc cap, equiv=True**; `GFa` 23/55/10 → 8/16/3;
+  `G(a->Fb)`/`G(a|Fb)` already minimal (19/48/4, no change); guarantee/safety
+  that normalize to Inf(0) (`Fa`,`a U b`,`Ga`) dispatch soundly with no size
+  change; `FGa` (coBüchi) correctly DECLINED. Every dispatched case equiv=True
+  vs original. NEXT (TODO P1, the resume point): wire `reconstruct_buchi` as a
+  fast-path in the per-cascade reconstruct (try it, fall back to Muller on
+  None), gate it, re-run audit+survey; then coBüchi (`⋀Fin(C)`, `Σ₂`) for the
+  persistence walls (`FGa|FGb`), then looping/weak (`reach_to`, no Fin).
 - **Per-DAG-node memoized simplification (2026-06-12, the "A" iteration).**
   `_simp_f` simplifies each hash-consed node ONCE (id-keyed memo + the shared
   tl_simplifier's internal cache); operators build bottom-up so every call
