@@ -7,11 +7,24 @@ This subtree implements the algebraic translation from counter-free deterministi
 > "On the Translation of Automata to Linear Temporal Logic". FoSSaCS 2022.
 
 The approach is systematic and algebraic: **no pattern matching** on SCCs, terminal
-components, or other shape-based rules (those live in the separate heuristic engine
-under `buchi2ltl/`). Everything is driven by the reset cascade (holonomy decomposition
-via SgpDec + GAP), the per-level Enter/Stay/Leave letter partitions, the configuration
-mapping, and the inductive definition of the five reachability formulas + Fin(C) +
-acceptance assembly.
+components, or other shape-based rules. Everything is driven by the reset cascade
+(holonomy decomposition via SgpDec + GAP), the per-level Enter/Stay/Leave letter
+partitions, the configuration mapping, and the inductive definition of the five
+reachability formulas + Fin(C) + acceptance assembly.
+
+The shape-based heuristic engine `buchi2ltl/` (backward labeling) is no longer kept
+strictly apart: it is wired into the decompose dispatcher as a **sound pre-filter
+gate** through the single seam `kr/heuristic_gate.py` (default ON). Its core, `sl`
+(self-loop / semi-linear backward labeling), is an EXACT state-elimination translation
+on the very-weak (1-weak) fragment — automata whose only cycles are self-loops — and
+DECLINES (`UNSUPPORTED`) on anything with a genuine multi-state cycle, so it is sound
+by construction; its f2/t2 layer is a separate verify-before-use guess-and-check. The
+gate tries it per node (raw input + each split piece) and falls through to the cascade
+when it declines — decomposition exposes very-weak pieces, the algebraic cascade
+carries the multi-cyclic core. **Authoritative sl/soundness description:
+`kr/heuristic_gate.py` module docstring** (read it before re-reasoning about sl). As
+the FoSSaCS'22 BLS construction has, to our knowledge, no prior practical
+implementation, this kr/ subtree is the first.
 
 ## Documentation map (read in this order)
 
@@ -89,6 +102,13 @@ under a small subprocess budget (a stall is reported, never waited on).
   by bounded unroll (no reach/Fin, self-declines on recurrent configs → BLS) and
   **cracks the `X(a&Xa)` reach wall** (UNVERIFIED 5.1×10⁸ → literal, equiv=True).
   See STATUS + TODO P1.
+- `heuristic_gate.py` — the SINGLE seam to `buchi2ltl/`. `try_heuristic_gate(aut)`
+  converts an arbitrary HOA to a TGBA (Spot, language-preserving), runs buchi2ltl's
+  backward labeling (the exact `sl` core + the verify-before-use f2/t2 layer),
+  simplifies the result through `_simp_f`, and returns the formula DAG or None.
+  Tried per node by `decompose_recombine` (default ON, `KR_GATE_BUCHI2LTL`); opt-in
+  `KR_GATE_VERIFY` audit. Cracks the `FGa|FGb` wall (2779→3 temporals); MP survey is
+  a clean sweep. Soundness rationale + sl description live in this module's docstring.
 - `gap_bridge.py`, `extract.py`, `gap/parse.py`, `bdd_utils.py` — decomposition
   pipeline and buddy-BDD stability.
 
