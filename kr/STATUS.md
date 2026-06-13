@@ -325,8 +325,9 @@ unfolding that DAG.
   (`Ga`, `a U b`, `F(a&b)`, `G(a->Xb)`, `GFa`, `FGa`) declines → BLS. **Survey
   (`logs/survey_wire_acc_2026-06-13`): the ONLY verdict change is `X(a&Xa)`
   UNVERIFIED→True; 0/35 FALSE, zero regressions; audit CLEAN.** After this the
-  ONLY non-True case in the MP survey is `FGa|FGb` (persistence-union absorption,
-  recurrent, over the cap). **Scope measured** (`probe_acc_fuzz`, 3×60 randltl
+  only non-True case left was `FGa|FGb` (persistence-union absorption, recurrent,
+  over the cap) — since cracked by the buchi2ltl gate (see the gate bullet
+  below; MP survey now a clean sweep). **Scope measured** (`probe_acc_fuzz`, 3×60 randltl
   through the real workflow; report in `dag_folding.md` "Acc(c) config-indexing"):
   gate rate ~24% but the fired cases are almost all TRIVIAL (boolean / 1-2×X /
   bounded decompose-pieces) where BLS is already tiny — the high-value
@@ -335,6 +336,57 @@ unfolding that DAG.
   reaches the bounded reach wall). Caveat: Spot ⊤/⊥ oracle in the construction
   path (bounded, on the small input) — the one departure from "Spot for
   hash-consing only"; a structural sink-reachability test could replace it (TODO).
+- **buchi2ltl heuristic gate — WIRED into the decompose dispatcher, default ON
+  (2026-06-14). Cracks the last MP wall `FGa|FGb`; the MP survey is now a clean
+  sweep.** `kr/heuristic_gate.py` `try_heuristic_gate(aut)` is the SINGLE seam
+  between the two paths (the kr core operators import nothing from `buchi2ltl/`;
+  the old "never mix" rule is retired). `decompose_recombine._dispatch` tries it
+  FIRST at every node — the raw input automaton AND every split piece — before
+  the cascade; a declining node still splits below, so the heuristic also sees
+  the pieces (the new idea: buchi2ltl was never combined WITH decomposition).
+  - **Soundness is a composition of sound steps, NO per-call equiv check:**
+    arbitrary HOA →(Spot `postprocess` to TGBA, language-preserving)→ buchi2ltl
+    (sound-by-construction — its f2/t2 fragments self-validate by round-trip
+    equivalence and it returns UNSUPPORTED rather than a wrong formula). The
+    bounded equiv check is kept only as an OPT-IN audit (`KR_GATE_VERIFY`,
+    default OFF; on, the gate re-checks every adopted candidate against its
+    small node automaton and counts `rejected`). **Audited at scale
+    (`fuzz_gate_decompose.py`, VERIFY=1, 3 seeds ≈170 randltl formulas / 191
+    piece-adoptions): 0 equiv=FALSE, 0 rejections, ~81% adopt rate**
+    (`logs/fuzz_gate_seed{1,2,3}_2026-06-14`). The bounded TGBA conversion is the
+    same "Spot on the small input" departure already accepted for Acc(c) — never
+    the translate-the-giant-output wall.
+  - **Why determinize-then-gate is NOT enough:** buchi2ltl's backward labeling
+    exploits the (often nondeterministic) translate-style TGBA, which
+    `_to_split_form`'s determinization destroys — determinized coBüchi (`FGa|FGb`)
+    defeats it. So the gate runs on the RAW input first (heuristic-friendly form),
+    then on the determinized split pieces. Sound regardless: TGBA conversion is
+    language-preserving.
+  - **Adopted output is simplified through `_simp_f`.** buchi2ltl does NOT wire
+    Spot's LTL simplifier, so its raw output is syntactically padded (`Fa|Gb`
+    emits a 5-temporal form `((!a&b)U(a|...))|(G(!a&b)&GF(!a&b))` that
+    simplifies to the 2-temporal `(!a&b)W(a|(!b&XFa))`). Every other kr node
+    passes through `_simp_f`; the gate routes its candidate through it too so
+    adopted formulas are on equal footing with the cascade. This removed two
+    apparent obligation-case regressions (`Fa|Gb`/`Ga|Fb` raw 5→2) AND the `Fa`
+    cosmetic enlargement; `probe_gate_inspect.py` shows the before/after.
+  - **Results (size A/B on the decompose path, gate ON vs OFF,
+    `logs/survey_sizes_gate_{on,off}_2026-06-14`; distinct temporals = 32-acc-cap
+    driver):** `FGa|FGb` **2779→3** (tree 3.2×10¹⁷→6 — the last wall collapses);
+    `G(a->Xb)` 23→1; `G(a->Xa)` 30→2; `Ga|Gb` 18→3; `GFa->GFb` 19→4;
+    `GFa&GFb&GFc` tree 46→8 / 9→4; `(aUb)|Gc` 9→3; `Fa&Gb` 7→2. Totals over 35
+    cases: distinct temporals **2997→114 (−96%)**, DAG 16376→494, tree
+    3.2×10¹⁷→1951. **Zero regressions** (13 cases smaller, 22 unchanged, 0
+    larger — `compare_sizes.py`). The earlier apparent `F(a&Xb)` regression was a
+    same-process memo-contamination artifact in the test harness — the fresh
+    per-subprocess census is 40 either way (gate declines it; kr carries it).
+  - **Gates:** r4 audit CLEAN; MP survey `logs/survey_gate_buchi2ltl_2026-06-14`
+    **0/35 equiv=FALSE, every case True** (the previously-failing set —
+    `F(a&Xb)`, `G(p->(qUr))`, `G(a->Xa)`, `GFa&GFb&GFc`, `G(a->Fb)`/`G(a|Fb)`,
+    `FGa|FGb` — all flip True). Gate `KR_GATE_BUCHI2LTL` (default ON; =0 restores
+    the pure kr decompose path). Side-by-side comparison of the two paths:
+    `testing/run_mp_through_buchi2ltl.py` (30/35 handled standalone, 0 FALSE; the
+    5 it declines whole are carried by kr under the gate).
 - **Per-DAG-node memoized simplification (2026-06-12, the "A" iteration).**
   `_simp_f` simplifies each hash-consed node ONCE (id-keyed memo + the shared
   tl_simplifier's internal cache); operators build bottom-up so every call
@@ -362,16 +414,17 @@ added: `Xa` 3L → `XXa` 4L → `XXXa` 5L → `X(a & Xa)` 5L.
   zero equiv=FALSE, zero regressions vs the monolithic baseline, and the
   acceptance-driven walls VERIFY**: `GFa&GFb`, `(aUb)|Gc`, `(GFa&FGb)`,
   `GFa->GFb`, `G(a->Fb)&G(c->Fd)` (L=7) all equiv=True; `XXXa` at 5 levels and
-  `G(a->Xb)`/`Ga|Gb` end-to-end. The residual non-True split is now exactly the
-  REACH/cascade-driven cases (single piece, decomposition no-ops — the P0 fold
-  job) plus the acceptance-ABSORPTION cases:
-  - SPOT_TIMEOUT: `G(a->Xa)` (1.5M, Spot slow); `GFa&GFb&GFc` (30 temporals near
-    the cap — compositional SOUND, see below).
-  - 32-acc: `F(a&Xb)` (census 74 — reach-driven, one piece).
-  - UNVERIFIED_SIZE: `X(a&Xa)` 1.5×10⁹ (reach-driven); `FGa|FGb` 2⁶⁰
-    (persistence-union absorption — folds to one co-Büchi, no split).
-  Monolithic path (`KR_DECOMPOSE=0`) unchanged: those four walls stay
-  UNVERIFIED (`GFa&GFb` 9.1×10¹⁶ etc.) — the A/B confirms the win is the split.
+  `G(a->Xb)`/`Ga|Gb` end-to-end.
+  - **With the buchi2ltl gate (default ON, 2026-06-14) the MP survey is a CLEAN
+    SWEEP: every case equiv=True** (`logs/survey_gate_buchi2ltl_2026-06-14`),
+    including the entire former residual — `F(a&Xb)`, `G(p->(qUr))`, `G(a->Xa)`,
+    `GFa&GFb&GFc`, `G(a->Fb)`/`G(a|Fb)`, and the last wall `FGa|FGb`
+    (persistence-union absorption, 2779→3 temporals). See the gate bullet above.
+  - Pure-kr A/B (gate OFF, `KR_GATE_BUCHI2LTL=0`): the residual was the
+    REACH/cascade-driven single-piece cases (`F(a&Xb)`, `X(a&Xa)`, `G(a->Xa)` —
+    the P0 fold job) plus the acceptance-ABSORPTION `FGa|FGb` (folds to one
+    co-Büchi, no split); the gate now carries all of them. Monolithic path
+    (`KR_DECOMPOSE=0`) unchanged — the A/B confirms the wins are split + gate.
 - **Semantic grounding (`trace_fin_semantics`, cover-aware — GTs on the config
   semiautomaton): zero contradictions across every probed case at every
   depth** (`GFa`, `a U b`, `Fa & Gb`, `Ga | Fb`, `Xa` fully OK; `G(a->Xb)`,
