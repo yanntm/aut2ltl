@@ -116,6 +116,17 @@ def reconstruct_ltl_paper_style(casc: Cascade) -> "spot.formula":
     back here. Gate KR_DISPATCH_BUCHI (default ON); =0 restores the pure Muller
     form (e.g. for size A/B baselines).
     """
+    # Weak (Δ₁) / looping (Σ₁/Π₁): EXPERIMENTAL, OFF by default. Placed BEFORE
+    # Büchi/coBüchi because weak languages are Büchi AND coBüchi recognizable —
+    # those would otherwise claim them first — so weak only ever fires when its
+    # gate is explicitly enabled. The cascade weak form is a size regression (the
+    # residual is reach-driven); kept in, flagged off, for A/B against the coming
+    # config-indexed Acc(c) weak-class construction. Gate KR_DISPATCH_WEAK.
+    if os.environ.get("KR_DISPATCH_WEAK", "0") != "0":
+        from .acceptance_dispatch import reconstruct_weak
+        phi = reconstruct_weak(casc)
+        if phi is not None:
+            return phi
     if os.environ.get("KR_DISPATCH_BUCHI", "1") != "0":
         from .acceptance_dispatch import reconstruct_buchi
         phi = reconstruct_buchi(casc)
