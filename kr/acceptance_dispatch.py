@@ -7,9 +7,8 @@ explosive one: it enumerates good config-sets G and, per G, asserts the inf-set
 is *exactly* G via ⋀_{C∈G}¬Fin(C) ∧ ⋀_{C∉G}Fin(C). For the simpler acceptance
 classes Theorem 2 gives a direct φ that avoids both explosions.
 
-First class implemented here: **Büchi** (recurrence, `Π₂`). For a deterministic
-Büchi cascade, acceptance is "some accepting config is visited infinitely
-often", so
+**Büchi** (recurrence, `Π₂`). For a deterministic Büchi cascade, acceptance is
+"some accepting config is visited infinitely often", so
 
     φ_Büchi := ⋁_{C ∈ accepting configs} ¬Fin(C)              (§9.3, Π₂)
 
@@ -19,8 +18,21 @@ often", so
 C contributes `¬Fin(C) ≡ false`, harmless). Returns None when the cascade is
 not Büchi so the caller falls back to the Muller path.
 
-Probe/verify: kr/testing/probe_buchi_dispatch.py (equiv vs original AND vs the
-Muller output, plus size A/B). Other classes (coBüchi/looping/weak) are TODO.
+**coBüchi** (persistence, `Σ₂`) is the mirror: acceptance is `Inf(ρ) ∩ Marked =
+∅` (the rejecting/marked configs are visited only finitely), so
+
+    φ_coBüchi := ⋀_{C ∈ marked configs} Fin(C)               (§9.3, Σ₂)
+
+— exact (no strongly-connected argument needed; a transient marked C contributes
+`Fin(C) ≡ true`, harmless). GATE SUBTLETY: `decompose_aut`'s parity normalization
+turns the natural `Fin(0)` into `Inf(0) | Fin(1)`, on which `acc().is_co_buchi()`
+is False — so the gate recovers the natural acceptance via
+`postprocess(.,"generic")` and tests `is_co_buchi` there (the `postprocess(.,
+"coBuchi")` variant is UNSOUND — a recurrence cascade like GFa passes it). Büchi
+is tried first, so coBüchi only sees genuinely-not-Büchi cascades.
+
+Probe/verify: kr/testing/probe_buchi_dispatch.py and probe_cobuchi_dispatch.py
+(equiv vs original, size A/B, gate). looping/weak are TODO.
 """
 
 from __future__ import annotations
@@ -28,7 +40,7 @@ from typing import Optional
 
 import kr.reachability_operators as _ops
 from kr.fin import fin_c
-from kr.ltl_builders import _Or, _Not, _ff, _simp_f, _tree_size_f
+from kr.ltl_builders import _And, _Or, _Not, _tt, _ff, _simp_f, _tree_size_f
 from kr.cascade import Cascade
 
 
@@ -39,6 +51,22 @@ def is_buchi_cascade(casc: Cascade) -> bool:
         return False
     try:
         return bool(casc.original_aut.acc().is_buchi())
+    except Exception:
+        return False
+
+
+def is_cobuchi_cascade(casc: Cascade) -> bool:
+    """True iff the cascade's language is coBüchi-recognizable (persistence), so
+    the direct coBüchi dispatch applies. Tested on the NATURAL acceptance recovered
+    via `postprocess(.,"generic")` — NOT on the cascade's parity-normalized
+    condition (`Inf(0)|Fin(1)`, on which `is_co_buchi()` is False) and NOT via
+    `postprocess(.,"coBuchi")` (unsound: recurrence cascades pass it)."""
+    if casc.num_levels == 0 or casc.original_aut is None:
+        return False
+    try:
+        import spot
+        gen = spot.postprocess(casc.original_aut, "deterministic", "generic")
+        return bool(gen.acc().is_co_buchi())
     except Exception:
         return False
 
@@ -82,4 +110,21 @@ def reconstruct_buchi(casc: Cascade) -> Optional["spot.formula"]:
     return res
 
 
-__all__ = ["is_buchi_cascade", "reconstruct_buchi"]
+def reconstruct_cobuchi(casc: Cascade) -> Optional["spot.formula"]:
+    """Direct coBüchi φ = ⋀_{C ∈ marked configs} Fin(C), or None if the cascade
+    is not coBüchi (persistence). α = `cobuchi_finite_configs()`, the cover-aware
+    "visit finitely" set (dual of the Büchi reader). Empty α (nothing must be
+    visited finitely) means every run is accepting -> `true`."""
+    if not is_cobuchi_cascade(casc):
+        return None
+    _reset_ops(casc)
+    fin_cfgs = sorted(casc.cobuchi_finite_configs())
+    if not fin_cfgs:
+        return _tt()    # coBüchi with no marked config -> all runs accept
+    res = _simp_f(_And(*[fin_c(c, casc) for c in fin_cfgs]))
+    _ops.PAPER_MAX_LTL_SIZE = _tree_size_f(res)
+    return res
+
+
+__all__ = ["is_buchi_cascade", "reconstruct_buchi",
+           "is_cobuchi_cascade", "reconstruct_cobuchi"]
