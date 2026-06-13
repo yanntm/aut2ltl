@@ -17,13 +17,47 @@ Soundness — a composition of sound steps, NO per-call equivalence check:
                    --(buchi2ltl, self-validating)-->            formula
 
 buchi2ltl's input form is a TGBA; our node may carry any acceptance, so we ask
-Spot to make it a TGBA (language-preserving). buchi2ltl is sound by
-construction — its f2/t2 sub-heuristics validate their fragments by round-trip
-language equivalence and it returns UNSUPPORTED (None / raises) rather than
-emitting an unsound formula. We confirmed this empirically: the opt-in audit
-check below (`KR_GATE_VERIFY`) found ZERO rejections across the full MP survey,
-so it is OFF by default. Flip it on to re-audit (it then declines, and counts,
-any candidate not are_equivalent to the node automaton).
+Spot to make it a TGBA (language-preserving).
+
+WHAT buchi2ltl ACTUALLY IS (so this is not misread again — sl is the core, NOT
+a guess-and-check heuristic):
+
+  * `sl` (self-loop / semi-linear backward labeling, `buchi2ltl/reconstruction.py`
+    `label`) is the CORE and is an EXACT state-elimination translation. For each
+    state it partitions outgoing edges into self-loops and exits, recurses
+    (memoized) on the exit targets, and assembles the language from that state by
+    fixed rules:
+        - self-loops only, accepting:        G(⋁self) & GF(⋁acc)
+          (one GF per acceptance set for generalized Büchi)
+        - self-loops + exits, accepting:     [G(⋁self) & GF(⋁acc)] | (⋁self U ⋁exit)
+          (the stay-forever-vs-leave dichotomy)
+        - non-accepting self-loops + exits:  (⋁self) U (⋁exit)
+        - exits only:                        ⋁ (cond & X succ)
+    with per-edge downstream invariants conjoined.
+    This is EXACT precisely on the VERY-WEAK (1-weak) fragment — automata whose
+    only cycles are self-loops (every nontrivial SCC is a single self-looping
+    state); there the U / G / GF encoding is the standard provably-correct
+    translation. OFF that fragment sl DECLINES: a state re-entered while on the
+    recursion stack (`visiting`), or a successor inside a genuine multi-state SCC
+    with no validated fragment (`bad_states`), yields the `UNSUPPORTED` sentinel,
+    which poisons upward (any compound term containing it collapses the whole
+    state). sl never emits a formula for a structure it cannot translate exactly
+    — it fails loudly. So its soundness is BY CONSTRUCTION (exact-on-fragment +
+    decline-otherwise), not post-hoc checking.
+
+  * `f2` (`size2_overapprox`) and `t2` (`terminal_2scc`) are a SEPARATE,
+    guess-and-check layer: they PROPOSE an LTL fragment for a 2-state / terminal
+    SCC and VALIDATE it by language equivalence before sl is allowed to use it
+    (injected as a pre-validated `scc_fragments[q]`). Sound because verified — a
+    wrong guess is simply not adopted.
+
+Net: the gate's adopted output is sound because sl is exact on its fragment and
+f2/t2 are verify-before-use. The opt-in audit (`KR_GATE_VERIFY`, default OFF;
+re-checks every adopted candidate against its node automaton and counts
+`rejected`) is CONFIRMATION, not the foundation — it found ZERO rejections over
+~170 randltl formulas (`fuzz_gate_decompose.py`). Combining the heuristic WITH
+decomposition is the lever: decomposition exposes pieces that fall into the
+very-weak sl fragment (or f2/t2), and the kr cascade carries the rest.
 
 This module is the ONE place kr touches buchi2ltl; the core operators stay pure.
 """
