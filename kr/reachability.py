@@ -104,7 +104,23 @@ def reconstruct_ltl_paper_style(casc: Cascade) -> "spot.formula":
     good_Ms come from Spot's scc_info on non-rejecting SCCs of D (those with accepting
     cycles) -- enumerating the recurrent sets Spot exhibits on D, not blind powerset.
     Keeps #terms small.
+
+    Acceptance dispatch fast-path (§9.3 / Theorem 2): before assembling the
+    explosive Muller DNF, try a direct hierarchy-class φ that drops the Fin web.
+    Currently the Büchi (Π₂) class — `reconstruct_buchi` returns the direct
+    ⋁_{C∈α}¬Fin(C) for Büchi cascades and None for every other class (then we
+    fall through to the Muller assembly). This is the single TOP-LEVEL hook: it
+    covers both `reconstruct_bls` and the decompose front end (both call this
+    function per piece), and it cannot fire inside the Muller DNF's own fin_c
+    computation because that runs in the operators/fin modules, which never call
+    back here. Gate KR_DISPATCH_BUCHI (default ON); =0 restores the pure Muller
+    form (e.g. for size A/B baselines).
     """
+    if os.environ.get("KR_DISPATCH_BUCHI", "1") != "0":
+        from .acceptance_dispatch import reconstruct_buchi
+        phi = reconstruct_buchi(casc)
+        if phi is not None:
+            return phi
     # reset counters owned by reachability_operators
     import kr.reachability_operators as _ops
     _ops.PAPER_REACH_CALLS = 0
