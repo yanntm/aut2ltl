@@ -340,10 +340,20 @@ unfolding that DAG.
   (2026-06-14). Cracks the last MP wall `FGa|FGb`; the MP survey is now a clean
   sweep.** `kr/heuristic_gate.py` `try_heuristic_gate(aut)` is the SINGLE seam
   between the two paths (the kr core operators import nothing from `buchi2ltl/`;
-  the old "never mix" rule is retired). `decompose_recombine._dispatch` tries it
-  FIRST at every node — the raw input automaton AND every split piece — before
-  the cascade; a declining node still splits below, so the heuristic also sees
-  the pieces (the new idea: buchi2ltl was never combined WITH decomposition).
+  the old "never mix" rule is retired). **Gate goes UNDER decomposition
+  (`KR_GATE_UNDER_DECOMP`, default ON, 2026-06-14):** `decompose_recombine`
+  splits FIRST and applies the gate only to the leaves that no longer split —
+  so a decomposable input is always cut into pieces (each then gated or
+  cascaded), even when the gate could take the whole. `=0` restores the old
+  order (gate first at every node, short-circuiting the split). Exception kept:
+  when the ROOT does not split, the gate runs on the RAW (pre-determinization)
+  input — see "determinize-then-gate" below. This makes the reported technique
+  honest: a case `split_report` says `or(2)` now actually decomposes
+  (`tech=or+sl`), instead of being silently taken whole by the gate. Size
+  effect is a wash (DAG 494→491, temporal 114→119): OR-unions get tighter
+  (`Fa|Gb` tree 13→8 — strength split removes the `W`-tangle), AND-conjunctions
+  get the un-factored form (`GFa&GFb` vs the gate-whole `G(Fa&Fb)`, +1 temporal),
+  all far under the cap and stylistically equivalent.
   - **Soundness is a composition of sound steps, NO per-call equiv check:**
     arbitrary HOA →(Spot `postprocess` to TGBA, language-preserving)→ buchi2ltl.
     buchi2ltl's CORE is `sl` (self-loop backward labeling) — an EXACT
@@ -362,12 +372,18 @@ unfolding that DAG.
     (`logs/fuzz_gate_seed{1,2,3}_2026-06-14`). The bounded TGBA conversion is the
     same "Spot on the small input" departure already accepted for Acc(c) — never
     the translate-the-giant-output wall.
-  - **Why determinize-then-gate is NOT enough:** buchi2ltl's backward labeling
-    exploits the (often nondeterministic) translate-style TGBA, which
-    `_to_split_form`'s determinization destroys — determinized coBüchi (`FGa|FGb`)
-    defeats it. So the gate runs on the RAW input first (heuristic-friendly form),
-    then on the determinized split pieces. Sound regardless: TGBA conversion is
-    language-preserving.
+  - **Why determinize-then-gate is NOT enough (measured, `probe_gate_redet.py`,
+    2026-06-14):** buchi2ltl's backward labeling exploits the (often
+    nondeterministic) translate-style TGBA, which `_to_split_form`'s
+    determinization destroys. Re-asking Spot for `TGBA,Small,High` off the
+    determinized form does NOT recover a labelable automaton: `FGa|FGb` goes raw
+    3-state nondet Büchi (`Inf(0)`, buchi2ltl ok tree=13) → det 2-state coBüchi
+    (`Fin(0)`) → re-projected 4-state nondet Büchi that buchi2ltl DECLINES — a
+    one-way loss. For every other surveyed case `raw`==`det` (translate already
+    minimal) so it is moot. Hence the gate runs on the RAW input exactly when the
+    root does not split (the determinization-sensitive cases are non-decomposable);
+    decomposable inputs are split first and the pieces gated. Sound regardless:
+    TGBA conversion is language-preserving.
   - **Adopted output is simplified through `_simp_f`.** buchi2ltl does NOT wire
     Spot's LTL simplifier, so its raw output is syntactically padded (`Fa|Gb`
     emits a 5-temporal form `((!a&b)U(a|...))|(G(!a&b)&GF(!a&b))` that
@@ -393,6 +409,18 @@ unfolding that DAG.
     the pure kr decompose path). Side-by-side comparison of the two paths:
     `testing/run_mp_through_buchi2ltl.py` (30/35 handled standalone, 0 FALSE; the
     5 it declines whole are carried by kr under the gate).
+  - **Portfolio result struct (`kr.recon_result.ReconResult`, 2026-06-14).** kr
+    is now a portfolio (gate / and-split / or-split / acc / weak / buchi / cobuchi
+    / bls-Muller), so `reconstruct_decomposed` returns a `ReconResult` (`.formula`
+    + `.technique`, a deduped SET of the method tags that contributed) instead of
+    a bare formula. buchi2ltl's `reconstruct_ltl` returns the SAME struct (its
+    `sl`/`t2`/`f2` tokens). The set is threaded by reference down the dispatch
+    (MT-safe — no module-level recorder). Wired into both surveys' output as a
+    `tech=` column; the leaf method is recorded inside `reconstruct_ltl_paper_style`
+    (the only place it is known). API change: `reconstruct_decomposed(...).formula`
+    at all call sites. (The `ReconResult` lives in `kr/` and buchi2ltl imports it
+    lazily — a temporary cross-package edge to be lifted into a shared `util`
+    later; no load-time cycle since `import kr` does not import buchi2ltl.)
 - **kr UNDER sl — full-suffix delegation prototype (2026-06-14; orthogonal:
   `kr/sl_driven.py` + one optional `buchi2ltl` hook). The mirror of the decompose
   gate; attacks BLS's state-count explosiveness by handing kr SMALLER automata.**

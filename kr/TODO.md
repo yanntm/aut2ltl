@@ -223,12 +223,23 @@ fold pass → interning). Items below are the actionable queue.
     the gate** (language-preserving, on the small node) — acceptable like Acc(c).
     No per-call equiv check (sound-by-construction, audited 0/0 over ~170 randltl
     via `fuzz_gate_decompose.py`); `KR_GATE_VERIFY` keeps the audit one env away.
-  - **gate-vs-split order:** the gate is tried on the raw input first, then per
-    split piece. Simplifying the gate output (`_simp_f`) removed the only
-    obligation-case "regressions" (they were unsimplified-output artifacts, not
-    genuine — buchi2ltl skips Spot's simplifier). If a case ever shows split <
-    gate AFTER simplification, add per-node pick-smaller (build both, keep fewer
-    temporals — construction is cheap); none observed in the 35-case census.
+  - ~~**gate-vs-split order**~~ **gate goes UNDER decomposition now
+    (2026-06-14, `KR_GATE_UNDER_DECOMP`, default ON).** Decompose FIRST, gate the
+    leaves; raw-form gate only when the root does not split (the
+    determinization-sensitive cases — measured in `probe_gate_redet.py`). This
+    fixed the honesty bug the size census exposed: a case `split_report` called
+    `or(2)` used to be taken whole by the gate (`tech=sl`), now it actually
+    decomposes (`tech=or+sl`). Size A/B (`survey_sizes_underdecomp` vs
+    `survey_sizes_method`): wash (DAG 494→491, temporal 114→119) — OR-unions
+    tighter (`Fa|Gb` tree 13→8), AND-conjunctions un-factored (`GFa&GFb` vs
+    gate-whole `G(Fa&Fb)`, +1 temporal), all under cap & stylistically equal.
+    Parked: per-node pick-smaller (build gate-whole AND decomposed, keep fewer
+    temporals) would recover the AND factoring; not worth it at these magnitudes.
+  - **technique reporting (`ReconResult`) — DONE 2026-06-14.** `reconstruct_decomposed`
+    and buchi2ltl's `reconstruct_ltl` return `kr.recon_result.ReconResult`
+    (`.formula` + `.technique` set), wired into both surveys' `tech=` column.
+    Cross-package import edge (buchi2ltl→kr) deferred to a shared `util` —
+    `[[technique-report-struct]]`.
   - **adopt rate ~81%** on random formulas; the ~19% it declines (and the
     UNVERIFIED giants) are exactly the REACH/cascade cases kr carries — the two
     paths are complementary, gate for shape-friendly + decomposition, kr for the
