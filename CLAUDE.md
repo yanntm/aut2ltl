@@ -9,8 +9,11 @@ sl_driven) ← `aut2ltl/cli` + `__init__`. Tests live under `tests/` (`tests/kr`
 
 ## Orientation (don't duplicate here — follow the pointers)
 - `aut2ltl/kr/README.md` — entry point: doc map, pipeline, module map, testing tools.
-- `aut2ltl/kr/STATUS.md` — current state + the failing-case ladder.
+- `aut2ltl/kr/STATUS.md` — **current** state (lean, read this to start).
   `aut2ltl/kr/TODO.md` — work items.
+- `docs/HISTORY.md` — construction log (the dated DONE/WIRED/LANDED/reverted
+  record). Reference when you need the *why/when*; **do NOT read it to start a
+  session** — STATUS.md is the current snapshot.
 - `paper/automata-to-ltl-construction.md` — the construction reference.
 - `paper/Automata2LTL.txt` — ground truth for any formula-fidelity question
   (Sec 4.2 + Table 1 + Formulas 3/4/5 ≈ lines 440–1040). LLM summaries have twice
