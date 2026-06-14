@@ -16,7 +16,7 @@ See aut2ltl/kr/README.md, STATUS.md, algorithm.md .
 """
 
 from .cascade import Cascade, LevelInfo, make_trivial_cascade
-from .gap_bridge import (
+from .gap import (
     decompose_gens,
     decompose_aut,
     generate_gap_script,

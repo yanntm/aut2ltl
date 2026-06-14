@@ -5,7 +5,7 @@ The holonomy decomposition (and the Boker et al. LTL construction) operate on
 *deterministic complete* (semi)automata. This module provides helpers to turn
 such a Spot twa_graph into the list-of-images representation expected by SgpDec.
 
-The main entry point `decompose_aut` (in gap_bridge) now normalizes the input
+The main entry point `decompose_aut` (in gap.bridge) now normalizes the input
 to a deterministic *complete* minimized parity automaton using Spot before extraction.
 Spot's completion is used; it does not always add a sink. Any sink state that
 appears is just a normal state of the automaton.

@@ -36,7 +36,7 @@ from typing import Callable, List, Tuple
 
 import spot
 
-from aut2ltl.kr.gap_bridge import decompose_aut
+from aut2ltl.kr.gap import decompose_aut
 from .heuristic_gate import try_heuristic_gate
 from aut2ltl.kr.reachability import reconstruct_ltl_paper_style
 from aut2ltl.contract import ReconResult
