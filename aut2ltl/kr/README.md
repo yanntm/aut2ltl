@@ -1,4 +1,4 @@
-# kr/ — Krohn-Rhodes / Holonomy Cascade Path
+# aut2ltl/kr — Krohn-Rhodes / Holonomy Cascade Path
 
 This subtree implements the algebraic translation from counter-free deterministic
 ω-automata to LTL following:
@@ -12,9 +12,9 @@ components, or other shape-based rules. Everything is driven by the reset cascad
 partitions, the configuration mapping, and the inductive definition of the five
 reachability formulas + Fin(C) + acceptance assembly.
 
-The shape-based heuristic engine `buchi2ltl/` (backward labeling) is no longer kept
+The shape-based heuristic engine `aut2ltl/sl/` (backward labeling) is no longer kept
 strictly apart: it is wired into the decompose dispatcher as a **sound pre-filter
-gate** through the single seam `kr/heuristic_gate.py` (default ON). Its core, `sl`
+gate** through the single seam `aut2ltl/portfolio/heuristic_gate.py` (default ON). Its core, `sl`
 (self-loop / semi-linear backward labeling), is an EXACT state-elimination translation
 on the very-weak (1-weak) fragment — automata whose only cycles are self-loops — and
 DECLINES (`UNSUPPORTED`) on anything with a genuine multi-state cycle, so it is sound
@@ -22,9 +22,9 @@ by construction; its f2/t2 layer is a separate verify-before-use guess-and-check
 gate tries it per node (raw input + each split piece) and falls through to the cascade
 when it declines — decomposition exposes very-weak pieces, the algebraic cascade
 carries the multi-cyclic core. **Authoritative sl/soundness description:
-`kr/heuristic_gate.py` module docstring** (read it before re-reasoning about sl). As
+`aut2ltl/portfolio/heuristic_gate.py` module docstring** (read it before re-reasoning about sl). As
 the FoSSaCS'22 BLS construction has, to our knowledge, no prior practical
-implementation, this kr/ subtree is the first.
+implementation, this subtree is the first.
 
 ## Documentation map (read in this order)
 
@@ -32,10 +32,10 @@ implementation, this kr/ subtree is the first.
 |---|---|
 | `paper/automata-to-ltl-construction.md` | **The construction reference.** Concise, self-contained: definitions, Table-1 semantics, the five formulas, Fin(C), per-acceptance assembly, worked example, pitfalls. Verified against the paper text. |
 | `paper/Automata2LTL.txt` (+ `.pdf`) | **Ground truth.** pdftotext extraction; Section 4.2 + Table 1 + Formulas 3/4/5 are around lines 440–1040. Any formula-fidelity question is settled HERE, not in any summary. |
-| `kr/algorithm.md` | Why this construction, scope/policy for kr/ (no pattern matching), complexity recap, mapping to modules. |
-| `kr/STATUS.md` | Current state: what works, what fails, with the current minimal failing cases. |
-| `kr/TODO.md` | Forward-looking work items only (history lives in git log). |
-| `kr/dag_folding.md` | **Research direction (open):** why the construction explodes (measured), the DAG-vs-unfolding thesis, BDD-analogy gap analysis, candidate folding counter-measures, X-ladder benchmark protocol. |
+| `algorithm.md` | Why this construction, scope/policy for kr/ (no pattern matching), complexity recap, mapping to modules. |
+| `STATUS.md` | Current state: what works, what fails, with the current minimal failing cases. |
+| `TODO.md` | Forward-looking work items only (history lives in git log). |
+| `dag_folding.md` | **Research direction (open):** why the construction explodes (measured), the DAG-vs-unfolding thesis, BDD-analogy gap analysis, candidate folding counter-measures, X-ladder benchmark protocol. |
 
 Lesson learned (twice): LLM-generated paper summaries drift on case splits and guards.
 A previous 1767-line reference doc introduced two classes of formula errors
@@ -49,16 +49,16 @@ Spot automaton
 → normalize (in decompose_aut): deterministic complete minimized parity (min even),
   state-based acceptance ("sbacc" — required: the Muller condition is lifted over
   configurations, so the set of infinitely-visited states must determine acceptance)
-→ extract generators (one per concrete letter in 2^|AP|)        kr/extract.py
-→ self-contained GAP script (SgpDec HolonomyCascadeSemigroup;   kr/gap_bridge.py
+→ extract generators (one per concrete letter in 2^|AP|)        extract.py
+→ self-contained GAP script (SgpDec HolonomyCascadeSemigroup;   gap_bridge.py
   emits state lifts via AsHolonomyCoords, TRUE cascade transitions
   via lifted generators/OnCoordinates BFS-closed, and the cover map π
   via AsHolonomyPoint — holonomy coordinatization is a many-to-one
   cover, so config dynamics are never reconstructed through the lift;
   GAP RNG seeded for reproducible runs)
-→ parse to Cascade (coordinates REVERSED: SgpDec top-first ↔    kr/gap/parse.py
+→ parse to Cascade (coordinates REVERSED: SgpDec top-first ↔    gap/parse.py
   operators peel deepest-first with suffix context)
-→ reachability formulas + Fin(C) + assembly                     kr/reachability*.py
+→ reachability formulas + Fin(C) + assembly                     reachability*.py
 ```
 
 Construction policy: hash-consed `spot.formula` DAGs end-to-end, full
@@ -102,7 +102,7 @@ under a small subprocess budget (a stall is reported, never waited on).
   by bounded unroll (no reach/Fin, self-declines on recurrent configs → BLS) and
   **cracks the `X(a&Xa)` reach wall** (UNVERIFIED 5.1×10⁸ → literal, equiv=True).
   See STATUS + TODO P1.
-- `heuristic_gate.py` — the SINGLE seam to `buchi2ltl/`. `try_heuristic_gate(aut)`
+- `heuristic_gate.py` — the SINGLE seam to `aut2ltl/sl/`. `try_heuristic_gate(aut)`
   converts an arbitrary HOA to a TGBA (Spot, language-preserving), runs buchi2ltl's
   backward labeling (the exact `sl` core + the verify-before-use f2/t2 layer),
   simplifies the result through `_simp_f`, and returns the formula DAG or None.
@@ -115,15 +115,16 @@ under a small subprocess budget (a stall is reported, never waited on).
 ## Usage
 
 ```python
-from kr import reconstruct_decomposed
+from aut2ltl.portfolio import reconstruct_decomposed   # the portfolio front end
 import spot
 
-# Recommended top-level entry: automaton in, LTL formula DAG out.
+# Recommended top-level entry: automaton in, ReconResult out (.formula DAG +
+# .technique). The portfolio composes the kr engine with the sl gate.
 aut = spot.formula("GFa & GFb").translate()
-print(reconstruct_decomposed(aut))   # root decompose-and-recombine over BLS
+print(reconstruct_decomposed(aut).formula)   # root decompose-and-recombine over BLS
 
-# Lower-level, per-cascade: decompose then run the BLS construction directly.
-from kr import decompose_aut, reconstruct_bls
+# Lower-level, per-cascade: the PURE kr engine, decompose then run BLS directly.
+from aut2ltl.kr import decompose_aut, reconstruct_bls
 casc = decompose_aut(spot.formula("Fa").translate())
 print(casc)                          # summary + levels
 print(reconstruct_bls(casc))         # Boker-Lehtinen-Sickert construction
@@ -132,9 +133,9 @@ print(reconstruct_bls(casc))         # Boker-Lehtinen-Sickert construction
 ## Dependencies
 
 - `gap` on $PATH (GAP 4.12+) with SgpDec loadable (`LoadPackage("SgpDec")`).
-- Run `./kr/install.sh` once (user-local under ~/.gap/pkg).
+- Run `aut2ltl/kr/install.sh` once (user-local under ~/.gap/pkg).
 
-## Verification (kr/testing/)
+## Verification (tests/kr/)
 
 All scripts run from the project root and use subprocess isolation (Spot/buddy can
 segfault on state accumulation; rc 139 = segv). Placed scripts only — no /tmp,
@@ -174,7 +175,7 @@ no `python -c` one-liners.
 - `logs/` — committed baseline size censuses (before/after reference for fold work).
 
 One-shot probes (built to answer a single question) are committed, their
-finding recorded in `kr/STATUS.md`, then deleted — git history keeps them.
+finding recorded in `STATUS.md`, then deleted — git history keeps them.
 
 ## Notes
 
