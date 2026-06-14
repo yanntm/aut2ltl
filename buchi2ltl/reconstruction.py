@@ -788,7 +788,7 @@ def reconstruct_ltl(aut, scc_labeler=None):
     init = aut.get_init_state_number()
     final = label(init)
 
-    if not (isinstance(final, str) and final.startswith("UNSUPPORTED")):
+    if isinstance(final, str) and not final.startswith("UNSUPPORTED"):
         final = final.replace(" & X(true)", " X true")
         final = final.replace("X(true)", "X true")
         final = final.replace("G(true)", "G true")

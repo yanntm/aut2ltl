@@ -314,15 +314,24 @@ def find_nice_terminal_2sccs(aut):
             continue
 
         # O labels (allowed to be "true").
+        O_bdds = {}
         O_strs = {}
         for st in states:
-            _, o = _compute_outgoing_or(aut, st)
+            o_bdd, o = _compute_outgoing_or(aut, st)
+            O_bdds[st] = o_bdd
             O_strs[st] = o
 
-        # Build the (generalized) raw pattern.
-        terms = [f"({L_strs[st]} & X({O_strs[st]}))" for st in states]
-        disj = " | ".join(terms)
-        formula = f"G( ({disj}) )"
+        # Build the (generalized) pattern as a hash-consed spot.formula DAG:
+        #     G( OR_st ( L(st) & X O(st) ) )
+        # (formerly assembled as a string; built natively from the L/O BDDs).
+        d = aut.get_dict()
+
+        def _bf(bdd):
+            return spot.formula.ff() if bdd is None else spot.bdd_to_formula(bdd, d)
+
+        terms = [spot.formula.And([_bf(L_bdds[st]), spot.formula.X(_bf(O_bdds[st]))])
+                 for st in states]
+        formula = spot.formula.G(spot.formula.Or(terms))
 
         # Keep raw (no Spot simplification).
         simplified = formula
@@ -427,7 +436,8 @@ def validate_terminal_2scc(aut, nice_info):
     try:
         # Translate with the exact same options used everywhere else in the
         # project so that the comparison is apples-to-apples.
-        cand_aut = spot.formula(candidate).translate("GeneralizedBuchi", "Small", "High")
+        cand_f = candidate if isinstance(candidate, spot.formula) else spot.formula(candidate)
+        cand_aut = cand_f.translate("GeneralizedBuchi", "Small", "High")
         eq = spot.are_equivalent(small, cand_aut)
         if T2_TRACE:
             print(f"[T2]   are_equivalent(isolated_SCC, translate(candidate)) = {eq}")
