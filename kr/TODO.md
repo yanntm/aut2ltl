@@ -17,37 +17,25 @@ Analysis, measurements and OPEN questions behind these items live in
 `kr/dag_folding.md` (item numbering there: plumbing → vacuity pruning →
 fold pass → interning). Items below are the actionable queue.
 
-0. **buchi2ltl on hash-consed `spot.formula` DAGs (IN PROGRESS, 2026-06-14).**
-   **Done:** DAG-native engine in `buchi2ltl/reconstruction_dag.py`
-   (`reconstruct_ltl_dag`) — a TEMPORARY parallel module (shares the pure helpers;
-   `label()` builds `spot.formula` DAGs, splices an adopted scc_labeler formula
-   WITHOUT flattening). Cross-oracled against the string engine
-   (`probe_dag_oracle.py`): MP ladder 30 MATCH / 4 DECL_BOTH, randltl 95 MATCH /
-   5 DECL_BOTH, **0 divergences** — and the DAG output is consistently smaller
-   (Spot simplifies on construction). `sl_driven` is now WIRED to the DAG engine
-   (2026-06-14): it drives `reconstruct_ltl_dag` and its labeler returns the kr
-   `spot.formula` DAG directly (no `str()`), spliced without flattening. The
-   no-flatten payoff is confirmed in `probe_sl_compose` (all equiv=True): high-
-   sharing delegated cores stay tiny while kr-on-the-whole explodes —
-   `XX(G(a->Fb))` 21 nodes vs 1.2×10¹⁴-tree, `c U (G(a->Fb))` 28 nodes vs
-   TIMEOUT. **Remaining:** flip the default (route the gate path / a top-level
-   chooser to the DAG engine) + DELETE the string engine (keep only DAG). The
-   original problem statement:
-   buchi2ltl is string-based — `label()` concatenates strings and
-   `reconstruct_ltl` returns a string — so every formula it touches is FLATTENED.
-   This defeats kr's DAG-compactness exactly at the kr-under-sl delegation
-   boundary (`str(reconstruct_decomposed(A_q))` unfolds the kr DAG; cost is the
-   core's unfolded-tree size, not its DAG size — a high-sharing core would explode
-   `str()` before sl sees it). kr's representation is the right one; sl is just an
-   API over strings. Refactor `label()`/`reconstruct_ltl` to build and return
-   hash-consed `spot.formula` objects (`spot.formula.And/Or/X/G/U/...`) end to end:
-   - the scc_labeler returns a formula (not a string), spliced as a child node;
-   - `state_formula` holds formula objects; `_simp_f`/Spot simplify per node;
-   - the UNSUPPORTED sentinel stays a distinct marker (not a formula).
-   Validate: the existing gate (`test_heuristic_gate`) and the historical-failure
-   soundness audit (`probe_sl_soundness`) must stay clean; re-run `probe_sl_compose`
-   and confirm a high-sharing delegated core no longer flattens. Then sl-driven can
-   delegate arbitrarily explosive cores at DAG cost.
+0. ~~**buchi2ltl on hash-consed `spot.formula` DAGs**~~ **DONE 2026-06-14.**
+   buchi2ltl is now DAG-native end to end: `reconstruct_ltl` builds a hash-consed
+   `spot.formula` DAG (t2 fragments included — `terminal_2scc` emits formula DAGs),
+   and an adopted `scc_labeler` formula is spliced as a child node WITHOUT
+   flattening. `sl_driven` drives it and its labeler returns the kr `spot.formula`
+   DAG directly (no `str()`), so the kr-under-sl delegation boundary no longer
+   flattens: `probe_sl_compose` all equiv=True, high-sharing cores stay tiny while
+   kr-on-the-whole explodes — `XX(G(a->Fb))` 21 nodes vs 1.2×10¹⁴-tree,
+   `c U (G(a->Fb))` 28 nodes vs TIMEOUT. Built as a temporary parallel module first
+   and cross-oracled against the old string engine (MP ladder + randltl, 0
+   divergences); the size census on the default decompose path is byte-identical to
+   the pre-flush baseline (pure engineering refactor). The string engine and the
+   cross-oracle (`reconstruction_dag.py`, `probe_dag_oracle.py`) were then DELETED;
+   the engine was folded into `reconstruction.py` with the shared automaton helpers
+   split into `reconstruction_helpers.py`. Gates green (r4 audit CLEAN, survey 70
+   equiv=True / 0 fail). **Spin-off (agreed, next):** return a result struct with
+   `.formula` + a `.technique` set (accumulating gate/and/or/buchi/cobuchi/bls/…)
+   instead of a bare formula, and wire it into the surveys (see
+   `[[technique-report-struct]]`).
 
 1. **Fold pass — step A DONE 2026-06-12** (per-DAG-node memoized
    tl_simplifier, hybrid full≤2000-nodes/basics policy + reach dead-tail

@@ -402,7 +402,7 @@ unfolding that DAG.
   reattaches the label. sl does the very-weak envelope exactly + tiny; kr does the
   multi-cyclic core on a smaller automaton (kr cost ~ cascade depth ~ state count).
   - **Seam:** optional `scc_labeler` callback on the DAG-native engine
-    `buchi2ltl.reconstruction_dag.reconstruct_ltl_dag` (the labeler returns a
+    `buchi2ltl.reconstruction.reconstruct_ltl` (the labeler returns a
     `spot.formula` DAG, spliced as a child node WITHOUT flattening). Delegation at
     the `label()` entry, keyed on multi-state-SCC membership (`spot.scc_info`), so
     it covers BOTH the bad_states and the `visiting` decline paths.
@@ -418,19 +418,23 @@ unfolding that DAG.
     TIMEOUT/explode → sl-driven **5**. Mixed where the prefix entangles with the
     core (`a U (F(b&Xc))` 40 vs kr-full 30 — the until's multi-state SCC spans
     prefix+core so A_q ≈ whole).
-  - **Boundary flattening — RESOLVED 2026-06-14 (DAG-native engine wired).**
+  - **Boundary flattening — RESOLVED 2026-06-14 (buchi2ltl is now DAG-native).**
     Formerly buchi2ltl was STRING-based, so the delegated kr DAG was FLATTENED at
     the boundary via `str(reconstruct_decomposed(A_q))` — cost was the core's
     unfolded-TREE size, and a high-sharing core (small DAG, huge tree) would
-    explode `str()` before sl ever saw it. Now `sl_driven` drives the DAG-native
-    `reconstruct_ltl_dag` and the labeler returns the kr `spot.formula` DAG
-    directly (no `str()`), spliced as a child node. The payoff shows in
-    `probe_sl_compose`: `XX(G(a->Fb))` kr-on-full 5596 DAG / **1.2×10¹⁴ tree** →
-    sl-driven **21 nodes**; `c U (G(a->Fb))` kr-on-full TIMEOUT/explode →
-    sl-driven **28**; `XX(F(a&Xb))` kr-on-full 2957 DAG / **1.1×10⁹ tree** → 183.
-    All equiv=True. The DAG engine is cross-oracled against the string engine
-    (`probe_dag_oracle.py`, 0 divergences); flipping it the default + deleting the
-    string engine is the remaining TODO-P0 step.
+    explode `str()` before sl ever saw it. `reconstruct_ltl` now builds a
+    hash-consed `spot.formula` DAG end to end (t2 fragments included), and the
+    `scc_labeler` returns the kr `spot.formula` DAG directly (no `str()`), spliced
+    as a child node. The payoff shows in `probe_sl_compose`: `XX(G(a->Fb))`
+    kr-on-full 5596 DAG / **1.2×10¹⁴ tree** → sl-driven **21 nodes**;
+    `c U (G(a->Fb))` kr-on-full TIMEOUT/explode → sl-driven **28**; `XX(F(a&Xb))`
+    kr-on-full 2957 DAG / **1.1×10⁹ tree** → 183. All equiv=True. The DAG engine
+    was cross-oracled against the (now deleted) string engine across the MP ladder
+    + randltl with 0 divergences; size census on the default decompose path is
+    byte-identical to the pre-flush `gate_on` baseline (pure engineering refactor).
+    The engine was folded into `reconstruction.py` (shared automaton helpers split
+    into `reconstruction_helpers.py`); the parallel `reconstruction_dag.py` and the
+    `probe_dag_oracle.py` cross-oracle were removed.
   - Not wired into any default path (a top-level chooser between the gate-path and
     sl-driven, plus a scale soundness fuzz, are later steps).
 - **Per-DAG-node memoized simplification (2026-06-12, the "A" iteration).**
