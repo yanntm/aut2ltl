@@ -61,31 +61,54 @@ intra-engine dispatch likely stays in the engine, but read it off the code);
 (5) clean API separation is the goal — Protocol vs ABC vs registry is just the
 Python realization, chosen when we implement.
 
+**Target layout (refined 2026-06-14, user direction — SIBLING packages, decided).**
+- **`kr/`** = ONLY the pure cascade-based FoSSaCS construction (the holonomy/Muller
+  engine): cascade, reachability(_operators), fin, config_graph, acceptance_dispatch,
+  gap_bridge, extract, ltl_builders, bdd_utils, simplify/. ALL heuristics leave it.
+  `kr` stops exporting `reconstruct_decomposed`; its public API is the pure engine.
+- **the heuristic engine** (buchi2ltl's sl/f2/t2 backward labeling) stays a separate
+  sibling package.
+- **`decompose/`** (its own folder — likely the composition root) = the portfolio /
+  combinators: `decompose_recombine`, `heuristic_gate`, `sl_driven`. Mixes the two
+  engines; owns the runtime mutual recursion.
+- **contract floor** = `ReconResult` + `Translator`, in a shared place both engines
+  and the portfolio import (today `kr/recon_result.py`; to be lifted out so `kr`
+  proper has no portfolio coupling). Resolves the `buchi2ltl→kr` edge
+  (`[[technique-report-struct]]`).
+
 **Incremental, code-driven plan (each step small; gates green after each —
 `test_kr_r4_audit` CLEAN + `survey_mp_cascade` previously-True stay True).**
-1. **Reify the contract in place (no folders move yet).** Give `ReconResult` a
-   `status`; replace the `UNSUPPORTED`-in-`.formula` convention at its ~4 call
-   sites (heuristic_gate, sl_driven, the sl probes, the root CLIs); write the
-   `Translator` signature down as the documented contract. Reading those call
-   sites IS the survey that tells us where the real seams are. (Also a genuine
-   cleanup independent of any reorg.)
-2. **Then decide the first folder move from what step 1 taught us** — most likely
-   `core/` (or `aut2ltl/api`) for the contract, since both engines already depend
-   only on `recon_result`. Resolves the deferred `[[technique-report-struct]]`
-   import-edge item.
+1. ~~**Reify the contract in place (no folders move yet).**~~ **DONE 2026-06-14.**
+   `ReconResult` got an explicit `status` (OK / DECLINED) + `decline()` /
+   `.declined` / `.ok`; the `UNSUPPORTED`-in-`.formula` sentinel is gone from the
+   contract boundary (engines still use the string INTERNALLY in their recursion,
+   translated to DECLINED at the boundary return). Migrated call sites:
+   `buchi2ltl.reconstruction.reconstruct_ltl` (boundary return), `heuristic_gate`,
+   `sl_driven`, the two root CLIs (`buchi2ltl.py`, `evaluate.py`). The `Translator`
+   Protocol (callable `twa -> ReconResult`, invariant "language-faithful OR
+   declines, never wrong") is written down in `recon_result.py`. A transitional
+   legacy-string sniff in `.declined` keeps every intermediate state green; drop it
+   once nothing emits the sentinel at a boundary. Gates: r4 audit CLEAN, MP survey
+   0 failing / clean sweep (`logs/survey_parch_step1_2026-06-14.txt`). Reading the
+   call sites confirmed the seams: the only static cross-edge is the boundary
+   `buchi2ltl→kr.recon_result` import; everything else is the runtime callbacks.
+   Standing convention from this step: type signatures explicitly (user pref).
+2. **Then decide the first folder move from what step 1 taught us** — the contract
+   floor (`ReconResult`/`Translator`) out of `kr/` into the shared place both
+   engines import, since that is the only static cross-edge. Resolves the deferred
+   `[[technique-report-struct]]` import-edge item.
 3. **Move the portfolio (the "daddy") up** — `heuristic_gate`,
-   `decompose_recombine`, `sl_driven` out of `kr/` into the composition layer;
+   `decompose_recombine`, `sl_driven` out of `kr/` into the `decompose/` layer;
    `kr` stops exporting `reconstruct_decomposed` (its public API shrinks to the
    pure algebraic engine). Combinator shape emerges here.
-4. **Fold the root CLIs** (`buchi2ltl.py`, `evaluate.py`) into the `aut2ltl`
-   front-end with the flag surface.
+4. **Fold the root CLIs** (`buchi2ltl.py`, `evaluate.py`) into the front-end with
+   the flag surface.
 
-**Open / to decide as we go.** (a) physically NESTED (`aut2ltl/kr/…`, big import
-churn) vs SIBLING packages (`aut2ltl`+`kr`+`buchi2ltl`+`core` top-level, `aut2ltl`
-imports the others — much less churn; recommended) — set this before any move;
-(b) does `buchi2ltl` keep its top-level identity or become "the sl engine"
-alongside `kr`; (c) whether the CLIs collapse into one `aut2ltl/cli.py`;
-(d) combinator placement (see decision 4). Expect iteration.
+**Open / to decide as we go.** (a) ~~nested vs sibling~~ DECIDED: SIBLING packages
+(`kr` + heuristic engine + `decompose` + contract floor top-level). (b) does
+`buchi2ltl` keep its top-level identity or become "the sl engine" alongside `kr`;
+(c) whether the CLIs collapse into one `cli.py`; (d) combinator placement (likely
+all in `decompose/` since the mixing is cross-engine). Expect iteration.
 
 ## P0 — practice beats the bound (active)
 
