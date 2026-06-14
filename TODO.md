@@ -2,11 +2,15 @@
 
 Project-level work items. Engine-level items live in `aut2ltl/kr/TODO.md`.
 
-## RESUME HERE — kr/ CascadeTranslator refactor (2026-06-14)
+## Architecture refactor — DONE (2026-06-14)
 
-We are turning `kr/` into a clean OO architecture: a contract floor, self-gating
-translator *members*, and a composition combinator. Most of it is done and
-pushed (master @ `b7349f5`); the **pipeline sweep is the last piece**.
+The OO refactor is complete: a contract floor (`Language` + `LTLFormulaResult` +
+the `Translator` / `CascadeTranslator` protocols), the kr cascade as self-gating
+members composed by `hierarchy_class`, the `aut2cas` adapter lifting it to a
+`Language` Translator, and the **portfolio as pure Translator composition** —
+`Sl` / `SlDriven` / `Decompose` over `first_success`, default entry
+`Decompose(first_success([sl_driven, cascade]))`. All gates green (r4 CLEAN, MP
+survey 70/70 equiv=True). Remaining work is the deferred passes below.
 
 ### Done (pushed)
 - `aut2ltl/contract.py`: `ReconResult`, `Translator`, and `CascadeTranslator`
@@ -25,7 +29,7 @@ pushed (master @ `b7349f5`); the **pipeline sweep is the last piece**.
   (analysis + relocated `good_muller_sets`), `__init__.py` re-exports.
 - tests: `tests/test_contract_combinators.py`, `tests/kr/test_acc_translator.py`.
 
-### Next steps (the pipeline sweep — integrate the new endpoint)
+### Done — the CascadeTranslator sweep (record)
 Design (refined): the ladder becomes a *configured `first_success` instance* and
 the twa-level entry a *GAP adapter* — both as NEW files in `kr/`, not an in-place
 collapse of `reachability.py`. The form caveat is satisfied INSIDE the members
@@ -56,9 +60,20 @@ buchi `is_buchi`, acc `original_aut`), so the chain does nothing form-specific.
    patch or prune when next needed): the ~9 `probe_*.py`,
    `test_kr_{reconstruct,zoom,basic}.py`, `measure_formula_dag.py`.
 
-Deferred passes (own iterations): the flags/options/**counters** cleanup (the
-module-global build state in `reachability_operators.py` — see Known debt) and the
-Phase-2 portfolio OO + `Language` reification (`aut2ltl/kr/TODO.md`).
+Deferred passes (own iterations, agreed):
+- **`best_of` combinator** — the portfolio optimizes for FIRST success, not
+  smallest output (the size objective is the research goal). Add a
+  `best_of([...], key=cost)` sibling of `first_success` + a `cost`/size field on
+  `LTLFormulaResult` (the dataclass is pre-shaped for it). Until then, chain
+  order is the only size heuristic.
+- **flags/options/counters cleanup** — the module-global build state in
+  `reachability_operators.py` (counters + `reset_build_state`); load-bearing under
+  composition (Decompose recursing while SlDriven delegates). See Known debt.
+- **`KR_DISPATCH_*` / `KR_GATE_*` env knobs** — left verbatim through the refactor;
+  fold into constructor args once the above lands.
+- **broken probes + secondary tests** (import the retired symbols; NOT gates):
+  `tests/kr/probe_*.py`, `fuzz_gate_decompose.py`, `test_kr_{reconstruct,zoom,basic}.py`,
+  `measure_formula_dag.py`. Patch or prune when next needed.
 
 ### Known debt (flagged by user, deferred)
 - **Module-global mutable state** in `reachability_operators.py` (counters +
