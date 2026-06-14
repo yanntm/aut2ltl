@@ -2,9 +2,9 @@
 kr/decompose_recombine.py — root-level decompose-and-recombine front end.
 
 ORTHOGONAL to the rest of kr/: this module only *consumes* the existing
-`decompose_aut` + `reconstruct_ltl_paper_style` on acceptance-trivial pieces and
-recombines their formula DAGs with a root boolean operator. Nothing in the core
-imports this; it is a wrapper you call instead of the monolithic path.
+`decompose_aut` + `hierarchy_class` on acceptance-trivial pieces and recombines
+their formula DAGs with a root boolean operator. Nothing in the core imports
+this; it is a wrapper you call instead of the monolithic path.
 
 Soundness (kr is language-faithful, a ROOT boolean op is a pure position-0
 language op — no temporal-placement / acceptance-coupling caveats):
@@ -38,7 +38,7 @@ import spot
 
 from aut2ltl.kr.gap import decompose_aut
 from .heuristic_gate import try_heuristic_gate
-from aut2ltl.kr.reachability import reconstruct_ltl_paper_style
+from aut2ltl.kr.hierarchy_class import hierarchy_class
 from aut2ltl.contract import ReconResult
 
 __all__ = ["reconstruct_decomposed", "split_report"]
@@ -49,7 +49,9 @@ __all__ = ["reconstruct_decomposed", "split_report"]
 # gated to small automata (our domain — explicit 2^|AP| letters, few states).
 _SAT_MIN_STATES = int(os.environ.get("KR_SAT_MIN_STATES", "30"))
 
-# A reconstruct function: Cascade -> spot.formula.
+# A reconstruct function applied per acceptance-trivial piece. The default is the
+# hierarchy_class CascadeTranslator (Cascade -> ReconResult); custom probe
+# reconstructs return a bare Cascade -> spot.formula.
 ReconstructFn = Callable[..., "spot.formula"]
 
 
@@ -113,11 +115,15 @@ def _or_pieces(aut: "spot.twa_graph") -> List["spot.twa_graph"]:
 def _base(aut, reconstruct, decompose_kwargs, techniques) -> "spot.formula":
     """Acceptance-trivial piece -> existing monolithic kr."""
     casc = decompose_aut(aut, **decompose_kwargs)
-    # The leaf method tag is knowable only INSIDE reconstruct_ltl_paper_style,
-    # so thread the accumulator into the default reconstruct. Custom reconstructs
-    # (probe stubs) don't take it; record a generic 'base' for them.
-    if reconstruct is reconstruct_ltl_paper_style:
-        return reconstruct(casc, techniques=techniques)
+    # The default leaf is the hierarchy_class CascadeTranslator: its ReconResult
+    # .technique names the firing leaf (acc/buchi/cobuchi/weak/bls), merged into
+    # the accumulator. Custom reconstructs (probe stubs) return a bare formula;
+    # record a generic 'base' for them.
+    if reconstruct is hierarchy_class:
+        r = reconstruct(casc)
+        if techniques is not None:
+            techniques |= r.technique
+        return r.formula
     phi = reconstruct(casc)
     if techniques is not None:
         techniques.add("base")
@@ -166,7 +172,7 @@ def _dispatch(aut, reconstruct, decompose_kwargs, depth, max_depth, techniques) 
 def reconstruct_decomposed(
     aut: "spot.twa_graph",
     *,
-    reconstruct: ReconstructFn = reconstruct_ltl_paper_style,
+    reconstruct: ReconstructFn = hierarchy_class,
     max_depth: int = 4,
     gap_cmd: str = "gap",
     timeout: int = 180,
