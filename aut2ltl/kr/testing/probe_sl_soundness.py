@@ -64,7 +64,7 @@ import sys, json, contextlib, io
 from pathlib import Path
 sys.path.insert(0, str(Path(r"{root}").resolve()))
 import spot
-from buchi2ltl.reconstruction import reconstruct_ltl
+from aut2ltl.sl.reconstruction import reconstruct_ltl
 
 fs = {fs!r}
 info = {{"formula": fs}}

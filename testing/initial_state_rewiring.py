@@ -27,7 +27,7 @@ import spot
 # Make project importable
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from buchi2ltl.utils import simplify_ltl
+from aut2ltl.sl.utils import simplify_ltl
 
 
 def aut_to_dot(aut, title=""):

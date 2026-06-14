@@ -7,7 +7,7 @@ Shows the original formula, per-state reconstruction, and equivalence.
 import csv
 import sys
 import spot
-from buchi2ltl.reconstruction import reconstruct_ltl
+from aut2ltl.sl.reconstruction import reconstruct_ltl
 
 def inspect(csv_path):
     with open(csv_path) as f:

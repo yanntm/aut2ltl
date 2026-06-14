@@ -22,7 +22,7 @@ import spot
 # previously maintained as a separate "recovered working" copy has been
 # reinstated into the main module).
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from buchi2ltl.heuristics.size2_overapprox import try_size2_overapprox as try_absorb_size2_v2
+from aut2ltl.sl.heuristics.size2_overapprox import try_size2_overapprox as try_absorb_size2_v2
 
 
 TIME_LIMIT = 60.0          # seconds

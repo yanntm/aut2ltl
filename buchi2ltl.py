@@ -6,7 +6,7 @@ Most of the real code now lives in the `buchi2ltl/` package.
 This file keeps backward compatibility for simple usage like:
 
     python3 buchi2ltl.py
-    from buchi2ltl import reconstruct_ltl
+    from aut2ltl.sl import reconstruct_ltl
 """
 
 import sys
@@ -15,7 +15,7 @@ import argparse
 import spot
 
 # Re-export the public API so old imports keep working
-from buchi2ltl import reconstruct_ltl, try_size2_overapprox, try_terminal_2scc_with_validation, simplify_ltl
+from aut2ltl.sl import reconstruct_ltl, try_size2_overapprox, try_terminal_2scc_with_validation, simplify_ltl
 
 # Also keep the small helper that many experiments still use
 def ltl_to_tgba(ltl_str):

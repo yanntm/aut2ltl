@@ -66,7 +66,7 @@ info = {{"formula": fs}}
 try:
     from aut2ltl.kr.sl_driven import reconstruct_sl_driven
     from aut2ltl.kr.decompose_recombine import reconstruct_decomposed
-    from buchi2ltl.reconstruction import reconstruct_ltl
+    from aut2ltl.sl.reconstruction import reconstruct_ltl
     aut = spot.formula(fs).translate()
 
     # sl alone (does it decline the whole formula?)

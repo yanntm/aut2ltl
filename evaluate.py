@@ -32,7 +32,7 @@ import importlib.util
 import os
 import spot
 
-from buchi2ltl.reconstruction import reconstruct_ltl
+from aut2ltl.sl.reconstruction import reconstruct_ltl
 
 
 def load_formulas_from_python(path):

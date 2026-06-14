@@ -111,7 +111,7 @@ def try_heuristic_gate(aut: "spot.twa_graph", *, techniques=None) -> Optional["s
         return None
     _STATS["tried"] += 1
     try:
-        from buchi2ltl.reconstruction import reconstruct_ltl
+        from aut2ltl.sl.reconstruction import reconstruct_ltl
         # Input is an arbitrary HOA; buchi2ltl's input form is a TGBA, so ask
         # Spot to make it one (language-preserving — the soundness step).
         tgba = spot.postprocess(aut, "TGBA", "Small", "High")

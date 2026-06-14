@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from buchi2ltl.reconstruction import reconstruct_ltl
+from aut2ltl.sl.reconstruction import reconstruct_ltl
 from testing.initial_state_rewiring import split_initial_state
 
 def print_automaton(aut, title):

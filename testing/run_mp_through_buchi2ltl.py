@@ -50,7 +50,7 @@ import sys, json, traceback, io, contextlib
 from pathlib import Path
 sys.path.insert(0, str(Path(r"{PROJECT_ROOT}").resolve()))
 import spot
-from buchi2ltl.reconstruction import reconstruct_ltl
+from aut2ltl.sl.reconstruction import reconstruct_ltl
 
 def sizes(f):
     seen, kinds, st = set(), {{}}, [f]

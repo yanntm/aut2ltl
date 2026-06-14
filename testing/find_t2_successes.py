@@ -20,7 +20,7 @@ from pathlib import Path
 import spot
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from buchi2ltl import reconstruct_ltl
+from aut2ltl.sl import reconstruct_ltl
 
 TIME_LIMIT = 300.0     # 5 minutes - increase if needed
 TARGET = 100

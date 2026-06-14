@@ -38,7 +38,7 @@ def reconstruct_sl_driven(aut: "spot.twa_graph") -> Optional["spot.formula"]:
     """sl-driven reconstruction with kr delegation. Returns a hash-consed
     formula DAG, or None if sl declines AND every delegation also declined
     (i.e. the whole thing is unreconstructable by this composition)."""
-    from buchi2ltl.reconstruction import reconstruct_ltl
+    from aut2ltl.sl.reconstruction import reconstruct_ltl
 
     def labeler(sub: "spot.twa_graph") -> Optional["spot.formula"]:
         # Return the kr DAG DIRECTLY (no str()): the DAG-native engine splices it

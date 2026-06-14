@@ -73,7 +73,7 @@ def sub_from(aut, q):
 fs = {fs!r}
 info = {{"formula": fs}}
 try:
-    from buchi2ltl.reconstruction import reconstruct_ltl
+    from aut2ltl.sl.reconstruction import reconstruct_ltl
     from aut2ltl.kr.decompose_recombine import reconstruct_decomposed
 
     # Deterministic TGBA: clean A_q semantics (future from q independent of prefix)

@@ -28,11 +28,11 @@ import itertools
 import spot
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from buchi2ltl.heuristics.terminal_2scc import (
+from aut2ltl.sl.heuristics.terminal_2scc import (
     find_nice_terminal_2sccs,
     try_terminal_2scc_with_validation,
 )
-from buchi2ltl.reconstruction import reconstruct_ltl
+from aut2ltl.sl.reconstruction import reconstruct_ltl
 
 TIME_LIMIT = 300.0      # 5 minutes hard timeout (user request)
 TARGET = 100
