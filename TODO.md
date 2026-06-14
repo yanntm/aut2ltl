@@ -25,29 +25,33 @@ pushed (master @ `b7349f5`); the **pipeline sweep is the last piece**.
   (analysis + relocated `good_muller_sets`), `__init__.py` re-exports.
 - tests: `tests/test_contract_combinators.py`, `tests/kr/test_acc_translator.py`.
 
-### Next steps (the pipeline sweep — `reachability.py` is the last hand-rolled bit)
-1. **Collapse the ladder.** Replace `reachability.py::reconstruct_ltl_paper_style`
-   (the hand-rolled acc→weak→buchi→cobuchi→bls `if`-ladder) with
-   `first_success([acc, weak, buchi, cobuchi, bls])` over the member instances.
-   ⚠️ **CAVEAT — do not lose this:** each stage needs a *specific* automaton form,
-   and determinization does not reverse, so the per-stage form recovery (the
-   `postprocess(.,"generic")` inside the cobuchi/weak predicates, and
-   `decompose_aut`'s normalized parity `D` kept as authoritative `original_aut`)
-   must be preserved. It currently lives *inside* each member, so it should travel
-   with them — but VERIFY the orchestrator/ladder does nothing form-specific
-   before collapsing it. (Per-member gates `KR_DISPATCH_{ACC,WEAK,BUCHI,COBUCHI}`
-   must survive: build the list conditionally.)
-2. **Kill the naming misnomers.** Rename `reconstruct_ltl_paper_style` →
-   `reconstruct_cascade` (the cascade-level peer of portfolio's
-   `reconstruct_decomposed`). Delete `reconstruct_bls` (it is the *pipeline*
-   wrapper + depth guard, NOT the `bls` leaf — confusing) and `build_phi` (dead;
-   only `"muller"` worked). Repoint the ~7 callers of `reconstruct_bls(casc)` →
-   `reconstruct_cascade(casc).formula`: survey_mp_cascade.py, survey_sizes.py,
-   test_kr_reconstruct.py, test_kr_zoom.py, test_kr_basic.py, probe_acc_dispatch.py,
-   probe_buchi_dispatch.py.
-3. **GAP adapter.** Build `as_translator(cascade_translator) -> Translator`
-   (twa → `decompose_aut` → cascade → member) so the twa-level entry composes;
-   it is the bridge from `CascadeTranslator` up to `Translator`.
+### Next steps (the pipeline sweep — integrate the new endpoint)
+Design (refined): the ladder becomes a *configured `first_success` instance* and
+the twa-level entry a *GAP adapter* — both as NEW files in `kr/`, not an in-place
+collapse of `reachability.py`. The form caveat is satisfied INSIDE the members
+(each self-recovers its automaton form — cobuchi/weak `postprocess(.,"generic")`,
+buchi `is_buchi`, acc `original_aut`), so the chain does nothing form-specific.
+
+1. ✅ **`first_success` is a real named translator** (`aut2ltl/combinators.py`):
+   obeys the Translator/CascadeTranslator interface, `name` passed at
+   construction, winning stage's ReconResult (incl. technique) forwarded
+   unchanged. (The flags/options/counters cleanup is a SEPARATE pass — deferred;
+   the `KR_DISPATCH_*` env knobs are left as-is for now.)
+2. ✅ **`kr/hierarchy_class.py`** — the acceptance-dispatch chain as a named
+   `first_success([acc,(weak),buchi,cobuchi,bls])`, default singleton
+   `hierarchy_class`; the `KR_DISPATCH_*` env gates kept verbatim.
+3. ✅ **`kr/aut2cas.py`** — `as_translator(ct) -> Translator` (twa →
+   `decompose_aut` → cascade → member); endpoint singleton `reconstruct =
+   as_translator(hierarchy_class)`. The `KR_MAX_LEVELS` depth guard is carried
+   here (it was the only live part of `reconstruct_bls`).
+4. ⏳ **Integrate (this iteration).** Wire `reconstruct`/`hierarchy_class` into
+   `kr/__init__.py`; repoint the ~20 callers (7× `reconstruct_bls(casc)`, ~10×
+   `reconstruct_ltl_paper_style(casc)` incl. the r4 gate and
+   `portfolio/decompose_recombine.py`) — cascade-level callers →
+   `hierarchy_class(casc).formula`, twa-level entries → `reconstruct(twa)`;
+   DELETE `reconstruct_bls`, `reconstruct_ltl_paper_style`, `build_phi` and trim
+   `reachability.py` to the operator module. Add a placed test validating the
+   endpoint against the old path, then run BOTH gates in full.
 
 ### Known debt (flagged by user, deferred)
 - **Module-global mutable state** in `reachability_operators.py` (counters +
