@@ -34,6 +34,8 @@ from .reachability import (
     reach_weak,
     fin_c,
 )
+from .hierarchy_class import make_hierarchy_class, hierarchy_class
+from .aut2cas import as_translator, reconstruct
 from .reachability_operators import TRACE_ON  # for KR_TRACE=1 dev traces of inductive construction
 
 __all__ = [
@@ -51,6 +53,10 @@ __all__ = [
     "is_deterministic",
     "reconstruct_bls",
     "reconstruct_ltl_paper_style",
+    "make_hierarchy_class",
+    "hierarchy_class",
+    "as_translator",
+    "reconstruct",
     "simplify_ltl",
     "normalize_ltl",
     "reach_strong",
