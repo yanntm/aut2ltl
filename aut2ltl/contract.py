@@ -24,13 +24,13 @@ methods that contributed.
 MT-safe by construction: the accumulator is a per-call local threaded by
 reference through the dispatch, never a module-level/global recorder.
 
-CONTRACT (P-ARCH step 1, 2026-06-14). This module is the contract FLOOR both
-engines depend on: the data signature `ReconResult` and the behavioral
-signature `Translator`. The key reification is an explicit `status` (OK /
-DECLINED) — "not me" is no longer smuggled as the `UNSUPPORTED` string inside
-`.formula`. `status` plus the dataclass being the single extension point
-(add a `cost`/size field when a pick-smaller combinator needs an ordering) is
-what lets the portfolio combinators compose soundly.
+This module is the contract FLOOR both engines depend on: the data signature
+`ReconResult` and the behavioral signatures `Translator` (automaton in) and
+`CascadeTranslator` (decomposed cascade in). The key reification is an explicit
+`status` (OK / DECLINED) — "not me" is no longer smuggled as the `UNSUPPORTED`
+string inside `.formula`. `status` plus the dataclass being the single extension
+point (add a `cost`/size field when a pick-smaller combinator needs an ordering)
+is what lets the combinators compose soundly.
 """
 from __future__ import annotations
 
@@ -100,3 +100,23 @@ class Translator(Protocol):
     """
 
     def __call__(self, twa: "spot.twa_graph") -> "ReconResult": ...
+
+
+@runtime_checkable
+class CascadeTranslator(Protocol):
+    """The cascade-level peer of `Translator`: translate a Krohn-Rhodes Cascade
+    to LTL.
+
+    Same `ReconResult` and the same load-bearing invariant — the result is
+    language-faithful (OK) or DECLINED, never wrong — but the input is an already
+    decomposed `Cascade` instead of a raw automaton. The kr acceptance-dispatch
+    constructions (acc / buchi / cobuchi / weak / the Muller-DNF `bls`) are the
+    leaf realizations; each is self-gating (it inspects the cascade and either
+    builds its faithful form or DECLINES). `decompose_aut` is the adapter that
+    lifts a CascadeTranslator up to a `Translator` (twa -> Cascade -> result).
+
+    The annotation is a bare forward-ref string (like `Translator`'s
+    `spot.twa_graph`) so this floor module stays import-free of the engines.
+    """
+
+    def __call__(self, casc: "Cascade") -> "ReconResult": ...
