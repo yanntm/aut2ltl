@@ -2,8 +2,8 @@
 """
 kr/testing/probe_cobuchi_dispatch.py
 
-Fact-finding for the coBüchi (persistence, Σ₂) acceptance dispatch — the mirror
-of the wired Büchi dispatch (kr/acceptance_dispatch.reconstruct_buchi).
+Fact-finding for the coBüchi (persistence, Σ₂) member — the mirror
+of the Büchi member (kr/buchi.buchi).
 
 CRUCIAL: this probe runs UNDER the decomposition front end, the GOTO path. The
 dispatch never sees the raw translate() automaton — it sees each piece that
