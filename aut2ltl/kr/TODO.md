@@ -101,21 +101,34 @@ tests/     kr/ (was kr/testing/ +simplify/testing +examples), sl/ (was top
 
 Steps (mark done inline as we go; ~46 files import `kr`, ~17 import `buchi2ltl`,
 mostly tests; internal relative imports survive a whole-package `git mv`):
-1. Scaffold `aut2ltl/__init__.py` + `.gitignore` (__pycache__, *.pyc, gen artifacts).
-2. `git mv kr aut2ltl/kr`; rewrite external `kr` imports → `aut2ltl.kr`. GATE.
-3. `git mv buchi2ltl aut2ltl/sl`; rewrite `buchi2ltl` imports → `aut2ltl.sl`. GATE.
-4. `git mv aut2ltl/kr/recon_result.py aut2ltl/contract.py`; repoint importers. GATE.
-5. `git mv` decompose_recombine/heuristic_gate/sl_driven → `aut2ltl/portfolio/`;
-   trim `aut2ltl/kr/__init__.py`; add `portfolio/__init__.py`. GATE (the load-bearing
-   one: r4 audit + MP survey).
-6. Consolidate tests: kr/testing→tests/kr, kr/simplify/testing→tests/kr/simplify,
-   kr/examples→tests/kr/examples, top testing→tests/sl, samples→tests/fixtures,
-   evaluate.py→tests/eval_roundtrip.py; fix script imports. GATE from new paths.
+1. ~~Scaffold `aut2ltl/__init__.py` + `.gitignore`.~~ DONE (.gitignore already
+   existed; left as-is, paths refreshed later).
+2. ~~`git mv kr aut2ltl/kr`; rewrite `kr`→`aut2ltl.kr`.~~ DONE (commit fe8ce59,
+   120 renames, r4 CLEAN).
+3. ~~`git mv buchi2ltl aut2ltl/sl`; rewrite `buchi2ltl`→`aut2ltl.sl`.~~ DONE
+   (fdde237, gate verified Ga→tech=sl).
+4. ~~Extract `aut2ltl/contract.py`; repoint importers.~~ DONE (20c9737).
+5. ~~Lift portfolio → `aut2ltl/portfolio/`; trim `kr/__init__`.~~ DONE (7c76cb0,
+   FULL gate green: r4 CLEAN + MP survey clean sweep).
+6. Consolidate tests: kr/testing→tests/kr (parents[2] stays root, no edits),
+   kr/simplify/testing→tests/kr/simplify (parents[3] stays root), kr/examples→
+   tests/kr/examples (FIX parents[2]→[3], depth+1), top testing→tests/sl (FIX
+   parent.parent depth+1 + the historical `samples` imports), samples→tests/fixtures
+   (historical fixtures — minimal importer fixups), evaluate.py→tests/eval_roundtrip.py.
+   GATE from new paths (no PYTHONPATH needed once parents[N] realign).
 7. `git mv buchi2ltl.py aut2ltl/cli.py`; repoint.
-8. Delete (history-recoverable): root current_*.csv/results.csv/trace_aut_*,
-   old_results/, testing/*.csv + debug_images/, kr/examples/generated/*, empty kr/tests/.
+8. Delete (history-recoverable): MOST root current_*.csv/results.csv/trace_aut_* +
+   old_results/ are already gitignored (untracked) — only TRACKED stragglers need
+   `git rm` (testing/debug_images/*). Plus empty kr/tests/.
 9. Docs: CLAUDE.md, README.md, kr/README→aut2ltl/kr/README, STATUS/TODO pointers,
    memory project_kr.
+10. Package metadata + per-package docs (user ask 2026-06-14). Add a
+    `pyproject.toml` (project info: name `aut2ltl`, version, deps, packages) —
+    Python's nearest "package manifest". Give EVERY package a documenting
+    `__init__.py` module docstring (the Python analog of Java's
+    `package-info.java`): `aut2ltl`, `aut2ltl.kr`, `aut2ltl.sl`,
+    `aut2ltl.portfolio`, plus `aut2ltl.contract`. State each package's role +
+    its place in the contract→engines→portfolio→cli layering.
 
 **Incremental, code-driven plan (superseded above by the concrete campaign;
 kept for the rationale). Each step small; gates green after each —
