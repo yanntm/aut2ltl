@@ -116,7 +116,7 @@ from pathlib import Path
 proj = Path(r"{PROJECT_ROOT}").resolve()
 sys.path.insert(0, str(proj))
 import spot
-from aut2ltl.kr import decompose_aut, reconstruct_bls
+from aut2ltl.kr import decompose_aut, hierarchy_class
 from aut2ltl.portfolio.decompose_recombine import reconstruct_decomposed
 
 # The decompose-and-recombine front end is the GOTO path (KR_DECOMPOSE=1,
@@ -144,8 +144,9 @@ try:
         rec_f = _rr.formula
         info["technique"] = _rr.technique_str()
     else:
-        rec_f = reconstruct_bls(casc)
-        info["technique"] = "bls"
+        _rr = hierarchy_class(casc)
+        rec_f = _rr.formula
+        info["technique"] = _rr.technique_str()
     # 5M tree nodes ~ 40MB string: above every case Spot equiv has ever
     # completed, below the 64M+ monsters whose str() alone blows the budget.
     _lim = int(_os.environ.get("KR_FLATTEN_TREE_LIMIT", "5000000"))
