@@ -120,10 +120,10 @@ def try_heuristic_gate(aut: "spot.twa_graph", *, techniques=None) -> Optional["s
     except Exception:
         _STATS["errored"] += 1
         return None
-    rec = out.formula      # ReconResult
     tech_tokens = out.technique
-    if rec is None:
+    if out.declined:       # ReconResult: "not me"
         return None
+    rec = out.formula
     try:
         cand = rec if isinstance(rec, spot.formula) else spot.formula(str(rec))
     except Exception:
