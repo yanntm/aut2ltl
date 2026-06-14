@@ -2,7 +2,7 @@
 """
 kr/testing/probe_buchi_dispatch.py
 
-Probe the direct Büchi dispatch (kr/acceptance_dispatch.reconstruct_buchi)
+Probe the direct Büchi member (kr/buchi.buchi)
 against the Muller-DNF path (reconstruct_bls): for each case report whether the
 cascade is detected Büchi, the size A/B (DAG / tree / distinct temporals), and
 — the soundness gate — whether the dispatch formula is equivalent to the
@@ -39,7 +39,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(r"{PROJECT_ROOT}").resolve()))
 import spot
 from aut2ltl.kr import decompose_aut, reconstruct_bls
-from aut2ltl.kr.acceptance_dispatch import is_buchi_cascade, reconstruct_buchi
+from aut2ltl.kr.buchi import is_buchi_cascade, buchi
 from aut2ltl.kr.ltl_builders import _tree_size_f
 
 def sizes(f):
@@ -59,10 +59,10 @@ try:
     casc = decompose_aut(aut)
     info["is_buchi"] = bool(is_buchi_cascade(casc))
     info["acc"] = str(casc.original_aut.get_acceptance())
-    bf = reconstruct_buchi(casc)
-    info["dispatched"] = bf is not None
-    if bf is not None:
-        info["buchi_size"] = sizes(bf)
+    bf = buchi(casc)
+    info["dispatched"] = bf.ok
+    if bf.ok:
+        info["buchi_size"] = sizes(bf.formula)
         # Muller baseline: the dispatch is now WIRED as a pre-check in
         # reconstruct_ltl_paper_style, so reconstruct_bls would itself dispatch;
         # force the pure Muller form for the A/B with KR_DISPATCH_BUCHI=0.
