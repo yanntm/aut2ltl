@@ -41,8 +41,8 @@ def reconstruct_ltl_paper_style(casc: Cascade, *, techniques=None) -> "spot.form
 
     Tries the direct hierarchy-class leaves in order — acc → weak → buchi →
     cobuchi — each self-gating (it returns a faithful form or declines), and
-    falls back to the general Muller-DNF core (`muller.reconstruct_muller`, the
-    `bls` leaf) when none applies. Each leaf drops the explosive Fin web that the
+    falls back to the general-case `bls` member (the full Muller-DNF construction)
+    when none applies. Each leaf drops the explosive Fin web that the
     Muller form pays. Returns the hash-consed `spot.formula` DAG; serialization
     to text is a separate concern (`ltl_builders._str_f`), never done here.
 
@@ -60,8 +60,8 @@ def reconstruct_ltl_paper_style(casc: Cascade, *, techniques=None) -> "spot.form
     # Acc(c): the bounded / transient (X-ladder) fragment — self-gating, so safe
     # first in the chain and smallest for bounded inputs. Gate KR_DISPATCH_ACC.
     if os.environ.get("KR_DISPATCH_ACC", "1") != "0":
-        from .acc import reconstruct_acc
-        r = reconstruct_acc(casc)        # self-gating CascadeTranslator
+        from .acc import acc
+        r = acc(casc)                    # self-gating CascadeTranslator member
         if r.ok:
             if techniques is not None:
                 techniques |= r.technique
@@ -94,11 +94,13 @@ def reconstruct_ltl_paper_style(casc: Cascade, *, techniques=None) -> "spot.form
         if phi is not None:
             _tag("cobuchi")
             return phi
-    # No simpler acceptance class applied: fall back to the general Muller-DNF
-    # core (the `bls` leaf), which always produces a formula.
-    _tag("bls")
-    from .muller import reconstruct_muller
-    return reconstruct_muller(casc)
+    # No simpler acceptance class applied: fall back to the general-case `bls`
+    # member (the full Muller-DNF construction), which always produces a formula.
+    from .bls import bls
+    r = bls(casc)
+    if techniques is not None:
+        techniques |= r.technique
+    return r.formula
 
 
 def reconstruct_bls(casc: Cascade) -> "spot.formula":

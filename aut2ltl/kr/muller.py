@@ -1,5 +1,5 @@
 """
-kr/muller.py — the general Muller-DNF assembly (the BLS core / `bls` leaf).
+kr/muller.py — the general Muller-DNF assembly (BLS core support).
 
 This is the explosive but fully general Δ₂ form: for the lifted Müller condition
 α' = good config-sets M (the recurrent sets the normalized D actually exhibits),
@@ -7,10 +7,10 @@ This is the explosive but fully general Δ₂ form: for the lifted Müller condi
     φ = ⋁_M ( ⋀_{C∈M} ¬Fin(C)  ∧  ⋀_{C∉M} Fin(C) )
 
 asserting the set of configs visited infinitely often is exactly some good M.
-`reconstruct_muller` is the leaf the dispatch chain falls back to when no simpler
-acceptance class applies; it always produces a formula (never declines). The five
-inductive reachability formulas it relies on (via fin_c / Fin(C)) live in
-reachability_operators.py + fin.py.
+`assemble_muller_dnf` is **support** (casc → formula), not a CascadeTranslator:
+the `Bls` member (kr/bls.py) wraps it into the general-case leaf. It always
+produces a formula. The five inductive reachability formulas it relies on (via
+fin_c / Fin(C)) live in reachability_operators.py + fin.py.
 """
 
 from __future__ import annotations
@@ -70,7 +70,7 @@ def _compute_good_muller_sets(casc: Cascade) -> list:
     return good
 
 
-def reconstruct_muller(casc: Cascade) -> "spot.formula":
+def assemble_muller_dnf(casc: Cascade) -> "spot.formula":
     """Assemble the general Muller DNF over the good config-sets of `casc`.
 
     Returns the hash-consed spot.formula DAG (never serialized here). Trivial
@@ -161,4 +161,4 @@ def reconstruct_muller(casc: Cascade) -> "spot.formula":
     return res_f
 
 
-__all__ = ["reconstruct_muller", "_compute_good_muller_sets"]
+__all__ = ["assemble_muller_dnf", "_compute_good_muller_sets"]

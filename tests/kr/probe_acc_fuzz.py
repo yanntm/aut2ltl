@@ -12,7 +12,7 @@ bounded tree size). Each formula in an ISOLATED subprocess with a LOW timeout
 (random formulas blow up — deep cascades, GAP, translation — a blown budget is a
 finding, counted as TIMEOUT/ERROR not conflated with a verdict). Per formula we
 run `reconstruct_decomposed` with a STUB reconstruct that, per piece, records
-whether `reconstruct_acc(casc).ok` (Acc would fire there) and
+whether `acc(casc).ok` (Acc would fire there) and
 returns ⊤ (we only care about the GATE, not the output — avoids building the
 possibly-huge BLS form). "Fired" = Acc gated on ≥1 piece.
 
@@ -66,7 +66,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(r"{PROJECT_ROOT}").resolve()))
 import spot
 from aut2ltl.portfolio.decompose_recombine import reconstruct_decomposed
-from aut2ltl.kr.acc import reconstruct_acc
+from aut2ltl.kr.acc import acc
 from aut2ltl.kr.ltl_builders import _tt
 
 fs = {fs!r}
@@ -77,7 +77,7 @@ try:
     def stub(casc):
         n_pieces[0] += 1
         try:
-            if reconstruct_acc(casc).ok:
+            if acc(casc).ok:
                 n_acc[0] += 1
         except Exception:
             pass

@@ -2,7 +2,7 @@
 """
 tests/kr/test_acc_translator.py
 
-Validate that the Acc leaf (kr/acc.reconstruct_acc) honors the CascadeTranslator
+Validate that the Acc member (kr/acc.acc) honors the CascadeTranslator
 contract: casc -> ReconResult, self-gating, language-faithful when it fires.
 
 - Bounded-fragment cases (X-ladder): result is OK, technique == {'acc'}, and the
@@ -24,19 +24,19 @@ import spot
 
 from aut2ltl.contract import ReconResult, CascadeTranslator
 from aut2ltl.kr.gap import decompose_aut
-from aut2ltl.kr.acc import reconstruct_acc
+from aut2ltl.kr.acc import acc
 
 BOUNDED = ["a", "X a", "X X a", "a & X a", "X(a & X a)", "a | X b"]
 RECURRENT = ["G a", "a U b", "F(a & b)", "G(a -> X b)", "GFa", "FGa"]
 
 
 def _result(fs: str) -> ReconResult:
-    return reconstruct_acc(decompose_aut(spot.formula(fs).translate()))
+    return acc(decompose_aut(spot.formula(fs).translate()))
 
 
 def test_is_cascade_translator() -> None:
     # @runtime_checkable: structural callable check.
-    assert isinstance(reconstruct_acc, CascadeTranslator)
+    assert isinstance(acc, CascadeTranslator)
 
 
 def test_bounded_fire_and_faithful() -> None:

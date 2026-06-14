@@ -109,14 +109,21 @@ class CascadeTranslator(Protocol):
 
     Same `ReconResult` and the same load-bearing invariant — the result is
     language-faithful (OK) or DECLINED, never wrong — but the input is an already
-    decomposed `Cascade` instead of a raw automaton. The kr acceptance-dispatch
-    constructions (acc / buchi / cobuchi / weak / the Muller-DNF `bls`) are the
-    leaf realizations; each is self-gating (it inspects the cascade and either
-    builds its faithful form or DECLINES). `decompose_aut` is the adapter that
-    lifts a CascadeTranslator up to a `Translator` (twa -> Cascade -> result).
+    decomposed `Cascade` instead of a raw automaton.
 
-    The annotation is a bare forward-ref string (like `Translator`'s
+    Realized as an OO family: each construction is a *member* — a small class
+    (singleton instance) with a fixed `name` (its technique identity, e.g.
+    'acc' / 'buchi' / 'cobuchi' / 'weak' / 'bls') and a `__call__` that is
+    self-gating (it inspects the cascade and either builds its faithful form or
+    DECLINES). The member stamps its own `name` into the ReconResult's technique,
+    so composites (`first_success`) need no out-of-band tagging. `decompose_aut`
+    is the adapter that lifts a member up to a `Translator` (twa -> Cascade ->
+    result).
+
+    The `Cascade` annotation is a bare forward-ref string (like `Translator`'s
     `spot.twa_graph`) so this floor module stays import-free of the engines.
     """
+
+    name: str
 
     def __call__(self, casc: "Cascade") -> "ReconResult": ...

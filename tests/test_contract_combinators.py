@@ -32,11 +32,19 @@ def test_reconresult_basics() -> None:
 
 
 def test_protocol_runtime_checkable() -> None:
-    def leaf(casc) -> ReconResult:
+    # A CascadeTranslator member is a named callable (fixed `name` + __call__).
+    class Member:
+        name = "x"
+        def __call__(self, casc) -> ReconResult:
+            return ReconResult.decline()
+    assert isinstance(Member(), CascadeTranslator)
+
+    # A bare function lacks the fixed `name`, so it is NOT a CascadeTranslator
+    # member — but it still satisfies Translator (no name in that contract).
+    def bare(twa) -> ReconResult:
         return ReconResult.decline()
-    # @runtime_checkable Protocols only check for the __call__ attribute here.
-    assert isinstance(leaf, CascadeTranslator)
-    assert isinstance(leaf, Translator)
+    assert not isinstance(bare, CascadeTranslator)
+    assert isinstance(bare, Translator)
 
 
 def test_first_success_short_circuits() -> None:
