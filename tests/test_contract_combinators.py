@@ -54,7 +54,7 @@ def test_first_success_short_circuits() -> None:
     def s_ok(x): calls.append("b"); return ReconResult(formula="F", technique={"buchi"})
     def s_never(x): calls.append("c"); return ReconResult(formula="Z")
 
-    chain = first_success([s_decline, s_ok, s_never])
+    chain = first_success([s_decline, s_ok, s_never], name="chain")
     r = chain("input")
     assert r.ok and r.formula == "F" and r.technique == {"buchi"}, r
     assert calls == ["a", "b"], calls          # s_never must not run
@@ -62,7 +62,7 @@ def test_first_success_short_circuits() -> None:
 
 def test_first_success_all_decline() -> None:
     chain = first_success([lambda x: ReconResult.decline(),
-                           lambda x: ReconResult.decline()])
+                           lambda x: ReconResult.decline()], name="chain")
     assert chain("x").declined
 
 
