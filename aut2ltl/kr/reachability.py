@@ -91,7 +91,7 @@ def reconstruct_ltl_paper_style(casc: Cascade, *, techniques=None) -> "spot.form
 
     `techniques` (optional, default None): a SET the leaf records its method tag
     into (`acc`/`weak`/`buchi`/`cobuchi`/`bls`) for the portfolio report
-    (`kr.recon_result.ReconResult`). None = no recording (the historical callers).
+    (`aut2ltl.contract.ReconResult`). None = no recording (the historical callers).
 
     Uses the reachability operators (the 5 formulas) inside fin_c / Fin(C), then
     for the lifted Müller condition α' = good_Ms on configs (w.r.t. the normalized

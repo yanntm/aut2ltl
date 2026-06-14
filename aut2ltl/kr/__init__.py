@@ -33,7 +33,7 @@ from .reachability import (
 )
 from .reachability_operators import TRACE_ON  # for KR_TRACE=1 dev traces of inductive construction
 from .decompose_recombine import reconstruct_decomposed, split_report
-from .recon_result import ReconResult
+from aut2ltl.contract import ReconResult
 
 __all__ = [
     "ReconResult",

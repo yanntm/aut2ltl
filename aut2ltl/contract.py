@@ -1,5 +1,5 @@
 """
-kr/recon_result.py — the portfolio result struct.
+aut2ltl/contract.py — the contract floor: the portfolio result struct.
 
 kr has become a PORTFOLIO: a given automaton is reconstructed by whichever
 method wins at each node of the decompose-and-recombine dispatch — the

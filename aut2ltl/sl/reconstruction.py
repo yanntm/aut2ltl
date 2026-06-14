@@ -2,7 +2,7 @@
 Core backward LTL reconstruction logic (DAG-native).
 
 `reconstruct_ltl` runs self-loop backward labeling over a TGBA and returns a
-`ReconResult` (`kr.recon_result`): a hash-consed `spot.formula` DAG on success,
+`ReconResult` (`aut2ltl.contract`): a hash-consed `spot.formula` DAG on success,
 or `status=DECLINED` (`.formula` None) when no exact label exists. Every formula
 is built as a `spot.formula` — an adopted `scc_labeler` formula
 is spliced as a child node WITHOUT flattening (the kr-under-sl payoff: a
@@ -18,7 +18,7 @@ import spot
 import buddy
 
 if TYPE_CHECKING:
-    from aut2ltl.kr.recon_result import ReconResult
+    from aut2ltl.contract import ReconResult
 
 # The two heuristics that can "rescue" certain multi-state SCCs before we
 # give up and emit UNSUPPORTED.  Both are tried (and validated) early.
@@ -47,7 +47,7 @@ def reconstruct_ltl(
     scc_labeler: Optional[Callable[["spot.twa_graph"], Optional["spot.formula"]]] = None,
 ) -> "ReconResult":
     """Backward LTL reconstruction from a TGBA. Returns a `ReconResult`
-    (`kr.recon_result`): on success `.formula` is a spot.formula and `.status`
+    (`aut2ltl.contract`): on success `.formula` is a spot.formula and `.status`
     is OK; on decline `.status` is DECLINED and `.formula` is None. `.technique`
     is the method-token set (e.g. {"sl","t2"}). Uniform with the kr portfolio
     result.
@@ -317,7 +317,7 @@ def reconstruct_ltl(
     # lives in kr/ for now (the resulting import cycle is deferred to a later
     # `util` extraction — agreed 2026-06-14). No load-time cycle: `import kr`
     # does not import buchi2ltl (the gate's buchi2ltl import is lazy).
-    from aut2ltl.kr.recon_result import ReconResult
+    from aut2ltl.contract import ReconResult
     techset = set(technique.split("+")) if technique else set()
     if _is_unsupported(final):
         # Contract boundary: the internal UNSUPPORTED sentinel becomes an
