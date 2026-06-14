@@ -38,3 +38,21 @@ sl_driven) ← `aut2ltl/cli` + `__init__`. Tests live under `tests/` (`tests/kr`
   fix against the paper text.
 - Keep files roughly under 500 LOC (technical cores like the mutually-recursive
   formula cluster or parsers may exceed).
+
+## Working style (how the user wants me to operate)
+- **Diagnostics self-bound, ≤15s.** Hard cap on any test/diagnostic run; a blown
+  timeout IS a finding, report it. Redirect long output to `tests/**/logs/`
+  (never /tmp), don't pipe long runs to `tail`.
+- **No process signals.** Never `kill`/`pkill`/terminate to manage runs; design
+  diagnostics to terminate themselves. Wait on background-task completion events,
+  never sleep/poll loops.
+- **Spot is bounded-or-skipped, never waited on** in the construction/test path —
+  no unbounded external calls; Spot is for hash-consing (+ the bounded oracles
+  already accepted). A stall is reported, not blocked on.
+- **Present intermediate results.** Stop and show results after each step; do not
+  start a new direction without user validation.
+- **Type the signatures.** Add explicit Python type annotations (params + return)
+  on new/touched functions — the user comes from Java/C++. Use `typing`
+  (`Optional`/`Callable`/`Protocol`/forward-ref strings), `TYPE_CHECKING` for
+  annotation-only imports; `Protocol` for behavioral contracts (see `Translator`).
+- **Git: commit directly to master** (the user does not branch when prototyping).
