@@ -547,3 +547,45 @@ def get_good_muller_sets_from_basins(casc):
         if m:
             good.append(m)
     return good
+
+
+def good_muller_sets(casc) -> list:
+    """The good Müller sets M on configs (w.r.t. the normalized D) — the entry
+    the BLS assembly consumes.
+
+    Prefers the config-graph computation (`casc.compute_good_muller_sets`):
+    reachable configs from init, the pruned config twa with lifted acceptance,
+    scc_info on the config graph, non-rejecting SCCs giving the recurrent config
+    sets that can occur i.o. on accepting paths. Falls back to state-SCC mapping
+    on D (pruned to reachable) if that analysis is unavailable.
+    """
+    import spot
+    # Prefer the config-graph based computation (pruned + actual use of config aut)
+    if hasattr(casc, 'compute_good_muller_sets'):
+        try:
+            res = casc.compute_good_muller_sets()
+            if res is not None:
+                return res
+        except Exception:
+            pass
+    # Fallback: state-SCC mapping on D, pruned to reachable configs.
+    reach = set(casc.reachable_configs()) if hasattr(casc, 'reachable_configs') else set(casc.all_configs())
+    if casc.original_aut is None:
+        acc = casc.accepting_configs()
+        acc = {c for c in acc if c in reach}
+        return [frozenset([c]) for c in acc] if acc else []
+    aut = casc.original_aut  # the normalized det D (our working automaton)
+    try:
+        si = spot.scc_info(aut)
+    except Exception:
+        acc = casc.accepting_configs()
+        acc = {c for c in acc if c in reach}
+        return [frozenset([c]) for c in acc] if acc else []
+    good = []
+    for scci in range(si.scc_count()):
+        if not si.is_rejecting_scc(scci):
+            states = [s for s in range(aut.num_states()) if si.scc_of(s) == scci]
+            m = frozenset(casc.state_to_config.get(s) for s in states if s in casc.state_to_config and casc.state_to_config.get(s) in reach)
+            if m:
+                good.append(m)
+    return good

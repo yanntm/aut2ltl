@@ -16,58 +16,10 @@ fin_c / Fin(C)) live in reachability_operators.py + fin.py.
 from __future__ import annotations
 import os
 
-import spot
-
 import aut2ltl.kr.reachability_operators as _ops
 from .fin import fin_c
 from .ltl_builders import _And, _Or, _Not, _tt, _ff, _simp_f, _short_f, _tree_size_f
-from .cascade import Cascade
-
-
-def _compute_good_muller_sets(casc: Cascade) -> list:
-    """Compute the good Müller sets M on configs (w.r.t. our normalized D).
-
-    We now prefer the proper computation on the pruned configuration automaton:
-    reachable configs from init (BFS), build pruned config twa with lifted acc,
-    scc_info on the *config graph*, non-rejecting SCCs give the recurrent config
-    sets M that can occur i.o. on accepting paths from the initial config.
-    This actually uses the config automaton and does the reachability pruning +
-    enumeration of accepting recurrent components on the lifted structure
-    (as per paper/algo2).
-
-    Falls back to state-SCC mapping (pruned to reachable) if the config graph
-    analysis is not available.
-    """
-    # Prefer the new config-graph based (pruned + actual use of config aut)
-    if hasattr(casc, 'compute_good_muller_sets'):
-        try:
-            res = casc.compute_good_muller_sets()
-            if res is not None:
-                return res
-        except Exception:
-            pass
-    # old fallback (with reachable prune)
-    reach = set(casc.reachable_configs()) if hasattr(casc, 'reachable_configs') else set(casc.all_configs())
-    if casc.original_aut is None:
-        acc = casc.accepting_configs()
-        acc = {c for c in acc if c in reach}
-        return [frozenset([c]) for c in acc] if acc else []
-    aut = casc.original_aut  # the normalized det D (our working automaton)
-    try:
-        si = spot.scc_info(aut)
-    except Exception:
-        # fallback
-        acc = casc.accepting_configs()
-        acc = {c for c in acc if c in reach}
-        return [frozenset([c]) for c in acc] if acc else []
-    good = []
-    for scci in range(si.scc_count()):
-        if not si.is_rejecting_scc(scci):
-            states = [s for s in range(aut.num_states()) if si.scc_of(s) == scci]
-            m = frozenset(casc.state_to_config.get(s) for s in states if s in casc.state_to_config and casc.state_to_config.get(s) in reach)
-            if m:
-                good.append(m)
-    return good
+from .cascade import Cascade, good_muller_sets
 
 
 def assemble_muller_dnf(casc: Cascade) -> "spot.formula":
@@ -103,7 +55,7 @@ def assemble_muller_dnf(casc: Cascade) -> "spot.formula":
             return _tt() if has_acc else _ff()
         return _tt()
 
-    good_ms = _compute_good_muller_sets(casc)
+    good_ms = good_muller_sets(casc)
     if not good_ms:
         return _ff()
 
@@ -161,4 +113,4 @@ def assemble_muller_dnf(casc: Cascade) -> "spot.formula":
     return res_f
 
 
-__all__ = ["assemble_muller_dnf", "_compute_good_muller_sets"]
+__all__ = ["assemble_muller_dnf"]

@@ -62,7 +62,7 @@ class Weak:
     def __call__(self, casc: Cascade) -> ReconResult:
         if not is_weak_cascade(casc):
             return ReconResult.decline()
-        from aut2ltl.kr.config_graph import build_pruned_config_aut, reachable_configs
+        from aut2ltl.kr.cascade import build_pruned_config_aut, reachable_configs
         import spot
         _ops.reset_build_state(casc)
         g = build_pruned_config_aut(casc)
