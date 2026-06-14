@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
 """
-Thin compatibility / CLI entry point for the BuchiToLTL prototype.
+aut2ltl CLI entry point (the sl-engine front-end).
 
-Most of the real code now lives in the `buchi2ltl/` package.
-This file keeps backward compatibility for simple usage like:
+Run as a module (preferred) or directly:
 
-    python3 buchi2ltl.py
-    from aut2ltl.sl import reconstruct_ltl
+    python3 -m aut2ltl.cli
+    python3 aut2ltl/cli.py
+
+The translation engine lives in `aut2ltl.sl`; this file is the command-line
+surface + a few convenience helpers.
 """
 
 import sys
 import os
 import argparse
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # repo root on path
+
 import spot
 
 # Re-export the public API so old imports keep working
