@@ -35,7 +35,10 @@ is what lets the combinators compose soundly.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional, Protocol, Set, runtime_checkable
+from typing import Optional, Protocol, Set, TYPE_CHECKING, runtime_checkable
+
+if TYPE_CHECKING:
+    from aut2ltl.language import Language
 
 # status values
 OK = "OK"
@@ -85,21 +88,25 @@ class LTLFormulaResult:
 
 @runtime_checkable
 class Translator(Protocol):
-    """The behavioral contract: translate a HOA automaton to LTL.
+    """The behavioral contract: translate a `Language` to LTL.
 
-    A Translator is a callable `twa -> LTLFormulaResult`. Current realizations are
-    plain module functions (`reconstruct_decomposed`, buchi2ltl's
-    `reconstruct_ltl`, the acceptance-dispatch leaves); this Protocol documents
-    the shared signature, and the portfolio combinators (Gate / Decompose /
-    SlDriven / Portfolio) are themselves Translators over Translators.
+    A Translator is a callable `Language -> LTLFormulaResult`. The input is a
+    `Language` (the floor handle over language-equivalent automaton
+    representations — `aut2ltl.language`), not a raw automaton: each translator
+    pulls the representation it wants (`tgba` / `det_parity_sbacc` / `det_generic`
+    / `det_generic_minimal`). The kr endpoint `aut2cas.reconstruct` realizes this;
+    the portfolio combinators (Gate / Decompose / SlDriven / Portfolio) are
+    themselves Translators over Translators (their migration to a `Language` input
+    is the Phase-2 portfolio pass — until then `reconstruct_decomposed` still
+    takes a raw automaton).
 
     Contract invariant (NOT type-checkable, the load-bearing rule): the returned
-    LTLFormulaResult is either language-faithful (`status` OK, `.formula` ≡ L(twa)) or
-    DECLINED — NEVER a wrong formula. That single rule is what makes composition
+    LTLFormulaResult is either language-faithful (`status` OK, `.formula` ≡ L(lang))
+    or DECLINED — NEVER a wrong formula. That single rule is what makes composition
     sound.
     """
 
-    def __call__(self, twa: "spot.twa_graph") -> "LTLFormulaResult": ...
+    def __call__(self, lang: "Language") -> "LTLFormulaResult": ...
 
 
 @runtime_checkable
