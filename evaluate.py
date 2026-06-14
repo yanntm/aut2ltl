@@ -228,12 +228,12 @@ def main():
                     row["equivalent"] = "skipped"
                 else:
                     res = reconstruct_ltl(aut)
-                    recovered = res.formula      # spot.formula or UNSUPPORTED str
+                    recovered = res.formula      # spot.formula, or None if declined
                     technique = res.technique_str()
                     row["recovered"] = str(recovered)
                     row["technique"] = technique
 
-                    if isinstance(recovered, str) and recovered.startswith("UNSUPPORTED"):
+                    if res.declined:
                         # Expected limitation — record cleanly instead of crashing later
                         row["equivalent"] = "unsupported"
                         failures += 1
