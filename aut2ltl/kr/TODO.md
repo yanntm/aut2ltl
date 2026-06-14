@@ -129,6 +129,22 @@ mostly tests; internal relative imports survive a whole-package `git mv`):
     `package-info.java`): `aut2ltl`, `aut2ltl.kr`, `aut2ltl.sl`,
     `aut2ltl.portfolio`, plus `aut2ltl.contract`. State each package's role +
     its place in the contract→engines→portfolio→cli layering.
+11. Doc compaction (user ask 2026-06-14). Split current-status from
+    construction-history: create top-level `docs/` with `docs/HISTORY.md` and
+    UNPACK the dated "DONE/WIRED/LANDED/reverted" narrative out of
+    `aut2ltl/kr/STATUS.md` into it; slim STATUS.md to current state only
+    (bottom line, pipeline, current-capability summary w/o dates, validation
+    state, open front, tooling). CLAUDE.md: STATUS = read-at-start, HISTORY =
+    don't-read-to-start. READMEs may be per-folder (tiered is fine), dedup
+    overlap. Other kr docs (STATUS/TODO/algorithm/dag_folding) stay in
+    `aut2ltl/kr/` for now (move to `docs/` later if wanted).
+12. Per-module `algorithm.md` (user ask 2026-06-14). Each package folder gains
+    an `algorithm.md` giving a FORMAL, detailed description of the algorithm
+    that module implements — `aut2ltl/kr/` (the cascade/holonomy construction;
+    expand the existing one), `aut2ltl/sl/` (self-loop backward labeling + f2/tN),
+    `aut2ltl/portfolio/` (the combinator algebra: decompose/gate/sl_driven and
+    their soundness), `aut2ltl/contract.py` (the Translator contract). Reference
+    `paper/Automata2LTL.txt` as ground truth where relevant.
 
 **Incremental, code-driven plan (superseded above by the concrete campaign;
 kept for the rationale). Each step small; gates green after each —
