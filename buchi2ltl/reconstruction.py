@@ -18,7 +18,7 @@ import spot
 import buddy
 
 if TYPE_CHECKING:
-    from kr.recon_result import ReconResult
+    from aut2ltl.kr.recon_result import ReconResult
 
 # The two heuristics that can "rescue" certain multi-state SCCs before we
 # give up and emit UNSUPPORTED.  Both are tried (and validated) early.
@@ -317,7 +317,7 @@ def reconstruct_ltl(
     # lives in kr/ for now (the resulting import cycle is deferred to a later
     # `util` extraction — agreed 2026-06-14). No load-time cycle: `import kr`
     # does not import buchi2ltl (the gate's buchi2ltl import is lazy).
-    from kr.recon_result import ReconResult
+    from aut2ltl.kr.recon_result import ReconResult
     techset = set(technique.split("+")) if technique else set()
     if _is_unsupported(final):
         # Contract boundary: the internal UNSUPPORTED sentinel becomes an
