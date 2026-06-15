@@ -40,9 +40,17 @@ class _FirstSuccess(Generic[_In]):
         self._stages = tuple(stages)
 
     def __call__(self, x: _In) -> LTLFormulaResult:
+        # A NOT_LTL-family verdict from a stage is NOT a decline: the language is
+        # (probably) not LTL-definable, so NO stage can produce a faithful formula.
+        # Both NOT_LTL and PROBABLY_NOT_LTL end the chain at once and propagate up
+        # (a later cascade stage would only re-derive the same verdict from the
+        # CascadeHolder's cached decomposition); `.conclusive` rides along for the
+        # caller. Only a real OK beats it.
         for stage in self._stages:
             r = stage(x)
             if r.ok:
+                return r
+            if r.not_ltl:
                 return r
         return LTLFormulaResult.decline()
 
