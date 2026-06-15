@@ -115,11 +115,10 @@ def main() -> int:
 
     od_dag, nd_dag = _sum(old, "dag_nodes"), _sum(new, "dag_nodes")
     od_tree, nd_tree = _sum(old, "tree_nodes"), _sum(new, "tree_nodes")
-    print("\n=== totals (matched + unmatched, per file) ===")
+    print("\ntotals (per file):")
     print(f"DAG nodes : {od_dag} -> {nd_dag}  ({_pct(od_dag, nd_dag)})")
     print(f"tree nodes: {od_tree} -> {nd_tree}  ({_pct(od_tree, nd_tree)})")
-    print(f"\nBOTTOM LINE: {len(regressions)} regression(s), {len(fixes)} fix(es), "
-          f"DAG {_pct(od_dag, nd_dag)}.")
+    print(f"{len(regressions)} regression(s), {len(fixes)} fix(es), DAG {_pct(od_dag, nd_dag)}")
     return 1 if regressions else 0
 
 

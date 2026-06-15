@@ -114,6 +114,8 @@ def _parse_report(stderr: str) -> Dict[str, object]:
             out["technique"] = val
         elif key == "DAG nodes":
             out["dag_nodes"] = int(val)
+        elif key == "temporals":
+            out["temporals"] = int(val)
         elif key == "tree nodes":
             out["tree_nodes"] = int(val)
         elif key == "sharing":
@@ -179,6 +181,7 @@ def survey_one(formula: str, use: Optional[str] = None) -> Dict[str, object]:
         "mp": "?",
         "technique": "-",
         "dag_nodes": "",
+        "temporals": "",
         "tree_nodes": "",
         "sharing": "",
         "build_s": "",
@@ -187,7 +190,7 @@ def survey_one(formula: str, use: Optional[str] = None) -> Dict[str, object]:
     }
     build = run_build(formula, use)
     rec_row["technique"] = build.get("technique", "-")
-    for k in ("dag_nodes", "tree_nodes", "sharing", "build_s"):
+    for k in ("dag_nodes", "temporals", "tree_nodes", "sharing", "build_s"):
         if k in build:
             rec_row[k] = build[k]
 
@@ -229,33 +232,60 @@ def _load_inputs(args: List[str]) -> List[str]:
     return formulas
 
 
-def _report(rows: List[Dict[str, object]]) -> List[str]:
-    """The overall report, returned as lines (printed last)."""
-    by_verdict: Dict[str, int] = {}
-    for r in rows:
-        by_verdict[str(r["equiv"])] = by_verdict.get(str(r["equiv"]), 0) + 1
-    fails = [r for r in rows if r["equiv"] == "FALSE"]
-    errs = [r for r in rows if str(r["equiv"]).startswith(("ERROR", "BUILD_TIMEOUT", "DECLINED"))]
+# An ANSWER is a formula the tool reconstructed (build succeeded); the verdict
+# then says whether the spot oracle could confirm it. declined / build_problem
+# are NOT answers.
+_ANSWER_CATS = ("validated", "spot_timeout", "unverified", "spot_err", "false")
 
-    lines = ["", "=== survey report ===", f"cases: {len(rows)}"]
-    for verdict in sorted(by_verdict, key=lambda v: (v != "True", v != "FALSE", v)):
-        tag = "  <-- TRUE FAILURES" if verdict == "FALSE" else ""
-        lines.append(f"  {verdict:18s}: {by_verdict[verdict]}{tag}")
-    if fails:
-        lines.append("")
-        lines.append("TRUE FAILURES (verified non-equivalent):")
-        for r in fails:
-            lines.append(f"  {r['formula']}  (class={r['class']}, mp={r['mp']})")
-    if errs:
-        lines.append("")
-        lines.append("build problems:")
-        for r in errs:
-            lines.append(f"  {r['formula']}  -> {r['equiv']}")
-    verdict_ok = by_verdict.get("True", 0)
-    lines.append("")
-    lines.append(f"BOTTOM LINE: {verdict_ok}/{len(rows)} verified equivalent; "
-                 f"{len(fails)} true failure(s).")
-    return lines
+
+def _category(equiv: str) -> str:
+    if equiv == "True":
+        return "validated"
+    if equiv == "FALSE":
+        return "false"
+    if equiv == "SPOT_TIMEOUT":
+        return "spot_timeout"
+    if equiv == "UNVERIFIED_SIZE":
+        return "unverified"
+    if equiv == "DECLINED":
+        return "declined"
+    if equiv.startswith("SPOT_ERR"):
+        return "spot_err"
+    return "build_problem"   # BUILD_TIMEOUT / ERROR
+
+
+def _num(v: object) -> float:
+    try:
+        return float(v)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _report(rows: List[Dict[str, object]], use: Optional[str]) -> List[str]:
+    """The compact summary, returned as the last few lines (the CSV holds all the
+    per-formula detail; this is just what `tail` carries). Build time is the
+    construction time only — it does NOT include the spot equiv verification."""
+    cat: Dict[str, int] = {}
+    for r in rows:
+        c = _category(str(r["equiv"]))
+        cat[c] = cat.get(c, 0) + 1
+    answers = [r for r in rows if _category(str(r["equiv"])) in _ANSWER_CATS]
+    dag = sum(int(_num(r["dag_nodes"])) for r in answers)
+    temp = sum(int(_num(r["temporals"])) for r in answers)
+    build = sum(_num(r["build_s"]) for r in answers)
+    label = use if use else "default"
+    # FAIL == a verified non-equivalent formula was produced (a definite wrong
+    # answer). Timeouts / size explosions / unverified are NOT failures.
+    verdict = "FAIL" if cat.get("false", 0) else "SUCCESS"
+    return [
+        f"survey: {len(rows)} formulas  (--use {label})",
+        f"answers {len(answers)}/{len(rows)}: validated {cat.get('validated', 0)}, "
+        f"spot_timeout {cat.get('spot_timeout', 0)}, unverified {cat.get('unverified', 0)}, "
+        f"spot_err {cat.get('spot_err', 0)}, false {cat.get('false', 0)}",
+        f"declined {cat.get('declined', 0)}, build_problem {cat.get('build_problem', 0)}",
+        f"totals over answers: DAG={dag} temporals={temp} build={build:.3f}s",
+        verdict,
+    ]
 
 
 def main() -> int:
@@ -274,18 +304,19 @@ def main() -> int:
     logs.mkdir(parents=True, exist_ok=True)
     csv_path = Path(os.environ.get("KR_SURVEY_CSV", str(logs / f"survey_{ts}.csv")))
 
-    print("=== aut2ltl front-end survey ===")
-    print(f"{len(formulas)} formulas  (build budget {BUILD_TIMEOUT}s, "
-          f"equiv budget {EQUIV_TIMEOUT}s, isolated per formula"
-          f"{', --use ' + args.use if args.use else ''})\n")
+    # Per-formula detail goes to the CSV and a stderr progress trace; STDOUT
+    # carries ONLY the compact summary (so a captured .txt stays terse).
+    print(f"=== aut2ltl front-end survey: {len(formulas)} formulas "
+          f"(build {BUILD_TIMEOUT}s, equiv {EQUIV_TIMEOUT}s"
+          f"{', --use ' + args.use if args.use else ''}) ===", file=sys.stderr)
     hdr = (f"  {'formula':26s} {'mp':2s} {'tech':16s} "
-           f"{'DAG':>6s} {'tree':>12s} {'build':>7s}  equiv")
-    print(hdr)
-    print("  " + "-" * (len(hdr) - 2))
+           f"{'DAG':>6s} {'temp':>5s} {'build':>7s}  equiv")
+    print(hdr, file=sys.stderr)
+    print("  " + "-" * (len(hdr) - 2), file=sys.stderr)
 
     rows: List[Dict[str, object]] = []
-    cols = ["formula", "class", "mp", "technique", "dag_nodes", "tree_nodes",
-            "sharing", "build_s", "equiv", "reconstructed"]
+    cols = ["formula", "class", "mp", "technique", "dag_nodes", "temporals",
+            "tree_nodes", "sharing", "build_s", "equiv", "reconstructed"]
     with csv_path.open("w", newline="", encoding="utf-8") as fh:
         writer = csv.DictWriter(fh, fieldnames=cols)
         writer.writeheader()
@@ -297,12 +328,12 @@ def main() -> int:
             bs = f"{row['build_s']}s" if row["build_s"] != "" else "-"
             print(f"  {formula:26.26s} {str(row['mp']):2s} "
                   f"{str(row['technique']):16.16s} "
-                  f"{str(row['dag_nodes']):>6s} {str(row['tree_nodes']):>12s} "
-                  f"{bs:>7s}  {row['equiv']}")
+                  f"{str(row['dag_nodes']):>6s} {str(row['temporals']):>5s} "
+                  f"{bs:>7s}  {row['equiv']}", file=sys.stderr)
+    print(f"CSV: {csv_path}", file=sys.stderr)
 
-    for line in _report(rows):
+    for line in _report(rows, args.use):
         print(line)
-    print(f"\nCSV: {csv_path}")
     # exit non-zero iff a TRUE failure (verified non-equivalent) occurred
     return 1 if any(r["equiv"] == "FALSE" for r in rows) else 0
 

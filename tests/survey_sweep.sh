@@ -59,46 +59,53 @@ for use in "${USES[@]}"; do
   csv="$OUTDIR/$label.csv"
   rep="$OUTDIR/$label.txt"
   echo "--- $label  (--use ${use:-<default>}) ---"
+  # stdout (the compact summary) -> per-config .txt; stderr (per-formula trace)
+  # -> one aggregated sweep.log (a *.log, gitignored), so each .txt stays terse.
   if [ -n "$use" ]; then
-    KR_SURVEY_CSV="$csv" python3 tests/survey.py --use "$use" "${FORMULAS[@]}" > "$rep" 2>&1
+    KR_SURVEY_CSV="$csv" python3 tests/survey.py --use "$use" "${FORMULAS[@]}" > "$rep" 2>>"$OUTDIR/sweep.log"
   else
-    KR_SURVEY_CSV="$csv" python3 tests/survey.py "${FORMULAS[@]}" > "$rep" 2>&1
+    KR_SURVEY_CSV="$csv" python3 tests/survey.py "${FORMULAS[@]}" > "$rep" 2>>"$OUTDIR/sweep.log"
   fi
-  tail -n 2 "$rep"
+  cat "$rep"
 done
 
 # Dense cross-config summary. equiv is CSV column 9, dag_nodes column 5; neither
 # is preceded by a comma-bearing field, so -F, is safe here.
 summary="$OUTDIR/SUMMARY.txt"
 {
-  printf "%-26s %5s %5s %6s %8s %7s %6s %9s\n" \
-         config cases True FALSE TIMEOUT UNVER other DAGsum
+  # CSV columns: 5 dag_nodes, 6 temporals, 9 build_s, 10 equiv (none preceded by
+  # a comma-bearing field, so -F, is safe). answers = built (not declined / not a
+  # build problem); totals are over answers only.
+  printf "%-26s %5s %5s %5s %5s %5s %6s %6s %9s %7s %8s\n" \
+         config cases answ valid decl spTO unver false DAGsum tempsum build
   total_false=0
   for use in "${USES[@]}"; do
     label="$(name_of "$use")"
     csv="$OUTDIR/$label.csv"
     [ -f "$csv" ] || continue
     line=$(awk -F, 'NR>1 {
-        n++;
-        if      ($9=="True")            t++;
-        else if ($9=="FALSE")           f++;
-        else if ($9=="SPOT_TIMEOUT")    to++;
-        else if ($9=="UNVERIFIED_SIZE") uv++;
-        else                            ot++;
-        if ($5 ~ /^[0-9]+$/) dag+=$5;
+        n++; e=$10;
+        if      (e=="True")            v++;
+        else if (e=="FALSE")           f++;
+        else if (e=="SPOT_TIMEOUT")    to++;
+        else if (e=="UNVERIFIED_SIZE") uv++;
+        else if (e=="DECLINED")        d++;
+        if (e=="True"||e=="FALSE"||e=="SPOT_TIMEOUT"||e=="UNVERIFIED_SIZE"||e ~ /^SPOT_ERR/) {
+          ans++;
+          if ($5 ~ /^[0-9]+$/)   dag+=$5;
+          if ($6 ~ /^[0-9]+$/)   tmp+=$6;
+          if ($9 ~ /^[0-9.]+$/)  bld+=$9;
+        }
       } END {
-        printf "%-26s %5d %5d %6d %8d %7d %6d %9d %d", L, n, t, f, to, uv, ot, dag, f
+        printf "%-26s %5d %5d %5d %5d %5d %6d %6d %9d %7d %8.2f %d",
+               L, n, ans, v, d, to, uv, f, dag, tmp, bld, f
       }' L="$label" "$csv")
     f_count="${line##* }"
     printf "%s\n" "${line% *}"
     total_false=$((total_false + f_count))
   done
   echo
-  if [ "$total_false" -gt 0 ]; then
-    echo "*** WARNING: $total_false verified-FALSE result(s) across the sweep — true failures ***"
-  else
-    echo "no verified-FALSE results across the sweep."
-  fi
+  [ "$total_false" -gt 0 ] && echo "FAIL" || echo "SUCCESS"
 } | tee "$summary"
 
 echo
