@@ -83,8 +83,16 @@ def _split(aut: "spot.twa_graph") -> Tuple[Optional[str], List["spot.twa_graph"]
 
 
 def _recombine(op: str, subs: List[LTLFormulaResult]) -> LTLFormulaResult:
-    """Recombine sub-results with the root ⋀/⋁. Declines if any part declines;
-    else And/Or of the part formulas, technique = ⋃ parts ∪ {op<n>}."""
+    """Recombine sub-results with the root ⋀/⋁. Propagates a NOT_LTL part upward
+    (a part that is (probably) not LTL-definable cannot be built, and no later
+    recombination recovers it); declines if any part declines; else And/Or of the
+    part formulas, technique = ⋃ parts ∪ {op<n>}."""
+    # Checked before the decline test: a NOT_LTL part also has formula None, and a
+    # non-definable part is a stronger fact than a plain decline. Prefer a
+    # conclusive verdict if several parts report one.
+    not_ltls = [s for s in subs if s.not_ltl]
+    if not_ltls:
+        return next((s for s in not_ltls if s.conclusive), not_ltls[0])
     if any(s.declined or s.formula is None for s in subs):
         return LTLFormulaResult.decline()
     forms = [s.formula for s in subs]
