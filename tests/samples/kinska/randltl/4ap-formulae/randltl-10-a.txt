@@ -1,0 +1,10 @@
+0
+c R d
+1 U b
+!Xb
+b
+1
+!Fc
+FGc
+GX(0)
+b -> a
