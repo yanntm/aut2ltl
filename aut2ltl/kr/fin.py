@@ -5,8 +5,8 @@ Fin(C) := ¬(ι ↝ C) ∨ ι ↝ C ( ¬ (C>0 ↝ C) )
 
 Uses the reachability operators (reachability_operators.py) for the
 unconditional shorthands. One-way dependency: the operators never import fin.
-Counters and the shared memo live on the operators module (mutated via module
-attribute so resets by callers keep working).
+The fin counter and its memo live on the CascadeHolder passed as `casc` (per
+build), not on the operators module.
 
 Formula objects (spot.formula) in and out — no string round-trips; stringify
 only in traces (guarded) or by callers via _str_f/simplify_ltl.
@@ -17,7 +17,7 @@ from typing import Optional, Tuple
 
 from aut2ltl.kr.ltl_builders import _And, _Or, _Not, _X, _ff, _tt, _letters_to_f, _simp_f, _short_f, _fuse_or
 import aut2ltl.kr.reachability_operators as _ops
-from aut2ltl.kr.reachability_operators import reach_strong, _reach_memo, _trace, TRACE_ON
+from aut2ltl.kr.reachability_operators import reach_strong, _trace, TRACE_ON
 
 
 def _uncond_reach_strict(S: Tuple[int, ...], T: Tuple[int, ...], casc: "Cascade") -> "spot.formula":
@@ -25,11 +25,11 @@ def _uncond_reach_strict(S: Tuple[int, ...], T: Tuple[int, ...], casc: "Cascade"
     Uses full move + letter guards so that the expansion carries the paper's letter partitions.
     """
     key = (S, T, id(casc))
-    if key in _reach_memo:
-        return _reach_memo[key]
+    if key in casc.uncond_memo:
+        return casc.uncond_memo[key]
     if not S:
         res = _ff()
-        _reach_memo[key] = res
+        casc.uncond_memo[key] = res
         return res
     # Letter fusion (dag_folding.md counter-measure B): one disjunct per
     # arrival config, guard = Minato-minimized OR of the letters landing there.
@@ -50,7 +50,7 @@ def _uncond_reach_strict(S: Tuple[int, ...], T: Tuple[int, ...], casc: "Cascade"
         sub = reach_strong(arrived, None, _ff(), T, _tt(), casc)
         disjs.append(_And(_fuse_or(gs), _X(sub)))
     res = _simp_f(_Or(*disjs)) if disjs else _ff()
-    _reach_memo[key] = res
+    casc.uncond_memo[key] = res
     return res
 
 
@@ -60,8 +60,8 @@ def fin_c(C: Tuple[int, ...], casc: "Cascade") -> "spot.formula":
     Uses the reach operators for the uncond shorthands (beta=false, tau=true).
     The >0 version forces progress so that when S==T the "return" requires a move.
     """
-    _ops.PAPER_FIN_CALLS += 1
-    if _ops.PAPER_FIN_CALLS > 10000:
+    casc.fin_calls += 1
+    if casc.fin_calls > 10000:
         raise RuntimeError("Too many fin_c calls -- repeated Fin on same C exploding the construction")
     # robust init (from the normalized det D stored in the Cascade; this D is
     # the authoritative input to the algorithm)
