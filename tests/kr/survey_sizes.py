@@ -61,7 +61,7 @@ from pathlib import Path
 proj = Path(r"{PROJECT_ROOT}").resolve()
 sys.path.insert(0, str(proj))
 import spot
-from aut2ltl.kr import decompose_aut, hierarchy_class
+from aut2ltl.kr import decompose_aut, hierarchy_class, CascadeHolder
 from aut2ltl.language import Language
 from aut2ltl.portfolio import reconstruct_decomposed
 from aut2ltl.kr.ltl_builders import _tree_size_f
@@ -98,7 +98,7 @@ try:
 
     t0 = time.monotonic()
     if PATH == "monolithic":
-        _rr = hierarchy_class(casc)
+        _rr = hierarchy_class(CascadeHolder(casc))
         rec_f = _rr.formula
         info["technique"] = _rr.technique_str()
     else:
