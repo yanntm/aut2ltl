@@ -21,9 +21,6 @@ from .reachability_operators import (  # noqa: F401
     normalize_ltl,
     reach_strong,
     reach_weak,
-    PAPER_REACH_CALLS,
-    PAPER_FIN_CALLS,
-    PAPER_MAX_LTL_SIZE,
 )
 from .fin import fin_c  # noqa: F401
 
