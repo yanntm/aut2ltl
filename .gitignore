@@ -13,6 +13,7 @@ tests/sl/debug_images/
 decomp/
 
 # generated outputs and caches
+tests/smoke/
 tests/kr/examples/generated/
 aut2ltl/**/__pycache__/
 aut2ltl/**/*.pyc
