@@ -19,12 +19,20 @@ import os
 from typing import TYPE_CHECKING
 
 from aut2ltl.contract import LTLFormulaResult, Translator, CascadeTranslator
+from aut2ltl.language import SAT_MIN_STATES
 from .gap import decompose_lang
 from .cascade import CascadeHolder
 from .hierarchy_class import hierarchy_class
 
 if TYPE_CHECKING:
     from aut2ltl.language import Language
+
+
+def _sat_min_threshold() -> int:
+    """The state count at/below which `Language` SAT-minimizes D — the regime in
+    which a non-aperiodic reading is taken as a conclusive NOT_LTL proof (above
+    it D may be non-minimal, so the verdict is only PROBABLY_NOT_LTL)."""
+    return int(os.environ.get(SAT_MIN_STATES.env, SAT_MIN_STATES.default))
 
 
 def as_translator(
@@ -50,6 +58,28 @@ def as_translator(
                 f"Reconstruction depth ceiling KR_MAX_LEVELS={max_levels} "
                 f"(got {casc.num_levels} levels)."
             )
+        # LTL-DEFINABILITY GATE (at cascade time). The holonomy decomposition
+        # succeeds even when D's transition monoid is non-aperiodic — it just
+        # produces a GROUP component the parser labels a reset, from which the
+        # cascade members would build a WRONG formula (the kinská counting/ cases).
+        # IsAperiodicSemigroup(T) is the sound oracle (LTL == star-free ==
+        # counter-free == aperiodic): on a False reading, decline to build and
+        # report the impossibility instead. This is the one choke point for ALL
+        # cascade members (they each run only after this). The verdict is a proof
+        # only when D was state-minimal (<= the SAT-min threshold); above it D may
+        # be non-minimal so a spurious group is possible -> PROBABLY_NOT_LTL.
+        if casc.aperiodic is False:
+            n = casc.num_states
+            conclusive = n <= _sat_min_threshold()
+            note = (
+                f"transition monoid of D ({n} states) is non-aperiodic "
+                f"(carries a non-trivial group), so the language is not "
+                f"star-free / counter-free and no LTL formula exists"
+                + ("" if conclusive else
+                   f"; D is above the SAT-min threshold ({_sat_min_threshold()}) "
+                   f"so it may be non-minimal — treat as a strong hint, not a proof")
+            )
+            return LTLFormulaResult.not_ltl_definable(conclusive=conclusive, note=note)
         # The CascadeHolder carries this build's memos + counters (no module
         # globals, no reset); discarding it after the build IS the reset.
         holder = CascadeHolder(casc)
