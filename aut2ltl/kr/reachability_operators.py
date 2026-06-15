@@ -13,15 +13,15 @@ The high-level assembly (Fin + Muller DNF) lives in kr/reachability.py.
 
 All driven uniformly by Cascade config transitions and letter valuations (no patterns
 on the automaton shape; the normalized det aut in the Cascade *is* the working D).
-Module-level state (PAPER_* counters, _reach_memo, casc registry) is reset by
-reconstruct_ltl_paper_style before each build; tests reset/read it via this module.
+Per-build state (the reach/helper memos and the distinct-expansion counters) lives
+on the CascadeHolder threaded as the `casc` argument — never module globals — so a
+fresh holder is a fresh build (no reset).
 """
 
 from __future__ import annotations
 from typing import Dict, List, Optional, Tuple
 import functools
 import os
-from functools import lru_cache
 
 # ---------------------------------------------------------------------------
 # Debug / tracing support (enable with KR_TRACE=1 env var for verbose construction traces)
@@ -31,85 +31,37 @@ from functools import lru_cache
 # ---------------------------------------------------------------------------
 TRACE_ON = os.getenv("KR_TRACE", "0").lower() in ("1", "true", "yes", "on")
 
-# Instrumentation counters (for profiling blowups / possible infinite construction loops).
-# Incremented from reach_strong and fin_c. Exposed so callers/tests can read/print.
-PAPER_REACH_CALLS = 0
-PAPER_FIN_CALLS = 0
-PAPER_MAX_LTL_SIZE = 0
-
-# Runaway guard on DISTINCT reach subproblems (lru misses, not raw calls).
-# Legitimate big builds stay finite — (a U b)|Gc completes at ~285k distinct —
-# so the default is generous; an infinite same-level recursion grows without
-# bound and still trips it. Wall-clock budgets belong to the callers.
+# Runaway guard on DISTINCT reach subproblems (holder.reach_calls = memo misses,
+# not raw calls). Legitimate big builds stay finite — (a U b)|Gc completes at
+# ~285k distinct — so the default is generous; an infinite same-level recursion
+# grows without bound and still trips it. Wall-clock budgets belong to the callers.
 REACH_GUARD = int(os.getenv("KR_REACH_GUARD", "5000000"))
 
-# Simple memo for reach_strong subproblems during one construction.
-# Key includes id(casc) for safety. Acts as "unique table of visited" to avoid
-# exponential re-expansion of identical (S, B, beta, T, tau, level) subformulas.
-# This should prevent the work explosion that looks like "infinite loop".
-_reach_memo = {}
-
-# Memo for the five helper formulas (solid/wsolid/dashed and the gt0 cores).
-# Only reach_strong was lru-cached; the helpers re-ran their whole
-# combined-letter enumeration at every call site (dashed lines (1)/(2)/(3)
-# invoke solid/wsolid directly), so the SAME helper signature was recomputed
-# under every enclosing context: (a U b)|Gc profiled at 437k raw reach calls
-# / 91.5% lru hit rate in 6s — pure fan-in overhead. BDD-style: one entry per
-# distinct (helper, casc, S, B, beta, T, tau, level). Cleared with the lru by
-# reconstruct and the probes.
-_helper_memo: Dict = {}
-
-
 def _memo_reach_helper(tag: str):
-    """Memoize a helper with the (S, B, beta, T, tau, casc, level) signature.
+    """Memoize a helper with the (S, B, beta, T, tau, casc, level) signature on
+    the CascadeHolder's `helper_memo` (per build; `casc` here is the holder).
     beta/tau are normalized to hash-consed spot.formula BEFORE keying (str and
     formula spellings of the same guard share an entry). A decorator so the
-    function BODY keeps its def-name and code shapes (the r4 audit greps
-    bodies by 'def <name>(')."""
+    function BODY keeps its def-name and code shapes (the r4 audit greps bodies by
+    'def <name>('). The helpers re-run their whole combined-letter enumeration at
+    every call site (dashed lines (1)/(2)/(3) invoke solid/wsolid directly), so
+    without this memo (a U b)|Gc profiled at 437k raw reach calls / 91.5% hit
+    rate — pure fan-in overhead. One entry per distinct (helper, S, B, beta, T,
+    tau, level); fresh per holder."""
     def deco(fn):
         @functools.wraps(fn)
         def wrapper(S, B, beta, T, tau, casc, level=0):
             beta_f = _ff() if beta is None else _to_f(beta)
             tau_f = _tt() if tau is None else _to_f(tau)
-            key = (tag, id(casc), S, B, beta_f, T, tau_f, level)
-            hit = _helper_memo.get(key)
+            key = (tag, S, B, beta_f, T, tau_f, level)
+            memo = casc.helper_memo
+            hit = memo.get(key)
             if hit is None:
                 hit = fn(S, B, beta_f, T, tau_f, casc, level)
-                _helper_memo[key] = hit
+                memo[key] = hit
             return hit
         return wrapper
     return deco
-
-# For lru on R* (arch adoption): registry to allow passing only hashable cid to cached funcs.
-# Cleared in reconstruct before each top-level build.
-_casc_by_id: Dict[int, "Cascade"] = {}
-
-def _register_casc(casc: "Cascade") -> int:
-    cid = id(casc)
-    _casc_by_id[cid] = casc
-    return cid
-
-def _get_casc(cid: int) -> Optional["Cascade"]:
-    return _casc_by_id.get(cid)
-
-def _clear_casc_registry():
-    _casc_by_id.clear()
-
-def reset_build_state(casc: "Cascade") -> None:
-    """Reset the operator counters/memos for an independent fresh build, so a
-    translator's size counters are accurate. The acceptance-class members
-    (buchi/cobuchi/weak) call this before constructing."""
-    global PAPER_REACH_CALLS, PAPER_FIN_CALLS, PAPER_MAX_LTL_SIZE
-    PAPER_REACH_CALLS = 0
-    PAPER_FIN_CALLS = 0
-    PAPER_MAX_LTL_SIZE = 0
-    _reach_memo.clear()
-    _clear_casc_registry()
-    _register_casc(casc)
-    if "_lru_reach_strong" in globals():
-        _lru_reach_strong.cache_clear()
-    if "_helper_memo" in globals():
-        _helper_memo.clear()
 
 def _trace(msg: str) -> None:
     if TRACE_ON:
@@ -162,42 +114,37 @@ def reach_strong(
     Native spot.formula end-to-end: accepts beta/tau as str or formula, RETURNS a
     spot.formula (hash-consed → DAG sharing across all subterms; stringify only at
     the very top via reconstruct, or with _str_f in tests/traces).
-    Uses lru_cache on _lru_reach_strong (with cid for hashability).
+
+    Memoized per build on `casc.reach_memo` (key = the normalized
+    (S, B, beta_f, T, tau_f, level)); `casc` is the CascadeHolder owning the memo.
     """
     beta_f = _ff() if beta is None else _to_f(beta)
     tau_f = _tt() if tau is None else _to_f(tau)
 
-    cid = id(casc)
-    _register_casc(casc)
-
-    # lru lookup (keyed on hashables: cid + tuples + formula objs; B can be None, which is hashable)
-    # (_reach_memo is NOT written here: fin.py uses it with its own 3-tuple
-    # keys; the old per-call 7-tuple writes were never read by anyone.)
-    return _lru_reach_strong(cid, S, B, beta_f, T, tau_f, level)
-
-
-@lru_cache(maxsize=None)
-def _lru_reach_strong(cid: int, S: Tuple[int, ...], B: Optional[Tuple[int, ...]], beta_f: 'spot.formula', T: Tuple[int, ...], tau_f: 'spot.formula', level: int) -> "spot.formula":
-    """Core cached implementation of reach_strong. Args are all hashable (B=None ok)."""
     # Dead-tail early-out: reach(S,B,β,T,τ≡false) ≡ false — Table 1 base case
     # is ¬β U false ≡ false and every inductive line conjoins τ at the claim
     # point. With per-node simplify folding tails (σ ∧ X(0) → 0), this deletes
     # the subproblem AND every wrapped descendant it would seed deeper down.
     if tau_f.is_ff():
         return _ff()
-    # Guard counts MISSES only (distinct expansions; this body runs once per
+
+    # Per-build memo lookup (the "unique table of visited" that prevents the
+    # exponential re-expansion of identical subproblems). One entry per distinct
+    # (S, B, beta_f, T, tau_f, level); lives on the holder, fresh per build.
+    key = (S, B, beta_f, T, tau_f, level)
+    memo = casc.reach_memo
+    hit = memo.get(key)
+    if hit is not None:
+        return hit
+
+    # Guard counts MISSES only (distinct expansions; the body below runs once per
     # key). Counting raw calls tripped the guard on healthy 91%-hit workloads.
-    global PAPER_REACH_CALLS
-    PAPER_REACH_CALLS += 1
-    if PAPER_REACH_CALLS > REACH_GUARD:
+    casc.reach_calls += 1
+    if casc.reach_calls > REACH_GUARD:
         raise RuntimeError(
             f"Too many DISTINCT reach_strong subproblems (>{REACH_GUARD}) -- "
             f"genuine blowup (not memo fan-in; hits are not counted). "
             f"KR_REACH_GUARD to tune.")
-
-    casc = _get_casc(cid)
-    if casc is None:
-        return _ff()
 
     n = getattr(casc, "num_levels", 0)
     if level == n:
@@ -205,6 +152,7 @@ def _lru_reach_strong(cid: int, S: Tuple[int, ...], B: Optional[Tuple[int, ...]]
         res_f = _simp_f(_U(negb, tau_f))
         if TRACE_ON:
             _trace(f"base level reached (level={level}): returning {_short_f(res_f)}")
+        memo[key] = res_f
         return res_f
 
     if TRACE_ON:
@@ -215,6 +163,7 @@ def _lru_reach_strong(cid: int, S: Tuple[int, ...], B: Optional[Tuple[int, ...]]
     suffix_T = T[level:]
     if suffix_S == suffix_T and tau_f.is_tt():
         _trace(f"  suffix from level {level} already matches target -> return tau early")
+        memo[key] = _tt()
         return _tt()
 
     # Current level's value (for solid/dashed decision at this layer)
@@ -235,6 +184,7 @@ def _lru_reach_strong(cid: int, S: Tuple[int, ...], B: Optional[Tuple[int, ...]]
     res_f = _simp_f(_Or(solid_f, dashed_f))
     if TRACE_ON:
         _trace(f"    reach_strong res (pre-memo, post-simp)={_short_f(res_f, 150)}")
+    memo[key] = res_f
     return res_f
 
 
