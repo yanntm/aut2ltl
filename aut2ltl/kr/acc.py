@@ -22,9 +22,8 @@ language-faithful LTLFormulaResult or a DECLINE.
 from __future__ import annotations
 from typing import Optional
 
-import aut2ltl.kr.reachability_operators as _ops
-from aut2ltl.kr.ltl_builders import _And, _Or, _X, _tt, _ff, _simp_f, _tree_size_f, _letters_to_f
-from aut2ltl.kr.cascade import Cascade
+from aut2ltl.kr.ltl_builders import _And, _Or, _X, _tt, _ff, _simp_f, _letters_to_f
+from aut2ltl.kr.cascade import Cascade, CascadeHolder
 from aut2ltl.contract import LTLFormulaResult, CascadeTranslator
 
 
@@ -111,7 +110,6 @@ def _unroll(casc: Cascade) -> Optional["spot.formula"]:
         res = step(iota)
     except _Recurrent:
         return None
-    _ops.PAPER_MAX_LTL_SIZE = _tree_size_f(res)
     return res
 
 
@@ -121,7 +119,7 @@ class Acc:
 
     name = "acc"
 
-    def __call__(self, casc: Cascade) -> LTLFormulaResult:
+    def __call__(self, casc: CascadeHolder) -> LTLFormulaResult:
         phi = _unroll(casc)
         if phi is None:
             return LTLFormulaResult.decline()
