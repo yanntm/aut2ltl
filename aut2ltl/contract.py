@@ -116,7 +116,7 @@ class CascadeTranslator(Protocol):
 
     Same `LTLFormulaResult` and the same load-bearing invariant — the result is
     language-faithful (OK) or DECLINED, never wrong — but the input is an already
-    decomposed `Cascade` instead of a raw automaton.
+    decomposed cascade (a `CascadeHolder` wrapping it) instead of a raw automaton.
 
     Realized as an OO family: each construction is a *member* — a small class
     (singleton instance) with a fixed `name` (its technique identity, e.g.
@@ -127,10 +127,12 @@ class CascadeTranslator(Protocol):
     is the adapter that lifts a member up to a `Translator` (twa -> Cascade ->
     result).
 
-    The `Cascade` annotation is a bare forward-ref string (like `Translator`'s
-    `spot.twa_graph`) so this floor module stays import-free of the engines.
+    The `CascadeHolder` annotation is a bare forward-ref string (like
+    `Translator`'s `spot.twa_graph`) so this floor module stays import-free of the
+    engines. The holder wraps the pure `Cascade` with that build's caches/counters
+    (kr/cascade/holder.py); members read cascade attributes off it transparently.
     """
 
     name: str
 
-    def __call__(self, casc: "Cascade") -> "LTLFormulaResult": ...
+    def __call__(self, casc: "CascadeHolder") -> "LTLFormulaResult": ...
