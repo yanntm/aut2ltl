@@ -299,7 +299,13 @@ fold pass → interning). Items below are the actionable queue.
 - More multi-level round-trips + size/depth metrics vs paper bounds (the
   DAG-vs-tree table in STATUS is the seed of the empirical argument).
 - Finite-word variant (weak next in wsolid, construction-ref §10) — stretch.
-- Counter-free verification for external HOA inputs (GAP IsAperiodic) — stretch.
+- **NOT_LTL detection — IN PROGRESS (2026-06-15).** Non-LTL inputs (kinská
+  `counting/`) currently get a WRONG formula from the cascade leaves (the
+  holonomy group component is mislabeled `KIND reset`); SL correctly declines.
+  Oracle: `IsAperiodicSemigroup(T)` on D's transition monoid (LTL ⟺ counter-free
+  ⟺ aperiodic). Contract `NOT_LTL` / `PROBABLY_NOT_LTL` landed; wire GAP emit →
+  parse → cascade flag → leaf members → portfolio/`__main__`. Conclusive only
+  when D is state-minimal (`PROBABLY_NOT_LTL` above the SAT-min threshold).
 
 ## P4 — heuristic/kr mixin via suffix-formula injection (LOW PRIO, deferred)
 

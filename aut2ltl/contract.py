@@ -27,10 +27,14 @@ reference through the dispatch, never a module-level/global recorder.
 This module is the contract FLOOR both engines depend on: the data signature
 `LTLFormulaResult` and the behavioral signatures `Translator` (automaton in) and
 `CascadeTranslator` (decomposed cascade in). The key reification is an explicit
-`status` (OK / DECLINED) — "not me" is no longer smuggled as the `UNSUPPORTED`
-string inside `.formula`. `status` plus the dataclass being the single extension
-point (add a `cost`/size field when a pick-smaller combinator needs an ordering)
-is what lets the combinators compose soundly.
+`status` (OK / DECLINED / NOT_LTL / PROBABLY_NOT_LTL) — "not me" is no longer
+smuggled as the `UNSUPPORTED` string inside `.formula`. NOT_LTL / PROBABLY_NOT_LTL
+are the impossibility verdicts (the language is (probably) not LTL-definable),
+distinct from DECLINED ("not my method"): a consumer keeps trying on DECLINED but
+stops on the NOT_LTL family (`.not_ltl`; `.conclusive` for strength). `status` plus
+the dataclass being the single extension point (add a `cost`/size field when a
+pick-smaller combinator needs an ordering) is what lets the combinators compose
+soundly.
 """
 from __future__ import annotations
 
@@ -43,6 +47,21 @@ if TYPE_CHECKING:
 # status values
 OK = "OK"
 DECLINED = "DECLINED"
+# Two POSITIVE non-answers, distinct from DECLINED: the input language is not
+# LTL-definable (its deterministic transition monoid is non-aperiodic — it carries
+# a non-trivial group — so the language is not star-free / counter-free and no LTL
+# formula exists). DECLINED means "not my method, try another"; these mean "no
+# method can succeed, stop". The verdict is rigorous only when D is state-minimal:
+# on a non-minimal D a spurious group can appear, so the two are split by D's size
+# against the SAT-min threshold —
+#   NOT_LTL           — D was state-minimal: a PROOF of non-definability.
+#   PROBABLY_NOT_LTL  — D was above the SAT-min threshold (not minimized): a strong
+#                       hint, not a proof (the group may be a non-minimality
+#                       artifact). Reported honestly as tentative.
+# `.not_ltl` is True for both (both are impossibility verdicts, no usable formula);
+# branch on `status` / `.conclusive` when the distinction matters.
+NOT_LTL = "NOT_LTL"
+PROBABLY_NOT_LTL = "PROBABLY_NOT_LTL"
 
 # Legacy decline sentinel. The engines (buchi2ltl, sl) still use this string
 # INTERNALLY to propagate "this state has no exact label" through their
@@ -61,10 +80,14 @@ class LTLFormulaResult:
     formula: Optional["spot.formula"]
     technique: Set[str] = field(default_factory=set)
     status: str = OK
+    # Human-facing detail. For the NOT_LTL verdicts it explains the reason (the
+    # non-aperiodic monoid) and whether D was state-minimal.
+    note: Optional[str] = None
 
     @property
     def declined(self) -> bool:
-        """True iff this is a "not me" result. Consumers branch on this."""
+        """True iff this is a "not me" result. Consumers branch on this. NOT_LTL
+        is NOT a decline — it is a positive impossibility verdict (see `.not_ltl`)."""
         if self.status == DECLINED:
             return True
         # Transitional: some producers still smuggle the UNSUPPORTED string in
@@ -72,14 +95,43 @@ class LTLFormulaResult:
         return isinstance(self.formula, str) and _LEGACY_UNSUPPORTED in self.formula
 
     @property
+    def not_ltl(self) -> bool:
+        """True iff this is a non-definability verdict (NOT_LTL or PROBABLY_NOT_LTL):
+        the language is (probably) not LTL-definable, so no technique can produce a
+        faithful formula. Consumers short-circuit; use `.conclusive` for strength."""
+        return self.status in (NOT_LTL, PROBABLY_NOT_LTL)
+
+    @property
+    def conclusive(self) -> bool:
+        """For a NOT_LTL-family verdict: True iff rigorous (status NOT_LTL, D was
+        state-minimal), False iff tentative (PROBABLY_NOT_LTL). False otherwise."""
+        return self.status == NOT_LTL
+
+    @property
     def ok(self) -> bool:
-        """True iff this carries a real (language-faithful) formula."""
-        return not self.declined
+        """True iff this carries a real (language-faithful) formula. DECLINED and
+        both NOT_LTL verdicts are non-answers (no usable formula)."""
+        return self.status == OK and not self.declined
 
     @classmethod
     def decline(cls, technique: Optional[Set[str]] = None) -> "LTLFormulaResult":
         """The "not me" result: no formula, DECLINED status."""
         return cls(formula=None, technique=technique or set(), status=DECLINED)
+
+    @classmethod
+    def not_ltl_definable(
+        cls,
+        *,
+        conclusive: bool = True,
+        note: Optional[str] = None,
+        technique: Optional[Set[str]] = None,
+    ) -> "LTLFormulaResult":
+        """The non-definability verdict: the language is (probably) not LTL-definable
+        (no formula exists). `conclusive=True` (D state-minimal) yields NOT_LTL — a
+        proof; `conclusive=False` (D above the SAT-min threshold) yields
+        PROBABLY_NOT_LTL — a strong hint. `note` carries the explanation."""
+        return cls(formula=None, technique=technique or set(),
+                   status=NOT_LTL if conclusive else PROBABLY_NOT_LTL, note=note)
 
     def technique_str(self) -> str:
         """Stable '+'-joined rendering (sorted) for logs/surveys."""
