@@ -172,17 +172,28 @@ def run_build(formula: str, use: Optional[str] = None,
     overrun — flattening is size-gated in the tool, so the wall time is the
     cascade build, not rendering."""
     if _is_hoa(formula):
-        cmd = [sys.executable, "-m", "aut2ltl", "--hoa", formula]
+        tool = [sys.executable, "-m", "aut2ltl", "--hoa", formula]
     else:
-        cmd = [sys.executable, "-m", "aut2ltl", formula, "--ltl"]
+        tool = [sys.executable, "-m", "aut2ltl", formula, "--ltl"]
     if use:
-        cmd += ["--use", use]
+        tool += ["--use", use]
+    # Strict per-phase budget with NO GAP runaway. `timeout` sends SIGINT at the
+    # budget so the tool's interrupt handler (aut2ltl/proc.py) reaps GAP's whole
+    # process group, then SIGKILLs after a 1s grace if the tool ignores SIGINT.
+    # subprocess.run's own timeout is only a backstop for `timeout` itself
+    # hanging: it SIGKILLs the python child directly, which WOULD orphan GAP, so
+    # we give it slack and let the catchable-SIGINT path above do the reaping.
+    cmd = ["timeout", "--signal=INT", "--kill-after=1", str(timeout), *tool]
     try:
         proc = subprocess.run(
             cmd,
-            capture_output=True, text=True, timeout=timeout, cwd=PROJECT_ROOT,
+            capture_output=True, text=True, timeout=timeout + 3, cwd=PROJECT_ROOT,
         )
     except subprocess.TimeoutExpired:
+        return {"status": f"BUILD_TIMEOUT>{timeout}s"}
+    # `timeout` reports 124 (SIGINT-killed at the budget) or 137 (SIGKILL after
+    # the grace) — a construction overrun, not a tool crash.
+    if proc.returncode in (124, 137):
         return {"status": f"BUILD_TIMEOUT>{timeout}s"}
     stdout = (proc.stdout or "").strip()
     stderr = proc.stderr or ""
