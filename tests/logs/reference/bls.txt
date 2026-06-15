@@ -1,0 +1,5 @@
+survey: 35 formulas  (--use bls)
+answers 31/35: validated 24, spot_timeout 1, unverified 5, spot_err 1, false 0
+declined 0, build_timeout 4, build_crash 0
+totals over answers: DAG=122874 temporals=21993 build=24.284s
+SUCCESS
