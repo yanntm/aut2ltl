@@ -4,7 +4,7 @@
 Layering, acyclic: `aut2ltl/contract.py` (ReconResult/Translator floor) ←
 `aut2ltl/kr` (pure cascade FoSSaCS engine) + `aut2ltl/sl` (heuristic engine,
 ex-`buchi2ltl/`) ← `aut2ltl/portfolio` (combinators: decompose / gate /
-sl_driven) ← `aut2ltl/cli` + `__init__`. Tests live under `tests/` (`tests/kr`,
+sl_driven) ← `aut2ltl/__main__` + `__init__`. Tests live under `tests/` (`tests/kr`,
 `tests/sl`, `tests/fixtures`). See `aut2ltl/kr/TODO.md` "THE MOVE CAMPAIGN".
 
 ## Orientation (don't duplicate here — follow the pointers)

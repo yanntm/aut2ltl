@@ -29,12 +29,13 @@ full tooling map.
 
 ## CLI
 
-`aut2ltl/cli.py` is a **stub** — it currently wraps only the sl heuristic engine,
-not the portfolio path. A real CLI over `reconstruct_decomposed` is upcoming work
-(see `TODO.md`); until then, prefer the test scripts above.
+`aut2ltl/__main__.py` (`python3 -m aut2ltl`, console script `aut2ltl`) is the
+portfolio front end: LTL/HOA in, equivalent LTL out, with `--use` technique
+selection, `-O key=value` overrides, and `--dag` output. See `aut2ltl/kr/STATUS.md`
+"Front end (CLI)" for the full surface. (The old sl-only `cli.py` stub is retired.)
 
 ## Layout
 
 `aut2ltl/contract.py` (floor) ← `aut2ltl/kr` (pure cascade engine) +
 `aut2ltl/sl` (heuristic engine) ← `aut2ltl/portfolio` (combinators) ←
-`aut2ltl/cli`. Tests under `tests/` (`tests/kr`, `tests/sl`, `tests/fixtures`).
+`aut2ltl/__main__`. Tests under `tests/` (`tests/kr`, `tests/sl`, `tests/fixtures`).

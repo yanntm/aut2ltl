@@ -22,7 +22,6 @@ soundly. On the Manna-Pnueli class ladder the combined path is a clean sweep
 aut2ltl/                  the root package (layering: floor -> engines -> portfolio -> cli)
   contract.py            ReconResult + Translator (the contract floor)
   __main__.py            the portfolio front end:  python3 -m aut2ltl  (console: aut2ltl)
-  cli.py                 legacy sl-engine demo:  python3 -m aut2ltl.cli
   kr/                    pure cascade FoSSaCS engine (cascade, reachability,
                          fin, acceptance_dispatch, gap_bridge, simplify/, ...)
   sl/                    heuristic engine (backward labeling + f2/tN heuristics)
@@ -56,9 +55,6 @@ python3 -m aut2ltl 'GFa & GFb' --dag | dot -Tpng -o dag.png
 python3 -m aut2ltl --list-techniques     # the --use vocabulary
 python3 -m aut2ltl --list-options        # every -O key, its default and doc
 python3 -m aut2ltl --help
-
-# Legacy sl-engine demo (original vs recovered LTL, technique, equivalence):
-python3 -m aut2ltl.cli
 ```
 
 Menu for `--use`: producers `acc weak buchi cobuchi bls sl` (ladder rungs, tried

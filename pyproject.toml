@@ -22,8 +22,7 @@ keywords = ["LTL", "omega-automata", "Buchi", "Krohn-Rhodes", "holonomy", "tempo
 dependencies = []
 
 [project.scripts]
-# The portfolio front end (aut2ltl/__main__.py:main). Equivalent to
-# `python3 -m aut2ltl`. The legacy sl-only demo stays at `python3 -m aut2ltl.cli`.
+# The portfolio front end (aut2ltl/__main__.py:main). Equivalent to `python3 -m aut2ltl`.
 aut2ltl = "aut2ltl.__main__:main"
 
 [tool.setuptools.packages.find]
