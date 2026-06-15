@@ -97,7 +97,15 @@ else:
             other = other.translate("Buchi")
         out["equiv"] = bool(spot.are_equivalent(orig_aut, other))
     except Exception as e:
-        out["equiv"] = "SPOT_ERR:" + str(e)[:80]
+        # Spot raises (not returns) on its limits; messages are multi-line, so
+        # collapse whitespace before it reaches a CSV field. The >32-acceptance-
+        # set wall is the standard case (a reconstruction with too many distinct
+        # temporals) — give it a stable single-line tag.
+        msg = " ".join(str(e).split())
+        if "Too many acceptance sets" in msg:
+            out["equiv"] = "SPOT_ERR:too-many-acceptance-sets"
+        else:
+            out["equiv"] = "SPOT_ERR:" + msg[:80]
 print("VERIFY_JSON:" + json.dumps(out))
 '''
 
@@ -208,7 +216,9 @@ def survey_one(formula: str, use: Optional[str] = None) -> Dict[str, object]:
         rec_row["equiv"] = status
         return rec_row
 
-    rec = str(build.get("rec", ""))
+    # Defensive: a CSV field must never carry a newline (it would split the row);
+    # a valid LTL formula has none, so this only guards against surprises.
+    rec = str(build.get("rec", "")).replace("\n", " ").replace("\r", " ")
     checkable = None if rec.startswith("<unflattened") else rec
     verify = run_verify(formula, checkable)
     rec_row["mp"] = verify.get("mp", "?")
