@@ -19,3 +19,7 @@ aut2ltl/**/*.pyc
 tests/**/__pycache__/
 tests/**/*.pyc
 
+# Reference survey sweeps are committed per release (re-include despite *.csv).
+!tests/logs/reference/
+!tests/logs/reference/*.csv
+
