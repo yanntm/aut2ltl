@@ -473,3 +473,23 @@ Tests: new `tests/kr/simplify/test_wm_fold.py` (10 cases incl. 2 must-not-fire
 guards, SUCCESS); fold/now/factor/context/arm_cofactor suites CLEAN;
 `test_random_equiv` 500-formula fuzz ALL EQUIVALENT; `test_kr_r4_audit` CLEAN;
 `tests/survey.py` SUCCESS 35/35.
+
+## 2026-06-16 — simplify rule 4: GF/FG sibling cofactoring (DONE)
+
+New independent rule in `fold_pass` (`_gffg_cofactor`, applied to boolean
+nodes in the fold walk after `_fold_node`): under the cofinite invariant
+`FG ψ`, the tail-only `GF φ` argument matters only where ψ holds —
+
+    GF φ ∧ FG ψ   →   GF(φ|ψ)  ∧ FG ψ        φ restricted to {ψ true}
+    FG α ∨ GF β   →   FG(α|¬β) ∨ GF β         dual (FG matters where β fails)
+
+e.g. `GF(a&b) ∧ FG b → GF a ∧ FG b` (user's case). Care-set aggregates every
+sibling invariant (`∧ ψ_k` for And; `¬(∨ β_k)` for Or), φ restricted via
+`prop_cofactor` (Coudert–Madre + ISOP), accepted only when strictly smaller;
+inner args must be propositional. No temporal node added/removed. Reuses the
+`prop_cofactor` helper from the arm-cofactor rule.
+
+Tests: new `tests/kr/simplify/test_gffg.py` (8 cases incl. Or-dual, nested,
+2 must-not-fire guards — non-propositional arg + no-FG-sibling — SUCCESS);
+all simplify suites CLEAN/SUCCESS; `test_random_equiv` fuzz ALL EQUIVALENT;
+`test_kr_r4_audit` CLEAN; `tests/survey.py` SUCCESS 35/35.

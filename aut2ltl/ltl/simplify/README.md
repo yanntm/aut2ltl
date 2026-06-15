@@ -72,6 +72,13 @@ Later additions (same module):
   propositional fragments only (one-way, sound). Found by the census
   class probe: these paddings were the dominant language-equal variant
   pairs in real outputs.
+- **GF/FG sibling cofactoring** (`_gffg_cofactor`, boolean args only): under
+  the cofinite invariant `FG ψ`, the tail-only `GF φ` argument matters only
+  where ψ holds, so `GF φ ∧ FG ψ → GF(φ|ψ) ∧ FG ψ` (e.g.
+  `GF(a&b) ∧ FG b → GF a ∧ FG b`); literal dual at Or
+  `FG α ∨ GF β → FG(α|¬β) ∨ GF β`. Care-set aggregates all sibling invariants
+  (`∧ ψ_k` / `¬(∨ β_k)`); φ restricted via `prop_cofactor`, accepted only when
+  strictly smaller. No temporal node added/removed.
 - **W/M expansion fold** (in `_find_fold_or` / `_find_fold_and`, flagged
   there as an independent rule): the weak-until / strong-release laws
   `f W g ≡ Gf ∨ (f U g)` and `f M g ≡ Ff ∧ (f R g)`, accepting the

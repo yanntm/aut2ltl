@@ -420,6 +420,57 @@ def _arm_cofactor(node: "spot.formula") -> "spot.formula":
     return node
 
 
+def _gffg_cofactor(node: "spot.formula") -> "spot.formula":
+    """INDEPENDENT RULE — GF/FG sibling cofactoring (boolean args only),
+    unrelated to the folds above; applied directly to a boolean node:
+
+        GF φ ∧ FG ψ   →   GF(φ|ψ)  ∧ FG ψ     φ restricted to {ψ true}
+        FG α ∨ GF β   →   FG(α|¬β) ∨ GF β      α restricted to {β false}
+
+    GF is a tail (infinitely-often) property, so under the cofinite invariant
+    FG ψ the GF argument only ever matters where ψ holds — restrict it there
+    (Coudert–Madre, `prop_cofactor`). The Or form is the literal dual: the FG
+    disjunct matters only when GF β fails, i.e. cofinitely ¬β. The care-set
+    aggregates every sibling invariant — `∧ ψ_k` (And) / `∧ ¬β_k = ¬(∨ β_k)`
+    (Or) — so it is built as And(ψ_k)|care_true (resp. Or(β_k)|¬care). Inner
+    arguments must be propositional; accept only when strictly smaller. No
+    temporal node added or removed (Couvreur acc-set census untouched)."""
+    is_and = node._is(spot.op_And)
+    if not (is_and or node._is(spot.op_Or)):
+        return node
+    # AND: shrink GF=G(F·) via the FG=F(G·) invariants; OR: dual.
+    shrink_o, shrink_i = (spot.op_G, spot.op_F) if is_and else (spot.op_F, spot.op_G)
+    inv_o, inv_i = (spot.op_F, spot.op_G) if is_and else (spot.op_G, spot.op_F)
+    rebuild = ((lambda p: spot.formula.G(spot.formula.F(p))) if is_and
+               else (lambda p: spot.formula.F(spot.formula.G(p))))
+
+    def _nest_body(k: "spot.formula", outer, inner) -> "Optional[spot.formula]":
+        if k._is(outer) and k[0]._is(inner) and k[0][0].is_boolean():
+            return k[0][0]
+        return None
+
+    kids = list(node)
+    invs = [b for b in (_nest_body(k, inv_o, inv_i) for k in kids) if b is not None]
+    if not invs:
+        return node
+    # And -> care-set ∧ψ_k (care_true); Or -> care-set ¬(∨β_k) (¬care_true).
+    care = spot.formula.And(invs) if is_and else spot.formula.Or(invs)
+    changed = False
+    out: List["spot.formula"] = []
+    for k in kids:
+        phi = _nest_body(k, shrink_o, shrink_i)
+        if phi is not None:
+            phi2 = prop_cofactor(phi, care, care_true=is_and)
+            if phi2 is not None and _tree_size(phi2) < _tree_size(phi):
+                out.append(rebuild(phi2))
+                changed = True
+                continue
+        out.append(k)
+    if not changed:
+        return node
+    return spot.formula.And(out) if is_and else spot.formula.Or(out)
+
+
 def ctx_subsume(node: "spot.formula", pos, neg) -> "spot.formula | None":
     """Context-aware S1/S2 (the initial-state reading): under a context
     refuting c, the bare-c disjunct of S1 is discharged by knowledge, so
@@ -501,7 +552,7 @@ def fold_simplify(f: "spot.formula") -> "spot.formula":
             out = spot.formula.And(kids) if n._is(spot.op_And) else spot.formula.Or(kids)
             # Constructors flatten/dedupe; fold only what is still boolean.
             if out._is(spot.op_And) or out._is(spot.op_Or):
-                out = _fold_node(out)
+                out = _gffg_cofactor(_fold_node(out))
         elif list(n):
             out = _arm_cofactor(_arm_unpad(n.map(walk)))
         else:
