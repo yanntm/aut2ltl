@@ -82,7 +82,16 @@ def reconstruct_ltl(
         else:
             state_invariants[q] = None
 
-    # Simplify outgoing edge labels by existentially quantifying downstream invariants.
+    # Simplify outgoing edge labels by existentially quantifying downstream
+    # invariants. This is sound ONLY because the linear walk re-adds each
+    # invariant (timed, X-wrapped) as it ENTERS the owning state. Full-suffix
+    # delegation skips that walk, so it must NOT see the stripped automaton: a
+    # stripped INTERIOR invariant (e.g. a terminal sink's `G a`) would never be
+    # re-added and the delegate would translate a widened language (an unsound
+    # over-approximation — the `a`-for-(a!a)*a^w bug). We keep the pre-strip
+    # automaton and root delegation on it (numbering is preserved, so q indexes
+    # both identically).
+    pristine_aut = aut
     aut = _apply_downstream_invariants(aut, state_invariant_literals)
 
     # --- Terminal-SCC (t2/tN) labeling heuristic: pre-validated G(...) fragments ---
@@ -131,7 +140,9 @@ def reconstruct_ltl(
         # both the bad_states and the `visiting` decline paths.
         if scc_labeler is not None and q in _multi_scc_states:
             try:
-                frag = scc_labeler(_sub_automaton_from(aut, q))
+                # Pre-strip automaton: the delegate must see the invariant intact
+                # (see _apply_downstream_invariants note above).
+                frag = scc_labeler(_sub_automaton_from(pristine_aut, q))
             except Exception:
                 frag = None
             if frag is not None:
