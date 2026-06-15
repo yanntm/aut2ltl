@@ -493,3 +493,22 @@ Tests: new `tests/kr/simplify/test_gffg.py` (8 cases incl. Or-dual, nested,
 2 must-not-fire guards — non-propositional arg + no-FG-sibling — SUCCESS);
 all simplify suites CLEAN/SUCCESS; `test_random_equiv` fuzz ALL EQUIVALENT;
 `test_kr_r4_audit` CLEAN; `tests/survey.py` SUCCESS 35/35.
+
+## 2026-06-16 — wire own_simplify into the decompose recombiner (DONE)
+
+The own-rules simplifier ran per kr-node and per leaf result, but
+`portfolio/decompose._recombine` assembled the recombined And/Or and returned
+it RAW — so a cross-part fold like `G(!b & h) | (h U b) → h W b` was never
+attempted (no per-node pass ever saw that Or whole). Found via survey_diff:
+the W/M + GF/FG rules unit-tested green but did NOT move the kinska sweep
+output (`h W b` still emitted as `G(!b & h) | (h U b)`).
+
+Fix: `_recombine` now runs `builders.own_simplify` (our rules ONLY — Spot's
+tl_simplifier is deliberately excluded, it is not DAG-size aware) on each
+part BEFORE combining and on the combo AFTER; the decompose recursion gives
+both at every nesting level. Exposed a typed public `builders.own_simplify`
+(wraps `_own_simp`: shared process bdd_dict, KR_SIMP_OWN size guard, no Spot).
+
+Verified: `h W b`/`c W d` → source, `d R e` → d M e-fold, 8ap HOA → `h W b`.
+survey.py SUCCESS (DAG 488→487); kr_r4_audit CLEAN; build_portfolio/
+contract_combinators/options ALL OK/PASS.

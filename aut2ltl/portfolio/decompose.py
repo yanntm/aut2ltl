@@ -36,6 +36,7 @@ import spot
 
 from aut2ltl.contract import LTLFormulaResult, Translator
 from aut2ltl.language import Language
+from aut2ltl.ltl.builders import own_simplify
 
 
 def _and_pieces(aut: "spot.twa_graph") -> List["spot.twa_graph"]:
@@ -95,12 +96,17 @@ def _recombine(op: str, subs: List[LTLFormulaResult]) -> LTLFormulaResult:
         return next((s for s in not_ltls if s.conclusive), not_ltls[0])
     if any(s.declined or s.formula is None for s in subs):
         return LTLFormulaResult.decline()
-    forms = [s.formula for s in subs]
+    # Run the own-rules simplifier (NOT Spot's — it is not DAG-size aware)
+    # on the parts BEFORE combining and on the combo AFTER: the recombined
+    # And/Or is a node no per-node pass ever saw whole, so cross-part folds
+    # (e.g. `G(!b&h) | (h U b)` → `h W b`) only fire here.
+    forms = [own_simplify(s.formula) for s in subs]
     tech = set()
     for s in subs:
         tech |= s.technique
     tech.add(f"{op}{len(subs)}")
     f = spot.formula.And(forms) if op == "and" else spot.formula.Or(forms)
+    f = own_simplify(f)
     return LTLFormulaResult(formula=f, technique=tech)
 
 

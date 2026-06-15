@@ -167,6 +167,16 @@ def _own_simp(f: "spot.formula") -> "spot.formula":
         return f
 
 
+def own_simplify(f: "spot.formula") -> "spot.formula":
+    """Public entry to the kr/simplify own-rules pass (NO Spot tl_simplifier —
+    Spot's simplifier is not DAG-size aware, so it is deliberately excluded
+    here). Used by the portfolio combinators to fold a recombined formula
+    that no per-node pass ever saw as a whole (e.g. `G(!b&h) | (h U b)` →
+    `h W b` after an Or-recombine). Shares the process bdd_dict and the
+    KR_SIMP_OWN size guard via `_own_simp`; identity on failure."""
+    return _own_simp(f)
+
+
 def _simp_f(f: "spot.formula") -> "spot.formula":
     """Normalize a spot.formula for the construction path (no string
     round-trip). Default: per-DAG-node memoized tl_simplifier (see policy
