@@ -1,0 +1,5 @@
+survey: 35 formulas  (--use weak)
+answers 23/35: validated 21, spot_timeout 0, unverified 2, spot_err 0, false 0
+declined 12, not_ltl 0, build_timeout 0, build_crash 0
+totals over answers: DAG=9602 temporals=1710 build=29.651s
+SUCCESS
