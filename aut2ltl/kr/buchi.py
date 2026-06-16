@@ -12,7 +12,8 @@ from __future__ import annotations
 from aut2ltl.kr.fin import fin_c
 from aut2ltl.ltl.builders import _Or, _Not, _ff, _simp_f
 from aut2ltl.kr.cascade import Cascade, CascadeHolder
-from aut2ltl.contract import LTLFormulaResult, CascadeTranslator
+from aut2ltl.contract import CascadeTranslator
+from aut2ltl.result import Result
 
 
 def is_buchi_cascade(casc: Cascade) -> bool:
@@ -31,15 +32,15 @@ class Buchi:
 
     name = "buchi"
 
-    def __call__(self, casc: CascadeHolder) -> LTLFormulaResult:
+    def __call__(self, casc: CascadeHolder) -> Result:
         if not is_buchi_cascade(casc):
-            return LTLFormulaResult.decline()
+            return Result.decline()
         acc_cfgs = sorted(casc.buchi_accepting_configs())
         if not acc_cfgs:
             res = _ff()    # Büchi with no recurrent accepting config -> empty
         else:
             res = _simp_f(_Or(*[_Not(fin_c(c, casc)) for c in acc_cfgs]))
-        return LTLFormulaResult(formula=res, technique={self.name})
+        return Result.success(res, self.name)
 
 
 buchi: CascadeTranslator = Buchi()

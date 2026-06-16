@@ -24,7 +24,8 @@ from typing import Optional
 
 from aut2ltl.ltl.builders import _And, _Or, _X, _tt, _ff, _simp_f, _letters_to_f
 from aut2ltl.kr.cascade import Cascade, CascadeHolder
-from aut2ltl.contract import LTLFormulaResult, CascadeTranslator
+from aut2ltl.contract import CascadeTranslator
+from aut2ltl.result import Result
 
 
 class _Recurrent(Exception):
@@ -119,11 +120,11 @@ class Acc:
 
     name = "acc"
 
-    def __call__(self, casc: CascadeHolder) -> LTLFormulaResult:
+    def __call__(self, casc: CascadeHolder) -> Result:
         phi = _unroll(casc)
         if phi is None:
-            return LTLFormulaResult.decline()
-        return LTLFormulaResult(formula=phi, technique={self.name})
+            return Result.decline()
+        return Result.success(phi, self.name)
 
 
 acc: CascadeTranslator = Acc()

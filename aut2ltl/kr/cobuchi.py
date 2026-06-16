@@ -15,7 +15,8 @@ from __future__ import annotations
 from aut2ltl.kr.fin import fin_c
 from aut2ltl.ltl.builders import _And, _tt, _simp_f
 from aut2ltl.kr.cascade import Cascade, CascadeHolder
-from aut2ltl.contract import LTLFormulaResult, CascadeTranslator
+from aut2ltl.contract import CascadeTranslator
+from aut2ltl.result import Result
 
 
 def is_cobuchi_cascade(casc: Cascade) -> bool:
@@ -36,15 +37,15 @@ class CoBuchi:
 
     name = "cobuchi"
 
-    def __call__(self, casc: CascadeHolder) -> LTLFormulaResult:
+    def __call__(self, casc: CascadeHolder) -> Result:
         if not is_cobuchi_cascade(casc):
-            return LTLFormulaResult.decline()
+            return Result.decline()
         fin_cfgs = sorted(casc.cobuchi_finite_configs())
         if not fin_cfgs:
             res = _tt()    # coBüchi with no marked config -> all runs accept
         else:
             res = _simp_f(_And(*[fin_c(c, casc) for c in fin_cfgs]))
-        return LTLFormulaResult(formula=res, technique={self.name})
+        return Result.success(res, self.name)
 
 
 cobuchi: CascadeTranslator = CoBuchi()
