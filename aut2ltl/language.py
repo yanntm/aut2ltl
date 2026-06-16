@@ -21,7 +21,7 @@ carries, which would invert the floor -> kr layering.
 from __future__ import annotations
 
 import os
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 import spot
 
@@ -58,6 +58,11 @@ class Language:
         self._source_aut: Optional["spot.twa_graph"] = aut
         self._source_formula: Optional["spot.formula"] = formula
         self._cache: dict = {}
+        # LTL-definability verdict (definable, conclusive), or None until decided.
+        # A PROPERTY of the language, but derived by the kr LtlTester (the GAP
+        # aperiodicity oracle lives above this floor); Language only HOLDS the
+        # tag — see `ltl_definable` / `set_ltl_definable`.
+        self._ltl_definable: Optional[Tuple[bool, bool]] = None
 
     # --- constructors (the only entry points) ---
 
@@ -134,6 +139,25 @@ class Language:
             self._cache["det_generic_minimal"] = det
             a = det
         return a
+
+    # --- LTL-definability tag (a property of the language; SET by the kr tester,
+    #     not derived here — the GAP aperiodicity oracle lives above this floor) ---
+
+    @property
+    def ltl_definable(self) -> Optional[Tuple[bool, bool]]:
+        """The cached LTL-definability verdict as `(definable, conclusive)`, or
+        `None` if not yet decided. `definable` is True iff an LTL formula exists
+        for this language (its syntactic monoid is aperiodic / counter-free);
+        `conclusive` is True iff the verdict is a proof (decided on a genuinely
+        state-minimal automaton) rather than a strong hint. Filled by the kr
+        LtlTester via `set_ltl_definable`; Language never computes it itself
+        (that would invert the floor -> kr layering)."""
+        return self._ltl_definable
+
+    def set_ltl_definable(self, definable: bool, *, conclusive: bool) -> None:
+        """Record the LTL-definability verdict for this language (idempotent
+        memo). Called by the kr LtlTester after the aperiodicity oracle runs."""
+        self._ltl_definable = (definable, conclusive)
 
 
 __all__ = ["Language"]
