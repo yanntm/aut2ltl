@@ -22,8 +22,15 @@ tests/**/*.pyc
 
 # Reference survey sweeps are committed per release (re-include despite *.csv).
 # Dated subfolders (tests/logs/reference/<YYYYMMDD>/) -> recurse with **/*.csv.
+# Also keep the token-compact summaries: the cross-config SUMMARY.txt and the
+# per-config .txt stdout reports (sweep.log stays gitignored — it is the bulky
+# per-formula stderr trace).
 !tests/logs/reference/
 !tests/logs/reference/**/*.csv
+!tests/logs/reference/**/SUMMARY.txt
+!tests/logs/reference/**/*.txt
 !tests/samples/kinska/logs/reference/
 !tests/samples/kinska/logs/reference/*.csv
+!tests/samples/kinska/logs/reference/SUMMARY.txt
+!tests/samples/kinska/logs/reference/*.txt
 
