@@ -75,7 +75,7 @@ A procedure that produces a result holds **one** current result and threads it:
    optional diagnosis) and return it.
 
 ```
-res = Result.ok(MY_TAG)                  # start OK, credit yourself
+res = Result.start(MY_TAG)               # start OK, credit yourself
 for sub in delegates:
     res.credit(sub(...))                 # fold a child in (mutating accumulator)
     if res.nok: return res               # bail with the reason
