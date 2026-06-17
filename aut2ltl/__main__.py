@@ -199,17 +199,16 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if res.not_ltl:
         # Positive impossibility verdict (non-aperiodic transition monoid), not a
-        # decline: the language is (probably) not LTL-definable, so no formula
-        # exists. Distinct exit code (3) so callers can tell it from DECLINED (1).
-        label = "NOT_LTL" if res.conclusive else "PROBABLY_NOT_LTL"
-        qualifier = "not" if res.conclusive else "probably not"
-        msg = f"aut2ltl: {label} — the language is {qualifier} LTL-definable"
-        if res.note:
-            msg += f"\n  ({res.note})"
+        # decline: the language is not LTL-definable, so no formula exists. The
+        # diagnosis states whether this is a proof or a strong hint. Distinct exit
+        # code (3) so callers can tell it from DECLINED (1).
+        msg = "aut2ltl: NOT_LTL — the language is not LTL-definable"
+        if res.diagnosis:
+            msg += f"\n  ({res.diagnosis})"
         print(msg, file=sys.stderr)
         return 3
 
-    if res.declined or res.formula is None:
+    if not res.ok:
         print("aut2ltl: DECLINED — no cited technique translated this language",
               file=sys.stderr)
         return 1
