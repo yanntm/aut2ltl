@@ -1,4 +1,4 @@
-"""The `sccdecomp` composite Translator (see algorithm.md).
+"""The accepting-SCC decomposition composite Translator (see algorithm.md).
 
 `SccDecompose(leaf)` splits a language by the accepting SCCs of its automaton: the
 per-SCC mark restriction A↾C makes `L(A↾C)` the words that lasso in C, and `L(A)`
@@ -20,7 +20,7 @@ from .restrict import accepting_sccs, ensure_marked, restrict_marks
 if TYPE_CHECKING:
     from aut2ltl.contract import Translator
 
-_NAME = "sccdecomp"
+_NAME = "scc"
 
 
 def _recombine(parts: List["LTLResult"]) -> "LTLResult":
@@ -29,7 +29,7 @@ def _recombine(parts: List["LTLResult"]) -> "LTLResult":
     accumulate), and bail if the fold is NOK — a declined part declines the whole.
     On OK, own-simplify the parts and their Or so cross-part folds and shared
     prefixes collapse (the Or is a node no per-part pass saw whole)."""
-    res = fuse(LTLResult.start(f"scc{len(parts)}"), *parts)
+    res = fuse(LTLResult.start(f"{_NAME}{len(parts)}"), *parts)
     if res.nok:
         return res
     forms = [own_simplify(p.formula) for p in parts]
@@ -56,5 +56,4 @@ class SccDecompose:
         accepting = accepting_sccs(aut)
         if len(accepting) < 2:
             return self._leaf(lang)               # atomic: nothing to split
-        return _recombine([self(Language.of(restrict_marks(aut, C)))
-                           for C in accepting])
+        return _recombine([self(Language.of(restrict_marks(aut, C))) for C in accepting])

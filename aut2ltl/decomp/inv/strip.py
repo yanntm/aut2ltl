@@ -5,7 +5,7 @@ that every transition's guard implies, hence a global safety invariant of `L(A)`
 (every letter any accepted word reads satisfies it). `strip(A, Σ)` rewrites each
 guard by the Coudert–Madre restrict under care-set `Σ` (`buddy.bdd_simplify`): the
 guard is preserved wherever `Σ` holds and free on `¬Σ`, the letters no edge admits.
-See README.md.
+See algorithm.md.
 """
 
 from typing import TYPE_CHECKING

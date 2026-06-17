@@ -1,4 +1,4 @@
-# aut2ltl.inv — the invariant-layer Translator decorator
+# The invariant-layer decomposition algorithm
 
 `Invariant(Λ)` wraps any `Translator` `Λ`: it factors a global safety invariant out
 of the input language, delegates the *simplified* language to `Λ`, and re-asserts

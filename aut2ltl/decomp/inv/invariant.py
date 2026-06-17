@@ -1,4 +1,4 @@
-"""The `inv` Translator decorator (see README.md).
+"""The `inv` Translator decorator (see algorithm.md).
 
 `Invariant(child)` factors the global safety invariant `Σ = ⋁(edge guards)` out of
 the input Language, delegates the *simplified* Language to `child`, and re-asserts

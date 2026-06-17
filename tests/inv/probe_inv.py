@@ -19,7 +19,7 @@ import spot  # noqa: E402
 from aut2ltl.language import Language  # noqa: E402
 from aut2ltl.result import LTLResult, decline, first  # noqa: E402
 from aut2ltl.daisy import Daisy  # noqa: E402
-from aut2ltl.inv import Invariant  # noqa: E402
+from aut2ltl.decomp.inv import Invariant  # noqa: E402
 
 
 def _sl(lang: "Language") -> "LTLResult":

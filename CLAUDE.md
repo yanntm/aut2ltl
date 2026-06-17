@@ -3,8 +3,9 @@
 ## Project layout (nested root package `aut2ltl/`)
 Layering, acyclic: `aut2ltl/contract.py` (LTLResult/Translator floor) +
 `aut2ltl/language.py` ← `aut2ltl/kr` (pure cascade FoSSaCS engine) +
-`aut2ltl/sl` (heuristic engine, ex-`buchi2ltl/`) + `aut2ltl/inv`
-(invariant-layer Translator decorator) ← `aut2ltl/portfolio`
+`aut2ltl/sl` (heuristic engine, ex-`buchi2ltl/`) + `aut2ltl/daisy` (pure
+self-loop peel) + `aut2ltl/decomp` ((de)composition approaches, one isolated
+subpackage each: `scc` / `strength` / `acceptance` / `inv`) ← `aut2ltl/portfolio`
 (combinators: build / decompose / gate / sl_driven) ← `aut2ltl/__main__` +
 `__init__`. Engine-agnostic helpers in `aut2ltl/ltl` (metrics, printers,
 simplify). Tests under `tests/` (`survey*`, `tests/kr`, `tests/sl`,
