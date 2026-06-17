@@ -89,6 +89,22 @@ SURVEY_CASES: List[SurveyCase] = [
     # -- reactivity (full Rabin/Streett, Pi_2 & Sigma_2 mix) --------------
     SurveyCase("GFa -> GFb", "T", "the canonical reactivity (one Rabin pair)"),
     SurveyCase("GFa & FGb", "T", "Inf & Fin Rabin-pair conjunct; AND-splits"),
+
+    # -- partscc stress: deterministic terminal-SCC partition (aut2ltl.partscc)
+    # Languages whose terminal SCC is letter-deterministic (disjoint L-labels),
+    # which the partscc leaf reconstructs to one anchored G(...) (+ GF per color).
+    # Span: phase-dependent (alternating) safety, then deterministic generalized
+    # Buchi with one and two acceptance colors.
+    SurveyCase("G((!a & X a) | (a & X !a))", "S",
+               "partscc: alternating terminal SCC; phase-dependent entry (anchor)"),
+    SurveyCase("G(a <-> X b)", "S",
+               "partscc: 2-step coupled invariant; phase-dependent terminal SCC"),
+    SurveyCase("GFa & G(a -> X !a)", "R",
+               "partscc: deterministic Buchi SCC (a i.o., no two a's running)"),
+    SurveyCase("G(a -> X b) & GFa", "R",
+               "partscc: deterministic SCC carrying one fairness color"),
+    SurveyCase("GFa & GFb & G(a -> X !a)", "R",
+               "partscc: deterministic generalized-Buchi SCC, two colors"),
 ]
 
 # Plain formula list (the runner's default when no arg is given).
