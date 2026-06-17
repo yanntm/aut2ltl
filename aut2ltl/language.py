@@ -21,7 +21,8 @@ carries, which would invert the floor -> kr layering.
 from __future__ import annotations
 
 import os
-from typing import Optional, Tuple, Union
+from collections import OrderedDict
+from typing import Callable, Optional, Tuple, Union
 
 import spot
 
@@ -40,7 +41,64 @@ SAT_MIN_STATES = OptionSpec(
     "SAT-minimize the input automaton only at or below this state count",
     env="KR_SAT_MIN_STATES")
 
-LANGUAGE_OPTIONS = [SAT_MIN_STATES]
+# Input cleanup level. The gentlest spot postprocess that still tidies the input:
+# Generic keeps the acceptance FAMILY (no degeneralization/parity conversion); the
+# level (default Medium) controls how much it simplifies — Low only purges states,
+# Medium also merges redundant acceptance sets, High also tries to shrink states;
+# Any avoids size-determinism churn. Unused APs are dropped separately by `_clean`
+# (no postprocess level reindexes the alphabet, to keep positional AP indices
+# stable). The level is a knob so High can be tried without code changes.
+_CLEAN_LEVEL = os.environ.get("AUT2LTL_CLEAN_LEVEL", "medium")
+
+CLEAN_LEVEL = OptionSpec(
+    "language.clean_level", "medium",
+    "spot postprocess level for input cleanup as (generic, <level>, any): "
+    "low (purge states) | medium (also merge redundant acc sets) | high (also shrink)",
+    env="AUT2LTL_CLEAN_LEVEL")
+
+# Factory cache size. Separate Language.of/of_ltl calls with the same literal input
+# reuse one Language (and so its lazily-built representations + definability
+# verdict). Bounded LRU so it never hogs memory; 0 disables interning.
+_CACHE_SIZE = int(os.environ.get("AUT2LTL_LANG_CACHE_SIZE", "512"))
+
+CACHE_SIZE = OptionSpec(
+    "language.cache_size", 512,
+    "max interned Language objects (bounded LRU over the literal of/of_ltl arg); "
+    "0 disables interning",
+    env="AUT2LTL_LANG_CACHE_SIZE")
+
+LANGUAGE_OPTIONS = [SAT_MIN_STATES, CLEAN_LEVEL, CACHE_SIZE]
+
+
+def _clean(aut: "spot.twa_graph") -> "spot.twa_graph":
+    """Language-preserving input cleanup (see `CLEAN_LEVEL`). Purges unreachable /
+    dead states, merges redundant acceptance sets (Medium+), keeps the acceptance
+    family (Generic), then drops atomic propositions no edge uses."""
+    a = spot.postprocess(aut, "generic", _CLEAN_LEVEL, "any")
+    a.remove_unused_ap()
+    return a
+
+
+# The intern table: literal-arg key -> shared Language. Bounded LRU (insertion
+# order = recency; evict oldest on overflow).
+_intern_cache: "OrderedDict[str, Language]" = OrderedDict()
+
+
+def _intern(key: str, build: "Callable[[], Language]") -> "Language":
+    """Return the cached Language for `key`, building it once. Caching the
+    expensive, sometimes-erratic spot calls (translate / postprocess) is the point
+    — never trust them to be cheap or to run twice the same."""
+    if _CACHE_SIZE <= 0:
+        return build()
+    lang = _intern_cache.get(key)
+    if lang is None:
+        lang = build()
+        _intern_cache[key] = lang
+        while len(_intern_cache) > _CACHE_SIZE:
+            _intern_cache.popitem(last=False)        # evict least-recently-used
+    else:
+        _intern_cache.move_to_end(key)               # touch (mark most recent)
+    return lang
 
 
 class Language:
@@ -68,25 +126,31 @@ class Language:
 
     @classmethod
     def of(cls, aut: "spot.twa_graph") -> "Language":
-        """A Language from an arbitrary HOA automaton (its language is L(aut))."""
-        return cls(aut=aut)
+        """A Language from an arbitrary HOA automaton (its language is L(aut)).
+        Interned on the automaton's literal HOA serialization, so repeated calls
+        with the same input reuse one Language (and its cached representations)."""
+        return _intern("A\n" + aut.to_str("hoa"), lambda: cls(aut=aut))
 
     @classmethod
     def of_ltl(cls, f: Union[str, "spot.formula"]) -> "Language":
         """A Language from an LTL formula (string or spot.formula). The formula is
-        translated to an automaton lazily on the first representation request."""
+        translated to an automaton lazily on the first representation request.
+        Interned on the canonical formula string."""
         if isinstance(f, str):
             f = spot.formula(f)
-        return cls(formula=f)
+        return _intern("L\n" + str(f), lambda: cls(formula=f))
 
     # --- base automaton (source as given, or the formula translated) ---
 
     def _base(self) -> "spot.twa_graph":
-        """The source automaton: the HOA as given, or `formula.translate()`."""
+        """The source automaton — the HOA as given, or `formula.translate()` —
+        after a language-preserving `_clean` (state purge, redundant-acc-set merge,
+        unused-AP drop). Cleaned once, lazily, then cached."""
         a = self._cache.get("base")
         if a is None:
-            a = (self._source_aut if self._source_aut is not None
-                 else self._source_formula.translate())
+            raw = (self._source_aut if self._source_aut is not None
+                   else self._source_formula.translate())
+            a = _clean(raw)
             self._cache["base"] = a
         return a
 
