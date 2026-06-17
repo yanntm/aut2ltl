@@ -10,7 +10,7 @@ the record of completed campaigns is in git history and `docs/HISTORY.md`.
   from `-m aut2ltl`. It reconstructs a `Language` whose state-based automaton is a
   single terminal SCC (the "stay in this SCC forever" sub-language) — exactly what
   the sl engine hands an exit target via `of(A↓dst)`. Wire it as a leaf in the
-  sl-driven delegate chain in `aut2ltl/portfolio/` (sl peels marguerites and
+  sl-driven delegate chain in `aut2ltl/portfolio/` (sl peels daisies and
   delegates the rerooted suffix; partscc labels it; the crossing `X` is sl's
   ordinary exit rule — no entry-timing cooperation needed). `Language.of` now
   cleans rerooted sub-languages (purged states, dropped orphan APs), so clean
