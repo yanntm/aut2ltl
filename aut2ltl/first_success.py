@@ -40,7 +40,7 @@ class _FirstSuccess(Generic[_In]):
         self._stages = tuple(stages)
 
     def __call__(self, x: _In) -> LTLResult:
-        # The single rule (result.md): only DECLINED continues the chain. OK or a
+        # The single rule (see result.py): only DECLINED continues the chain. OK or a
         # NOT_LTL verdict both stop it — a verdict means no stage can produce a
         # faithful formula (a later stage would re-derive the same verdict), and
         # returning it preserves the reason. The terminal is a bare decline.

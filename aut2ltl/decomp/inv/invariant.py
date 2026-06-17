@@ -48,7 +48,7 @@ class Invariant:
         if sig == buddy.bddtrue:
             return self._child(lang)
 
-        # Build/accumulate idiom (result.md): seed an OK accumulator crediting
+        # Build/accumulate idiom (see result.py): seed an OK accumulator crediting
         # ourselves, delegate the stripped language, and credit the child IN — so
         # all of its fields (technique, diagnosis, and any future step-trace /
         # profiling info) flow through the contract instead of being hand-copied.

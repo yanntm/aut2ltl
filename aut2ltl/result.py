@@ -1,14 +1,39 @@
-"""aut2ltl/result.py — the Translator result and its lifecycle algebra.
+"""aut2ltl/result.py — the value a Translator returns, and how results combine.
 
-Faithful implementation of `result.md`. A `LTLResult` is the value a `Translator`
-returns; `Status` is its closed three-value state. Two algebras combine results:
+A Translator yields more than a formula: which method produced it, and whether it
+succeeded, declined, or proved the language non-LTL. `LTLResult` carries all of it —
+a `Status`, the `formula` (only when OK), the contributing `technique` tags, and an
+optional `diagnosis` — so composition stays sound and self-reporting (a bare
+`spot.formula` hid which method fired, and could not distinguish "not my case" from
+"impossible").
 
-  * composition — `credit` / `fuse`: the OK-identity monoid (a child's work is
-    folded in; the worst status wins). Used as a per-call accumulator.
-  * choice — `first` / `decline`: the decline-identity monoid (try translators in
-    order; the first non-declined wins; a NOT_LTL verdict short-circuits).
+`Status` is closed and three-valued:
+  * OK       — success; `.formula` is language-equivalent to the input.
+  * DECLINED — this translator cannot handle the input (recoverable: try another).
+  * NOT_LTL  — the language is not LTL-definable (absorbing verdict; no method wins).
 
-See `result.md` for the model, the two-state OK/NOK consumer view, and the duality.
+Results combine by two monoids:
+  * composition — `credit` / `fuse`: fold a child's work in; the worst status wins
+    (NOT_LTL ≻ DECLINED ≻ OK), techniques union, diagnoses accumulate; OK is the unit.
+  * choice — `first` / `decline`: try translators in order, take the first non-declined
+    result (NOT_LTL short-circuits); DECLINED falls through; `decline` is the unit.
+
+Usage — the accumulator idiom. A translator threads ONE result:
+
+    res = LTLResult.start(MY_TAG)        # OK seed, credited with your own tag
+    for child in children:
+        res.credit(child(...))           # fold each delegate in
+        if res.nok:                      # bail on the first NOK, reason intact
+            return res
+    res.formula = build(...)             # finish: fill the formula
+    return res                           # (on error: res.fail(NOT_LTL, why))
+
+The accumulator is per-call (never shared), so the mutation is safe.
+
+NOT FINAL: `LTLResult` is expected to trace/accumulate more over time (output size,
+cost, finer provenance). Route every child through `credit`/`fuse` rather than
+lifting out its `.formula` alone — bypassing the idiom silently drops accumulated
+metadata that a consumer above, or a field added later, will rely on.
 """
 
 from __future__ import annotations
@@ -43,9 +68,9 @@ class LTLResult:
     """A Translator's result: a formula (only when OK), the contributing technique
     tags, a status, and an optional diagnosis.
 
-    Used as a per-call accumulator (see `result.md` "Usage"): start OK crediting
-    yourself, `credit` each delegate in, bail returning self on NOK, else fill the
-    `formula` and return. The accumulator is never shared, so the mutation is safe.
+    Used as a per-call accumulator (see the module docstring "Usage"): start OK
+    crediting yourself, `credit` each delegate in, bail returning self on NOK, else
+    fill the `formula` and return. The accumulator is never shared, so mutation is safe.
     """
 
     __slots__ = ("_status", "_formula", "_technique", "_diagnosis")
