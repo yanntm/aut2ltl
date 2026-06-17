@@ -3,16 +3,11 @@ __pycache__/
 *.pyo
 *.csv
 *.log
-*.png
-*.dot
 .idea/
 .vscode/
 
-# Heavy debug artifacts from t2 / f2 development sessions
-tests/sl/debug_images/
-# the bare decomp/ scratch dir, but NOT the aut2ltl/decomp source package
-decomp/
-!aut2ltl/decomp/
+# Transient scratch / debug output goes in tests/smoke/ (committed images such as
+# docs/img/*.png are kept — we no longer blanket-ignore *.png / *.dot).
 
 # generated outputs and caches
 tests/smoke/
