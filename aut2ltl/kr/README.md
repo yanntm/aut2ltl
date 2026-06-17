@@ -10,14 +10,14 @@ pattern-matching on the automaton's shape — and produces a hash-consed
 
 Translation is a family of **`CascadeTranslator` members** composed into a chain.
 
-- **Contract** (`aut2ltl/contract.py`, the floor): `LTLFormulaResult` (a formula
+- **Contract** (`aut2ltl/contract.py`, the floor): `LTLResult` (a formula
   DAG + technique set + OK/DECLINED status) and the `CascadeTranslator` protocol —
-  `holder → LTLFormulaResult`, with a fixed `name`. A member is a small class
+  `holder → LTLResult`, with a fixed `name`. A member is a small class
   (singleton instance) that is **self-gating**: it inspects the cascade and
   either returns a language-faithful result or DECLINES; it stamps its own
   `name` into the technique.
 
-- **Members** (`holder → LTLFormulaResult`):
+- **Members** (`holder → LTLResult`):
   - `acc.py` — `Acc` / `acc`: the bounded ("X-ladder") fragment, by direct
     bounded unroll over a ⊤/⊥ oracle on the input automaton. Orthogonal to the
     reach machinery; declines on any recurrent config.
@@ -57,7 +57,7 @@ normalize → deterministic, complete, minimized, state-based-acceptance parity
 Cascade                              (cascade/model.py + cascade/config_graph.py)
   │  the dispatch chain of CascadeTranslator members         (hierarchy_class.py)
   ▼
-LTLFormulaResult  (hash-consed spot.formula DAG + winning technique)
+LTLResult  (hash-consed spot.formula DAG + winning technique)
 ```
 
 `decompose_aut` and the GAP/SgpDec bridge live in the **`kr.gap`** subpackage
@@ -78,7 +78,7 @@ print(phi)
 
 The recommended top-level entry is the portfolio front end
 `aut2ltl.portfolio.reconstruct_decomposed(Language.of(aut))` (a `Language` in, an
-`LTLFormulaResult` out), which composes `kr` with the `sl` heuristic gate.
+`LTLResult` out), which composes `kr` with the `sl` heuristic gate.
 
 ## Dependencies
 

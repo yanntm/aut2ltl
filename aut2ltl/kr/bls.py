@@ -14,7 +14,7 @@ module only wraps it into a named CascadeTranslator member.
 from __future__ import annotations
 
 from aut2ltl.contract import CascadeTranslator
-from aut2ltl.result import Result
+from aut2ltl.result import LTLResult
 from .cascade import Cascade
 from .muller import assemble_muller_dnf
 
@@ -24,8 +24,8 @@ class Bls:
 
     name = "bls"
 
-    def __call__(self, casc: Cascade) -> Result:
-        return Result.success(assemble_muller_dnf(casc), self.name)
+    def __call__(self, casc: Cascade) -> LTLResult:
+        return LTLResult.success(assemble_muller_dnf(casc), self.name)
 
 
 bls: CascadeTranslator = Bls()

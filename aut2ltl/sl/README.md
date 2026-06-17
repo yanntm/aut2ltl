@@ -7,7 +7,7 @@ flattening. It is EXACT on the very-weak (1-weak) fragment — automata whose on
 cycles are self-loops — and DECLINES off it: a state re-entered on the recursion
 stack, or a successor inside a genuine multi-state SCC with no validated fragment,
 poisons the result with the `UNSUPPORTED` sentinel that surfaces as
-`LTLFormulaResult.declined`. Soundness is BY CONSTRUCTION (exact-on-fragment +
+`LTLResult.declined`. Soundness is BY CONSTRUCTION (exact-on-fragment +
 decline-otherwise), never post-hoc checking.
 
 It is wired into the portfolio only through `Sl` / `SlDriven` in
@@ -17,7 +17,7 @@ It is wired into the portfolio only through `Sl` / `SlDriven` in
 
 - **`reconstruction.py`** — the engine: `reconstruct_ltl` and its recursive `label`.
   Runs the backward labeling, injects validated SCC fragments, and returns a
-  `LTLFormulaResult` (DAG on success, declined otherwise).
+  `LTLResult` (DAG on success, declined otherwise).
 - **`reconstruction_helpers.py`** — the automaton-side helpers `reconstruction`
   leans on: per-state invariant computation, downstream-invariant application,
   tN-fragment injection + bad-state marking, the reachable-from-q sub-automaton

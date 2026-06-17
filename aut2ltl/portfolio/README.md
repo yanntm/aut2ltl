@@ -2,7 +2,7 @@
 
 This package wires the two engines (`kr` cascade, `sl` heuristic) into the shipped
 default translator and the `--use` technique vocabulary. Every member here is a
-`Translator` (`Language -> LTLFormulaResult`, see `aut2ltl.contract`) or a builder
+`Translator` (`Language -> LTLResult`, see `aut2ltl.contract`) or a builder
 of one; the engines stay pure and are composed, not modified. The object graph IS
 the config graph — one shared `Options` is threaded through the whole assembly.
 

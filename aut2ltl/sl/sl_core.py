@@ -35,7 +35,7 @@ from typing import List, Tuple, TYPE_CHECKING
 import spot
 
 from aut2ltl.language import Language
-from aut2ltl.result import Result, Status
+from aut2ltl.result import LTLResult, Status
 
 if TYPE_CHECKING:
     from aut2ltl.contract import Translator
@@ -78,7 +78,7 @@ def _reroot(aut: "spot.twa_graph", state: int) -> "spot.twa_graph":
 
 
 class SlCore:
-    """The pure sl combinator `sl(Λ)` as a `Translator` (`Language → Result`).
+    """The pure sl combinator `sl(Λ)` as a `Translator` (`Language → LTLResult`).
 
     Constructed with the child labeler `Λ` it uses for exit targets (the decorator
     seam). It peels the initial state of the input Language's TGBA form when that
@@ -88,10 +88,10 @@ class SlCore:
     def __init__(self, child: "Translator") -> None:
         self._child = child
 
-    def __call__(self, lang: "Language") -> "Result":
+    def __call__(self, lang: "Language") -> "LTLResult":
         aut = lang.tgba()
         q = aut.get_init_state_number()
-        res = Result.start(_NAME)                   # start OK, credit ourselves
+        res = LTLResult.start(_NAME)                   # start OK, credit ourselves
 
         # Accept iff q is a marguerite (only self-loops come back to it).
         if _has_non_self_incoming(aut, q):

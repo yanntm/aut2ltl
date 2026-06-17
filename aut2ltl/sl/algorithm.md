@@ -237,7 +237,7 @@ in that mode.
 
 `label(q)` returns an LTL formula whose models are exactly the words accepted by
 `A` started in `q` — *on the supported fragment* (§3). Off it, it returns the
-sentinel `UNSUPPORTED`, which surfaces as `LTLFormulaResult.declined`.
+sentinel `UNSUPPORTED`, which surfaces as `LTLResult.declined`.
 
 For a state `q` partition its outgoing edges into
 

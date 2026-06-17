@@ -30,7 +30,7 @@ from typing import Optional
 import spot
 
 from aut2ltl.contract import Translator
-from aut2ltl.result import Result
+from aut2ltl.result import LTLResult
 from aut2ltl.language import Language
 
 __all__ = ["SlDriven"]
@@ -45,7 +45,7 @@ class SlDriven:
     def __init__(self, delegate: Translator) -> None:
         self._delegate = delegate
 
-    def __call__(self, lang: Language) -> Result:
+    def __call__(self, lang: Language) -> LTLResult:
         from aut2ltl.sl.reconstruction import reconstruct_ltl
 
         deleg_tech: set = set()
@@ -64,14 +64,14 @@ class SlDriven:
         try:
             out = reconstruct_ltl(tgba, scc_labeler=labeler)
         except Exception:
-            return Result.decline()
+            return LTLResult.decline()
         if not out.ok:
-            return Result.decline()
+            return LTLResult.decline()
         rec = out.formula
         try:
             cand = rec if isinstance(rec, spot.formula) else spot.formula(str(rec))
         except Exception:
-            return Result.decline()
+            return LTLResult.decline()
         # Simplify on equal footing with the rest of the pipeline (sl skips Spot's
         # simplifier; the spliced delegate labels are already simplified).
         try:
@@ -81,4 +81,4 @@ class SlDriven:
             pass
         tech = set(out.technique) | deleg_tech
         tech.add(self.name)
-        return Result.success(cand, *tech)
+        return LTLResult.success(cand, *tech)

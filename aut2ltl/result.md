@@ -1,9 +1,9 @@
-# Result lifecycle
+# LTLResult lifecycle
 
 The contract-floor counterpart to `sl/algorithm.md`. It specifies the result a
 `Translator` returns, its **closed** status set, the two algebras for combining
 results (composition `credit` / `fuse` and choice `first`), and the standard
-accumulator idiom for using it. The current type is `LTLFormulaResult` in
+accumulator idiom for using it. The current type is `LTLResult` in
 `contract.py`; this is the spec to build/clean toward (a better-named home is part
 of the cleanup — see end).
 
@@ -75,7 +75,7 @@ A procedure that produces a result holds **one** current result and threads it:
    optional diagnosis) and return it.
 
 ```
-res = Result.start(MY_TAG)               # start OK, credit yourself
+res = LTLResult.start(MY_TAG)               # start OK, credit yourself
 for sub in delegates:
     res.credit(sub(...))                 # fold a child in (mutating accumulator)
     if res.nok: return res               # bail with the reason

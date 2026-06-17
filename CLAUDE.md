@@ -1,7 +1,7 @@
 # aut2ltl — Working Notes for Claude
 
 ## Project layout (nested root package `aut2ltl/`)
-Layering, acyclic: `aut2ltl/contract.py` (LTLFormulaResult/Translator floor) +
+Layering, acyclic: `aut2ltl/contract.py` (LTLResult/Translator floor) +
 `aut2ltl/language.py` ← `aut2ltl/kr` (pure cascade FoSSaCS engine) +
 `aut2ltl/sl` (heuristic engine, ex-`buchi2ltl/`) ← `aut2ltl/portfolio`
 (combinators: build / decompose / gate / sl_driven) ← `aut2ltl/__main__` +

@@ -6,10 +6,10 @@ method wins at each node of the decompose-and-recombine dispatch — the
 buchi2ltl gate, an AND/OR strength/acceptance split, or one of the leaf
 acceptance-dispatch forms (acc / weak / buchi / cobuchi / the Muller-DNF
 cascade `bls`). The bare `spot.formula` return hid which method fired, so a
-translator now returns a `Result` (`aut2ltl.result`), carrying the formula plus
+translator now returns a `LTLResult` (`aut2ltl.result`), carrying the formula plus
 the SET of methods that contributed.
 
-`Result.technique` is a set (deduped) accumulated down the dispatch tree:
+`LTLResult.technique` is a set (deduped) accumulated down the dispatch tree:
   * 'and<n>' / 'or<n>'           — a boolean split into n pieces occurred at some
                                    node (n = number of conjuncts / disjuncts);
                                    subsumes the old `split_report` side channel;
@@ -36,14 +36,14 @@ from typing import Protocol, TYPE_CHECKING, runtime_checkable
 
 if TYPE_CHECKING:
     from aut2ltl.language import Language
-    from aut2ltl.result import Result
+    from aut2ltl.result import LTLResult
 
 
 @runtime_checkable
 class Translator(Protocol):
     """The behavioral contract: translate a `Language` to LTL.
 
-    A Translator is a callable `Language -> Result`. The input is a `Language`
+    A Translator is a callable `Language -> LTLResult`. The input is a `Language`
     (the floor handle over language-equivalent automaton representations —
     `aut2ltl.language`), not a raw automaton: each translator pulls the
     representation it wants (`tgba` / `det_parity_sbacc` / `det_generic`
@@ -52,12 +52,12 @@ class Translator(Protocol):
     themselves Translators over Translators.
 
     Contract invariant (NOT type-checkable, the load-bearing rule): the returned
-    `Result` is either language-faithful (`status` OK, `.formula` ≡ L(lang)) or a
+    `LTLResult` is either language-faithful (`status` OK, `.formula` ≡ L(lang)) or a
     NOK (DECLINED / NOT_LTL) — NEVER a wrong formula. That single rule is what
     makes composition sound.
     """
 
-    def __call__(self, lang: "Language") -> "Result": ...
+    def __call__(self, lang: "Language") -> "LTLResult": ...
 
 
 @runtime_checkable
@@ -65,7 +65,7 @@ class CascadeTranslator(Protocol):
     """The cascade-level peer of `Translator`: translate a Krohn-Rhodes Cascade
     to LTL.
 
-    Same `Result` and the same load-bearing invariant — the result is
+    Same `LTLResult` and the same load-bearing invariant — the result is
     language-faithful (OK) or a NOK, never wrong — but the input is an already
     decomposed cascade (a `CascadeHolder` wrapping it) instead of a raw automaton.
 
@@ -73,7 +73,7 @@ class CascadeTranslator(Protocol):
     (singleton instance) with a fixed `name` (its technique identity, e.g.
     'acc' / 'buchi' / 'cobuchi' / 'weak' / 'bls') and a `__call__` that is
     self-gating (it inspects the cascade and either builds its faithful form or
-    DECLINES). The member stamps its own `name` into the `Result`'s technique,
+    DECLINES). The member stamps its own `name` into the `LTLResult`'s technique,
     so composites (`first_success`) need no out-of-band tagging. `decompose_aut`
     is the adapter that lifts a member up to a `Translator` (twa -> Cascade ->
     result).
@@ -86,4 +86,4 @@ class CascadeTranslator(Protocol):
 
     name: str
 
-    def __call__(self, casc: "CascadeHolder") -> "Result": ...
+    def __call__(self, casc: "CascadeHolder") -> "LTLResult": ...

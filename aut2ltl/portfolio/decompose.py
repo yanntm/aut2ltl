@@ -35,7 +35,7 @@ from typing import List, Optional, Tuple
 import spot
 
 from aut2ltl.contract import Translator
-from aut2ltl.result import Result, fuse
+from aut2ltl.result import LTLResult, fuse
 from aut2ltl.language import Language
 from aut2ltl.ltl.builders import own_simplify
 
@@ -84,13 +84,13 @@ def _split(aut: "spot.twa_graph") -> Tuple[Optional[str], List["spot.twa_graph"]
     return (None, [])
 
 
-def _recombine(op: str, subs: List[Result]) -> Result:
+def _recombine(op: str, subs: List[LTLResult]) -> LTLResult:
     """Recombine sub-results with the root ⋀/⋁ via the accumulator idiom: seed an
     OK result with {op<n>}, `fuse` every part in (worst status wins, all diagnoses
     accumulated), and bail if the fold is NOK — a NOT_LTL part is propagated as the
     verdict, a declined part as a decline, each carrying every part's reason. On OK,
     fill in the And/Or of the part formulas; technique = ⋃ parts ∪ {op<n>}."""
-    res = fuse(Result.start(f"{op}{len(subs)}"), *subs)   # credit each part; accumulate reasons
+    res = fuse(LTLResult.start(f"{op}{len(subs)}"), *subs)   # credit each part; accumulate reasons
     if res.nok:
         return res
     # Run the own-rules simplifier (NOT Spot's — it is not DAG-size aware)
@@ -114,7 +114,7 @@ class Decompose:
     def __init__(self, leaf: Translator) -> None:
         self._leaf = leaf
 
-    def __call__(self, lang: Language) -> Result:
+    def __call__(self, lang: Language) -> LTLResult:
         op, pieces = _split(lang.det_generic_minimal())
         if pieces:
             return _recombine(op, [self(Language.of(p)) for p in pieces])

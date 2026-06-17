@@ -90,13 +90,13 @@ landed, the soundness arguments, and the measurements):
   `KR_DISPATCH_*` env vars are the seeding bridge for the default singleton.
 
 The portfolio (the composition layer) lives in `aut2ltl/portfolio/`: every method
-is a `Translator` (`Language -> LTLFormulaResult`) — `Sl` (the sl gate), `SlDriven`
+is a `Translator` (`Language -> LTLResult`) — `Sl` (the sl gate), `SlDriven`
 (sl-driven with delegated cores, "kr under sl"), and `Decompose` (the AND/OR split
 Composite over a leaf Translator) — composed by `first_success` over the kr cascade
 Translator (`kr/aut2cas.reconstruct`). The default entry `reconstruct_decomposed`
 is `Decompose(first_success([sl_driven, cascade]))`. The input is a `Language`
 (`aut2ltl/language.py`, lazy/cached language-equivalent automaton representations;
-each Translator pulls the form it wants). The contract floor — `LTLFormulaResult`
+each Translator pulls the form it wants). The contract floor — `LTLResult`
 + the `Translator` / `CascadeTranslator` protocols — is in `aut2ltl/contract.py`,
 with the `Language`/cascade adapter (`CascadeTranslator -> Translator`) in
 `kr/aut2cas.py` over the GAP-native `kr/gap/decompose_lang.py`.

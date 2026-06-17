@@ -3,7 +3,7 @@
 tests/kr/test_aut2cas.py
 
 End-to-end check of the Language-native kr endpoint: `reconstruct(Language)`
-builds the cascade (decompose_lang -> GAP) and returns a Result whose
+builds the cascade (decompose_lang -> GAP) and returns a LTLResult whose
 formula is language-equivalent to the input. Also checks the two Language ctors
 (of_ltl from a formula, of from its automaton) agree through the endpoint.
 

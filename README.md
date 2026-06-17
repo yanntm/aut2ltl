@@ -49,17 +49,17 @@ portfolio. Any declared option is overridable with `-O key=value` (e.g.
 `-O kr.fuse_letters=0`).
 
 ```python
-# Programmatic entry: a Language in, an LTLFormulaResult out.
+# Programmatic entry: a Language in, an LTLResult out.
 import spot
 from aut2ltl.language import Language
 from aut2ltl.portfolio import reconstruct_decomposed
 
 aut = spot.formula("GFa & GFb").translate()
-res = reconstruct_decomposed(Language.of(aut))   # LTLFormulaResult
+res = reconstruct_decomposed(Language.of(aut))   # LTLResult
 print(res.formula, res.technique_str())          # formula DAG, e.g. "and2+sl"
 ```
 
-The result is an `LTLFormulaResult` (`aut2ltl.contract`): `.formula` (a
+The result is an `LTLResult` (`aut2ltl.contract`): `.formula` (a
 hash-consed `spot.formula` DAG) or `.declined`, plus `.technique` (the methods
 that contributed). A `Language` (`aut2ltl.language`) wraps any input
 (`Language.of(aut)` / `Language.of_ltl(formula)`) as lazily-cached,
@@ -69,7 +69,7 @@ language-equivalent automaton views.
 
 ```
 aut2ltl/                  the root package (layering: floor -> engines -> portfolio -> cli)
-  contract.py            LTLFormulaResult + Translator (the contract floor)
+  contract.py            LTLResult + Translator (the contract floor)
   language.py            Language: lazy language-equivalent automaton views
   __main__.py            the portfolio front end:  python3 -m aut2ltl  (console: aut2ltl)
   kr/                    pure cascade FoSSaCS engine (cascade/, reachability,

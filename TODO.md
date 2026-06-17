@@ -13,7 +13,7 @@ the record of completed campaigns is in git history and `docs/HISTORY.md`.
 - **`best_of` combinator.** The portfolio optimizes for the FIRST success, not the
   smallest output — but size is the research objective. Add `best_of([...],
   key=cost)` beside `first_success`, plus a `cost`/size field on
-  `LTLFormulaResult` (the dataclass is pre-shaped for it). Until then, cited order
+  `LTLResult` (the dataclass is pre-shaped for it). Until then, cited order
   is the only size heuristic.
 
 - **HOA input to the survey.** `tests/survey.py` currently feeds LTL strings only;

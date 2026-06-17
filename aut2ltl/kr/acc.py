@@ -16,7 +16,7 @@ output formula; the build is O(|reachable configs| × |Σ|) memoized.
 
 `Acc` is a self-contained CascadeTranslator member: it decides on its own whether
 the input is in the bounded fragment (no external predicate) and returns a
-language-faithful Result or a DECLINE.
+language-faithful LTLResult or a DECLINE.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ from typing import Optional
 from aut2ltl.ltl.builders import _And, _Or, _X, _tt, _ff, _simp_f, _letters_to_f
 from aut2ltl.kr.cascade import Cascade, CascadeHolder
 from aut2ltl.contract import CascadeTranslator
-from aut2ltl.result import Result
+from aut2ltl.result import LTLResult
 
 
 class _Recurrent(Exception):
@@ -36,7 +36,7 @@ class _Recurrent(Exception):
 def _unroll(casc: Cascade) -> Optional["spot.formula"]:
     """The bounded Acc(ι) unroll: the formula for L(D) from the initial config,
     or None if any reachable config is recurrent (input outside the bounded
-    fragment). `Acc` wraps this into a Result.
+    fragment). `Acc` wraps this into a LTLResult.
 
       Acc(c) = ⊤  if L(D from state_of(c)) is universal,           (R1 base)
              = ⊥  if it is empty,
@@ -120,11 +120,11 @@ class Acc:
 
     name = "acc"
 
-    def __call__(self, casc: CascadeHolder) -> Result:
+    def __call__(self, casc: CascadeHolder) -> LTLResult:
         phi = _unroll(casc)
         if phi is None:
-            return Result.decline()
-        return Result.success(phi, self.name)
+            return LTLResult.decline()
+        return LTLResult.success(phi, self.name)
 
 
 acc: CascadeTranslator = Acc()

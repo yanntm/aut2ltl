@@ -1,6 +1,6 @@
 """aut2ltl/result.py — the Translator result and its lifecycle algebra.
 
-Faithful implementation of `result.md`. A `Result` is the value a `Translator`
+Faithful implementation of `result.md`. A `LTLResult` is the value a `Translator`
 returns; `Status` is its closed three-value state. Two algebras combine results:
 
   * composition — `credit` / `fuse`: the OK-identity monoid (a child's work is
@@ -39,7 +39,7 @@ class Status(Enum):
 _RANK = {Status.OK: 0, Status.DECLINED: 1, Status.NOT_LTL: 2}
 
 
-class Result:
+class LTLResult:
     """A Translator's result: a formula (only when OK), the contributing technique
     tags, a status, and an optional diagnosis.
 
@@ -64,23 +64,23 @@ class Result:
 
     # --- factories -------------------------------------------------------------
     @classmethod
-    def start(cls, *techniques: str) -> "Result":
+    def start(cls, *techniques: str) -> "LTLResult":
         """The accumulator seed: an OK result with no formula yet, credited with
         your own technique tag(s)."""
         return cls(Status.OK, technique=set(techniques))
 
     @classmethod
-    def success(cls, formula: "spot.formula", *techniques: str) -> "Result":
+    def success(cls, formula: "spot.formula", *techniques: str) -> "LTLResult":
         """A finished OK result carrying its formula (the leaf-producer shape)."""
         return cls(Status.OK, formula=formula, technique=set(techniques))
 
     @classmethod
-    def decline(cls, diagnosis: Optional[str] = None, *techniques: str) -> "Result":
+    def decline(cls, diagnosis: Optional[str] = None, *techniques: str) -> "LTLResult":
         """A DECLINED result (recoverable). Optional diagnosis."""
         return cls(Status.DECLINED, technique=set(techniques), diagnosis=diagnosis)
 
     @classmethod
-    def not_definable(cls, diagnosis: Optional[str] = None, *techniques: str) -> "Result":
+    def not_definable(cls, diagnosis: Optional[str] = None, *techniques: str) -> "LTLResult":
         """A NOT_LTL verdict (absorbing). The diagnosis may note proof vs hint."""
         return cls(Status.NOT_LTL, technique=set(techniques), diagnosis=diagnosis)
 
@@ -125,7 +125,7 @@ class Result:
         return "+".join(sorted(self._technique)) if self._technique else "-"
 
     # --- composition monoid ----------------------------------------------------
-    def credit(self, other: "Result") -> "Result":
+    def credit(self, other: "LTLResult") -> "LTLResult":
         """Fold a child result in (mutates and returns self). An OK child
         contributes its techniques; a more-dominant NOK child flips this result to
         that status (accumulating its diagnosis, clearing the formula)."""
@@ -142,7 +142,7 @@ class Result:
         self._add_diagnosis(other.diagnosis)
         return self
 
-    def fail(self, status: "Status", diagnosis: Optional[str] = None) -> "Result":
+    def fail(self, status: "Status", diagnosis: Optional[str] = None) -> "LTLResult":
         """Transition this result to a NOK status, accumulating an optional
         diagnosis (clears the formula). Returns self."""
         assert status is not Status.OK, "fail() needs a NOK status"
@@ -156,11 +156,11 @@ class Result:
             self._diagnosis = "; ".join(p for p in (self._diagnosis, diagnosis) if p)
 
     def __repr__(self) -> str:
-        return (f"Result({self._status.value}, formula={self._formula}, "
+        return (f"LTLResult({self._status.value}, formula={self._formula}, "
                 f"technique={sorted(self._technique)}, diagnosis={self._diagnosis!r})")
 
 
-def fuse(primary: "Result", *others: "Result") -> "Result":
+def fuse(primary: "LTLResult", *others: "LTLResult") -> "LTLResult":
     """Credit several children into `primary` (the composition monoid, folded)."""
     for other in others:
         primary.credit(other)
@@ -168,21 +168,21 @@ def fuse(primary: "Result", *others: "Result") -> "Result":
 
 
 # --- choice monoid -------------------------------------------------------------
-def decline(_lang: "Language") -> "Result":
+def decline(_lang: "Language") -> "LTLResult":
     """The identity translator: always a bare DECLINED — `first`'s terminal/unit."""
-    return Result.decline()
+    return LTLResult.decline()
 
 
-def first(*translators: Callable[["Language"], "Result"]) -> Callable[["Language"], "Result"]:
+def first(*translators: Callable[["Language"], "LTLResult"]) -> Callable[["Language"], "LTLResult"]:
     """Choice monoid: try `translators` in order, return the first non-declined
     result (OK or NOT_LTL — a verdict short-circuits); a DECLINED falls through to
     the next. The terminal (all declined / empty) is a bare decline."""
-    members: List[Callable[["Language"], "Result"]] = list(translators)
+    members: List[Callable[["Language"], "LTLResult"]] = list(translators)
 
-    def run(lang: "Language") -> "Result":
+    def run(lang: "Language") -> "LTLResult":
         for t in members:
             r = t(lang)
             if not r.declined:        # OK or NOT_LTL: return as-is (reason kept)
                 return r
-        return Result.decline()
+        return LTLResult.decline()
     return run

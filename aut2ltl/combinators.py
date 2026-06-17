@@ -2,7 +2,7 @@
 aut2ltl/combinators.py — composite translators built over the contract.
 
 A composite is itself a translator: it delegates to a collection of
-sub-translators and combines their `Result`s. Because every sub-result obeys
+sub-translators and combines their `LTLResult`s. Because every sub-result obeys
 the contract invariant (language-faithful or DECLINED, never wrong), the
 composite is sound by construction. The combinators here are generic over the
 input type, so they apply to both `Translator` (automaton in) and
@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from typing import Callable, Generic, Sequence, TypeVar
 
-from aut2ltl.result import Result
+from aut2ltl.result import LTLResult
 
 _In = TypeVar("_In")
 
@@ -28,18 +28,18 @@ class _FirstSuccess(Generic[_In]):
     `__call__`), so a composite is itself a valid stage of another composite.
 
     Each stage is self-gating: a stage that does not apply to the input returns a
-    DECLINED `Result`, and the chain moves on. The winning stage's result —
+    DECLINED `LTLResult`, and the chain moves on. The winning stage's result —
     including its `technique` set — is returned unchanged (the composite stamps no
     tag of its own; its `name` is its identity, not a technique).
     """
 
     def __init__(
-        self, name: str, stages: Sequence[Callable[[_In], Result]]
+        self, name: str, stages: Sequence[Callable[[_In], LTLResult]]
     ) -> None:
         self.name = name
         self._stages = tuple(stages)
 
-    def __call__(self, x: _In) -> Result:
+    def __call__(self, x: _In) -> LTLResult:
         # The single rule (result.md): only DECLINED continues the chain. OK or a
         # NOT_LTL verdict both stop it — a verdict means no stage can produce a
         # faithful formula (a later stage would re-derive the same verdict), and
@@ -48,11 +48,11 @@ class _FirstSuccess(Generic[_In]):
             r = stage(x)
             if not r.declined:
                 return r
-        return Result.decline()
+        return LTLResult.decline()
 
 
 def first_success(
-    stages: Sequence[Callable[[_In], Result]],
+    stages: Sequence[Callable[[_In], LTLResult]],
     *,
     name: str,
 ) -> "_FirstSuccess[_In]":
