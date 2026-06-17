@@ -12,7 +12,7 @@ from __future__ import annotations
 from aut2ltl.kr.fin import fin_c
 from aut2ltl.ltl.builders import _Or, _Not, _ff, _simp_f
 from aut2ltl.kr.cascade import Cascade, CascadeHolder
-from .cascade_translator import CascadeTranslator
+from aut2ltl.kr.cascade_translator import CascadeTranslator
 from aut2ltl.result import LTLResult
 
 
