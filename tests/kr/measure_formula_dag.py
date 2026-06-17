@@ -27,7 +27,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 import spot
 
 from aut2ltl.kr import decompose_aut
-import aut2ltl.kr.reachability_operators as _ops
+import aut2ltl.kr.operators.reachability_operators as _ops
 from aut2ltl.kr.reachability import reconstruct_ltl_paper_style
 # reconstruct now returns the spot.formula DAG itself (no final str), so this
 # tool measures the REAL pipeline output — the former local re-implementation

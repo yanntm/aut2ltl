@@ -14,7 +14,7 @@ reach-driven A/B alternative rather than the default.
 
 from __future__ import annotations
 
-import aut2ltl.kr.reachability_operators as _ops
+import aut2ltl.kr.operators.reachability_operators as _ops
 from aut2ltl.ltl.builders import _And, _Or, _Not, _tt, _ff, _simp_f
 from aut2ltl.kr.cascade import Cascade, CascadeHolder
 from aut2ltl.kr.cascade_translator import CascadeTranslator

@@ -62,7 +62,7 @@ try:
     print("LEVELS:", casc.num_levels)
     print("ACC_CFGS:", len(casc.accepting_configs()))
     try:
-        import aut2ltl.kr.reachability_operators as _ops
+        import aut2ltl.kr.operators.reachability_operators as _ops
         print("REACH_CALLS:", getattr(_ops, 'PAPER_REACH_CALLS', -1))
         print("FIN_CALLS:", getattr(_ops, 'PAPER_FIN_CALLS', -1))
         print("MAXSZ:", getattr(_ops, 'PAPER_MAX_LTL_SIZE', -1))

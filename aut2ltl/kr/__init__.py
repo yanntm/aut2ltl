@@ -25,7 +25,7 @@ from .gap import (
     check_gap_available,
 )
 from .extract import extract_generators, ExtractionError, is_deterministic
-from .reachability import (
+from .operators import (
     simplify_ltl,
     normalize_ltl,
     reach_strong,
@@ -34,7 +34,7 @@ from .reachability import (
 )
 from .hierarchy_class import make_hierarchy_class, hierarchy_class
 from .aut2cas import as_translator, reconstruct
-from .reachability_operators import TRACE_ON  # for KR_TRACE=1 dev traces of inductive construction
+from .operators import TRACE_ON  # for KR_TRACE=1 dev traces of inductive construction
 
 __all__ = [
     "Cascade",
