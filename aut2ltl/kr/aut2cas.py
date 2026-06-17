@@ -5,7 +5,7 @@ A CascadeTranslator works on an already-decomposed `Cascade`; a `Translator`
 works on a contract `Language` (the floor input type). `as_translator` is the
 adapter that closes the gap: given a Language it builds the Krohn-Rhodes cascade
 with `decompose_lang` (pulls `Language.det_parity_sbacc()` -> GAP SgpDec holonomy)
-and runs the cascade-translator on it. The result `LTLFormulaResult` (formula +
+and runs the cascade-translator on it. The result `Result` (formula +
 technique) is forwarded unchanged.
 
 Before building, it runs the LTL-definability gate (`kr/ltl_tester`): the cascade
@@ -14,7 +14,7 @@ NOT_LTL (cached on the Language) instead of built — skipping the explosive
 holonomy step entirely on the non-LTL case.
 
 The module builds the default endpoint singleton `reconstruct`
-(= `as_translator(hierarchy_class)`): the pure-kr Language -> LTLFormulaResult
+(= `as_translator(hierarchy_class)`): the pure-kr Language -> Result
 entry, the cascade-level construction lifted to the Language level.
 """
 
@@ -23,7 +23,8 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-from aut2ltl.contract import LTLFormulaResult, Translator, CascadeTranslator
+from aut2ltl.contract import Translator, CascadeTranslator
+from aut2ltl.result import Result
 from .gap import decompose_lang
 from .cascade import CascadeHolder
 from .hierarchy_class import hierarchy_class
@@ -44,7 +45,7 @@ def as_translator(
     cascade (GAP) and run `ct` on it. Decomposition options are captured at build
     time; the returned Translator takes only the Language (the contract shape)."""
 
-    def reconstruct(lang: "Language") -> LTLFormulaResult:
+    def reconstruct(lang: "Language") -> Result:
         # LTL-DEFINABILITY GATE (BEFORE the explosive holonomy build). The cascade
         # is UNSOUND on a non-aperiodic language: the holonomy decomposition still
         # succeeds, but it emits a GROUP component the parser labels a reset, from
@@ -69,7 +70,7 @@ def as_translator(
                 "non-trivial group), so the language is not star-free / counter-free "
                 "and no LTL formula exists" + qualifier
             )
-            return LTLFormulaResult.not_ltl_definable(conclusive=conclusive, note=note)
+            return Result.not_definable(diagnosis=note)
         casc = decompose_lang(lang, gap_cmd=gap_cmd, timeout=timeout, max_aps=max_aps)
         # Depth guard dropped (was 3 levels during find-issues-small-first dev):
         # the ladder is green through 3L and the construction is fully memoized
