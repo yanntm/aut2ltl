@@ -18,7 +18,7 @@ from aut2ltl.result import LTLResult, fuse
 from aut2ltl.ltl.builders import own_simplify
 
 if TYPE_CHECKING:
-    from aut2ltl.contract import Translator
+    from aut2ltl.translator import Translator
 
 _NAME = "strength"
 

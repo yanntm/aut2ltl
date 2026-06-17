@@ -25,7 +25,7 @@ from aut2ltl.result import LTLResult, Status
 from .shape import is_daisy, reroot, split
 
 if TYPE_CHECKING:
-    from aut2ltl.contract import Translator
+    from aut2ltl.translator import Translator
 
 _NAME = "daisy"
 _F = spot.formula

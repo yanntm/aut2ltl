@@ -22,7 +22,7 @@ from aut2ltl.result import LTLResult
 from .strip import sigma, strip
 
 if TYPE_CHECKING:
-    from aut2ltl.contract import Translator
+    from aut2ltl.translator import Translator
 
 _NAME = "inv"
 _F = spot.formula

@@ -10,7 +10,7 @@ No ad-hoc pattern matching or approximations on automaton structure.
 
 This package is the PURE cascade engine: no heuristics, no portfolio. The
 decompose-and-recombine front end and the sl gate live in `aut2ltl.portfolio`;
-the result struct lives in `aut2ltl.contract`.
+the result struct lives in `aut2ltl.result`.
 
 See aut2ltl/kr/README.md, STATUS.md, algorithm.md .
 """

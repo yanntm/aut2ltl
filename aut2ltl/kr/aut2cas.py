@@ -23,7 +23,8 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-from aut2ltl.contract import Translator, CascadeTranslator
+from aut2ltl.translator import Translator
+from .cascade_translator import CascadeTranslator
 from aut2ltl.result import LTLResult
 from .gap import decompose_lang
 from .cascade import CascadeHolder

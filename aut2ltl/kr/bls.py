@@ -13,7 +13,7 @@ module only wraps it into a named CascadeTranslator member.
 
 from __future__ import annotations
 
-from aut2ltl.contract import CascadeTranslator
+from .cascade_translator import CascadeTranslator
 from aut2ltl.result import LTLResult
 from .cascade import Cascade
 from .muller import assemble_muller_dnf

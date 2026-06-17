@@ -18,7 +18,7 @@ from aut2ltl.ltl.builders import own_simplify
 from .restrict import accepting_sccs, ensure_marked, restrict_marks
 
 if TYPE_CHECKING:
-    from aut2ltl.contract import Translator
+    from aut2ltl.translator import Translator
 
 _NAME = "scc"
 
