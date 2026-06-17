@@ -116,6 +116,38 @@ context and no composer — it is read straight off the automaton. A bare steady
 `G(⋁_s L(s) ∧ X O(s))` drops the `O(q0)` anchor and over-approximates the entry,
 which is why the phase-dependent (alternating) family needs this form.
 
+## Acceptance: fairness on top
+
+So far `φ` is a *safety* skeleton — it pins the (unique) run but says nothing about
+which runs are *accepting*. Ask the Language for **state-based acceptance** (sbacc),
+so each color (acc set) `i` is a **set of states**, and the condition is generalized
+Büchi: `⋀_i Inf(color i)` — hit each color's state-set infinitely often.
+
+Two facts the partition already gives us make this expressible:
+
+- the component is **deterministic**, so word-acceptance = the acceptance of its
+  *one* run — nothing to quantify over;
+- **state visits are observable from the input**: "in state `s` at time `j ≥ 1`"
+  ⟺ "the previous letter `w[j-1] ∈ L(s)`", so "visit `s` infinitely often" ⟺
+  `GF L(s)` (`GF` is shift-invariant, so the one-step offset is harmless).
+
+Hence "hit color `i` infinitely often" ⟺ `GF( ⋁_{s ∈ color i} L(s) )`, and the full
+formula is the safety skeleton with a generalized-Büchi conjunct per color:
+
+```
+φ  =  O(q0)  ∧  G( ⋀_s ( L(s) → X O(s) ) )  ∧  ⋀_colors i  GF( ⋁_{s ∈ color i} L(s) )
+```
+
+The safety part pins *the* run; the `GF` part pins *its acceptance*; determinism
+makes the conjunction the whole language. When the component is all-accepting (no
+colors) the conjunction is empty and `φ` collapses to the safety form above. This
+is `sl`-core's `STAY∞ = G(σ) ∧ ⋀ GF(σ_i)` lifted from a single self-loop state to a
+deterministic multi-state SCC, with `L(s)` as the per-color guard `σ_i`.
+
+This is exact **only when the acceptance is generalized Büchi** after sbacc; a
+parity/Rabin component does not fit `⋀ GF(…)` and falls through to the equivalence
+gate (decline). Same `L`-partition precondition; same post-validation safety net.
+
 ## Soundness — verify before use
 
 The partition pattern is a candidate *generator*, never trusted on faith. The
@@ -131,11 +163,9 @@ so `partscc` can never answer unsoundly — it only ever *adds* coverage. In the
 pure-leaf framing the "isolate the SCC" step the legacy code performs is a no-op:
 `A` already **is** the isolated component.
 
-Note this gate also absorbs the **acceptance** question. The syntactic form assumes
-every infinite run of the component is accepting; if the component carries a
-non-trivial (generalized) Büchi condition that `G(…)` cannot express, `translate(φ)`
-will not match `A` and the candidate is declined. Acceptance is thus handled by the
-oracle, not by a separate syntactic rule.
+The gate is also the backstop for acceptance shapes the fairness conjunct does not
+model (parity/Rabin after sbacc): such a `φ` will not match `A` and is declined,
+never adopted wrongly.
 
 ## Why a leaf (no composer impact, no entry-timing)
 
@@ -158,20 +188,25 @@ created it.
 
 ## Status
 
-Implemented (`partscc.py` / `labels.py`): the anchored construction above. It fires
-on both terminal-SCC families, each equivalence-checked:
+Implemented (`partscc.py` / `labels.py`): the full anchored + fairness construction
+above. It fires (each equivalence-checked) on input-deterministic terminal SCCs of
+every acceptance shape it can model:
 
-- **memoryless** — `G(p→Xq)` → `G(!p|Xq)`, and its rerooted embeddings
-  `a U G(p→Xq)`, `FG(!p|Xq)`;
-- **phase-dependent (alternating)** — `G((!p∧Xp)|(p∧X!p))` →
-  `p ∧ G((p|Xp)∧(!p|X!p))`, and `G(a↔Xb)` → `b ∧ G((!a|Xb)∧(a|X!b))`; the leading
-  conjunct is the `O(q0)` anchor. The legacy t2 rescued these only via entry-timing
-  surgery pushed into sl; here it is read straight off the input's init state.
+- **safety, memoryless** — `G(p→Xq)` → `G(!p|Xq)`, and rerooted `a U G(p→Xq)`,
+  `FG(!p|Xq)`;
+- **safety, phase-dependent (alternating)** — `G((!p∧Xp)|(p∧X!p))` →
+  `p ∧ G((p|Xp)∧(!p|X!p))`, `G(a↔Xb)` → `b ∧ G((!a|Xb)∧(a|X!b))`; the leading
+  conjunct is the `O(q0)` anchor (legacy t2 needed entry-timing surgery in sl for
+  these; here it is read off the input's init state);
+- **generalized Büchi** — `GF a ∧ G(a→X!a)` → `G(Fa ∧ (!a|X!a))` (one color), and
+  `GF a ∧ GF b ∧ G(a→X!a)` (two colors); the `GF(⋁_{s∈color i} L(s))` conjuncts
+  carry the acceptance.
 
 It **soundly declines** whatever it cannot express, never returning a
-non-equivalent answer: recurrence SCCs whose `L`-labels overlap (`G(a→Fb)`,
-`G(a→XFb)`) are rejected at the partition test; Büchi components a safety `G(…)`
-cannot capture (`GF(a∧Xb)`) are built but rejected at the equivalence gate.
+non-equivalent answer: SCCs that are not letter-deterministic — overlapping
+`L`-labels — are rejected at the partition test (`G(a→Fb)`, `G(a→XFb)`, `GF(a∧Xb)`:
+the "waiting" and "satisfied" states are not separable by the last letter);
+acceptance shapes the fairness conjunct does not model fall to the equivalence gate.
 
 ## Open questions (settle by test)
 

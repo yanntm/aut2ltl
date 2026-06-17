@@ -1,12 +1,15 @@
 """The `partscc` leaf Translator (see algorithm.md).
 
-`PartScc` labels a Language whose TGBA is a single terminal (escape-free) SCC by
-partitioning it: each state gets a uniquely-characterizing label `L(s)`, and when
-the labels are tight and pairwise disjoint it emits `φ = G(⋁ L(s) ∧ X O(s))`,
-adopted **only** if it is language-equivalent to the component. Otherwise it
-declines. Self-contained: no child, no composer cooperation, no entry-timing — the
-input *is* the whole "stay forever" language, so the steady-state `φ` is the whole
-answer.
+`PartScc` labels a Language whose (state-based) automaton is a single terminal
+(escape-free) SCC by partitioning it: each state gets a uniquely-characterizing
+label `L(s)`, and when the labels are tight and pairwise disjoint it emits
+
+    φ = O(q0) ∧ G(⋀_s (L(s) → X O(s))) ∧ ⋀_colors i GF(⋁_{s ∈ color i} L(s))
+
+— the safety transition law anchored at the init state, plus one generalized-Büchi
+conjunct per acceptance color — adopted **only** if it is language-equivalent to
+the component. Otherwise it declines. Self-contained: no child, no composer
+cooperation, no entry-timing. See algorithm.md.
 """
 
 from typing import TYPE_CHECKING
@@ -43,7 +46,10 @@ class PartScc:
     name = _NAME
 
     def __call__(self, lang: "Language") -> "LTLResult":
-        aut = lang.tgba()
+        # State-based acceptance: each color (acc set) becomes a SET OF STATES, so
+        # the fairness conjunct below can characterize "visit color i i.o." by the
+        # L-labels of its states.
+        aut = spot.postprocess(lang.tgba(), "sbacc")
 
         states = scc_states(aut)
         if states is None:
@@ -54,25 +60,35 @@ class PartScc:
             return LTLResult.decline(
                 "L-labels are not a tight pairwise-disjoint partition")
 
-        # The L-partition makes the SCC deterministic (a letter σ leads to the
-        # unique state with σ ∈ L(s)), so the language from the init state q0 is
-        #     O(q0)  ∧  G( ⋀_s ( L(s) → X O(s) ) )
-        # The G-part is the steady-state transition law (if the last letter put us
-        # in s, the next is a valid move out of s); the O(q0) conjunct anchors
-        # position 0 to the init state's own outgoing availability — there is no
-        # incoming letter there, which is exactly the entry phase a bare steady G
-        # over-approximates.
         d = aut.get_dict()
 
         def _f(bdd: "buddy.bdd") -> "spot.formula":
             return spot.bdd_to_formula(bdd, d)
 
+        # Safety skeleton (deterministic via the L-partition):
+        #   O(q0)  ∧  G( ⋀_s ( L(s) → X O(s) ) )
+        # The G-part is the steady-state transition law (if the last letter put us
+        # in s, the next is a valid move out of s); the O(q0) conjunct anchors
+        # position 0 to the init state's outgoing availability (no incoming letter
+        # there — exactly the entry phase a bare steady G over-approximates).
         steady = _F.G(_F.And([
             _F.Or([_F.Not(_f(labels[s])), _F.X(_f(outgoing_or(aut, s)))])
             for s in states
         ]))
         anchor = _f(outgoing_or(aut, aut.get_init_state_number()))
-        phi = _F.And([anchor, steady])
+        conjuncts = [anchor, steady]
+
+        # Fairness: generalized-Büchi acceptance ⋀_i Inf(color i). Since "in state
+        # s" ⟺ "previous letter ∈ L(s)", "visit color i i.o." is GF(⋁_{s∈i} L(s)).
+        # Only generalized-Büchi acceptance fits this; other shapes fall through to
+        # the equivalence gate (decline).
+        if aut.acc().is_generalized_buchi():
+            for i in range(aut.num_sets()):
+                color = [s for s in states if i in aut.state_acc_sets(s).sets()]
+                inf_i = _F.Or([_f(labels[s]) for s in color]) if color else _F.ff()
+                conjuncts.append(_F.G(_F.F(inf_i)))
+
+        phi = _F.And(conjuncts)
 
         if not _validates(aut, phi):
             return LTLResult.decline(
