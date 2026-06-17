@@ -1,97 +1,57 @@
-# aut2ltl.bls — cascade engine (automaton → LTL)
+# aut2ltl.bls — the cascade engine (source map)
 
-`kr` translates a deterministic ω-automaton into an equivalent LTL formula via
-the Krohn–Rhodes / holonomy reset cascade, following the construction of Boker,
-Lehtinen & Sickert (FoSSaCS 2022). It is algebraic and systematic — no
-pattern-matching on the automaton's shape — and produces a hash-consed
-`spot.formula` DAG (never serialized internally).
+The systematic engine: it translates a deterministic ω-automaton to LTL via a
+Krohn-Rhodes / holonomy **cascade**, following Boker, Lehtinen & Sickert (FoSSaCS
+2022) — algebraic, no pattern-matching on the automaton's shape. Reconstruction is a
+family of **cascade translators** dispatched by acceptance class.
 
-## Architecture
-
-Translation is a family of **`CascadeTranslator` members** composed into a chain.
-
-- **Contract** (`aut2ltl/contract.py`, the floor): `LTLResult` (a formula
-  DAG + technique set + OK/DECLINED status) and the `CascadeTranslator` protocol —
-  `holder → LTLResult`, with a fixed `name`. A member is a small class
-  (singleton instance) that is **self-gating**: it inspects the cascade and
-  either returns a language-faithful result or DECLINES; it stamps its own
-  `name` into the technique.
-
-- **Members** (`holder → LTLResult`):
-  - `acc.py` — `Acc` / `acc`: the bounded ("X-ladder") fragment, by direct
-    bounded unroll over a ⊤/⊥ oracle on the input automaton. Orthogonal to the
-    reach machinery; declines on any recurrent config.
-  - `bls.py` — `Bls` / `bls`: the general case (the full Muller-DNF
-    construction). The chain's fallback; accepts every LTL-expressible cascade.
-  - `buchi.py` / `cobuchi.py` / `weak.py` — the direct hierarchy-class members
-    `buchi` (`⋁¬Fin`), `cobuchi` (`⋀Fin`), `weak` (reach-only), each self-gating
-    on its class (`is_{buchi,cobuchi,weak}_cascade`).
-
-- **Composition** (`aut2ltl/combinators.py`): `first_success([...])` — try the
-  members in order, take the first OK, else DECLINE. The acceptance-dispatch
-  chain `acc → weak → buchi → cobuchi → bls` is assembled by
-  `make_hierarchy_class` (`hierarchy_class.py`); per-member gates are read from
-  the injected `Options` (`kr.dispatch.*`, env bridge `KR_DISPATCH_*`). The CLI
-  exposes the whole chain as the `str` technique.
-
-- **Support** (build a formula, *not* translators):
-  - `reachability_operators.py` + `fin.py` — the five inductive reachability
-    formulas and `Fin(C)` (Lemma 7): the mutually-recursive core.
-  - `muller.py` — `assemble_muller_dnf`: the general Δ₂ Muller-DNF over the good
-    config sets. `Bls` wraps it.
-  - LTL utilities moved OUT of kr to the floor package `aut2ltl/ltl/` (shared by
-    kr/sl/portfolio): `ltl/builders.py` (hash-consed formula builders, the simplify
-    hook, DAG→text `_str_f`), `ltl/simplify/` (own simplify/fold passes), and
-    `ltl/bdd_utils.py` (buddy-BDD letter classification, used by `kr/extract.py`).
-
-## Pipeline
+## Architecture: `CascadeTranslator`
 
 ```
-spot automaton
-  │  decompose_aut  (kr.gap)
-  ▼
-normalize → deterministic, complete, minimized, state-based-acceptance parity
-  → extract one generator per concrete letter (extract.py)
-  → GAP / SgpDec holonomy decomposition, parsed back        (kr.gap — see its README)
-  ▼
-Cascade                              (cascade/model.py + cascade/config_graph.py)
-  │  the dispatch chain of CascadeTranslator members         (hierarchy_class.py)
-  ▼
-LTLResult  (hash-consed spot.formula DAG + winning technique)
+CascadeTranslator =  CascadeHolder → LTLResult
 ```
 
-`decompose_aut` and the GAP/SgpDec bridge live in the **`kr.gap`** subpackage
-(its own README). `cascade/model.py` is the data model (levels, state↔config,
-letter valuations, `move_config`); `cascade/config_graph.py` does the
-config-automaton analysis (reachable/accepting configs, good Muller sets).
+- **`cascade_translator.py`** — the contract: a member is a self-gating singleton
+  with a fixed `name` that inspects the cascade and either returns a
+  language-faithful `LTLResult` or DECLINES (the cascade-level peer of the
+  `aut2ltl.translator.Translator` floor).
+- **`aut2cas.py`** — the adapter that lifts a member to a `Language → LTLResult`
+  `Translator` (decompose the Language, then run the member).
+- **`hierarchy_class.py`** — the builder that assembles the members into the dispatch
+  chain `acc → weak → buchi → cobuchi → muller` (via `aut2ltl.first_success`), exposed
+  to the CLI as the `str` technique.
 
-## Usage
-
-```python
-import spot
-from aut2ltl.bls import decompose_aut, reconstruct_bls
-
-casc = decompose_aut(spot.formula("G(p -> (q U r))").translate())
-phi = reconstruct_bls(casc)            # the dispatch chain, formula DAG out
-print(phi)
+```
+spot automaton ──decompose (gap/)──▶ Cascade ──dispatch chain──▶ LTLResult (formula DAG)
 ```
 
-The recommended top-level entry is the portfolio front end
-`aut2ltl.portfolio.reconstruct_decomposed(Language.of(aut))` (a `Language` in, an
-`LTLResult` out), which composes `kr` with the `sl` heuristic gate.
+## Members (one folder each, with its own algorithm.md)
 
-## Dependencies
+- **`acc/`** — the bounded "X-ladder" fragment (direct unroll over a ⊤/⊥ oracle).
+- **`weak/`** — Δ₁ (obligation): pure reachability, settle in an accepting SCC.
+- **`buchi/`** — Π₂ (recurrence): `⋁ ¬Fin(C)`.
+- **`cobuchi/`** — Σ₂ (persistence): `⋀ Fin(C)`.
+- **`muller/`** — the general-case fallback: the full Muller-DNF (`assemble_muller_dnf`).
 
-GAP (≥ 4.12) with the SgpDec package on `PATH`. Install once:
-`./aut2ltl/bls/gap/install.sh` (user-local under `~/.gap/pkg`).
+## Support / infrastructure
 
-## Docs & tests
+- **`operators/`** — the five inductive reachability formulas + `Fin(C)` (Lemma 7),
+  the mutually-recursive core the members are built on.
+- **`cascade/`** — the `Cascade` data model + config-graph analysis (reachable /
+  accepting configs, good Muller sets) + the build `holder`.
+- **`gap/`** — the GAP / SgpDec holonomy bridge (`decompose_aut`); see `gap/README.md`.
+- **`extract.py`** — transformation-generator extraction for SgpDec.
+- **`ltl_tester.py`** — the LTL-definability labeler. **`options.py`** — engine options.
+- **`bls.py`** — DEPRECATED shim (the general member is now `muller/`); to be retired
+  with the portfolio rework.
 
-- `paper/Automata2LTL.txt` — ground truth for any formula-fidelity question.
-- `paper/automata-to-ltl-construction.md` — the construction reference.
-- `../../docs/algorithm.md` — scope/policy and module mapping.
-- `STATUS.md` / `TODO.md` — current state / work items.
-- `../../docs/dag_folding.md` — the size-explosion analysis (open research).
-- Tests: `tests/kr/` holds the cascade unit tests + debug tools
-  (`test_kr_r4_audit.py` is the structural gate); the correctness gate is the
-  front-end survey `tests/survey.py` (ends SUCCESS/FAIL).
+Engine-agnostic LTL machinery (builders, simplify, BDD utils, metrics, printers)
+lives in `aut2ltl/ltl/`, shared across engines.
+
+## More
+
+- Construction reference: `paper/automata-to-ltl-construction.md`; ground truth for
+  fidelity questions: `paper/Automata2LTL.txt`. Scope/policy: `docs/algorithm.md`.
+- Engine state: `docs/kr_STATUS.md`. Size-explosion research: `docs/dag_folding.md`.
+- Tests: `tests/kr/` (cascade unit tests + the `test_kr_r4_audit.py` structural gate);
+  the correctness gate is the front-end survey `tests/survey.py`.
