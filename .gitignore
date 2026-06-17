@@ -10,7 +10,9 @@ __pycache__/
 
 # Heavy debug artifacts from t2 / f2 development sessions
 tests/sl/debug_images/
+# the bare decomp/ scratch dir, but NOT the aut2ltl/decomp source package
 decomp/
+!aut2ltl/decomp/
 
 # generated outputs and caches
 tests/smoke/
