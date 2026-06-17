@@ -574,3 +574,33 @@ Other rules' duals confirmed accounted for (G/F absorption, GF/FG cofactor,
 arm-cofactor U/W/R/M all present); the two deliberately-absent duals are the
 S1/S2 W/M variants (unsound, regression-tested) and arm-padding's M case (sound
 but never observed in outputs — arm-padding is empirically driven).
+
+## 2026-06-17 — LANDED: result.py migration campaign complete; LTLFormulaResult retired
+
+Completed the campaign tracked in TODO.md (steps 1–10). Every producer/combinator
+now returns `aut2ltl/result.py::Result` (closed `Status` OK/DECLINED/NOT_LTL +
+`credit`/`fuse`/`first` algebras per `result.md`); the legacy
+`contract.py::LTLFormulaResult` dataclass, the `OK`/`DECLINED`/`NOT_LTL`/
+`PROBABLY_NOT_LTL` status-string constants, the `_LEGACY_UNSUPPORTED` sentinel,
+and `.conclusive`/`.note`/`not_ltl_definable` are all GONE.
+
+- `contract.py` keeps only the `Translator`/`CascadeTranslator` Protocols, now
+  annotated `-> Result`.
+- `decompose.py::_recombine` reworked to the strict accumulator idiom
+  (`fuse(start, *subs)` → bail-if-nok → fill formula), so a NOK fused with a NOK
+  inherits BOTH diagnoses (the defect the user flagged: constructor-at-return
+  dropped sibling reasons). `credit`/`fail` accumulate diagnoses via `_add_diagnosis`.
+- `__main__.py` non-definability branch collapsed to a single `NOT_LTL` label
+  (exit 3) printing `res.diagnosis`; decline test is now `not res.ok`.
+- `PROBABLY_NOT_LTL` collapsed into `NOT_LTL` (proof-vs-hint wording lives in the
+  diagnosis text). The Language-level `(definable, conclusive)` verdict in
+  `language.py`/`ltl_tester.py` is a SEPARATE mechanism and stays; `aut2cas.py`
+  folds its conclusive/hint qualifier into the `Result.not_definable(diagnosis=)`.
+- Removed `Result`'s retro-compat harness (the `getattr(other, "note", ...)`
+  duck-typing fallback in `credit`) now that no legacy result exists.
+- Retired stale test scaffolding referencing the dead type: `tests/sl/probe_sl_core.py`,
+  `tests/sl/probe_sl_over_str.py`, `tests/test_contract_combinators.py`,
+  `tests/kr/test_acc_translator.py` (git rm; revisit only if needed).
+
+Gates: `tests/kr/test_kr_r4_audit.py` CLEAN; `tests/survey.py` SUCCESS (35/35
+validated, 0 false, 0 declined, DAG=487 temporals=119 build=8.8s).
