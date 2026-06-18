@@ -6,12 +6,18 @@ Project-level snapshot. For the **engine** state read `aut2ltl/bls/STATUS.md`
 ## What works
 
 The FoSSaCS'22 automaton→LTL construction is implemented end-to-end and
-semantically validated. The portfolio front end is the **`best` recipe** (the
-no-`--use` default): `Simplify(strength(acceptance(daisy(core))), "hi")` with
-`core = first(partscc, bls)` — strength/acceptance decomposition over a self-loop
-daisy peel flooring on the `bls` cascade. It sweeps the Manna–Pnueli class ladder,
-every probed case verifying equiv=True. Engine internals and the size profile live
-in `aut2ltl/bls/STATUS.md`.
+semantically validated. The portfolio front end is the **`best_daisy2` recipe**
+(the no-`--use` default): `Simplify(strength(acceptance(daisy_pair(core))), "hi")`
+with `core = first(partscc, bls)` — strength/acceptance decomposition over a
+**daisy/daisy2 peel pair** (the self-loop daisy, then the length-1 star `daisy2`,
+see `aut2ltl/daisy2/algorithm.md`) flooring on the `bls` cascade. It sweeps the
+Manna–Pnueli class ladder, every probed case verifying equiv=True; on the 373-case
+benchmark it is sound (0 non-equivalent) and −3.6% DAG vs the prior `best`, even
+turning one 3804-node unverifiable answer into a verified 16-node one. `--use best`
+is the prior daisy-only assembly; `--use best_inv` adds the global-invariant layer
+(benchmark-neutral here). daisy2 itself is still **gate-rescued** on the safety
+half (a Spot equivalence gate; see its algorithm.md). Engine internals and the
+size profile live in `aut2ltl/bls/STATUS.md`.
 
 ## Front end (CLI)
 
@@ -19,7 +25,8 @@ in `aut2ltl/bls/STATUS.md`.
 portfolio front end: an LTL formula or HOA file in, an equivalent LTL formula
 out. `--use` cites the techniques that may participate (the producers `acc weak
 buchi cobuchi muller bls`, where `muller` is the general Muller-DNF leaf and `bls`
-the integrated cascade) or names a recipe (`best`); omit it for the best default.
+the integrated cascade) or names a recipe (`best` / `best_daisy2` / `best_inv`);
+omit it for the `best_daisy2` default.
 `-O key=value` overrides any
 declared option (`--list-options`/`--list-techniques` to discover). The verbose
 report (technique, DAG/temporals/tree sizes, build time) goes to stderr (`-q`
