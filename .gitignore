@@ -9,6 +9,9 @@ __pycache__/
 # Transient scratch / debug output goes in tests/smoke/ (committed images such as
 # docs/img/*.png are kept — we no longer blanket-ignore *.png / *.dot).
 
+# Local-only dev tool (parses session transcripts; not part of the project)
+/parse_last_session.py
+
 # generated outputs and caches
 tests/smoke/
 tests/kr/examples/generated/
