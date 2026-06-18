@@ -18,9 +18,14 @@ handling is needed — drop files in and they are picked up.
 ## Provenance
 
 Some categories are **generated** (committed for reproducibility) by a generator that
-lives *outside* this tree (e.g. `chains/` from `tests/benchmark/patterns.py --emit`);
-others are hand-written or collected (HOA we have, Kinská models). Generated files say
-so in their header comment — do not hand-edit those.
+lives *outside* this tree (e.g. `chains/` from `tests/benchmark/patterns.py --emit`,
+`fixtures/` from `collect_fixtures.py`); others are hand-written or collected (HOA we
+have, Kinská models). Generated files say so in their header comment — do not hand-edit
+those.
+
+Every emitted example is stored in **AP-canonical form** (`normalize.py`: APs renamed
+to `a,b,c…`, nothing else simplified/reordered) — the same key used for dedup, applied
+to the stored content so the corpus is uniform.
 
 ## Status: collection phase
 
