@@ -4,11 +4,13 @@ technique set.
 
 Two modes, one entry point (`build_portfolio`):
 
-* `techniques is None` — the shipped default: the `best_daisy2` recipe
-  (`recipes.RECIPES["best_daisy2"]`), `Simplify(strength(acceptance(daisy_pair(core))), "hi")`
-  with `core = first(partscc, bls)`. The strength/acceptance decomposition over a
-  daisy/daisy2 peel pair (self-loop daisy, then the length-1 star daisy2) flooring
-  on the bls cascade. (`--use best` is the prior daisy-only assembly.)
+* `techniques is None` — the shipped default: the `"default"` alias in
+  `recipes.RECIPES` (currently → `best_daisy2`,
+  `Simplify(strength(acceptance(daisy_pair(core))), "hi")` with
+  `core = first(partscc, bls)` — the strength/acceptance decomposition over a
+  daisy/daisy2 peel pair flooring on the bls cascade). The default is re-pointed by
+  editing that one alias in `recipes/__init__.py`; `--use default` names it
+  explicitly. (`--use best` is the prior daisy-only assembly.)
 
 * `techniques` is a set/sequence of NAMES — the research path: cite the methods
   that may participate, everything else is knocked out, NO implicit floor. The
@@ -110,13 +112,14 @@ def build_portfolio(
     options: Options, techniques: Optional[Iterable[str]] = None
 ) -> Translator:
     """Assemble a portfolio Translator. `techniques=None` ⇒ the shipped default,
-    the `best_daisy2` recipe (`recipes.RECIPES["best_daisy2"]`); a single recipe
-    name from `recipes.RECIPES` (e.g. `best`, `best_inv`) ⇒ that named assembly;
+    the `"default"` alias in `recipes.RECIPES` (re-point that one entry to change the
+    default); a single recipe name from `recipes.RECIPES` (e.g. `best`, `best_inv`,
+    or `default` itself) ⇒ that named assembly;
     otherwise a set/sequence of technique names ⇒ the cited ladder (cited order =
     priority, no implicit floor). Raises `ValueError` on an unknown name or a
     producer-free citation."""
     if techniques is None:
-        return RECIPES["best_daisy2"](options)
+        return RECIPES["default"](options)
     techs = list(techniques)
     # A recipe name (e.g. `--use best`) resolves to a named assembly from recipes/.
     # Recipes are whole assemblies, not ladder rungs, so they are cited alone.

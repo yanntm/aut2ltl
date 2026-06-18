@@ -29,4 +29,11 @@ RECIPES: Dict[str, Callable[[Optional[Options]], Translator]] = {
     "best_inv_loop": best_inv_loop,
 }
 
+# The shipped default — the assembly used when no `--use` is given (the CLI/build
+# entrypoint resolves the empty case to the name `"default"`, and `--use default`
+# names it explicitly). This single alias IS the default pointer: re-point it to one
+# of the recipes above to ship a different default; nothing else in the CLI, build,
+# or survey changes.
+RECIPES["default"] = RECIPES["best_daisy2"]
+
 __all__ = ["RECIPES", "best", "best_daisy2", "best_inv", "best_inv_loop"]
