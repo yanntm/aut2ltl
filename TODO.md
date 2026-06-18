@@ -6,54 +6,61 @@ and the `kr → bls` engine reorg all landed — see HISTORY 2026-06-17.)
 
 ## Portfolio rework (NEXT PRIORITY)
 
-The component layer is complete: every engine/approach is a `Translator` (or
-`CascadeTranslator`), composed by the floor combinator `first_success`. A scan of
-`portfolio/` shows almost nothing intrinsically belongs there — the three composites
-each map onto pieces that already exist or belong with their engine. Goal: portfolio
-becomes a **thin, cunning assembly** offering convenience builders with reasonable
-sub-assemblies pre-wired.
+`aut2ltl/portfolio/builder.py` now holds named assembly **recipes** over the
+translators. `best` = `Simplify(strength(acceptance(daisy(core))), "hi")` with
+`core = first(partscc, bls)` — the modern re-expression of the historical
+`Decompose / SlDriven / Decompose` default, `daisy` in place of the sl envelope and
+`partscc` in place of `t2`. It **reproduces and slightly beats** that default and is
+reachable via `--use best` (see HISTORY 2026-06-18; survey log pointer below). The
+new framing (from this session): **`sl/` and the current `portfolio/` contents should
+disappear** — all of sl is covered by `daisy` (a stronger self-loop labeler), and the
+one piece with no daisy equivalent (`fuse2`) is already extracted to `heur/`.
 
-- **Retire `portfolio/decompose.py`.** `Decompose` is the old monolith of the
-  AND-by-acceptance / OR-by-strength split — already extracted as `decomp/acceptance`
-  + `decomp/strength` (+ `decomp/scc`). Compose those via `first_success` instead.
-- **Move the sl adapter into `aut2ltl/sl/`.** `portfolio/sl.py` (`Sl`) is the sl
-  engine's Translator façade; it belongs in the engine (like `daisy`/`decomp` expose
-  theirs). Its flags (`portfolio/options.py`: `SL_ENABLED` / `SL_MAX_STATES` /
-  `SL_VERIFY`) move with it.
-- **Replace `SlDriven` with `Daisy(child=…)`** — `SlDriven` is the peel-and-delegate
-  pattern over the legacy engine; `daisy` is exactly that, pure. Wire `Daisy` with a
-  delegate; relocate `SlDriven` to `sl/` only if the legacy engine is still needed.
-- **Slim `build.py`** to: the default assembly recipe (`first_success` / `best_of`
-  over `{daisy, decomp/*, cascade, partscc, inv}`) + the `--use` name→translator
-  table; settle the vocabulary (`str`/`bls` → `bls`/`muller`); offer convenience
-  builders (pre-wired sub-assemblies).
-- **`best_of` combinator + a `cost`/size field on `LTLResult`.** The portfolio picks
-  the FIRST success; size is the research objective, so add `best_of([...], key=cost)`
+Remaining, roughly in order:
+
+- **Promote `best` to the actual default.** Replace the old `Decompose / SlDriven /
+  Decompose` graph (`portfolio/__init__.py` `reconstruct_decomposed`,
+  `build.py::_default_portfolio`) with `builder.best`, so the no-`--use` path IS the
+  recipe.
+- **Retire the old portfolio contents** once `best` is the default and nothing imports
+  them: `portfolio/decompose.py` (`Decompose`), `portfolio/sl.py` (`Sl`),
+  `portfolio/sl_driven.py` (`SlDriven`), `portfolio/options.py` (`SL_*`), and the old
+  cited-technique ladder in `build.py`. Then **retire `aut2ltl/sl/` entirely.**
+- **Settle the `--use` vocabulary**: recipes (`best`, …) + the leaf names; `str`/`bls`
+  → `bls`/`muller`. Drop the inline `_simp_f` boundary calls `portfolio/sl*.py` carry
+  (the `Simplify` decorator subsumes them).
+- **`best_of` combinator + a `cost`/size field on `LTLResult`.** Recipes pick the
+  FIRST success; size is the research objective, so add `best_of([...], key=cost)`
   beside `first_success` (`LTLResult` is pre-shaped for a cost field).
+- **A `recurse`/`fix` combinator (idea — revisit with `best_of`).** `daisy`, the
+  `strength`/`acceptance` decomposers all share ONE shape: structural recursion over a
+  well-founded decomposition — `leaf = combine([leaf(sub) for sub in decompose(lang)])`
+  with a floor base case. NOT Kleene (not iteration of one op on the same input; it
+  hands strictly-smaller subproblems back, terminating by well-founded descent). A
+  shared `recurse(decompose, combine, floor)` would unify the three and give ONE place
+  to swap `first`→`best_of`, memoize subproblems on the `Language`, and tag uniformly.
+  Today each combinator owns its own recursion (honest, explicit) — extract only when
+  the `best_of` + memo payoff is real.
 - **Retire the transitional shims** once importers repoint: `aut2ltl/contract.py` and
   `aut2ltl/bls/bls.py`.
+- **`fuse2` is unwired** (`heur/fuse2`). Decision: leave it out; let fuzzing measure
+  whether its absence costs `best` vs the default before deciding to wire it.
+
+Latest `--use best` survey vs the default reference: **`tests/logs/best.csv`**
+(+10.7% DAG, 40/40 sound, several cases smaller than default). **NOT committed** —
+throwaway scratch, still WIP; promote to `tests/logs/reference/<date>/` only once
+`best` becomes the default.
 
 ## Open
 
-- **Wire `PartScc` into the assembly (part of the rework).** The `aut2ltl.partscc`
-  leaf is built, tested, gate-clean, but not reachable from `-m aut2ltl`. It labels a
-  single terminal SCC — exactly what a peel hands an exit target via `of(A↓dst)`. Wire
-  it as a leaf alongside the cascade; validate against the t2 fixtures
-  (`tests/fixtures/t2_successes.py`, `terminal_2scc_labeled.py`) and the survey's
-  partscc stress block. End goal: retire `aut2ltl/sl/heuristics/terminal_2scc.py` and
-  its sl entry-timing surgery (`scc_entry_I` / `direct_scc_sync_attach`).
 - **Output size at scale (the live research front).** The construction is cheap; the
   flat form explodes and Spot hits its 32-acceptance-set wall. Representation/
   verification, not fidelity. Analysis: `docs/dag_folding.md`.
 - **HOA input to the survey.** `tests/survey.py` feeds LTL strings only; the tool
   accepts HOA files. Extend the survey (and corpus) to HOA inputs, the equiv oracle
   comparing against the source automaton.
-- ~~**`Simplify` Translator decorator.**~~ LANDED as `aut2ltl/simplify_ltl/`
-  (`Simplify(child, level)`, `lo` = own DAG rules, `hi` = + Spot). The `best` recipe
-  wraps one `hi` outside the whole assembly — replacing the per-Translator `_simp_f`
-  the old `Sl`/`SlDriven` ran. Remaining: once `best` is the default, drop the inline
-  `_simp_f` boundary calls the retiring `portfolio/sl*.py` still carry.
-- **Flags manual.** The `--use` / `-O` reference doc the root README points to.
+- **Flags manual.** The `--use` / `-O` reference doc the root README points to (add
+  the `--use best` recipe and the recipe-vs-leaf distinction).
 
 ## Housekeeping
 

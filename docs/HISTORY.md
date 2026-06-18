@@ -1081,3 +1081,28 @@ collapsed the broad small-case padding (movers 17->5; several now SMALLER than
 default). Remaining +138% DAG is essentially ONE formula: G(a->Xb) 6->101, because
 partscc/t2 is not yet wired and it routes to the buchi cascade. NOT the default yet;
 additive via --use best.
+
+## 2026-06-18 — partscc wired into `best`: --use best reproduces (and edges out) the historical default
+
+Wired `aut2ltl.partscc` into the `best` recipe via a `core` floor:
+`core = first_success([PartScc(), bls])`, handed to the daisy fixpoint as its
+delegate (`daisy(core)`). partscc labels a single terminal SCC — exactly what a daisy
+peel hands an exit target — and is the modern replacement for the sl `t2` heuristic.
+
+RESULT (survey, 40-formula corpus, `--use best` vs the default reference
+tests/logs/reference/20260616_2/default.csv):
+  * SUCCESS, 0 regressions, 40/40 VALIDATED equivalent (was 39/40 — the lone
+    spot_err was the G(a->Xb) buchi blowup hitting Spot >32 acceptance sets; partscc
+    (DAG 6) sidesteps it).
+  * DAG 487 -> 539 (+10.7%), tree 1940 -> 2036 (+4.9%) — down from +138%/+1440%
+    before partscc. Only 4 changed rows; 3 are WINS over the default (GFa&GFb&GFc
+    -20%, (aUb)|Gc -15%, GFa&GFb -14%), one +1 node (GFa&FGb). Faster too (9.1s).
+
+MILESTONE: `best` = Simplify(strength(acceptance(daisy(first(partscc, bls)))), hi)
+now reproduces the historical Decompose/SlDriven/Decompose default with daisy in place
+of the whole sl envelope and partscc in place of t2 — the goal of the portfolio
+rework. Still additive (--use best); promoting it to the no-flag default and retiring
+sl/ + the old portfolio contents is the remaining work (see TODO).
+
+LOG NOT COMMITTED: tests/logs/best.csv is throwaway scratch (WIP), not promoted to
+the reference baseline — promote only when best becomes the default.
