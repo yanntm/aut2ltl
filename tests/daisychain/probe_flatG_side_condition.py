@@ -1,6 +1,6 @@
 """Probe: the flat-G STAY-safety form is UNSOUND, in both directions.
 
-algorithm2.md considers, for a length-1 star (hub h + one self-loop spoke s), the
+aut2ltl/daisy2/algorithm.md considers, for a length-1 star (hub h + one self-loop spoke s), the
 tempting flat collapse of the staying language:
 
     StaySafe  ?=  G( P  v  (G_s U R_s) )      -- the flat form

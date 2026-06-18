@@ -1,4 +1,4 @@
-"""The `daisy2` combinator Translator (see algorithm2.md).
+"""The `daisy2` combinator Translator (see algorithm.md).
 
 `Daisy2(child)` peels a **length-1 star hub** — the initial state's SCC when it
 is a hub `h` with petal self-loops, stem exits, and one-hop spokes (entry `h→s`,
@@ -11,7 +11,7 @@ spoke excursion `E_s ∧ X(G_s U R_s)`):
     LEAVE = stay U ⋁_j ( g_j ∧ X φ_j )
 
 with `stay` the move-level stay-region (petal guards, spoke entries, spoke
-bodies). The closed move-level form is **not yet solved** (algorithm2.md Open
+bodies). The closed move-level form is **not yet solved** (algorithm.md Open
 points); `daisy2` therefore emits its current best candidate and adopts it
 **only** if a Spot oracle finds it language-equivalent to the input — otherwise
 it declines. So it is always sound; what we are measuring is how often the
@@ -69,7 +69,7 @@ def build_candidate(
     petals: List["Petal"], spokes: List["Spoke"], stems: List["Stem"],
     children: List["spot.formula"], m: int,
 ) -> "spot.formula":
-    """The current best move-level candidate `STAY∞ ∨ LEAVE` (algorithm2.md). Free
+    """The current best move-level candidate `STAY∞ ∨ LEAVE` (algorithm.md). Free
     function so probes can inspect the exact formula daisy2 gates — the closed
     form is unsolved, so what it emits is the object under study."""
     # The move-level stay-region: a petal letter, a spoke move-start
@@ -81,7 +81,7 @@ def build_candidate(
     stay = _or([sigma] + excursions + bodies)
 
     # STAY∞ = G(stay) ∧ ⋀_i GF(comp_i). A mark is collected per edge ROLE, not
-    # per spoke (algorithm2.md §Acceptance): entry/return edges fire on every
+    # per spoke (algorithm.md §Acceptance): entry/return edges fire on every
     # traversal (the bare excursion witnesses them), but a body self-loop mark
     # needs ≥ 1 real loop step — E_s ∧ X(G_s ∧ (G_s U R_s)).
     gfs: List["spot.formula"] = []

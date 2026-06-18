@@ -1,4 +1,4 @@
-"""Star-hub structure helpers behind the `daisy2` combinator (see algorithm2.md).
+"""Star-hub structure helpers behind the `daisy2` combinator (see algorithm.md).
 
 A **length-1 star hub** is the initial state's SCC `C` presented as: a hub `h`
 (the init state) carrying **petals** (self-loops `h → h`) and **stems** (exits
@@ -34,7 +34,7 @@ class Spoke:
     (`s → h`), and the acceptance sets marked on each role **separately** —
     `entry_acc`, `body_acc`, `ret_acc`. The roles must stay split because a body
     mark is collected only when the body actually loops, while entry/return marks
-    are collected on every traversal (see algorithm2.md §Acceptance)."""
+    are collected on every traversal (see algorithm.md §Acceptance)."""
 
     state: int
     entry: "spot.formula"
