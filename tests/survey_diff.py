@@ -1,99 +1,122 @@
 #!/usr/bin/env python3
 """
-tests/survey_diff.py — quantitative diff of two survey CSVs.
+tests/survey_diff.py — quantitative diff of two survey CSVs (keyed on input).
 
-Replaces the old `compare_sizes.py` (which parsed survey_sizes log lines). It
-reads two CSVs written by `tests/survey.py` (keyed on the `formula` column) and
-prints a DENSE, SHORT report meant to be read whole at a glance — only changed
-rows, capped mover lists, and a one-line bottom line. It deliberately does NOT
-echo unchanged rows (a 35-row corpus would otherwise drown the signal).
+Reads two CSVs written by `tests/survey.py` and keys both on the INPUT column
+`formula` — an LTL formula, or for an HOA input the automaton's file name. The
+two runs need NOT cover the same corpus (a grown benchmark, or one run answering
+fewer inputs after a timeout), so the report has two stages:
 
-What it surfaces, worst-news-first:
-  * equiv regressions      — True -> {FALSE, SPOT_TIMEOUT, UNVERIFIED_SIZE, ...}
-                             (a True -> FALSE is a HARD regression)
-  * equiv fixes            — anything -> True
-  * size movers            — the top |Δ DAG nodes| rows (build cost driver)
-  * technique changes      — which formulas now take a different portfolio path
-  * totals                 — summed DAG / tree nodes old vs new, with % delta
+  1. KEY SETS — how many inputs are absent from the left, absent from the right,
+     and in common, plus how many each side actually *answered* (built a DAG for).
+     This is where a "one file has fewer answers/queries" discrepancy shows up.
+  2. COMMON DIFF — everything quantitative (equiv regressions/fixes, technique
+     changes, size movers, totals) is computed STRICTLY on the common inputs, so
+     a size delta reflects per-input change, not a difference in corpus size.
 
-Run from the project root:
-    python3 tests/survey_diff.py OLD.csv NEW.csv
-    python3 tests/survey_diff.py OLD.csv NEW.csv --top 5   # fewer mover rows
+Worst-news-first; only changed rows are echoed. Run from the project root:
+    python3 tests/survey_diff.py LEFT.csv RIGHT.csv
+    python3 tests/survey_diff.py LEFT.csv RIGHT.csv --top 5   # fewer sample/mover rows
 """
 from __future__ import annotations
 
 import argparse
-import csv
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Tuple
+
+import pandas as pd
+
+KEY = "formula"
 
 
-def _load(path: str) -> Dict[str, dict]:
-    """formula -> row dict, from a survey CSV."""
-    rows: Dict[str, dict] = {}
-    with Path(path).open(newline="", encoding="utf-8") as fh:
-        for row in csv.DictReader(fh):
-            rows[row["formula"]] = row
-    return rows
+def _load(path: str) -> pd.DataFrame:
+    """Survey CSV -> DataFrame indexed by the input key (deduped, last wins)."""
+    df = pd.read_csv(path, dtype=str).fillna("")
+    if KEY not in df.columns:
+        sys.exit(f"{path}: no '{KEY}' column — not a survey CSV?")
+    return df.drop_duplicates(subset=KEY, keep="last").set_index(KEY)
 
 
-def _int(row: dict, key: str) -> Optional[int]:
-    val = row.get(key, "")
-    try:
-        return int(val)
-    except (TypeError, ValueError):
-        return None
+def _num(s: "pd.Series") -> "pd.Series":
+    return pd.to_numeric(s, errors="coerce")
 
 
-def _sum(rows: Dict[str, dict], key: str) -> int:
-    return sum(v for v in (_int(r, key) for r in rows.values()) if v is not None)
+def _answered(df: pd.DataFrame) -> int:
+    """Rows with a built DAG (non-blank dag_nodes) = inputs aut2ltl answered."""
+    return int(_num(df["dag_nodes"]).notna().sum())
 
 
-def _pct(old: int, new: int) -> str:
+def _pct(old: float, new: float) -> str:
     if old == 0:
         return "n/a" if new == 0 else "+inf"
     return f"{100.0 * (new - old) / old:+.1f}%"
 
 
+def _print_sample(keys: List[str], cap: int) -> None:
+    for k in keys[:cap]:
+        print(f"    {k:.70s}")
+    if len(keys) > cap:
+        print(f"    ... +{len(keys) - cap} more")
+
+
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Quantitative diff of two survey CSVs.")
-    ap.add_argument("old")
-    ap.add_argument("new")
-    ap.add_argument("--top", type=int, default=10, help="max size-mover rows to show")
+    ap = argparse.ArgumentParser(
+        description="Quantitative diff of two survey CSVs, keyed on the input column.")
+    ap.add_argument("left")
+    ap.add_argument("right")
+    ap.add_argument("--top", type=int, default=10, help="max mover / sample rows to show")
     args = ap.parse_args()
 
-    old, new = _load(args.old), _load(args.new)
-    common = [f for f in new if f in old]
-    only_new = [f for f in new if f not in old]
-    only_old = [f for f in old if f not in new]
+    L, R = _load(args.left), _load(args.right)
+    lk, rk = set(L.index), set(R.index)
+    common = sorted(lk & rk)
+    only_left = sorted(lk - rk)
+    only_right = sorted(rk - lk)
+
+    # --- stage 1: key sets -------------------------------------------------
+    print("=== survey diff (keyed on input) ===")
+    print(f"left ={args.left}   {len(lk)} inputs, {_answered(L)} answered")
+    print(f"right={args.right}   {len(rk)} inputs, {_answered(R)} answered")
+    print(f"key sets: {len(common)} common | "
+          f"{len(only_left)} absent-from-right | {len(only_right)} absent-from-left")
+    if only_left:
+        print(f"  only in left ({len(only_left)}):")
+        _print_sample(only_left, args.top)
+    if only_right:
+        print(f"  only in right ({len(only_right)}):")
+        _print_sample(only_right, args.top)
+    if not common:
+        print("\nno common inputs — nothing to compare.")
+        return 0
+
+    # --- stage 2: diff on the common set -----------------------------------
+    Lc, Rc = L.loc[common], R.loc[common]
+    la, ra = _answered(Lc), _answered(Rc)
+    note = "" if la == ra else "   <-- one side answered fewer"
+    print(f"\non {len(common)} common inputs: answered  left {la}  right {ra}{note}")
 
     regressions: List[str] = []
     fixes: List[str] = []
     tech_changes: List[str] = []
-    movers: List[Tuple[int, str, str]] = []  # (|delta|, formula, detail)
-    for f in common:
-        o, n = old[f], new[f]
+    movers: List[Tuple[int, str, str]] = []
+    for k in common:
+        o, n = Lc.loc[k], Rc.loc[k]
         oe, ne = o.get("equiv", ""), n.get("equiv", "")
         if oe != ne:
-            line = f"  {f:30.30s} {oe} -> {ne}"
+            line = f"  {k:30.30s} {oe} -> {ne}"
             if oe == "True" and ne != "True":
                 regressions.append(line + ("   *** HARD ***" if ne == "FALSE" else ""))
             elif ne == "True" and oe != "True":
                 fixes.append(line)
             else:
                 tech_changes.append(line)  # equiv churn that is neither (rare)
-        if o.get("technique") != n.get("technique"):
-            tech_changes.append(f"  {f:30.30s} {o.get('technique','-')} -> {n.get('technique','-')}")
-        od, nd = _int(o, "dag_nodes"), _int(n, "dag_nodes")
-        if od is not None and nd is not None and od != nd:
-            movers.append((abs(nd - od), f, f"DAG {od} -> {nd} ({_pct(od, nd):>7s})"))
-
-    print("=== survey diff ===")
-    print(f"old={args.old}")
-    print(f"new={args.new}")
-    print(f"matched {len(common)} formulas"
-          + (f"; {len(only_new)} only-new; {len(only_old)} only-old" if (only_new or only_old) else ""))
+        if o.get("technique", "") != n.get("technique", ""):
+            tech_changes.append(
+                f"  {k:30.30s} {o.get('technique', '-')} -> {n.get('technique', '-')}")
+        od, nd = _num(pd.Series([o.get("dag_nodes")]))[0], _num(pd.Series([n.get("dag_nodes")]))[0]
+        if pd.notna(od) and pd.notna(nd) and od != nd:
+            movers.append((int(abs(nd - od)), k, f"DAG {int(od)} -> {int(nd)} ({_pct(od, nd):>7s})"))
 
     if regressions:
         print(f"\nEQUIV REGRESSIONS ({len(regressions)}):")
@@ -110,15 +133,16 @@ def main() -> int:
     movers.sort(reverse=True)
     if movers:
         print(f"\ntop size movers (of {len(movers)} changed):")
-        for _, f, detail in movers[: args.top]:
-            print(f"  {f:30.30s} {detail}")
+        for _, k, detail in movers[: args.top]:
+            print(f"  {k:30.30s} {detail}")
 
-    od_dag, nd_dag = _sum(old, "dag_nodes"), _sum(new, "dag_nodes")
-    od_tree, nd_tree = _sum(old, "tree_nodes"), _sum(new, "tree_nodes")
-    print("\ntotals (per file):")
-    print(f"DAG nodes : {od_dag} -> {nd_dag}  ({_pct(od_dag, nd_dag)})")
-    print(f"tree nodes: {od_tree} -> {nd_tree}  ({_pct(od_tree, nd_tree)})")
-    print(f"{len(regressions)} regression(s), {len(fixes)} fix(es), DAG {_pct(od_dag, nd_dag)}")
+    od_dag, nd_dag = _num(Lc["dag_nodes"]).sum(), _num(Rc["dag_nodes"]).sum()
+    od_tree, nd_tree = _num(Lc["tree_nodes"]).sum(), _num(Rc["tree_nodes"]).sum()
+    print("\ntotals (common set):")
+    print(f"DAG nodes : {int(od_dag)} -> {int(nd_dag)}  ({_pct(od_dag, nd_dag)})")
+    print(f"tree nodes: {int(od_tree)} -> {int(nd_tree)}  ({_pct(od_tree, nd_tree)})")
+    print(f"{len(regressions)} regression(s), {len(fixes)} fix(es), DAG {_pct(od_dag, nd_dag)} "
+          f"(on {len(common)} common of {len(lk)}L/{len(rk)}R)")
     return 1 if regressions else 0
 
 
