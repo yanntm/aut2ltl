@@ -1,0 +1,15 @@
+# Ported from tests/fixtures/formulas.py by tests/benchmark/collect_fixtures.py -- do not hand-edit.
+# AP-renamed to canonical a,b,c… (normalize_ltl); dedup vs the rest of inputs/ (excl. kinska); no simplification.
+
+# -- Basic cases that worked well --
+(a U b) & GF c  # fx001
+FG a  # fx002
+G (a -> X a) & GF b  # fx003
+G(Xa & (b | Xc))  # fx004
+
+# -- Required the size-2 fusion (f2) heuristic --
+X(a | F(a & Xa))  # fx005
+
+# -- Known problematic (very-weak, etc.) --
+!a W b  # fx006
+G!a R b  # fx007
