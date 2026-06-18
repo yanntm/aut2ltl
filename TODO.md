@@ -18,16 +18,17 @@ one piece with no daisy equivalent (`fuse2`) is already extracted to `heur/`.
 
 Remaining, roughly in order:
 
-- **Promote `best` to the actual default.** Replace the old `Decompose / SlDriven /
-  Decompose` graph (`portfolio/__init__.py` `reconstruct_decomposed`,
-  `build.py::_default_portfolio`) with `builder.best`, so the no-`--use` path IS the
-  recipe. The benchmark gives the strongest case yet: `best` is not just smaller but
-  **correct** where the legacy default is WRONG — a verified `FALSE` (non-equivalent)
-  on a strong-until chain that `best` reconstructs soundly (see HISTORY 2026-06-18).
-- **Retire the old portfolio contents** once `best` is the default and nothing imports
-  them: `portfolio/decompose.py` (`Decompose`), `portfolio/sl.py` (`Sl`),
-  `portfolio/sl_driven.py` (`SlDriven`), `portfolio/options.py` (`SL_*`), and the old
-  cited-technique ladder in `build.py`. Then **retire `aut2ltl/sl/` entirely.**
+- **DONE (2026-06-18) — `best` is the actual default.** `build_portfolio(None)` now
+  returns `RECIPES["best"]`; the no-`--use` path IS the recipe. Gated (survey 40/40,
+  kr audit CLEAN) and the benchmark's legacy-default `FALSE` is now sound under default
+  (`daisy+strength2`, DAG 19). `_default_portfolio` is dead pending the next item.
+- **IN PROGRESS — retire the old architecture** (nothing in the default path imports it
+  now): `portfolio/decompose.py` (`Decompose`), `portfolio/sl.py` (`Sl`),
+  `portfolio/sl_driven.py` (`SlDriven`), `portfolio/options.py` (`SL_*`), the
+  `_default_portfolio` + the `sl`/`sl_driven`/`decompose` cited rungs in `build.py`, and
+  then **`aut2ltl/sl/` entirely.** Update/remove the tests that pin the old arch
+  (`test_sl_member`, `kr/test_decompose`, `kr/fuzz_gate_decompose`, the `sl/` probes,
+  `test_build_portfolio` vocabulary) — a one-time test refresh, then full modern.
 - **Settle the `--use` vocabulary**: recipes (`best`, …) + the leaf names; `str`/`bls`
   → `bls`/`muller`. Drop the inline `_simp_f` boundary calls `portfolio/sl*.py` carry
   (the `Simplify` decorator subsumes them).

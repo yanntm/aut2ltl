@@ -1186,3 +1186,16 @@ Engine/test changes this session, all landed:
 FINDING: the first full bench run flagged a legacy-`default` **FALSE** (verified
 non-equivalent) on the strong-until chain `(a U ((a & b) R (b | c)))`, which `best`
 reconstructs correctly — concrete evidence to promote `best` and retire the legacy path.
+
+## 2026-06-18 — promote `best` to the default (portfolio pivot)
+
+`build_portfolio(options, techniques=None)` now returns `RECIPES["best"](options)`
+instead of `_default_portfolio` — so the no-`--use` path IS the modern `best` recipe
+(`Simplify(strength(acceptance(daisy(core))), "hi")`, `core = first(partscc, bls)`).
+WHY: the `tests/benchmark` first full run caught the legacy `Decompose / SlDriven /
+Decompose` default producing a verified-FALSE (non-equivalent) formula on the
+strong-until chain `(a U ((a & b) R (b | c)))` via `or2+or3+sl+sl_driven`; `best`
+reconstructs it soundly (`daisy+strength2`, DAG 19, Spot True). Gated: kr r4 audit
+CLEAN, survey SUCCESS 40/40 equivalent (all modern techniques), and the formerly-FALSE
+formula now sound under the default CLI path. `_default_portfolio` and the legacy
+`sl`/`sl_driven`/`decompose` rungs are now dead pending the architecture retirement.
