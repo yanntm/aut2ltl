@@ -17,6 +17,12 @@ CASES = [
     ("FG(a & !b) | GF(b)",            "FG(a) | GF(b)"),
     # nested under another temporal
     ("X(GF(a & b) & FG(b))",          "X(GF(a) & FG(b))"),
+    # strong until/release as invariant SOURCE (φ U G(x) ⟹ FG x; dual φ R F(x))
+    ("GF(a & b) & (c U G(b))",        "GF(a) & (c U G(b))"),
+    ("FG(a | b) | (c R F(b))",        "FG(a) | (c R F(b))"),
+    # must NOT fire: WEAK until/release give no eventuality (Gφ / G¬φ branch)
+    ("GF(a & b) & (c W G(b))",        "GF(a & b) & (c W G(b))"),
+    ("FG(a | b) | (c M F(b))",        "FG(a | b) | (c M F(b))"),
     # must NOT fire: no FG sibling
     ("GF(a & b) & GF(b)",             "GF(a & b) & GF(b)"),
     # must NOT fire: GF arg not propositional
