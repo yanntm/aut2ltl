@@ -396,6 +396,24 @@ so the hub-looseness is gone by construction. Sub-steps:
   gate then declines (sound), instead of relying on the oracle to catch a wrong
   candidate.
 
+*Design lead — partscc already solves this, deterministically.* `partscc`
+(`aut2ltl/partscc/algorithm.md`) faces the identical "name the occupied state with
+no proposition for it" problem and cracks it: the phase is **a function of the last
+letter** — `L(s) = ⋁(letters entering s)`, and "in `s`" ⟺ "the previous letter
+∈ `L(s)`" — and position 0 is anchored by the init state directly,
+`φ = O(q0) ∧ G(⋀_s L(s) → X O(s)) ∧ ⋀_i GF(⋁_{s∈F_i} L(s))`. That **is** a flat-`G`
+transition law, and it is sound *only because the `L`-partition is deterministic*
+(entry letters identify the state). daisy2's open case is exactly the
+**non-deterministic** star where that partition fails — `L(h) ∧ L(s) ≠ false`, the
+very letter coincidence behind `GF(a&Xb)`. The lead: replace partscc's
+*letter-level* determinism with **move-level self-delimitation** — each move is an
+`E_s`-to-`R_s` strong-`U` block, so the anchor need not be recovered from the
+letter; it **re-anchors at every `R_s ∧ X Φ`** (move completion), starting from
+`q0 = h` exactly as partscc starts from `O(q0)`. Φ_stay is the same anchor,
+propagated by moves instead of by a deterministic letter-partition. (Where the star
+*is* L-partition-deterministic, partscc already labels it — the two are
+complementary, and the portfolio orders `partscc` before `daisy2` for that reason.)
+
 *Test:* `G((!a&Xa)|(a&X!a))` and `G(a↔Xb)` lose their too-loose witness — they may
 still decline (closed form pending) but must never gate-REJECT for being *loose*.
 
@@ -405,6 +423,47 @@ still decline (closed form pending) but must never gate-REJECT for being *loose*
 daisy2's strong-`U` is correct, do not patch it. It is also *not* fixed by the
 current `SccDecompose` (splits across SCCs, not within one). A dedicated in-SCC
 divergence handler is separate, later work.
+
+## Working notes — findings & direction (keep)
+
+Distilled understanding, to survive context churn:
+
+- **The anchor is the spine.** Every open reject — the `m=0` safety cases and the
+  `GF(a&Xb)` acceptance coincidence — is one problem: *name "control is at the hub"
+  with no proposition for it*. Solve that and they all close. partscc is the
+  deterministic shadow of the answer (last-letter `L`-partition + init anchor);
+  daisy2 needs the **non-deterministic** version, with the move's strong-`U`
+  providing self-delimitation so the anchor re-fires at each move completion
+  (`R_s ∧ X Φ`) rather than at each letter. See Target B's design lead.
+
+- **The strong-`U` extended petal is `Λ_f` at depth 1.** A one-state spoke's label
+  is `G_s U R_s` — exactly what the general daisychain's finite-word labeler would
+  return for a trivial child. So daisy2 → full daisychain is "replace the strong-`U`
+  by the child's label": the *same recursion*, one rung deeper. The length-1 star is
+  the base case, not a special trick.
+
+- **S3 turns a promise into a check.** "Accepting runs revisit the hub" is, in the
+  paper and `decomp/scc`, a division-of-labour *assumption*. S3 (no marks on the q1
+  loop) makes it a **local edge test**: a mark-free body can't accept while
+  diverging, so revisit-`h` is forced. The research move is to carve the exact
+  regime and make its boundary checkable — not to handle everything.
+
+- **Heuristic, localized.** The acceptance half is now a real construction (S3 +
+  per-edge `GF`, sound by argument). The safety half is still the flat-`G`
+  heuristic. The Spot gate is what makes the *whole* sound today; the goal is to
+  make it a net, not a crutch — and the gap is precisely one finite-LTL fixpoint
+  (`Φ_stay`).
+
+- **A recursive composer is the next lever.** `daisy`/`daisy_pair`/`strength`/
+  `acceptance`/`scc` are all `leaf(L) = combine(decompose(L), [leaf(sub)…])` with a
+  floor (TODO.md `recurse`/`fix`). One `recurse(decompose, combine, floor)` is the
+  single place to (a) swap `first_success → best_of` (size is the objective), (b)
+  memoize on the `Language` for DAG sharing, and (c) apply `inv` **per descent**.
+  Top-only `best_inv` is benchmark-neutral because the *global* `Σ = ⋁(all guards)`
+  is usually `≡ true`; a deep sub-automaton has a far tighter local `Σ`. A plausible,
+  testable payoff: inv-per-descent strips `G(Σ_local)`, shrinking the transition
+  monoid the LTL-definability gate tests — so it may make **NOT_LTL verdicts cheaper
+  or decidable** on the kinška `counting/` automata (where best currently times out).
 
 ## Open points (small, by design)
 
