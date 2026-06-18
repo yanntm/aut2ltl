@@ -28,3 +28,11 @@ print("inmove == target       :", equiv(inmove, target))
 print("inmove == recon        :", equiv(inmove, recon))
 print("recon                  :", spot.formula(recon))
 print("recon simplified       :", spot.simplify(spot.formula(recon)))
+
+# --- compositional view: the detour as an OPAQUE *-language (a SERE), plugged
+#     by PSL suffix-implication, never cracked open into per-state residuals.
+print()
+R       = "{!a & !b ; (!b)[*] ; b}"        # the detour's *-language (one R-word)
+detSERE = f"{R}<>->1"                       # "some R-word matches from here"
+print("detour SERE parses     :", spot.formula(detSERE))
+print("detour SERE == entry&Fb:", equiv(detSERE, "!a & !b & Fb"))   # opaque plug = hand value
