@@ -76,9 +76,14 @@ Later additions (same module):
   the cofinite invariant `FG ψ`, the tail-only `GF φ` argument matters only
   where ψ holds, so `GF φ ∧ FG ψ → GF(φ|ψ) ∧ FG ψ` (e.g.
   `GF(a&b) ∧ FG b → GF a ∧ FG b`); literal dual at Or
-  `FG α ∨ GF β → FG(α|¬β) ∨ GF β`. Care-set aggregates all sibling invariants
-  (`∧ ψ_k` / `¬(∨ β_k)`); φ restricted via `prop_cofactor`, accepted only when
-  strictly smaller. No temporal node added/removed.
+  `FG α ∨ GF β → FG(α|¬β) ∨ GF β`. The invariant SOURCE is not only the literal
+  `FG ψ` (`GF β` at Or): a **strong** until/release that *entails* it counts too —
+  `φ U G(ψ)` on the And side (`φ U Gψ ⟹ FGψ`, any φ), its dual `φ R F(β)` at Or
+  (false only when `¬φ U G(¬β) ⟹ FG¬β`, the same `¬β` co-invariant). Weak `W`/`M`
+  are excluded — their `Gφ`/`G¬φ` branch breaks the eventuality (must-not-fire
+  tested). Care-set aggregates all sibling invariants (`∧ ψ_k` / `¬(∨ β_k)`); φ
+  restricted via `prop_cofactor`, accepted only when strictly smaller. No temporal
+  node added/removed.
 - **W/M/R/U expansion fold** (in `_find_fold_or` / `_find_fold_and`, flagged
   there as independent rules): the full quartet of binary-modal expansion
   laws, each with the construction's strengthened modal body, sound because
