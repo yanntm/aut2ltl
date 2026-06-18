@@ -94,9 +94,11 @@ def emit(root: str, lengths: range = range(2, 5)) -> List[str]:
         "x_laced.ltl": ("Until chains with X-laced arms (every other arm under X)",
                         [(f"uchain_x{n}", chain("U", n, xlace=True)) for n in lengths]
                         + [(f"wchain_x{n}", chain("W", n, xlace=True)) for n in lengths]),
-        "mixed.ltl": ("Alternating-operator chains (W/U, U/R)",
-                      [(f"wu_mix{n}", mixed(["W", "U"], n)) for n in lengths]
-                      + [(f"ur_mix{n}", mixed(["U", "R"], n)) for n in lengths]),
+        # Mixed families need >=3 arms: at n=2 only the first operator is used,
+        # so wu_mix2 == wchain2 / ur_mix2 == uchain2 (a self-duplicate).
+        "mixed.ltl": ("Alternating-operator chains (W/U, U/R) -- length >= 3",
+                      [(f"wu_mix{n}", mixed(["W", "U"], n)) for n in lengths if n >= 3]
+                      + [(f"ur_mix{n}", mixed(["U", "R"], n)) for n in lengths if n >= 3]),
     }
     os.makedirs(root, exist_ok=True)
     written: List[str] = []
