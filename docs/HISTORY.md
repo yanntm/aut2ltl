@@ -1049,3 +1049,35 @@ legacy entry over the 100-formula f2 fixture (0 disagreements, 0 gate failures).
 NOT WIRED: nothing imports `heur/` yet; the live pipeline + survey/r4 gates are
 untouched. Decision: leave unwired for now, let fuzzing measure whether its absence
 costs perf vs the current default before deciding to wire it.
+
+## 2026-06-18 — portfolio/builder.py + simplify_ltl: the `best` recipe takes shape (--use best)
+
+Started the portfolio rework as a NEW assembly file rather than retiring the old one
+in place. `aut2ltl/portfolio/builder.py` holds named "recipes" (good assemblies found
+in exploration) as convenience builders over the translators:
+
+  bls(options)   = as_translator(make_hierarchy_class(options))  -- the cascade
+                   engine lifted, with the cached LTL-definability gate in front.
+  daisy(child)   = fixpoint first(Daisy(self), child) -- recursively peel self-loop
+                   daisies, floor on `child` (the proven probe idiom).
+  best(options)  = Simplify(strength(acceptance(daisy(bls))), "hi") -- the modern
+                   re-expression of the historical Decompose/SlDriven/Decompose graph,
+                   daisy in place of the sl envelope.
+
+`RECIPES` maps recipe names; `build_portfolio` resolves a lone `--use best` to the
+named assembly (recipes are whole assemblies, not ladder rungs). The CLI/survey can
+now run `--use best` and variants head-to-head.
+
+NEW COMPONENT `aut2ltl/simplify_ltl/` (Simplify Translator decorator): forwards to a
+child, simplifies an OK formula (`lo`=own DAG rules, `hi`=+Spot tl_simplifier), NOK
+passes through. Lives outside `ltl/` to respect the dep graph (a Translator must
+import the contract floor, which `ltl/` may not). It GENERALIZES the two inline
+`_simp_f(cand)` calls the historical `Sl`/`SlDriven` ran on their own padded output
+(portfolio/sl.py, sl_driven.py).
+
+SURVEY (--use best vs the default reference, 40-formula corpus): SUCCESS, 0
+regressions, sound (39/40 validated, 1 Spot >32-acc wall). The one `hi` outside
+collapsed the broad small-case padding (movers 17->5; several now SMALLER than
+default). Remaining +138% DAG is essentially ONE formula: G(a->Xb) 6->101, because
+partscc/t2 is not yet wired and it routes to the buchi cascade. NOT the default yet;
+additive via --use best.

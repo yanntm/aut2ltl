@@ -62,6 +62,7 @@ from aut2ltl.bls.bls import bls as _bls
 from .sl import Sl
 from .sl_driven import SlDriven
 from .decompose import Decompose
+from .builder import RECIPES
 
 # The cited-technique vocabulary. KR leaves map to their CascadeTranslator member
 # (lifted to a Translator via as_translator); `sl` is already a Translator. The
@@ -144,12 +145,18 @@ def build_portfolio(
     options: Options, techniques: Optional[Iterable[str]] = None
 ) -> Translator:
     """Assemble a portfolio Translator. `techniques=None` ⇒ the best default;
-    a set/sequence of names ⇒ the cited ladder (cited order = priority, no
-    implicit floor). Raises `ValueError` on an unknown name or a producer-free
-    citation."""
+    a single recipe name from `builder.RECIPES` (e.g. `best`) ⇒ that named assembly;
+    otherwise a set/sequence of technique names ⇒ the cited ladder (cited order =
+    priority, no implicit floor). Raises `ValueError` on an unknown name or a
+    producer-free citation."""
     if techniques is None:
         return _default_portfolio(options)
-    return _from_techniques(options, techniques)
+    techs = list(techniques)
+    # A recipe name (e.g. `--use best`) resolves to a named assembly from builder.py.
+    # Recipes are whole assemblies, not ladder rungs, so they are cited alone.
+    if len(techs) == 1 and techs[0] in RECIPES:
+        return RECIPES[techs[0]](options)
+    return _from_techniques(options, techs)
 
 
 __all__ = ["build_portfolio", "TECHNIQUES", "PRODUCERS", "WRAPPERS"]

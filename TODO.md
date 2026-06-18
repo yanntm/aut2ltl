@@ -48,9 +48,11 @@ sub-assemblies pre-wired.
 - **HOA input to the survey.** `tests/survey.py` feeds LTL strings only; the tool
   accepts HOA files. Extend the survey (and corpus) to HOA inputs, the equiv oracle
   comparing against the source automaton.
-- **`Simplify` Translator decorator (tentative).** A decorator that simplifies a
-  child's LTL output (own DAG rules and/or Spot) instead of each method simplifying;
-  also eases debug traces. Evaluate; likely offer as a wrapping Translator.
+- ~~**`Simplify` Translator decorator.**~~ LANDED as `aut2ltl/simplify_ltl/`
+  (`Simplify(child, level)`, `lo` = own DAG rules, `hi` = + Spot). The `best` recipe
+  wraps one `hi` outside the whole assembly — replacing the per-Translator `_simp_f`
+  the old `Sl`/`SlDriven` ran. Remaining: once `best` is the default, drop the inline
+  `_simp_f` boundary calls the retiring `portfolio/sl*.py` still carry.
 - **Flags manual.** The `--use` / `-O` reference doc the root README points to.
 
 ## Housekeeping
