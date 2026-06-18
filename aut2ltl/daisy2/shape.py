@@ -29,20 +29,19 @@ Stem = Tuple["spot.formula", int]
 
 @dataclass
 class Spoke:
-    """A length-1 detour `h → s → h`: the entry guard (`h → s`), the body guard
-    (`s → s` self-loop, `false` if the spoke has none), the return guard
-    (`s → h`), and the acceptance sets marked on each role **separately** —
-    `entry_acc`, `body_acc`, `ret_acc`. The roles must stay split because a body
-    mark is collected only when the body actually loops, while entry/return marks
-    are collected on every traversal (see algorithm.md §Acceptance)."""
+    """A length-1 detour `h → s → h`. `entry`/`body`/`ret` are the aggregate role
+    guards used to build the move `E_s ∧ X(G_s U R_s)`. `entries`/`rets` keep the
+    link edges **per edge** as `(guard, marks)` — needed for the per-edge `GF`
+    anchor, where only the `i`-marked siblings of a role witness set `i` (see
+    algorithm.md §Acceptance). Under **S3** the body carries no marks, so it needs
+    no per-edge list."""
 
     state: int
     entry: "spot.formula"
     body: "spot.formula"
     ret: "spot.formula"
-    entry_acc: FrozenSet[int]
-    body_acc: FrozenSet[int]
-    ret_acc: FrozenSet[int]
+    entries: List[Tuple["spot.formula", FrozenSet[int]]]
+    rets: List[Tuple["spot.formula", FrozenSet[int]]]
 
 
 def init_scc_states(aut: "spot.twa_graph") -> Set[int]:
@@ -93,29 +92,25 @@ def star_partition(
         if s not in entries:
             return None                      # in C but no direct entry: not a star
         body_g: List["spot.formula"] = []
-        ret_g: List["spot.formula"] = []
-        body_acc: Set[int] = set()
-        ret_acc: Set[int] = set()
+        rets: List[Tuple["spot.formula", FrozenSet[int]]] = []
         for e in aut.out(s):
             if e.dst == s:
+                if set(e.acc.sets()):
+                    return None              # S3: a body self-loop mark is out of scope
                 body_g.append(_f(aut, e.cond))
-                body_acc |= set(e.acc.sets())
             elif e.dst == h:
-                ret_g.append(_f(aut, e.cond))
-                ret_acc |= set(e.acc.sets())
+                rets.append((_f(aut, e.cond), frozenset(e.acc.sets())))
             else:
                 return None                  # edge to a third state: detour > length 1
-        if not ret_g:
+        if not rets:
             return None                      # cannot return to h (not in the SCC)
-        entry_acc: Set[int] = set(a for _, sets in entries[s] for a in sets)
         spokes.append(Spoke(
             state=s,
             entry=_or([g for g, _ in entries[s]]),
             body=_or(body_g),
-            ret=_or(ret_g),
-            entry_acc=frozenset(entry_acc),
-            body_acc=frozenset(body_acc),
-            ret_acc=frozenset(ret_acc),
+            ret=_or([g for g, _ in rets]),
+            entries=entries[s],
+            rets=rets,
         ))
 
     return petals, spokes, stems
