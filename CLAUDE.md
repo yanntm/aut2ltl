@@ -3,13 +3,13 @@
 ## Project layout (nested root package `aut2ltl/`)
 Layering, acyclic: `aut2ltl/contract.py` (LTLResult/Translator floor) +
 `aut2ltl/language.py` ← `aut2ltl/bls` (pure cascade FoSSaCS engine) +
-`aut2ltl/sl` (heuristic engine, ex-`buchi2ltl/`) + `aut2ltl/daisy` (pure
-self-loop peel) + `aut2ltl/decomp` ((de)composition approaches, one isolated
-subpackage each: `scc` / `strength` / `acceptance` / `inv`) ← `aut2ltl/portfolio`
-(combinators: build / decompose / gate / sl_driven) ← `aut2ltl/__main__` +
-`__init__`. Engine-agnostic helpers in `aut2ltl/ltl` (metrics, printers,
-simplify). Tests under `tests/` (`survey*`, `tests/kr`, `tests/sl`,
-`tests/fixtures`).
+`aut2ltl/daisy` (pure self-loop peel) + `aut2ltl/partscc` (single-terminal-SCC
+leaf) + `aut2ltl/heur` (extracted heuristics, e.g. `fuse2`) + `aut2ltl/decomp`
+((de)composition approaches, one isolated subpackage each: `scc` / `strength` /
+`acceptance` / `inv`) ← `aut2ltl/portfolio` (combinators: build / builder recipes)
+← `aut2ltl/__main__` + `__init__`. Engine-agnostic helpers in `aut2ltl/ltl`
+(metrics, printers, simplify). Tests under `tests/` (`survey*`, `tests/kr`,
+`tests/heur`, `tests/fixtures`).
 
 ## Orientation (don't duplicate here — follow the pointers)
 - `README.md` — repo guide / quick start. `STATUS.md` / `TODO.md` — project
@@ -26,11 +26,9 @@ simplify). Tests under `tests/` (`survey*`, `tests/kr`, `tests/sl`,
 - `paper/Automata2LTL.txt` — ground truth for any formula-fidelity question
   (Sec 4.2 + Table 1 + Formulas 3/4/5 ≈ lines 440–1040). LLM summaries have twice
   introduced guard/case errors; the paper text settles disputes.
-- `aut2ltl/sl/` is the separate heuristic engine (backward labeling + f2/t2 SCC
-  heuristics). It is wired into the decompose dispatcher as a sound pre-filter
-  gate — but ONLY through the single seam `aut2ltl/portfolio/heuristic_gate.py`;
-  the kr core operators stay pure and import nothing from `aut2ltl/sl/` (only the
-  contract).
+- The default translator is the `best` recipe in `aut2ltl/portfolio/builder.py`
+  (strength/acceptance decomposition over a daisy peel flooring on the `bls`
+  cascade); `aut2ltl/portfolio/README.md` maps the package. The kr core stays pure.
 
 ## Discipline (mandatory)
 - One commit per file (preference). The exception is a mechanical bulk change —
