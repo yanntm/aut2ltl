@@ -62,25 +62,65 @@ cannot revisit `h` in the middle; since the detour is finite it *must* return (n
 section). It is a *big self-loop*: a self-loop on `h` whose "letter" is a
 finite-word language, not a single symbol.
 
-### Folding a detour: delegate, don't crack it open
+### Folding a detour: delegate to a finite-word labeler
 
 The detour sub-automaton `A↓s_d` — rooted at `s_d`, kept inside `C ∖ {h}`, with
 every return edge `· →[r] h` redirected to a fresh placeholder exit `•` ("control
-is back at the hub") — is very-weak, so a child labels it. The child returns the
-detour's **finite-word language** `R_d`: an opaque `*`-language (a star-free SERE /
-`U`-fragment obligation) that daisychain **never inspects**. This is the
-compositional seam — the daisychain analog of daisy delegating an LTL label to a
-child. All daisychain reads back is `R_d` (the move) and
+is back at the hub") — describes a **finite-word language** `R_d` (every word ends
+by returning to `h`). daisychain hands it to a **finite-word labeler** `Λ_f` and
+gets back an opaque label for `R_d` that it **never inspects** — the compositional
+seam, the daisychain analog of daisy delegating an LTL label to a child:
+
+```
+Λ_f  :  FiniteLanguage → Label_f       -- a translator for finite words (LTL_f / co-safety)
+```
+
+**daisychain depends only on the *finiteness* of `R_d`, not on which `Λ_f` is
+used.** `Λ_f` is a pluggable parameter, exactly as the child `Λ` is for daisy; we
+expect a *family* of `LTL_f` translators (a finite-word daisy, the paper's
+`reach`/`solid`/`dashed` reachability machinery — see next — or others), and the
+construction below is stated against the abstract `Λ_f`. All daisychain itself
+reads back is the move `R_d` and
 
 ```
 M_d  =  ⋃ { B : B marks some edge along the detour }     -- marks collected per traversal
 ```
 
-`R_d` being a *finite-word* language is the load-bearing assumption: the detour
-returns. The genuinely-infinite alternative — *diverge and accept while staying in
-the detour* — is a **different** language contribution, owned by `decomp/scc`, not
-by daisychain (see Soundness §3). So `R_d`'s only requirement here is finiteness;
-there is **no** "detour must avoid certain marks" side condition.
+`R_d` being *finite* is the load-bearing assumption: the detour returns. The
+genuinely-infinite alternative — *diverge and accept while staying in the detour* —
+is a **different** language contribution, owned by `decomp/scc`, not by daisychain
+(see Soundness §3). So `R_d`'s only requirement here is finiteness; there is **no**
+"detour must avoid certain marks" side condition.
+
+### Finite words are the building block (and the `X̃` boundary)
+
+Why a *finite-word* labeler is the right primitive — and not an accident of this
+construction — is visible in the FoSSaCS paper itself (`paper/automata-to-ltl-
+construction.md`). Its whole ω-construction is glued out of **finite-prefix
+reachability** blocks: the core `reach(S,B,β,T,τ)` means
+
+```
+∃ i ≥ 0.  δ(S, w[0..i)) = T  ∧  w[i..] ⊨ τ  ∧  (avoid B on [0..i))
+```
+
+— reach a target over a *finite prefix* `w[0..i)`, the continuation carried in the
+suffix obligation `τ`; the base case is literally a finite until `(¬β) U τ`. That
+is "build infinite words by parts": each part is a finite reachability obligation,
+the next part is `τ`. A daisychain detour is exactly such a part —
+`R_d` reaching `h`, with `Φ` (the hub continuation) playing the role of `τ` — which
+is why `{R_d} ↦ Φ` is the natural seam.
+
+The one subtlety a finite-word labeler must respect: a finite word has a **real
+last position**, where `X` is *not* self-dual. `X φ` requires `|w| > 1`, so at the
+end `X true ≡ false`, **not** `true` (the identity the infinite-word construction
+leans on). The fix is the **weak next** `X̃ ψ := ¬X¬ψ`, true at the last position
+and agreeing with `X` elsewhere; the paper's Remark 2 / §10 needs it in exactly one
+place — `wsolid` (Formula 4), the *safety* dual that reasons all the way to the
+end. For daisychain this is precisely the detour↔hub **handoff**: inside `R_d` the
+labeler uses `X̃` at the return edge, and the seam `{R_d} ↦ Φ` reinterprets "end of
+the detour word" as "control passes to the infinite continuation `Φ`" (strong `X`
+again). Keeping the two regimes — finite body, infinite tail — separated at that
+seam is what makes the composition clean.
 
 ## The label
 
@@ -206,5 +246,9 @@ blob. (The `GF` conjunct is implied here and vanishes.)
 As with daisy: closing the open recursion with a fixpoint `Λ*` and first-fit
 dispatch, memoization by state for DAG sharing, the split of labour with
 `decomp/scc`, and SCC-iteration order belong to the assembly that wires the child,
-not to this local production. daisychain computes one SCC's label from its hub, its
-petals, its detours (opaque `*`-language children), and its stem children.
+not to this local production. **The finite-word labeler `Λ_f` is likewise out of
+scope** — daisychain fixes its *contract* (label a finite-word detour language) and
+leans only on finiteness; *which* `LTL_f` translator implements it (a finite-word
+daisy, the paper's reachability machinery, …) is a separate, pluggable family.
+daisychain computes one SCC's label from its hub, its petals, its detours (opaque
+finite-word labels), and its stem children.
