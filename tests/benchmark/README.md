@@ -8,8 +8,10 @@ where `best` wins/loses at scale before promoting it to the default.
 It **reuses the survey engine**: `tests/survey.py` runs `python3 -m aut2ltl` per input
 (routing HOA vs LTL by content, `--use <recipe>`, strict per-input budget, dense CSV;
 its summary separates *what aut2ltl answered* from *what Spot could verify*), and
-`tests/survey_diff.py` diffs two CSVs by DAG/tree size + equiv transitions. The bench
-adds the *inputs*, the A/B framing, and the dedup key around that engine.
+`tests/survey_diff.py` keys two CSVs on the input column, reports the key-set overlap
+(absent-left / absent-right / common + answered counts), then diffs DAG/tree size +
+equiv transitions **on the common fragment**. The bench adds the *inputs*, the A/B
+framing, and the dedup key around that engine.
 
 ## Running
 
@@ -34,15 +36,22 @@ Generators live *outside* `inputs/` and emit committed files into it:
 - **`inputs/chains/`** — scalable W/U/R chains with optional `X`-lacing and W-U/U-R
   mixes, over non-trivial arms (`patterns.py --emit`).
 - **`inputs/kinska/`** — 105 Büchi automata (HOA), flattened + deduped from the 125
-  under `tests/samples/kinska` (`collect_kinska.py`); many are not LTL-definable.
+  under `tests/samples/kinska` (`collect_kinska.py`), AP-renamed; many are not
+  LTL-definable.
+- **`inputs/fixtures/`** — the dev-time fixture corpus (`tests/fixtures/*.py` formula
+  lists + 3 HOA), one `.ltl` per source list, AP-normalized and cumulatively deduped
+  against the rest of the tree (`collect_fixtures.py`).
 
 ## Tools
 
 - **`patterns.py`** — chain-family generator (`--emit DIR`).
 - **`from_survey.py`** — mirror the survey corpus into `inputs/core/`.
-- **`collect_kinska.py`** — import + dedup Kinská HOA into `inputs/kinska/`.
-- **`normalize.py`** — AP-canonical NAME form (the dedup key): renames APs to `a,b,c…`
-  by first occurrence and NOTHING else (no simplification/reordering). LTL + HOA.
+- **`collect_kinska.py`** — import + dedup Kinská HOA into `inputs/kinska/`, AP-renamed.
+- **`collect_fixtures.py`** — port the dev fixtures (`tests/fixtures`) into
+  `inputs/fixtures/`, one `.ltl` per source list (+ the 3 HOA), AP-normalized on store.
+- **`normalize.py`** — AP-canonical NAME form: the dedup key, and the basic rename the
+  generators APPLY to every emitted example — renames APs to `a,b,c…` by first
+  occurrence and NOTHING else (no simplification/reordering). LTL + HOA.
   `--dedup PATHS...` reports duplicate groups.
 
 ## Plan (phased)
