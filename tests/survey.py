@@ -195,9 +195,13 @@ def run_build(formula: str, use: Optional[str] = None,
     except subprocess.TimeoutExpired:
         return {"status": f"BUILD_TIMEOUT>{timeout}s"}
     wall_s = time.monotonic() - t0
-    # `timeout` reports 124 (SIGINT-killed at the budget) or 137 (SIGKILL after
-    # the grace) — a construction overrun, not a tool crash.
-    if proc.returncode in (124, 137):
+    # A run that REACHED the budget is a timeout, not a crash — whatever the exit
+    # code. `timeout` reports 124 (SIGINT at the budget) / 137 (SIGKILL after the
+    # grace), but the tool's own SIGINT handler (aut2ltl/proc.py reaps GAP, then
+    # re-raises) can exit with another code; keying on wall time catches that
+    # uniformly. A genuine crash exits FAST (wall_s < timeout) and is still
+    # reported as CRASH below.
+    if proc.returncode in (124, 137) or wall_s >= timeout:
         return {"status": f"BUILD_TIMEOUT>{timeout}s", "build_s": f"{wall_s:.3f}"}
     stdout = (proc.stdout or "").strip()
     stderr = proc.stderr or ""
