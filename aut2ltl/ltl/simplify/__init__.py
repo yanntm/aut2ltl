@@ -1,8 +1,8 @@
 """
-kr/simplify — generic LTL simplification rules over spot.formula DAGs.
+aut2ltl.ltl.simplify — generic LTL simplification rules over spot.formula DAGs.
 
-Independent of the kr/ decomposition; see README.md for the rule catalog,
-lineage and soundness notes.
+Independent of the construction; see algorithm.md for the construction and
+soundness spec, README.md for the module map.
 """
 
 import os as _os

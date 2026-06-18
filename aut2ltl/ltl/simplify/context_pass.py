@@ -2,8 +2,8 @@
 context_pass.py — Rule 1: context-carrying boolean-skeleton simplification.
 
 Adapts the seenPos/seenNeg/dominant mechanics of the user's Java
-`Simplifier.simplifyBoolean` to spot.formula DAGs (see kr/simplify/README.md
-for the rule statement and soundness note).
+`Simplifier.simplifyBoolean` to spot.formula DAGs (see algorithm.md for the
+rule statement and soundness note).
 
 Core ideas:
 - Walk the And/Or skeleton top-down carrying (pos, neg) frozensets of
