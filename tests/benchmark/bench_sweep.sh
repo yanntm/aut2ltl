@@ -40,7 +40,7 @@ for label in default best; do
   KR_SURVEY_TIMEOUT="$TO" KR_SURVEY_CSV="$OUTDIR/$label.csv" \
     python3 tests/survey.py "${use_args[@]}" "${FILES[@]}" \
     > "$OUTDIR/$label.txt" 2>"$OUTDIR/$label.sweep.log"
-  echo "--- $label ---"; tail -4 "$OUTDIR/$label.txt"
+  echo "--- $label ---"; tail -6 "$OUTDIR/$label.txt"
 done
 
 echo
