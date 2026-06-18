@@ -1238,3 +1238,34 @@ Grew tests/benchmark from 164 -> 373 inputs and made the stored corpus uniform.
   overlap (absent-left/right, common, answered counts), diffs the common fragment.
 - Sweep at 15s clean: 366/373 answered, 0 not-equivalent, 0 regressions vs the prior
   reference on the common fragment; reference baseline refreshed.
+
+## 2026-06-18 — daisy2 (length-1 star peel) + best_daisy2 becomes the default
+
+LANDED a new translator `aut2ltl/daisy2/` generalizing `daisy` by one level: it
+peels a whole **length-1 star SCC** (a hub with petal self-loops, stem exits, and
+one-hop spokes — each spoke a one-state daisy reached by `E_s ∧ X(G_s U R_s)`,
+a strong `U`). The move-level closed form is not yet solved, so daisy2 emits a
+candidate and adopts it only if a Spot equivalence oracle confirms it (the
+`partscc` gate pattern) — always sound, currently **gate-rescued**. Design lives
+beside the code in `aut2ltl/daisy2/algorithm.md` (moved there from
+`daisychain/algorithm2.md`); the general multi-state design stays in
+`daisychain/algorithm.md`.
+
+Construction notes worked out this session (all in daisy2/algorithm.md):
+- **S1/S2** drop FVS (hub given) and restrict detours to length 1 (the star).
+- **S3** (keystone): acceptance marks only on the petals/links, never on the q1
+  self-loop — checkable; makes revisit-of-hub a *theorem* (looping q1 collects
+  nothing ⇒ non-accepting ⇒ must return) and makes acceptance a clean **per-edge
+  `GF` anchor** at the move boundary (Target A, DONE).
+- Open nut: the safety `StaySafe` is still the unsound flat-`G`; the
+  position-0-anchored `Φ_stay` fixpoint (the hub anchor) is the single missing
+  piece — it would also fix the acceptance phase case `GF(a&Xb)`.
+
+PORTFOLIO: `best_daisy2` = `best` with the **daisy/daisy2 peel pair** (`daisy_pair`)
+in place of `daisy`; wired `best_inv` (the global-invariant `G(Σ)` layer, which was
+in NO recipe before). On the 373-case benchmark (core/chains/fixtures/kinska) all
+recipes are sound (0 non-equivalent); best_daisy2 is −3.6% DAG vs best and turns
+`!a M G(b|X(b R a))` from a 3804-node UNVERIFIED blob into a verified 16-node
+formula. best_inv is benchmark-neutral on this corpus (~0.03%) but kept as an A/B.
+**best_daisy2 is now the no-`--use` default** (`build_portfolio`); reference
+baseline regenerated (DAG 538 → 414 on the 40-survey).
