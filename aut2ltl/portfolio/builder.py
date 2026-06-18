@@ -30,6 +30,7 @@ from aut2ltl.first_success import first_success
 from aut2ltl.bls.aut2cas import as_translator
 from aut2ltl.bls.hierarchy_class import make_hierarchy_class
 from aut2ltl.daisy import Daisy
+from aut2ltl.partscc import PartScc
 from aut2ltl.decomp.acceptance import AccDecompose
 from aut2ltl.decomp.strength import StrengthDecompose
 from aut2ltl.simplify_ltl import Simplify
@@ -60,19 +61,27 @@ def daisy(child: Translator) -> Translator:
     return leaf
 
 
+def core(options: Optional[Options] = None) -> Translator:
+    """The non-decomposed core floor: try `partscc` (label a single terminal SCC —
+    exactly what a daisy peel hands an exit target), else fall to the `bls` cascade.
+    `partscc` is cheap and tight where it fires (it retires the sl `t2` heuristic);
+    `bls` is the always-answers floor."""
+    return first_success([PartScc(), bls(options)], name="core")
+
+
 def best(options: Optional[Options] = None) -> Translator:
-    """The shipped default assembly: `strength(acceptance(daisy(bls)))`.
+    """The shipped default assembly: `strength(acceptance(daisy(core)))`.
 
     Splits the language by strength (∨ of weak/terminal/strong), then each part by
     acceptance conjunct (∧, on the deterministic form), and on each atom peels
-    self-loop daisies before handing the residual core to the bls cascade. The
-    modern re-expression of the historical `Decompose / SlDriven / Decompose` graph,
-    with `daisy` in place of the sl envelope.
+    self-loop daisies before handing the residual core to `core` (partscc, else the
+    bls cascade). The modern re-expression of the historical `Decompose / SlDriven /
+    Decompose` graph, with `daisy` in place of the sl envelope and `partscc` for `t2`.
 
     One `hi` simplification sits OUTSIDE the whole assembly (our DAG combinators are
     size-indifferent, so a single final pass suffices — it replaces the per-Translator
     `_simp_f` the old `Sl`/`SlDriven` ran on their own output)."""
-    return Simplify(StrengthDecompose(AccDecompose(daisy(bls(options)))), "hi")
+    return Simplify(StrengthDecompose(AccDecompose(daisy(core(options)))), "hi")
 
 
 # Public recipe names → builders. `build_portfolio` resolves `--use <name>` here.
@@ -81,4 +90,4 @@ RECIPES: Dict[str, Callable[[Optional[Options]], Translator]] = {
 }
 
 
-__all__ = ["bls", "daisy", "best", "RECIPES"]
+__all__ = ["bls", "daisy", "core", "best", "RECIPES"]
