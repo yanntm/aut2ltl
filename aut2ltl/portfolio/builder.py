@@ -34,6 +34,7 @@ from aut2ltl.daisy2 import Daisy2
 from aut2ltl.partscc import PartScc
 from aut2ltl.decomp.acceptance import AccDecompose
 from aut2ltl.decomp.strength import StrengthDecompose
+from aut2ltl.decomp.inv import Invariant
 from aut2ltl.simplify_ltl import Simplify
 
 
@@ -114,12 +115,24 @@ def best_daisy2(options: Optional[Options] = None) -> Translator:
         StrengthDecompose(AccDecompose(daisy_pair(core(options)))), "hi")
 
 
+def best_inv(options: Optional[Options] = None) -> Translator:
+    """`best_daisy2` with the invariant layer in the loop: factor the global safety
+    invariant `G(Σ)` out front (`Invariant`), then strength ∘ acceptance
+    decomposition over the daisy/daisy2 peel pair flooring on `core`. The strip
+    hands a simpler residual language to the rest of the assembly; sound for the one
+    application (`L(A) = L(strip(A,Σ)) ∩ L(GΣ)`). A/B variant to see what the
+    invariant layer buys on top of daisy2."""
+    return Simplify(
+        Invariant(StrengthDecompose(AccDecompose(daisy_pair(core(options))))), "hi")
+
+
 # Public recipe names → builders. `build_portfolio` resolves `--use <name>` here.
 RECIPES: Dict[str, Callable[[Optional[Options]], Translator]] = {
     "best": best,
     "best_daisy2": best_daisy2,
+    "best_inv": best_inv,
 }
 
 
 __all__ = ["bls", "daisy", "daisy_pair", "core", "best", "best_daisy2",
-           "RECIPES"]
+           "best_inv", "RECIPES"]
