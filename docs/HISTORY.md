@@ -1128,3 +1128,27 @@ inner-`hi` experiment that reached the same 7 was backed out; the fix belongs in
 rule). best now ties-or-beats the default on every corpus formula: −49.6% DAG, 40/40
 sound, 0 regressions, 0 size-losses (survey scratch tests/logs/best_rulefix.csv, WIP).
 Gates: gffg 12/12, fold CLEAN(42), random-equiv fuzz 500/500 equivalent, R4 CLEAN.
+
+## 2026-06-18 — simplify: algorithm.md spec, README slim, producer-first context order
+
+Documentation + one behaviour tweak, all on the simplify package (`aut2ltl/ltl/simplify`):
+
+- **`algorithm.md`** (new) — a decomp-style construction/soundness spec for the four-pass
+  simplifier (context / now-eval / factor / fold), written by reading each module back,
+  not from the README: the root-equivalence soundness model, every rule with its
+  soundness hook, the pipeline pseudocode, termination-by-orientation, O(DAG) cost.
+- **`README.md`** slimmed ~195→~60 lines to a source map + usage (mirrors `bls/README`);
+  spec delegated to algorithm.md. Docstring cross-refs repointed (and the stale
+  `kr/simplify` path fixed).
+- **`context_pass.py`** — children are now visited **now-fact producers first**
+  (`_open_rank`, polarity-aware: G/R/M at And, F/U/W at Or, strong before weak). The
+  one-way opening (sound, anti-circular) made the result depend on canonical child
+  order; producer-first maximises how many siblings each opening reaches. Free (Spot
+  re-canonicalises the rebuilt node; tiny operand lists). Fuzz: marginally more
+  reduction, ALL EQUIVALENT; survey corpus DAG unchanged (538), R4 CLEAN.
+
+WHY: reviewing the simplify code while writing the spec surfaced the order-sensitivity
+of the one-way now-fact opening — sound but order-dependent in completeness. The
+producer-first sort is the cheap, principled answer (strong facts reach the weak
+siblings that consume them); no soundness change, the fixed-order invariant holds for
+any order.
