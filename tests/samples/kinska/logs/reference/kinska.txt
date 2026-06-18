@@ -1,5 +1,6 @@
 survey: 165 formulas  (--use default)
-answers 99/165: validated 88, spot_timeout 0, unverified 11, spot_err 0, false 0
-declined 0, not_ltl 63, build_timeout 3, build_crash 0
-totals over answers: DAG=13692 temporals=2360 build=28.685s
+aut2ltl answered: 162/165  (99 LTL built + 63 not-LTL)   |   Failures: 3  (timeout 3, crash 0, declined 0)
+Spot check of the 99 LTL built: 88 EQUIVALENT, 11 not checked (formula too large)
+NOT EQUIVALENT: 0   (clean)
+totals over LTL built: DAG=13531 temporals=2325 build=19.932s
 SUCCESS
