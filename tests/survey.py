@@ -368,9 +368,10 @@ def _report(rows: List[Dict[str, object]], use: Optional[str]) -> List[str]:
     not_ltl = g("not_ltl", 0)
     produced = ltl_built + not_ltl
     our_fail = g("build_timeout", 0) + g("build_crash", 0) + g("declined", 0)
-    # Spot post-validation of the LTL we built. "Could not check" (too big / Spot
-    # timeout / Spot refused >32 acc) is a VERIFIER limit, not a doubt on our
-    # output. The only line that means we are WRONG is NOT EQUIVALENT.
+    # Spot post-validation of the LTL we built. The three not-checked cases
+    # (size-skipped / Spot timeout / Spot refused >32 acc) share ONE root cause —
+    # the formula we built is very large — so they are grouped as "too large", not
+    # blamed on Spot. The only line that means we are WRONG is NOT EQUIVALENT.
     equivalent = g("validated", 0)
     not_checked = g("unverified", 0) + g("spot_timeout", 0) + g("spot_err", 0)
     wrong = g("false", 0)
@@ -379,15 +380,13 @@ def _report(rows: List[Dict[str, object]], use: Optional[str]) -> List[str]:
     verdict = "FAIL" if wrong else "SUCCESS"
     return [
         f"survey: {len(rows)} formulas  (--use {label})",
-        f"produced a result: {produced}/{len(rows)}  "
+        f"aut2ltl answered: {produced}/{len(rows)}  "
         f"({ltl_built} LTL built + {not_ltl} not-LTL)   |   "
-        f"our shortfalls: {our_fail}  (timeout {g('build_timeout', 0)}, "
+        f"Failures: {our_fail}  (timeout {g('build_timeout', 0)}, "
         f"crash {g('build_crash', 0)}, declined {g('declined', 0)})",
         f"Spot check of the {ltl_built} LTL built: {equivalent} EQUIVALENT, "
-        f"{not_checked} not checked by Spot "
-        f"(too-big {g('unverified', 0)} / Spot-timeout {g('spot_timeout', 0)} / "
-        f"Spot-refused {g('spot_err', 0)}) — verifier limits, not result doubts",
-        f"NOT EQUIVALENT (wrong answers): {wrong}"
+        f"{not_checked} not checked (formula too large)",
+        f"NOT EQUIVALENT: {wrong}"
         + ("   *** INVESTIGATE — see FALSE rows in the CSV ***" if wrong else "   (clean)"),
         f"totals over LTL built: DAG={dag} temporals={temp} build={build:.3f}s",
         verdict,
