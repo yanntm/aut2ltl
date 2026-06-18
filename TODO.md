@@ -21,7 +21,9 @@ Remaining, roughly in order:
 - **Promote `best` to the actual default.** Replace the old `Decompose / SlDriven /
   Decompose` graph (`portfolio/__init__.py` `reconstruct_decomposed`,
   `build.py::_default_portfolio`) with `builder.best`, so the no-`--use` path IS the
-  recipe.
+  recipe. The benchmark gives the strongest case yet: `best` is not just smaller but
+  **correct** where the legacy default is WRONG — a verified `FALSE` (non-equivalent)
+  on a strong-until chain that `best` reconstructs soundly (see HISTORY 2026-06-18).
 - **Retire the old portfolio contents** once `best` is the default and nothing imports
   them: `portfolio/decompose.py` (`Decompose`), `portfolio/sl.py` (`Sl`),
   `portfolio/sl_driven.py` (`SlDriven`), `portfolio/options.py` (`SL_*`), and the old
@@ -56,9 +58,13 @@ throwaway scratch, still WIP; promote to `tests/logs/reference/<date>/` only onc
 - **Output size at scale (the live research front).** The construction is cheap; the
   flat form explodes and Spot hits its 32-acceptance-set wall. Representation/
   verification, not fidelity. Analysis: `docs/dag_folding.md`.
-- **HOA input to the survey.** `tests/survey.py` feeds LTL strings only; the tool
-  accepts HOA files. Extend the survey (and corpus) to HOA inputs, the equiv oracle
-  comparing against the source automaton.
+- **Benchmark sub-project (`tests/benchmark/`).** A size bench, `default` vs `best`,
+  reusing the survey engine over file-based `inputs/` (the survey corpus + W/U/R chains
+  + 105 Kinská HOA; survey already routes HOA, oracle vs the source automaton — the old
+  "HOA input to the survey" item, now done). Collection done for those three categories.
+  Next: more categories, a *very* progressive `randltl` ladder (the construction is
+  multiply-exponential — lean on the per-input timeout), and curation (dedup via
+  `normalize.py`, a representative classified set). Reference: `tests/benchmark/logs/reference/`.
 - **Flags manual.** The `--use` / `-O` reference doc the root README points to (add
   the `--use best` recipe and the recipe-vs-leaf distinction).
 
