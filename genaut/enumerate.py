@@ -9,14 +9,19 @@ Slot model (full, symmetric; q0 is the initial state):
   general (a marked `a` plus an unmarked `!a` self-loop is a distinct automaton;
   `a`-marked + `!a`-marked = `1`-marked, so parallel edges are covered too).
 
-Pipeline (generation only — dedup is a later, separate step):
+Pipeline:
   build each automaton -> ONE spot postprocess(Small, Generic family) pass ->
-  append the result to a single multi-automaton HOA stream.
+  drop byte-identical results (md5, first generator-id wins) -> write the rest
+  one HOA per file. 65536 combos collapse to 1845 distinct files.
+
+Each surviving file keeps its GENERATOR ID in the name (aut_<index>.hoa), so the
+exact raw automaton is reproducible from the index alone via `aut_at(index, ...)`
+(see genaut/probe_post.py).
 
 Usage:
   python3 genaut/enumerate.py [LIMIT]      # LIMIT: smoke-test the first N combos
 Output:
-  genaut/raw/aut_NNNNN.hoa   (one HOA automaton per generated case)
+  genaut/raw/aut_NNNNN.hoa   (one HOA automaton per surviving case)
 """
 from __future__ import annotations
 
@@ -43,6 +48,24 @@ SLOTS: List[Tuple[int, int, bool]] = [
     for mark in (False, True)
 ]
 
+# Total raw combos in the enumeration (the generator-id space): 4**8 = 65536.
+NUM_COMBOS: int = len(GUARDS) ** len(SLOTS)
+
+
+def combo_at(index: int) -> Tuple[str, ...]:
+    """The length-8 guard tuple at generator position `index` — the same order
+    the main loop visits (itertools.product over GUARDS, rightmost slot fastest).
+    The inverse of "which combo produced aut_<index>.hoa"."""
+    if not 0 <= index < NUM_COMBOS:
+        raise IndexError(f"index {index} out of range [0, {NUM_COMBOS})")
+    return next(itertools.islice(
+        itertools.product(GUARDS, repeat=len(SLOTS)), index, index + 1))
+
+
+def aut_at(index: int, bdict: "spot.bdd_dict") -> "spot.twa_graph":
+    """Rebuild the RAW automaton (pre-postprocess) for generator id `index`."""
+    return build_aut(combo_at(index), bdict)
+
 
 def build_aut(combo: Tuple[str, ...], bdict: "spot.bdd_dict") -> "spot.twa_graph":
     """Build one raw TGBA from a length-8 tuple of guard labels (one per slot)."""
@@ -63,18 +86,20 @@ def build_aut(combo: Tuple[str, ...], bdict: "spot.bdd_dict") -> "spot.twa_graph
     return aut
 
 
-def make_postprocessor() -> "spot.postprocessor":
-    p = spot.postprocessor()
-    p.set_type(spot.postprocessor.Generic)   # keep the acceptance family
-    p.set_pref(spot.postprocessor.Small)
-    p.set_level(spot.postprocessor.High)
-    return p
+# The single reduction pass, via the same spot.postprocess string convenience the
+# tool uses for input cleanup (aut2ltl/language.py::_clean) — (type, level, pref).
+# Generic keeps the acceptance family; Small is the structural reducer (NOT the
+# `deterministic` pref, so universality is not decided — see README).
+POST_ARGS = ("generic", "high", "small")
+
+
+def reduce_aut(aut: "spot.twa_graph") -> "spot.twa_graph":
+    return spot.postprocess(aut, *POST_ARGS)
 
 
 def main(limit: Optional[int]) -> None:
     os.makedirs(OUT_DIR, exist_ok=True)
     bdict = spot.make_bdd_dict()
-    post = make_postprocessor()
 
     combos = itertools.product(GUARDS, repeat=len(SLOTS))
     seen: Set[str] = set()                 # md5 of every distinct exported HOA
@@ -84,7 +109,7 @@ def main(limit: Optional[int]) -> None:
         if limit is not None and i >= limit:
             break
         total += 1
-        content = post.run(build_aut(combo, bdict)).to_str("hoa") + "\n"
+        content = reduce_aut(build_aut(combo, bdict)).to_str("hoa") + "\n"
         digest = hashlib.md5(content.encode()).hexdigest()
         if digest in seen:                 # byte-identical to an earlier id -> drop
             continue
