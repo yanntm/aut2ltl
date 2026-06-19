@@ -6,6 +6,14 @@ and the `kr → bls` engine reorg all landed — see HISTORY 2026-06-17.)
 
 ## Portfolio / combinators
 
+- **daisystar: prove the `LEAVE` closed form (retire the gate).** `daisystar` (the
+  rejecting-star reachability peel, now in the `daisy_trio`/`cakeds` default) emits
+  `STAY∞ = false` soundly, but its surviving `LEAVE` reuses daisy2's flat
+  move-level `stay` region, so it is **gate-rescued** (Spot equivalence) on the
+  safety prefix — same open form as daisy2 Target B. Two follow-ups: (a) the closed
+  `stay`; (b) decide whether `daisy2` + `daisystar` should **fuse** into one
+  star peel dispatching on the rejecting/accepting SCC tag (left open in
+  `aut2ltl/daisystar/algorithm.md` pending the coverage overlap the survey now shows).
 - **Benchmark `best_inv_loop` (inv per-descent).** The `recurse` brick now lets the
   invariant strip ride every descent level (`daisy_pair_inv`); A/B it vs
   `best_daisy2` on the full benchmark — total size, and especially whether
