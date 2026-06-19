@@ -1436,3 +1436,19 @@ Also de-referenced the current-default recipe NAME from README / portfolio/READM
 CLAUDE.md / STATUS CLI section — the single source of truth is the
 `RECIPES["default"]` pointer; docs that named the winner went stale (best_daisy2 →
 cake → cakeds).
+
+## 2026-06-19 — daisystardet peer + cakedsdet default (LANDED)
+
+Promoted the deterministic anchored read-off `DaisystarDet` from a sub-module of
+`daisystar` to its own peer package `aut2ltl/daisystardet/` (daisystardet.py +
+shape.py + __init__.py + algorithm.md, the spec history-free; reroot reused from
+daisy, flat-LEAVE attribution corrected daisy->daisystar). Re-pointed
+`RECIPES["default"]` from `cakeds` to `cakedsdet`. WHY: over the `cakeds`
+reference the deterministic read-off is a clean Pareto step — survey -3.3% DAG (0
+reg), 373-case benchmark 9 equivalence fixes / DAG -22.6% (counting_buchi
+2150->13, several -90%+ cases), kinska -15.9% DAG (0 reg); the lone kinska
+NOT_LTL<->BUILD_TIMEOUT diff is 15s-cap jitter, not a read-off effect. Audit
+CLEAN, survey SUCCESS. Regenerated the three reference baselines (survey /
+benchmark / kinska) under the new default. Also decoupled
+tests/test_build_portfolio.py from the recipe name (asserts the "default" alias,
+not a hardcoded name) so future adoptions touch only RECIPES.
