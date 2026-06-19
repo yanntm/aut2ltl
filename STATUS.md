@@ -5,32 +5,23 @@ Project-level snapshot. For the **engine** state read `aut2ltl/bls/STATUS.md`
 
 ## What works
 
-The FoSSaCS'22 automaton→LTL construction is implemented end-to-end and
-semantically validated. The portfolio front end is the **`cakeds` recipe** (the
-no-`--use` default since 2026-06-19): the `cake` assembly with the rejecting-star
-**`daisystar`** peel woven into the peel layer (the `daisy → daisy2 → daisystar`
-trio, see `aut2ltl/daisystar/algorithm.md`). `daisystar` peels a *rejecting*
-length-1 star (Spot-tagged) that exits to a sink — the **reachability dual** of
-`daisy2`: no run staying in the SCC accepts, so `STAY∞ = false` by construction and
-only the `LEAVE` least-fixpoint remains (it sidesteps daisy2's open `Φ_stay` safety
-form entirely). On the 373-case benchmark `cakeds` is a clean Pareto step over
-`cake`: **0 regressions, 10 equivalence fixes** (size-explosion / timeout cases now
-built and Spot-verified), **DAG −78.5%** (e.g. `F(a & Xb)` 181→13, `(a U b) M XF!a`
-23123→18). The prior **`cake`** recipe (`--use cake`) is a **shy `best_of`** over the
-`best_daisy2` incumbent (`Simplify(strength(acceptance(daisy_pair(core))), "hi")`,
-`core = first(partscc, bls)` — the one cascade) and one CHEAP every-technique rich
-variant (`Invariant ∘ Strength ∘ Scc ∘ Invariant ∘ Acc ∘ daisy_pair_inv`) flooring
-on `partscc` only, displacing the incumbent only on a significant form win.
-`best_daisy2` (`--use best_daisy2`) remains the prior default — the daisy/daisy2 peel
-pair (self-loop daisy, then the length-1 star `daisy2`, see
-`aut2ltl/daisy2/algorithm.md`) flooring on the `bls` cascade. It sweeps the
-Manna–Pnueli class ladder, every probed case verifying equiv=True; on the 373-case
-benchmark it is sound (0 non-equivalent) and −3.6% DAG vs the prior `best`, even
-turning one 3804-node unverifiable answer into a verified 16-node one. `--use best`
-is the prior daisy-only assembly; `--use best_inv` adds the global-invariant layer
-(benchmark-neutral here). daisy2 itself is still **gate-rescued** on the safety
-half (a Spot equivalence gate; see its algorithm.md). Engine internals and the
-size profile live in `aut2ltl/bls/STATUS.md`.
+The FoSSaCS'22 automaton→LTL construction is implemented end-to-end and is sound
+on the survey gate (0 verified non-equivalent across the curated corpus, the
+373-case benchmark, and the Kinská set).
+
+The portfolio default (`RECIPES["default"]`) is the **`cakedsdet`** recipe: the
+`cakeds` assembly with the deterministic anchored read-off **`daisystardet`** (peer
+package `aut2ltl/daisystardet/`, see its `algorithm.md`) ahead of the flat
+`daisystar` in the peel trio. The peel layer is `daisy` (self-loop) → `daisy2`
+(length-1 recurrence star) → `daisystardet`/`daisystar` (rejecting star), each
+delegating exits to a child and flooring on the `bls` cascade or the `partscc`
+leaf. `daisystardet` peels a *rejecting* SCC with a **deterministic L-partition**
+and emits an **exact, flat, fixpoint-free** label — `partscc`'s transition law run
+`U`-to-an-exit (the reachability dual of `partscc`, not restricted to length-1
+stars); the flat `daisystar` is the fallback for a *non-deterministic* rejecting
+star. Alternate assemblies are reachable by name under `--use` (the `RECIPES`
+registry); the kr cascade core stays pure. Engine internals and the size profile
+live in `aut2ltl/bls/STATUS.md`.
 
 ## Combinator algebra (2026-06-19)
 
