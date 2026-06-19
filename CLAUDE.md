@@ -85,6 +85,10 @@ leaf) + `aut2ltl/heur` (extracted heuristics, e.g. `fuse2`) + `aut2ltl/decomp`
   can't verify is NOT our failure.
 - **Present intermediate results.** Stop and show results after each step; do not
   start a new direction without user validation.
+- **Trust the scripts.** Existing scripts the user points me at and tells me to
+  run are meant to be run, not to be read. Trust that the default flags do the
+  job, at most `head` the script to see its pydoc. Avoid poisoning context by
+  reading code we are not editing.
 - **Type the signatures.** Add explicit Python type annotations (params + return)
   on new/touched functions — the user comes from Java/C++. Use `typing`
   (`Optional`/`Callable`/`Protocol`/forward-ref strings), `TYPE_CHECKING` for
