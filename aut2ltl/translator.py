@@ -32,3 +32,23 @@ class Translator(Protocol):
     """
 
     def __call__(self, lang: "Language") -> "LTLResult": ...
+
+
+@runtime_checkable
+class Decorator(Protocol):
+    """The second sort of the combinator algebra: a `Translator -> Translator` map.
+
+    A Decorator wraps a child translator into a new one — `StrengthDecompose`,
+    `AccDecompose`, `Invariant`, `daisy_pair`, and a `recurse` step are all
+    Decorators (each takes its recursion/floor target as its argument). Under
+    composition (`∘`, `aut2ltl.compose.compose`) they form a monoid whose unit is
+    `identity` — distinct from the `decline` *terminal* of the choice combinators
+    (`first_success` / `best_of`); a terminal is an element, an identity is a map.
+
+    Contract invariant (inherited, NOT type-checkable): a Decorator preserves the
+    Translator faithful-or-NOK invariant — it returns a translator that is again
+    language-faithful-or-declined — so any composition of Decorators stays sound by
+    construction.
+    """
+
+    def __call__(self, child: "Translator") -> "Translator": ...

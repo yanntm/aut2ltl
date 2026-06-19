@@ -1308,3 +1308,13 @@ comparator makes an embedded score redundant, and deriving size in the comparato
 (dag_node_count(.formula)) keeps the contract floor free of the metric layer. README
 extended: intent, a comparator catalog table, and how to configure/write another.
 Still unwired. tests/test_best_of.py green.
+
+## 2026-06-19 — combinator algebra, Step A: vocabulary (identity, compose, Decorator)
+
+Plan enchanted-dreaming-hopper, step A of D. Named the decorator sort of the
+combinator algebra: `Decorator` Protocol in aut2ltl/translator.py (Translator ->
+Translator, beside Translator), and aut2ltl/compose.py with `identity` (the ∘ unit,
+distinct from the decline terminal) + `compose(*decorators)` (outermost-first,
+compose(f,g,h)(x)=f(g(h(x))), empty=identity). Free named combinators only — no DSL,
+no operators. Additive (nothing imports compose yet). tests/test_combinators.py green
+(identity neutrality, compose order/assoc/unit); r4 audit CLEAN.
