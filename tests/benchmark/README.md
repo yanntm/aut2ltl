@@ -53,6 +53,12 @@ Generators live *outside* `inputs/` and emit committed files into it:
   generators APPLY to every emitted example — renames APs to `a,b,c…` by first
   occurrence and NOTHING else (no simplification/reordering). LTL + HOA.
   `--dedup PATHS...` reports duplicate groups.
+- **`polarity.py`** — a further dedup step that homogenises atomic-proposition
+  *polarity*: each AP is complemented so its first occurrence (left-to-right reading
+  order) is positive, collapsing sign-twin inputs that differ only by which
+  propositions are negated. For example `!a X F a` and `a X F !a` both fold to
+  `a X F !a`. LTL + HOA, nothing else changed. See [`polarity.py`](polarity.py) for
+  details.
 
 ## Plan (phased)
 
