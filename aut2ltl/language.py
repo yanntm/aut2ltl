@@ -151,12 +151,25 @@ class Language:
 
     @classmethod
     def of_ltl(cls, f: Union[str, "spot.formula"]) -> "Language":
-        """A Language from an LTL formula (string or spot.formula). The formula is
+        """A Language from an LTL/PSL formula (string or spot.formula). The formula is
         translated to an automaton lazily on the first representation request.
-        Interned on the canonical formula string."""
+        Interned on the canonical formula string.
+
+        When `f` is syntactically LTL, the language is LTL-definable BY CONSTRUCTION
+        (we hold a defining formula), so the verdict is recorded as a proof —
+        `(definable=True, conclusive=True)` — sparing the kr aperiodicity oracle. A
+        PSL/SERE `f` is left undecided: its language may lie outside LTL, so the
+        oracle must still rule."""
         if isinstance(f, str):
             f = spot.formula(f)
-        return _intern("L\n" + str(f), lambda: cls(formula=f))
+
+        def build() -> "Language":
+            lang = cls(formula=f)
+            if f.is_ltl_formula():                    # LTL ⇒ definable, by construction
+                lang.set_ltl_definable(True, conclusive=True)
+            return lang
+
+        return _intern("L\n" + str(f), build)
 
     # --- base automaton (source as given, or the formula translated) ---
 
