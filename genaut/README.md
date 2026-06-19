@@ -29,11 +29,17 @@ dedup cannot accidentally miss a language.
    `spot.postprocess(Generic, Small, High)` pass on each. Generic keeps the
    acceptance *family* (no degeneralization / determinization); Small is a
    polynomial structural reducer.
-2. **Dedup — byte-identical only.** Skip a result whose md5 was already emitted
-   (first generator-id wins). This is intentionally *not* language- or
-   isomorphism-based: language-equivalent-but-different encodings are KEPT (a
+2. **Dedup — two layers, both in-memory and PRE-write (a twin is never built into
+   a file).** First *byte-identical*: skip a result whose md5 was already emitted
+   (first generator-id wins). Then *AP-canonical*: fold the `a ↔ !a` polarity /
+   AP-rename twins via the shared `tests/benchmark/normalize` key
+   (`polarity ∘ names`) — only the byte-distinct survivors pay this cost. Folding
+   a relabeling is not a different test of `aut2ltl`, just a renamed one; we still
+   intentionally do *not* dedup by language or isomorphism beyond relabeling, so
+   language-equivalent-but-genuinely-differently-shaped encodings are KEPT (a
    round-trip through `aut2ltl` *should* recover the same formula, but that is the
-   thing we want to measure, not assume).
+   thing we want to measure, not assume). The AP-canonical key is reused verbatim
+   from the shared tool, so this pre-process carries to any future family regen.
 3. **Survey** the survivors through the real front end with the repo's
    `tests/survey.py` (per-case 15s build + 15s verify budgets, spot
    `are_equivalent` oracle):
@@ -45,14 +51,21 @@ the exact raw automaton is reproducible from the index alone (`aut_at(index)`).
 
 ## Headline results (2-state / 1-AP / 1-acc census)
 
-- 65536 combos → **1845** byte-distinct postprocessed automata.
-- `aut2ltl` answered **1831 / 1845**: **1586 LTL formulas built** + **245 decided
-  not-LTL**; **14 build-timeouts**; **0 crashes, 0 declines**.
-- Spot verification of the 1586: **1480 equivalent, 0 NOT-equivalent**, 106 too
-  large to flatten/check. **Clean.**
-- The 1586 collapse (on the truncated formula string) to ~**221** distinct
-  formulas — a huge `a ↔ !a`-symmetric long tail led by `1` (×654), `GFa`/`GF!a`
-  (×104 each), `Fa`/`F!a`, `a`/`!a`, …
+- 65536 combos → **1845** byte-distinct → **929** AP-canonical survivors (the
+  `a ↔ !a` polarity / AP-rename twins folded pre-write).
+- `aut2ltl` answered **922 / 929**: **799 LTL formulas built** + **123 decided
+  not-LTL**; **7 build-timeouts**; **0 crashes, 0 declines**.
+- Spot verification of the 799: **745 equivalent, 0 NOT-equivalent**, 54 too
+  large to flatten/check. **Clean.** Total build 516.5s.
+
+> **Note — the analysis below predates AP-canonical dedup.** The "true finding"
+> and determinization sections were computed on the *pre-dedup 1845* corpus via
+> the probe scripts (`probe_post.py`, `probe_true_collapse.py`), which still
+> reference the original generator-ids. AP-canonical dedup folds away exactly the
+> polarity twins they count (e.g. the `1` ×654 universal class roughly halves),
+> so those absolute counts no longer match the 929-file `raw/`. The *structure*
+> they describe is unchanged; the numbers are anchored to 1845 until the probes
+> are re-run over the pruned corpus.
 
 ### The "true" finding
 
@@ -100,8 +113,9 @@ canonicalization we never asked for.
 
     research_log.md  dated, dense log of observations (idea/validation/results/
                      conclusions) with reproduction pointers.
-    enumerate.py     the generator: slot model, build_aut, postprocess+md5 dedup,
-                     and per-index helpers combo_at(i) / aut_at(i, bdict).
+    enumerate.py     the generator: slot model, build_aut, postprocess + two-layer
+                     pre-write dedup (md5, then AP-canonical polarity∘names), and
+                     per-index helpers combo_at(i) / aut_at(i, bdict).
                      `python3 genaut/enumerate.py [LIMIT]`  -> genaut/raw/*.hoa
     probe_post.py    diagnostic: rebuild a raw automaton from its generator id and
                      run a spot postprocess type×pref×level matrix on it.
