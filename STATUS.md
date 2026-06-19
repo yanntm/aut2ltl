@@ -19,6 +19,20 @@ is the prior daisy-only assembly; `--use best_inv` adds the global-invariant lay
 half (a Spot equivalence gate; see its algorithm.md). Engine internals and the
 size profile live in `aut2ltl/bls/STATUS.md`.
 
+## Combinator algebra (in progress, 2026-06-19)
+
+The portfolio combinators are being named into a small (almost-)algebra over
+language-manipulators (Translators carrying *faithful-or-⊥*; soundness is closed under
+every operation). Landed: `aut2ltl/compose.py` — `identity` (the decorator-composition
+unit `∘`) and `compose` (outermost-first), plus the `Decorator` sort
+(`aut2ltl/translator.py`), beside `first_success` (`⊕`) / `best_of` (`⊞`) / `recurse`
+(`fix`); and the five recipes are now flat point-free `compose(...)` terms (pure move,
+survey unchanged at DAG=414). Remaining: collapse the three `decomp` decomposers
+(strength/acceptance/scc — byte-identical scaffolding) onto one
+`decompose(split, connective, tag)` over `recurse`+`fuse`, then a `COMBINATORS.md`
+note. Plan/progress: `TODO.md` (top) + `algebra_todo.md`. Scope fence: free named
+combinators only — no DSL, no AST, no meta-level reflection.
+
 ## Front end (CLI)
 
 `aut2ltl/__main__.py` (`python3 -m aut2ltl`, console script `aut2ltl`) is the

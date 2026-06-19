@@ -1,3 +1,44 @@
+# COMBINATOR ALGEBRA — core cleanup (in progress, 2026-06-19)
+
+PROGRESS: Step A (vocabulary: `identity` / `compose` / `Decorator` sort) LANDED 718c839.
+Step B (recipes as point-free `compose` terms) LANDED fd0f5ff — survey SUCCESS, DAG=414
+unchanged. REMAINING: Step C (unify the decomposers) + Step D (`COMBINATORS.md`), below.
+(Scratch progress mirror: `algebra_todo.md`; approved plan: enchanted-dreaming-hopper.)
+
+SCOPE FENCE: free named combinators only
+— NO DSL / operator overloading, NO term-as-data/AST, NO meta-level reflection on
+composition (we never navigate or rewrite the term). The algebra is a conceptual
+lens + a fixed vocabulary, not a runtime structure. Carrier = language-manipulators
+(Translators carrying the invariant *faithful-or-⊥*); the one real law is that
+**soundness is closed under every operation** (any writable term is sound by
+construction → reason locally, never look up a level).
+
+- **Unify strength/acceptance/scc into ONE `decompose(split, connective, tag)`.**
+  The three are byte-identical scaffolding (`__init__`/`__call__`/`_recombine`)
+  differing only in (split, connective, tag): strength-pieces/`Or`, conjuncts/`And`,
+  accepting-SCCs(+restrict)/`Or`. Collapse to
+  `decompose(split, connective, tag)(leaf) = recurse(λself.λlang.
+  combine(connective, tag, [self(p) for p in split(lang)]) if split(lang) else leaf(lang))`,
+  where `combine` = the result composition-monoid (`fuse`/`credit`) finished with
+  `own_simplify(connective(forms))`. NO new concept — wires `fix` (have) + the result
+  monoid (have); this IS the deferred `recurse(decompose, combine, floor)` item, now
+  with 3 concrete instances. `inv` already clean (a pure Decorator `∘`) — leave it.
+  daisy's recurse body is a *choice* (`⊕`); decomp's is a *combine* (`∧/∨`) — same
+  `fix`, different body op. VERIFIED: the three `_recombine` are byte-identical modulo
+  (connective, tag) — so this is behavior-preserving, survey DAG must stay 414. Keep
+  the split fns (strength_pieces / conjunct_pieces / scc accepting_sccs+restrict_marks)
+  and the public import paths. (Supersedes the older "recurse/fix combinator (idea)".)
+
+- **Write `COMBINATORS.md` — the (almost-)algebra note (lens, not a spec).** Record:
+  carrier + the operations (`⊕`/`⊞`/`∘`/`fix` and the `∧/∨` combine) + neutrals
+  (`decline`/`identity`); the soundness-closure property as the load-bearing theorem;
+  and the PARTIAL/NEGATIVE laws *loudly* — `⊕` non-commutative (order=priority),
+  `⊞`-with-margin non-associative, `fix` no monoid — so nobody "simplifies" a recipe
+  into a different language. Optional: laws-as-behavioral-tests (idempotence of `inv`,
+  `id` neutrality, `⊕` associativity) — checks, not a rewrite engine.
+
+---
+
 # aut2ltl — Project TODO
 
 Open project-level items only. Completed campaigns are recorded in `docs/HISTORY.md`
