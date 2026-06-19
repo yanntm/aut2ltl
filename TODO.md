@@ -1,44 +1,3 @@
-# COMBINATOR ALGEBRA — core cleanup (in progress, 2026-06-19)
-
-PROGRESS: Step A (vocabulary: `identity` / `compose` / `Decorator` sort) LANDED 718c839.
-Step B (recipes as point-free `compose` terms) LANDED fd0f5ff — survey SUCCESS, DAG=414
-unchanged. REMAINING: Step C (unify the decomposers) + Step D (`COMBINATORS.md`), below.
-(Scratch progress mirror: `algebra_todo.md`; approved plan: enchanted-dreaming-hopper.)
-
-SCOPE FENCE: free named combinators only
-— NO DSL / operator overloading, NO term-as-data/AST, NO meta-level reflection on
-composition (we never navigate or rewrite the term). The algebra is a conceptual
-lens + a fixed vocabulary, not a runtime structure. Carrier = language-manipulators
-(Translators carrying the invariant *faithful-or-⊥*); the one real law is that
-**soundness is closed under every operation** (any writable term is sound by
-construction → reason locally, never look up a level).
-
-- **Unify strength/acceptance/scc into ONE `decompose(split, connective, tag)`.**
-  The three are byte-identical scaffolding (`__init__`/`__call__`/`_recombine`)
-  differing only in (split, connective, tag): strength-pieces/`Or`, conjuncts/`And`,
-  accepting-SCCs(+restrict)/`Or`. Collapse to
-  `decompose(split, connective, tag)(leaf) = recurse(λself.λlang.
-  combine(connective, tag, [self(p) for p in split(lang)]) if split(lang) else leaf(lang))`,
-  where `combine` = the result composition-monoid (`fuse`/`credit`) finished with
-  `own_simplify(connective(forms))`. NO new concept — wires `fix` (have) + the result
-  monoid (have); this IS the deferred `recurse(decompose, combine, floor)` item, now
-  with 3 concrete instances. `inv` already clean (a pure Decorator `∘`) — leave it.
-  daisy's recurse body is a *choice* (`⊕`); decomp's is a *combine* (`∧/∨`) — same
-  `fix`, different body op. VERIFIED: the three `_recombine` are byte-identical modulo
-  (connective, tag) — so this is behavior-preserving, survey DAG must stay 414. Keep
-  the split fns (strength_pieces / conjunct_pieces / scc accepting_sccs+restrict_marks)
-  and the public import paths. (Supersedes the older "recurse/fix combinator (idea)".)
-
-- **Write `COMBINATORS.md` — the (almost-)algebra note (lens, not a spec).** Record:
-  carrier + the operations (`⊕`/`⊞`/`∘`/`fix` and the `∧/∨` combine) + neutrals
-  (`decline`/`identity`); the soundness-closure property as the load-bearing theorem;
-  and the PARTIAL/NEGATIVE laws *loudly* — `⊕` non-commutative (order=priority),
-  `⊞`-with-margin non-associative, `fix` no monoid — so nobody "simplifies" a recipe
-  into a different language. Optional: laws-as-behavioral-tests (idempotence of `inv`,
-  `id` neutrality, `⊕` associativity) — checks, not a rewrite engine.
-
----
-
 # aut2ltl — Project TODO
 
 Open project-level items only. Completed campaigns are recorded in `docs/HISTORY.md`
@@ -63,15 +22,10 @@ and the `kr → bls` engine reorg all landed — see HISTORY 2026-06-17.)
   swappable (e.g. temporals-first). (b) Swap a `first_success` for `best_of` where
   running every branch pays (the `recurse` seam; pairing an inv-variant with its
   non-inv form to keep only per-input wins).
-- **A `recurse`/`fix` combinator (idea — revisit with `best_of`).** `daisy`, the
-  `strength`/`acceptance` decomposers all share ONE shape: structural recursion over a
-  well-founded decomposition — `leaf = combine([leaf(sub) for sub in decompose(lang)])`
-  with a floor base case. NOT Kleene (not iteration of one op on the same input; it
-  hands strictly-smaller subproblems back, terminating by well-founded descent). A
-  shared `recurse(decompose, combine, floor)` would unify the three and give ONE place
-  to swap `first`→`best_of`, memoize subproblems on the `Language`, and tag uniformly.
-  Today each combinator owns its own recursion (honest, explicit) — extract only when
-  the `best_of` + memo payoff is real.
+- **Memoize `recurse` subproblems on the `Language`** (free DAG sharing across a
+  descent). The decomposition-unification half of the old `recurse(decompose, combine,
+  floor)` idea landed (`aut2ltl/decomp/decompose.py`, all three decomposers); the open
+  levers on the `recurse` seam are memoization and a per-descent `best_of`.
 - **Retire the transitional shim** `aut2ltl/contract.py` once importers repoint.
 - **`fuse2` is unwired** (`heur/fuse2`). Decision: leave it out; let fuzzing measure
   whether its absence costs `best` before deciding to wire it.

@@ -1342,3 +1342,18 @@ SccDecompose=decompose(<accepting_sccs+restrict_marks>, Or, "scc"). Behavior-pre
 DAG=414 unchanged, r4 CLEAN. The .name class attr dropped (nothing read it; tags come
 from combine's LTLResult.start). decomp's recurse body is a *combine* (∧/∨); daisy's is
 a *choice* (⊕) — same fix, different body op.
+
+## 2026-06-19 — combinator algebra, Step D: COMBINATORS.md + close-out (DONE)
+
+Plan step D of D — campaign complete. New top-level COMBINATORS.md: the (almost-)
+algebra over language-manipulators as a conceptual lens — carrier (Translators
+faithful-or-⊥), the two sorts (translators / Decorators), the operations
+(⊕ first_success / ⊞ best_of / ∘ compose / fix recurse, + the ∧/∨ combine of
+decompose), the neutrals (decline terminal / identity ∘-unit), the ONE law (soundness
+closed under every op) and the NEGATIVE laws loud (⊕ non-commutative, ⊞-with-margin
+non-associative, fix no monoid), and the daisy(choice body)/decomp(combine body)
+contrast. Close-out: removed the prepended COMBINATOR-ALGEBRA plan block from TODO.md
+(A-D all landed), trimmed the superseded "recurse/fix combinator (idea)" item to the
+still-open memoization lever, flipped the STATUS combinator-algebra note to done,
+removed the algebra_todo.md scratch. Scope held throughout: free named combinators
+only, no DSL/AST/meta. Whole campaign behavior-preserving (survey DAG=414 unchanged).
