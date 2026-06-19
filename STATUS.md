@@ -6,14 +6,21 @@ Project-level snapshot. For the **engine** state read `aut2ltl/bls/STATUS.md`
 ## What works
 
 The FoSSaCS'22 automaton→LTL construction is implemented end-to-end and
-semantically validated. The portfolio front end is the **`cake` recipe** (the
-no-`--use` default since 2026-06-19): a **shy `best_of`** over the `best_daisy2`
-incumbent (`Simplify(strength(acceptance(daisy_pair(core))), "hi")`, `core =
-first(partscc, bls)` — the one cascade) and one CHEAP every-technique rich variant
-(`Invariant ∘ Strength ∘ Scc ∘ Invariant ∘ Acc ∘ daisy_pair_inv`) that floors on
-`partscc` only (no second cascade), displacing the incumbent only on a significant
-form win. On the 373-case benchmark it is a Pareto step over `best_daisy2` (11 wins
-−25…−41 %, 0 regressions, +1 answered, ≈same build); kinská-neutral.
+semantically validated. The portfolio front end is the **`cakeds` recipe** (the
+no-`--use` default since 2026-06-19): the `cake` assembly with the rejecting-star
+**`daisystar`** peel woven into the peel layer (the `daisy → daisy2 → daisystar`
+trio, see `aut2ltl/daisystar/algorithm.md`). `daisystar` peels a *rejecting*
+length-1 star (Spot-tagged) that exits to a sink — the **reachability dual** of
+`daisy2`: no run staying in the SCC accepts, so `STAY∞ = false` by construction and
+only the `LEAVE` least-fixpoint remains (it sidesteps daisy2's open `Φ_stay` safety
+form entirely). On the 373-case benchmark `cakeds` is a clean Pareto step over
+`cake`: **0 regressions, 10 equivalence fixes** (size-explosion / timeout cases now
+built and Spot-verified), **DAG −78.5%** (e.g. `F(a & Xb)` 181→13, `(a U b) M XF!a`
+23123→18). The prior **`cake`** recipe (`--use cake`) is a **shy `best_of`** over the
+`best_daisy2` incumbent (`Simplify(strength(acceptance(daisy_pair(core))), "hi")`,
+`core = first(partscc, bls)` — the one cascade) and one CHEAP every-technique rich
+variant (`Invariant ∘ Strength ∘ Scc ∘ Invariant ∘ Acc ∘ daisy_pair_inv`) flooring
+on `partscc` only, displacing the incumbent only on a significant form win.
 `best_daisy2` (`--use best_daisy2`) remains the prior default — the daisy/daisy2 peel
 pair (self-loop daisy, then the length-1 star `daisy2`, see
 `aut2ltl/daisy2/algorithm.md`) flooring on the `bls` cascade. It sweeps the
@@ -46,8 +53,8 @@ combinators only — no DSL, no AST, no meta-level reflection. Open levers (TODO
 portfolio front end: an LTL formula or HOA file in, an equivalent LTL formula
 out. `--use` cites the techniques that may participate (the producers `acc weak
 buchi cobuchi muller bls`, where `muller` is the general Muller-DNF leaf and `bls`
-the integrated cascade) or names a recipe (`best` / `best_daisy2` / `best_inv`);
-omit it for the `best_daisy2` default.
+the integrated cascade) or names a recipe (see the `RECIPES` registry);
+omit it for the default portfolio.
 `-O key=value` overrides any
 declared option (`--list-options`/`--list-techniques` to discover). The verbose
 report (technique, DAG/temporals/tree sizes, build time) goes to stderr (`-q`
