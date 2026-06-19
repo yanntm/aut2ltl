@@ -30,6 +30,7 @@ from aut2ltl.bls.hierarchy_class import make_hierarchy_class
 from aut2ltl.daisy import Daisy
 from aut2ltl.daisy2 import Daisy2
 from aut2ltl.daisystar import Daisystar
+from aut2ltl.daisystar.det import DaisystarDet
 from aut2ltl.partscc import PartScc
 from aut2ltl.decomp.inv import Invariant
 
@@ -90,6 +91,30 @@ def daisy_trio_inv(child: Translator) -> Translator:
                           name="daisy_trio")))
 
 
+def daisy_trio_det(child: Translator) -> Translator:
+    """`daisy_trio` with the deterministic read-off `DaisystarDet` slipped in ahead
+    of the flat `Daisystar`: per level try `Daisy`, `Daisy2`, then `DaisystarDet`
+    (the exact, fixpoint-free anchored form for a rejecting SCC with a
+    deterministic L-partition), then `Daisystar` (the flat fallback for a
+    *non*-deterministic rejecting star), then `child`. Coverage is therefore at
+    least `daisy_trio`'s; a deterministic rejecting star gets the smaller exact
+    form instead of the gated flat one."""
+    return recurse(
+        lambda leaf: first_success(
+            [Daisy(leaf), Daisy2(leaf), DaisystarDet(leaf), Daisystar(leaf), child],
+            name="daisy_trio_det"))
+
+
+def daisy_trio_det_inv(child: Translator) -> Translator:
+    """`daisy_trio_det` with the invariant strip woven into every descent level
+    (cf. `daisy_trio_inv` / `daisy_pair_inv`)."""
+    return recurse(
+        lambda leaf: Invariant(
+            first_success(
+                [Daisy(leaf), Daisy2(leaf), DaisystarDet(leaf), Daisystar(leaf), child],
+                name="daisy_trio_det")))
+
+
 def daisy_pair_inv(child: Translator) -> Translator:
     """`daisy_pair` with the invariant strip woven into EVERY descent level: each
     recursion first factors its sub-automaton's *local* `G(Σ)` (`Invariant`), peels
@@ -112,4 +137,5 @@ def core(options: Optional[Options] = None) -> Translator:
 
 
 __all__ = ["bls", "daisy", "daisy_pair", "daisy_pair_inv",
-           "daisy_trio", "daisy_trio_inv", "core"]
+           "daisy_trio", "daisy_trio_inv",
+           "daisy_trio_det", "daisy_trio_det_inv", "core"]
