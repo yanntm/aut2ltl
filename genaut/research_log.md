@@ -116,3 +116,36 @@ the construction's semantic work, not a spot canonicalization we rode on.
   histogram of which hierarchy keys dominate. (3) does the `acc` vs `daisy*`
   partition of the 654 fall out along a structural feature (e.g. presence of a
   non-self-loop edge)?
+
+---
+
+## 2026-06-19 — AP-canonical dedup wired pre-write; survey rerun on 929
+
+- **idea**: the byte-identical md5 dedup leaves the `a <-> !a` polarity / AP-rename
+  twins (byte-distinct, same language up to relabeling) in the corpus — half the
+  files were folding to the same formula a posteriori. Fold them *before* writing,
+  reusing the shared normaliser instead of a bespoke key.
+- **validation**: add `dedup.default_key` (`polarity o names`, from
+  `tests/benchmark/normalize`) as a second in-memory `seen` set in
+  `enumerate.py::main`, after the cheap md5 pre-filter (so only the ~1845
+  byte-distinct survivors pay the normalise cost). No file is ever written for a
+  twin. Confirmed against the standalone `dedup.py --prune` (same 916 dropped).
+  Repro: `python3 genaut/enumerate.py` (full regen ~1.7s).
+- **results**: 65536 -> **1845** byte-distinct -> **929** AP-canonical survivors
+  (916 twins folded pre-write). Survey over the 929
+  (`KR_SURVEY_CSV=genaut/logs/genaut.csv python3 tests/survey.py genaut/raw/*.hoa`):
+  **922/929** answered (**799** LTL built + **123** not-LTL), **7** build-timeouts,
+  **0** crashes/declines; Spot **745 equivalent, 0 NON-equivalent**, 54 unchecked
+  (too large). **SUCCESS, clean.** Totals: DAG=211884, temporals=37488,
+  build=516.5s — roughly half the 1845 run, as expected from removing the twins.
+- **conclusions**: the polarity symmetry that dominated the produced-formula
+  histogram is now removed at the source, so the committed census (`logs/genaut.*`)
+  is the AP-canonical one. Still zero wrong answers on the deduped space —
+  soundness is not an artifact of the redundant twins. The dedup is generic over
+  the produced TGBA set (not census-specific), so it carries to any future
+  family/shape regen.
+- **caveat**: the earlier "true finding" / determinization entries above were
+  computed on the pre-dedup 1845 corpus and their absolute counts (e.g. `1` ×654)
+  no longer match `raw/`; the probe scripts still reference the original
+  generator-ids. The structure stands; re-run the probes over 929 to refresh the
+  numbers if needed.
