@@ -77,8 +77,8 @@ Fine-tune any declared option with `-O key=value` (see `--list-options`).
 
 ## Evaluation
 
-Reference runs of the **default** portfolio (currently the `cake` recipe) are committed
-as per-formula CSVs — which GitHub renders as readable tables — one per corpus:
+Reference runs of the **default** portfolio are committed as per-formula CSVs —
+which GitHub renders as readable tables — one per corpus:
 
 - [`tests/logs/reference/default.csv`](tests/logs/reference/default.csv) — the curated
   40-formula survey (the correctness gate's corpus).
