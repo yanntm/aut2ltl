@@ -1,12 +1,29 @@
 """survey.discovery.detect — classify a candidate file by content.
 
-Answers only "can survey read this, and as what?": HOA automaton (by header /
-content), LTL list (one formula per non-blank, non-comment line), or skip. No
-technique knowledge here.
-
-Bones only.
+Answers only "can survey read this, and as what?": HOA automaton (first non-blank
+line `HOA:`, by content, whatever the extension), or an LTL list (a `.ltl`/`.txt`
+file, one formula per line), or skip. No technique knowledge here.
 """
 from __future__ import annotations
 
-# TODO: Kind = Literal["hoa", "ltl"]   (None ⇒ skip)
-# TODO: detect(path: Path) -> Optional[Kind]
+from pathlib import Path
+from typing import Optional
+
+_LTL_SUFFIXES = {".ltl", ".txt"}
+
+
+def detect(path: Path) -> Optional[str]:
+    """Return "hoa", "ltl", or None (skip). HOA wins by content; otherwise a
+    `.ltl`/`.txt` file is an LTL list. Unreadable files are skipped."""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+    for line in text.splitlines():
+        if line.strip():
+            if line.lstrip().startswith("HOA:"):
+                return "hoa"
+            break
+    if path.suffix.lower() in _LTL_SUFFIXES:
+        return "ltl"
+    return None

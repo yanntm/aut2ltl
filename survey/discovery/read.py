@@ -1,12 +1,21 @@
 """survey.discovery.read — turn a classified file into runnable Example(s).
 
-An HOA file yields one Example; an LTL list yields one Example per non-blank,
-non-comment line. Each Example carries provenance (source path / subfolder) so
-the CSV records where it came from without any input-order replay.
-
-Bones only — `Example` is the unit the rest of survey consumes.
+An HOA file yields one Example (the automaton is the input); an LTL list yields
+one Example per non-blank, non-comment line. Each carries provenance.
 """
 from __future__ import annotations
 
-# TODO: @dataclass Example: path: Path; kind: Kind; formula: Optional[str]; provenance: str
-# TODO: read(path: Path, kind: Kind) -> Iterator[Example]
+from pathlib import Path
+from typing import Iterator
+
+from survey.example import Example
+
+
+def read(path: Path, kind: str) -> Iterator[Example]:
+    if kind == "hoa":
+        yield Example("hoa", str(path), path.name, source=str(path))
+        return
+    for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        formula = line.split("#", 1)[0].strip()
+        if formula:
+            yield Example("ltl", formula, formula, source=f"{path}:{i}")
