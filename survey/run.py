@@ -1,9 +1,9 @@
 """survey.run — orchestrate a survey: examples × techniques → rows → CSV/report.
 
 For each requested technique, reconstruct every example (and, unless disabled,
-verify it), into the legacy row schema. All rows go to one flat CSV (a file
-under --logs, or stdout); a compact summary per technique goes to stdout; the
-per-input live trace goes to stderr under --verbose.
+validate it), into one flat CSV (a file under --logs, or stdout). A compact
+summary per technique goes to stdout; the per-input live trace goes to stderr
+under --verbose.
 """
 from __future__ import annotations
 
@@ -18,58 +18,51 @@ from survey import verify as _verify
 from survey.example import Example
 from survey.techniques import resolve
 
-FORMULA_SHOWN = 80
+
+def _validation(ex: Example, br: "_build.BuildResult", *, verify: bool,
+                equiv_timeout: int) -> str:
+    """The single validation token for a row. Empty for non-LTL (ineligible);
+    OFF when verification is disabled; SIZE when the formula was too large to
+    send to spot; else the oracle verdict (TRUE / FAIL / TIMEOUT / ERROR)."""
+    if br.status != "OK":
+        return ""
+    if not verify:
+        return "OFF"
+    rec = str(br.rec or "")
+    if rec.startswith("<unflattened"):
+        return "SIZE"
+    eq = _verify.verify(ex.value, rec, is_hoa=ex.is_hoa, timeout=equiv_timeout).equiv
+    if eq is True:
+        return "TRUE"
+    if eq is False:
+        return "FAIL"
+    if eq == "SPOT_TIMEOUT":
+        return "TIMEOUT"
+    if isinstance(eq, str) and eq.startswith("SPOT_ERR"):
+        return "ERROR"
+    return str(eq)
 
 
 def _record(ex: Example, technique: Optional[str], *, verify: bool,
             build_timeout: int, equiv_timeout: int) -> Dict[str, object]:
-    """One CSV row: BUILD the example (front end), then VERIFY (spot oracle)
-    unless disabled. Mirrors the legacy survey_one content."""
-    row: Dict[str, object] = {c: "" for c in report.COLS}
-    row.update(formula=ex.display, **{"class": "?"}, mp="?", technique="-")
-
     br = _build.build(ex.value, is_hoa=ex.is_hoa, technique=technique,
                       timeout=build_timeout)
-    row["technique"] = br.technique or "-"
-    for k in ("dag_nodes", "temporals", "tree_nodes", "sharing"):
-        if k in br.report:
-            row[k] = br.report[k]
-    if br.build_s is not None:
-        row["build_s"] = br.build_s
-
-    if br.status != "OK":
-        if verify:
-            row["mp"] = _verify.verify(ex.value, None, is_hoa=ex.is_hoa,
-                                       timeout=equiv_timeout).mp
-        row["equiv"] = br.status            # DECLINED / NOT_LTL / BUILD_TIMEOUT / CRASH
-        return row
-
-    rec = str(br.rec or "").replace("\n", " ").replace("\r", " ")
-    row["reconstructed"] = rec[:FORMULA_SHOWN] + ("…" if len(rec) > FORMULA_SHOWN else "")
-    if verify:
-        checkable = None if rec.startswith("<unflattened") else rec
-        vr = _verify.verify(ex.value, checkable, is_hoa=ex.is_hoa,
-                            timeout=equiv_timeout)
-        row["mp"] = vr.mp
-        if checkable is None:
-            row["equiv"] = "UNVERIFIED_SIZE"
-        else:
-            row["equiv"] = {True: "True", False: "FALSE"}.get(vr.equiv, str(vr.equiv))
-    return row
+    validation = _validation(ex, br, verify=verify, equiv_timeout=equiv_timeout)
+    return report.row(ex.display, br, validation)
 
 
 def _trace_header() -> None:
-    hdr = (f"  {'formula':26s} {'mp':2s} {'tech':16s} "
-           f"{'DAG':>6s} {'temp':>5s} {'build':>7s}  equiv")
+    hdr = (f"  {'input':26s} {'result':6s} {'technique':16s} "
+           f"{'build':>7s}  validation")
     print(hdr, file=sys.stderr)
     print("  " + "-" * (len(hdr) - 2), file=sys.stderr)
 
 
 def _trace(row: Dict[str, object]) -> None:
     bs = f"{row['build_s']}s" if row["build_s"] != "" else "-"
-    print(f"  {str(row['formula']):26.26s} {str(row['mp']):2s} "
-          f"{str(row['technique']):16.16s} {str(row['dag_nodes']):>6s} "
-          f"{str(row['temporals']):>5s} {bs:>7s}  {row['equiv']}", file=sys.stderr)
+    print(f"  {str(row['input']):26.26s} {str(row['result']):6s} "
+          f"{str(row['technique']):16.16s} {bs:>7s}  {row['validation']}",
+          file=sys.stderr)
 
 
 def run(examples: Sequence[Example], uses: Sequence[str], *,
@@ -111,4 +104,4 @@ def run(examples: Sequence[Example], uses: Sequence[str], *,
         for line in report.summarize(rows, label):
             print(line)
 
-    return 1 if any(r.get("equiv") == "FALSE" for r in all_rows) else 0
+    return 1 if any(r.get("validation") == "FAIL" for r in all_rows) else 0

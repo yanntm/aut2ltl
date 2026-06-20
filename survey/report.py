@@ -1,28 +1,56 @@
-"""survey.report — CSV emission and run summaries.
+"""survey.report — row assembly and run summaries.
 
-The per-row CSV schema (kept identical to the legacy survey for now) plus a
-compact summary. Comparing two result CSVs lives in survey.diff.results;
-comparing two LANGUAGES lives in survey.diff (ltl_diff).
+The CSV is the pipeline, read left to right, and a row short-circuits: an
+aut2ltl block (what the tool produced) then a validation block (what the spot
+oracle said). Once a stage stops, the later cells stay empty. `row()` merges the
+two blocks — the aut2ltl block printed from a BuildResult, the validation block
+a single token the caller (survey.run) decided.
 """
 from __future__ import annotations
 
 import csv
+from collections import Counter
 from typing import Dict, List, Sequence, TextIO
 
-# The legacy column set, reused verbatim (provenance/relative-path is deferred).
-COLS: List[str] = ["formula", "class", "mp", "technique", "dag_nodes",
-                   "temporals", "tree_nodes", "sharing", "build_s", "equiv",
-                   "reconstructed"]
+from survey.build import BuildResult
 
-# An ANSWER is an input the tool reconstructed (a DAG), whether or not the oracle
-# then confirmed it; "built" is the answered-but-unverified case (--no-verify).
-_ANSWER_CATS = ("validated", "spot_timeout", "unverified", "spot_err", "false",
-                "built")
+COLS: List[str] = ["input", "result", "technique", "build_s", "formula",
+                   "dag", "temporals", "tree", "sharing", "validation"]
+FORMULA_SHOWN = 80
+
+
+def _result_token(status: str) -> str:
+    """BuildResult.status -> the `result` column token."""
+    if status == "OK":
+        return "LTL"
+    if status.startswith("BUILD_TIMEOUT"):
+        return "TIMEOUT"
+    if status.startswith("CRASH"):
+        return "CRASH"
+    return status            # DECLINED / NOT_LTL / PROBABLY_NOT_LTL
+
+
+def row(display: str, br: BuildResult, validation: str) -> Dict[str, object]:
+    """Merge the aut2ltl result block (from a BuildResult) with the validation
+    token into one CSV row. Non-LTL rows leave the formula/size cells empty."""
+    r: Dict[str, object] = {c: "" for c in COLS}
+    r["input"] = display
+    r["result"] = _result_token(br.status)
+    r["technique"] = br.technique or ""
+    r["build_s"] = br.build_s or ""
+    if br.status == "OK":
+        rec = str(br.rec or "").replace("\n", " ").replace("\r", " ")
+        r["formula"] = rec[:FORMULA_SHOWN] + ("…" if len(rec) > FORMULA_SHOWN else "")
+        for src, dst in (("dag_nodes", "dag"), ("temporals", "temporals"),
+                         ("tree_nodes", "tree"), ("sharing", "sharing")):
+            if src in br.report:
+                r[dst] = br.report[src]
+    r["validation"] = validation
+    return r
 
 
 def write_csv(rows: Sequence[Dict[str, object]], fileobj: TextIO,
               cols: Sequence[str] = COLS) -> None:
-    """Write `rows` as CSV to an open text stream (a file, or stdout)."""
     writer = csv.DictWriter(fileobj, fieldnames=list(cols))
     writer.writeheader()
     for r in rows:
@@ -36,63 +64,31 @@ def _num(v: object) -> float:
         return 0.0
 
 
-def _category(equiv: str) -> str:
-    if equiv == "True":
-        return "validated"
-    if equiv == "FALSE":
-        return "false"
-    if equiv == "SPOT_TIMEOUT":
-        return "spot_timeout"
-    if equiv == "UNVERIFIED_SIZE":
-        return "unverified"
-    if equiv == "DECLINED":
-        return "declined"
-    if equiv in ("NOT_LTL", "PROBABLY_NOT_LTL"):
-        return "not_ltl"
-    if equiv.startswith("SPOT_ERR"):
-        return "spot_err"
-    if equiv.startswith("BUILD_TIMEOUT"):
-        return "build_timeout"
-    if equiv == "":
-        return "built"           # answered, not verified (--no-verify, status OK)
-    return "build_crash"         # the tool actually threw (a real defect)
-
-
 def summarize(rows: Sequence[Dict[str, object]], label: str) -> List[str]:
-    """The compact summary lines for one technique's rows (the CSV holds the
-    per-input detail). Build time is construction only — not spot verification."""
-    cat: Dict[str, int] = {}
-    for r in rows:
-        c = _category(str(r.get("equiv") or ""))
-        cat[c] = cat.get(c, 0) + 1
-    g = cat.get
-    answers = [r for r in rows if _category(str(r.get("equiv") or "")) in _ANSWER_CATS]
-    dag = sum(int(_num(r.get("dag_nodes"))) for r in answers)
-    temp = sum(int(_num(r.get("temporals"))) for r in answers)
-    build = sum(_num(r.get("build_s")) for r in answers)
-
-    ltl_built = len(answers)
-    not_ltl = g("not_ltl", 0)
-    produced = ltl_built + not_ltl
-    our_fail = g("build_timeout", 0) + g("build_crash", 0) + g("declined", 0)
-    equivalent = g("validated", 0)
-    not_checked = g("unverified", 0) + g("spot_timeout", 0) + g("spot_err", 0)
-    wrong = g("false", 0)
+    """Compact per-technique summary (the CSV holds the per-input detail).
+    FAIL iff a verified non-equivalent (`validation == FAIL`) occurred."""
+    res = Counter(str(r.get("result")) for r in rows)
+    val = Counter(str(r.get("validation")) for r in rows if r.get("validation"))
+    ltl = res.get("LTL", 0)
+    not_ltl = res.get("NOT_LTL", 0) + res.get("PROBABLY_NOT_LTL", 0)
+    fails = val.get("FAIL", 0)
+    not_checked = val.get("SIZE", 0) + val.get("TIMEOUT", 0) + val.get("ERROR", 0)
 
     lines = [
         f"survey: {len(rows)} inputs  (--use {label})",
-        f"aut2ltl answered: {produced}/{len(rows)}  "
-        f"({ltl_built} LTL built + {not_ltl} not-LTL)   |   "
-        f"Failures: {our_fail}  (timeout {g('build_timeout', 0)}, "
-        f"crash {g('build_crash', 0)}, declined {g('declined', 0)})",
+        f"aut2ltl: {ltl} LTL, {not_ltl} not-LTL  |  "
+        f"declined {res.get('DECLINED', 0)}, timeout {res.get('TIMEOUT', 0)}, "
+        f"crash {res.get('CRASH', 0)}",
     ]
-    if equivalent or wrong or not_checked:   # verification ran for some rows
-        lines.append(f"Spot check of the {ltl_built} LTL built: {equivalent} "
-                     f"EQUIVALENT, {not_checked} not checked (formula too large)")
-        lines.append(f"NOT EQUIVALENT: {wrong}"
-                     + ("   *** INVESTIGATE — see FALSE rows ***" if wrong
-                        else "   (clean)"))
-    lines.append(f"totals over LTL built: DAG={dag} temporals={temp} "
-                 f"build={build:.3f}s")
-    lines.append("FAIL" if wrong else "SUCCESS")
+    if val.get("TRUE", 0) or fails or not_checked:
+        lines.append(f"validation of {ltl} LTL: {val.get('TRUE', 0)} TRUE, "
+                     f"{fails} FAIL, {not_checked} not checked (size/timeout/error)")
+    elif val.get("OFF", 0):
+        lines.append(f"validation: OFF ({ltl} LTL unverified)")
+
+    dag = sum(int(_num(r.get("dag"))) for r in rows if r.get("result") == "LTL")
+    temp = sum(int(_num(r.get("temporals"))) for r in rows if r.get("result") == "LTL")
+    build = sum(_num(r.get("build_s")) for r in rows)
+    lines.append(f"totals: DAG={dag} temporals={temp} build={build:.3f}s")
+    lines.append("FAIL" if fails else "SUCCESS")
     return lines
