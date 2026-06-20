@@ -318,6 +318,57 @@ keep the win; the cascade's top-level `∧` is the prime target, where ugliness 
 structure coincide. Soundness caveat: future-time LTL only (our output) — not PSL with
 past or SERE semantics.
 
+## The kernel and its three certificates
+
+Across the threads one object keeps returning: the **irreducible kernel** — the residual
+that survives all structural peeling and falls to the cascade. It is at once the
+complexity bottleneck (the only place the exponential is paid), the carrier of
+non-definability (counting structure is exactly what cannot be peeled into compositional
+LTL), and the locus of every diagnostic below. Three moves shrink, name, and quantify it.
+
+**Shrink it — bidirectional peeling.** Daisy peels the *front* (clean local test: no
+non-self incoming). The dual back-peel is harder *for a reason*: acceptance is a property
+of infinite suffixes, so terminal structure is not disposable scaffolding — a terminal
+SCC *is* the acceptance and must be labelled, not cut (that is `partscc`'s job). The
+practical lever is to **widen the terminal catalog**: a **tail oracle** that, per state,
+cheaply recognizes an LTL-trivial tail (`∅`, `Σω`, safety `G(B)`, guarantee `F(B)`,
+persistence `FG`, recurrence `GF`, a one-step obligation) and marks it a leaf with a
+known label, so the cascade never recurses past it; plus a **tail-language quotient**
+(merge states with identical tail languages on the cascade's own generic-acceptance
+form, where Spot's parity-minimization may not reach). Front peel + tail recognition =
+the cascade sees only the irreducible *middle*. (Open: how to prune suffixes is not yet
+solved — this is the current best handle.)
+
+**Name it — the counting witness (a checkable SERE certificate).** Non-definability is
+*not* witnessed by a single ω-word; the certificate is a **counting family**: a pumping
+triple `(u, v, w)` and period `p > 1` such that `u·vⁿ·wω` flips membership in `L` as
+`n mod p` — `L` distinguishes `vⁿ` by `n`, which counter-free LTL cannot. It is
+extractable from the failing aperiodicity test (GAP's non-trivial subgroup gives the
+period word `v`; the reaching states give `u`; the accepting tail gives `w`), and a SERE
+expresses it compactly. Two payoffs: the NOT_LTL verdict becomes an **independently
+checkable proof** (verify the alternation — `conclusive` becomes a witness, not a flag);
+and at census scale the witnesses form a **field guide to non-LTL-ness** — the minimal
+counting atoms, the periods that occur, how obstructions compose — the LTL/ω-regular
+frontier drawn *with witnesses*, not only counts.
+
+**Quantify it — the two-sided LTL bracket.** Decomposition yields sound one-sided LTL
+bounds; take both at once — an under-approximation `B ⊆ L` (the LTL disjuncts of a
+`∨`-split) and an over-approximation `A ⊇ L` (the LTL conjuncts of a `∧`-split) — so
+`B ⊆ L ⊆ A`. Then `L` is LTL-definable **iff the bracket collapses** (`A = B`), and the
+**bracket width is a quantitative distance-from-LTL**: not yes/no but *how much* escapes
+LTL, and where (the gap `A ∖ B` is concentrated at the kernel, and the counting witness
+lives inside it). The point-certificate (witness) and the set-certificate (bracket) are
+the same frontier at two resolutions. Uses are immediate: `A` is a sound LTL **rejection
+monitor** even when `L` is not LTL-monitorable; `B` is a sound **synthesis target**; and
+the pair drives a structure-guided **abstraction-refinement** loop (peel more kernel,
+tighten until they meet or stabilize on the non-LTL essence).
+
+The keystone: the tool's deepest output is not the formula or the verdict but **the
+kernel and its three certificates** — the LTL part (bracket), exactly why the rest is not
+LTL (witness), and the smallest carrier of both the hardness and the non-definability
+(the peeled kernel). A candidate spine for a second paper, distinct from the
+size-reconstruction one.
+
 ## Concrete next steps
 
 1. **Validate the floor patch.** Run `tests/bls/test_kr_r4_audit.py` (must be CLEAN)
