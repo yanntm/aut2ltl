@@ -208,6 +208,37 @@ minimal — `translate` is a violent normalizer funnelling many formulas onto fe
 automata. Whether that low diameter holds broadly is *the* measurable hypothesis under
 the whole approach.
 
+**The algebra is, precisely, Kleene-shaped — with tests.** Map the bricks onto the
+signature: `compose` is sequencing (`·`, unit `identity` = `1`); the two choices are
+sums (`+`, unit `decline` = `0`) — `first_success` a *priority* sum (first
+non-declined, left-biased), `best_of` a *size-ordered* sum; and `recurse` is the
+least-fixpoint star (`*`). The moves (`roundtrip`, `complement`, `syntactic-decompose`,
+`simplify`) are generators, and the predicates that gate them — `is_daisy`,
+`is_ltl_formula`, the definability verdict — are **tests**: guards in the
+Kleene-Algebra-with-Tests sense. The payoff is not aesthetic: if the recipe algebra is
+(close to) a KAT, **recipe equivalence is decidable** and recipe terms **normalize** —
+we could prove two recipes compute the same thing, and simplify a recipe expression
+before ever running it. The tool minimizes formulas by a rewrite algebra; the recipes
+themselves form a rewrite algebra we can minimize — inner and outer are the same kind
+of object. (Caveat: the two-sum, two-sorted shape is not vanilla KA; which axioms hold,
+and on which sort, is the open formalization.)
+
+**Its laws are exactly our probes.** The identities we would most want —
+`roundtrip ∘ roundtrip ≈ roundtrip` (reshape reaching a fixpoint),
+`complement ∘ complement = id`, `simplify ∘ simplify = simplify`, `best_of(a, a) = a`,
+the absorptions of `first_success` — are precisely the experiments already on the plan.
+The measurement campaign is therefore not only benchmarking; it is **checking the
+algebra's equational theory**. "Probe reshape-idempotence" *is* "establish the law that
+makes `roundtrip` a well-behaved star-able operator." Science and engineering are the
+same activity here.
+
+**This is a proven design, not a flourish.** The operators-as-semantics-preserving-
+homomorphisms discipline is imported deliberately from the author's prior
+decision-diagram library, where the same algebra — sound operators, closed under
+composition — delivered engineering robustness as much as elegance. That lineage is
+*how this project got here*; the translator algebra meets the same criterion in every
+useful way, and the bet is that it pays off the same way again.
+
 **Worst case is mostly a stale worry on real inputs.** The construction is
 (triple-)exponential and LTL-definability is hard — and it mostly does not matter,
 because decomposition + round-trip **localize the expense to the largest irreducible
