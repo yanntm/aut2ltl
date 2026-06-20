@@ -1534,3 +1534,35 @@ PLAN REORDER: do step 3 (survey/) BEFORE step 2 (samples/) — the harness infra
 the samples/ and logs/ trees, not the other way round. READMEs come LAST, once
 stable; given how intense this refactor is, they will likely be rewritten from
 scratch rather than curated step by step.
+
+## 2026-06-20 — tests restructure, part 2: the survey/ harness package
+
+Built the new `survey/` package — the aut2ltl evaluation harness, a client of
+aut2ltl, run as `python -m survey` (eventually the `aut2ltl_survey` console tool).
+
+LANDED:
+  * bounded.py — the timeout --signal=INT/kill subprocess primitive (lifted from
+    survey.py:run_build).
+  * build.py — reconstruct one input via the front end, atop bounded.
+  * verify.py — the spot-oracle equivalence stage, decoupled (takes is_hoa).
+  * discovery/{walk,detect,read,scan} — recurse PATHs into Example(s).
+  * techniques.py — resolve --use (opaque; `all` -> discovery TODO).
+  * report.py — STAGED pipeline CSV: input|result|technique|build_s|formula dag
+    temporals tree sharing|validation; row() merges the aut2ltl block + a single
+    validation token; short-circuits left-to-right. Dropped class+mp.
+  * run.py / cli.py / __main__.py (two-liner) — the orchestration + CLI.
+  * diff/ — language diff (ltl_diff/diff_hoa) AND result-CSV diff (results.py,
+    pandas, keyed by column name).
+
+CLI contract: inputs via --ltl/--hoa/--folder (repeatable, mixable, none=>usage);
+--logs DIR sends the one flat CSV to a file else stdout; verify ON by default
+(--no-verify); --verbose adds the per-input trace. The GATE is now just
+`aut2ltl_survey --folder <corpus>`.
+
+SMOKED green: core/ (40 LTL, 40 TRUE -> SUCCESS) and a Kinska set exercising
+every state (NOT_LTL / TIMEOUT / LTL+SIZE / LTL+TRUE). results.py self-diff = 0
+regressions.
+
+STILL OPEN (see TODO_REFACTORING.md): survey/normalize/ (from
+tests/benchmark/normalize), pyproject wiring (survey* + aut2ltl_survey script),
+retire tests/survey.py + sweeps, then samples/ (step 2), logs/ (step 4), docs.
