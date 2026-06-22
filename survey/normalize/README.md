@@ -1,10 +1,10 @@
 # survey/normalize — AP-normalisation + dedup
 
-Canonicalise the atomic propositions of LTL formulas and HOA automata, and dedup
-a folder of them. It is **orthogonal to sample collection** — it does not
-generate a corpus; the dataset collectors under `tests/samples/` reuse it as a
-shared dedup key. Dedup reports by default (dry run); its `--prune` is the
-explicit opt-in that removes the duplicates.
+Canonicalise the atomic propositions of LTL formulas and HOA automata, and keep a
+folder of them AP-canonical and irredundant. It is **orthogonal to sample
+collection** — it does not generate a corpus; the dataset collectors under
+`samples/` reuse it as a shared key. The folder tools report by default (dry run);
+`--prune` is the explicit opt-in that writes.
 
 Importable as a module path:
 
@@ -14,24 +14,39 @@ Importable as a module path:
 
 ## Services
 
+Two **normalisers** (pure, content-level — one touches names, the other signs, so
+they compose freely):
+
 - **`names.py`** — rename APs to `a, b, c…` in order of first occurrence, nothing
   else. `normalize_ltl` / `normalize_hoa` / `normalize_text` (content dispatch).
 - **`polarity.py`** — complement each AP so its first literal occurrence is positive,
   nothing else (`!a X F a` and `a X F !a` both fold to `a X F !a`).
   `polarity_normalize_ltl` / `polarity_normalize_hoa` / `polarity_normalize_text`.
-- **`dedup.py`** — walk a folder, split each file into items (one per HOA, one per
-  non-comment line per `.ltl`), keep the first item per **pluggable** key, drop the
-  rest. Reports per-file drop counts by default; `--prune` deletes / rewrites.
 
-The two normalisers are independent (one touches names, the other signs), so they
-compose freely. `dedup.default_key` is `polarity ∘ names`.
+Two **folder tools** that walk a tree recursively and either report (dry run) or
+`--prune` to write, both on the shared **`sweep`** engine:
+
+- **`dedup.py`** — keep the first item per **pluggable** key (one item per HOA file,
+  one per non-comment `.ltl` line), drop later duplicates. `default_key` is
+  `polarity ∘ names`.
+- **`canon.py`** — `dedup` **with renaming built in**: AP-rename every file to
+  canonical form *and* drop duplicates in one recursive pass — the maximal normalize.
+
+`sweep.py` is the engine: each folder tool supplies only its per-file `Op`; the
+walk, the dry-run/`--prune` switch and the tally live in `sweep`, once — so `dedup`
+and `canon` share one API.
 
 ## CLI
 
-    python3 -m survey.normalize.names    '<formula>' | file.hoa | file.ltl  # normalised form
-    python3 -m survey.normalize.polarity '<formula>' | file.hoa | file.ltl  # polarity-canon form
-    python3 -m survey.normalize.dedup FOLDER           # dry run: per-file drop counts
-    python3 -m survey.normalize.dedup --prune FOLDER   # apply: delete / rewrite dups
+Isolated — print the canonical form of one formula / file:
+
+    python3 -m survey.normalize.names    '<formula>' | file.hoa | file.ltl
+    python3 -m survey.normalize.polarity '<formula>' | file.hoa | file.ltl
+
+Whole folder — dry run, then add `--prune` to apply (from the repo root):
+
+    python3 -m survey.normalize.dedup FOLDER     # drop duplicates
+    python3 -m survey.normalize.canon FOLDER     # AP-rename + drop duplicates
 
 ## Test
 
