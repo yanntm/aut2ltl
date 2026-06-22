@@ -7,7 +7,7 @@ runs each corpus formula through best_daisy2 in-process with DAISY2_TRACE on,
 captures the trace per formula, and lists every formula that produced a gate
 REJECT (or a gate ERROR), with the witnesses.
 
-Usage:  python3 tests/daisy2/scan_corpus.py
+Usage:  python3 -m tests.probes.daisy2.scan_corpus
 """
 import os
 
@@ -18,7 +18,14 @@ import io                                  # noqa: E402
 import sys                                 # noqa: E402
 from typing import List, Tuple            # noqa: E402
 
-from tests.survey_formulas import SURVEY_FORMULAS   # noqa: E402
+from pathlib import Path                            # noqa: E402
+
+# The survey corpus is now data under samples/ (the 40, one .ltl per class).
+_LTL = Path(__file__).resolve().parents[3] / "samples/validation/ltl"
+SURVEY_FORMULAS = [s for p in sorted(_LTL.glob("*.ltl"))
+                   for ln in p.read_text(encoding="utf-8").splitlines()
+                   if (s := ln.split("#", 1)[0].strip())]
+
 from aut2ltl.options import Options                 # noqa: E402
 from aut2ltl.portfolio.build import build_portfolio  # noqa: E402
 from aut2ltl.language import Language               # noqa: E402
