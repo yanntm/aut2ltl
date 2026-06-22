@@ -1,9 +1,16 @@
-# normalize — AP-normalisation + dedup services
+# survey/normalize — AP-normalisation + dedup
 
-A small, self-contained tool: canonicalise the atomic propositions of LTL formulas
-and HOA automata, and dedup a folder of them. It is **orthogonal to sample
-collection** — it does not generate a corpus. Dedup reports by default (dry run);
-its `--prune` is the explicit opt-in that removes the duplicates.
+Canonicalise the atomic propositions of LTL formulas and HOA automata, and dedup
+a folder of them. It is **orthogonal to sample collection** — it does not
+generate a corpus; the dataset collectors under `tests/samples/` reuse it as a
+shared dedup key. Dedup reports by default (dry run); its `--prune` is the
+explicit opt-in that removes the duplicates.
+
+Importable as a module path:
+
+    from survey.normalize import normalize_ltl, polarity_normalize_ltl
+    normalize_ltl("p & q")            # -> "a & b"
+    polarity_normalize_ltl("!p & q")  # -> "p & q"
 
 ## Services
 
@@ -21,15 +28,14 @@ compose freely. `dedup.default_key` is `polarity ∘ names`.
 
 ## CLI
 
-```
-python3 names.py    '<formula>' | file.hoa | file.ltl   # print normalised form
-python3 polarity.py '<formula>' | file.hoa | file.ltl   # print polarity-canon form
-python3 dedup.py FOLDER                                  # dry run: per-file drop counts
-python3 dedup.py --prune FOLDER                          # apply: delete / rewrite dups
-```
+    python3 -m survey.normalize.names    '<formula>' | file.hoa | file.ltl  # normalised form
+    python3 -m survey.normalize.polarity '<formula>' | file.hoa | file.ltl  # polarity-canon form
+    python3 -m survey.normalize.dedup FOLDER           # dry run: per-file drop counts
+    python3 -m survey.normalize.dedup --prune FOLDER   # apply: delete / rewrite dups
 
 ## Test
 
-```
-python3 test_polarity.py        # OK / raises
-```
+    python3 -m survey.normalize.test_polarity   # OK / raises
+    python3 -m survey.normalize.test_imports    # OK / raises
+
+Run from the repo root (so `import survey.normalize` resolves).

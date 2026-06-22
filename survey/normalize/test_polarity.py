@@ -1,14 +1,10 @@
-"""Smoke test for tests/benchmark/polarity.py — the polarity dedup symmetry.
+"""Smoke test for survey.normalize.polarity — the polarity dedup symmetry.
 
-Run: python3 tests/benchmark/test_polarity.py   (prints OK / raises on failure)
+Run (from the repo root): python3 -m survey.normalize.test_polarity   (OK / raises)
 """
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from polarity import polarity_normalize_hoa, polarity_normalize_ltl  # noqa: E402
+from survey.normalize.polarity import polarity_normalize_hoa, polarity_normalize_ltl
 
 
 def _eq(got: str, want: str, label: str) -> None:

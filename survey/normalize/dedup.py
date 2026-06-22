@@ -8,9 +8,9 @@ is LTL. By default it only REPORTS (dry run, nothing written); `--prune` is the
 explicit opt-in that deletes duplicate HOA files and removes duplicate formula
 lines from LTL files.
 
-CLI:
-    python3 .../dedup.py FOLDER            # dry run: per-file drop counts, no writes
-    python3 .../dedup.py --prune FOLDER    # apply: delete / rewrite the duplicates
+CLI (from the repo root):
+    python3 -m survey.normalize.dedup FOLDER           # dry run: per-file drop counts
+    python3 -m survey.normalize.dedup --prune FOLDER   # apply: delete / rewrite dups
 """
 from __future__ import annotations
 
@@ -18,9 +18,8 @@ import sys
 from pathlib import Path
 from typing import Callable, Dict, List, Tuple
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from names import _is_hoa_text, normalize_text         # noqa: E402
-from polarity import polarity_normalize_text            # noqa: E402
+from survey.normalize.names import _is_hoa_text, normalize_text
+from survey.normalize.polarity import polarity_normalize_text
 
 Key = Callable[[str], str]
 _SUFFIXES = {".ltl", ".hoa"}

@@ -1,17 +1,11 @@
-"""Guard the package's public surface the way the sibling collectors import it:
-they put `tests/benchmark` on sys.path and do `from normalize import ...`.
+"""Guard the package's public surface the way its clients import it: the
+installed package path `from survey.normalize import ...`.
 
-Run: python3 tests/benchmark/normalize/test_imports.py   (prints OK / raises)
+Run (from the repo root): python3 -m survey.normalize.test_imports   (OK / raises)
 """
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-# Mimic the collectors: tests/benchmark on the path, import the package by name.
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
-from normalize import (  # noqa: E402
+from survey.normalize import (
     _is_hoa_text,
     normalize_hoa,
     normalize_ltl,

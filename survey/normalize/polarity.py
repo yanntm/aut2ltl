@@ -23,9 +23,9 @@ no aliases). A negated literal is a `!` directly abutting the atom (`!a`, not
 `!(a)`); `!!x` is out of scope. For HOA the reading order is the file's edge
 order, so polarity is canonicalised relative to the presented form.
 
-CLI:
-    python3 .../polarity.py '<formula>'        # print polarity-canon LTL
-    python3 .../polarity.py file.hoa|file.ltl  # whole HOA / per-line LTL
+CLI (from the repo root):
+    python3 -m survey.normalize.polarity '<formula>'        # print polarity-canon LTL
+    python3 -m survey.normalize.polarity file.hoa|file.ltl  # whole HOA / per-line LTL
 """
 from __future__ import annotations
 

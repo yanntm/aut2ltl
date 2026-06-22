@@ -7,13 +7,13 @@ explicit opt-in that removes duplicates.
 """
 from __future__ import annotations
 
-from .names import (  # noqa: F401
+from survey.normalize.names import (  # noqa: F401
     normalize_hoa,
     normalize_ltl,
     normalize_text,
     _is_hoa_text,
 )
-from .polarity import (  # noqa: F401
+from survey.normalize.polarity import (  # noqa: F401
     hoa_flips,
     ltl_flips,
     polarity_normalize_hoa,

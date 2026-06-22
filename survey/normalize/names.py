@@ -13,9 +13,9 @@ compare of normalised forms is a sound, conservative syntactic key.
   weak key: it collapses name-variants and exact-duplicate automata, but NOT
   automata equal up to state renumbering / transition reordering.
 
-CLI:
-    python3 .../names.py '<formula>'        # print normalised LTL
-    python3 .../names.py file.hoa|file.ltl  # whole HOA / per-line LTL
+CLI (from the repo root):
+    python3 -m survey.normalize.names '<formula>'        # print normalised LTL
+    python3 -m survey.normalize.names file.hoa|file.ltl  # whole HOA / per-line LTL
 """
 from __future__ import annotations
 
