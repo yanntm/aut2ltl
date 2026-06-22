@@ -41,3 +41,23 @@ Both use the shared **`survey.normalize`** utility (its own
 [README](../../survey/normalize/README.md)) for AP **name**/**polarity**
 canonicalisation and folder `dedup`; they apply the name rename on store. Run them
 from the repo root (with `pip install -e .`).
+
+## Extending the corpus
+
+The corpus is kept **hierarchical, AP-canonical and irredundant**. To add inputs:
+
+1. **Add a category subfolder** under `inputs/` (nest if useful).
+2. **Add a `README.md`** for it — what the category is, and its provenance.
+3. **Populate** it with `.ltl` (one formula per line, `#` comments) and/or `.hoa`
+   (one automaton) files.
+4. **Normalize, then dedup.** Canonicalise the new files' APs so the corpus stays
+   uniform, then drop redundancy under that key — always **dry run first**, then
+   `--prune` to apply. From the repo root:
+
+       python3 -m survey.normalize.names FILE          # print the AP-canonical form of one file
+       python3 -m survey.normalize.dedup        inputs # dry run: per-file drop counts, nothing written
+       python3 -m survey.normalize.dedup --prune inputs # apply: delete dup .hoa / strip dup .ltl lines
+
+   `dedup` keys on the canonical form (names then polarity), so it catches
+   name/polarity variants too — run it after **any** addition to `inputs/`.
+
