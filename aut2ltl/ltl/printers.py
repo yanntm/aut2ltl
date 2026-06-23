@@ -14,6 +14,7 @@ rather than the saturating internal walk.)
 """
 from __future__ import annotations
 
+import hashlib
 from typing import List, Optional, TYPE_CHECKING
 
 from .metrics import tree_node_count
@@ -26,7 +27,17 @@ def _dot_escape(s: str) -> str:
     return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
-def to_dot(f: Optional["spot.formula"], max_label: int = 60) -> str:
+def dag_md5(f: Optional["spot.formula"], length: int = 12) -> str:
+    """A stable structural fingerprint of the formula DAG: the md5 of its
+    canonical (lossless, DFS-numbered) `to_dot` serialization, truncated to
+    `length` hex chars. Same structure -> same key across processes, so it
+    discriminates results even when the flat string is too large to print
+    (`length` is clamped to 1..32 — md5 is 32 hex)."""
+    digest = hashlib.md5(to_dot(f).encode("utf-8")).hexdigest()
+    return digest[:max(1, min(32, length))]
+
+
+def to_dot(f: Optional["spot.formula"], max_label: Optional[int] = None) -> str:
     """Graphviz dot of the hash-consed formula DAG — O(distinct nodes), never the
     unfolded O(tree), so it does not explode where the flat string would.
 
@@ -43,7 +54,9 @@ def to_dot(f: Optional["spot.formula"], max_label: int = 60) -> str:
     (`f.is_boolean()` — no temporal operator inside) are collapsed into a single
     leaf node labelled with their flat string instead of expanding their boolean
     tree, so the graph shows only the temporal skeleton and stays bounded by the
-    boolean width too (labels truncated to `max_label`). Temporal nodes are
+    boolean width too. Labels are **lossless by default** so the whole dot is a
+    faithful structural key (e.g. to md5-fingerprint the result); pass `max_label`
+    to truncate boolean leaves for human rendering only. Temporal nodes are
     labelled by their operator (`kindstr`); edges of an n-ary/binary operator are
     indexed so the non-commutative ones (U/R/W/M) stay readable."""
     if f is None:
@@ -56,7 +69,7 @@ def to_dot(f: Optional["spot.formula"], max_label: int = 60) -> str:
 
     def label_of(g: "spot.formula", boolean: bool) -> str:
         s = str(g) if boolean else g.kindstr()
-        if len(s) > max_label:
+        if max_label is not None and len(s) > max_label:
             s = s[: max_label - 3] + "..."
         return _dot_escape(s)
 
