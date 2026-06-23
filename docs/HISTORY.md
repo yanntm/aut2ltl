@@ -1603,3 +1603,42 @@ Gates green throughout (validation 80 inputs SUCCESS; canon/dedup dry-run on ben
 = 0; test_fuse2 0 gate failures). NOT done: benchmark inputs ltl/hoa split; reference-log
 REGENERATION under the new default; root README/STATUS eval-link refresh; pyproject. See
 TODO_REFACTORING.md.
+
+## 2026-06-23 — survey source column, evaluation gate, tests/ curation, deployment
+
+Closing out the tests/survey restructure (3rd session).
+
+- **survey CSV `source` column.** Added a unique provenance key to every row
+  (relative path | `file:line` | `--ltl:k`); `input` stays the readable, possibly
+  colliding label. `survey.diff.results` now keys on `source` (dropped the old
+  `input` keying that silently collapsed HOA basename collisions, e.g. kinska
+  subdirs); only current source-bearing CSVs are supported (no legacy fallback).
+- **Reference logs regenerated** under `results/reference/{validation,kinska,
+  benchmark}` with the `source` column; no regression (identical LTL/not-LTL/
+  TRUE/FAIL + DAG/temporals; build-time jitter only). Per-corpus CSVs overwritten
+  in place; SUMMARY.txt folded from the old per-config `.txt`. `.gitignore`
+  switched to a blocklist (only root `logs/` ignored; no blanket `*.csv` + the
+  re-include dance).
+- **`results/README`** added: the layout + the evaluation-gate refresh procedure
+  (rerun into scratch `logs/` → `survey.diff.results` keyed on source → overwrite
+  + commit only when clean: 0 regressions, SUMMARY SUCCESS).
+- **tests/ curation.** `tests/README` rewritten as the probes-home statement
+  (placed scripts, folder congruent to the module, run from root via `-m`; gate →
+  `results/README`); documented the `survey.bounded.run` / `survey.build.build`
+  budget+isolation harness API (reuse it, don't hand-roll subprocess/timeout —
+  it survives Spot/buddy/GAP segfaults via `aut2ltl/proc.py`). `tests/.gitignore`
+  ignores `logs/` + `probes/**/logs/`. Promoted 3 untracked `decomp` probes;
+  removed smoke scratch.
+- **Retired the kr-era r4 audit gate** from the daily process: renamed
+  `test_kr_r4_audit.py` → `test_r4_audit.py`; dropped the gate citations from
+  CLAUDE.md, the STATUS testing block and the tests READMEs (repointed to
+  `results/README`); the probe stays runnable, just not headlined. Fixed stale
+  pointers in `aut2ltl/bls/README` (dropped its gate citation — bls is a
+  submodule now) and reduced `tests/probes/bls/README` to a simple source map.
+- **Root README + STATUS** repointed to the survey/samples/results layout.
+- **Deployment (pyproject).** `survey*` added to packages.find; `aut2ltl_survey =
+  survey.cli:main` console script; `pandas` declared. `pip install -e .` verified.
+- **Deferred:** the broad `kr → bls` code/prose sweep (dead import paths +
+  engine-naming prose, a possible `sed` pass); converting the benchmark
+  `samples/benchmark/inputs/` LTL examples to HOA (moved to TODO.md as feature
+  work — the gateway to new-algorithm experiments).
