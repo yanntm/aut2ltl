@@ -15,15 +15,19 @@ requires-python = ">=3.9"
 authors = [{ name = "Yann Thierry-Mieg", email = "yann.thierrymieg@gmail.com" }]
 keywords = ["LTL", "omega-automata", "Buchi", "Krohn-Rhodes", "holonomy", "temporal-logic"]
 
-# Runtime requirements are NOT pip-installable and are intentionally omitted:
+# pandas is the one pip-installable runtime dep (survey.diff.results — the
+# result-CSV diff). The rest are system-level and NOT pip-installable, so
+# intentionally omitted:
 #   * Spot (the `spot` and `buddy` Python bindings) — install at system level.
 #   * GAP 4.12+ with the SgpDec package — needed only by the bls cascade engine;
 #     see README.md and install_gap.sh.
-dependencies = []
+dependencies = ["pandas"]
 
 [project.scripts]
 # The portfolio front end (aut2ltl/__main__.py:main). Equivalent to `python3 -m aut2ltl`.
 aut2ltl = "aut2ltl.__main__:main"
+# The evaluation harness (survey.cli:main). Equivalent to `python3 -m survey`.
+aut2ltl_survey = "survey.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["aut2ltl*"]
+include = ["aut2ltl*", "survey*"]
