@@ -17,6 +17,3 @@ dist/
 # folder (no blanket *.csv ignore — committed CSVs need no re-include dance).
 /logs/
 *.log
-
-# Local-only dev tool (parses session transcripts; not part of the project)
-/parse_last_session.py
