@@ -1,5 +1,5 @@
 survey: 333 inputs  (--use default)
 aut2ltl: 267 LTL, 63 not-LTL  |  declined 0, timeout 3, crash 0
 validation of 267 LTL: 255 TRUE, 0 FAIL, 12 not checked (size/timeout/error)
-totals: DAG=16769 temporals=2803 build=119.991s
+totals: DAG=16769 temporals=2803 build=119.703s
 SUCCESS

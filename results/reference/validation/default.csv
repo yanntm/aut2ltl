@@ -1,81 +1,81 @@
-input,result,technique,build_s,formula,dag,temporals,tree,sharing,validation
-bottom_l4.hoa,LTL,daisy,0.066,1,1,0,1,1.0,TRUE
-bottom_l5.hoa,LTL,daisy,0.066,0,1,0,1,1.0,TRUE
-guarantee_l10.hoa,LTL,daisy,0.063,a U b,3,1,3,1.0,TRUE
-guarantee_l11.hoa,LTL,daisy,0.068,F(a & b),4,1,4,1.0,TRUE
-guarantee_l12.hoa,LTL,daisy+daisystardet,0.066,F(a & Xb),5,1,5,1.0,TRUE
-guarantee_l13.hoa,LTL,daisy,0.065,a | Xb,4,0,4,1.0,TRUE
-guarantee_l4.hoa,LTL,daisy,0.065,a,1,0,1,1.0,TRUE
-guarantee_l5.hoa,LTL,daisy,0.067,Xa,2,0,2,1.0,TRUE
-guarantee_l6.hoa,LTL,daisy,0.068,XXa,3,0,3,1.0,TRUE
-guarantee_l7.hoa,LTL,daisy,0.065,XXXa,4,0,4,1.0,TRUE
-guarantee_l8.hoa,LTL,daisy,0.069,X(a & Xa),4,0,5,1.2,TRUE
-guarantee_l9.hoa,LTL,daisy,0.066,Fa,2,1,2,1.0,TRUE
-obligation_l4.hoa,LTL,daisy+strength2,0.072,G(!a & b) | Fa,7,2,8,1.1,TRUE
-obligation_l5.hoa,LTL,daisy,0.073,(a & b) W ((!a & Gb) | (!b & Ga)),11,3,15,1.4,TRUE
-obligation_l6.hoa,LTL,daisy+inv,0.064,Gb & Fa,5,2,5,1.0,TRUE
-obligation_l7.hoa,LTL,daisy+strength2,0.067,((a & !b & c) W (!a & !b & Gc)) | (a U b),11,3,17,1.5,TRUE
-obligation_l8.hoa,LTL,daisy+strength2,0.066,G(a & !b) | Fb,7,2,8,1.1,TRUE
-persistence_l4.hoa,LTL,daisy,0.072,FGa,3,2,3,1.0,TRUE
-persistence_l5.hoa,LTL,daisy,0.070,F(a & Gb),5,2,5,1.0,TRUE
-persistence_l6.hoa,LTL,daisy,0.066,F(Ga | Gb),6,3,6,1.0,TRUE
-reactivity_l4.hoa,LTL,daisy+strength2,0.070,F(G!a | (b & GFb)),9,4,10,1.1,TRUE
-reactivity_l5.hoa,LTL,acc2+daisy,0.068,G(Fa & FGb),7,4,7,1.0,TRUE
-recurrence_l10.hoa,LTL,daisy2,0.066,G(!a | (b U c)),7,2,7,1.0,TRUE
-recurrence_l11.hoa,LTL,daisy2,0.068,G(F(a & X!a) & (!a | X!a)),8,2,14,1.8,TRUE
-recurrence_l12.hoa,LTL,partscc,0.062,G((!a | Xb) & Fa),8,2,9,1.1,TRUE
-recurrence_l13.hoa,LTL,acc2+daisy2,0.074,G(F(a & X!a) & (!a | X!a) & F((a & X(!a & b)) | (b & (!a | X!a)))),15,3,31,2.1,TRUE
-recurrence_l4.hoa,LTL,daisy,0.070,GFa,3,2,3,1.0,TRUE
-recurrence_l5.hoa,LTL,daisy2,0.068,G(!a | Fb),6,2,6,1.0,TRUE
-recurrence_l6.hoa,LTL,daisy2,0.067,G(a | Fb),5,2,5,1.0,TRUE
-recurrence_l7.hoa,LTL,acc2+daisy,0.068,G(Fa & Fb),6,3,6,1.0,TRUE
-recurrence_l8.hoa,LTL,acc3+daisy,0.065,G(Fa & Fb & Fc),8,4,8,1.0,TRUE
-recurrence_l9.hoa,LTL,acc2+daisy2,0.206,G((!a | Fb) & (!c | Fd)),12,3,12,1.0,TRUE
-safety_l10.hoa,LTL,daisy+partscc,0.069,(a & X(!a & G((!a | X!a) & (a | Xa)))) | (!a & X(a & G((!a | X!a) & (a | Xa)))),15,1,37,2.5,TRUE
-safety_l11.hoa,LTL,daisy+partscc,0.069,(a & X(b & G((!a | Xb) & (a | X!b)))) | (!a & X(!b & G((!a | Xb) & (a | X!b)))),17,1,37,2.2,TRUE
-safety_l4.hoa,LTL,daisy,0.069,Ga,2,1,2,1.0,TRUE
-safety_l5.hoa,LTL,daisy,0.069,G(a | b),4,1,4,1.0,TRUE
-safety_l6.hoa,LTL,partscc,0.068,G(!a | Xb),6,1,6,1.0,TRUE
-safety_l7.hoa,LTL,daisy,0.064,a & Xa,3,0,4,1.3,TRUE
-safety_l8.hoa,LTL,daisy,0.068,!a W Ga,4,2,5,1.2,TRUE
-safety_l9.hoa,LTL,daisy,0.064,Ga,2,1,2,1.0,TRUE
-true,LTL,daisy,0.064,1,1,0,1,1.0,TRUE
-false,LTL,daisy,0.069,0,1,0,1,1.0,TRUE
-a,LTL,daisy,0.068,a,1,0,1,1.0,TRUE
-X a,LTL,daisy,0.067,Xa,2,0,2,1.0,TRUE
-X X a,LTL,daisy,0.067,XXa,3,0,3,1.0,TRUE
-X X X a,LTL,daisy,0.072,XXXa,4,0,4,1.0,TRUE
-X(a & X a),LTL,daisy,0.064,X(a & Xa),4,0,5,1.2,TRUE
-Fa,LTL,daisy,0.066,Fa,2,1,2,1.0,TRUE
-a U b,LTL,daisy,0.066,a U b,3,1,3,1.0,TRUE
-F(a & b),LTL,daisy,0.067,F(a & b),4,1,4,1.0,TRUE
-F(a & X b),LTL,daisy+daisystardet,0.066,F(a & Xb),5,1,5,1.0,TRUE
-a | X b,LTL,daisy,0.067,a | Xb,4,0,4,1.0,TRUE
-Fa | Gb,LTL,daisy+strength2,0.070,Fa | G(!a & b),7,2,8,1.1,TRUE
-Ga | Gb,LTL,daisy,0.069,(a & b) W ((!a & Gb) | (!b & Ga)),11,3,15,1.4,TRUE
-Fa & Gb,LTL,daisy+inv,0.069,Fa & Gb,5,2,5,1.0,TRUE
-(a U b) | Gc,LTL,daisy+strength2,0.070,(a U b) | ((a & !b & c) W (!a & !b & Gc)),11,3,17,1.5,TRUE
-Ga | Fb,LTL,daisy+strength2,0.068,Fb | G(a & !b),7,2,8,1.1,TRUE
-FGa,LTL,daisy,0.068,FGa,3,2,3,1.0,TRUE
-F(a & G b),LTL,daisy,0.069,F(a & Gb),5,2,5,1.0,TRUE
-FGa | FGb,LTL,daisy,0.070,F(Ga | Gb),6,3,6,1.0,TRUE
-GFa -> GFb,LTL,daisy+strength2,0.069,F(G!a | (b & GFb)),9,4,10,1.1,TRUE
-GFa & FGb,LTL,acc2+daisy,0.071,G(Fa & FGb),7,4,7,1.0,TRUE
-GFa,LTL,daisy,0.067,GFa,3,2,3,1.0,TRUE
-G(a -> F b),LTL,daisy2,0.070,G(!a | Fb),6,2,6,1.0,TRUE
-G(a | F b),LTL,daisy2,0.067,G(a | Fb),5,2,5,1.0,TRUE
-GFa & GFb,LTL,acc2+daisy,0.066,G(Fa & Fb),6,3,6,1.0,TRUE
-GFa & GFb & GFc,LTL,acc3+daisy,0.071,G(Fa & Fb & Fc),8,4,8,1.0,TRUE
-G(a -> F b) & G(c -> F d),LTL,acc2+daisy2,0.205,G((!a | Fb) & (!c | Fd)),12,3,12,1.0,TRUE
-G(a -> (b U c)),LTL,daisy2,0.067,G(!a | (b U c)),7,2,7,1.0,TRUE
-GFa & G(a -> X !a),LTL,daisy2,0.068,G((!a | X!a) & F(a & X!a)),8,2,14,1.8,TRUE
-G(a -> X b) & GFa,LTL,partscc,0.065,G(Fa & (!a | Xb)),8,2,9,1.1,TRUE
-GFa & GFb & G(a -> X !a),LTL,acc2+daisy2,0.073,G((!a | X!a) & F(a & X!a) & F((a & X(!a & b)) | (b & (!a | X!a)))),15,3,31,2.1,TRUE
-Ga,LTL,daisy,0.063,Ga,2,1,2,1.0,TRUE
-G(a | b),LTL,daisy,0.070,G(a | b),4,1,4,1.0,TRUE
-G(a -> X b),LTL,partscc,0.067,G(!a | Xb),6,1,6,1.0,TRUE
-a & X a,LTL,daisy,0.067,a & Xa,3,0,4,1.3,TRUE
-G(a -> X a),LTL,daisy,0.067,!a W Ga,4,2,5,1.2,TRUE
-G(a & X a),LTL,daisy,0.066,Ga,2,1,2,1.0,TRUE
-G((!a & X a) | (a & X !a)),LTL,daisy+partscc,0.069,(!a & X(a & G((a | Xa) & (!a | X!a)))) | (a & X(!a & G((a | Xa) & (!a | X!a)))),15,1,37,2.5,TRUE
-G(a <-> X b),LTL,daisy+partscc,0.069,(a & X(b & G((!a | Xb) & (a | X!b)))) | (!a & X(!b & G((!a | Xb) & (a | X!b)))),17,1,37,2.2,TRUE
+input,result,technique,build_s,formula,dag,temporals,tree,sharing,validation,source
+bottom_l4.hoa,LTL,daisy,0.067,1,1,0,1,1.0,TRUE,samples/validation/hoa/bottom_l4.hoa
+bottom_l5.hoa,LTL,daisy,0.062,0,1,0,1,1.0,TRUE,samples/validation/hoa/bottom_l5.hoa
+guarantee_l10.hoa,LTL,daisy,0.063,a U b,3,1,3,1.0,TRUE,samples/validation/hoa/guarantee_l10.hoa
+guarantee_l11.hoa,LTL,daisy,0.063,F(a & b),4,1,4,1.0,TRUE,samples/validation/hoa/guarantee_l11.hoa
+guarantee_l12.hoa,LTL,daisy+daisystardet,0.068,F(a & Xb),5,1,5,1.0,TRUE,samples/validation/hoa/guarantee_l12.hoa
+guarantee_l13.hoa,LTL,daisy,0.068,a | Xb,4,0,4,1.0,TRUE,samples/validation/hoa/guarantee_l13.hoa
+guarantee_l4.hoa,LTL,daisy,0.067,a,1,0,1,1.0,TRUE,samples/validation/hoa/guarantee_l4.hoa
+guarantee_l5.hoa,LTL,daisy,0.066,Xa,2,0,2,1.0,TRUE,samples/validation/hoa/guarantee_l5.hoa
+guarantee_l6.hoa,LTL,daisy,0.069,XXa,3,0,3,1.0,TRUE,samples/validation/hoa/guarantee_l6.hoa
+guarantee_l7.hoa,LTL,daisy,0.069,XXXa,4,0,4,1.0,TRUE,samples/validation/hoa/guarantee_l7.hoa
+guarantee_l8.hoa,LTL,daisy,0.066,X(a & Xa),4,0,5,1.2,TRUE,samples/validation/hoa/guarantee_l8.hoa
+guarantee_l9.hoa,LTL,daisy,0.065,Fa,2,1,2,1.0,TRUE,samples/validation/hoa/guarantee_l9.hoa
+obligation_l4.hoa,LTL,daisy+strength2,0.068,G(!a & b) | Fa,7,2,8,1.1,TRUE,samples/validation/hoa/obligation_l4.hoa
+obligation_l5.hoa,LTL,daisy,0.067,(a & b) W ((!a & Gb) | (!b & Ga)),11,3,15,1.4,TRUE,samples/validation/hoa/obligation_l5.hoa
+obligation_l6.hoa,LTL,daisy+inv,0.065,Gb & Fa,5,2,5,1.0,TRUE,samples/validation/hoa/obligation_l6.hoa
+obligation_l7.hoa,LTL,daisy+strength2,0.068,((a & !b & c) W (!a & !b & Gc)) | (a U b),11,3,17,1.5,TRUE,samples/validation/hoa/obligation_l7.hoa
+obligation_l8.hoa,LTL,daisy+strength2,0.065,G(a & !b) | Fb,7,2,8,1.1,TRUE,samples/validation/hoa/obligation_l8.hoa
+persistence_l4.hoa,LTL,daisy,0.065,FGa,3,2,3,1.0,TRUE,samples/validation/hoa/persistence_l4.hoa
+persistence_l5.hoa,LTL,daisy,0.064,F(a & Gb),5,2,5,1.0,TRUE,samples/validation/hoa/persistence_l5.hoa
+persistence_l6.hoa,LTL,daisy,0.066,F(Ga | Gb),6,3,6,1.0,TRUE,samples/validation/hoa/persistence_l6.hoa
+reactivity_l4.hoa,LTL,daisy+strength2,0.066,F(G!a | (b & GFb)),9,4,10,1.1,TRUE,samples/validation/hoa/reactivity_l4.hoa
+reactivity_l5.hoa,LTL,acc2+daisy,0.065,G(Fa & FGb),7,4,7,1.0,TRUE,samples/validation/hoa/reactivity_l5.hoa
+recurrence_l10.hoa,LTL,daisy2,0.068,G(!a | (b U c)),7,2,7,1.0,TRUE,samples/validation/hoa/recurrence_l10.hoa
+recurrence_l11.hoa,LTL,daisy2,0.067,G(F(a & X!a) & (!a | X!a)),8,2,14,1.8,TRUE,samples/validation/hoa/recurrence_l11.hoa
+recurrence_l12.hoa,LTL,partscc,0.065,G((!a | Xb) & Fa),8,2,9,1.1,TRUE,samples/validation/hoa/recurrence_l12.hoa
+recurrence_l13.hoa,LTL,acc2+daisy2,0.077,G(F(a & X!a) & (!a | X!a) & F((a & X(!a & b)) | (b & (!a | X!a)))),15,3,31,2.1,TRUE,samples/validation/hoa/recurrence_l13.hoa
+recurrence_l4.hoa,LTL,daisy,0.065,GFa,3,2,3,1.0,TRUE,samples/validation/hoa/recurrence_l4.hoa
+recurrence_l5.hoa,LTL,daisy2,0.066,G(!a | Fb),6,2,6,1.0,TRUE,samples/validation/hoa/recurrence_l5.hoa
+recurrence_l6.hoa,LTL,daisy2,0.066,G(a | Fb),5,2,5,1.0,TRUE,samples/validation/hoa/recurrence_l6.hoa
+recurrence_l7.hoa,LTL,acc2+daisy,0.066,G(Fa & Fb),6,3,6,1.0,TRUE,samples/validation/hoa/recurrence_l7.hoa
+recurrence_l8.hoa,LTL,acc3+daisy,0.069,G(Fa & Fb & Fc),8,4,8,1.0,TRUE,samples/validation/hoa/recurrence_l8.hoa
+recurrence_l9.hoa,LTL,acc2+daisy2,0.199,G((!a | Fb) & (!c | Fd)),12,3,12,1.0,TRUE,samples/validation/hoa/recurrence_l9.hoa
+safety_l10.hoa,LTL,daisy+partscc,0.065,(a & X(!a & G((!a | X!a) & (a | Xa)))) | (!a & X(a & G((!a | X!a) & (a | Xa)))),15,1,37,2.5,TRUE,samples/validation/hoa/safety_l10.hoa
+safety_l11.hoa,LTL,daisy+partscc,0.070,(a & X(b & G((!a | Xb) & (a | X!b)))) | (!a & X(!b & G((!a | Xb) & (a | X!b)))),17,1,37,2.2,TRUE,samples/validation/hoa/safety_l11.hoa
+safety_l4.hoa,LTL,daisy,0.062,Ga,2,1,2,1.0,TRUE,samples/validation/hoa/safety_l4.hoa
+safety_l5.hoa,LTL,daisy,0.067,G(a | b),4,1,4,1.0,TRUE,samples/validation/hoa/safety_l5.hoa
+safety_l6.hoa,LTL,partscc,0.067,G(!a | Xb),6,1,6,1.0,TRUE,samples/validation/hoa/safety_l6.hoa
+safety_l7.hoa,LTL,daisy,0.064,a & Xa,3,0,4,1.3,TRUE,samples/validation/hoa/safety_l7.hoa
+safety_l8.hoa,LTL,daisy,0.062,!a W Ga,4,2,5,1.2,TRUE,samples/validation/hoa/safety_l8.hoa
+safety_l9.hoa,LTL,daisy,0.065,Ga,2,1,2,1.0,TRUE,samples/validation/hoa/safety_l9.hoa
+true,LTL,daisy,0.066,1,1,0,1,1.0,TRUE,samples/validation/ltl/bottom.ltl:4
+false,LTL,daisy,0.066,0,1,0,1,1.0,TRUE,samples/validation/ltl/bottom.ltl:5
+a,LTL,daisy,0.065,a,1,0,1,1.0,TRUE,samples/validation/ltl/guarantee.ltl:4
+X a,LTL,daisy,0.068,Xa,2,0,2,1.0,TRUE,samples/validation/ltl/guarantee.ltl:5
+X X a,LTL,daisy,0.066,XXa,3,0,3,1.0,TRUE,samples/validation/ltl/guarantee.ltl:6
+X X X a,LTL,daisy,0.066,XXXa,4,0,4,1.0,TRUE,samples/validation/ltl/guarantee.ltl:7
+X(a & X a),LTL,daisy,0.064,X(a & Xa),4,0,5,1.2,TRUE,samples/validation/ltl/guarantee.ltl:8
+Fa,LTL,daisy,0.066,Fa,2,1,2,1.0,TRUE,samples/validation/ltl/guarantee.ltl:9
+a U b,LTL,daisy,0.068,a U b,3,1,3,1.0,TRUE,samples/validation/ltl/guarantee.ltl:10
+F(a & b),LTL,daisy,0.066,F(a & b),4,1,4,1.0,TRUE,samples/validation/ltl/guarantee.ltl:11
+F(a & X b),LTL,daisy+daisystardet,0.067,F(a & Xb),5,1,5,1.0,TRUE,samples/validation/ltl/guarantee.ltl:12
+a | X b,LTL,daisy,0.067,a | Xb,4,0,4,1.0,TRUE,samples/validation/ltl/guarantee.ltl:13
+Fa | Gb,LTL,daisy+strength2,0.069,Fa | G(!a & b),7,2,8,1.1,TRUE,samples/validation/ltl/obligation.ltl:4
+Ga | Gb,LTL,daisy,0.070,(a & b) W ((!a & Gb) | (!b & Ga)),11,3,15,1.4,TRUE,samples/validation/ltl/obligation.ltl:5
+Fa & Gb,LTL,daisy+inv,0.067,Fa & Gb,5,2,5,1.0,TRUE,samples/validation/ltl/obligation.ltl:6
+(a U b) | Gc,LTL,daisy+strength2,0.067,(a U b) | ((a & !b & c) W (!a & !b & Gc)),11,3,17,1.5,TRUE,samples/validation/ltl/obligation.ltl:7
+Ga | Fb,LTL,daisy+strength2,0.067,Fb | G(a & !b),7,2,8,1.1,TRUE,samples/validation/ltl/obligation.ltl:8
+FGa,LTL,daisy,0.067,FGa,3,2,3,1.0,TRUE,samples/validation/ltl/persistence.ltl:4
+F(a & G b),LTL,daisy,0.066,F(a & Gb),5,2,5,1.0,TRUE,samples/validation/ltl/persistence.ltl:5
+FGa | FGb,LTL,daisy,0.068,F(Ga | Gb),6,3,6,1.0,TRUE,samples/validation/ltl/persistence.ltl:6
+GFa -> GFb,LTL,daisy+strength2,0.068,F(G!a | (b & GFb)),9,4,10,1.1,TRUE,samples/validation/ltl/reactivity.ltl:4
+GFa & FGb,LTL,acc2+daisy,0.070,G(Fa & FGb),7,4,7,1.0,TRUE,samples/validation/ltl/reactivity.ltl:5
+GFa,LTL,daisy,0.066,GFa,3,2,3,1.0,TRUE,samples/validation/ltl/recurrence.ltl:4
+G(a -> F b),LTL,daisy2,0.067,G(!a | Fb),6,2,6,1.0,TRUE,samples/validation/ltl/recurrence.ltl:5
+G(a | F b),LTL,daisy2,0.064,G(a | Fb),5,2,5,1.0,TRUE,samples/validation/ltl/recurrence.ltl:6
+GFa & GFb,LTL,acc2+daisy,0.068,G(Fa & Fb),6,3,6,1.0,TRUE,samples/validation/ltl/recurrence.ltl:7
+GFa & GFb & GFc,LTL,acc3+daisy,0.070,G(Fa & Fb & Fc),8,4,8,1.0,TRUE,samples/validation/ltl/recurrence.ltl:8
+G(a -> F b) & G(c -> F d),LTL,acc2+daisy2,0.201,G((!a | Fb) & (!c | Fd)),12,3,12,1.0,TRUE,samples/validation/ltl/recurrence.ltl:9
+G(a -> (b U c)),LTL,daisy2,0.066,G(!a | (b U c)),7,2,7,1.0,TRUE,samples/validation/ltl/recurrence.ltl:10
+GFa & G(a -> X !a),LTL,daisy2,0.069,G((!a | X!a) & F(a & X!a)),8,2,14,1.8,TRUE,samples/validation/ltl/recurrence.ltl:11
+G(a -> X b) & GFa,LTL,partscc,0.070,G(Fa & (!a | Xb)),8,2,9,1.1,TRUE,samples/validation/ltl/recurrence.ltl:12
+GFa & GFb & G(a -> X !a),LTL,acc2+daisy2,0.075,G((!a | X!a) & F(a & X!a) & F((a & X(!a & b)) | (b & (!a | X!a)))),15,3,31,2.1,TRUE,samples/validation/ltl/recurrence.ltl:13
+Ga,LTL,daisy,0.066,Ga,2,1,2,1.0,TRUE,samples/validation/ltl/safety.ltl:4
+G(a | b),LTL,daisy,0.065,G(a | b),4,1,4,1.0,TRUE,samples/validation/ltl/safety.ltl:5
+G(a -> X b),LTL,partscc,0.067,G(!a | Xb),6,1,6,1.0,TRUE,samples/validation/ltl/safety.ltl:6
+a & X a,LTL,daisy,0.066,a & Xa,3,0,4,1.3,TRUE,samples/validation/ltl/safety.ltl:7
+G(a -> X a),LTL,daisy,0.067,!a W Ga,4,2,5,1.2,TRUE,samples/validation/ltl/safety.ltl:8
+G(a & X a),LTL,daisy,0.067,Ga,2,1,2,1.0,TRUE,samples/validation/ltl/safety.ltl:9
+G((!a & X a) | (a & X !a)),LTL,daisy+partscc,0.072,(!a & X(a & G((a | Xa) & (!a | X!a)))) | (a & X(!a & G((a | Xa) & (!a | X!a)))),15,1,37,2.5,TRUE,samples/validation/ltl/safety.ltl:10
+G(a <-> X b),LTL,daisy+partscc,0.069,(a & X(b & G((!a | Xb) & (a | X!b)))) | (!a & X(!b & G((!a | Xb) & (a | X!b)))),17,1,37,2.2,TRUE,samples/validation/ltl/safety.ltl:11

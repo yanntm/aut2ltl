@@ -1,334 +1,334 @@
-input,result,technique,build_s,formula,dag,temporals,tree,sharing,validation
-(a W ((a & b) U (b | c))),LTL,daisy+strength2,0.067,G(a & !b & !c) | (a U (b | c)),10,2,13,1.3,TRUE
-(a W ((a & b) U ((b | c) W (a & X b)))),LTL,daisy+strength2,0.071,a W ((a & Xb) | (((!a & b) | (!a & c)) & X((b | c) W (a & Xb)))),15,2,26,1.7,TRUE
-(a U ((a & b) R (b | c))),LTL,daisy+strength2,0.069,(a & !b) U ((a & b) | G((!a & b) | (!b & c)) | (((!a & b) | (!a & c)) & X((c | (…,19,3,40,2.1,TRUE
-(a U ((a & b) R ((b | c) U (a & X b)))),LTL,daisy+daisy2+daisystar+strength2,0.110,a U ((a & b & X(b | ((b | c) U (a & Xb)))) | (((!a & b) | (!a & c)) & X(G(F(a & …,36,5,112,3.1,TRUE
-(a R (a & b)),LTL,daisy,0.065,a & b,3,0,3,1.0,TRUE
-(a R ((a & b) R (b | c))),LTL,daisy+strength2,0.068,G((!a & b) | (!b & c)) | ((b | c) U (a & b)),13,2,18,1.4,TRUE
-(a R ((a & b) R ((b | c) R (a & X b)))),LTL,daisy,0.066,a & ((b & Xb) | (!b & X(a & b & Xb))),10,0,16,1.6,TRUE
-(a U (a & b)),LTL,daisy,0.065,b M a,3,1,3,1.0,TRUE
-(a U ((a & b) U (b | c))),LTL,daisy,0.068,a U (b | c),5,1,5,1.0,TRUE
-(a U ((a & b) U ((b | c) U (a & X b)))),LTL,daisy,0.071,a U ((a & Xb) | (((!a & b) | (!a & c)) & X((b | c) U (a & Xb)))),15,2,26,1.7,TRUE
-(a W (a & b)),LTL,daisy+strength2,0.068,b R a,3,1,3,1.0,TRUE
-(a W ((a & b) W (b | c))),LTL,daisy+strength2,0.070,G(a & !b & !c) | (a U (b | c)),10,2,13,1.3,TRUE
-(a W ((a & b) W ((b | c) W (a & X b)))),LTL,daisy+strength2,0.067,a W ((a & Xb) | (((!a & b) | (!a & c)) & X((b | c) W (a & Xb)))),15,2,26,1.7,TRUE
-(a U X (a & b)),LTL,daisy,0.068,a U X(a & b),5,1,6,1.2,TRUE
-(a U (X (a & b) U (b | c))),LTL,daisy,0.069,(a & !b & !c) U (b | c | (!a & X(a & b))),12,1,17,1.4,TRUE
-(a U (X (a & b) U ((b | c) U X (a & X b)))),LTL,daisy,0.071,a U (X(a & Xb) | (((!a & b) | (!a & c)) & X((b | c) U X(a & Xb))) | (!a & !b & !…,23,2,54,2.3,TRUE
-(a W X (a & b)),LTL,daisy+strength2,0.068,a W X(a & b),5,1,6,1.2,TRUE
-(a W (X (a & b) W (b | c))),LTL,daisy+strength2,0.068,(a & !b & !c) W (b | c | (!a & X(a & b))),12,1,17,1.4,TRUE
-(a W (X (a & b) W ((b | c) W X (a & X b)))),LTL,daisy+strength2,0.075,a W (X(a & Xb) | (((!a & b) | (!a & c)) & X((b | c) W X(a & Xb))) | (!a & !b & !…,28,4,63,2.2,TRUE
-true,LTL,daisy,0.067,1,1,0,1,1.0,TRUE
-false,LTL,daisy,0.067,0,1,0,1,1.0,TRUE
-a,LTL,daisy,0.068,a,1,0,1,1.0,TRUE
-X a,LTL,daisy,0.068,Xa,2,0,2,1.0,TRUE
-X X a,LTL,daisy,0.068,XXa,3,0,3,1.0,TRUE
-X X X a,LTL,daisy,0.068,XXXa,4,0,4,1.0,TRUE
-X(a & X a),LTL,daisy,0.067,X(a & Xa),4,0,5,1.2,TRUE
-Fa,LTL,daisy,0.065,Fa,2,1,2,1.0,TRUE
-a U b,LTL,daisy,0.069,a U b,3,1,3,1.0,TRUE
-F(a & b),LTL,daisy,0.069,F(a & b),4,1,4,1.0,TRUE
-F(a & X b),LTL,daisy+daisystardet,0.069,F(a & Xb),5,1,5,1.0,TRUE
-a | X b,LTL,daisy,0.067,a | Xb,4,0,4,1.0,TRUE
-Fa | Gb,LTL,daisy+strength2,0.065,Fa | G(!a & b),7,2,8,1.1,TRUE
-Ga | Gb,LTL,daisy,0.069,(a & b) W ((!a & Gb) | (!b & Ga)),11,3,15,1.4,TRUE
-Fa & Gb,LTL,daisy+inv,0.064,Fa & Gb,5,2,5,1.0,TRUE
-(a U b) | Gc,LTL,daisy+strength2,0.072,(a U b) | ((a & !b & c) W (!a & !b & Gc)),11,3,17,1.5,TRUE
-Ga | Fb,LTL,daisy+strength2,0.068,Fb | G(a & !b),7,2,8,1.1,TRUE
-FGa,LTL,daisy,0.067,FGa,3,2,3,1.0,TRUE
-F(a & G b),LTL,daisy,0.064,F(a & Gb),5,2,5,1.0,TRUE
-FGa | FGb,LTL,daisy,0.069,F(Ga | Gb),6,3,6,1.0,TRUE
-GFa -> GFb,LTL,daisy+strength2,0.067,F(G!a | (b & GFb)),9,4,10,1.1,TRUE
-GFa & FGb,LTL,acc2+daisy,0.072,G(Fa & FGb),7,4,7,1.0,TRUE
-GFa,LTL,daisy,0.068,GFa,3,2,3,1.0,TRUE
-G(a -> F b),LTL,daisy2,0.069,G(!a | Fb),6,2,6,1.0,TRUE
-G(a | F b),LTL,daisy2,0.067,G(a | Fb),5,2,5,1.0,TRUE
-GFa & GFb,LTL,acc2+daisy,0.067,G(Fa & Fb),6,3,6,1.0,TRUE
-GFa & GFb & GFc,LTL,acc3+daisy,0.067,G(Fa & Fb & Fc),8,4,8,1.0,TRUE
-G(a -> F b) & G(c -> F d),LTL,acc2+daisy2,0.206,G((!a | Fb) & (!c | Fd)),12,3,12,1.0,TRUE
-G(a -> (b U c)),LTL,daisy2,0.069,G(!a | (b U c)),7,2,7,1.0,TRUE
-GFa & G(a -> X !a),LTL,daisy2,0.069,G((!a | X!a) & F(a & X!a)),8,2,14,1.8,TRUE
-G(a -> X b) & GFa,LTL,partscc,0.068,G(Fa & (!a | Xb)),8,2,9,1.1,TRUE
-GFa & GFb & G(a -> X !a),LTL,acc2+daisy2,0.075,G((!a | X!a) & F(a & X!a) & F((a & X(!a & b)) | (b & (!a | X!a)))),15,3,31,2.1,TRUE
-Ga,LTL,daisy,0.069,Ga,2,1,2,1.0,TRUE
-G(a | b),LTL,daisy,0.069,G(a | b),4,1,4,1.0,TRUE
-G(a -> X b),LTL,partscc,0.069,G(!a | Xb),6,1,6,1.0,TRUE
-a & X a,LTL,daisy,0.068,a & Xa,3,0,4,1.3,TRUE
-G(a -> X a),LTL,daisy,0.068,!a W Ga,4,2,5,1.2,TRUE
-G(a & X a),LTL,daisy,0.065,Ga,2,1,2,1.0,TRUE
-G((!a & X a) | (a & X !a)),LTL,daisy+partscc,0.070,(!a & X(a & G((a | Xa) & (!a | X!a)))) | (a & X(!a & G((a | Xa) & (!a | X!a)))),15,1,37,2.5,TRUE
-G(a <-> X b),LTL,daisy+partscc,0.068,(a & X(b & G((!a | Xb) & (a | X!b)))) | (!a & X(!b & G((!a | Xb) & (a | X!b)))),17,1,37,2.2,TRUE
-F(a R Xa),LTL,daisy+daisystardet,0.070,F(a & Xa),4,1,5,1.2,TRUE
-XF(!a & X!a),LTL,daisy+daisystardet,0.070,XF(!a & X!a),6,1,8,1.3,TRUE
-F(a & Xa),LTL,daisy+daisystardet,0.068,F(a & Xa),4,1,5,1.2,TRUE
-F(a & X!b),LTL,daisy+daisystardet,0.069,F(a & X!b),6,1,6,1.0,TRUE
-F(a & b & Xa),LTL,daisy+daisystardet,0.067,F(a & b & Xa),5,1,6,1.2,TRUE
-X!a & F(b & Xb),LTL,daisy+daisystardet,0.072,(!b & X(!a & ((!b & XF(b & Xb)) | (b & X(b | F(b & Xb)))))) | (b & X(!a & (b | X…,21,1,42,2.0,TRUE
-F(a & X(a U b)),LTL,daisy+daisystardet,0.065,F(a & Xb),5,1,5,1.0,TRUE
-XF(!a & X(!a U !b)),LTL,daisy+daisystardet,0.068,XF(!a & X!b),8,1,8,1.0,TRUE
-F(X!a & ((b R a) W b)),LTL,daisy+daisystardet,0.067,F(b & X!a),6,1,6,1.0,TRUE
-F(a & (!a M !b)),LTL,daisy+daisystardet,0.068,F(a & !b & X(!a & !b)),8,1,11,1.4,TRUE
-F(a & !b & Xb),LTL,daisy+daisystardet,0.068,F(a & !b & Xb),6,1,7,1.2,TRUE
-F(((a & !b) | (!a & b)) & Xc),LTL,daisy+daisystardet,0.068,F(((a & !b) | (!a & b)) & Xc),11,1,13,1.2,TRUE
-F(!a & (b U a)),LTL,daisy+daisystardet,0.070,F(!a & b & Xa),6,1,7,1.2,TRUE
-a | F(a & Xa),LTL,daisy+daisystardet,0.069,a | F(a & Xa),5,1,7,1.4,TRUE
-F(a & Xa) & (a | Fb),LTL,daisy+daisystardet,0.080,(a & X(a | F(a & Xa))) | (!a & ((b & XF(a & Xa)) | (!b & X((b & ((a & X(a | F(a …,36,3,105,2.9,TRUE
-XF(!a & X!b),LTL,daisy+daisystardet,0.067,XF(!a & X!b),8,1,8,1.0,TRUE
-Fa & F(b R Xb),LTL,daisy+daisystardet,0.072,(a & ((!b & XF(b & Xb)) | (b & X(b | F(b & Xb))))) | F(!a & ((b & X((a & b) | (a…,30,3,78,2.6,TRUE
-F((!a | !b) & X(!a U !b)),LTL,daisy+daisystardet,0.067,F((!a | !b) & X!b),8,1,10,1.2,TRUE
-(!a U !b) M Fb,LTL,daisy+daisystardet,0.069,(!b & XFb) | F(b & ((!a & X!b) | (a & X(!b & XFb)))),15,2,26,1.7,TRUE
-XF(((a & b) | (!a & c) | (a & !c)) & Xa),LTL,daisy+daisystardet,0.068,XF(((a & b) | (!a & c) | (a & !c)) & Xa),13,1,17,1.3,TRUE
-(a & Xb) M Fb,LTL,daisy+daisystardet,0.066,F(a & Xb),5,1,5,1.0,TRUE
-XXF(a & X(a U b)),LTL,daisy+daisystardet,0.068,XXF(a & Xb),7,1,7,1.0,TRUE
-F(((!a & b) | (a & !b)) & X((!a & b) U a)),LTL,daisy+daisystardet,0.066,F(((!a & b) | (a & !b)) & Xa),10,1,13,1.3,TRUE
-F(a & ((a & Xa) | (!a & X!a))),LTL,daisy+daisystardet,0.065,F(a & Xa),4,1,5,1.2,TRUE
-(a U b) M XF!a,LTL,daisy+daisystardet,0.072,(b & XF!a) | F(!b & ((!a & X(b & XF!a)) | (a & X((!a & b) | (a & b & XF!a))))),18,2,37,2.1,TRUE
-F(a & b & Xb),LTL,daisy+daisystardet,0.070,F(a & b & Xb),5,1,6,1.2,TRUE
-!a | (F(!a & Fa) U b),LTL,daisy+daisystardet,0.073,!a | b | X((b & ((!a & XFa) | (a & XF(!a & XFa)))) | F(!b & ((!a & X((a & b) | (…,27,3,67,2.5,TRUE
-F(a & X(b | !c)),LTL,daisy+daisystardet,0.069,F(a & X(b | !c)),8,1,8,1.0,TRUE
-X((a U b) M F!b),LTL,daisy+daisystardet,0.071,X((b & XF!b) | F(!b & ((a & Xb) | (!a & X(b & XF!b))))),16,2,27,1.7,TRUE
-F(!a & (!a R Xb)),LTL,daisy+daisystardet,0.068,F(!a & Xb),6,1,6,1.0,TRUE
-XXF(a & Xa),LTL,daisy+daisystardet,0.071,XXF(a & Xa),6,1,7,1.2,TRUE
-a M XF(!b & Xc),LTL,daisy+daisystardet,0.067,F(a & XF(!b & Xc)),10,2,10,1.0,TRUE
-F((a & Fb) | (!a & G!b)) U ((c U !a) M a),LTL,daisy+daisystardet,0.068,F(a & c & X!a),6,1,7,1.2,TRUE
-(a R Xa) M Fa,LTL,daisy+daisystardet,0.069,F(a & Xa),4,1,5,1.2,TRUE
-XF(!a & (!a R X!a)),LTL,daisy+daisystardet,0.068,XF(!a & X!a),6,1,8,1.3,TRUE
-F((a | !b) & Xa),LTL,daisy+daisystardet,0.067,F((a | !b) & Xa),7,1,8,1.1,TRUE
-(!a U !b) | F(a & Xa),LTL,daisy+daisystardet,0.067,(!a & b) U (!b | (a & X(a | F(a & Xa)))),13,2,18,1.4,TRUE
-!a | F(a & Xa),LTL,daisy+daisystardet,0.069,!a | X(a | F(a & Xa)),8,1,11,1.4,TRUE
-a & XF(a & (!b U !a)),LTL,daisy+daisystardet,0.067,a & XF(a & !b & X!a),9,1,11,1.2,TRUE
-F(Fa & (!a M (a U b))),LTL,daisy+daisystardet,0.070,(!a & b & XFa) | F((a & X(!a & b)) | (!a & !b & X(!a & b & XFa))),15,2,30,2.0,TRUE
-XXXF(a & Xa),LTL,daisy+daisystardet,0.070,XXXF(a & Xa),7,1,8,1.1,TRUE
-F(a & b & X(!c | b)),LTL,daisy+daisystardet,0.068,F(a & b & X(b | !c)),8,1,9,1.1,TRUE
-F(a R (!b M (c & Xa))),LTL,daisy+daisystardet,0.071,F(a & !b & c & Xa),7,1,8,1.1,TRUE
-(a U b) & GF c,LTL,daisy,0.066,(a & !b) U (b & GFc),9,3,10,1.1,TRUE
-FG a,LTL,daisy,0.067,FGa,3,2,3,1.0,TRUE
-G (a -> X a) & GF b,LTL,daisy,0.071,G(!a & F(!a & b)) | (!a U G(a & F(a & b))),13,5,20,1.5,TRUE
-G(Xa & (b | Xc)),LTL,daisy+inv+partscc,0.074,(b & XG(a & (b | Xc))) | (!b & X(c & G(a & (b | Xc)))),14,1,24,1.7,TRUE
-X(a | F(a & Xa)),LTL,daisy+daisystardet,0.072,X(a | F(a & Xa)),6,1,8,1.3,TRUE
-!a W b,LTL,daisy+strength2,0.067,!a W b,4,1,4,1.0,TRUE
-G!a R b,LTL,daisy,0.069,G!a R b,5,2,5,1.0,TRUE
-motivating_example.hoa,LTL,daisy,0.068,(a & !b) U (b & GFc),9,3,10,1.1,TRUE
-second_example.hoa,LTL,daisy,0.070,G(!b & F(a & !b)) | (!b U G(b & F(a & b))),13,5,20,1.5,TRUE
-G(a | X!b),LTL,partscc,0.067,G(a | X!b),6,1,6,1.0,TRUE
-G(a | (a & Xb) | (!a & X!b)),LTL,partscc,0.068,G(a | X!b),6,1,6,1.0,TRUE
-XG(Xa | (b & X!a) | (!b & Xa)),LTL,daisy+partscc,0.068,XG(b | Xa),6,1,6,1.0,TRUE
-FG(a | Xa),LTL,daisy+daisy2+partscc,0.070,F((!a & X(a & G(a | Xa))) | (a & XG(a | Xa))),12,2,21,1.8,TRUE
-X!a | G(b | Xb),LTL,daisy+daisy2+strength2,0.067,X!a | G(b | Xb),8,1,9,1.1,TRUE
-XG(a | Xa),LTL,daisy+daisy2,0.069,XG(a | Xa),5,1,6,1.2,TRUE
-G(!a | (a & X!b) | (!a & Xb)),LTL,partscc,0.067,G(!a | X!b),7,1,7,1.0,TRUE
-XG(a | X!b),LTL,daisy+partscc,0.069,XG(a | X!b),7,1,7,1.0,TRUE
-G((a R b) | (!b & F!b) | (b & Gb)),LTL,partscc,0.069,G(a | !b | Xb),6,1,7,1.2,TRUE
-FG(!a | X(!a R b)),LTL,daisy+partscc,0.069,F((!a & XG(!a | Xb)) | (a & X(b & G(!a | Xb)))),13,2,23,1.8,TRUE
-G(a | Xa),LTL,daisy2,0.069,G(a | Xa),4,1,5,1.2,TRUE
-FG(!a | X(a W b)),LTL,daisy+partscc,0.072,F((!a & XG(!a | X(a | b))) | (a & X((a | b) & G(!a | X(a | b))))),14,2,29,2.1,TRUE
-X(G!a U G(b | X!a)),LTL,daisy+partscc,0.069,XG(b | X!a),7,1,7,1.0,TRUE
-FG(a | X!b),LTL,daisy+partscc,0.069,F((a & XG(a | X!b)) | (!a & X(!b & G(a | X!b)))),14,2,24,1.7,TRUE
-G(a | b | Xb),LTL,daisy2,0.069,G(a | b | Xb),5,1,6,1.2,TRUE
-XG(!a | b | (b & Xa) | (!b & X!a)),LTL,daisy+daisy2,0.067,XG(!a | b | X!a),7,1,9,1.3,TRUE
-G(a U Xa),LTL,daisy2,0.072,G(a | Xa),4,1,5,1.2,TRUE
-FG(((a & X!b) | (!a & Xb)) U (!a | X!b)),LTL,daisy+partscc,0.070,F((!a & XG(!a | X!b)) | (a & X(!b & G(!a | X!b)))),14,2,26,1.9,TRUE
-Ga R (a | X((a & b) | (!a & !b))),LTL,partscc,0.068,G(a | X((a & b) | (!a & !b))),10,1,13,1.3,TRUE
-XG(!a | X!b | (a M b)),LTL,daisy+partscc,0.069,XG(!a | b | X!b),8,1,9,1.1,TRUE
-a W FG(b | Xa),LTL,daisy+partscc,0.072,F((b & XG(b | Xa)) | (!b & X(a & G(b | Xa)))),13,2,21,1.6,TRUE
-G((a & (!b M ((a & !b) | (!a & b)))) | (!a & (b W ((a & b) | (!a & !b))))),LTL,partscc,0.071,(!a | !b) & G((b | X(!a | !b)) & (a | !b | X!a)),12,1,23,1.9,TRUE
-G((!a & b) | (a W !b)),LTL,partscc,0.070,G(!a | !b | X(a | !b)),8,1,11,1.4,TRUE
-G(!a | X(!b & c)),LTL,partscc,0.069,G(!a | X(!b & c)),9,1,9,1.0,TRUE
-!a & G(b | X!c),LTL,daisy+partscc,0.070,!a & ((b & XG(b | X!c)) | (!b & X(!c & G(b | X!c)))),16,1,26,1.6,TRUE
-G(a | X((b & !a) | (!b & a))),LTL,partscc,0.069,G(a | X((!a & b) | (a & !b))),10,1,13,1.3,TRUE
-FG(a | X(a R ((a & b) | (!a & !b)))),LTL,daisy+partscc,0.070,F((a & XG(a | X((a & b) | (!a & !b)))) | (!a & X(((a & b) | (!a & !b)) & G(a | X…,17,2,45,2.6,TRUE
-G(!a | b | Xa),LTL,partscc,0.068,G(!a | b | Xa),6,1,7,1.2,TRUE
-G(a | X(a R b)),LTL,partscc,0.068,G(a | Xb),5,1,5,1.0,TRUE
-G(a | (a U Xa)),LTL,daisy2,0.070,G(a | Xa),4,1,5,1.2,TRUE
-G(a | (b W (!a W b))),LTL,partscc,0.069,G(a | b | X(!a | b)),7,1,9,1.3,TRUE
-G(a | (Fb R Xb)),LTL,partscc,0.067,G(a | Xb),5,1,5,1.0,TRUE
-G((a & (a M !b)) | (!a & (!a W b))),LTL,inv+partscc,0.070,G((!a | !b) & (a | b | X!a)),9,1,13,1.4,TRUE
-XG(!a | b | Xc),LTL,daisy+partscc,0.070,XG(!a | b | Xc),8,1,8,1.0,TRUE
-G((a & (a W b)) | (!a & (!a M !b))),LTL,inv+partscc,0.070,G((a | !b) & (!a | b | Xa)),9,1,12,1.3,TRUE
-!a U G(b | Xb),LTL,daisy+daisy2+partscc,0.071,!a U ((!b & X(b & G(b | Xb))) | (b & XG(b | Xb))),14,2,23,1.6,TRUE
-FG((a | (!a M !b)) & (!a | (a W b))),LTL,daisy+partscc,0.072,F((((!a & !b) | (a & b)) & X((a | !b) & G((((a | b) & (!a | !b)) | X(a | !b)) & …,25,2,71,2.8,TRUE
-G(a | (a & !a) | X((a | (a & !a)) R b)),LTL,partscc,0.068,G(a | Xb),5,1,5,1.0,TRUE
-FG(a | (!b R !a)),LTL,daisy+partscc,0.069,F(((a | !b) & XG(a | !b | X!a)) | (!a & b & X(!a & G(a | !b | X!a)))),15,2,32,2.1,TRUE
-XG(a | (a U Xb)),LTL,daisy+partscc,0.070,XG(a | Xb),6,1,6,1.0,TRUE
-G(!a | (!a & !b) | X!a),LTL,daisy2,0.069,G(!a | X!a),5,1,7,1.4,TRUE
-X(Xa U G(b | (!b W a))),LTL,daisy+partscc,0.066,XG(a | b | X(a | !b)),8,1,10,1.2,TRUE
-a U G(a | Xb),LTL,partscc,0.065,G(a | Xb),5,1,5,1.0,TRUE
-XG(a U Xa),LTL,daisy+daisy2,0.066,XG(a | Xa),5,1,6,1.2,TRUE
-G((a & X(a W b)) | (!a & (!a | X(!a M !b)))),LTL,partscc,0.070,G(!a | X(a | b)),7,1,8,1.1,TRUE
-XG(a | X(a R b)),LTL,daisy+partscc,0.073,XG(a | Xb),6,1,6,1.0,TRUE
-G(a | X(!a | b | !c)),LTL,partscc,0.070,G(a | X(!a | b | !c)),9,1,10,1.1,TRUE
-Ga R (a | X!b),LTL,partscc,0.071,G(a | X!b),6,1,6,1.0,TRUE
-G(a | (a R b)),LTL,inv+partscc,0.070,G((a | b) & (a | X(!a | b))),9,1,12,1.3,TRUE
-!a & G(b | Xa),LTL,daisy+partscc,0.071,!a & ((b & XG(b | Xa)) | (!b & X(a & G(b | Xa)))),14,1,23,1.6,TRUE
-G((a U b) & (!a | Xb)),LTL,inv+partscc,0.072,G((a | b) & (!a | X(!a | b))),9,1,13,1.4,TRUE
-G(a & !a) R (b U Xb),LTL,daisy2,0.071,G(b | Xb),4,1,5,1.2,TRUE
-G(a->Xb) & G(c->Xd),LTL,partscc,0.069,G((a | !c | Xd) & (!a | c | Xb) & (!a | !c | X(b & d))),15,1,23,1.5,TRUE
-XG((a & (b | Xb)) | (!a & !b & X!b)),LTL,daisy+partscc,0.067,X((a | !b) & G((!a | !b | X(a | !b)) & (a | b | X!b) & (!a | b | X(a & b)))),16,1,32,2.0,TRUE
-X(a | G(X!a | (!b W !a))),LTL,daisy+partscc+strength2,0.069,X(a | G((!a | !b | X!a) & (!a | b | X(!a | !b)))),13,1,23,1.8,TRUE
-FG((a | b) & (a | Xb) & (!a | !b | X!b)),LTL,daisy+partscc,0.072,F((!a & b & X(b & G((!a | b | X(a | b)) & (a | !b | Xb) & (!a | !b | X(a & !b)))…,27,2,105,3.9,TRUE
-G(a | (b & Xc) | (!b & X!c)),LTL,partscc,0.068,G((a | !b | Xc) & (a | b | X!c)),11,1,14,1.3,TRUE
-G((a & (!b M X!a)) | (!a & (b W Xa))),LTL,inv+partscc,0.071,G((!a | !b) & (!a | X!a) & (a | b | Xa)),11,1,18,1.6,TRUE
-G((!a & b & Xc) | (!b & (a | X!c))),LTL,inv+partscc,0.076,G((!a | !b) & (a | !b | Xc) & (a | b | X!c)),13,1,19,1.5,TRUE
-G(Fa & F!a),LTL,acc2+daisy,0.070,G(Fa & F!a),6,3,7,1.2,TRUE
-G(Fa & Fb),LTL,acc2+daisy,0.066,G(Fa & Fb),6,3,6,1.0,TRUE
-G(a M Fb),LTL,acc2+daisy,0.067,G(Fb & Fa),6,3,6,1.0,TRUE
-a & G(b | Xb),LTL,daisy+daisy2+partscc,0.068,a & ((!b & X(b & G(b | Xb))) | (b & XG(b | Xb))),13,1,22,1.7,TRUE
-(X!a & F(b & Xb)) | (Xa & G(!b | X!b)),LTL,daisy+daisy2+daisystardet+partscc+strength2,0.075,(b & X((a & !b & XG(!b | X!b)) | (!a & (b | XF(b & Xb))))) | (!b & X((a & ((b & …,34,2,83,2.4,TRUE
-GF(a & Xa),LTL,buchi,0.635,(a | X(F(a & Xa) & (a | Xa | (X(!a & XFa) & ((a | X!a) U (!a & X(!a & Xa))))))) …,67,12,826,12.3,TRUE
-G((a & (a W X!b)) | (!a & (!a M Xb))),LTL,daisy+partscc,0.069,(!a & X(b & G((a | Xb) & (!a | X(a | !b))))) | (a & X((a | !b) & G((a | Xb) & (!…,18,1,43,2.4,TRUE
-G((a & X!a) | (!a & Xa)),LTL,daisy+partscc,0.064,(a & X(!a & G((!a | X!a) & (a | Xa)))) | (!a & X(a & G((!a | X!a) & (a | Xa)))),15,1,37,2.5,TRUE
-XG((!a & Xb) | (a & X!b)),LTL,daisy+partscc,0.069,X((!a & X(b & G((a | Xb) & (!a | X!b)))) | (a & X(!b & G((a | Xb) & (!a | X!b)))…,18,1,38,2.1,TRUE
-G((!a & Xb) | (a & X!b)),LTL,daisy+partscc,0.071,(!a & X(b & G((a | Xb) & (!a | X!b)))) | (a & X(!b & G((a | Xb) & (!a | X!b)))),17,1,37,2.2,TRUE
-X(a M G(!b | X(!b M c))),LTL,daisy+daisy2+daisystar+partscc,0.089,X((!a & (!b | X((!a & b & c) U (!a & !b & c)))) U ((a & !b & XG(!b | X((b & c) U…,38,7,105,2.8,TRUE
-!a M G(b | X(b R a)),LTL,daisy2+partscc,0.072,(b M a) U (!a & ((b & XG(b | Xa)) | (!b & X(a & G(b | Xa))))),16,3,27,1.7,TRUE
-G(a | X(a M Gb)),LTL,daisy+inv+partscc+strength2,0.067,a W (!a & XG(b & Fa)),9,3,11,1.2,TRUE
-G(a | X(a M b)),LTL,daisy2,0.068,G(a | X((!a & b) U (a & b))),9,2,12,1.3,TRUE
-G(!a | Xb) M c,LTL,daisy+partscc,0.081,((!a & XG(!a | Xb)) | (a & X(b & G(!a | Xb)))) M c,14,2,24,1.7,TRUE
-XG(a & ((b & X!c) | (!b & Xc))),LTL,daisy+partscc,0.075,X(a & ((!b & X(a & c & G((!a | b | X(a & c)) & (!a | !b | X(a & !c))))) | (b & X…,23,1,58,2.5,TRUE
-G(a & ((b & X!c) | (!b & Xc))),LTL,daisy+partscc,0.074,a & ((!b & X(a & c & G((!a | b | X(a & c)) & (!a | !b | X(a & !c))))) | (b & X(a…,22,1,57,2.6,TRUE
-G(Xa | (F!a R !b)),LTL,partscc,0.066,G(!b | Xa),6,1,6,1.0,TRUE
-G(a | (a M (!a W !b))) U a,LTL,daisy+partscc+strength2,0.070,a | X((!a | !b) & G((a | X(!a | !b)) & Fa)),13,2,21,1.6,TRUE
-G((a & !b & X(!a | !c)) | ((!a | b) & X(a & c))),LTL,daisy+partscc,0.071,((!a | b) & X(a & c & G(((a & !b) | X(a & c)) & (!a | b | X(!a | !c))))) | (a & …,23,1,63,2.7,TRUE
-a | G((b & X!c) | (!b & Xc)),LTL,daisy+partscc+strength2,0.071,a | (!b & X(c & G((b | Xc) & (!b | X!c)))) | (b & X(!c & G((b | Xc) & (!b | X!c)…,18,1,38,2.1,TRUE
-G((a & ((a & b) | (!a & !b))) | Xa),LTL,partscc,0.068,G((a & b) | Xa),6,1,7,1.2,TRUE
-G((!a & b) | (a & !b) | Xb),LTL,partscc,0.068,G(((a | b) & (!a | !b)) | Xb),10,1,13,1.3,TRUE
-G(X!a | (b W a)),LTL,partscc,0.066,G(a | b | X!a),6,1,7,1.2,TRUE
-((a M b) & G((c & X!a) | (!c & Xa))) | (F((c & Xa) | (!c & X!a)) & (!a W !b)),LTL,daisy+daisystardet+partscc+strength2,0.093,(!b & ((!c & X(!a | F((c & Xa) | (!c & X!a)))) | (c & X(a | F((c & Xa) | (!c & X…,62,7,317,5.1,TRUE
-G((a & ((Xb & G!c) | (Fc & X!b))) | (!a & ((Xb & Fc) | (G!c & X!b)))),LTL,daisy+daisystardet+partscc+strength2,0.138,(!a & X(b & G(Fc & (a | c | Xb) & (a | !c | Xb) & (!a | c | X!b) & (!a | !c | X!…,67,4,921,13.7,TRUE
-G(a | b | X!c),LTL,partscc,0.068,G(a | b | X!c),7,1,7,1.0,TRUE
-a | X(a M G(!a | X!b)),LTL,daisy+partscc+strength2,0.070,a | X(!a U (a & X(!b & G(!a | X!b)))),13,2,19,1.5,TRUE
-X(a | FG(!b | X(!b M !c))),LTL,acc2+daisy+daisy2+daisystardet+partscc+strength2,0.105,X(a | X(GF!b & F((!b & X(!b & XG(!b | X!c))) | (b & X(!c & ((!b & XG(!b | X!c)) …,27,4,57,2.1,TRUE
-(a & G(!b | X!c)) | (!a & F(b & Xc)),LTL,daisy+daisystardet+partscc+strength2,0.073,(a & ((!b & XG(!b | X!c)) | (b & X(!c & G(!b | X!c))))) | (!a & ((!b & XF(b & Xc…,27,2,51,1.9,TRUE
-G(((a U b) & (b W a)) U !b),LTL,daisy2,0.069,G(F(!b | (!a & X((!a & b) U (a & !b)))) & (!b | (b U a))),15,4,25,1.7,TRUE
-G(!a | Xb) M !b,LTL,daisy+partscc,0.076,((!a & XG(!a | Xb)) | (a & X(b & G(!a | Xb)))) M !b,14,2,25,1.8,TRUE
-G(a | (b & Xb)),LTL,inv+partscc,0.067,G((a | b) & (a | X(!a | b))),9,1,12,1.3,TRUE
-G((a & F!a) | (!b R !a)),LTL,buchi,0.881,<unflattened DAG: 4966985808 tree nodes>,2470,407,4966985808,2010925.4,SIZE
-GF((a & Xb) | (!a & X!b)),LTL,buchi,0.665,(((a & ((!b & X((!a | !b | X(!a | !b) | (X((b & X(!a | !b)) M a) & ((!a | X(a & …,248,46,93446,376.8,ERROR
-(!a & b) | (a & !b) | G(b | Xc),LTL,daisy+partscc+strength2,0.071,(!a & (b | X(c & G(b | Xc)))) | (a & (!b | XG(b | Xc))),16,1,25,1.6,TRUE
-G((!a & !b) | X!c),LTL,partscc,0.067,G((!a & !b) | X!c),10,1,10,1.0,TRUE
-FG((!a | X!b) & (a | Xb)),LTL,daisy+partscc,0.070,F((!a & X(b & G((!a | X!b) & (a | Xb)))) | (a & X(!b & G((!a | X!b) & (a | Xb)))…,18,2,38,2.1,TRUE
-G(!a | (b M a)),LTL,daisy2,0.070,G(!a | (b M a)),6,2,7,1.2,TRUE
-FG(a | b | Xb),LTL,daisy+daisy2+partscc,0.067,F((!a & !b & X(b & G(a | b | Xb))) | ((a | b) & XG(a | b | Xb))),15,2,27,1.8,TRUE
-F((a & F((!a & X!b) | (a & Xb))) | (!a & G((!a & Xb) | (a & X!b)))),LTL,daisy+daisystardet+partscc+strength2,0.071,(!a U (a & X(b | F((!a & X!b) | (a & Xb))))) | F(!a & X(b & G((a | Xb) & (!a | X…,23,4,40,1.7,TRUE
-GF((!a & X!a) | (a & Xa)),LTL,buchi,0.642,((!a | F(!a & X!a)) & (a | X((!a | XF(!a & X!a)) & (a | ((X(a | X(a R (!a | XF(!…,66,11,412,6.2,TRUE
-G((a & b) | (!a & !b) | Xc),LTL,partscc,0.070,G(((a | !b) & (!a | b)) | Xc),11,1,13,1.2,TRUE
-a & G((!b & X!a) U b),LTL,daisy+daisy2+partscc,0.071,a & ((!b & X(!a & G((b | X!a) & Fb))) | (b & XG(b | X(b M !a)))),20,4,30,1.5,TRUE
-G((a & Xb) | (!a & X!b)) R Fc,LTL,daisy+partscc+strength2,0.076,F(GFc | (c & ((!a & X(!b & G((a | X!b) & (!a | Xb)))) | (a & X(b & G((a | X!b) &…,23,4,44,1.9,TRUE
-G((a & Xb) | (!a & X!b)) U b,LTL,daisy+partscc+strength2,0.071,b | ((!a & !b) U (a & !b & X(b & G((!a | Xb) & (a | X!b))))),16,2,27,1.7,TRUE
-a U G(b | Xa),LTL,daisy+partscc,0.070,a W (!a & ((!b & X(a & G(b | Xa))) | (b & XG(b | Xa)))),15,2,25,1.7,TRUE
-((!a | b) & F((a & Xc) | (!a & X!c))) | (a & !b & G((a & X!c) | (!a & Xc))),LTL,daisy+daisystardet+partscc+strength2,0.075,(!a & X(!c | F((a & Xc) | (!a & X!c)))) | (a & ((!b & X(!c & G((!a | X!c) & (a |…,28,2,59,2.1,TRUE
-(Ga & F((((b & c) | (!b & !c)) & ((b & X!a) | (!b & Xa))) | (((b & !c) | (!b & c)) & ((b & Xa) | (!b & X!a))))) | (F!a & G((((b & c) | (!b & !c)) & ((b & Xa) | (!b & X!a))) | (((b & !c) | (!b & c)) & ((b & X!a) | (!b & Xa))))),LTL,daisy+partscc,0.077,(!c & (Ga | X(!a & G((c | X!a) & (!c | Xa))))) | (c & ((!a & X(a & G((c | X!a) &…,28,3,75,2.7,TRUE
-G((a & !b) | (!a & b) | X(((a & !b) | (!a & b)) M c)),LTL,daisy2,0.072,G((a & !b) | (!a & b) | (((!a & !b) | (a & b)) & X(((!a & !b & c) | (a & b & c))…,21,2,44,2.1,TRUE
-FG((!a | b) & (!c | X!a) & (c | X(!b | (a & b)))),LTL,daisy+partscc,0.078,F((((!a & !c) | (b & !c)) & X(((a & b) | (!a & !b)) & G((((a | c) & (!b | c)) | …,35,2,107,3.1,TRUE
-G((Xa & (b U !a)) | (X!a & (!b R a))),LTL,daisy+partscc,0.076,(!a & X(a & !b & G((a | X(a & !b)) & (!a | b | X!a)))) | (a & !b & X(!a & G((a |…,18,1,49,2.7,TRUE
-G(!a | (Xa & F!b) | (Gb & X!a)),LTL,daisy+daisy2+daisystardet+partscc+strength2,0.084,!a W ((a & ((!b & X((!b M a) U (a & b & X(!a & b & G((!a | !b | X(!a & b)) & (a …,37,7,124,3.4,TRUE
-G((a & !b & ((b & Xb) | (!b & X!b))) | ((!a | b) & ((b & X!b) | (!b & Xb)))),LTL,daisy+partscc,0.072,(!a & !b & X(b & G((a | b | Xb) & ((!a & !b) | X!b)))) | ((a | b) & X(!b & G((a …,19,1,49,2.6,TRUE
-G((a & b) | Xb),LTL,partscc,0.070,G((a & b) | Xb),6,1,7,1.2,TRUE
-(Ga & F((b & Xa) | (!b & X!a))) | (F!a & G((b & X!a) | (!b & Xa))),LTL,daisy+partscc,0.075,(!b & ((!a & X(a & G((!b | X!a) & (b | Xa)))) | (a & X((a & !b) U (b & (Ga | (a …,28,3,75,2.7,TRUE
-(a & F(b & Xa)) | (!a & G(!b | X!a)),LTL,daisy+daisystardet+partscc+strength2,0.073,(!a & G(!b | X!a)) | (a & ((!b & XF(b & Xa)) | (b & X(a | F(b & Xa))))),19,2,33,1.7,TRUE
-G((((a & Xb) | (!a & X!b)) & G!c) | (Fc & ((a & X!b) | (!a & Xb)))),LTL,daisy+daisystardet+partscc+strength2,0.137,(!a & X(b & G(Fc & (a | c | Xb) & (!a | c | X!b) & (a | !c | Xb) & (!a | !c | X!…,67,4,921,13.7,TRUE
-(!a & XG((a & X!b) | (!a & Xb))) | (a & XF((a & Xb) | (!a & X!b))),LTL,daisy+daisystardet+partscc+strength2,0.071,(!a & X((!a & X(b & G((a | Xb) & (!a | X!b)))) | (a & X(!b & G((a | Xb) & (!a | …,33,2,82,2.5,TRUE
-very_weak_w_until.hoa,LTL,daisy+strength2,0.073,!a W b,4,1,4,1.0,TRUE
-counting-1ap-counting_buchi_1ap_01.hoa,NOT_LTL,,0.628,,,,,,
-counting-1ap-counting_buchi_1ap_02.hoa,NOT_LTL,,0.629,,,,,,
-counting-1ap-counting_buchi_1ap_03.hoa,LTL,partscc,0.066,!a & G((!a | X!a) & (a | Xa)),9,1,15,1.7,TRUE
-counting-1ap-counting_buchi_1ap_04.hoa,LTL,partscc,0.068,!a & G((!a | X!a) & (a | Xa)),9,1,15,1.7,TRUE
-counting-1ap-counting_buchi_1ap_05.hoa,NOT_LTL,,0.624,,,,,,
-counting-1ap-counting_buchi_1ap_06.hoa,LTL,daisy+daisystardet,0.070,a & (Ga | (((a | Xa) & (!a | X!a)) U (!a & XGa))),13,2,23,1.8,TRUE
-counting-1ap-counting_buchi_1ap_07.hoa,LTL,buchi,1.528,<unflattened DAG: 2063370 tree nodes>,2175,343,2063370,948.7,SIZE
-counting-1ap-counting_buchi_1ap_08.hoa,NOT_LTL,,0.627,,,,,,
-counting-1ap-counting_buchi_1ap_09.hoa,NOT_LTL,,0.622,,,,,,
-counting-1ap-counting_buchi_1ap_10.hoa,NOT_LTL,,0.620,,,,,,
-counting-1ap-counting_buchi_1ap_11.hoa,NOT_LTL,,0.635,,,,,,
-counting-1ap-counting_buchi_1ap_12.hoa,LTL,buchi,1.309,<unflattened DAG: 9874589 tree nodes>,709,128,9874589,13927.5,SIZE
-counting-1ap-counting_buchi_1ap_13.hoa,LTL,buchi,1.330,<unflattened DAG: 9874589 tree nodes>,709,128,9874589,13927.5,SIZE
-counting-1ap-counting_buchi_1ap_14.hoa,LTL,buchi,1.327,<unflattened DAG: 9874589 tree nodes>,709,128,9874589,13927.5,SIZE
-counting-1ap-counting_buchi_1ap_15.hoa,LTL,buchi,1.309,<unflattened DAG: 41719086 tree nodes>,1128,202,41719086,36985.0,SIZE
-counting-1ap-counting_buchi_1ap_16.hoa,LTL,buchi,1.307,<unflattened DAG: 41719086 tree nodes>,1128,202,41719086,36985.0,SIZE
-counting-1ap-counting_buchi_1ap_17.hoa,LTL,buchi,1.278,<unflattened DAG: 41719086 tree nodes>,1128,202,41719086,36985.0,SIZE
-counting-1ap-counting_buchi_1ap_18.hoa,LTL,buchi,1.301,<unflattened DAG: 43867210 tree nodes>,1152,200,43867210,38079.2,SIZE
-counting-1ap-counting_buchi_1ap_19.hoa,LTL,buchi,1.293,<unflattened DAG: 43867210 tree nodes>,1152,200,43867210,38079.2,SIZE
-counting-1ap-counting_buchi_1ap_20.hoa,LTL,buchi,1.301,<unflattened DAG: 43867210 tree nodes>,1152,200,43867210,38079.2,SIZE
-counting-1ap-counting_buchi_1ap_21.hoa,NOT_LTL,,0.609,,,,,,
-counting-1ap-counting_buchi_1ap_22.hoa,NOT_LTL,,0.622,,,,,,
-counting-1ap-counting_buchi_1ap_23.hoa,NOT_LTL,,0.609,,,,,,
-counting-1ap-counting_buchi_1ap_24.hoa,NOT_LTL,,0.623,,,,,,
-counting-1ap-counting_buchi_1ap_25.hoa,NOT_LTL,,0.629,,,,,,
-counting-1ap-counting_buchi_1ap_26.hoa,NOT_LTL,,0.608,,,,,,
-counting-1ap-counting_buchi_1ap_27.hoa,LTL,daisy+partscc,0.080,a & X(a & G((a | Xa) & (!a | X!a))),11,1,17,1.5,TRUE
-counting-1ap-counting_buchi_1ap_28.hoa,LTL,daisy+partscc,0.075,a & X(a & G((a | Xa) & (!a | X!a))),11,1,17,1.5,TRUE
-counting-1ap-counting_buchi_1ap_29.hoa,NOT_LTL,,0.599,,,,,,
-counting-1ap-counting_buchi_1ap_30.hoa,NOT_LTL,,0.630,,,,,,
-counting-1ap-counting_buchi_1ap_31.hoa,NOT_LTL,,0.616,,,,,,
-counting-1ap-counting_buchi_1ap_32.hoa,NOT_LTL,,0.633,,,,,,
-counting-1ap-counting_buchi_1ap_33.hoa,NOT_LTL,,0.611,,,,,,
-counting-1ap-counting_buchi_1ap_34.hoa,NOT_LTL,,0.658,,,,,,
-counting-1ap-counting_buchi_1ap_35.hoa,NOT_LTL,,0.645,,,,,,
-counting-1ap-counting_buchi_1ap_36.hoa,NOT_LTL,,1.002,,,,,,
-counting-1ap-counting_buchi_1ap_37.hoa,NOT_LTL,,1.881,,,,,,
-counting-1ap-counting_buchi_1ap_38.hoa,TIMEOUT,,15.004,,,,,,
-counting-1ap-counting_buchi_1ap_39.hoa,TIMEOUT,,15.004,,,,,,
-counting-1ap-counting_buchi_1ap_40.hoa,TIMEOUT,,15.004,,,,,,
-counting-2ap-counting_buchi_2ap_01.hoa,NOT_LTL,,0.608,,,,,,
-counting-2ap-counting_buchi_2ap_02.hoa,NOT_LTL,,0.607,,,,,,
-counting-2ap-counting_buchi_2ap_03.hoa,NOT_LTL,,0.603,,,,,,
-counting-2ap-counting_buchi_2ap_04.hoa,NOT_LTL,,0.616,,,,,,
-counting-2ap-counting_buchi_2ap_05.hoa,NOT_LTL,,0.617,,,,,,
-counting-2ap-counting_buchi_2ap_06.hoa,NOT_LTL,,0.613,,,,,,
-counting-2ap-counting_buchi_2ap_07.hoa,NOT_LTL,,0.620,,,,,,
-counting-2ap-counting_buchi_2ap_08.hoa,NOT_LTL,,0.605,,,,,,
-counting-2ap-counting_buchi_2ap_09.hoa,NOT_LTL,,0.606,,,,,,
-counting-2ap-counting_buchi_2ap_10.hoa,NOT_LTL,,0.584,,,,,,
-counting-2ap-counting_buchi_2ap_11.hoa,LTL,daisy+partscc,0.069,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,TRUE
-counting-2ap-counting_buchi_2ap_12.hoa,LTL,daisy+partscc,0.066,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,TRUE
-counting-2ap-counting_buchi_2ap_13.hoa,LTL,daisy+partscc,0.067,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,TRUE
-counting-2ap-counting_buchi_2ap_14.hoa,NOT_LTL,,0.587,,,,,,
-counting-2ap-counting_buchi_2ap_15.hoa,NOT_LTL,,0.588,,,,,,
-counting-2ap-counting_buchi_2ap_16.hoa,NOT_LTL,,0.594,,,,,,
-counting-2ap-counting_buchi_2ap_17.hoa,NOT_LTL,,0.589,,,,,,
-counting-2ap-counting_buchi_2ap_18.hoa,NOT_LTL,,0.593,,,,,,
-counting-2ap-counting_buchi_2ap_19.hoa,NOT_LTL,,0.593,,,,,,
-counting-2ap-counting_buchi_2ap_20.hoa,NOT_LTL,,0.592,,,,,,
-counting-2ap-counting_buchi_2ap_21.hoa,NOT_LTL,,0.592,,,,,,
-counting-2ap-counting_buchi_2ap_22.hoa,NOT_LTL,,0.589,,,,,,
-counting-2ap-counting_buchi_2ap_23.hoa,NOT_LTL,,0.593,,,,,,
-counting-2ap-counting_buchi_2ap_24.hoa,NOT_LTL,,0.585,,,,,,
-counting-2ap-counting_buchi_2ap_25.hoa,NOT_LTL,,0.609,,,,,,
-counting-2ap-counting_buchi_2ap_26.hoa,NOT_LTL,,0.587,,,,,,
-counting-2ap-counting_buchi_2ap_27.hoa,NOT_LTL,,0.590,,,,,,
-counting-2ap-counting_buchi_2ap_28.hoa,LTL,daisy,0.065,0,1,0,1,1.0,TRUE
-counting-2ap-counting_buchi_2ap_29.hoa,NOT_LTL,,0.591,,,,,,
-counting-2ap-counting_buchi_2ap_30.hoa,NOT_LTL,,0.589,,,,,,
-counting-2ap-counting_buchi_2ap_31.hoa,NOT_LTL,,0.580,,,,,,
-counting-2ap-counting_buchi_2ap_32.hoa,NOT_LTL,,0.585,,,,,,
-counting-2ap-counting_buchi_2ap_33.hoa,NOT_LTL,,0.588,,,,,,
-counting-2ap-counting_buchi_2ap_34.hoa,NOT_LTL,,0.592,,,,,,
-counting-2ap-counting_buchi_2ap_35.hoa,NOT_LTL,,0.585,,,,,,
-counting-2ap-counting_buchi_2ap_36.hoa,NOT_LTL,,0.587,,,,,,
-counting-2ap-counting_buchi_2ap_37.hoa,NOT_LTL,,0.602,,,,,,
-counting-2ap-counting_buchi_2ap_38.hoa,NOT_LTL,,0.621,,,,,,
-counting-2ap-counting_buchi_2ap_39.hoa,NOT_LTL,,0.862,,,,,,
-counting-2ap-counting_buchi_2ap_40.hoa,NOT_LTL,,1.554,,,,,,
-counting-2ap-counting_buchi_2ap_41.hoa,NOT_LTL,,0.588,,,,,,
-counting-2ap-counting_buchi_2ap_42.hoa,NOT_LTL,,0.591,,,,,,
-counting-2ap-counting_buchi_2ap_43.hoa,NOT_LTL,,0.590,,,,,,
-counting-2ap-counting_buchi_2ap_44.hoa,NOT_LTL,,0.594,,,,,,
-counting-2ap-counting_buchi_2ap_45.hoa,NOT_LTL,,0.590,,,,,,
-randltl-1ap-ba-randltl-10-a-hoa-1.hoa,LTL,daisy,0.066,1,1,0,1,1.0,TRUE
-randltl-1ap-ba-randltl-10-a-hoa-10.hoa,LTL,daisy,0.065,XFa,3,1,3,1.0,TRUE
-randltl-1ap-ba-randltl-10-a-hoa-2.hoa,LTL,daisy,0.064,0,1,0,1,1.0,TRUE
-randltl-1ap-ba-randltl-10-a-hoa-4.hoa,LTL,daisy,0.066,G!a,3,1,3,1.0,TRUE
-randltl-1ap-ba-randltl-10-a-hoa-5.hoa,LTL,daisy,0.065,a,1,0,1,1.0,TRUE
-randltl-1ap-ba-randltl-10-a-hoa-8.hoa,LTL,daisy,0.064,Fa,2,1,2,1.0,TRUE
-randltl-1ap-ba-randltl-10-a-hoa-9.hoa,LTL,daisy,0.065,FGa,3,2,3,1.0,TRUE
-randltl-2ap-ba-randltl-10-a-hoa-3.hoa,LTL,daisy,0.063,XXa,3,0,3,1.0,TRUE
-randltl-2ap-ba-randltl-10-a-hoa-4.hoa,LTL,daisy,0.064,XFa,3,1,3,1.0,TRUE
-randltl-4ap-ba-randltl-10-a-hoa-10.hoa,LTL,daisy,0.063,a | !b,4,0,4,1.0,TRUE
-randltl-4ap-ba-randltl-10-a-hoa-2.hoa,LTL,daisy+strength2,0.065,b R a,3,1,3,1.0,TRUE
-randltl-4ap-ba-randltl-10-a-hoa-3.hoa,LTL,daisy,0.064,Fa,2,1,2,1.0,TRUE
-randltl-4ap-ba-randltl-10-a-hoa-4.hoa,LTL,daisy,0.063,X!a,3,0,3,1.0,TRUE
-randltl-4ap-ba-randltl-10-a-hoa-8.hoa,LTL,daisy,0.063,FGa,3,2,3,1.0,TRUE
-randltl-8ap-ba-randltl-10-a-hoa-10.hoa,LTL,daisy+strength2,0.065,a W b,3,1,3,1.0,TRUE
-randltl-8ap-ba-randltl-10-a-hoa-4.hoa,LTL,daisy,0.065,XFa,3,1,3,1.0,TRUE
-randltl-8ap-ba-randltl-10-a-hoa-5.hoa,LTL,daisy,0.065,b M a,3,1,3,1.0,TRUE
-randltl-8ap-ba-randltl-10-a-hoa-8.hoa,LTL,daisy,0.066,b M a,3,1,3,1.0,TRUE
+input,result,technique,build_s,formula,dag,temporals,tree,sharing,validation,source
+(a W ((a & b) U (b | c))),LTL,daisy+strength2,0.068,G(a & !b & !c) | (a U (b | c)),10,2,13,1.3,TRUE,samples/benchmark/inputs/chains/mixed.ltl:4
+(a W ((a & b) U ((b | c) W (a & X b)))),LTL,daisy+strength2,0.070,a W ((a & Xb) | (((!a & b) | (!a & c)) & X((b | c) W (a & Xb)))),15,2,26,1.7,TRUE,samples/benchmark/inputs/chains/mixed.ltl:5
+(a U ((a & b) R (b | c))),LTL,daisy+strength2,0.069,(a & !b) U ((a & b) | G((!a & b) | (!b & c)) | (((!a & b) | (!a & c)) & X((c | (…,19,3,40,2.1,TRUE,samples/benchmark/inputs/chains/mixed.ltl:6
+(a U ((a & b) R ((b | c) U (a & X b)))),LTL,daisy+daisy2+daisystar+strength2,0.111,a U ((a & b & X(b | ((b | c) U (a & Xb)))) | (((!a & b) | (!a & c)) & X(G(F(a & …,36,5,112,3.1,TRUE,samples/benchmark/inputs/chains/mixed.ltl:7
+(a R (a & b)),LTL,daisy,0.063,a & b,3,0,3,1.0,TRUE,samples/benchmark/inputs/chains/release.ltl:4
+(a R ((a & b) R (b | c))),LTL,daisy+strength2,0.071,G((!a & b) | (!b & c)) | ((b | c) U (a & b)),13,2,18,1.4,TRUE,samples/benchmark/inputs/chains/release.ltl:5
+(a R ((a & b) R ((b | c) R (a & X b)))),LTL,daisy,0.066,a & ((b & Xb) | (!b & X(a & b & Xb))),10,0,16,1.6,TRUE,samples/benchmark/inputs/chains/release.ltl:6
+(a U (a & b)),LTL,daisy,0.064,b M a,3,1,3,1.0,TRUE,samples/benchmark/inputs/chains/strong_until.ltl:4
+(a U ((a & b) U (b | c))),LTL,daisy,0.067,a U (b | c),5,1,5,1.0,TRUE,samples/benchmark/inputs/chains/strong_until.ltl:5
+(a U ((a & b) U ((b | c) U (a & X b)))),LTL,daisy,0.068,a U ((a & Xb) | (((!a & b) | (!a & c)) & X((b | c) U (a & Xb)))),15,2,26,1.7,TRUE,samples/benchmark/inputs/chains/strong_until.ltl:6
+(a W (a & b)),LTL,daisy+strength2,0.069,b R a,3,1,3,1.0,TRUE,samples/benchmark/inputs/chains/weak_until.ltl:4
+(a W ((a & b) W (b | c))),LTL,daisy+strength2,0.066,G(a & !b & !c) | (a U (b | c)),10,2,13,1.3,TRUE,samples/benchmark/inputs/chains/weak_until.ltl:5
+(a W ((a & b) W ((b | c) W (a & X b)))),LTL,daisy+strength2,0.065,a W ((a & Xb) | (((!a & b) | (!a & c)) & X((b | c) W (a & Xb)))),15,2,26,1.7,TRUE,samples/benchmark/inputs/chains/weak_until.ltl:6
+(a U X (a & b)),LTL,daisy,0.064,a U X(a & b),5,1,6,1.2,TRUE,samples/benchmark/inputs/chains/x_laced.ltl:4
+(a U (X (a & b) U (b | c))),LTL,daisy,0.070,(a & !b & !c) U (b | c | (!a & X(a & b))),12,1,17,1.4,TRUE,samples/benchmark/inputs/chains/x_laced.ltl:5
+(a U (X (a & b) U ((b | c) U X (a & X b)))),LTL,daisy,0.071,a U (X(a & Xb) | (((!a & b) | (!a & c)) & X((b | c) U X(a & Xb))) | (!a & !b & !…,23,2,54,2.3,TRUE,samples/benchmark/inputs/chains/x_laced.ltl:6
+(a W X (a & b)),LTL,daisy+strength2,0.068,a W X(a & b),5,1,6,1.2,TRUE,samples/benchmark/inputs/chains/x_laced.ltl:7
+(a W (X (a & b) W (b | c))),LTL,daisy+strength2,0.064,(a & !b & !c) W (b | c | (!a & X(a & b))),12,1,17,1.4,TRUE,samples/benchmark/inputs/chains/x_laced.ltl:8
+(a W (X (a & b) W ((b | c) W X (a & X b)))),LTL,daisy+strength2,0.075,a W (X(a & Xb) | (((!a & b) | (!a & c)) & X((b | c) W X(a & Xb))) | (!a & !b & !…,28,4,63,2.2,TRUE,samples/benchmark/inputs/chains/x_laced.ltl:9
+true,LTL,daisy,0.067,1,1,0,1,1.0,TRUE,samples/benchmark/inputs/core/bottom.ltl:4
+false,LTL,daisy,0.066,0,1,0,1,1.0,TRUE,samples/benchmark/inputs/core/bottom.ltl:5
+a,LTL,daisy,0.064,a,1,0,1,1.0,TRUE,samples/benchmark/inputs/core/guarantee.ltl:4
+X a,LTL,daisy,0.066,Xa,2,0,2,1.0,TRUE,samples/benchmark/inputs/core/guarantee.ltl:5
+X X a,LTL,daisy,0.066,XXa,3,0,3,1.0,TRUE,samples/benchmark/inputs/core/guarantee.ltl:6
+X X X a,LTL,daisy,0.067,XXXa,4,0,4,1.0,TRUE,samples/benchmark/inputs/core/guarantee.ltl:7
+X(a & X a),LTL,daisy,0.068,X(a & Xa),4,0,5,1.2,TRUE,samples/benchmark/inputs/core/guarantee.ltl:8
+Fa,LTL,daisy,0.067,Fa,2,1,2,1.0,TRUE,samples/benchmark/inputs/core/guarantee.ltl:9
+a U b,LTL,daisy,0.066,a U b,3,1,3,1.0,TRUE,samples/benchmark/inputs/core/guarantee.ltl:10
+F(a & b),LTL,daisy,0.065,F(a & b),4,1,4,1.0,TRUE,samples/benchmark/inputs/core/guarantee.ltl:11
+F(a & X b),LTL,daisy+daisystardet,0.065,F(a & Xb),5,1,5,1.0,TRUE,samples/benchmark/inputs/core/guarantee.ltl:12
+a | X b,LTL,daisy,0.066,a | Xb,4,0,4,1.0,TRUE,samples/benchmark/inputs/core/guarantee.ltl:13
+Fa | Gb,LTL,daisy+strength2,0.068,Fa | G(!a & b),7,2,8,1.1,TRUE,samples/benchmark/inputs/core/obligation.ltl:4
+Ga | Gb,LTL,daisy,0.068,(a & b) W ((!a & Gb) | (!b & Ga)),11,3,15,1.4,TRUE,samples/benchmark/inputs/core/obligation.ltl:5
+Fa & Gb,LTL,daisy+inv,0.069,Fa & Gb,5,2,5,1.0,TRUE,samples/benchmark/inputs/core/obligation.ltl:6
+(a U b) | Gc,LTL,daisy+strength2,0.068,(a U b) | ((a & !b & c) W (!a & !b & Gc)),11,3,17,1.5,TRUE,samples/benchmark/inputs/core/obligation.ltl:7
+Ga | Fb,LTL,daisy+strength2,0.068,Fb | G(a & !b),7,2,8,1.1,TRUE,samples/benchmark/inputs/core/obligation.ltl:8
+FGa,LTL,daisy,0.065,FGa,3,2,3,1.0,TRUE,samples/benchmark/inputs/core/persistence.ltl:4
+F(a & G b),LTL,daisy,0.068,F(a & Gb),5,2,5,1.0,TRUE,samples/benchmark/inputs/core/persistence.ltl:5
+FGa | FGb,LTL,daisy,0.068,F(Ga | Gb),6,3,6,1.0,TRUE,samples/benchmark/inputs/core/persistence.ltl:6
+GFa -> GFb,LTL,daisy+strength2,0.066,F(G!a | (b & GFb)),9,4,10,1.1,TRUE,samples/benchmark/inputs/core/reactivity.ltl:4
+GFa & FGb,LTL,acc2+daisy,0.068,G(Fa & FGb),7,4,7,1.0,TRUE,samples/benchmark/inputs/core/reactivity.ltl:5
+GFa,LTL,daisy,0.065,GFa,3,2,3,1.0,TRUE,samples/benchmark/inputs/core/recurrence.ltl:4
+G(a -> F b),LTL,daisy2,0.069,G(!a | Fb),6,2,6,1.0,TRUE,samples/benchmark/inputs/core/recurrence.ltl:5
+G(a | F b),LTL,daisy2,0.066,G(a | Fb),5,2,5,1.0,TRUE,samples/benchmark/inputs/core/recurrence.ltl:6
+GFa & GFb,LTL,acc2+daisy,0.065,G(Fa & Fb),6,3,6,1.0,TRUE,samples/benchmark/inputs/core/recurrence.ltl:7
+GFa & GFb & GFc,LTL,acc3+daisy,0.068,G(Fa & Fb & Fc),8,4,8,1.0,TRUE,samples/benchmark/inputs/core/recurrence.ltl:8
+G(a -> F b) & G(c -> F d),LTL,acc2+daisy2,0.199,G((!a | Fb) & (!c | Fd)),12,3,12,1.0,TRUE,samples/benchmark/inputs/core/recurrence.ltl:9
+G(a -> (b U c)),LTL,daisy2,0.068,G(!a | (b U c)),7,2,7,1.0,TRUE,samples/benchmark/inputs/core/recurrence.ltl:10
+GFa & G(a -> X !a),LTL,daisy2,0.068,G((!a | X!a) & F(a & X!a)),8,2,14,1.8,TRUE,samples/benchmark/inputs/core/recurrence.ltl:11
+G(a -> X b) & GFa,LTL,partscc,0.067,G(Fa & (!a | Xb)),8,2,9,1.1,TRUE,samples/benchmark/inputs/core/recurrence.ltl:12
+GFa & GFb & G(a -> X !a),LTL,acc2+daisy2,0.074,G((!a | X!a) & F(a & X!a) & F((a & X(!a & b)) | (b & (!a | X!a)))),15,3,31,2.1,TRUE,samples/benchmark/inputs/core/recurrence.ltl:13
+Ga,LTL,daisy,0.064,Ga,2,1,2,1.0,TRUE,samples/benchmark/inputs/core/safety.ltl:4
+G(a | b),LTL,daisy,0.066,G(a | b),4,1,4,1.0,TRUE,samples/benchmark/inputs/core/safety.ltl:5
+G(a -> X b),LTL,partscc,0.066,G(!a | Xb),6,1,6,1.0,TRUE,samples/benchmark/inputs/core/safety.ltl:6
+a & X a,LTL,daisy,0.067,a & Xa,3,0,4,1.3,TRUE,samples/benchmark/inputs/core/safety.ltl:7
+G(a -> X a),LTL,daisy,0.067,!a W Ga,4,2,5,1.2,TRUE,samples/benchmark/inputs/core/safety.ltl:8
+G(a & X a),LTL,daisy,0.065,Ga,2,1,2,1.0,TRUE,samples/benchmark/inputs/core/safety.ltl:9
+G((!a & X a) | (a & X !a)),LTL,daisy+partscc,0.070,(!a & X(a & G((a | Xa) & (!a | X!a)))) | (a & X(!a & G((a | Xa) & (!a | X!a)))),15,1,37,2.5,TRUE,samples/benchmark/inputs/core/safety.ltl:10
+G(a <-> X b),LTL,daisy+partscc,0.069,(a & X(b & G((!a | Xb) & (a | X!b)))) | (!a & X(!b & G((!a | Xb) & (a | X!b)))),17,1,37,2.2,TRUE,samples/benchmark/inputs/core/safety.ltl:11
+F(a R Xa),LTL,daisy+daisystardet,0.067,F(a & Xa),4,1,5,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:5
+XF(!a & X!a),LTL,daisy+daisystardet,0.067,XF(!a & X!a),6,1,8,1.3,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:6
+F(a & Xa),LTL,daisy+daisystardet,0.067,F(a & Xa),4,1,5,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:7
+F(a & X!b),LTL,daisy+daisystardet,0.067,F(a & X!b),6,1,6,1.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:8
+F(a & b & Xa),LTL,daisy+daisystardet,0.067,F(a & b & Xa),5,1,6,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:9
+X!a & F(b & Xb),LTL,daisy+daisystardet,0.070,(!b & X(!a & ((!b & XF(b & Xb)) | (b & X(b | F(b & Xb)))))) | (b & X(!a & (b | X…,21,1,42,2.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:10
+F(a & X(a U b)),LTL,daisy+daisystardet,0.066,F(a & Xb),5,1,5,1.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:11
+XF(!a & X(!a U !b)),LTL,daisy+daisystardet,0.065,XF(!a & X!b),8,1,8,1.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:12
+F(X!a & ((b R a) W b)),LTL,daisy+daisystardet,0.067,F(b & X!a),6,1,6,1.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:13
+F(a & (!a M !b)),LTL,daisy+daisystardet,0.067,F(a & !b & X(!a & !b)),8,1,11,1.4,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:14
+F(a & !b & Xb),LTL,daisy+daisystardet,0.068,F(a & !b & Xb),6,1,7,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:15
+F(((a & !b) | (!a & b)) & Xc),LTL,daisy+daisystardet,0.067,F(((a & !b) | (!a & b)) & Xc),11,1,13,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:16
+F(!a & (b U a)),LTL,daisy+daisystardet,0.066,F(!a & b & Xa),6,1,7,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:17
+a | F(a & Xa),LTL,daisy+daisystardet,0.067,a | F(a & Xa),5,1,7,1.4,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:18
+F(a & Xa) & (a | Fb),LTL,daisy+daisystardet,0.073,(a & X(a | F(a & Xa))) | (!a & ((b & XF(a & Xa)) | (!b & X((b & ((a & X(a | F(a …,36,3,105,2.9,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:19
+XF(!a & X!b),LTL,daisy+daisystardet,0.066,XF(!a & X!b),8,1,8,1.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:20
+Fa & F(b R Xb),LTL,daisy+daisystardet,0.074,(a & ((!b & XF(b & Xb)) | (b & X(b | F(b & Xb))))) | F(!a & ((b & X((a & b) | (a…,30,3,78,2.6,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:21
+F((!a | !b) & X(!a U !b)),LTL,daisy+daisystardet,0.069,F((!a | !b) & X!b),8,1,10,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:22
+(!a U !b) M Fb,LTL,daisy+daisystardet,0.068,(!b & XFb) | F(b & ((!a & X!b) | (a & X(!b & XFb)))),15,2,26,1.7,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:23
+XF(((a & b) | (!a & c) | (a & !c)) & Xa),LTL,daisy+daisystardet,0.069,XF(((a & b) | (!a & c) | (a & !c)) & Xa),13,1,17,1.3,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:24
+(a & Xb) M Fb,LTL,daisy+daisystardet,0.067,F(a & Xb),5,1,5,1.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:25
+XXF(a & X(a U b)),LTL,daisy+daisystardet,0.067,XXF(a & Xb),7,1,7,1.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:26
+F(((!a & b) | (a & !b)) & X((!a & b) U a)),LTL,daisy+daisystardet,0.067,F(((!a & b) | (a & !b)) & Xa),10,1,13,1.3,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:27
+F(a & ((a & Xa) | (!a & X!a))),LTL,daisy+daisystardet,0.067,F(a & Xa),4,1,5,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:28
+(a U b) M XF!a,LTL,daisy+daisystardet,0.069,(b & XF!a) | F(!b & ((!a & X(b & XF!a)) | (a & X((!a & b) | (a & b & XF!a))))),18,2,37,2.1,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:29
+F(a & b & Xb),LTL,daisy+daisystardet,0.067,F(a & b & Xb),5,1,6,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:30
+!a | (F(!a & Fa) U b),LTL,daisy+daisystardet,0.074,!a | b | X((b & ((!a & XFa) | (a & XF(!a & XFa)))) | F(!b & ((!a & X((a & b) | (…,27,3,67,2.5,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:31
+F(a & X(b | !c)),LTL,daisy+daisystardet,0.070,F(a & X(b | !c)),8,1,8,1.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:32
+X((a U b) M F!b),LTL,daisy+daisystardet,0.069,X((b & XF!b) | F(!b & ((a & Xb) | (!a & X(b & XF!b))))),16,2,27,1.7,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:33
+F(!a & (!a R Xb)),LTL,daisy+daisystardet,0.068,F(!a & Xb),6,1,6,1.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:34
+XXF(a & Xa),LTL,daisy+daisystardet,0.070,XXF(a & Xa),6,1,7,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:35
+a M XF(!b & Xc),LTL,daisy+daisystardet,0.067,F(a & XF(!b & Xc)),10,2,10,1.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:36
+F((a & Fb) | (!a & G!b)) U ((c U !a) M a),LTL,daisy+daisystardet,0.069,F(a & c & X!a),6,1,7,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:37
+(a R Xa) M Fa,LTL,daisy+daisystardet,0.067,F(a & Xa),4,1,5,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:38
+XF(!a & (!a R X!a)),LTL,daisy+daisystardet,0.068,XF(!a & X!a),6,1,8,1.3,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:39
+F((a | !b) & Xa),LTL,daisy+daisystardet,0.067,F((a | !b) & Xa),7,1,8,1.1,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:40
+(!a U !b) | F(a & Xa),LTL,daisy+daisystardet,0.069,(!a & b) U (!b | (a & X(a | F(a & Xa)))),13,2,18,1.4,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:41
+!a | F(a & Xa),LTL,daisy+daisystardet,0.067,!a | X(a | F(a & Xa)),8,1,11,1.4,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:42
+a & XF(a & (!b U !a)),LTL,daisy+daisystardet,0.067,a & XF(a & !b & X!a),9,1,11,1.2,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:43
+F(Fa & (!a M (a U b))),LTL,daisy+daisystardet,0.070,(!a & b & XFa) | F((a & X(!a & b)) | (!a & !b & X(!a & b & XFa))),15,2,30,2.0,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:44
+XXXF(a & Xa),LTL,daisy+daisystardet,0.067,XXXF(a & Xa),7,1,8,1.1,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:45
+F(a & b & X(!c | b)),LTL,daisy+daisystardet,0.068,F(a & b & X(b | !c)),8,1,9,1.1,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:46
+F(a R (!b M (c & Xa))),LTL,daisy+daisystardet,0.067,F(a & !b & c & Xa),7,1,8,1.1,TRUE,samples/benchmark/inputs/fixtures/f2_successes.ltl:47
+(a U b) & GF c,LTL,daisy,0.067,(a & !b) U (b & GFc),9,3,10,1.1,TRUE,samples/benchmark/inputs/fixtures/formulas.ltl:5
+FG a,LTL,daisy,0.067,FGa,3,2,3,1.0,TRUE,samples/benchmark/inputs/fixtures/formulas.ltl:6
+G (a -> X a) & GF b,LTL,daisy,0.070,G(!a & F(!a & b)) | (!a U G(a & F(a & b))),13,5,20,1.5,TRUE,samples/benchmark/inputs/fixtures/formulas.ltl:7
+G(Xa & (b | Xc)),LTL,daisy+inv+partscc,0.072,(b & XG(a & (b | Xc))) | (!b & X(c & G(a & (b | Xc)))),14,1,24,1.7,TRUE,samples/benchmark/inputs/fixtures/formulas.ltl:8
+X(a | F(a & Xa)),LTL,daisy+daisystardet,0.067,X(a | F(a & Xa)),6,1,8,1.3,TRUE,samples/benchmark/inputs/fixtures/formulas.ltl:11
+!a W b,LTL,daisy+strength2,0.068,!a W b,4,1,4,1.0,TRUE,samples/benchmark/inputs/fixtures/formulas.ltl:14
+G!a R b,LTL,daisy,0.067,G!a R b,5,2,5,1.0,TRUE,samples/benchmark/inputs/fixtures/formulas.ltl:15
+motivating_example.hoa,LTL,daisy,0.069,(a & !b) U (b & GFc),9,3,10,1.1,TRUE,samples/benchmark/inputs/fixtures/motivating_example.hoa
+second_example.hoa,LTL,daisy,0.069,G(!b & F(a & !b)) | (!b U G(b & F(a & b))),13,5,20,1.5,TRUE,samples/benchmark/inputs/fixtures/second_example.hoa
+G(a | X!b),LTL,partscc,0.068,G(a | X!b),6,1,6,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:5
+G(a | (a & Xb) | (!a & X!b)),LTL,partscc,0.066,G(a | X!b),6,1,6,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:6
+XG(Xa | (b & X!a) | (!b & Xa)),LTL,daisy+partscc,0.069,XG(b | Xa),6,1,6,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:7
+FG(a | Xa),LTL,daisy+daisy2+partscc,0.068,F((!a & X(a & G(a | Xa))) | (a & XG(a | Xa))),12,2,21,1.8,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:8
+X!a | G(b | Xb),LTL,daisy+daisy2+strength2,0.067,X!a | G(b | Xb),8,1,9,1.1,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:9
+XG(a | Xa),LTL,daisy+daisy2,0.065,XG(a | Xa),5,1,6,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:10
+G(!a | (a & X!b) | (!a & Xb)),LTL,partscc,0.066,G(!a | X!b),7,1,7,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:11
+XG(a | X!b),LTL,daisy+partscc,0.067,XG(a | X!b),7,1,7,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:12
+G((a R b) | (!b & F!b) | (b & Gb)),LTL,partscc,0.066,G(a | !b | Xb),6,1,7,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:13
+FG(!a | X(!a R b)),LTL,daisy+partscc,0.072,F((!a & XG(!a | Xb)) | (a & X(b & G(!a | Xb)))),13,2,23,1.8,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:14
+G(a | Xa),LTL,daisy2,0.066,G(a | Xa),4,1,5,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:15
+FG(!a | X(a W b)),LTL,daisy+partscc,0.069,F((!a & XG(!a | X(a | b))) | (a & X((a | b) & G(!a | X(a | b))))),14,2,29,2.1,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:16
+X(G!a U G(b | X!a)),LTL,daisy+partscc,0.068,XG(b | X!a),7,1,7,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:17
+FG(a | X!b),LTL,daisy+partscc,0.070,F((a & XG(a | X!b)) | (!a & X(!b & G(a | X!b)))),14,2,24,1.7,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:18
+G(a | b | Xb),LTL,daisy2,0.067,G(a | b | Xb),5,1,6,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:19
+XG(!a | b | (b & Xa) | (!b & X!a)),LTL,daisy+daisy2,0.069,XG(!a | b | X!a),7,1,9,1.3,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:20
+G(a U Xa),LTL,daisy2,0.066,G(a | Xa),4,1,5,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:21
+FG(((a & X!b) | (!a & Xb)) U (!a | X!b)),LTL,daisy+partscc,0.069,F((!a & XG(!a | X!b)) | (a & X(!b & G(!a | X!b)))),14,2,26,1.9,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:22
+Ga R (a | X((a & b) | (!a & !b))),LTL,partscc,0.068,G(a | X((a & b) | (!a & !b))),10,1,13,1.3,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:23
+XG(!a | X!b | (a M b)),LTL,daisy+partscc,0.071,XG(!a | b | X!b),8,1,9,1.1,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:24
+a W FG(b | Xa),LTL,daisy+partscc,0.070,F((b & XG(b | Xa)) | (!b & X(a & G(b | Xa)))),13,2,21,1.6,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:25
+G((a & (!b M ((a & !b) | (!a & b)))) | (!a & (b W ((a & b) | (!a & !b))))),LTL,partscc,0.068,(!a | !b) & G((b | X(!a | !b)) & (a | !b | X!a)),12,1,23,1.9,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:26
+G((!a & b) | (a W !b)),LTL,partscc,0.068,G(!a | !b | X(a | !b)),8,1,11,1.4,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:27
+G(!a | X(!b & c)),LTL,partscc,0.067,G(!a | X(!b & c)),9,1,9,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:28
+!a & G(b | X!c),LTL,daisy+partscc,0.068,!a & ((b & XG(b | X!c)) | (!b & X(!c & G(b | X!c)))),16,1,26,1.6,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:29
+G(a | X((b & !a) | (!b & a))),LTL,partscc,0.066,G(a | X((!a & b) | (a & !b))),10,1,13,1.3,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:30
+FG(a | X(a R ((a & b) | (!a & !b)))),LTL,daisy+partscc,0.071,F((a & XG(a | X((a & b) | (!a & !b)))) | (!a & X(((a & b) | (!a & !b)) & G(a | X…,17,2,45,2.6,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:31
+G(!a | b | Xa),LTL,partscc,0.070,G(!a | b | Xa),6,1,7,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:32
+G(a | X(a R b)),LTL,partscc,0.070,G(a | Xb),5,1,5,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:33
+G(a | (a U Xa)),LTL,daisy2,0.066,G(a | Xa),4,1,5,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:34
+G(a | (b W (!a W b))),LTL,partscc,0.069,G(a | b | X(!a | b)),7,1,9,1.3,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:35
+G(a | (Fb R Xb)),LTL,partscc,0.066,G(a | Xb),5,1,5,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:36
+G((a & (a M !b)) | (!a & (!a W b))),LTL,inv+partscc,0.068,G((!a | !b) & (a | b | X!a)),9,1,13,1.4,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:37
+XG(!a | b | Xc),LTL,daisy+partscc,0.069,XG(!a | b | Xc),8,1,8,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:38
+G((a & (a W b)) | (!a & (!a M !b))),LTL,inv+partscc,0.069,G((a | !b) & (!a | b | Xa)),9,1,12,1.3,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:39
+!a U G(b | Xb),LTL,daisy+daisy2+partscc,0.068,!a U ((!b & X(b & G(b | Xb))) | (b & XG(b | Xb))),14,2,23,1.6,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:40
+FG((a | (!a M !b)) & (!a | (a W b))),LTL,daisy+partscc,0.067,F((((!a & !b) | (a & b)) & X((a | !b) & G((((a | b) & (!a | !b)) | X(a | !b)) & …,25,2,71,2.8,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:41
+G(a | (a & !a) | X((a | (a & !a)) R b)),LTL,partscc,0.067,G(a | Xb),5,1,5,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:42
+FG(a | (!b R !a)),LTL,daisy+partscc,0.070,F(((a | !b) & XG(a | !b | X!a)) | (!a & b & X(!a & G(a | !b | X!a)))),15,2,32,2.1,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:43
+XG(a | (a U Xb)),LTL,daisy+partscc,0.068,XG(a | Xb),6,1,6,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:44
+G(!a | (!a & !b) | X!a),LTL,daisy2,0.063,G(!a | X!a),5,1,7,1.4,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:45
+X(Xa U G(b | (!b W a))),LTL,daisy+partscc,0.067,XG(a | b | X(a | !b)),8,1,10,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:46
+a U G(a | Xb),LTL,partscc,0.067,G(a | Xb),5,1,5,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:47
+XG(a U Xa),LTL,daisy+daisy2,0.067,XG(a | Xa),5,1,6,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:48
+G((a & X(a W b)) | (!a & (!a | X(!a M !b)))),LTL,partscc,0.066,G(!a | X(a | b)),7,1,8,1.1,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:49
+XG(a | X(a R b)),LTL,daisy+partscc,0.067,XG(a | Xb),6,1,6,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:50
+G(a | X(!a | b | !c)),LTL,partscc,0.069,G(a | X(!a | b | !c)),9,1,10,1.1,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:51
+Ga R (a | X!b),LTL,partscc,0.068,G(a | X!b),6,1,6,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:52
+G(a | (a R b)),LTL,inv+partscc,0.067,G((a | b) & (a | X(!a | b))),9,1,12,1.3,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:53
+!a & G(b | Xa),LTL,daisy+partscc,0.070,!a & ((b & XG(b | Xa)) | (!b & X(a & G(b | Xa)))),14,1,23,1.6,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:54
+G((a U b) & (!a | Xb)),LTL,inv+partscc,0.067,G((a | b) & (!a | X(!a | b))),9,1,13,1.4,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:55
+G(a & !a) R (b U Xb),LTL,daisy2,0.067,G(b | Xb),4,1,5,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:56
+G(a->Xb) & G(c->Xd),LTL,partscc,0.065,G((a | !c | Xd) & (!a | c | Xb) & (!a | !c | X(b & d))),15,1,23,1.5,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:57
+XG((a & (b | Xb)) | (!a & !b & X!b)),LTL,daisy+partscc,0.068,X((a | !b) & G((!a | !b | X(a | !b)) & (a | b | X!b) & (!a | b | X(a & b)))),16,1,32,2.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:58
+X(a | G(X!a | (!b W !a))),LTL,daisy+partscc+strength2,0.068,X(a | G((!a | !b | X!a) & (!a | b | X(!a | !b)))),13,1,23,1.8,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:59
+FG((a | b) & (a | Xb) & (!a | !b | X!b)),LTL,daisy+partscc,0.074,F((!a & b & X(b & G((!a | b | X(a | b)) & (a | !b | Xb) & (!a | !b | X(a & !b)))…,27,2,105,3.9,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:60
+G(a | (b & Xc) | (!b & X!c)),LTL,partscc,0.067,G((a | !b | Xc) & (a | b | X!c)),11,1,14,1.3,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:61
+G((a & (!b M X!a)) | (!a & (b W Xa))),LTL,inv+partscc,0.068,G((!a | !b) & (!a | X!a) & (a | b | Xa)),11,1,18,1.6,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:62
+G((!a & b & Xc) | (!b & (a | X!c))),LTL,inv+partscc,0.065,G((!a | !b) & (a | !b | Xc) & (a | b | X!c)),13,1,19,1.5,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:63
+G(Fa & F!a),LTL,acc2+daisy,0.066,G(Fa & F!a),6,3,7,1.2,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:64
+G(Fa & Fb),LTL,acc2+daisy,0.066,G(Fa & Fb),6,3,6,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:65
+G(a M Fb),LTL,acc2+daisy,0.067,G(Fb & Fa),6,3,6,1.0,TRUE,samples/benchmark/inputs/fixtures/t2_successes.ltl:66
+a & G(b | Xb),LTL,daisy+daisy2+partscc,0.066,a & ((!b & X(b & G(b | Xb))) | (b & XG(b | Xb))),13,1,22,1.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:5
+(X!a & F(b & Xb)) | (Xa & G(!b | X!b)),LTL,daisy+daisy2+daisystardet+partscc+strength2,0.075,(b & X((a & !b & XG(!b | X!b)) | (!a & (b | XF(b & Xb))))) | (!b & X((a & ((b & …,34,2,83,2.4,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:6
+GF(a & Xa),LTL,buchi,0.625,(a | X(F(a & Xa) & (a | Xa | (X(!a & XFa) & ((a | X!a) U (!a & X(!a & Xa))))))) …,67,12,826,12.3,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:7
+G((a & (a W X!b)) | (!a & (!a M Xb))),LTL,daisy+partscc,0.069,(!a & X(b & G((a | Xb) & (!a | X(a | !b))))) | (a & X((a | !b) & G((a | Xb) & (!…,18,1,43,2.4,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:8
+G((a & X!a) | (!a & Xa)),LTL,daisy+partscc,0.068,(a & X(!a & G((!a | X!a) & (a | Xa)))) | (!a & X(a & G((!a | X!a) & (a | Xa)))),15,1,37,2.5,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:9
+XG((!a & Xb) | (a & X!b)),LTL,daisy+partscc,0.069,X((!a & X(b & G((a | Xb) & (!a | X!b)))) | (a & X(!b & G((a | Xb) & (!a | X!b)))…,18,1,38,2.1,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:10
+G((!a & Xb) | (a & X!b)),LTL,daisy+partscc,0.071,(!a & X(b & G((a | Xb) & (!a | X!b)))) | (a & X(!b & G((a | Xb) & (!a | X!b)))),17,1,37,2.2,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:11
+X(a M G(!b | X(!b M c))),LTL,daisy+daisy2+daisystar+partscc,0.089,X((!a & (!b | X((!a & b & c) U (!a & !b & c)))) U ((a & !b & XG(!b | X((b & c) U…,38,7,105,2.8,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:12
+!a M G(b | X(b R a)),LTL,daisy2+partscc,0.072,(b M a) U (!a & ((b & XG(b | Xa)) | (!b & X(a & G(b | Xa))))),16,3,27,1.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:13
+G(a | X(a M Gb)),LTL,daisy+inv+partscc+strength2,0.070,a W (!a & XG(b & Fa)),9,3,11,1.2,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:14
+G(a | X(a M b)),LTL,daisy2,0.067,G(a | X((!a & b) U (a & b))),9,2,12,1.3,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:15
+G(!a | Xb) M c,LTL,daisy+partscc,0.080,((!a & XG(!a | Xb)) | (a & X(b & G(!a | Xb)))) M c,14,2,24,1.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:16
+XG(a & ((b & X!c) | (!b & Xc))),LTL,daisy+partscc,0.073,X(a & ((!b & X(a & c & G((!a | b | X(a & c)) & (!a | !b | X(a & !c))))) | (b & X…,23,1,58,2.5,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:17
+G(a & ((b & X!c) | (!b & Xc))),LTL,daisy+partscc,0.070,a & ((!b & X(a & c & G((!a | b | X(a & c)) & (!a | !b | X(a & !c))))) | (b & X(a…,22,1,57,2.6,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:18
+G(Xa | (F!a R !b)),LTL,partscc,0.066,G(!b | Xa),6,1,6,1.0,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:19
+G(a | (a M (!a W !b))) U a,LTL,daisy+partscc+strength2,0.069,a | X((!a | !b) & G((a | X(!a | !b)) & Fa)),13,2,21,1.6,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:20
+G((a & !b & X(!a | !c)) | ((!a | b) & X(a & c))),LTL,daisy+partscc,0.072,((!a | b) & X(a & c & G(((a & !b) | X(a & c)) & (!a | b | X(!a | !c))))) | (a & …,23,1,63,2.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:21
+a | G((b & X!c) | (!b & Xc)),LTL,daisy+partscc+strength2,0.071,a | (!b & X(c & G((b | Xc) & (!b | X!c)))) | (b & X(!c & G((b | Xc) & (!b | X!c)…,18,1,38,2.1,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:22
+G((a & ((a & b) | (!a & !b))) | Xa),LTL,partscc,0.072,G((a & b) | Xa),6,1,7,1.2,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:23
+G((!a & b) | (a & !b) | Xb),LTL,partscc,0.071,G(((a | b) & (!a | !b)) | Xb),10,1,13,1.3,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:24
+G(X!a | (b W a)),LTL,partscc,0.071,G(a | b | X!a),6,1,7,1.2,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:25
+((a M b) & G((c & X!a) | (!c & Xa))) | (F((c & Xa) | (!c & X!a)) & (!a W !b)),LTL,daisy+daisystardet+partscc+strength2,0.092,(!b & ((!c & X(!a | F((c & Xa) | (!c & X!a)))) | (c & X(a | F((c & Xa) | (!c & X…,62,7,317,5.1,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:26
+G((a & ((Xb & G!c) | (Fc & X!b))) | (!a & ((Xb & Fc) | (G!c & X!b)))),LTL,daisy+daisystardet+partscc+strength2,0.133,(!a & X(b & G(Fc & (a | c | Xb) & (a | !c | Xb) & (!a | c | X!b) & (!a | !c | X!…,67,4,921,13.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:27
+G(a | b | X!c),LTL,partscc,0.068,G(a | b | X!c),7,1,7,1.0,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:28
+a | X(a M G(!a | X!b)),LTL,daisy+partscc+strength2,0.070,a | X(!a U (a & X(!b & G(!a | X!b)))),13,2,19,1.5,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:29
+X(a | FG(!b | X(!b M !c))),LTL,acc2+daisy+daisy2+daisystardet+partscc+strength2,0.107,X(a | X(GF!b & F((!b & X(!b & XG(!b | X!c))) | (b & X(!c & ((!b & XG(!b | X!c)) …,27,4,57,2.1,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:30
+(a & G(!b | X!c)) | (!a & F(b & Xc)),LTL,daisy+daisystardet+partscc+strength2,0.077,(a & ((!b & XG(!b | X!c)) | (b & X(!c & G(!b | X!c))))) | (!a & ((!b & XF(b & Xc…,27,2,51,1.9,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:31
+G(((a U b) & (b W a)) U !b),LTL,daisy2,0.072,G(F(!b | (!a & X((!a & b) U (a & !b)))) & (!b | (b U a))),15,4,25,1.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:32
+G(!a | Xb) M !b,LTL,daisy+partscc,0.078,((!a & XG(!a | Xb)) | (a & X(b & G(!a | Xb)))) M !b,14,2,25,1.8,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:33
+G(a | (b & Xb)),LTL,inv+partscc,0.071,G((a | b) & (a | X(!a | b))),9,1,12,1.3,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:34
+G((a & F!a) | (!b R !a)),LTL,buchi,0.897,<unflattened DAG: 4966985808 tree nodes>,2470,407,4966985808,2010925.4,SIZE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:35
+GF((a & Xb) | (!a & X!b)),LTL,buchi,0.674,(((a & ((!b & X((!a | !b | X(!a | !b) | (X((b & X(!a | !b)) M a) & ((!a | X(a & …,248,46,93446,376.8,ERROR,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:36
+(!a & b) | (a & !b) | G(b | Xc),LTL,daisy+partscc+strength2,0.073,(!a & (b | X(c & G(b | Xc)))) | (a & (!b | XG(b | Xc))),16,1,25,1.6,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:37
+G((!a & !b) | X!c),LTL,partscc,0.069,G((!a & !b) | X!c),10,1,10,1.0,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:38
+FG((!a | X!b) & (a | Xb)),LTL,daisy+partscc,0.073,F((!a & X(b & G((!a | X!b) & (a | Xb)))) | (a & X(!b & G((!a | X!b) & (a | Xb)))…,18,2,38,2.1,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:39
+G(!a | (b M a)),LTL,daisy2,0.070,G(!a | (b M a)),6,2,7,1.2,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:40
+FG(a | b | Xb),LTL,daisy+daisy2+partscc,0.073,F((!a & !b & X(b & G(a | b | Xb))) | ((a | b) & XG(a | b | Xb))),15,2,27,1.8,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:41
+F((a & F((!a & X!b) | (a & Xb))) | (!a & G((!a & Xb) | (a & X!b)))),LTL,daisy+daisystardet+partscc+strength2,0.074,(!a U (a & X(b | F((!a & X!b) | (a & Xb))))) | F(!a & X(b & G((a | Xb) & (!a | X…,23,4,40,1.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:42
+GF((!a & X!a) | (a & Xa)),LTL,buchi,0.648,((!a | F(!a & X!a)) & (a | X((!a | XF(!a & X!a)) & (a | ((X(a | X(a R (!a | XF(!…,66,11,412,6.2,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:43
+G((a & b) | (!a & !b) | Xc),LTL,partscc,0.070,G(((a | !b) & (!a | b)) | Xc),11,1,13,1.2,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:44
+a & G((!b & X!a) U b),LTL,daisy+daisy2+partscc,0.073,a & ((!b & X(!a & G((b | X!a) & Fb))) | (b & XG(b | X(b M !a)))),20,4,30,1.5,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:45
+G((a & Xb) | (!a & X!b)) R Fc,LTL,daisy+partscc+strength2,0.073,F(GFc | (c & ((!a & X(!b & G((a | X!b) & (!a | Xb)))) | (a & X(b & G((a | X!b) &…,23,4,44,1.9,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:46
+G((a & Xb) | (!a & X!b)) U b,LTL,daisy+partscc+strength2,0.070,b | ((!a & !b) U (a & !b & X(b & G((!a | Xb) & (a | X!b))))),16,2,27,1.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:47
+a U G(b | Xa),LTL,daisy+partscc,0.074,a W (!a & ((!b & X(a & G(b | Xa))) | (b & XG(b | Xa)))),15,2,25,1.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:48
+((!a | b) & F((a & Xc) | (!a & X!c))) | (a & !b & G((a & X!c) | (!a & Xc))),LTL,daisy+daisystardet+partscc+strength2,0.075,(!a & X(!c | F((a & Xc) | (!a & X!c)))) | (a & ((!b & X(!c & G((!a | X!c) & (a |…,28,2,59,2.1,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:49
+(Ga & F((((b & c) | (!b & !c)) & ((b & X!a) | (!b & Xa))) | (((b & !c) | (!b & c)) & ((b & Xa) | (!b & X!a))))) | (F!a & G((((b & c) | (!b & !c)) & ((b & Xa) | (!b & X!a))) | (((b & !c) | (!b & c)) & ((b & X!a) | (!b & Xa))))),LTL,daisy+partscc,0.077,(!c & (Ga | X(!a & G((c | X!a) & (!c | Xa))))) | (c & ((!a & X(a & G((c | X!a) &…,28,3,75,2.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:50
+G((a & !b) | (!a & b) | X(((a & !b) | (!a & b)) M c)),LTL,daisy2,0.079,G((a & !b) | (!a & b) | (((!a & !b) | (a & b)) & X(((!a & !b & c) | (a & b & c))…,21,2,44,2.1,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:51
+FG((!a | b) & (!c | X!a) & (c | X(!b | (a & b)))),LTL,daisy+partscc,0.076,F((((!a & !c) | (b & !c)) & X(((a & b) | (!a & !b)) & G((((a | c) & (!b | c)) | …,35,2,107,3.1,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:52
+G((Xa & (b U !a)) | (X!a & (!b R a))),LTL,daisy+partscc,0.070,(!a & X(a & !b & G((a | X(a & !b)) & (!a | b | X!a)))) | (a & !b & X(!a & G((a |…,18,1,49,2.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:53
+G(!a | (Xa & F!b) | (Gb & X!a)),LTL,daisy+daisy2+daisystardet+partscc+strength2,0.082,!a W ((a & ((!b & X((!b M a) U (a & b & X(!a & b & G((!a | !b | X(!a & b)) & (a …,37,7,124,3.4,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:54
+G((a & !b & ((b & Xb) | (!b & X!b))) | ((!a | b) & ((b & X!b) | (!b & Xb)))),LTL,daisy+partscc,0.075,(!a & !b & X(b & G((a | b | Xb) & ((!a & !b) | X!b)))) | ((a | b) & X(!b & G((a …,19,1,49,2.6,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:55
+G((a & b) | Xb),LTL,partscc,0.067,G((a & b) | Xb),6,1,7,1.2,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:56
+(Ga & F((b & Xa) | (!b & X!a))) | (F!a & G((b & X!a) | (!b & Xa))),LTL,daisy+partscc,0.076,(!b & ((!a & X(a & G((!b | X!a) & (b | Xa)))) | (a & X((a & !b) U (b & (Ga | (a …,28,3,75,2.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:57
+(a & F(b & Xa)) | (!a & G(!b | X!a)),LTL,daisy+daisystardet+partscc+strength2,0.074,(!a & G(!b | X!a)) | (a & ((!b & XF(b & Xa)) | (b & X(a | F(b & Xa))))),19,2,33,1.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:58
+G((((a & Xb) | (!a & X!b)) & G!c) | (Fc & ((a & X!b) | (!a & Xb)))),LTL,daisy+daisystardet+partscc+strength2,0.147,(!a & X(b & G(Fc & (a | c | Xb) & (!a | c | X!b) & (a | !c | Xb) & (!a | !c | X!…,67,4,921,13.7,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:59
+(!a & XG((a & X!b) | (!a & Xb))) | (a & XF((a & Xb) | (!a & X!b))),LTL,daisy+daisystardet+partscc+strength2,0.073,(!a & X((!a & X(b & G((a | Xb) & (!a | X!b)))) | (a & X(!b & G((a | Xb) & (!a | …,33,2,82,2.5,TRUE,samples/benchmark/inputs/fixtures/terminal_2scc.ltl:60
+very_weak_w_until.hoa,LTL,daisy+strength2,0.068,!a W b,4,1,4,1.0,TRUE,samples/benchmark/inputs/fixtures/very_weak_w_until.hoa
+counting-1ap-counting_buchi_1ap_01.hoa,NOT_LTL,,0.626,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_01.hoa
+counting-1ap-counting_buchi_1ap_02.hoa,NOT_LTL,,0.625,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_02.hoa
+counting-1ap-counting_buchi_1ap_03.hoa,LTL,partscc,0.069,!a & G((!a | X!a) & (a | Xa)),9,1,15,1.7,TRUE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_03.hoa
+counting-1ap-counting_buchi_1ap_04.hoa,LTL,partscc,0.068,!a & G((!a | X!a) & (a | Xa)),9,1,15,1.7,TRUE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_04.hoa
+counting-1ap-counting_buchi_1ap_05.hoa,NOT_LTL,,0.614,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_05.hoa
+counting-1ap-counting_buchi_1ap_06.hoa,LTL,daisy+daisystardet,0.070,a & (Ga | (((a | Xa) & (!a | X!a)) U (!a & XGa))),13,2,23,1.8,TRUE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_06.hoa
+counting-1ap-counting_buchi_1ap_07.hoa,LTL,buchi,1.548,<unflattened DAG: 2063370 tree nodes>,2175,343,2063370,948.7,SIZE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_07.hoa
+counting-1ap-counting_buchi_1ap_08.hoa,NOT_LTL,,0.601,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_08.hoa
+counting-1ap-counting_buchi_1ap_09.hoa,NOT_LTL,,0.633,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_09.hoa
+counting-1ap-counting_buchi_1ap_10.hoa,NOT_LTL,,0.606,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_10.hoa
+counting-1ap-counting_buchi_1ap_11.hoa,NOT_LTL,,0.650,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_11.hoa
+counting-1ap-counting_buchi_1ap_12.hoa,LTL,buchi,1.344,<unflattened DAG: 9874589 tree nodes>,709,128,9874589,13927.5,SIZE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_12.hoa
+counting-1ap-counting_buchi_1ap_13.hoa,LTL,buchi,1.292,<unflattened DAG: 9874589 tree nodes>,709,128,9874589,13927.5,SIZE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_13.hoa
+counting-1ap-counting_buchi_1ap_14.hoa,LTL,buchi,1.342,<unflattened DAG: 9874589 tree nodes>,709,128,9874589,13927.5,SIZE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_14.hoa
+counting-1ap-counting_buchi_1ap_15.hoa,LTL,buchi,1.289,<unflattened DAG: 41719086 tree nodes>,1128,202,41719086,36985.0,SIZE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_15.hoa
+counting-1ap-counting_buchi_1ap_16.hoa,LTL,buchi,1.299,<unflattened DAG: 41719086 tree nodes>,1128,202,41719086,36985.0,SIZE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_16.hoa
+counting-1ap-counting_buchi_1ap_17.hoa,LTL,buchi,1.296,<unflattened DAG: 41719086 tree nodes>,1128,202,41719086,36985.0,SIZE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_17.hoa
+counting-1ap-counting_buchi_1ap_18.hoa,LTL,buchi,1.285,<unflattened DAG: 43867210 tree nodes>,1152,200,43867210,38079.2,SIZE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_18.hoa
+counting-1ap-counting_buchi_1ap_19.hoa,LTL,buchi,1.301,<unflattened DAG: 43867210 tree nodes>,1152,200,43867210,38079.2,SIZE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_19.hoa
+counting-1ap-counting_buchi_1ap_20.hoa,LTL,buchi,1.277,<unflattened DAG: 43867210 tree nodes>,1152,200,43867210,38079.2,SIZE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_20.hoa
+counting-1ap-counting_buchi_1ap_21.hoa,NOT_LTL,,0.634,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_21.hoa
+counting-1ap-counting_buchi_1ap_22.hoa,NOT_LTL,,0.645,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_22.hoa
+counting-1ap-counting_buchi_1ap_23.hoa,NOT_LTL,,0.607,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_23.hoa
+counting-1ap-counting_buchi_1ap_24.hoa,NOT_LTL,,0.645,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_24.hoa
+counting-1ap-counting_buchi_1ap_25.hoa,NOT_LTL,,0.602,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_25.hoa
+counting-1ap-counting_buchi_1ap_26.hoa,NOT_LTL,,0.646,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_26.hoa
+counting-1ap-counting_buchi_1ap_27.hoa,LTL,daisy+partscc,0.067,a & X(a & G((a | Xa) & (!a | X!a))),11,1,17,1.5,TRUE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_27.hoa
+counting-1ap-counting_buchi_1ap_28.hoa,LTL,daisy+partscc,0.068,a & X(a & G((a | Xa) & (!a | X!a))),11,1,17,1.5,TRUE,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_28.hoa
+counting-1ap-counting_buchi_1ap_29.hoa,NOT_LTL,,0.611,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_29.hoa
+counting-1ap-counting_buchi_1ap_30.hoa,NOT_LTL,,0.659,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_30.hoa
+counting-1ap-counting_buchi_1ap_31.hoa,NOT_LTL,,0.609,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_31.hoa
+counting-1ap-counting_buchi_1ap_32.hoa,NOT_LTL,,0.619,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_32.hoa
+counting-1ap-counting_buchi_1ap_33.hoa,NOT_LTL,,0.637,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_33.hoa
+counting-1ap-counting_buchi_1ap_34.hoa,NOT_LTL,,0.637,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_34.hoa
+counting-1ap-counting_buchi_1ap_35.hoa,NOT_LTL,,0.665,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_35.hoa
+counting-1ap-counting_buchi_1ap_36.hoa,NOT_LTL,,0.989,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_36.hoa
+counting-1ap-counting_buchi_1ap_37.hoa,NOT_LTL,,1.912,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_37.hoa
+counting-1ap-counting_buchi_1ap_38.hoa,TIMEOUT,,15.005,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_38.hoa
+counting-1ap-counting_buchi_1ap_39.hoa,TIMEOUT,,15.004,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_39.hoa
+counting-1ap-counting_buchi_1ap_40.hoa,TIMEOUT,,15.004,,,,,,,samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_40.hoa
+counting-2ap-counting_buchi_2ap_01.hoa,NOT_LTL,,0.611,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_01.hoa
+counting-2ap-counting_buchi_2ap_02.hoa,NOT_LTL,,0.606,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_02.hoa
+counting-2ap-counting_buchi_2ap_03.hoa,NOT_LTL,,0.607,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_03.hoa
+counting-2ap-counting_buchi_2ap_04.hoa,NOT_LTL,,0.599,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_04.hoa
+counting-2ap-counting_buchi_2ap_05.hoa,NOT_LTL,,0.602,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_05.hoa
+counting-2ap-counting_buchi_2ap_06.hoa,NOT_LTL,,0.594,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_06.hoa
+counting-2ap-counting_buchi_2ap_07.hoa,NOT_LTL,,0.600,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_07.hoa
+counting-2ap-counting_buchi_2ap_08.hoa,NOT_LTL,,0.589,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_08.hoa
+counting-2ap-counting_buchi_2ap_09.hoa,NOT_LTL,,0.581,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_09.hoa
+counting-2ap-counting_buchi_2ap_10.hoa,NOT_LTL,,0.581,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_10.hoa
+counting-2ap-counting_buchi_2ap_11.hoa,LTL,daisy+partscc,0.066,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,TRUE,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_11.hoa
+counting-2ap-counting_buchi_2ap_12.hoa,LTL,daisy+partscc,0.066,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,TRUE,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_12.hoa
+counting-2ap-counting_buchi_2ap_13.hoa,LTL,daisy+partscc,0.065,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,TRUE,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_13.hoa
+counting-2ap-counting_buchi_2ap_14.hoa,NOT_LTL,,0.587,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_14.hoa
+counting-2ap-counting_buchi_2ap_15.hoa,NOT_LTL,,0.574,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_15.hoa
+counting-2ap-counting_buchi_2ap_16.hoa,NOT_LTL,,0.574,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_16.hoa
+counting-2ap-counting_buchi_2ap_17.hoa,NOT_LTL,,0.582,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_17.hoa
+counting-2ap-counting_buchi_2ap_18.hoa,NOT_LTL,,0.588,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_18.hoa
+counting-2ap-counting_buchi_2ap_19.hoa,NOT_LTL,,0.587,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_19.hoa
+counting-2ap-counting_buchi_2ap_20.hoa,NOT_LTL,,0.588,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_20.hoa
+counting-2ap-counting_buchi_2ap_21.hoa,NOT_LTL,,0.588,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_21.hoa
+counting-2ap-counting_buchi_2ap_22.hoa,NOT_LTL,,0.591,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_22.hoa
+counting-2ap-counting_buchi_2ap_23.hoa,NOT_LTL,,0.585,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_23.hoa
+counting-2ap-counting_buchi_2ap_24.hoa,NOT_LTL,,0.588,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_24.hoa
+counting-2ap-counting_buchi_2ap_25.hoa,NOT_LTL,,0.585,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_25.hoa
+counting-2ap-counting_buchi_2ap_26.hoa,NOT_LTL,,0.580,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_26.hoa
+counting-2ap-counting_buchi_2ap_27.hoa,NOT_LTL,,0.586,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_27.hoa
+counting-2ap-counting_buchi_2ap_28.hoa,LTL,daisy,0.068,0,1,0,1,1.0,TRUE,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_28.hoa
+counting-2ap-counting_buchi_2ap_29.hoa,NOT_LTL,,0.585,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_29.hoa
+counting-2ap-counting_buchi_2ap_30.hoa,NOT_LTL,,0.584,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_30.hoa
+counting-2ap-counting_buchi_2ap_31.hoa,NOT_LTL,,0.586,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_31.hoa
+counting-2ap-counting_buchi_2ap_32.hoa,NOT_LTL,,0.582,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_32.hoa
+counting-2ap-counting_buchi_2ap_33.hoa,NOT_LTL,,0.589,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_33.hoa
+counting-2ap-counting_buchi_2ap_34.hoa,NOT_LTL,,0.593,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_34.hoa
+counting-2ap-counting_buchi_2ap_35.hoa,NOT_LTL,,0.585,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_35.hoa
+counting-2ap-counting_buchi_2ap_36.hoa,NOT_LTL,,0.591,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_36.hoa
+counting-2ap-counting_buchi_2ap_37.hoa,NOT_LTL,,0.595,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_37.hoa
+counting-2ap-counting_buchi_2ap_38.hoa,NOT_LTL,,0.617,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_38.hoa
+counting-2ap-counting_buchi_2ap_39.hoa,NOT_LTL,,0.843,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_39.hoa
+counting-2ap-counting_buchi_2ap_40.hoa,NOT_LTL,,1.555,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_40.hoa
+counting-2ap-counting_buchi_2ap_41.hoa,NOT_LTL,,0.598,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_41.hoa
+counting-2ap-counting_buchi_2ap_42.hoa,NOT_LTL,,0.586,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_42.hoa
+counting-2ap-counting_buchi_2ap_43.hoa,NOT_LTL,,0.593,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_43.hoa
+counting-2ap-counting_buchi_2ap_44.hoa,NOT_LTL,,0.587,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_44.hoa
+counting-2ap-counting_buchi_2ap_45.hoa,NOT_LTL,,0.594,,,,,,,samples/benchmark/inputs/kinska/counting-2ap-counting_buchi_2ap_45.hoa
+randltl-1ap-ba-randltl-10-a-hoa-1.hoa,LTL,daisy,0.064,1,1,0,1,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-1ap-ba-randltl-10-a-hoa-1.hoa
+randltl-1ap-ba-randltl-10-a-hoa-10.hoa,LTL,daisy,0.063,XFa,3,1,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-1ap-ba-randltl-10-a-hoa-10.hoa
+randltl-1ap-ba-randltl-10-a-hoa-2.hoa,LTL,daisy,0.065,0,1,0,1,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-1ap-ba-randltl-10-a-hoa-2.hoa
+randltl-1ap-ba-randltl-10-a-hoa-4.hoa,LTL,daisy,0.066,G!a,3,1,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-1ap-ba-randltl-10-a-hoa-4.hoa
+randltl-1ap-ba-randltl-10-a-hoa-5.hoa,LTL,daisy,0.065,a,1,0,1,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-1ap-ba-randltl-10-a-hoa-5.hoa
+randltl-1ap-ba-randltl-10-a-hoa-8.hoa,LTL,daisy,0.065,Fa,2,1,2,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-1ap-ba-randltl-10-a-hoa-8.hoa
+randltl-1ap-ba-randltl-10-a-hoa-9.hoa,LTL,daisy,0.065,FGa,3,2,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-1ap-ba-randltl-10-a-hoa-9.hoa
+randltl-2ap-ba-randltl-10-a-hoa-3.hoa,LTL,daisy,0.065,XXa,3,0,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-2ap-ba-randltl-10-a-hoa-3.hoa
+randltl-2ap-ba-randltl-10-a-hoa-4.hoa,LTL,daisy,0.065,XFa,3,1,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-2ap-ba-randltl-10-a-hoa-4.hoa
+randltl-4ap-ba-randltl-10-a-hoa-10.hoa,LTL,daisy,0.064,a | !b,4,0,4,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-4ap-ba-randltl-10-a-hoa-10.hoa
+randltl-4ap-ba-randltl-10-a-hoa-2.hoa,LTL,daisy+strength2,0.065,b R a,3,1,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-4ap-ba-randltl-10-a-hoa-2.hoa
+randltl-4ap-ba-randltl-10-a-hoa-3.hoa,LTL,daisy,0.066,Fa,2,1,2,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-4ap-ba-randltl-10-a-hoa-3.hoa
+randltl-4ap-ba-randltl-10-a-hoa-4.hoa,LTL,daisy,0.063,X!a,3,0,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-4ap-ba-randltl-10-a-hoa-4.hoa
+randltl-4ap-ba-randltl-10-a-hoa-8.hoa,LTL,daisy,0.065,FGa,3,2,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-4ap-ba-randltl-10-a-hoa-8.hoa
+randltl-8ap-ba-randltl-10-a-hoa-10.hoa,LTL,daisy+strength2,0.066,a W b,3,1,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-8ap-ba-randltl-10-a-hoa-10.hoa
+randltl-8ap-ba-randltl-10-a-hoa-4.hoa,LTL,daisy,0.064,XFa,3,1,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-8ap-ba-randltl-10-a-hoa-4.hoa
+randltl-8ap-ba-randltl-10-a-hoa-5.hoa,LTL,daisy,0.065,b M a,3,1,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-8ap-ba-randltl-10-a-hoa-5.hoa
+randltl-8ap-ba-randltl-10-a-hoa-8.hoa,LTL,daisy,0.064,b M a,3,1,3,1.0,TRUE,samples/benchmark/inputs/kinska/randltl-8ap-ba-randltl-10-a-hoa-8.hoa
