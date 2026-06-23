@@ -1,4 +1,6 @@
-# This experiment's census results ARE committed (we keep all of it).
+# This experiment's census results ARE committed (we keep all of it):
+# default.csv (the survey run), SUMMARY.txt, frontier.pdf (the analysis report).
 # Override the repo-root *.csv / *.log ignore for this folder only.
 !*.csv
 !*.log
+!*.pdf
