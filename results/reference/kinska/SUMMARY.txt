@@ -1,4 +1,5 @@
-corpus     cases  answ valid false  decl    bTO   bCR unver    DAGsum tempsum    build
-kinska       165    99    89     0     0      3     0    10     11394    1980    19.32
-
+survey: 165 inputs  (--use default)
+aut2ltl: 99 LTL, 63 not-LTL  |  declined 0, timeout 3, crash 0
+validation of 99 LTL: 89 TRUE, 0 FAIL, 10 not checked (size/timeout/error)
+totals: DAG=11394 temporals=1980 build=106.452s
 SUCCESS
