@@ -20,7 +20,10 @@ Never overwrite a committed CSV blind. Rerun into the gitignored scratch `logs/`
 diff against the committed reference, and only overwrite when the diff is clean.
 
 ```bash
-# 1. rerun into scratch (logs/ is gitignored; --logs writes survey_<ts>.csv there)
+# 1. rerun into a FRESH scratch (logs/ is gitignored; --logs writes a NEW
+#    survey_<ts>.csv each run — wipe first so the survey_*.csv glob in steps 2-3
+#    matches exactly one file and never an older stale run)
+rm -rf logs/rerun
 mkdir -p logs/rerun/{validation,kinska,benchmark}
 python3 -m survey --folder samples/validation --logs logs/rerun/validation > logs/rerun/validation/SUMMARY.txt
 python3 -m survey --folder samples/kinska     --logs logs/rerun/kinska     > logs/rerun/kinska/SUMMARY.txt
@@ -42,6 +45,11 @@ Size / technique movements are informational, a human judgement call.
 cp logs/rerun/validation/survey_*.csv reference/validation/default.csv
 cp logs/rerun/validation/SUMMARY.txt  reference/validation/SUMMARY.txt
 # …same for kinska/ and benchmark/…
+
+# 4. clean up behind yourself so the next refresh starts from an empty scratch
+rm -rf logs/rerun
 ```
 
-Run these from the repo root (the diff paths above are relative to `results/`).
+Run step 1 from the repo root; run the step-2 diffs from `results/` (the
+`reference/...` paths are relative to it, the `logs/...` paths to the repo root —
+so pass the rerun CSV by an absolute path if you run the diff from elsewhere).
