@@ -4,6 +4,14 @@ Open project-level items only. Completed campaigns are recorded in `docs/HISTORY
 and git history. (The big docs + contract/combinator refactors + the `decomp/` regroup
 and the `kr → bls` engine reorg all landed — see HISTORY 2026-06-17.)
 
+## Corpora / test harness
+
+- **Convert the benchmark examples to HOA.** Split `samples/benchmark/inputs/`
+  into `ltl/` + `hoa/` like `samples/{validation,fixtures}`, generating the HOA
+  with `survey.ltl2hoa` (our inputs are not explosive for Spot). Lets the
+  benchmark exercise the HOA entry path, not just LTL — preliminary to new-algo
+  experiments. (Deferred from the survey/tests refactor — see HISTORY 2026-06-23.)
+
 ## Portfolio / combinators
 
 - **daisystar (non-deterministic case): close the flat `LEAVE`.** For a
