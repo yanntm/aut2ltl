@@ -63,6 +63,14 @@ node_ids = sorted(int(m.group(1)) for ln in dot.splitlines()
 check(node_ids == list(range(len(node_ids))),
       f"node names are contiguous DFS indices n0..n{len(node_ids)-1} (got {node_ids})")
 check("n0 [label=" in dot, "root is numbered n0")
+# dag_md5: a fingerprint of the canonical dot — deterministic, structure-sensitive,
+# length-configurable (the survey `md5` column / aut2ltl.md5_length knob).
+from aut2ltl.ltl.printers import dag_md5
+k = dag_md5(spot.formula("G(a | b) & X(a | b)"))
+check(len(k) == 12, "dag_md5 default length is 12 hex")
+check(k == dag_md5(spot.formula("G(a | b) & X(a | b)")), "dag_md5 is deterministic")
+check(dag_md5(spot.formula("GFa")) != k, "dag_md5 differs for different structure")
+check(len(dag_md5(spot.formula("a"), 8)) == 8, "dag_md5 honours the length argument")
 print("--- sample to_dot('G(a|b) & X(a|b)') ---")
 print(dot)
 
