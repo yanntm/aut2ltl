@@ -55,12 +55,24 @@ def row(display: str, br: BuildResult, validation: str,
     return r
 
 
-def write_csv(rows: Sequence[Dict[str, object]], fileobj: TextIO,
-              cols: Sequence[str] = COLS) -> None:
-    writer = csv.DictWriter(fileobj, fieldnames=list(cols))
-    writer.writeheader()
-    for r in rows:
-        writer.writerow(r)
+class CsvStream:
+    """Streaming CSV writer: header on construction, one flushed row per `write`.
+
+    Opened up front (before the survey loop) so the file exists and grows row by
+    row as records are produced — live progress, and crash-safe (a killed or
+    timed-out run keeps every row written so far). Replaces the prior batch
+    write-at-end, which materialised nothing until the whole run finished.
+    """
+
+    def __init__(self, fileobj: TextIO, cols: Sequence[str] = COLS) -> None:
+        self._fh = fileobj
+        self._writer = csv.DictWriter(fileobj, fieldnames=list(cols))
+        self._writer.writeheader()
+        fileobj.flush()
+
+    def write(self, r: Dict[str, object]) -> None:
+        self._writer.writerow(r)
+        self._fh.flush()
 
 
 def _num(v: object) -> float:

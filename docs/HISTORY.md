@@ -1642,3 +1642,15 @@ Closing out the tests/survey restructure (3rd session).
   engine-naming prose, a possible `sed` pass); converting the benchmark
   `samples/benchmark/inputs/` LTL examples to HOA (moved to TODO.md as feature
   work — the gateway to new-algorithm experiments).
+
+## 2026-06-23 — FIX: survey CSV streams again (regression)
+
+`survey.run` had regressed to collecting every row in memory and writing the
+whole CSV in ONE batch at the very end (the timestamped file was not even
+created until the run finished — `ts` computed post-loop). For a long
+multi-technique `--use all` run that means minutes of no output and total row
+loss on a kill/timeout. Restored streaming: `report.CsvStream` opens the file up
+front, writes the header, and flushes one row per record; `run.py` opens the
+stream before the loop (file under `--logs`, else stdout) and writes each row as
+it is produced. Summary stays end-of-run. Removed the batch `report.write_csv`
+(its only caller was `run.py`).

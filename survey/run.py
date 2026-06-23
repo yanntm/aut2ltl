@@ -75,30 +75,38 @@ def run(examples: Sequence[Example], uses: Sequence[str], *,
     if verbose:
         _trace_header()
 
-    groups: List[Tuple[str, List[Dict[str, object]]]] = []
-    all_rows: List[Dict[str, object]] = []
-    for technique in techniques:
-        rows: List[Dict[str, object]] = []
-        for ex in examples:
-            row = _record(ex, technique, verify=verify,
-                          build_timeout=build_timeout, equiv_timeout=equiv_timeout)
-            rows.append(row)
-            all_rows.append(row)
-            if verbose:
-                _trace(row)
-        groups.append((technique or "default", rows))
-
-    # One flat CSV: to a file under --logs, else to stdout.
+    # Open the CSV up front and stream a flushed row per record, so the file
+    # exists and grows during the run (live progress, crash-safe). A file under
+    # --logs, else stdout; the summary is the only end-of-run output.
+    csv_path: Optional[Path] = None
     if logs_dir is not None:
         logs_dir = Path(logs_dir)
         logs_dir.mkdir(parents=True, exist_ok=True)
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         csv_path = logs_dir / f"survey_{ts}.csv"
-        with csv_path.open("w", newline="", encoding="utf-8") as fh:
-            report.write_csv(all_rows, fh)
+        fh: "object" = csv_path.open("w", newline="", encoding="utf-8")
         print(f"CSV: {csv_path}", file=sys.stderr)
     else:
-        report.write_csv(all_rows, sys.stdout)
+        fh = sys.stdout
+
+    groups: List[Tuple[str, List[Dict[str, object]]]] = []
+    all_rows: List[Dict[str, object]] = []
+    try:
+        stream = report.CsvStream(fh)  # type: ignore[arg-type]
+        for technique in techniques:
+            rows: List[Dict[str, object]] = []
+            for ex in examples:
+                row = _record(ex, technique, verify=verify,
+                              build_timeout=build_timeout, equiv_timeout=equiv_timeout)
+                stream.write(row)
+                rows.append(row)
+                all_rows.append(row)
+                if verbose:
+                    _trace(row)
+            groups.append((technique or "default", rows))
+    finally:
+        if csv_path is not None:
+            fh.close()  # type: ignore[union-attr]
 
     for label, rows in groups:
         for line in report.summarize(rows, label):
