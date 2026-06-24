@@ -15,9 +15,12 @@ R         :  Rewriter               -- the per-operand re-presentation
 Φ         :  Formula → (Node | ⊥)   -- locates the node whose operands are re-presented
 ```
 
-`operands(N) = ψ₁ … ψₖ` are `N`'s distinct immediate children. `N⟨ψ₁' … ψₖ'⟩` is `N`
-rebuilt with its operands replaced by `ψ₁' … ψₖ'`, and `φ[N ↦ N']` substitutes by
-hash-consed identity (`roundtrip/subst`).
+`operands(N) = ψ₁ … ψₖ` are `N`'s immediate children, **in order, with repeats kept** —
+each occurrence is re-presented on its own, since the re-presentation `R` is not assumed
+idempotent (only `∧`/`∨` would let duplicates collapse safely). `N⟨ψ₁' … ψₖ'⟩` is `N`
+rebuilt with its operands replaced by `ψ₁' … ψₖ'` positionally (not by value: an `R` may
+drift a shared child instance, so the rebuild feeds results back by position), and
+`φ[N ↦ N']` substitutes by hash-consed identity (`roundtrip/subst`).
 
 ## The construction
 
