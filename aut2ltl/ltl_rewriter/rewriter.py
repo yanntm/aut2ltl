@@ -24,6 +24,15 @@ class Rewriter(Protocol):
     language-faithful (status OK, `.formula` ≡ the input's) or a NOK (DECLINED) —
     NEVER a wrong formula. Decline closes composition (`first_of` / `best_of`);
     `identity` is the floor that never declines.
+
+    Attribution rule (no-op ⇒ no credit). A Rewriter earns attribution only by an
+    actual change to the formula. If it does not change the formula — its output is
+    hash-cons-identical to the input (`out.formula == res.formula`) — it MUST return
+    the input result VERBATIM, contributing no technique tag: neither its own, nor a
+    delegate's. A finder that located a node, or a delegate that itself did nothing,
+    is not work; only a changed formula is. So a composite Rewriter must short-circuit
+    to its input whenever its rebuild reproduces it (`identity` and a no-op `simplify`
+    already embody this), and must not pre-credit delegates it may end up discarding.
     """
 
     def __call__(self, res: "LTLResult") -> "LTLResult": ...
