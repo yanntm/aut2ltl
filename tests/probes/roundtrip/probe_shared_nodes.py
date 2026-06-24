@@ -148,11 +148,12 @@ def main() -> int:
         cands = cands[:topk]
     print(f"=== dance on {len(cands)} shared+translatable nodes, biggest first "
           f"(survey --use {recipe}, --no-verify, SIGKILL {timeout_s}s) ===")
-    print("(only SIZE-CHANGING + failed rows shown; same-size aggregated below)")
+    print("(only SIZE-CHANGING + timeout rows shown; same-size & declined aggregated below)")
     print(f"{'dagG':>5} {'->':>2} {'dagG2':>7} {'par':>3} {'paths':>14} "
           f"{'wall':>6} {'result':>8}  technique")
     tally = {"smaller": 0, "same": 0, "bigger": 0, "declined": 0, "timeout": 0}
     same_time = 0.0                                       # total time spent confirming "no change"
+    declined_time = 0.0                                   # total time spent on declines
     total_time = 0.0
     blowups: List[Tuple["spot.formula", int, int, str, float]] = []
     for gid in cands:
@@ -170,8 +171,10 @@ def main() -> int:
                 blowups.append((g, d0, d1, tech, wall))
         elif result in ("TIMEOUT", "ERROR"):
             tally["timeout"] += 1
-        else:
+        else:                                            # declined: aggregate, don't print
             tally["declined"] += 1
+            declined_time += wall
+            continue
         print(f"{d0:>5} {'->':>2} {str(d1) if d1 is not None else '-':>7} "
               f"{len(parent_ids[gid]):>3} {paths[gid]:>14} {wall:>6.2f} {result:>8}  {tech}")
 
@@ -180,6 +183,8 @@ def main() -> int:
           f"declined={tally['declined']} timeout={tally['timeout']}")
     print(f"UNCHANGED: {tally['same']} nodes recovered same-size, "
           f"{same_time:.1f}s spent confirming no change (of {total_time:.1f}s total dance time)")
+    print(f"DECLINED:  {tally['declined']} nodes not recovered by the dance recipe, "
+          f"{declined_time:.1f}s")
     if blowups:
         print(f"\n=== {len(blowups)} BLOWUP(s) (round trip returned BIGGER) ===")
         for g, d0, d1, tech, wall in sorted(blowups, key=lambda b: b[2] - b[1], reverse=True):
