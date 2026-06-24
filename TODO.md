@@ -1,3 +1,23 @@
+# TODO
+
+## NEXT: test the new `roundtrip_decomp` recipe (rt_decomp)
+
+All bricks landed + wired (`--use roundtrip_decomp`); never exercised. Run, eyeball, gate.
+
+```bash
+# 1. smoke on the motivating case (a & BIG -> expect ~ a & G(a | Xa))
+timeout 30 python3 -m aut2ltl --hoa genaut/corpus/2state1ap1acc/aut_00536.hoa \
+    --use roundtrip_decomp --flatten-limit 100000
+
+# 2. correctness gate (must end SUCCESS)
+timeout 600 python3 -m survey --folder samples/validation --use roundtrip_decomp
+```
+
+Watch: top operator is really AND on the seed; best_of default comparator = smaller;
+cakedsdet is the seed yielding the buchi blow-up. Then compare size vs default/roundtrip.
+
+---
+
 # aut2ltl — Project TODO
 
 Open project-level items only. Completed campaigns are recorded in `docs/HISTORY.md`

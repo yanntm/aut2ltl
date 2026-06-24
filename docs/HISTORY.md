@@ -1667,3 +1667,24 @@ prior code bucketed every TRUE->not-TRUE (incl. TIMEOUT/SIZE/ERROR) as a
 but still-correct formula" with "formula was wrong". A bigger tree or a
 TRUE->TIMEOUT move is now an assay, not a regression. Gate test:
 tests/probes/test_diff_results.py.
+
+## 2026-06-24 — roundtrip generalized to the Rewriter contract; roundtrip_decomp + recipe
+
+Reframed the round-trip family around a formula-space contract.
+
+- `aut2ltl/ltl_rewriter/` — new contract `Rewriter = LTLResult -> LTLResult`
+  (faithful `R(r) ≡ r`, decline kept, `identity` floor). Boundary adapters
+  `relabel(Λ)` (Translator -> Rewriter) and `as_translator(seed, R)` (Rewriter ->
+  Translator); `simplify` lifts own_simplify, crediting only on change.
+- `aut2ltl/roundtrip_top/` — the prior whole-seed round-trip brick, renamed off
+  `roundtrip/` (recipes repointed); unchanged behaviour.
+- `aut2ltl/roundtrip/` — rebuilt as the Rewriter `roundtrip(R, Φ)` (no seed):
+  locate `n = Φ(φ)`, re-present `φ↓n` with R, relink via `subst`. `cutpoints/`
+  finders `root`, `toplevel(operator)`; `Finder` protocol; `subst` (φ[n↦ψ]).
+- `aut2ltl/roundtrip_decomp/` — the Rewriter `roundtrip_decomp(R, Φ)`: locate N,
+  re-present each distinct operand of N (helper `rewrite_each`), rebuild N once,
+  one `subst`. Rebuild-once => operands rewritten as independent formulas, no
+  in-flight hash-cons identity invalidated; per-operand faithfulness + congruence.
+- `--use roundtrip_decomp` recipe: `Simplify(as_translator(cakedsdet,
+  roundtrip_decomp(best_of(identity, relabel(cakedsdet)), toplevel(And))), "hi")`.
+  NOT yet exercised — first run / survey deferred to next session (see TODO).
