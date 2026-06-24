@@ -25,6 +25,29 @@ That single invariant is the whole soundness obligation — no transition struct
 no `NOT_LTL` (the input is already a formula, hence LTL-definable). Decline (`⊥`) is
 kept: it closes composition under `first_of` / `best_of`, exactly as for `Translator`.
 
+## Attribution (no-op ⇒ no credit)
+
+Faithfulness is the *soundness* obligation; attribution is the *provenance* one. A
+Rewriter earns its technique tag — and gets to fold in its delegates' tags — only by
+an **actual change to the formula**. If the output is hash-cons-identical to the input,
+
+```
+R(r).formula = r.formula   ⇒   R(r) = r        -- return the input VERBATIM, uncredited
+```
+
+the Rewriter must return `r` itself, contributing no tag: neither its own nor a
+delegate's. A finder that located a node, or a delegate that itself did nothing, is not
+work; only a changed formula is. Consequences for implementors:
+
+- a *leaf* Rewriter (`simplify`, `relabel`) compares its result formula to the input and
+  returns the input on a match;
+- a *composite* Rewriter (`roundtrip`, `roundtrip_decomp`) short-circuits to its input
+  when its rebuild reproduces the located node — so even a successful finder hit whose
+  re-presentation changed nothing stays uncredited, and the delegates it would have
+  credited are discarded with it.
+
+`identity` is the degenerate case: it never changes the formula, so it is never credited.
+
 ## identity
 
 ```
