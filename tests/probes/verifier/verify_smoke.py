@@ -1,5 +1,5 @@
 """
-tests/probes/certificate/verify_smoke.py — first prototype of the non-LTL
+tests/probes/verifier/verify_smoke.py — first prototype of the non-LTL
 certificate checker (the *membership* tier).
 
 A non-LTL certificate is a counting family (u, v, x, p): finite words u, v, an

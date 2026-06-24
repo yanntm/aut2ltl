@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Extract and print the non-LTL witness for ONE HOA file (single-input probe).
 
-    python3 -m tests.probes.witness.witness_on_hoa <file.hoa>
+    python3 -m tests.probes.bls.definability.witness.witness_on_hoa <file.hoa>
 """
 import sys
 from typing import List

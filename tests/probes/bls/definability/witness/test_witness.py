@@ -12,7 +12,7 @@ exactly as the cascade gate hands it the same form. Two contrasting inputs:
 
 GAP-bearing, small inputs (fast). Run from the repo root:
 
-    python3 -m tests.probes.witness.test_witness
+    python3 -m tests.probes.bls.definability.witness.test_witness
 """
 
 from __future__ import annotations

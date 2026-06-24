@@ -6,7 +6,7 @@ phase tail x = (!a)^w (stage-2 x not built yet), and check that u.v^n.x toggles
 membership on the INPUT automaton, via the suggestive membership tier of the
 certificate verifier. Closes the loop GAP-witness -> letters -> input automaton.
 
-    python3 -m tests.probes.witness.replay_certificate
+    python3 -m tests.probes.bls.definability.witness.replay
 """
 import spot
 
