@@ -60,9 +60,10 @@ def label_ltl_definable(
     automaton (≤ the SAT-min threshold), so a `not definable` reading is a proof
     rather than a strong hint.
 
-    Fail-open: if the oracle cannot run (too many APs to extract, or GAP error),
-    we do NOT claim non-definability — return `(True, False)` and tag it, so the
-    cascade is attempted rather than a language falsely rejected.
+    Abstain when the oracle CANNOT RUN: on an extraction or GAP failure (too many
+    APs, a GAP error) return `(True, False)` instead of fabricating a non-definable
+    verdict, so a possibly-definable language is built rather than rejected unseen.
+    A genuine non-aperiodic reading returns `(False, conclusive)`.
     """
     cached = lang.ltl_definable
     if cached is not None:
@@ -79,7 +80,7 @@ def label_ltl_definable(
         gens, _, _ = extract_generators(aut, max_aps=max_aps)
         definable = is_aperiodic_gens(gens, gap_cmd=gap_cmd, timeout=timeout)
     except Exception:
-        definable, conclusive = True, False  # fail-open (see docstring)
+        definable, conclusive = True, False  # abstain: oracle could not run (see docstring)
 
     lang.set_ltl_definable(definable, conclusive=conclusive)
     return (definable, conclusive)

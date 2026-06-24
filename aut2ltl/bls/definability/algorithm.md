@@ -63,16 +63,49 @@ label_ltl_definable(L)  →  (definable, conclusive)
   `not definable` reading is a **proof**; above it, it is only a **strong hint**
   (the automaton may be non-minimal). `conclusive` is `n_min ≤ threshold`.
 
-The consumer (`aut2cas.py`) phrases the non-definable verdict accordingly — a flat
-NOT_LTL when conclusive, a hedged "strong hint, may be non-minimal" otherwise.
+The consumer (`aut2cas.py`) emits the non-definable reading as a `NOT_LTL`
+`LTLResult` **before** the holonomy build is ever called — a flat NOT_LTL when
+conclusive, a hedged "strong hint, may be non-minimal" otherwise.
 
-## Fail-open
+## The verdict is absorbing — it wires the whole portfolio
 
-If the oracle **cannot run** — too many APs to extract a tractable letter set, or
-a GAP error/timeout — the gate does **not** claim non-definability. It returns
-`(True, False)` and tags it, so the cascade is *attempted* rather than a language
-being **falsely rejected**. The asymmetry is deliberate: a missed rejection costs a
-later cascade decline; a false rejection would lose a definable answer outright.
+`NOT_LTL` is not a private decline: it **dominates** in both result algebras
+(`aut2ltl/result.py`), so a non-LTL reading routes *every* member to hell, not just
+the cascade.
+
+- **Choice (`first_success`).** `NOT_LTL ≻ DECLINED`: a `DECLINED` falls through to
+  the next translator, but a `NOT_LTL` **short-circuits** — `first` returns it
+  as-is and no later member is even tried. One member proving non-definability
+  decides the whole portfolio.
+- **Composition (`credit`/`fuse`).** Dominance `NOT_LTL ≻ DECLINED ≻ OK`: a
+  `NOT_LTL` child flips its parent to `NOT_LTL` and clears the formula, carrying the
+  verdict up.
+
+So a genuinely non-LTL language routes straight to the reported impossibility and
+nothing downstream can override it. **non-LTL is a hard fail** — this gate is the
+opposite of lenient.
+
+## When the oracle can't run (the gate abstains)
+
+The one place the gate is permissive is **not** the verdict — it is when the oracle
+*physically cannot run*: too many APs to extract a tractable letter set, or a GAP
+error/timeout. There the gate **abstains**: it does *not* fabricate a `NOT_LTL`
+(that would falsely reject a definable language over a mere extraction limit), and
+it does *not* assert definability as fact — it returns `(definable=True,
+conclusive=False)` so the cascade is *attempted* rather than the language rejected
+unseen. The asymmetry is conservative toward **completeness**: an abstention costs
+at worst a later cascade decline; a fabricated rejection would lose a definable
+answer outright. It never touches the verdict path above — a real `not-aperiodic`
+reading is still emitted as the absorbing `NOT_LTL`.
+
+**Soundness is preserved — abstaining cannot leak a wrong formula.** The gate and
+the cascade share the *same* machinery: `extract_generators` and GAP. Whatever stops
+the cheap aperiodicity check (too many APs to extract, a GAP error/timeout) also
+stops the cascade's heavier holonomy — it runs the *same* extraction and a *larger*
+GAP job — so on exactly those inputs the cascade is doomed to **decline**, not to
+build a formula. Abstaining attempts a construction that in all reasonable
+probability fails cleanly, rather than rejecting a language we could not read. The
+tool stays **sound** either way: it never returns a non-equivalent formula.
 
 ## Caching
 
@@ -85,7 +118,7 @@ serves the whole portfolio pass over a Language.
 
 - **`tester.py`** — `label_ltl_definable`: pull `det_generic_minimal()`, gate
   `conclusive` on the SAT-min threshold, complete + extract generators, run the
-  aperiodicity oracle, fail-open on error, cache the pair.
+  aperiodicity oracle, abstain on error, cache the pair.
 
 ## Layering
 
