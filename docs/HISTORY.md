@@ -1732,3 +1732,24 @@ scaffolding dropped. Principle recorded at the key site: str/flatten is print-on
 and size-gated (`ltl/printers.format_gated`); a Language's identity is the O(DAG)
 dag_md5. Genaut roundtrip_decomp re-run (to confirm the 5 resolved + no new moves)
 and the adoption decision are pending.
+
+## 2026-06-24 — buchi is the blob factory; nobls recipe + recoverability probe
+
+DONE (research finding). To test whether internal shared subformulas of a giant-DAG
+result are recoverable+smaller by round trip, added
+`tests/probes/roundtrip/probe_shared_nodes.py`: walk the DAG, pick >1-parent nodes,
+round-trip each (under the Language.of translate bound) via survey --no-verify with a
+severe SIGKILL. On aut_10380's default formula (1704 DAG nodes, 463 shared, 116
+translatable): 38 nodes come back SMALLER (e.g. 30->9), 50 same, 21 BIGGER, 7 timeout.
+EVERY severe blowup (x24..x1247; a 14-node U-language -> 10912 nodes) was a `buchi`
+answer (`buchi+daisy[+...]`); the daisy/partscc/daisystar/inv layers produced all the
+compact + shrinking forms, cheaply (~0.11s vs 1-4s for the buchi blobs).
+
+LANDED. `nobls` recipe (`portfolio/recipes/nobls.py`): the rich decomposition stack
+over `daisy_trio_det_inv` floored on `PartScc` ALONE (no bls). Re-running the probe
+with the dance under `--use nobls`: the 38 shrinks and 50 same-size recoveries are
+UNCHANGED, the 21 buchi blowups become clean DECLINES, 0 timeouts, 5.5x less total
+time (13s vs 72s). Confirms: the bls cascade (buchi) is the sole source of the severe
+round-trip blowups; nobls trades "blob answer" for "clean decline", leaving such
+sub-languages for a round trip. roundtrip_decomp NOT adopted as default (still
+maturing); nobls is a building block toward a roundtrip-floored-on-nobls assembly.
