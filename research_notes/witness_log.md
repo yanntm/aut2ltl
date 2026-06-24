@@ -23,11 +23,11 @@ All from the repo root; GAP-bearing, small automata, fast.
 One HOA in, witness out (single-input probe; verifies the toggle on the input
 automaton):
 
-    python3 -m tests.probes.witness.witness_on_hoa <file.hoa>
+    python3 -m tests.probes.bls.definability.witness.witness_on_hoa <file.hoa>
 
 Unit test (counter example `parity_a` + LTL control `GFa` + stage-2 completion):
 
-    python3 -m tests.probes.witness.test_witness
+    python3 -m tests.probes.bls.definability.witness.test_witness
 
 ## 2026-06-25 — first witnesses on real corpus inputs (kinska counting, 1 AP)
 
@@ -45,7 +45,7 @@ known NOT_LTL and decided fast (~0.62 s in the reference survey), taken from
 
 Reproduce one:
 
-    python3 -m tests.probes.witness.witness_on_hoa \
+    python3 -m tests.probes.bls.definability.witness.witness_on_hoa \
       samples/benchmark/inputs/kinska/counting-1ap-counting_buchi_1ap_01.hoa
 
 Observations:

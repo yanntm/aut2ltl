@@ -228,15 +228,15 @@ The pipeline is being built bottom-up; this maps the code to the design above.
   `product(L_q, complement(L_q'))`). Built, unit-tested, and validated on real
   kinska non-LTL inputs (see `research_notes/witness_log.md`).
 - **Membership certificate checker (suggestive tier).**
-  `tests/probes/certificate/verify_smoke.py` — `member(aut, word)` (Spot
+  `tests/probes/verifier/verify_smoke.py` — `member(aut, word)` (Spot
   `intersects`, every acceptance type, on the **input** automaton) and
   `verify_suggestive` (sample `u·vⁿ·x` for `n = 0…2p`, check the toggle). The
   verifier of §3.2 at the distinguishability tier: phase-sensitivity, not yet
   periodicity.
-- **Tests / fixtures.** `tests/probes/witness/test_witness.py` — counter example
+- **Tests / fixtures.** `tests/probes/bls/definability/witness/test_witness.py` — counter example
   `samples/fixtures/hoa/various/parity_a.hoa` (`L = a^{2k}(¬a)ᵒ`, period 2) yields a
   witness; LTL control `GFa` yields `None`.
-  `tests/probes/witness/replay_certificate.py` — the end-to-end loop: extract
+  `tests/probes/bls/definability/witness/replay.py` — the end-to-end loop: extract
   `(v, p)` from GAP, lift to letters, replay `u·vⁿ·x` membership on the input
   automaton (toggles `10101` on the counter).
 

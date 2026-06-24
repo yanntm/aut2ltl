@@ -10,7 +10,7 @@ import spot
 
 from aut2ltl.language import Language
 from aut2ltl.bls.definability.witness import extract_witness
-from tests.probes.certificate.verify_smoke import verify_suggestive
+from tests.probes.verifier.verify_smoke import verify_suggestive
 
 
 def main(argv: List[str]) -> int:

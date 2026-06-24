@@ -19,7 +19,7 @@ finitely many membership samples witness phase *distinguishability* but not yet
 The residual-equivalence upgrade that makes it a proof is deferred.
 
 Run from the repo root:
-    python3 -m tests.probes.certificate.verify_smoke
+    python3 -m tests.probes.verifier.verify_smoke
 """
 from __future__ import annotations
 
