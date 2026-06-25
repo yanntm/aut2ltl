@@ -1832,3 +1832,29 @@ onto the NOT_LTL result as a diagnosis complement in aut2cas (gate path untouche
 (5) DEFERRED ADMIN the user asked to delay: move the witness probes under
 `tests/probes/bls/definability/witness/` (mirror the source tree), give the verifier
 its own folder, and drop the "certificate" naming (the object is a *witness*).
+
+## 2026-06-25 — non-LTL witness: GAP right-action order pinned (p ≥ 3)
+
+DONE. The witness lift (`witness/_induced_transform`) reads a GAP `Factorization`
+index word left-to-right in the image-list convention; this is correct only if it
+matches GAP's right-action product, else the period word `v` comes out reversed
+(non_ltl_certificates §4 gotcha). A period-2 cycle is self-inverse and a
+single-letter factor is a palindrome, so neither the prior `parity_a` (p=2) case nor
+the kinska 1ap witnesses could test the *direction*.
+
+LANDED (all additive, nothing existing edited):
+- `samples/fixtures/hoa/various/mod3_a.hoa` (+ generator
+  `tests/probes/bls/definability/witness/make_mod3_fixture.py`) — `L = a^{3k}(!a)ᵒ`,
+  the first p ≥ 3 non-LTL input; `extract_witness` returns a genuine period-3 witness
+  (factor `a;a`, toggle `1001001`).
+- `aut2ltl/bls/gap/witness_eval.py` — `eval_word(gens, word)`, GAP's right-action
+  product as a 0-based image list: the independent oracle.
+- `aut2ltl/bls/definability/witness/pin.py` — `check_action_order(lang)` → `PinResult`,
+  comparing `_induced_transform` to `eval_word` on the real factor and on a constructed
+  direction-sensitive word (reversal induces a different transform — what a palindrome
+  cannot exercise). Probe `tests/probes/bls/definability/witness/pin_order.py`.
+
+RESULT: PINNED on mod3_a (p=3) and parity_a (p=2). Forward matches GAP, reversal
+differs — the lift composes left-to-right, no reversal bug. `test_witness` 4/4.
+Notes: research_notes/non_ltl_certificates.md §8/§10, research_notes/witness_log.md.
+Open: minimise u/x; periodicity-proof tier; wire Witness into the NOT_LTL result.
