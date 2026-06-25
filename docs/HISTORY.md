@@ -1921,3 +1921,22 @@ and split the 652-line module into one file per operator, with a proper algorith
 - Doc tidy: CLAUDE.md drops the paper pointers; README folder-map slimmed to top level;
   bls/README refreshed (definability/ replaces ltl_tester.py, docs/ refs dropped);
   stale reachability_operators references repointed to the operators package.
+
+## 2026-06-25 — operators code review (pass over the split files)
+
+Reviewing the sed-carved operator files against the new algorithm.md, removing
+progress-log / refactor-history cruft and tightening structure (behavior-preserving;
+survey SUCCESS with identical totals DAG=472/temporals=128 at each logic-touching step):
+
+- **support.py** — dropped the memo decorator's benchmark log (437k/91.5%, the
+  r4-audit grep rationale); lifted `_dedupe` from the three nested copies
+  (solid/wsolid/dashed) into support (fixes its dangling reference); removed unused
+  `Dict`/`Optional` imports.
+- **builder delegation removed** — operators now import the LTL bricks directly from
+  `aut2ltl.ltl.builders` (the project's LTL-over-spot layer) instead of through
+  support's pass-through re-export; support keeps only the builders it uses; the facade
+  sources the public LTL helpers from the bricks and drops unused internal re-exports.
+- **reach.py** — dropped the guard's past-bug log line; aligned the docstring notation
+  to the reference (`reach(S, B, β, T, τ)`).
+- **wreach.py** — dropped the refactor-history parenthetical (named the removed
+  `solid_w`/`dashed_w`).
