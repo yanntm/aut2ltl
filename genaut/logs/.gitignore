@@ -4,3 +4,5 @@
 !*.csv
 !*.log
 !*.pdf
+# but the rerun scratch (survey.diff workflow) stays untracked.
+rerun/

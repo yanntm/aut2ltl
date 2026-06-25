@@ -1,6 +1,0 @@
-CSV: logs/rerun/genaut/survey_20260625_130443.csv
-survey: 929 inputs  (--use default)
-aut2ltl: 752 LTL, 123 not-LTL  |  declined 0, timeout 54, crash 0
-validation of 752 LTL: 750 TRUE, 0 FAIL, 2 not checked (size/timeout/error)
-totals: DAG=5340 temporals=1256 build=1569.620s
-SUCCESS
