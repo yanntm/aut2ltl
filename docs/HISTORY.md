@@ -1940,3 +1940,13 @@ survey SUCCESS with identical totals DAG=472/temporals=128 at each logic-touchin
   to the reference (`reach(S, B, β, T, τ)`).
 - **wreach.py** — dropped the refactor-history parenthetical (named the removed
   `solid_w`/`dashed_w`).
+
+## 2026-06-25 — operators code review complete (solid/wsolid/dashed; fin clean)
+
+Finished the per-file comment pass over the operators package (all 7 files). Removed
+progress-log / refactor-history / half-baked-instruction residue the sed carve carried
+over: solid (the '2L breaker' from-S note, the stale `_stay_gt0` trace label, the
+`p.11` page ref); wsolid (the 'Removed special stay_prop U path' history, stale
+`Rws`/`Rws0` names, 'corrected paper', `p.12`, 2L-breaker); dashed (`p.13`, 2L-breaker
+framing kept-the-illustration, the heisenbug/bare-except narration). reach/wreach/support
+done earlier; fin.py reviewed clean. All comment-only here (no survey needed).
