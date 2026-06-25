@@ -9,10 +9,22 @@ The FoSSaCS'22 automaton→LTL construction is implemented end-to-end and is sou
 on the survey gate (0 verified non-equivalent across the curated corpus, the
 373-case benchmark, and the Kinská set).
 
-The portfolio default (`RECIPES["default"]`) is the **`cakedsdet`** recipe: the
-`cakeds` assembly with the deterministic anchored read-off **`daisystardet`** (peer
-package `aut2ltl/daisystardet/`, see its `algorithm.md`) ahead of the flat
-`daisystar` in the peel trio. The peel layer is `daisy` (self-loop) → `daisy2`
+The portfolio default (`RECIPES["default"]`) is the **`deep_nobls`** recipe: it
+seeds a formula with the **`cakedsdet`** assembly (below), then runs a DEEP,
+bottom-up round trip — `deep_roundtrip` re-presents every node of the seed's DAG
+through the cascade-refusing **`nobls`** labeler, kept per node only when not larger
+(`best_of([identity, relabel(nobls)])`), then a final `hi` simplify. A re-derivable
+node comes back compact (often collapsing a whole buchi tower from the leaves up);
+one `nobls` cannot re-derive is declined and the seed's node is kept. This round
+trip leans on the language retranslate budget, **raised to 1000** flat nodes
+(`language.translate_tree_limit`, env `KR_TRANSLATE_TREE_LIMIT`): blobs up to that
+size are re-presented rather than refused, which is where the bulk of the size
+collapse comes from (see `results/reference/`).
+
+The `cakedsdet` seed is the `cakeds` assembly with the deterministic anchored
+read-off **`daisystardet`** (peer package `aut2ltl/daisystardet/`, see its
+`algorithm.md`) ahead of the flat `daisystar` in the peel trio. The peel layer is
+`daisy` (self-loop) → `daisy2`
 (length-1 recurrence star) → `daisystardet`/`daisystar` (rejecting star), each
 delegating exits to a child and flooring on the `bls` cascade or the `partscc`
 leaf. `daisystardet` peels a *rejecting* SCC with a **deterministic L-partition**
