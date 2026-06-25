@@ -40,10 +40,11 @@ live in `aut2ltl/bls/STATUS.md`.
 The portfolio combinators are named into a small (almost-)algebra over
 language-manipulators (Translators carrying *faithful-or-⊥*; **soundness is closed
 under every operation**, so any writable recipe is sound by construction). See
-[`COMBINATORS.md`](COMBINATORS.md) for the lens and law table. Two sorts: translators
-and `Decorator`s (`aut2ltl/translator.py`). Operations: `first_success` (`⊕`) /
-`best_of` (`⊞`) / `compose` (`∘`, `aut2ltl/compose.py`, unit `identity`) / `recurse`
-(`fix`), plus the `∧/∨` combine (`aut2ltl/decomp/decompose.py`). The five recipes are
+[`aut2ltl/combinators/`](aut2ltl/combinators/README.md) for the algebra and law table.
+Two sorts: translators and `Decorator`s (`aut2ltl/translator.py`). Operations:
+`first_success` (`⊕`) / `best_of` (`⊞`) / `compose` (`∘`, unit `identity`) / `recurse`
+(`fix`) — all under `aut2ltl/combinators/` — plus the `∧/∨` combine
+(`aut2ltl/decomp/decompose.py`). The five recipes are
 flat point-free `compose(...)` terms, and the three `decomp` decomposers
 (strength/acceptance/scc) collapsed onto the one `decompose(split, connective, tag)` —
 all behavior-preserving (survey unchanged at DAG=414). Scope fence: free named

@@ -36,8 +36,8 @@ retired `sl` heuristic engine, which `daisy` (self-loop peel) and `partscc`
   daisy/daisy2 peel pair), and `daisy_pair_inv` (the peel with the invariant strip
   woven per descent). The recursive peels are built from the two primitive **bricks**:
   `daisy(child) = recurse(λ leaf: first_success([Daisy(leaf), child]))` — i.e.
-  `recurse` (self-reference, `aut2ltl.recurse`) over `first_success` (choice,
-  `aut2ltl.first_success`).
+  `recurse` (self-reference, `aut2ltl.combinators.recurse`) over `first_success`
+  (choice, `aut2ltl.combinators.first_success`).
 - **`recipes/`** — the named assemblies, **one module per recipe**, each composing the
   `builder.py` blocks into a whole. Its `__init__` aggregates them into the `RECIPES`
   registry that `build_portfolio` resolves for `--use <name>`; the `RECIPES["default"]`
@@ -63,10 +63,10 @@ leaves `acc / weak / buchi / cobuchi / muller / bls` for the research ladder —
 
 ## Combinator bricks
 
-Two primitives, both sibling modules of this package, compose the translators:
+Two primitives, both in `aut2ltl.combinators`, compose the translators:
 
-- **`aut2ltl.first_success`** — *choice*: a flat chain, take the first non-declined.
-- **`aut2ltl.recurse`** — *self-reference*: `recurse(step) = leaf` with
+- **`aut2ltl.combinators.first_success`** — *choice*: a flat chain, take the first non-declined.
+- **`aut2ltl.combinators.recurse`** — *self-reference*: `recurse(step) = leaf` with
   `leaf = step(leaf)`, the recursive-descent shape `daisy` / `daisy_pair` / the
   `decomp` composites share. The single seam where `best_of` (size), memoization,
   or a per-descent layer would later land.

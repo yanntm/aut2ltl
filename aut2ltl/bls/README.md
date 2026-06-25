@@ -18,7 +18,7 @@ CascadeTranslator =  CascadeHolder → LTLResult
 - **`aut2cas.py`** — the adapter that lifts a member to a `Language → LTLResult`
   `Translator` (decompose the Language, then run the member).
 - **`hierarchy_class.py`** — the builder that assembles the members into the dispatch
-  chain `acc → weak → buchi → cobuchi → muller` (via `aut2ltl.first_success`), exposed
+  chain `acc → weak → buchi → cobuchi → muller` (via `aut2ltl.combinators.first_success`), exposed
   to the CLI as the `str` technique.
 
 ```

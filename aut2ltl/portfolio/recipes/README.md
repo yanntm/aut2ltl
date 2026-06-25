@@ -83,18 +83,20 @@ delegates to it.
 
 Small, single-concern bricks; the combinators above are pure wiring of these. Soundness
 (faithful-or-decline) is closed under every one, so any recipe is sound by construction.
+They live together under [`../../combinators/`](../../combinators/) (each with its own
+`algorithm.md`); that package's [`README.md`](../../combinators/README.md) is the algebra hub.
 
 - **`first_success` (⊕)** — *choice*: a flat chain, take the first non-declined result
-  ([`../../first_success.py`](../../first_success.py)). ¹
+  ([`../../combinators/first_success`](../../combinators/first_success)).
 - **`best_of` (⊞)** — *size choice*: run the arms, keep the one a comparator prefers
-  (`significantly_smaller`) ([`../../best_of/README.md`](../../best_of/README.md)).
+  (`significantly_smaller`) ([`../../combinators/best_of`](../../combinators/best_of)).
 - **`compose` (∘)** — function composition of decorators; unit `identity`
-  ([`../../compose.py`](../../compose.py)).
+  ([`../../combinators/compose`](../../combinators/compose)).
 - **`recurse` (fix)** — *self-reference*: `recurse(step) = leaf` with `leaf = step(leaf)`,
   the recursive-descent seam the peels / decomp composites share
-  ([`../../recurse`](../../recurse)).
+  ([`../../combinators/recurse`](../../combinators/recurse)).
 - **`Memo`** — the one sharing-aware brick: a single child run shared across arms
-  ([`../../memo`](../../memo)).
+  ([`../../combinators/memo`](../../combinators/memo)).
 - **The Rewriter kit** — `Rewriter = LTLResult -> LTLResult`, re-present an
   already-built formula by going back through its language:
   - `Roundtrip` (one located node), `deep_roundtrip` (whole DAG, bottom-up, one
@@ -103,9 +105,6 @@ Small, single-concern bricks; the combinators above are pure wiring of these. So
   - `identity` / `relabel(Λ)` / `as_translator(seed, rewriter)` — the floor, a node's
     language round trip, and *seed-then-rewrite* ([`../../ltl_rewriter`](../../ltl_rewriter)).
   - The algorithm for the located-node case is [`../../roundtrip/algorithm.md`](../../roundtrip/algorithm.md).
-
-> ¹ `first_success` currently lives as a bare module rather than a peer package
-> (`recurse`/`memo`/`best_of` are packages). TODO: promote it to its own folder.
 
 ## Adding a recipe (the whole wiring)
 

@@ -29,9 +29,10 @@ Because every translator is faithful-or-declines, translators **compose soundly*
 
 ## Assembly
 
-- **`first_success.py`**: the basic combinator — try translators in order, take the
-  first non-declined result, else decline. A composite is itself a Translator, so it
-  nests. (A size-optimal `best` combinator is planned, in its own file.)
+- **`combinators/`**: the general-purpose combinator bricks — `first_success` (⊕
+  choice), `best_of` (⊞ size-choice), `compose` (∘, unit `identity`), `recurse` (fix
+  self-reference), `memo` (sharing). A composite is itself a Translator, so it nests.
+  See its [`README.md`](combinators/README.md) for the algebra.
 - **`options.py`**: the runtime configuration compartment — an explicit key-value
   store threaded through construction (never a singleton). Pointer here; see the file
   for the spec.
