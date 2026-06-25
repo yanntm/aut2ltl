@@ -23,7 +23,7 @@ from pathlib import Path
 import spot
 
 from aut2ltl.bls import decompose_aut
-import aut2ltl.bls.operators.reachability_operators as _ops
+import aut2ltl.bls.operators as _ops
 from aut2ltl.bls.reachability import reconstruct_ltl_paper_style
 # reconstruct now returns the spot.formula DAG itself (no final str), so this
 # tool measures the REAL pipeline output — the former local re-implementation

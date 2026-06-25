@@ -25,7 +25,7 @@ from pathlib import Path
 
 import spot
 from aut2ltl.bls import decompose_aut, CascadeHolder
-from aut2ltl.bls.operators.reachability_operators import (
+from aut2ltl.bls.operators import (
     reach, wreach, simplify_ltl,
     wsolid, wsolid_plus,
     dashed,
@@ -182,12 +182,13 @@ def check_5point_checklist():
     Precise source inspection of the *bodies* of Rws0 / R4 + behavioral.
     """
     print("\n=== Path C: 5-point Rws0 / R4 checklist (source + behavioral) ===")
-    from aut2ltl.bls.operators import reachability_operators as _reachops
-    src_path = Path(_reachops.__file__)
-    src = src_path.read_text()
-    rws0_body = _get_func_body(src, "wsolid_plus")
-    rs_body = _get_func_body(src, "wsolid")
-    dashed_body = _get_func_body(src, "dashed")
+    import importlib
+    # the operator bodies now live one per file; read each module's source by text
+    ws_src = Path(importlib.import_module("aut2ltl.bls.operators.wsolid").__file__).read_text()
+    d_src = Path(importlib.import_module("aut2ltl.bls.operators.dashed").__file__).read_text()
+    rws0_body = _get_func_body(ws_src, "wsolid_plus")
+    rs_body = _get_func_body(ws_src, "wsolid")
+    dashed_body = _get_func_body(d_src, "dashed")
 
     points = {
         "1. Has Line-2 disjunct (stay forever) in weak >0?": ('S, "false"' in rws0_body or "_avoid_conjs(S, _ff())" in rws0_body or ", S, false" in rws0_body),

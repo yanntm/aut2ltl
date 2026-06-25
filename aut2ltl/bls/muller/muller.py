@@ -10,13 +10,13 @@ asserting the set of configs visited infinitely often is exactly some good M.
 `assemble_muller_dnf` is the assembly (casc → formula); the `Muller`
 CascadeTranslator member wraps it into the general-case leaf, which always produces a
 formula. The five inductive reachability formulas it relies on (via fin_c / Fin(C))
-live in reachability_operators.py + fin.py. See algorithm.md.
+live in the operators package (reach/wreach/solid/wsolid/dashed + fin.py). See algorithm.md.
 """
 
 from __future__ import annotations
 import os
 
-import aut2ltl.bls.operators.reachability_operators as _ops
+import aut2ltl.bls.operators as _ops
 from aut2ltl.bls.operators.fin import fin_c
 from aut2ltl.ltl.builders import _And, _Or, _Not, _tt, _ff, _simp_f, _short_f
 from aut2ltl.bls.cascade import CascadeHolder, good_muller_sets

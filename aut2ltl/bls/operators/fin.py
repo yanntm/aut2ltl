@@ -3,7 +3,7 @@ fin.py — Fin(C) per Lemma 7 of the paper.
 
 Fin(C) := ¬(ι ↝ C) ∨ ι ↝ C ( ¬ (C>0 ↝ C) )
 
-Uses the reachability operators (reachability_operators.py) for the
+Uses the reachability operators (reach.py) for the
 unconditional shorthands. One-way dependency: the operators never import fin.
 The fin counter and its memo live on the CascadeHolder passed as `casc` (per
 build), not on the operators module.
@@ -16,8 +16,8 @@ from __future__ import annotations
 from typing import Optional, Tuple
 
 from aut2ltl.ltl.builders import _And, _Or, _Not, _X, _ff, _tt, _letters_to_f, _simp_f, _short_f, _fuse_or
-import aut2ltl.bls.operators.reachability_operators as _ops
-from aut2ltl.bls.operators.reachability_operators import reach, _trace, TRACE_ON
+from .reach import reach
+from .support import _trace, TRACE_ON, _FUSE_LETTERS
 
 
 def _uncond_reach_strict(S: Tuple[int, ...], T: Tuple[int, ...], casc: "Cascade") -> "spot.formula":
@@ -42,7 +42,7 @@ def _uncond_reach_strict(S: Tuple[int, ...], T: Tuple[int, ...], casc: "Cascade"
         g_f = _letters_to_f(casc.letter_valuations[li], casc.aps)
         if g_f.is_ff():
             continue
-        key = arrived if _ops._FUSE_LETTERS else (li, arrived)
+        key = arrived if _FUSE_LETTERS else (li, arrived)
         groups.setdefault(key, (arrived, []))[1].append(g_f)
     disjs = []
     for arrived, gs in groups.values():
