@@ -22,10 +22,6 @@ leaf) + `aut2ltl/heur` (extracted heuristics, e.g. `fuse2`) + `aut2ltl/decomp`
   STATUS.md is the current snapshot.
 - `docs/algorithm.md` — the construction's scope/policy and module mapping.
   `docs/dag_folding.md` — the size-explosion analysis (open research direction).
-- `paper/automata-to-ltl-construction.md` — the construction reference.
-- `paper/Automata2LTL.txt` — ground truth for any formula-fidelity question
-  (Sec 4.2 + Table 1 + Formulas 3/4/5 ≈ lines 440–1040). LLM summaries have twice
-  introduced guard/case errors; the paper text settles disputes.
 - The default translator is whichever recipe `RECIPES["default"]` points at in
   `aut2ltl/portfolio/recipes/` (do not hardcode its name elsewhere — the registry
   decides); `aut2ltl/portfolio/README.md` maps the package. The kr core stays pure.
@@ -61,7 +57,7 @@ leaf) + `aut2ltl/heur` (extracted heuristics, e.g. `fuse2`) + `aut2ltl/decomp`
   (`python3 -m survey.diff.ltl_diff`), not just equivalence.
 - Debug method: ground sub-terms against GT automata built from D's semiautomaton
   (`tests/bls/trace_fin_semantics.py` pattern), find the first diverging sub-term,
-  fix against the paper text.
+  fix against the construction reference.
 - Keep files roughly under 500 LOC (technical cores like the mutually-recursive
   formula cluster or parsers may exceed).
 
