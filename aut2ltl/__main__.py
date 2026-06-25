@@ -221,6 +221,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         msg = "aut2ltl: NOT_LTL — the language is not LTL-definable"
         if res.diagnosis:
             msg += f"\n  ({res.diagnosis})"
+        if res.witness is not None:
+            msg += f"\n  {res.witness.summary()}"
         print(msg, file=sys.stderr)
         return 3
 
