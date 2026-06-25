@@ -100,3 +100,44 @@ Observations:
   bridge round-trips correctly through `eval_word`.
 - Still open: minimise `u` / `x`; the periodicity-proof tier; wiring `Witness` into
   the `NOT_LTL` result.
+
+## 2026-06-25 — witness wired end-to-end into `main`
+
+The witness now reaches the user. On any non-LTL input `python3 -m aut2ltl <file>`
+prints the counting family beneath the `NOT_LTL` diagnosis (exit 3).
+
+    $ python3 -m aut2ltl samples/fixtures/hoa/various/mod3_a.hoa
+    aut2ltl: NOT_LTL — the language is not LTL-definable
+      (the deterministic transition monoid is non-aperiodic (carries a
+       non-trivial group), so the language is not star-free / counter-free
+       and no LTL formula exists)
+      witness: counting family, period p=3 — u·vⁿ·x flips membership with n mod 3
+        u = ε ;  v = a ; a ;  x = (!a)ω
+
+    $ python3 -m aut2ltl samples/fixtures/hoa/various/parity_a.hoa
+      … witness: counting family, period p=2 — u·vⁿ·x flips membership with n mod 2
+        u = a ;  v = a ;  x = a ; (!a)ω
+
+    $ KR_PRODUCE_WITNESS=0 python3 -m aut2ltl …/mod3_a.hoa   # knob off → verdict only
+
+The path (mirrors the diagnosis, which travels the same chain):
+
+- the `Witness` value type lives at the floor (`aut2ltl/witness.py`), with
+  `summary()` for the CLI; `LTLResult` carries it (`witness` slot, set only by the
+  `not_definable` factory, propagated by `credit`);
+- the **gate decorator** `bls/definability/gate.py` (`definability_gate`) is the
+  border: on the non-definable branch it builds the `NOT_LTL` `LTLResult` with the
+  prose diagnosis and, knob-guarded (`kr.produce_witness`, default on), the witness
+  (best-effort — a GAP hiccup never disturbs the verdict);
+- it orchestrates the `tester/` and `witness/` peers, so neither depends on the other,
+  and **`aut2cas` is now a pure cascade adapter** (the gate was extracted from it). The
+  portfolio composes `definability_gate(as_translator(…))`.
+
+Verification: `samples/validation` survey **SUCCESS** (80/80 TRUE — the definable
+path through the gate); `test_result_witness` 6/6 (the floor slot: single injection,
+`credit` propagation, witness-agnostic `fail`); `test_witness` 4/4; `pin_order`
+PINNED. Validation corpus has no NOT_LTL cases, so the witness *content* is covered by
+the probes + the live `mod3_a` / `parity_a` runs above.
+
+Still open: minimise `u` / `x`; the periodicity-proof tier; multi-factor witness sets
+and the field-guide atlas (§6/§7).
