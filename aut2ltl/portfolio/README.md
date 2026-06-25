@@ -23,8 +23,9 @@ retired `sl` heuristic engine, which `daisy` (self-loop peel) and `partscc`
 
 ## Modules
 
-- **`build.py`** — `build_portfolio` (the single entry: `None` ⇒ the `best_daisy2`
-  recipe; a recipe name ⇒ that assembly; a technique list ⇒ the cited ladder) and the
+- **`build.py`** — `build_portfolio` (the single entry: `None` ⇒ the default recipe
+  (the `RECIPES["default"]` pointer); a recipe name ⇒ that assembly; a technique list
+  ⇒ the cited ladder) and the
   `TECHNIQUES` vocabulary for `--use`: the five kr leaves
   (`acc / weak / buchi / cobuchi / muller`) and the integrated cascade `bls`
   (the whole engine). Groups the cited kr leaves into ONE cascade-level
@@ -37,10 +38,11 @@ retired `sl` heuristic engine, which `daisy` (self-loop peel) and `partscc`
   `daisy(child) = recurse(λ leaf: first_success([Daisy(leaf), child]))` — i.e.
   `recurse` (self-reference, `aut2ltl.recurse`) over `first_success` (choice,
   `aut2ltl.first_success`).
-- **`recipes/`** — the named assemblies, **one module per recipe** (`best`,
-  `best_daisy2` the shipped default, `best_inv`, `best_inv_loop`), each composing the
+- **`recipes/`** — the named assemblies, **one module per recipe**, each composing the
   `builder.py` blocks into a whole. Its `__init__` aggregates them into the `RECIPES`
-  registry that `build_portfolio` resolves for `--use <name>`.
+  registry that `build_portfolio` resolves for `--use <name>`; the `RECIPES["default"]`
+  alias selects which one ships (re-point it, nothing else changes). Which recipe that
+  is evolves — read the registry, not this README.
 - **`__init__.py`** — builds the env-seeded default `Options` (from `KR_OPTIONS`) and
   exposes `build_portfolio` / `TECHNIQUES` / `RECIPES` for callers wanting a variant.
 
