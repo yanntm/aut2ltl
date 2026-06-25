@@ -2055,3 +2055,43 @@ bdd_dict/buddy + proc.py registry + fds); small broker-that-forks with an O(DAG)
 format (elegant but more machinery — supervision/framing/reaping/restart — and its only
 hard win is moot while the size guard keeps the flatten small; keep as a future backend
 behind the same `spotrun.translate` API).
+
+## 2026-06-25 — spotrun timeout: subprocess transport perturbs exploration order
+
+C landed (killable per-call translate backend); switched the bounded child from the
+ltl2tgba CLI to the binding (_child.py) + added an in-process fast path
+(spotrun.inproc_tree_limit=100 / inproc_temporal_limit=16). Commit 6d73556d (WIP).
+
+ROOT CAUSE of the kinska regression (counting_buchi_1ap_18: DAG 29 -> 225) found and
+NOT yet fixed: crossing the process boundary (HOA serialize/parse, or reparse of
+str(f)) returns an ISOMORPHIC automaton with PERMUTED STATE INDICES (verified iso,
+e.g. sigma=(3 4)(7 8)). deep_roundtrip's reconstruction is NOT permutation-invariant,
+so a permuted automaton blows up. In-process HOA round-trip -> 29 (fine); reparse ->
+239 (bad): it is the exploration/visit order, not the backend or the bound. Per-node
+the effect is invisible (good==perm identical); it is emergent in the cascade.
+
+Lead: a canonical exploration-order heuristic (spot.canonicalize) before reconstruction
+could make deep_roundtrip permutation-stable and the transport safe. Pure daisy
+(--use nobls) declines the structured counting nodes; the per-node cost lives in the
+daisystar-family peels. Debug instrumentation (KR_SPOTRUN_CMP/REPARSE/INPROC_RT) is
+env-gated and TO BE REVERTED. See HANDOVER_spot_isolation.md.
+
+## 2026-06-25 (cont.) — spotrun regression ROOT CAUSE corrected; instruments logged & dropped
+
+The entry above blamed transport/state-permutation/exploration-order — DISPROVEN this
+session. Confirmed cause against Spot 2.14.5 sources: `formula.translate()` is NOT
+referentially transparent. Formula id is a process-global construction-order counter
+(`fnode::next_id_`, formula.cc:1666-1688), `operator<` orders by it (formula.hh:790-808),
+and the FM worklist is an id-ordered `std::set<formula>` (ltl2tgba_fm.cc:970,1912). So
+translate depends on global formula-construction history: a `str(f)` reparse (what the
+bounded child does) or a fresh process shifts the id-landscape -> a different, ~8x larger
+automaton. In-proc `spot.formula(str(f)).translate()` reproduces the blow-up (DAG 239)
+with NO subprocess; a fresh `bdd_dict` is inert -> the dict/permutation/HOA-interning
+hypotheses are all ruled out. Full reasoning + experiment table: research_notes/spot_isolation.md.
+
+DONE: kept the default (translate_timeout=3 + inproc barriers, backend active) — the
+kinska size bump (counting_18 DAG 29->225) is a sound "ugly duck", validation stays
+SUCCESS. WIRED state-index normalization `aut2ltl/ltl/canon.py` (used by Language.of +
+_base) — defensive/free, but does NOT fix this regression (cause is upstream in translate).
+The session's debug probes (KR_SPOTRUN_CMP/REPARSE/INPROC_RT/WARM/FRESHDICT + _debug_compare)
+were committed once then dropped — recover from history if more debugging is needed.
