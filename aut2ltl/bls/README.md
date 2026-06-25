@@ -44,7 +44,7 @@ spot automaton ──decompose (gap/)──▶ Cascade ──dispatch chain─�
 - **`definability/`** — the LTL-definability gate: the verdict oracle (`tester/`), the
   non-LTL witness extractor (`witness/`), and the gate decorator (`gate.py`) that
   intercepts a non-LTL language as NOT_LTL (with a witness) before the cascade builds;
-  see `definability/algorithm.md`. **`options.py`** — engine options.
+  see `definability/README.md`. **`options.py`** — engine options.
 
 Engine-agnostic LTL machinery (builders, simplify, BDD utils, metrics, printers)
 lives in `aut2ltl/ltl/`, shared across engines.
