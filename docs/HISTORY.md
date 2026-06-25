@@ -2009,3 +2009,49 @@ its final form — a thin, non-rotting session-orientation map: the project work
 root README; it is large (be guided to the part in play); don't read source unless asked;
 the markdown orients; the four parts (aut2ltl/ survey/ results/ genaut/) each carry a
 README. No numbers, no named default, nothing to drift.
+
+## 2026-06-25 — ANALYSIS+DESIGN: Spot isolation / per-call timeouts (no code landed)
+
+Design session for the top `TODO.md` item ("Finer per-Spot-call control: decouple
+construction-translate from verify"). No code landed; the full design + implementation
+plan + all context is captured in the UNTRACKED scratch `TODO_spot_isolation.md` at
+repo root (deliberately not committed; this HISTORY entry is the durable why/when).
+
+Problem: inside one survey build (~15s killable child), the `deep_nobls` default round
+trip re-presents every DAG node bottom-up through `ltl2tgba`; one runaway translate eats
+the whole build budget and kills a near-collapsed answer instead of declining that one
+node. Today's guard is SIZE only (`language._guard_translation`), never time.
+
+Governing facts established: (a) our scenarios reduce to two Spot ops — `ltl2tgba`
+(formula->automaton, DANGEROUS) and `autfilt` (automaton ops, FINE in-process: our
+automata are small); (b) the formula DAG is small but its FLATTENED form is horrible,
+while automata are small (so HOA in/out is cheap); (c) an in-process timeout cannot
+interrupt a Spot C++ call (GIL/deferred signal) so a real bound needs a child; runtime
+is single-threaded; (d) reuse `survey/bounded.py` (coreutils `timeout` wrapper) +
+`proc.py`, not new machinery — note `ltl2tgba` spawns no sub-children so bounded's
+SIGINT->SIGKILL suffices, no extra proc.py wiring.
+
+Decisions locked: isolate ONLY `ltl2tgba` (autfilt stays in-process); the SIZE guard
+stays PRIMARY (decline over-budget formulas before any flatten — we do NOT OOM ourselves,
+and a within-budget input that makes Spot OOM is Spot's limit, not ours); NO memory
+limits in v1 (RLIMIT_AS is a noted extension, not now); trip (over-size OR wall-timeout OR
+non-zero exit) -> raise `UntranslatableLanguage`, absorbed per-node by `best_of` at the
+existing catch sites; two independent budget knobs (construction-translate vs equiv);
+operation-aware semantic adapter (start one citizen, mediate more later via experiment);
+placement = floor sibling `aut2ltl/spotrun/` (NOT inside `ltl/`), `_guard_translation`
+relocates there; promote `survey/bounded.py` -> `aut2ltl/bounded.py` as a shared citizen;
+no spotrun cache (sits below Language's interning memo).
+
+A/B -> B: wrap the `ltl2tgba` CLI binary. "Serialization within time control" is honored
+by the size guard: we flatten only AFTER the guard proves flat size <= budget, so the
+string fed to ltl2tgba is small (~KB); the exponential translate runs in the killable
+child under the wall-time budget. New knob `spotrun.translate_timeout` (~5s default,
+env-read, < the 15s build budget). Migrates with the guard: KR_TRANSLATE_TREE_LIMIT
+(1000), KR_TRANSLATE_TEMPORAL_LIMIT (32).
+
+Rejected (recorded so it is not redone): in-process SIGALRM (cannot interrupt C++);
+fork-from-main calling the `.translate()` binding (forks our big/stateful image —
+bdd_dict/buddy + proc.py registry + fds); small broker-that-forks with an O(DAG) wire
+format (elegant but more machinery — supervision/framing/reaping/restart — and its only
+hard win is moot while the size guard keeps the flatten small; keep as a future backend
+behind the same `spotrun.translate` API).
