@@ -1,166 +1,166 @@
 input,result,technique,build_s,formula,dag,temporals,tree,sharing,md5,validation,source
-counting_buchi_1ap_01.txt,NOT_LTL,,0.628,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_01.txt
-counting_buchi_1ap_02.txt,NOT_LTL,,0.617,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_02.txt
-counting_buchi_1ap_03.txt,LTL,partscc,0.068,!a & G((!a | X!a) & (a | Xa)),9,1,15,1.7,307ad4ea6833,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_03.txt
-counting_buchi_1ap_04.txt,LTL,partscc,0.070,!a & G((!a | X!a) & (a | Xa)),9,1,15,1.7,307ad4ea6833,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_04.txt
-counting_buchi_1ap_05.txt,NOT_LTL,,0.615,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_05.txt
-counting_buchi_1ap_06.txt,LTL,daisy+daisystardet,0.068,a & (Ga | (((a | Xa) & (!a | X!a)) U (!a & XGa))),13,2,23,1.8,6584e5097340,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_06.txt
-counting_buchi_1ap_07.txt,LTL,buchi,1.563,<unflattened DAG: 2063370 tree nodes>,2175,343,2063370,948.7,1a896100d85c,SIZE,samples/kinska/counting/1ap/counting_buchi_1ap_07.txt
-counting_buchi_1ap_08.txt,NOT_LTL,,0.632,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_08.txt
-counting_buchi_1ap_09.txt,NOT_LTL,,0.630,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_09.txt
-counting_buchi_1ap_10.txt,NOT_LTL,,0.622,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_10.txt
-counting_buchi_1ap_11.txt,NOT_LTL,,0.635,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_11.txt
-counting_buchi_1ap_12.txt,LTL,buchi,1.335,<unflattened DAG: 9874589 tree nodes>,709,128,9874589,13927.5,6c28ded36bcf,SIZE,samples/kinska/counting/1ap/counting_buchi_1ap_12.txt
-counting_buchi_1ap_13.txt,LTL,buchi,1.319,<unflattened DAG: 9874589 tree nodes>,709,128,9874589,13927.5,6c28ded36bcf,SIZE,samples/kinska/counting/1ap/counting_buchi_1ap_13.txt
-counting_buchi_1ap_14.txt,LTL,buchi,1.309,<unflattened DAG: 9874589 tree nodes>,709,128,9874589,13927.5,6c28ded36bcf,SIZE,samples/kinska/counting/1ap/counting_buchi_1ap_14.txt
-counting_buchi_1ap_15.txt,LTL,buchi,1.284,<unflattened DAG: 41719086 tree nodes>,1128,202,41719086,36985.0,821b8e34ab35,SIZE,samples/kinska/counting/1ap/counting_buchi_1ap_15.txt
-counting_buchi_1ap_16.txt,LTL,buchi,1.308,<unflattened DAG: 41719086 tree nodes>,1128,202,41719086,36985.0,821b8e34ab35,SIZE,samples/kinska/counting/1ap/counting_buchi_1ap_16.txt
-counting_buchi_1ap_17.txt,LTL,buchi,1.291,<unflattened DAG: 41719086 tree nodes>,1128,202,41719086,36985.0,821b8e34ab35,SIZE,samples/kinska/counting/1ap/counting_buchi_1ap_17.txt
-counting_buchi_1ap_18.txt,LTL,buchi,1.335,<unflattened DAG: 43867210 tree nodes>,1152,200,43867210,38079.2,8db08d5bcb09,SIZE,samples/kinska/counting/1ap/counting_buchi_1ap_18.txt
-counting_buchi_1ap_19.txt,LTL,buchi,1.291,<unflattened DAG: 43867210 tree nodes>,1152,200,43867210,38079.2,8db08d5bcb09,SIZE,samples/kinska/counting/1ap/counting_buchi_1ap_19.txt
-counting_buchi_1ap_20.txt,LTL,buchi,1.294,<unflattened DAG: 43867210 tree nodes>,1152,200,43867210,38079.2,8db08d5bcb09,SIZE,samples/kinska/counting/1ap/counting_buchi_1ap_20.txt
-counting_buchi_1ap_21.txt,NOT_LTL,,0.620,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_21.txt
-counting_buchi_1ap_22.txt,NOT_LTL,,0.622,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_22.txt
-counting_buchi_1ap_23.txt,NOT_LTL,,0.623,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_23.txt
-counting_buchi_1ap_24.txt,NOT_LTL,,0.625,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_24.txt
-counting_buchi_1ap_25.txt,NOT_LTL,,0.619,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_25.txt
-counting_buchi_1ap_26.txt,NOT_LTL,,0.630,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_26.txt
-counting_buchi_1ap_27.txt,LTL,daisy+partscc,0.066,a & X(a & G((a | Xa) & (!a | X!a))),11,1,17,1.5,e0d8c0abc0b4,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_27.txt
-counting_buchi_1ap_28.txt,LTL,daisy+partscc,0.069,a & X(a & G((a | Xa) & (!a | X!a))),11,1,17,1.5,e0d8c0abc0b4,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_28.txt
-counting_buchi_1ap_29.txt,NOT_LTL,,0.623,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_29.txt
-counting_buchi_1ap_30.txt,NOT_LTL,,0.618,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_30.txt
-counting_buchi_1ap_31.txt,NOT_LTL,,0.621,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_31.txt
-counting_buchi_1ap_32.txt,NOT_LTL,,0.629,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_32.txt
-counting_buchi_1ap_33.txt,NOT_LTL,,0.629,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_33.txt
-counting_buchi_1ap_34.txt,NOT_LTL,,0.633,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_34.txt
-counting_buchi_1ap_35.txt,NOT_LTL,,0.670,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_35.txt
-counting_buchi_1ap_36.txt,NOT_LTL,,0.970,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_36.txt
-counting_buchi_1ap_37.txt,NOT_LTL,,1.894,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_37.txt
+counting_buchi_1ap_01.txt,NOT_LTL,,1.132,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_01.txt
+counting_buchi_1ap_02.txt,NOT_LTL,,1.169,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_02.txt
+counting_buchi_1ap_03.txt,LTL,partscc,0.078,!a & G((!a | X!a) & (a | Xa)),9,1,15,1.7,307ad4ea6833,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_03.txt
+counting_buchi_1ap_04.txt,LTL,partscc,0.076,!a & G((!a | X!a) & (a | Xa)),9,1,15,1.7,307ad4ea6833,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_04.txt
+counting_buchi_1ap_05.txt,NOT_LTL,,1.171,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_05.txt
+counting_buchi_1ap_06.txt,LTL,daisy+daisystardet,0.083,a & (Ga | (((a | Xa) & (!a | X!a)) U (!a & XGa))),13,2,23,1.8,6584e5097340,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_06.txt
+counting_buchi_1ap_07.txt,LTL,buchi+daisy+daisy2+daisystar+daisystardet+deep_roundtrip+inv+partscc+scc2+strength2,7.935,(!a | Xa) & (!a | X!a | Ga) & (a | ((a | Xa) U (a & Xa))) & (a | X((!a | X!a) U …,51,11,151,3.0,00bf046fc39f,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_07.txt
+counting_buchi_1ap_08.txt,NOT_LTL,,1.204,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_08.txt
+counting_buchi_1ap_09.txt,NOT_LTL,,1.158,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_09.txt
+counting_buchi_1ap_10.txt,NOT_LTL,,1.154,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_10.txt
+counting_buchi_1ap_11.txt,NOT_LTL,,1.158,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_11.txt
+counting_buchi_1ap_12.txt,LTL,buchi+daisy+daisystar+daisystardet+deep_roundtrip+inv+scc2+strength2,2.655,!a & (Xa | ((a & X(a W (!a & Xa))) R (!a | X(!a R (a | X(a | X(a & X(!a & X!a)))…,23,3,53,2.3,edb60799066c,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_12.txt
+counting_buchi_1ap_13.txt,LTL,buchi+daisy+daisystar+daisystardet+deep_roundtrip+inv+scc2+strength2,2.717,!a & (Xa | ((a & X(a W (!a & Xa))) R (!a | X(!a R (a | X(a | X(a & X(!a & X!a)))…,23,3,53,2.3,edb60799066c,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_13.txt
+counting_buchi_1ap_14.txt,LTL,buchi+daisy+daisystar+daisystardet+deep_roundtrip+inv+scc2+strength2,2.751,!a & (Xa | ((a & X(a W (!a & Xa))) R (!a | X(!a R (a | X(a | X(a & X(!a & X!a)))…,23,3,53,2.3,edb60799066c,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_14.txt
+counting_buchi_1ap_15.txt,LTL,buchi+daisy+daisy2+daisystar+daisystardet+deep_roundtrip+inv+scc2+strength2,3.556,a & X(!a & Xa) & (X(a | G!a) | (a W (!a & X!a)) | ((a & X(a & X(a | G!a))) R (!a…,39,6,116,3.0,8299c92a2fa7,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_15.txt
+counting_buchi_1ap_16.txt,LTL,buchi+daisy+daisy2+daisystar+daisystardet+deep_roundtrip+inv+scc2+strength2,3.899,a & X(!a & Xa) & (X(a | G!a) | (a W (!a & X!a)) | ((a & X(a & X(a | G!a))) R (!a…,39,6,116,3.0,8299c92a2fa7,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_16.txt
+counting_buchi_1ap_17.txt,LTL,buchi+daisy+daisy2+daisystar+daisystardet+deep_roundtrip+inv+scc2+strength2,3.655,a & X(!a & Xa) & (X(a | G!a) | (a W (!a & X!a)) | ((a & X(a & X(a | G!a))) R (!a…,39,6,116,3.0,8299c92a2fa7,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_17.txt
+counting_buchi_1ap_18.txt,LTL,buchi+daisy+daisy2+daisystar+daisystardet+deep_roundtrip+inv+scc2+strength2,3.273,!a & X(a & Xa) & (X!a | (((!a & X(!a W (a & X!a))) | (a & X((!a & X!a) | (a & X(…,29,3,65,2.2,d7943eadb3b9,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_18.txt
+counting_buchi_1ap_19.txt,LTL,buchi+daisy+daisy2+daisystar+daisystardet+deep_roundtrip+inv+scc2+strength2,3.386,!a & X(a & Xa) & (X!a | (((!a & X(!a W (a & X!a))) | (a & X((!a & X!a) | (a & X(…,29,3,65,2.2,d7943eadb3b9,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_19.txt
+counting_buchi_1ap_20.txt,LTL,buchi+daisy+daisy2+daisystar+daisystardet+deep_roundtrip+inv+scc2+strength2,3.364,!a & X(a & Xa) & (X!a | (((!a & X(!a W (a & X!a))) | (a & X((!a & X!a) | (a & X(…,29,3,65,2.2,d7943eadb3b9,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_20.txt
+counting_buchi_1ap_21.txt,NOT_LTL,,1.190,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_21.txt
+counting_buchi_1ap_22.txt,NOT_LTL,,1.180,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_22.txt
+counting_buchi_1ap_23.txt,NOT_LTL,,1.185,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_23.txt
+counting_buchi_1ap_24.txt,NOT_LTL,,1.179,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_24.txt
+counting_buchi_1ap_25.txt,NOT_LTL,,1.217,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_25.txt
+counting_buchi_1ap_26.txt,NOT_LTL,,1.196,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_26.txt
+counting_buchi_1ap_27.txt,LTL,daisy+partscc,0.081,a & X(a & G((a | Xa) & (!a | X!a))),11,1,17,1.5,e0d8c0abc0b4,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_27.txt
+counting_buchi_1ap_28.txt,LTL,daisy+partscc,0.075,a & X(a & G((a | Xa) & (!a | X!a))),11,1,17,1.5,e0d8c0abc0b4,TRUE,samples/kinska/counting/1ap/counting_buchi_1ap_28.txt
+counting_buchi_1ap_29.txt,NOT_LTL,,1.182,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_29.txt
+counting_buchi_1ap_30.txt,NOT_LTL,,1.185,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_30.txt
+counting_buchi_1ap_31.txt,NOT_LTL,,1.295,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_31.txt
+counting_buchi_1ap_32.txt,NOT_LTL,,1.287,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_32.txt
+counting_buchi_1ap_33.txt,NOT_LTL,,1.281,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_33.txt
+counting_buchi_1ap_34.txt,NOT_LTL,,1.386,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_34.txt
+counting_buchi_1ap_35.txt,NOT_LTL,,1.831,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_35.txt
+counting_buchi_1ap_36.txt,NOT_LTL,,3.114,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_36.txt
+counting_buchi_1ap_37.txt,NOT_LTL,,7.468,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_37.txt
 counting_buchi_1ap_38.txt,TIMEOUT,,15.005,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_38.txt
 counting_buchi_1ap_39.txt,TIMEOUT,,15.004,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_39.txt
 counting_buchi_1ap_40.txt,TIMEOUT,,15.004,,,,,,,,samples/kinska/counting/1ap/counting_buchi_1ap_40.txt
-counting_buchi_2ap_01.txt,NOT_LTL,,0.695,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_01.txt
-counting_buchi_2ap_02.txt,NOT_LTL,,0.620,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_02.txt
-counting_buchi_2ap_03.txt,NOT_LTL,,0.634,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_03.txt
-counting_buchi_2ap_04.txt,NOT_LTL,,0.643,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_04.txt
-counting_buchi_2ap_05.txt,NOT_LTL,,0.649,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_05.txt
-counting_buchi_2ap_06.txt,NOT_LTL,,0.646,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_06.txt
-counting_buchi_2ap_07.txt,NOT_LTL,,0.655,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_07.txt
-counting_buchi_2ap_08.txt,NOT_LTL,,0.645,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_08.txt
-counting_buchi_2ap_09.txt,NOT_LTL,,0.646,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_09.txt
-counting_buchi_2ap_10.txt,NOT_LTL,,0.641,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_10.txt
-counting_buchi_2ap_11.txt,LTL,daisy+partscc,0.071,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,78c559eca13e,TRUE,samples/kinska/counting/2ap/counting_buchi_2ap_11.txt
-counting_buchi_2ap_12.txt,LTL,daisy+partscc,0.073,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,78c559eca13e,TRUE,samples/kinska/counting/2ap/counting_buchi_2ap_12.txt
-counting_buchi_2ap_13.txt,LTL,daisy+partscc,0.071,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,78c559eca13e,TRUE,samples/kinska/counting/2ap/counting_buchi_2ap_13.txt
-counting_buchi_2ap_14.txt,NOT_LTL,,0.649,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_14.txt
-counting_buchi_2ap_15.txt,NOT_LTL,,0.639,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_15.txt
-counting_buchi_2ap_16.txt,NOT_LTL,,0.646,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_16.txt
-counting_buchi_2ap_17.txt,NOT_LTL,,0.647,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_17.txt
-counting_buchi_2ap_18.txt,NOT_LTL,,0.642,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_18.txt
-counting_buchi_2ap_19.txt,NOT_LTL,,0.639,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_19.txt
-counting_buchi_2ap_20.txt,NOT_LTL,,0.654,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_20.txt
-counting_buchi_2ap_21.txt,NOT_LTL,,0.647,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_21.txt
-counting_buchi_2ap_22.txt,NOT_LTL,,0.632,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_22.txt
-counting_buchi_2ap_23.txt,NOT_LTL,,0.673,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_23.txt
-counting_buchi_2ap_24.txt,NOT_LTL,,0.622,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_24.txt
-counting_buchi_2ap_25.txt,NOT_LTL,,0.672,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_25.txt
-counting_buchi_2ap_26.txt,NOT_LTL,,0.633,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_26.txt
-counting_buchi_2ap_27.txt,NOT_LTL,,0.631,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_27.txt
-counting_buchi_2ap_28.txt,LTL,daisy,0.078,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/counting/2ap/counting_buchi_2ap_28.txt
-counting_buchi_2ap_29.txt,NOT_LTL,,0.646,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_29.txt
-counting_buchi_2ap_30.txt,NOT_LTL,,0.628,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_30.txt
-counting_buchi_2ap_31.txt,NOT_LTL,,0.627,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_31.txt
-counting_buchi_2ap_32.txt,NOT_LTL,,0.642,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_32.txt
-counting_buchi_2ap_33.txt,NOT_LTL,,0.645,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_33.txt
-counting_buchi_2ap_34.txt,NOT_LTL,,0.649,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_34.txt
-counting_buchi_2ap_35.txt,NOT_LTL,,0.649,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_35.txt
-counting_buchi_2ap_36.txt,NOT_LTL,,0.651,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_36.txt
-counting_buchi_2ap_37.txt,NOT_LTL,,0.659,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_37.txt
-counting_buchi_2ap_38.txt,NOT_LTL,,0.678,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_38.txt
-counting_buchi_2ap_39.txt,NOT_LTL,,1.016,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_39.txt
-counting_buchi_2ap_40.txt,NOT_LTL,,1.956,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_40.txt
-counting_buchi_2ap_41.txt,NOT_LTL,,0.645,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_41.txt
-counting_buchi_2ap_42.txt,NOT_LTL,,0.652,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_42.txt
-counting_buchi_2ap_43.txt,NOT_LTL,,0.649,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_43.txt
-counting_buchi_2ap_44.txt,NOT_LTL,,0.649,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_44.txt
-counting_buchi_2ap_45.txt,NOT_LTL,,0.646,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_45.txt
-randltl-10-a-hoa-1.txt,LTL,daisy,0.071,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-1.txt
-randltl-10-a-hoa-10.txt,LTL,daisy,0.074,XFa,3,1,3,1.0,b192cfa563d7,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-10.txt
-randltl-10-a-hoa-2.txt,LTL,daisy,0.070,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-2.txt
+counting_buchi_2ap_01.txt,NOT_LTL,,1.207,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_01.txt
+counting_buchi_2ap_02.txt,NOT_LTL,,1.199,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_02.txt
+counting_buchi_2ap_03.txt,NOT_LTL,,1.209,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_03.txt
+counting_buchi_2ap_04.txt,NOT_LTL,,1.231,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_04.txt
+counting_buchi_2ap_05.txt,NOT_LTL,,1.232,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_05.txt
+counting_buchi_2ap_06.txt,NOT_LTL,,1.227,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_06.txt
+counting_buchi_2ap_07.txt,NOT_LTL,,1.231,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_07.txt
+counting_buchi_2ap_08.txt,NOT_LTL,,1.221,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_08.txt
+counting_buchi_2ap_09.txt,NOT_LTL,,1.216,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_09.txt
+counting_buchi_2ap_10.txt,NOT_LTL,,1.237,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_10.txt
+counting_buchi_2ap_11.txt,LTL,daisy+partscc,0.085,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,78c559eca13e,TRUE,samples/kinska/counting/2ap/counting_buchi_2ap_11.txt
+counting_buchi_2ap_12.txt,LTL,daisy+partscc,0.081,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,78c559eca13e,TRUE,samples/kinska/counting/2ap/counting_buchi_2ap_12.txt
+counting_buchi_2ap_13.txt,LTL,daisy+partscc,0.082,b & X(!a & G((!a | X!a) & (a | Xa))),12,1,18,1.5,78c559eca13e,TRUE,samples/kinska/counting/2ap/counting_buchi_2ap_13.txt
+counting_buchi_2ap_14.txt,NOT_LTL,,1.242,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_14.txt
+counting_buchi_2ap_15.txt,NOT_LTL,,1.261,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_15.txt
+counting_buchi_2ap_16.txt,NOT_LTL,,1.250,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_16.txt
+counting_buchi_2ap_17.txt,NOT_LTL,,1.221,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_17.txt
+counting_buchi_2ap_18.txt,NOT_LTL,,1.253,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_18.txt
+counting_buchi_2ap_19.txt,NOT_LTL,,1.244,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_19.txt
+counting_buchi_2ap_20.txt,NOT_LTL,,1.243,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_20.txt
+counting_buchi_2ap_21.txt,NOT_LTL,,1.251,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_21.txt
+counting_buchi_2ap_22.txt,NOT_LTL,,1.241,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_22.txt
+counting_buchi_2ap_23.txt,NOT_LTL,,1.282,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_23.txt
+counting_buchi_2ap_24.txt,NOT_LTL,,1.232,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_24.txt
+counting_buchi_2ap_25.txt,NOT_LTL,,1.230,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_25.txt
+counting_buchi_2ap_26.txt,NOT_LTL,,1.231,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_26.txt
+counting_buchi_2ap_27.txt,NOT_LTL,,1.243,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_27.txt
+counting_buchi_2ap_28.txt,LTL,daisy,0.072,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/counting/2ap/counting_buchi_2ap_28.txt
+counting_buchi_2ap_29.txt,NOT_LTL,,1.236,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_29.txt
+counting_buchi_2ap_30.txt,NOT_LTL,,1.210,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_30.txt
+counting_buchi_2ap_31.txt,NOT_LTL,,1.231,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_31.txt
+counting_buchi_2ap_32.txt,NOT_LTL,,1.307,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_32.txt
+counting_buchi_2ap_33.txt,NOT_LTL,,1.219,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_33.txt
+counting_buchi_2ap_34.txt,NOT_LTL,,1.226,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_34.txt
+counting_buchi_2ap_35.txt,NOT_LTL,,1.278,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_35.txt
+counting_buchi_2ap_36.txt,NOT_LTL,,1.294,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_36.txt
+counting_buchi_2ap_37.txt,NOT_LTL,,1.440,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_37.txt
+counting_buchi_2ap_38.txt,NOT_LTL,,1.839,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_38.txt
+counting_buchi_2ap_39.txt,NOT_LTL,,3.217,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_39.txt
+counting_buchi_2ap_40.txt,NOT_LTL,,6.978,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_40.txt
+counting_buchi_2ap_41.txt,NOT_LTL,,1.322,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_41.txt
+counting_buchi_2ap_42.txt,NOT_LTL,,1.301,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_42.txt
+counting_buchi_2ap_43.txt,NOT_LTL,,1.305,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_43.txt
+counting_buchi_2ap_44.txt,NOT_LTL,,1.294,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_44.txt
+counting_buchi_2ap_45.txt,NOT_LTL,,1.298,,,,,,,,samples/kinska/counting/2ap/counting_buchi_2ap_45.txt
+randltl-10-a-hoa-1.txt,LTL,daisy,0.072,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-1.txt
+randltl-10-a-hoa-10.txt,LTL,daisy,0.072,XFa,3,1,3,1.0,b192cfa563d7,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-10.txt
+randltl-10-a-hoa-2.txt,LTL,daisy,0.071,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-2.txt
 randltl-10-a-hoa-3.txt,LTL,daisy,0.070,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-3.txt
-randltl-10-a-hoa-4.txt,LTL,daisy,0.074,G!a,3,1,3,1.0,6d2bdb385b7a,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-4.txt
-randltl-10-a-hoa-5.txt,LTL,daisy,0.072,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-5.txt
+randltl-10-a-hoa-4.txt,LTL,daisy,0.073,G!a,3,1,3,1.0,6d2bdb385b7a,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-4.txt
+randltl-10-a-hoa-5.txt,LTL,daisy,0.069,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-5.txt
 randltl-10-a-hoa-6.txt,LTL,daisy,0.072,!a,2,0,2,1.0,dffef08b04a5,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-6.txt
 randltl-10-a-hoa-7.txt,LTL,daisy,0.066,Ga,2,1,2,1.0,79182d6e45ae,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-7.txt
-randltl-10-a-hoa-8.txt,LTL,daisy,0.072,Fa,2,1,2,1.0,ff08d8efb425,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-8.txt
-randltl-10-a-hoa-9.txt,LTL,daisy,0.070,FGa,3,2,3,1.0,7ef5ce8004f6,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-9.txt
+randltl-10-a-hoa-8.txt,LTL,daisy,0.073,Fa,2,1,2,1.0,ff08d8efb425,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-8.txt
+randltl-10-a-hoa-9.txt,LTL,daisy,0.074,FGa,3,2,3,1.0,7ef5ce8004f6,TRUE,samples/kinska/randltl/1ap-ba/randltl-10-a-hoa-9.txt
 1,LTL,daisy,0.071,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:1
 0,LTL,daisy,0.071,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:2
 X(0),LTL,daisy,0.072,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:3
-!Fa,LTL,daisy,0.077,G!a,3,1,3,1.0,6d2bdb385b7a,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:4
-a,LTL,daisy,0.070,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:5
-!a,LTL,daisy,0.073,!a,2,0,2,1.0,dffef08b04a5,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:6
-Ga,LTL,daisy,0.071,Ga,2,1,2,1.0,79182d6e45ae,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:7
-Fa,LTL,daisy,0.074,Fa,2,1,2,1.0,ff08d8efb425,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:8
-FGa,LTL,daisy,0.072,FGa,3,2,3,1.0,7ef5ce8004f6,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:9
-FXa,LTL,daisy,0.071,XFa,3,1,3,1.0,b192cfa563d7,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:10
-randltl-10-a-hoa-1.txt,LTL,daisy,0.072,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-1.txt
-randltl-10-a-hoa-10.txt,LTL,daisy,0.079,Ga,2,1,2,1.0,79182d6e45ae,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-10.txt
-randltl-10-a-hoa-2.txt,LTL,daisy,0.071,!a,2,0,2,1.0,dffef08b04a5,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-2.txt
-randltl-10-a-hoa-3.txt,LTL,daisy,0.067,XXb,3,0,3,1.0,d6770d903fd8,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-3.txt
-randltl-10-a-hoa-4.txt,LTL,daisy,0.072,XFb,3,1,3,1.0,98dd93fe66de,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-4.txt
-randltl-10-a-hoa-5.txt,LTL,daisy,0.069,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-5.txt
-randltl-10-a-hoa-6.txt,LTL,daisy,0.069,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-6.txt
-randltl-10-a-hoa-7.txt,LTL,daisy,0.069,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-7.txt
-randltl-10-a-hoa-8.txt,LTL,daisy,0.070,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-8.txt
-randltl-10-a-hoa-9.txt,LTL,daisy,0.069,!b,2,0,2,1.0,599148956b50,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-9.txt
-0,LTL,daisy,0.070,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:1
-!a,LTL,daisy,0.070,!a,2,0,2,1.0,dffef08b04a5,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:2
+!Fa,LTL,daisy,0.072,G!a,3,1,3,1.0,6d2bdb385b7a,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:4
+a,LTL,daisy,0.071,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:5
+!a,LTL,daisy,0.072,!a,2,0,2,1.0,dffef08b04a5,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:6
+Ga,LTL,daisy,0.068,Ga,2,1,2,1.0,79182d6e45ae,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:7
+Fa,LTL,daisy,0.072,Fa,2,1,2,1.0,ff08d8efb425,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:8
+FGa,LTL,daisy,0.074,FGa,3,2,3,1.0,7ef5ce8004f6,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:9
+FXa,LTL,daisy,0.072,XFa,3,1,3,1.0,b192cfa563d7,TRUE,samples/kinska/randltl/1ap-formulae/randltl-10-a.txt:10
+randltl-10-a-hoa-1.txt,LTL,daisy,0.069,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-1.txt
+randltl-10-a-hoa-10.txt,LTL,daisy,0.072,Ga,2,1,2,1.0,79182d6e45ae,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-10.txt
+randltl-10-a-hoa-2.txt,LTL,daisy,0.072,!a,2,0,2,1.0,dffef08b04a5,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-2.txt
+randltl-10-a-hoa-3.txt,LTL,daisy,0.074,XXb,3,0,3,1.0,d6770d903fd8,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-3.txt
+randltl-10-a-hoa-4.txt,LTL,daisy,0.076,XFb,3,1,3,1.0,98dd93fe66de,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-4.txt
+randltl-10-a-hoa-5.txt,LTL,daisy,0.072,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-5.txt
+randltl-10-a-hoa-6.txt,LTL,daisy,0.068,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-6.txt
+randltl-10-a-hoa-7.txt,LTL,daisy,0.074,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-7.txt
+randltl-10-a-hoa-8.txt,LTL,daisy,0.072,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-8.txt
+randltl-10-a-hoa-9.txt,LTL,daisy,0.073,!b,2,0,2,1.0,599148956b50,TRUE,samples/kinska/randltl/2ap-ba/randltl-10-a-hoa-9.txt
+0,LTL,daisy,0.069,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:1
+!a,LTL,daisy,0.073,!a,2,0,2,1.0,dffef08b04a5,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:2
 XXb,LTL,daisy,0.073,XXb,3,0,3,1.0,d6770d903fd8,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:3
-XFb,LTL,daisy,0.070,XFb,3,1,3,1.0,98dd93fe66de,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:4
-b,LTL,daisy,0.069,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:5
-1,LTL,daisy,0.071,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:6
-a,LTL,daisy,0.071,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:7
-GX(0),LTL,daisy,0.071,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:8
-!b,LTL,daisy,0.071,!b,2,0,2,1.0,599148956b50,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:9
-a W 0,LTL,daisy,0.071,Ga,2,1,2,1.0,79182d6e45ae,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:10
-randltl-10-a-hoa-1.txt,LTL,daisy,0.072,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-1.txt
-randltl-10-a-hoa-10.txt,LTL,daisy,0.072,a | !b,4,0,4,1.0,f1a6bbfad7c8,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-10.txt
-randltl-10-a-hoa-2.txt,LTL,daisy+strength2,0.074,c R d,3,1,3,1.0,143bf9c9bb55,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-2.txt
-randltl-10-a-hoa-3.txt,LTL,daisy,0.070,Fb,2,1,2,1.0,80617ee78d88,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-3.txt
-randltl-10-a-hoa-4.txt,LTL,daisy,0.070,X!b,3,0,3,1.0,c1bafbe87d2d,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-4.txt
-randltl-10-a-hoa-5.txt,LTL,daisy,0.071,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-5.txt
-randltl-10-a-hoa-6.txt,LTL,daisy,0.071,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-6.txt
-randltl-10-a-hoa-7.txt,LTL,daisy,0.069,G!c,3,1,3,1.0,2f80e18a75e3,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-7.txt
-randltl-10-a-hoa-8.txt,LTL,daisy,0.070,FGc,3,2,3,1.0,45de97920b4a,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-8.txt
-randltl-10-a-hoa-9.txt,LTL,daisy,0.070,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-9.txt
-0,LTL,daisy,0.069,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:1
-c R d,LTL,daisy+strength2,0.072,c R d,3,1,3,1.0,143bf9c9bb55,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:2
-1 U b,LTL,daisy,0.068,Fb,2,1,2,1.0,80617ee78d88,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:3
-!Xb,LTL,daisy,0.067,X!b,3,0,3,1.0,c1bafbe87d2d,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:4
-b,LTL,daisy,0.068,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:5
-1,LTL,daisy,0.068,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:6
-!Fc,LTL,daisy,0.071,G!c,3,1,3,1.0,2f80e18a75e3,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:7
-FGc,LTL,daisy,0.067,FGc,3,2,3,1.0,45de97920b4a,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:8
-GX(0),LTL,daisy,0.068,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:9
-b -> a,LTL,daisy,0.071,a | !b,4,0,4,1.0,f1a6bbfad7c8,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:10
-randltl-10-a-hoa-1.txt,LTL,daisy,0.068,g,1,0,1,1.0,bffe89fde577,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-1.txt
-randltl-10-a-hoa-10.txt,LTL,daisy+strength2,0.069,c W d,3,1,3,1.0,4afae9288bd0,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-10.txt
-randltl-10-a-hoa-2.txt,LTL,daisy+strength2,0.067,d R e,3,1,3,1.0,54dd0197887b,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-2.txt
-randltl-10-a-hoa-3.txt,LTL,daisy,0.069,!h,2,0,2,1.0,2c0b951079eb,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-3.txt
-randltl-10-a-hoa-4.txt,LTL,daisy,0.067,XFg,3,1,3,1.0,b49734c707c1,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-4.txt
-randltl-10-a-hoa-5.txt,LTL,daisy,0.069,h M e,3,1,3,1.0,b653902c0324,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-5.txt
-randltl-10-a-hoa-6.txt,LTL,daisy,0.067,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-6.txt
-randltl-10-a-hoa-7.txt,LTL,daisy,0.069,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-7.txt
-randltl-10-a-hoa-8.txt,LTL,daisy,0.070,a M g,3,1,3,1.0,883704efbb3c,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-8.txt
-randltl-10-a-hoa-9.txt,LTL,daisy+strength2,0.071,h W b,3,1,3,1.0,686d3b4267ad,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-9.txt
-g,LTL,daisy,0.069,g,1,0,1,1.0,bffe89fde577,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:1
-d R e,LTL,daisy+strength2,0.069,d R e,3,1,3,1.0,54dd0197887b,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:2
-!h,LTL,daisy,0.069,!h,2,0,2,1.0,2c0b951079eb,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:3
-XFg,LTL,daisy,0.067,XFg,3,1,3,1.0,b49734c707c1,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:4
-h M e,LTL,daisy,0.067,h M e,3,1,3,1.0,b653902c0324,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:5
-a,LTL,daisy,0.070,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:6
-b,LTL,daisy,0.068,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:7
-a M g,LTL,daisy,0.069,a M g,3,1,3,1.0,883704efbb3c,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:8
-h W b,LTL,daisy+strength2,0.071,h W b,3,1,3,1.0,686d3b4267ad,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:9
-c W d,LTL,daisy+strength2,0.066,c W d,3,1,3,1.0,4afae9288bd0,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:10
+XFb,LTL,daisy,0.072,XFb,3,1,3,1.0,98dd93fe66de,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:4
+b,LTL,daisy,0.073,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:5
+1,LTL,daisy,0.065,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:6
+a,LTL,daisy,0.068,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:7
+GX(0),LTL,daisy,0.073,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:8
+!b,LTL,daisy,0.075,!b,2,0,2,1.0,599148956b50,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:9
+a W 0,LTL,daisy,0.126,Ga,2,1,2,1.0,79182d6e45ae,TRUE,samples/kinska/randltl/2ap-formulae/randltl-10-a.txt:10
+randltl-10-a-hoa-1.txt,LTL,daisy,0.069,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-1.txt
+randltl-10-a-hoa-10.txt,LTL,daisy,0.071,a | !b,4,0,4,1.0,f1a6bbfad7c8,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-10.txt
+randltl-10-a-hoa-2.txt,LTL,daisy+strength2,0.072,c R d,3,1,3,1.0,143bf9c9bb55,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-2.txt
+randltl-10-a-hoa-3.txt,LTL,daisy,0.073,Fb,2,1,2,1.0,80617ee78d88,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-3.txt
+randltl-10-a-hoa-4.txt,LTL,daisy,0.075,X!b,3,0,3,1.0,c1bafbe87d2d,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-4.txt
+randltl-10-a-hoa-5.txt,LTL,daisy,0.074,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-5.txt
+randltl-10-a-hoa-6.txt,LTL,daisy,0.070,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-6.txt
+randltl-10-a-hoa-7.txt,LTL,daisy,0.074,G!c,3,1,3,1.0,2f80e18a75e3,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-7.txt
+randltl-10-a-hoa-8.txt,LTL,daisy,0.073,FGc,3,2,3,1.0,45de97920b4a,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-8.txt
+randltl-10-a-hoa-9.txt,LTL,daisy,0.071,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/4ap-ba/randltl-10-a-hoa-9.txt
+0,LTL,daisy,0.073,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:1
+c R d,LTL,daisy+strength2,0.075,c R d,3,1,3,1.0,143bf9c9bb55,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:2
+1 U b,LTL,daisy,0.070,Fb,2,1,2,1.0,80617ee78d88,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:3
+!Xb,LTL,daisy,0.072,X!b,3,0,3,1.0,c1bafbe87d2d,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:4
+b,LTL,daisy,0.073,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:5
+1,LTL,daisy,0.071,1,1,0,1,1.0,e20f564d992f,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:6
+!Fc,LTL,daisy,0.072,G!c,3,1,3,1.0,2f80e18a75e3,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:7
+FGc,LTL,daisy,0.069,FGc,3,2,3,1.0,45de97920b4a,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:8
+GX(0),LTL,daisy,0.073,0,1,0,1,1.0,256b0f7a8d39,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:9
+b -> a,LTL,daisy,0.074,a | !b,4,0,4,1.0,f1a6bbfad7c8,TRUE,samples/kinska/randltl/4ap-formulae/randltl-10-a.txt:10
+randltl-10-a-hoa-1.txt,LTL,daisy,0.073,g,1,0,1,1.0,bffe89fde577,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-1.txt
+randltl-10-a-hoa-10.txt,LTL,daisy+strength2,0.075,c W d,3,1,3,1.0,4afae9288bd0,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-10.txt
+randltl-10-a-hoa-2.txt,LTL,daisy+strength2,0.075,d R e,3,1,3,1.0,54dd0197887b,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-2.txt
+randltl-10-a-hoa-3.txt,LTL,daisy,0.074,!h,2,0,2,1.0,2c0b951079eb,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-3.txt
+randltl-10-a-hoa-4.txt,LTL,daisy,0.073,XFg,3,1,3,1.0,b49734c707c1,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-4.txt
+randltl-10-a-hoa-5.txt,LTL,daisy,0.075,h M e,3,1,3,1.0,b653902c0324,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-5.txt
+randltl-10-a-hoa-6.txt,LTL,daisy,0.070,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-6.txt
+randltl-10-a-hoa-7.txt,LTL,daisy,0.071,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-7.txt
+randltl-10-a-hoa-8.txt,LTL,daisy,0.073,a M g,3,1,3,1.0,883704efbb3c,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-8.txt
+randltl-10-a-hoa-9.txt,LTL,daisy+strength2,0.074,h W b,3,1,3,1.0,686d3b4267ad,TRUE,samples/kinska/randltl/8ap-ba/randltl-10-a-hoa-9.txt
+g,LTL,daisy,0.071,g,1,0,1,1.0,bffe89fde577,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:1
+d R e,LTL,daisy+strength2,0.074,d R e,3,1,3,1.0,54dd0197887b,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:2
+!h,LTL,daisy,0.071,!h,2,0,2,1.0,2c0b951079eb,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:3
+XFg,LTL,daisy,0.075,XFg,3,1,3,1.0,b49734c707c1,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:4
+h M e,LTL,daisy,0.073,h M e,3,1,3,1.0,b653902c0324,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:5
+a,LTL,daisy,0.072,a,1,0,1,1.0,883cb92c9ed3,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:6
+b,LTL,daisy,0.073,b,1,0,1,1.0,98f9c15e60dd,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:7
+a M g,LTL,daisy,0.072,a M g,3,1,3,1.0,883704efbb3c,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:8
+h W b,LTL,daisy+strength2,0.073,h W b,3,1,3,1.0,686d3b4267ad,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:9
+c W d,LTL,daisy+strength2,0.073,c W d,3,1,3,1.0,4afae9288bd0,TRUE,samples/kinska/randltl/8ap-formulae/randltl-10-a.txt:10

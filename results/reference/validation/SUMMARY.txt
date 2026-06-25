@@ -1,6 +1,6 @@
-CSV: logs/rerun/validation/survey_20260625_031524.csv
+CSV: logs/rerun/validation/survey_20260625_130320.csv
 survey: 81 inputs  (--use default)
 aut2ltl: 80 LTL, 1 not-LTL  |  declined 0, timeout 0, crash 0
 validation of 80 LTL: 80 TRUE, 0 FAIL, 0 not checked (size/timeout/error)
-totals: DAG=472 temporals=128 build=6.952s
+totals: DAG=458 temporals=128 build=7.517s
 SUCCESS
