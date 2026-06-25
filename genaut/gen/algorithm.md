@@ -130,13 +130,15 @@ counts is the regression signal.
 
 ## Scope
 
-The `n` (states) and `c` (acceptance) axes are parametric and exercised now, at
-`k = 1`. The `k` (AP-width) axis is a **declared extension point, not yet
-realised**: `k > 1` instantiates the same truth-table scheme above with the larger
-alphabet `Guards_k` (size `2^(2^k)`) and the matching minterm-BDD build, with no
-legacy ordering to preserve (the general index already accommodates it). It is
-deferred only because it is untested and the immediate target is `k = 1`; until
-built, `Guards_k` raises for `k > 1`, adding no untested code path.
+All three axes — `n` (states), `k` (APs), `c` (acceptance) — are parametric and
+realised. A guard is a subset of the **letters** of `2^AP`; the letters are the
+`2^k` minterms, walked once (`build._minterm_bdds`, the `APBDDIterator` idea from
+sogits/libITS, over Spot/BuDDy BDDs), and `Guards_k` is their **powerset**, so for
+`k = 2` the 16 guard codes realise *all 16 Boolean functions over two variables*
+(`false`, the 4 minterms, `a`,`!a`,`b`,`!b`, `a|b`, `a^b`, …, `true`). Both
+degenerate ends fall out of the one minterm walk: `k = 0` is the one-letter
+alphabet (guards `{absent, true}`, cf. `EmptyAPIterator`) and `c = 0` is the
+acceptance `t`.
 
 Enumeration does not scale far in any axis (`N` is doubly exponential in `k`,
 exponential in `n²` and `2^c`), so this stays a one-off census per small shape, not
