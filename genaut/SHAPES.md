@@ -18,13 +18,16 @@ census, written to `corpus/<tag>/` with a `census.md` (regenerable via
 ## Feasible shapes (measured)
 
 `kept` = distinct automata after both dedup gates (md5, then polarity∘names);
-`polarity` = relabel twins folded by the second gate.
+`polarity` = relabel twins folded by the second gate. **All shapes below are
+committed to `corpus/<tag>/`** (each with its `census.md`). `survey`: light ones
+are surveyed in-session into `logs/<tag>/`; the three high-`kept` ones (**cluster**)
+are surveyed out-of-session (cluster / overnight).
 
-| shape | n | k | c | slots | N (combos) | byte-distinct | polarity | **kept** | status |
+| shape | n | k | c | slots | N (combos) | byte-distinct | polarity | **kept** | survey |
 |---|---|---|---|---|---|---|---|---|---|
 | `1state0ap0acc` | 1 | 0 | 0 | 1 | 2 | 2 | 0 | **2** | |
 | `1state0ap1acc` | 1 | 0 | 1 | 2 | 4 | 2 | 0 | **2** | |
-| `1state1ap0acc` | 1 | 1 | 0 | 1 | 4 | 4 | 1 | **3** | committed |
+| `1state1ap0acc` | 1 | 1 | 0 | 1 | 4 | 4 | 1 | **3** | |
 | `2state0ap0acc` | 2 | 0 | 0 | 4 | 16 | 3 | 0 | **3** | |
 | `1state1ap1acc` | 1 | 1 | 1 | 2 | 16 | 7 | 2 | **5** | |
 | `1state2ap0acc` | 1 | 2 | 0 | 1 | 16 | 16 | 10 | **6** | |
@@ -38,11 +41,11 @@ census, written to `corpus/<tag>/` with a `census.md` (regenerable via
 | `4state0ap0acc` | 4 | 0 | 0 | 16 | 65536 | 3 | 0 | **3** | |
 | `2state0ap2acc` | 2 | 0 | 2 | 16 | 65536 | 91 | 0 | **91** | |
 | `1state2ap2acc` | 1 | 2 | 2 | 4 | 65536 | 272 | 189 | **83** | |
-| `2state1ap1acc` | 2 | 1 | 1 | 8 | 65536 | 1845 | 916 | **929** | committed |
-| `1state3ap1acc` | 1 | 3 | 1 | 2 | 65536 | 6553 | 5041 | **1512** | |
-| `2state2ap0acc` | 2 | 2 | 0 | 4 | 65536 | 30613 | 19071 | **11542** | |
+| `2state1ap1acc` | 2 | 1 | 1 | 8 | 65536 | 1845 | 916 | **929** | |
+| `1state3ap1acc` | 1 | 3 | 1 | 2 | 65536 | 6553 | 5041 | **1512** | cluster |
+| `2state2ap0acc` | 2 | 2 | 0 | 4 | 65536 | 30613 | 19071 | **11542** | cluster |
 | `3state0ap1acc` | 3 | 0 | 1 | 18 | 262144 | 281 | 0 | **281** | |
-| `3state1ap0acc` | 3 | 1 | 0 | 9 | 262144 | 7908 | 3875 | **4033** | |
+| `3state1ap0acc` | 3 | 1 | 0 | 9 | 262144 | 7908 | 3875 | **4033** | cluster |
 
 ## Beyond the wall (first intractable)
 
