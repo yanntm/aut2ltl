@@ -5,6 +5,10 @@ level Δ₁ — safety, guarantee, and their boolean combinations). It reads the
 off the configuration automaton purely by *reachability*, no `Fin`: a run accepts iff
 it settles in an accepting SCC of the configurations.
 
+Reference: the weak case of the acceptance encoding of Boker, Lehtinen & Sickert,
+*On the Translation of Automata to Linear Temporal Logic* (FoSSaCS 2022) — digest
+[`../paper/automata-to-ltl-construction.md`](../paper/automata-to-ltl-construction.md) §9.3.
+
 ## Setting
 
 ```
@@ -29,7 +33,7 @@ Spot's `is_weak_automaton`. It declines otherwise.
 
 Over the SCCs of the configuration automaton, with `reach_to(ι, C)` = "the run
 reaches configuration `C` from the initial config ι" (pure reach, `β = false`, no
-`Fin`; §9.1 shorthand over `reach_strong`):
+`Fin`; digest §9.1 shorthand over `reach`):
 
 ```
 φ        =  ⋁_{G accepting SCC}  end_in(G)

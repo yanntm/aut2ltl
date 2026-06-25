@@ -7,6 +7,10 @@ small formula — which this member emits directly, bypassing the cascade reach
 machinery (no `Fin`, no reach τ-tail) that the general Muller form would pay on these
 inputs.
 
+Unlike the other cascade members, `acc` is **not** part of the FoSSaCS 2022 acceptance
+encoding — it is an *original* fast path for the bounded fragment, a portfolio
+optimisation that sidesteps the reach machinery where a finite unrolling suffices.
+
 ## Setting
 
 ```

@@ -5,6 +5,10 @@ a plain Büchi condition (recurrence, Π₂ of the temporal hierarchy) directly 
 Krohn-Rhodes cascade, as a disjunction of "infinitely often in an accepting
 configuration".
 
+Reference: the Büchi case of the acceptance encoding of Boker, Lehtinen & Sickert,
+*On the Translation of Automata to Linear Temporal Logic* (FoSSaCS 2022) — digest
+[`../paper/automata-to-ltl-construction.md`](../paper/automata-to-ltl-construction.md) §9.3.
+
 ## Setting
 
 The kr engine translates by decomposing the normalized deterministic automaton D into
@@ -31,7 +35,8 @@ set infinitely often — recurrence.
 
 The cascade exposes **configurations** (the reachable states of the holonomy
 product). Let `Fin(C)` be the formula true on exactly the words whose run visits
-configuration `C` only finitely often (Lemma 7 of the construction; [`bls/fin.py`](../fin.py)).
+configuration `C` only finitely often (Lemma 7 of the construction;
+[`bls/operators/fin.py`](../operators/fin.py)).
 Then "visit `C` infinitely often" is `¬Fin(C)`, and a Büchi run accepts iff it is
 recurrent in *some* accepting configuration:
 

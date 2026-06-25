@@ -4,6 +4,10 @@ A leaf of the kr cascade engine and the **dual of [`buchi`](../buchi)**: it read
 LTL of a coBüchi (persistence, Σ₂) automaton off the Krohn-Rhodes cascade as a
 conjunction of "finitely often in each marked configuration".
 
+Reference: the coBüchi case of the acceptance encoding of Boker, Lehtinen & Sickert,
+*On the Translation of Automata to Linear Temporal Logic* (FoSSaCS 2022) — digest
+[`../paper/automata-to-ltl-construction.md`](../paper/automata-to-ltl-construction.md) §9.3.
+
 ## Setting
 
 ```
@@ -25,7 +29,7 @@ wrongly pass). It declines otherwise.
 ## The formula
 
 With `Fin(C)` the formula true on words whose run visits configuration `C` only
-finitely often (Lemma 7; [`bls/fin.py`](../fin.py)), persistence is "eventually stay
+finitely often (Lemma 7; [`bls/operators/fin.py`](../operators/fin.py)), persistence is "eventually stay
 out of every marked configuration":
 
 ```
