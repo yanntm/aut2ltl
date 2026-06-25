@@ -17,10 +17,8 @@ from typing import Optional, Tuple
 import spot
 
 from . import solid, dashed
-from .support import (
-    TRACE_ON, _trace, REACH_GUARD,
-    _tt, _ff, _to_f, _Not, _Or, _U, _simp_f, _short_f,
-)
+from .support import TRACE_ON, _trace, REACH_GUARD
+from aut2ltl.ltl.builders import _tt, _ff, _to_f, _Not, _Or, _U, _simp_f, _short_f
 
 def reach(
     S: Tuple[int, ...],
@@ -31,7 +29,7 @@ def reach(
     casc: "Cascade",
     level: int = 0,
 ) -> "spot.formula":
-    """Formula 1 (main strong): S ~_B(β)^X T(τ) at the given cascade level (coordinate index).
+    """Formula 1 (main strong): reach(S, B, β, T, τ) at the given cascade level.
 
     Recursion advances the level cursor while always passing full-length config tuples
     (so move_config and partition helpers always see correct context for higher coords).
@@ -63,8 +61,7 @@ def reach(
     if hit is not None:
         return hit
 
-    # Guard counts MISSES only (distinct expansions; the body below runs once per
-    # key). Counting raw calls tripped the guard on healthy 91%-hit workloads.
+    # Guard counts MISSES only (distinct expansions; the body below runs once per key).
     casc.reach_calls += 1
     if casc.reach_calls > REACH_GUARD:
         raise RuntimeError(

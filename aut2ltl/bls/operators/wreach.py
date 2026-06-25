@@ -14,7 +14,7 @@ from typing import Optional, Tuple
 import spot
 
 from . import reach
-from .support import _tt, _ff, _to_f, _Not, _simp_f
+from aut2ltl.ltl.builders import _tt, _ff, _to_f, _Not, _simp_f
 
 def wreach(
     S: Tuple[int, ...],

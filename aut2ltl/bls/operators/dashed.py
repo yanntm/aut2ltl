@@ -17,8 +17,8 @@ from . import reach, solid, wsolid
 from .support import (
     _memo_reach_helper, _combined_letters_at_level, _fuse_letters, _dedupe,
     TRACE_ON, _trace,
-    _ff, _to_f, _And, _Or, _Not, _X, _simp_f, _short_f,
 )
+from aut2ltl.ltl.builders import _ff, _to_f, _And, _Or, _Not, _X, _simp_f, _short_f
 
 @_memo_reach_helper("dc")
 def dashed(

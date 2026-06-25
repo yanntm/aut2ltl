@@ -18,18 +18,9 @@ from typing import List, Tuple
 import functools
 import os
 
-# Guard helpers, simplification, and native spot.formula builders live in
-# aut2ltl/ltl/builders.py (no kr deps). Re-exported here under their short names so
-# the operator modules import them from one place.
-from aut2ltl.ltl.builders import (
-    letters_to_prop,
-    make_guard,
-    simplify_ltl,
-    normalize_ltl,
-    _normalize_ltl,
-    _tt, _ff, _ap, _And, _Or, _Not, _X, _U,
-    _to_f, _letters_to_f, _str_f, _short_f, _simp_f, _fuse_or,
-)
+# support uses only these for its own helpers (the memo decorator and letter fusion);
+# the operator modules import the builders they need directly from aut2ltl.ltl.builders.
+from aut2ltl.ltl.builders import _ff, _to_f, _letters_to_f, _fuse_or
 
 # Tracing (enable with KR_TRACE=1): verbose level-by-level construction traces.
 TRACE_ON = os.getenv("KR_TRACE", "0").lower() in ("1", "true", "yes", "on")

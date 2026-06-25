@@ -8,19 +8,8 @@ the **facade**: it re-exports the whole surface so callers import from here and 
 not know the file split. See algorithm.md.
 """
 
-from .support import (
-    letters_to_prop,
-    make_guard,
-    simplify_ltl,
-    normalize_ltl,
-    TRACE_ON,
-    REACH_GUARD,
-    _FUSE_LETTERS,
-    _combined_letters_at_level,
-    _fuse_letters,
-    _memo_reach_helper,
-    _trace,
-)
+from aut2ltl.ltl.builders import letters_to_prop, make_guard, simplify_ltl, normalize_ltl
+from .support import TRACE_ON
 from .reach import reach
 from .wreach import wreach
 from .solid import solid, solid_plus
