@@ -139,10 +139,10 @@ which GitHub renders as readable tables — one per corpus, under `results/refer
 
 - [`results/reference/validation/default.csv`](results/reference/validation/default.csv) —
   the curated 40-formula validation survey (the correctness gate's corpus), run both
-  as LTL and as the equivalent HOA automaton (80 inputs).
+  as LTL and as the equivalent HOA automaton (81 inputs).
 - [`results/reference/benchmark/default.csv`](results/reference/benchmark/default.csv)
   — the larger benchmark corpus (the survey set + scalable W/U/R chains + the Kinská
-  automata, 333 inputs).
+  automata, 334 inputs).
 - [`results/reference/kinska/kinska.csv`](results/reference/kinska/kinska.csv)
   — the 165 Kinská Büchi automata on their own (many are not LTL-definable); see
   [`samples/kinska/README.md`](samples/kinska/README.md) for provenance.
