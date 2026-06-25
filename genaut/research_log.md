@@ -272,3 +272,47 @@ canonicalization we never asked for.
 
 (Aside: `spot.is_universal` is the *structural* HOA property about branching, not
 "accepts every word"; test language-universality with `complement(a).is_empty()`.)
+
+---
+
+## 2026-06-25 — generalized to Shape(n,k,c); the LTL frontier; dropped 0-AP
+
+- **idea**: lift the one-off 2-state/1-AP/1-acc generator to a parametric
+  `Shape(n,k,c)` and build a *bestiary* across all tractable shapes, to find where
+  the LTL frontier actually lies.
+- **validation/build**: refactored the generator into `gen/` (`shape.py` pure model
+  / `build.py` Spot realisation / `enumerate.py` driver, + `gen/algorithm.md`).
+  Guard alphabet generalised to **all Boolean functions over k APs** = the powerset
+  of the 2^k letters (minterms) — the `APBDDIterator` idea (sogits/libITS): a guard
+  is any union of minterms, `|Guards_k| = 2^(2^k)`. Verified k=2 yields all 16 BDDs.
+  Fixed the stale `tests/benchmark/normalize` import (now `survey.normalize`).
+  Self-identifying filenames `<tag>_<id>.hoa` (id-width fits N); per-shape
+  `census.md` written next to the samples (combos/byte-distinct/polarity-fold/kept),
+  so set-info needs no rerun. Repro: `python3 genaut/gen/enumerate.py n,k,c`.
+- **reindex**: the general truth-table guard order renumbers the first corpus; chose
+  to reindex `2state1ap1acc` rather than preserve legacy ids. Same language-set by
+  construction (same combo set, same reduce); survey parity SUCCESS, 0 FAIL — 750
+  LTL / 122 not-LTL / 57 timeout vs the old 752 / 123 / 54 (drift is timeout-boundary
+  noise on the polarity-mirrored representatives, the new guard order putting `!a`
+  before `a`). Corpus + logs restructured to per-shape `corpus/<tag>/`, `logs/<tag>/`.
+- **bestiary**: enumerated + committed the tractable shapes (`N <= ~3e5`), surveyed
+  the light ones; `SHAPES.md` is **generated** from the `census.md` files by
+  `shapes_table.py` (no hand arithmetic). Heavy shapes (`1state3ap1acc` 1512,
+  `3state1ap0acc` 4033, `2state2ap0acc` 11542) promoted, surveys deferred.
+- **results — the LTL frontier**: not-LTL is **0 for every shape until
+  `2state1ap0acc`** (6 of 30 not-LTL, acceptance trivial), then `2state1ap1acc` 122.
+  Frontier = **`n >= 2` AND `k >= 1`**: counting needs a multi-state cycle over a
+  real alphabet (non-aperiodic monoid). 1-state shapes are all-LTL (single self-loop
+  = aperiodic safety/recurrence); 0-AP shapes are all-LTL (one-letter alphabet).
+- **results — smallest non-LTL = Wolper parity**: the 6 minimal non-LTL automata
+  (2 states, 1 AP) all carry **period p=2** (witness `u=!a, v=!a, x=aω`, membership
+  flips with the parity of the leading `!a`-block) — Wolper's even/odd non-star-free
+  phenomenon. Forced: 2 states ⇒ the monoid's group is at most `S2 = Z/2` ⇒ parity
+  only. A `Z/3` counter needs >= 3 states (cf. the `mod3_a` example, 3-state).
+- **dropped the 0-AP shapes as garbage**: a 0-AP automaton is over a one-letter
+  alphabet — a single ω-word — so the only languages are `0` and `1` (surveys
+  confirmed: every 0-AP shape reconstructs to just 0/1). Removed all 8 k=0 shapes
+  from corpus/logs; `enumerate` now refuses k<1.
+- **conclusions**: the bestiary is the `k >= 1` shapes; the LTL frontier is exactly
+  `n>=2 ∧ k>=1`, bottoming out at the canonical Wolper period-2 parity language as
+  the minimal non-LTL witness. Modular-counting period is bounded by state count.
