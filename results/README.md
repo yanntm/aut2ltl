@@ -6,8 +6,8 @@ one-glance `SUMMARY.txt`:
 
 | corpus | folder | CSV | inputs |
 |---|---|---|---|
-| validation (the correctness gate) | `reference/validation/` | `default.csv` | 80 |
-| benchmark (survey + W/U/R chains + Kinská) | `reference/benchmark/` | `default.csv` | 333 |
+| validation (the correctness gate) | `reference/validation/` | `default.csv` | 81 |
+| benchmark (survey + W/U/R chains + Kinská) | `reference/benchmark/` | `default.csv` | 334 |
 | Kinská on their own | `reference/kinska/` | `kinska.csv` | 165 |
 
 Each CSV is keyed by its **`source`** column — the unique provenance of every row
