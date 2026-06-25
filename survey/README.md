@@ -83,7 +83,6 @@ per-folder breakdowns.
 | `example.py` | `Example` — one input (`kind`/`value`/`display`/`source` provenance) |
 | `discovery/` | recurse `--folder` paths → readable examples (`walk` + `detect` + `read`) |
 | `techniques.py` | resolve the `--use` set (pass-through; `all` → discovery — see TODO) |
-| `bounded.py` | the `timeout --signal=INT --kill-after` subprocess primitive (one home) |
 | `build.py` | run the front end on one example × technique via `bounded` → `BuildResult` |
 | `verify.py` | **optional** spot-oracle equivalence (the gate's VERIFY), decoupled from build |
 | `report.py` | CSV schema + writer + per-technique summary |

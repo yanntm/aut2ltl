@@ -1,4 +1,4 @@
-"""survey.bounded — run a subprocess under a strict, reapable budget.
+"""aut2ltl.bounded — run a subprocess under a strict, reapable budget.
 
 The single home for the `timeout --signal=INT --kill-after` wrapper: SIGINT at
 the budget lets the tool's own handler (aut2ltl/proc.py) reap its GAP process

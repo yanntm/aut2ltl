@@ -11,7 +11,7 @@ import sys
 from dataclasses import dataclass, field
 from typing import Dict, Optional
 
-from survey import bounded
+from aut2ltl import bounded
 
 
 @dataclass

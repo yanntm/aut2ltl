@@ -13,7 +13,7 @@ import sys
 from dataclasses import dataclass
 from typing import Optional
 
-from survey import bounded
+from aut2ltl import bounded
 
 # Test-only spot oracle: classify the original and (when a flattened
 # reconstruction is supplied) check equivalence. Inputs travel via stdin — a
