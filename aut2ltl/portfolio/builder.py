@@ -25,6 +25,7 @@ from aut2ltl.translator import Translator
 from aut2ltl.options import Options
 from aut2ltl.combinators.first_success import first_success
 from aut2ltl.combinators.recurse import recurse
+from aut2ltl.combinators.compose import compose
 from aut2ltl.bls.aut2cas import as_translator
 from aut2ltl.bls.definability import definability_gate
 from aut2ltl.bls.hierarchy_class import make_hierarchy_class
@@ -34,6 +35,9 @@ from aut2ltl.daisystar import Daisystar
 from aut2ltl.daisystardet import DaisystarDet
 from aut2ltl.partscc import PartScc
 from aut2ltl.decomp.inv import Invariant
+from aut2ltl.decomp.acceptance import AccDecompose
+from aut2ltl.decomp.scc import SccDecompose
+from aut2ltl.decomp.strength import StrengthDecompose
 
 
 def bls(options: Optional[Options] = None) -> Translator:
@@ -117,6 +121,43 @@ def daisy_trio_det_inv(child: Translator) -> Translator:
                 name="daisy_trio_det")))
 
 
+#: The always-declining floor — the unit of `first_success` (the empty chain). It is
+#: the floor that turns `peel` into a NO-cascade peel: `peel(decline)` declines a
+#: residual the precise/heuristic arms cannot resolve, instead of handing it to a
+#: bls leaf (the `nobls` discipline). `peel(bls(...))` is the always-answers variant.
+decline: Translator = first_success([], name="decline")
+
+
+def peel(floor: Translator) -> Translator:
+    """The SORTED peel — exact producers before gated heuristics, then `floor`.
+
+    Per descent level, `first_success` tries, in order: `Daisy` (self-loop daisy),
+    `DaisystarDet` (rejecting deterministic SCC — the reachability dual of
+    `partscc`), `PartScc` (accepting terminal SCC) — the three EXACT producers — then
+    the two oracle-gated heuristics `Daisy2` (recurrence star) and `Daisystar` (flat
+    rejecting star), and finally `floor`. `recurse` ties the knot; each peel hands its
+    stem exits back to `leaf` (THIS assembly), and every stem strictly descends, so the
+    recursion is well-founded. Floor on `bls` to always answer, on `decline` for a
+    no-cascade peel. A decorator: it takes the floor that completes it."""
+    return recurse(lambda leaf: first_success(
+        [Daisy(leaf), DaisystarDet(leaf), PartScc(),
+         Daisy2(leaf), Daisystar(leaf), floor], name="peel"))
+
+
+def peel_decomp(floor: Translator) -> Translator:
+    """`peel` with the (de)compositions woven into EVERY descent level: each recursion
+    first strips the local invariant (`Invariant`), then splits by strength
+    (`StrengthDecompose`), by acceptance (`AccDecompose`), by SCC (`SccDecompose`), and
+    peels the residual atoms — a stem exit re-enters the full decomp on the way down.
+    Order inv → strength → acc → scc (invariant first, it is the cheapest). Sound per
+    level (each decorator is faithful-or-⊥). A decorator, like `peel`."""
+    return recurse(lambda leaf: compose(
+        Invariant, StrengthDecompose, AccDecompose, SccDecompose)(
+        first_success(
+            [Daisy(leaf), DaisystarDet(leaf), PartScc(),
+             Daisy2(leaf), Daisystar(leaf), floor], name="peel")))
+
+
 def daisy_pair_inv(child: Translator) -> Translator:
     """`daisy_pair` with the invariant strip woven into EVERY descent level: each
     recursion first factors its sub-automaton's *local* `G(Σ)` (`Invariant`), peels
@@ -140,4 +181,5 @@ def core(options: Optional[Options] = None) -> Translator:
 
 __all__ = ["bls", "daisy", "daisy_pair", "daisy_pair_inv",
            "daisy_trio", "daisy_trio_inv",
-           "daisy_trio_det", "daisy_trio_det_inv", "core"]
+           "daisy_trio_det", "daisy_trio_det_inv",
+           "decline", "peel", "peel_decomp", "core"]
