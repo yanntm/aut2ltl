@@ -69,12 +69,16 @@ and the `kr → bls` engine reorg all landed — see HISTORY 2026-06-17.)
   spurious-group example to use as the regression fixture. Full context + pointers:
   root `nonltl.md`. (Docs already corrected: `tester/algorithm.md` Soundness/
   Conclusiveness, `witness/algorithm.md` Scope.)
-  **Now surfaced:** the survey replays each NOT_LTL witness (`aut2ltl/verifier/`) and
-  marks an incomplete / non-toggling family FAIL. The kinska `counting/2ap` cluster — 9
-  rows (`counting_buchi_2ap_{05,07,08,09,10,20,21,22,23}`) — currently fails replay: the
-  concrete target set. Decide per case whether it is an incomplete witness to *complete*
-  (peeling carries the family up the translator chain — the witness must travel with it)
-  or a genuine spurious group ⇒ abstain.
+  **Witness lift landed (the "travels up the chain" half).** A peeler now lifts a
+  NOT_LTL child's witness back across its peel: `LTLResult.prefix` prepends the consumed
+  prefix to the anchor `u` (`Witness.prepend`) and stamps the peeler's own technique on
+  the verdict. `daisy` (the stem guard) and `daisystardet` (a reaching word through the
+  SCC, `shape.exit_word`) are done; the kinska `counting/2ap` cluster — the former FAIL
+  target — now validates TRUE. **Remaining peelers** need the same lift: `daisy2` is next,
+  marked red-by-design by `samples/validation/hoa/prefix_nonltl_2.hoa` (the other fixture,
+  `prefix_nonltl_1.hoa`, exercises the daisystardet path). Still open here is the *other*
+  failure mode — an incomplete / spurious-group witness (no `x`) ⇒ **abstain**, not FAIL —
+  which is the `_distinguish` widening + completed-witness gating described above.
 - **Output size at scale (the live research front).** The construction is cheap; the
   flat form explodes and Spot hits its 32-acceptance-set wall. Representation/
   verification, not fidelity. Analysis: `docs/dag_folding.md`.
