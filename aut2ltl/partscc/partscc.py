@@ -12,12 +12,15 @@ the component. Otherwise it declines. Self-contained: no child, no composer
 cooperation, no entry-timing. See algorithm.md.
 """
 
+import os
+import sys
 from typing import TYPE_CHECKING
 
 import spot
 
 from aut2ltl.language import Language
 from aut2ltl.result import LTLResult
+from aut2ltl.printer import format_language, format_result
 from .labels import scc_states, partition, outgoing_or
 
 if TYPE_CHECKING:  # spot imported above for runtime use
@@ -25,6 +28,17 @@ if TYPE_CHECKING:  # spot imported above for runtime use
 
 _NAME = "partscc"
 _F = spot.formula
+
+# On when PARTSCC_TRACE or the global TRANSLATOR_TRACE_ON is set (presence). Built
+# only inside `if _TRACE:`.
+_TRACE = "PARTSCC_TRACE" in os.environ or "TRANSLATOR_TRACE_ON" in os.environ
+
+
+def _out(res: "LTLResult") -> "LTLResult":
+    """Trace the outgoing result (status / size), pass it through unchanged."""
+    if _TRACE:
+        print("[partscc] out " + format_result(res), file=sys.stderr)
+    return res
 
 
 def _validates(aut: "spot.twa_graph", phi: "spot.formula") -> bool:
@@ -50,15 +64,17 @@ class PartScc:
         # the fairness conjunct below can characterize "visit color i i.o." by the
         # L-labels of its states.
         aut = spot.postprocess(lang.tgba(), "sbacc")
+        if _TRACE:
+            print("[partscc] in " + format_language(lang, aut), file=sys.stderr)
 
         states = scc_states(aut)
         if states is None:
-            return LTLResult.decline("not a single SCC of size >= 2")
+            return _out(LTLResult.decline("not a single SCC of size >= 2"))
 
         labels = partition(aut, states)
         if labels is None:
-            return LTLResult.decline(
-                "L-labels are not a tight pairwise-disjoint partition")
+            return _out(LTLResult.decline(
+                "L-labels are not a tight pairwise-disjoint partition"))
 
         d = aut.get_dict()
 
@@ -91,7 +107,9 @@ class PartScc:
         phi = _F.And(conjuncts)
 
         if not _validates(aut, phi):
-            return LTLResult.decline(
-                "candidate not language-equivalent to the component")
+            return _out(LTLResult.decline(
+                "candidate not language-equivalent to the component"))
 
-        return LTLResult.success(phi, _NAME)
+        if _TRACE:
+            print("[partscc] gate PASS", file=sys.stderr)
+        return _out(LTLResult.success(phi, _NAME))
