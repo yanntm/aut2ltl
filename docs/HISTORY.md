@@ -2162,3 +2162,44 @@ family.
   report.summarize (resolved LTL/not-LTL, no-answer, validated over LTL only), adds
   Sigma build_s runtime, a left->right technique-SHIFT diff, tail-anchored source
   keys, compact --top default 3, opt-in --formulas.
+
+## 2026-06-30 — federated translator trace + brick reification
+
+Built a federated, human-browsable trace facility to investigate the in-proc vs
+out-of-proc translate divergence (untracked note `tracing_spot_inproc.md`).
+
+- **`aut2ltl/printer.py`** (new): `format_language(lang, aut)` (the pulled twa: id /
+  states / edges / ap / acc / det, HOA dump to `AUT2LTL_TRACE_DIR` at full verbosity)
+  and `format_result(res)` (status / technique / gated formula / dag·temporal·tree·
+  sharing). Pure builders, called only under each translator's `if _TRACE:` guard —
+  no trace string (no flatten) computed when off. Verbosity is the printer's own knob
+  `AUT2LTL_TRACE_VERBOSITY` (stats|full), separate from the on/off gate.
+- **One federated gate `TRANSLATOR_TRACE_ON`** (presence-based, isdef — not a parsed
+  value), OR-ed into every component's local `*_TRACE`. `_trace()` helper retired for
+  inlined `if _TRACE:` guards (so the compute, not just the print, is skipped). TODO
+  added to do the same for `bls/operators/`.
+- **`Language.id`**: short fingerprint of the intern key, stamped by `of`/`of_ltl`;
+  never triggers a build. (An experiment keying it on the normalized base automaton
+  was tried and reverted — a print must reflect identity, not deform it to hide that
+  two equivalent formulas are distinct objects.)
+- **Instrumented**: daisy / daisy2 / daisystar / daisystardet (in/gate/out + each
+  exit `delegating ... as language`), the `decompose` combinator (split + per-operand
+  dispatch, one flag for strength/acc/scc), `deep_roundtrip`, `partscc`, `inv`,
+  `first_success` (choice ladder), `best_of` (in/out + size choice), `relabel` (the
+  formula→Language crossing — the source of a re-presented automaton).
+- **Reification (Option 1, named functors — no ABC/inheritance)**: the closure
+  factories `identity` / `relabel` / `as_translator` / `deep_roundtrip` / `recurse`
+  became functor classes carrying `.name`, so every brick names itself and the trace
+  stops printing `function`. Factories preserved; the `decompose` fixpoint is named by
+  its tag.
+- **`Language` representations** (`tgba` / `det_parity_sbacc` / `det_generic` /
+  `det_generic_minimal`) now run through `canon.normalize` after postprocess —
+  determinism first, so the twa a translator pulls carries the canonical numbering,
+  not just the base. Validation gate SUCCESS, diff vs reference clean (DAG/tree
+  unchanged).
+
+Finding: forcing canonical numbering did NOT collapse the term030 A/B divergence —
+the two backends produce structurally distinct (not merely differently-numbered)
+automata at the relevant sub-language; both sound. The trace now localizes the
+divergence to the `deep_nobls_arm` `identity` node (`a | (GF!b…)` vs `a | X(GF!b…)`)
+and the `relabel` crossing that translates each to an equivalent automaton.
