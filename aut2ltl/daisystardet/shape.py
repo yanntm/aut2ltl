@@ -20,7 +20,45 @@ import buddy
 
 from aut2ltl.daisy.shape import reroot  # reused verbatim: A↓dst for exit delegation
 
-__all__ = ["init_scc_states", "scc_data", "is_deterministic", "reroot"]
+__all__ = ["init_scc_states", "scc_data", "is_deterministic", "exit_word", "reroot"]
+
+
+def exit_word(
+    aut: "spot.twa_graph", C: Set[int], h: int, dst: int
+) -> List[str]:
+    """A word that traverses `C` from the hub `h` to an exit into `dst`: one path of
+    in-`C` edges (self-loops skipped) reaching a state that carries an exit to `dst`,
+    then that exit guard. Returns the guards as Spot-syntax letter strings — one valid
+    path is enough; the order they spell reaches `dst` from `h`. Empty only if no such
+    path exists (not the case for a real exit target)."""
+    d = aut.get_dict()
+
+    def lit(cond: "buddy.bdd") -> str:
+        return str(spot.bdd_to_formula(cond, d))
+
+    prev: Dict[int, Tuple[int, str]] = {}   # state -> (parent, guard reaching it)
+    seen = {h}
+    queue = [h]
+    qi = 0
+    while qi < len(queue):
+        p = queue[qi]
+        qi += 1
+        for e in aut.out(p):                 # an exit p →(g) dst ends the word
+            if e.dst == dst:
+                word: List[str] = []
+                cur = p
+                while cur != h:
+                    parent, guard = prev[cur]
+                    word.append(guard)
+                    cur = parent
+                word.reverse()
+                return word + [lit(e.cond)]
+        for e in aut.out(p):                 # else walk on through C (no self-loops)
+            if e.dst in C and e.dst != p and e.dst not in seen:
+                seen.add(e.dst)
+                prev[e.dst] = (p, lit(e.cond))
+                queue.append(e.dst)
+    return []
 
 
 def init_scc_states(aut: "spot.twa_graph", h: int) -> Set[int]:
