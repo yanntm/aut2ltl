@@ -265,7 +265,8 @@ class Language:
         nondeterministic translate-style form the heuristic/sl engine exploits."""
         a = self._cache.get("tgba")
         if a is None:
-            a = spot.postprocess(self._base(), "tgba")
+            from aut2ltl.ltl import canon
+            a = canon.normalize(spot.postprocess(self._base(), "tgba"))
             self._cache["tgba"] = a
         return a
 
@@ -276,8 +277,9 @@ class Language:
         Muller condition is over configurations/states)."""
         a = self._cache.get("det_parity_sbacc")
         if a is None:
-            a = spot.postprocess(self._base(), "parity min even",
-                                 "deterministic", "complete", "sbacc")
+            from aut2ltl.ltl import canon
+            a = canon.normalize(spot.postprocess(self._base(), "parity min even",
+                                                 "deterministic", "complete", "sbacc"))
             self._cache["det_parity_sbacc"] = a
         return a
 
@@ -286,7 +288,8 @@ class Language:
         which coBüchi/weak recognizability is read (the parity step can hide it)."""
         a = self._cache.get("det_generic")
         if a is None:
-            a = spot.postprocess(self._base(), "deterministic", "generic")
+            from aut2ltl.ltl import canon
+            a = canon.normalize(spot.postprocess(self._base(), "deterministic", "generic"))
             self._cache["det_generic"] = a
         return a
 
@@ -296,12 +299,13 @@ class Language:
         `det_generic()` on a large or unsolved automaton."""
         a = self._cache.get("det_generic_minimal")
         if a is None:
+            from aut2ltl.ltl import canon
             det = self.det_generic()
             if det.num_states() <= _SAT_MIN_STATES:
                 try:
                     m = spot.sat_minimize(det)
                     if m is not None and m.num_states() < det.num_states():
-                        det = m
+                        det = canon.normalize(m)   # re-canonicalize: sat_minimize renumbers
                 except Exception:
                     pass
             self._cache["det_generic_minimal"] = det
