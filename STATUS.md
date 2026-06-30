@@ -9,6 +9,15 @@ The project **works**: it does what the [root README](README.md) claims — read
 and giving a checkable witness when the language is not LTL-definable. Sound on the
 correctness gate.
 
+The non-LTL **witness is now a first-class, checked result**: the front end emits it
+as a machine-readable line on stdout (`NOT_LTL: p=… u=… v=… x=…`, kind-tagged like
+`LTL: <formula>`), a standalone `aut2ltl/verifier/` package replays it against the
+input automaton (membership only — acceptance-agnostic), and the survey runs that
+verifier to fill the `validation` cell of every NOT_LTL row (same TRUE/FAIL/TIMEOUT
+vocabulary as LTL; a new `check_s` column times it). **Open:** witnesses that arrive
+incomplete through peeling replay as FAIL — the kinska `counting/2ap` cluster (9 rows)
+is the current target set; see `TODO.md` and `nonltl.md`.
+
 ## How to work in it
 
 - The project is **large**. You will be pointed at the part in play — stay there;
