@@ -38,12 +38,11 @@ if TYPE_CHECKING:
 
 _NAME = "daisystardet"
 _F = spot.formula
-_TRACE = os.getenv("DAISYSTARDET_TRACE", "0").lower() in ("1", "true", "yes", "on")
-
-
-def _trace(msg: str) -> None:
-    if _TRACE:
-        print("[daisystardet] " + msg, file=sys.stderr)
+# DAISYSTARDET_TRACE, or the global TRANSLATOR_TRACE_ON which lights every
+# translator trace at once. Every use guards with `if _TRACE:` BEFORE building its
+# message, so a formula is never flattened for a trace that will not be printed.
+_TRACE = (os.getenv("DAISYSTARDET_TRACE", "0").lower() in ("1", "true", "yes", "on")
+          or "TRANSLATOR_TRACE_ON" in os.environ)
 
 
 def _or(fs: List["spot.formula"]) -> "spot.formula":
@@ -93,12 +92,13 @@ def _validates(aut: "spot.twa_graph", phi: "spot.formula") -> bool:
                 tight = aut.intersecting_word(spot.complement(cand))
             except Exception as e:
                 loose = tight = f"<witness error: {e}>"
-            _trace(f"gate REJECT: cand={phi}")
-            _trace(f"    too loose (cand\\input): {loose}")
-            _trace(f"    too tight (input\\cand): {tight}")
+            print(f"[daisystardet] gate REJECT: cand={phi}", file=sys.stderr)
+            print(f"[daisystardet]     too loose (cand\\input): {loose}", file=sys.stderr)
+            print(f"[daisystardet]     too tight (input\\cand): {tight}", file=sys.stderr)
         return False
     except Exception as e:
-        _trace(f"gate ERROR on cand={phi}: {e}")
+        if _TRACE:
+            print(f"[daisystardet] gate ERROR on cand={phi}: {e}", file=sys.stderr)
         return False
 
 
