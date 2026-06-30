@@ -35,13 +35,12 @@ if TYPE_CHECKING:
 _NAME = "daisystar"
 _F = spot.formula
 
-# Dev trace of the Spot equivalence gate, mirroring daisy2's DAISY2_TRACE.
-_TRACE = os.getenv("DAISYSTAR_TRACE", "0").lower() in ("1", "true", "yes", "on")
-
-
-def _trace(msg: str) -> None:
-    if _TRACE:
-        print("[daisystar] " + msg, file=sys.stderr)
+# Dev trace of the Spot equivalence gate, mirroring daisy2's DAISY2_TRACE; the
+# global TRANSLATOR_TRACE_ON lights it (and every translator trace) at once. Every
+# use guards with `if _TRACE:` BEFORE building its message, so a formula is never
+# flattened for a trace that will not be printed.
+_TRACE = (os.getenv("DAISYSTAR_TRACE", "0").lower() in ("1", "true", "yes", "on")
+          or "TRANSLATOR_TRACE_ON" in os.environ)
 
 
 def _or(fs: List["spot.formula"]) -> "spot.formula":
@@ -99,9 +98,9 @@ def _trace_reject(aut: "spot.twa_graph", phi: "spot.formula",
         tight = aut.intersecting_word(spot.complement(cand))   # input \ cand
     except Exception as e:
         loose = tight = f"<witness error: {e}>"
-    _trace(f"gate REJECT: cand={phi}")
-    _trace(f"    too loose (cand\\input): {loose}")
-    _trace(f"    too tight (input\\cand): {tight}")
+    print(f"[daisystar] gate REJECT: cand={phi}", file=sys.stderr)
+    print(f"[daisystar]     too loose (cand\\input): {loose}", file=sys.stderr)
+    print(f"[daisystar]     too tight (input\\cand): {tight}", file=sys.stderr)
 
 
 def _validates(aut: "spot.twa_graph", phi: "spot.formula") -> bool:
@@ -116,7 +115,8 @@ def _validates(aut: "spot.twa_graph", phi: "spot.formula") -> bool:
             _trace_reject(aut, phi, cand)
         return False
     except Exception as e:
-        _trace(f"gate ERROR on cand={phi}: {e}")
+        if _TRACE:
+            print(f"[daisystar] gate ERROR on cand={phi}: {e}", file=sys.stderr)
         return False
 
 
