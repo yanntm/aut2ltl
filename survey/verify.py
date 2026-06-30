@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import sys
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Tuple
 
 from aut2ltl import bounded
 
@@ -70,9 +70,11 @@ print("VERIFY_JSON:" + json.dumps(out))
 @dataclass
 class VerifyResult:
     """The oracle's verdict. `equiv` is True / False / None (nothing to verify) /
-    "SPOT_TIMEOUT" / "SPOT_ERR:..."; `mp` is the Manna-Pnueli class or "?"."""
+    "SPOT_TIMEOUT" / "SPOT_ERR:..."; `mp` is the Manna-Pnueli class or "?";
+    `check_s` is the oracle subprocess wall time (distinct from the build time)."""
     mp: str
     equiv: object
+    check_s: str = ""
 
 
 def verify(orig: str, rec: Optional[str], *, is_hoa: bool,
@@ -83,10 +85,40 @@ def verify(orig: str, rec: Optional[str], *, is_hoa: bool,
         [sys.executable, "-c", _VERIFY_CHILD], timeout,
         stdin=json.dumps({"orig": orig, "rec": rec, "is_hoa": is_hoa}),
     )
+    cs = f"{res.wall_s:.3f}"
     if res.timed_out:
-        return VerifyResult(mp="?", equiv="SPOT_TIMEOUT")
+        return VerifyResult(mp="?", equiv="SPOT_TIMEOUT", check_s=cs)
     for line in (res.out or "").splitlines():
         if line.startswith("VERIFY_JSON:"):
             d = json.loads(line[len("VERIFY_JSON:"):])
-            return VerifyResult(mp=d.get("mp", "?"), equiv=d.get("equiv"))
-    return VerifyResult(mp="?", equiv="SPOT_ERR:no marker")
+            return VerifyResult(mp=d.get("mp", "?"), equiv=d.get("equiv"), check_s=cs)
+    return VerifyResult(mp="?", equiv="SPOT_ERR:no marker", check_s=cs)
+
+
+def verify_witness(orig: str, witness: Optional[str], *, is_hoa: bool,
+                   timeout: int) -> Tuple[str, str]:
+    """Replay a NOT_LTL witness against `orig` via the `aut2ltl.verifier` CLI in a
+    bounded, isolated subprocess (membership only — acceptance-agnostic). Returns
+    `(token, check_s)`; the token is the same vocabulary as the LTL equivalence
+    oracle:
+
+      * TRUE    -- the counting family toggles with its period (sound certificate);
+      * FAIL    -- it does not toggle, OR the family is incomplete / absent: a
+                   NOT_LTL claim with no replayable certificate is unsound;
+      * TIMEOUT -- the bounded replay overran;
+      * ERROR   -- the verifier could not run (bad input / load error).
+    """
+    if not witness:
+        return ("FAIL", "")  # NOT_LTL asserted with no witness to back it
+    tool = [sys.executable, "-m", "aut2ltl.verifier", orig, witness,
+            "--hoa" if is_hoa else "--ltl"]
+    res = bounded.run(tool, timeout)
+    cs = f"{res.wall_s:.3f}"
+    if res.timed_out:
+        return ("TIMEOUT", cs)
+    for line in (res.out or "").splitlines():
+        if line.startswith("VERIFY: ok"):
+            return ("TRUE", cs)
+        if line.startswith("VERIFY: fail") or line.startswith("VERIFY: no-witness"):
+            return ("FAIL", cs)
+    return ("ERROR", cs)
