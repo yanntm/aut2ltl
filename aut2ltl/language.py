@@ -38,6 +38,7 @@ carries, which would invert the floor -> kr layering.
 """
 from __future__ import annotations
 
+import hashlib
 import os
 import sys
 import time
@@ -119,6 +120,11 @@ TRACE = OptionSpec(
 LANGUAGE_OPTIONS = [SAT_MIN_STATES, CLEAN_LEVEL, CACHE_SIZE, TRACE]
 
 
+def _fingerprint(key: str) -> str:
+    """Short md5 of an intern key — the language's browsable `id`."""
+    return hashlib.md5(key.encode("utf-8")).hexdigest()[:12]
+
+
 def _clean(aut: "spot.twa_graph") -> "spot.twa_graph":
     """Language-preserving input cleanup (see `CLEAN_LEVEL`). Purges unreachable /
     dead states, merges redundant acceptance sets (Medium+), keeps the acceptance
@@ -160,10 +166,12 @@ class Language:
         *,
         aut: Optional["spot.twa_graph"] = None,
         formula: Optional["spot.formula"] = None,
+        lid: Optional[str] = None,
     ) -> None:
         # Exactly one source; use the classmethod constructors, not this directly.
         self._source_aut: Optional["spot.twa_graph"] = aut
         self._source_formula: Optional["spot.formula"] = formula
+        self._id: Optional[str] = lid          # browsable id, stamped by of/of_ltl
         self._cache: dict = {}
         # LTL-definability verdict (definable, conclusive), or None until decided.
         # A PROPERTY of the language, but derived by the kr LtlTester (the GAP
@@ -180,7 +188,8 @@ class Language:
         automaton, not of its (transport-dependent) state numbering."""
         from aut2ltl.ltl import canon                  # deferred: keep the floor import-acyclic
         na = canon.normalize(aut)
-        return _intern("A\n" + na.to_str("hoa"), lambda: cls(aut=na))
+        key = "A\n" + na.to_str("hoa")
+        return _intern(key, lambda: cls(aut=na, lid=_fingerprint(key)))
 
     @classmethod
     def of_ltl(cls, f: Union[str, "spot.formula"]) -> "Language":
@@ -204,14 +213,15 @@ class Language:
         from aut2ltl.ltl.printers import dag_md5      # deferred: keep the floor import-acyclic
         if isinstance(f, str):
             f = spot.formula(f)
+        key = "L\n" + dag_md5(f, 32)
 
         def build() -> "Language":
-            lang = cls(formula=f)
+            lang = cls(formula=f, lid=_fingerprint(key))
             if f.is_ltl_formula():                    # LTL ⇒ definable, by construction
                 lang.set_ltl_definable(True, conclusive=True)
             return lang
 
-        return _intern("L\n" + dag_md5(f, 32), build)
+        return _intern(key, build)
 
     # --- base automaton (source as given, or the formula translated) ---
 
@@ -297,6 +307,12 @@ class Language:
             self._cache["det_generic_minimal"] = det
             a = det
         return a
+
+    @property
+    def id(self) -> Optional[str]:
+        """Short fingerprint of the intern key — the same re-presented language
+        shares it across the run. Stamped by `of`/`of_ltl`; never triggers a build."""
+        return self._id
 
     # --- LTL-definability tag (a property of the language; SET by the kr tester,
     #     not derived here — the GAP aperiodicity oracle lives above this floor) ---
