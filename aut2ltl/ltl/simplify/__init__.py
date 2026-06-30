@@ -11,10 +11,12 @@ from . import context_pass as _cp
 from . import factor_pass as _fp
 from . import fold_pass as _dp
 from . import now_eval
+from . import spot_EU_rules as _eu
 from .context_pass import context_simplify
 from .now_eval import now_rewrite, prop_minimize
 from .factor_pass import factor_simplify
 from .fold_pass import fold_simplify
+from .spot_EU_rules import eu_simplify
 
 _node_memo: dict = {}
 
@@ -28,6 +30,12 @@ _OWN_FACTOR = _os.getenv("KR_SIMP_OWN_FACTOR", "1").lower() not in ("0", "false"
 # KR_SIMP_OWN_FOLD=0 restores the rules-1..3 pipeline.
 _OWN_FOLD = _os.getenv("KR_SIMP_OWN_FOLD", "1").lower() not in ("0", "false", "no", "off")
 
+# Spot's eventual/universal class rules (rule 5, spot_EU_rules.py): always-applied
+# (≡) absorptions keyed on the cached is_eventual/is_universal node bits. Monotone
+# (each rule strips/relocates one operator, no ≡ inverse), O(DAG), disjoint from
+# rules 1..4. KR_SIMP_OWN_EU=0 drops it.
+_OWN_EU = _os.getenv("KR_SIMP_OWN_EU", "1").lower() not in ("0", "false", "no", "off")
+
 
 def _ctx_simplify(f: "spot.formula") -> "spot.formula":
     """Context pass with both hooks: now-evaluation (rule 2) on temporal
@@ -39,18 +47,28 @@ def _ctx_simplify(f: "spot.formula") -> "spot.formula":
 
 def simplify(f: "spot.formula") -> "spot.formula":
     """Combined pipeline: context pass (rule 1) with the now-evaluation
-    hook (rule 2), then unroll-inverse folding (rule 4, unless
+    hook (rule 2), then the eventual/universal class absorptions (rule 5,
+    unless KR_SIMP_OWN_EU=0), then unroll-inverse folding (rule 4, unless
     KR_SIMP_OWN_FOLD=0), then partial factoring (rule 3, unless
     KR_SIMP_OWN_FACTOR=0); a pass that changed something is followed by
-    one more context pass (composites can expose new absorptions) and,
-    after factoring, one more fold (factoring can expose fold partners).
+    one more context pass (composites can expose new absorptions). Folding
+    can expose newly-eventual/universal arms, so the EU step is re-run after
+    fold; after factoring, one more fold (factoring can expose fold partners).
     Language-preserving."""
     _ctx = _ctx_simplify
     g = _ctx(f)
+    if _OWN_EU:
+        h = eu_simplify(g)
+        if h != g:
+            g = _ctx(h)
     if _OWN_FOLD:
         h = fold_simplify(g)
         if h != g:
             g = _ctx(h)
+            if _OWN_EU:
+                e = eu_simplify(g)
+                if e != g:
+                    g = _ctx(e)
     if not _OWN_FACTOR:
         return g
     h = factor_simplify(g)
@@ -83,8 +101,9 @@ def reset_caches() -> None:
     _cp.reset_cache()
     _fp.reset_cache()
     _dp.reset_cache()
+    _eu.reset_cache()
 
 
 __all__ = ["context_simplify", "now_rewrite", "prop_minimize",
-           "factor_simplify", "fold_simplify", "simplify", "simplify_node",
-           "reset_caches"]
+           "factor_simplify", "fold_simplify", "eu_simplify", "simplify",
+           "simplify_node", "reset_caches"]
