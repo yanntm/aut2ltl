@@ -32,7 +32,7 @@ import spot
 from aut2ltl.language import Language
 from aut2ltl.result import LTLResult, Status
 from aut2ltl.printer import format_language
-from .shape import init_scc_states, scc_data, is_deterministic, reroot
+from .shape import init_scc_states, scc_data, is_deterministic, exit_word, reroot
 
 if TYPE_CHECKING:
     from aut2ltl.translator import Translator
@@ -138,7 +138,10 @@ class DaisystarDet:
                 print(f"[daisystardet] delegating exit {dst} as language: "
                       + format_language(sub, sub.tgba()), file=sys.stderr)
             child = self._child(sub)
-            res.credit(child)
+            # Fold the exit label in; a NotLTL child has its witness lifted back to the
+            # hub by the reaching word h ⟶* p →(g) dst — `w[u ↦ w_dst·u]` — and
+            # daisystardet credited (algorithm.md).
+            res.prefix(child, "; ".join(exit_word(aut, C, h, dst)), _NAME)
             if res.nok:
                 return res
             phi[dst] = child.formula
