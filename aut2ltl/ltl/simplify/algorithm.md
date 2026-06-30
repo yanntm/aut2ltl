@@ -9,9 +9,12 @@ construction emits (`c & XGc`, `1 U Gb`, per-conjunct fairness) that Spot never 
 back, and to exploit **initial-state knowledge** (a boolean sibling is a fact about
 *now*) that Spot's purely-structural simplifier ignores.
 
-Lineage: the boolean-context machinery adapts the user's Java engine
-(`Simplifier.simplifyBoolean`, `LogicSimplifier.evalInInitial`), the latter an LTL/CTL
-take on the initial-state strategy of Bonneland et al. (PetriNets 2018).
+Lineage: the boolean-context machinery adapts the user's Java engine in ITS-Tools
+(`Simplifier.simplifyBoolean`, `LogicSimplifier.evalInInitial`); the per-operator LTL
+now-evaluation forms are original there, extending to LTL the core initial-state idea of
+Bonneland et al. (PetriNets 2018), which is CTL. The eventual/universal class rules
+(pass 5, `spot_EU_rules.py`) instead follow Spot's `tl_simplifier` (see
+`algorithm_EU_rules.md`).
 
 ## Setting
 
@@ -49,10 +52,12 @@ There is therefore one invariant the whole package obeys and the test harness ch
 Contexts never cross a non-boolean operator: knowledge about "now" is **reset at every
 `X`/`U`/`G`/`F`/`R`/`W`/`M`** (bodies are still visited, with an empty context).
 
-## The four passes
+## The five passes
 
 Each pass is a bottom-up DAG walk (memoized). They are oriented so they cannot
-ping-pong (below).
+ping-pong (below). Passes 1–4 are the construction-specific machinery; **pass 5**
+(`spot_EU_rules.py`) is Spot's eventual/universal class absorptions, catalogued
+separately in `algorithm_EU_rules.md`.
 
 **1 — Context pass** (`context_pass.py`). A walk of the boolean skeleton carrying two
 frozensets `(pos, neg)` of asserted subformulas. At an `And`, every child is rewritten
@@ -63,15 +68,22 @@ collapses to `⊤`/`⊥` (a `Not(x)` with `x` in the dual set likewise) — **id
 domination**, valid for temporal atoms too (`Gφ & (b | Gφ) → Gφ`). Beyond the sibling
 itself, a temporal sibling is **opened** into now-knowledge (initial-state reading): at
 `And`, `Gφ` asserts the conjuncts of `φ@0`, `f R g`/`f M g` assert those of `g@0`; at
-`Or`, `Fφ` refutes the disjuncts of `φ@0`, `f U g`/`f W g` those of `g@0`. The sibling
-atoms flow bidirectionally (DAG acyclicity rules out support cycles) but the **opened**
-facts flow **one-way**, earlier-sibling → later only — bidirectional opening builds
-circular support and is unsound (fuzz witness `!(b R (Gb & (b M Gb)))` collapsed to
-`0`). Because one-way flow makes the result depend on traversal order (sound for any
-fixed order, but more or less *complete*), children are visited **now-fact producers
-first** (`_open_rank`, polarity-aware: `G`/`R`/`M` at `And`, `F`/`U`/`W` at `Or`, strong
-before weak; consumers last), so each opening reaches the most siblings — free, since
-Spot re-canonicalises the rebuilt node and the operand list is tiny. When the And/Or
+`Or`, `Fφ` refutes the disjuncts of `φ@0`, `f U g`/`f W g` those of `g@0`. The reading
+is **sequential conditional simplification**: child `i` assumes each sibling in the form
+it actually has in the conjunction at that step — the **finalized** form for
+already-processed siblings (`j < i`), the **original** for the rest — and openings are
+taken only from those already-finalized earlier siblings. This is the only sound reading:
+a sibling that was itself reduced to a constant contributes nothing, so two siblings can
+no longer discharge each other. The old "single snapshot" relaxation (assume every
+sibling in its *original* form, openings one-way) let an atom `b` reduce `(a M b)` to ⊤
+while `(a M b)`'s opening erased that same `b` — the circular-support bug
+`a & b & (a M b) → a` (and its `Or` dual `!a | !b | (!a W !b) → !a`; the older fuzz
+witness `!(b R (Gb & (b M Gb))) → 0` is the same defect). Because the sequential reading
+makes the result depend on traversal order (sound for any fixed order, more or less
+*complete*), children are visited **now-fact producers first** (`_open_rank`,
+polarity-aware: `G`/`R`/`M` at `And`, `F`/`U`/`W` at `Or`, strong before weak; consumers
+last), so each surviving opening reaches the most siblings — free, since Spot
+re-canonicalises the rebuilt node and the operand list is tiny. When the And/Or
 constructor exposes a new atom sibling (fold/flatten), the node is re-walked. Subsumes the classics: unit propagation, both absorptions,
 contradiction/tautology.
 
@@ -148,7 +160,8 @@ now-evaluation only ever emits a constant or an existing arm) the two cannot pin
 ```
 simplify(f) =
     g  = context(f)                       -- pass 1 (+ now hook 2, + ctx_subsume on bool nodes)
-    g  = context(fold(g))   if changed    -- pass 4, re-contextualise on change
+    g  = context(eu(g))     if changed    -- pass 5, re-contextualise on change
+    g  = context(fold(g))   if changed    -- pass 4, then eu again (fold can expose e/u arms)
     h  = factor(g)                        -- pass 3
     if h changed: h = context(h); h = context(fold(h)) if changed
     return h
@@ -157,9 +170,11 @@ simplify(f) =
 Termination rests on **orientation**, not a global measure: folding only ever returns
 a strictly smaller tree with one fewer eventuality; now-evaluation only ever returns a
 **constant or an existing arm** — never an unrolled form. So the two cannot ping-pong
-(fold → unrolled-shape, now → constant/arm are disjoint codomains). Factoring strictly
-drops the `Or` arity each round. The per-pass walks are memoized fixpoints, so each
-reaches a fixpoint in finitely many node visits.
+(fold → unrolled-shape, now → constant/arm are disjoint codomains). The EU absorptions
+are monotone (each strips/relocates one operator, no `≡` inverse among them) and produce
+no unrolled shape, so they ping-pong with neither. Factoring strictly drops the `Or`
+arity each round. The per-pass walks are memoized fixpoints, so each reaches a fixpoint
+in finitely many node visits.
 
 ## Cost
 
