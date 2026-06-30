@@ -15,15 +15,25 @@ re-presentation keeps the rebuilt node — the pass never regresses or declines.
 """
 from __future__ import annotations
 
+import os
+import sys
 from typing import Dict, TYPE_CHECKING
 
 from aut2ltl.result import LTLResult
+from aut2ltl.printer import format_result
+from aut2ltl.ltl.metrics import dag_metrics
 
 if TYPE_CHECKING:
     import spot
     from aut2ltl.ltl_rewriter import Rewriter
 
 _NAME = "deep_roundtrip"
+
+# On when either DEEP_ROUNDTRIP_TRACE or the global TRANSLATOR_TRACE_ON is set
+# (presence; value ignored). Built only inside `if _TRACE:`, so nothing is computed
+# when off. Shows the incoming/outgoing result and each node the bottom-up pass
+# actually re-presents (where a tower collapses from the leaves up).
+_TRACE = "DEEP_ROUNDTRIP_TRACE" in os.environ or "TRANSLATOR_TRACE_ON" in os.environ
 
 
 def deep_roundtrip(rewrite: "Rewriter", *, name: str = _NAME) -> "Rewriter":
@@ -34,6 +44,8 @@ def deep_roundtrip(rewrite: "Rewriter", *, name: str = _NAME) -> "Rewriter":
     the input verbatim, uncredited (the ltl_rewriter attribution rule)."""
     def run(res: LTLResult) -> LTLResult:
         formula = res.formula
+        if _TRACE:
+            print("[deep_roundtrip] in " + format_result(res), file=sys.stderr)
         memo: Dict["spot.formula", "spot.formula"] = {}
         out = LTLResult.start(name)
         out.credit(res)
@@ -49,12 +61,21 @@ def deep_roundtrip(rewrite: "Rewriter", *, name: str = _NAME) -> "Rewriter":
                 result = r.formula
             else:
                 result = rebuilt                          # decline → keep rebuilt, don't taint out
+            if _TRACE and result != rebuilt:
+                mb, ma = dag_metrics(rebuilt), dag_metrics(result)
+                print(f"[deep_roundtrip]   node re-presented: dag {mb.dag_nodes}->"
+                      f"{ma.dag_nodes} tree {mb.tree_nodes}->{ma.tree_nodes}",
+                      file=sys.stderr)
             memo[n] = result
             return result
 
         rebuilt = go(formula)
         if rebuilt == formula:
+            if _TRACE:
+                print("[deep_roundtrip] out no-op (input unchanged)", file=sys.stderr)
             return res                                    # all no-op → no self-credit
         out.formula = rebuilt
+        if _TRACE:
+            print("[deep_roundtrip] out " + format_result(out), file=sys.stderr)
         return out
     return run
