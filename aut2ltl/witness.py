@@ -16,6 +16,7 @@ phases. See `research_notes/non_ltl_certificates.md`.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -46,15 +47,69 @@ class Witness:
 
     def summary(self) -> str:
         """A human rendering of the counting family for a NOT_LTL diagnosis: the
-        period, the toggling claim, and (when completed) the words `u`, `v`, `x`."""
-        head = (f"witness: counting family, period p={self.p} — "
-                f"u·vⁿ·x flips membership with n mod {self.p}")
+        period, the toggling claim, and (when completed) the words `u`, `v`, `x`.
+        ASCII only (the serialized form is the machine channel)."""
+        head = (f"witness: counting family, period p={self.p} -- "
+                f"u.v^n.x flips membership with n mod {self.p}")
         if not self.complete:
             return f"{head}\n    v = {self.v_str()}   (u, x not synthesised)"
-        u = " ; ".join(self.u) if self.u else "ε"
+        u = " ; ".join(self.u) if self.u else "[]"
         prefix = (" ; ".join(self.x_prefix) + " ; ") if self.x_prefix else ""
-        x = f"{prefix}({' ; '.join(self.x_cycle or [])})ω"
+        x = f"{prefix}({' ; '.join(self.x_cycle or [])})^w"
         return f"{head}\n    u = {u} ;  v = {self.v_str()} ;  x = {x}"
+
+    # ----------------------------------------------------------------------- #
+    # Machine round-trip: a single ASCII line in Spot word syntax. The inverse
+    # pair (`serialize` / `parse`) is what lets the front end emit the witness
+    # and a downstream verifier replay it; `factor` is internal (the generator-
+    # index lift) and not carried — `parse` reconstructs with `factor=[]`.
+    # ----------------------------------------------------------------------- #
+    def serialize(self) -> str:
+        """The compact one-line payload, e.g. `p=3 u=[] v=[a; a] x=[cycle{!a}]`.
+
+        Bare (no `NOT_LTL` tag): the front end prefixes the result kind, symmetric
+        with a bare LTL formula. Words use Spot syntax: a finite word is `l; l`, the
+        lasso tail `x` is `prefix; cycle{l; l}`. An incomplete family (no `u`/`x`)
+        drops them and is flagged `incomplete`."""
+        v = f"v=[{'; '.join(self.v)}]"
+        if not self.complete:
+            return f"p={self.p} {v} incomplete"
+        u = f"u=[{'; '.join(self.u or [])}]"
+        prefix = ("; ".join(self.x_prefix) + "; ") if self.x_prefix else ""
+        x = f"x=[{prefix}cycle{{{'; '.join(self.x_cycle or [])}}}]"
+        return f"p={self.p} {u} {v} {x}"
+
+    @staticmethod
+    def parse(line: str) -> "Witness":
+        """Inverse of `serialize`: rebuild a `Witness` from its one-line form.
+
+        Tolerates the leading `NOT_LTL` tag. Raises `ValueError` if `p`/`v` are
+        absent. The `incomplete` form (or a missing `u`/`x`) yields a witness with
+        `u`/`x_*` left None. `factor` is not recoverable from the line and is set
+        empty (it is only used to re-check the generator lift, not to replay)."""
+        def _letters(body: str) -> List[str]:
+            return [t.strip() for t in body.split(";") if t.strip()]
+
+        m_p = re.search(r"\bp=(\d+)", line)
+        m_v = re.search(r"\bv=\[([^\]]*)\]", line)
+        if m_p is None or m_v is None:
+            raise ValueError(f"not a witness line (need p= and v=): {line!r}")
+        p = int(m_p.group(1))
+        v = _letters(m_v.group(1))
+
+        m_u = re.search(r"\bu=\[([^\]]*)\]", line)
+        m_x = re.search(r"\bx=\[([^\]]*)\]", line)
+        if "incomplete" in line or m_u is None or m_x is None:
+            return Witness(p=p, v=v, factor=[])
+
+        u = _letters(m_u.group(1))
+        x_body = m_x.group(1)
+        m_cyc = re.search(r"cycle\{([^}]*)\}", x_body)
+        if m_cyc is None:
+            raise ValueError(f"x has no cycle{{...}}: {line!r}")
+        x_cycle = _letters(m_cyc.group(1))
+        x_prefix = _letters(x_body[: m_cyc.start()])
+        return Witness(p=p, v=v, factor=[], u=u, x_prefix=x_prefix, x_cycle=x_cycle)
 
 
 __all__ = ["Witness"]
