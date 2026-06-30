@@ -2240,3 +2240,48 @@ order-sensitive (sound for any fixed order), still O(DAG); valuable openings
 survive when the opener stands (`b & (a M b) -> a M b`). random_equiv unchanged
 (21.9% smaller, ALL EQUIVALENT). Regression guards added to test_now_eval.py.
 The LTL now-eval forms credited to ITS-Tools (Bonneland = CTL core).
+
+## 2026-06-30 — non-LTL witness cabled in as a checked, surveyed result
+
+LANDED. The NOT_LTL witness was decorative: the front end printed it as non-ASCII
+prose on stderr (`Witness.summary()`), nothing parsed it, and the survey recorded
+NOT_LTL rows with an empty `validation` cell — ~64 verdicts never checked ("a false
+negative passes silently", `nonltl.md`). This increment makes the witness a
+first-class, machine-readable, *replayed* result.
+
+Pieces (one feature, walked file by file):
+- `aut2ltl/witness.py` — `serialize()`/`parse()` round-trip; a bare one-line payload
+  in Spot word syntax (`p=3 u=[] v=[a; a] x=[cycle{!a}]`); ASCII `summary()`.
+- `aut2ltl/verifier/` — NEW root package promoted out of `tests/probes/verifier/`:
+  membership-only checker (Spot lasso intersection, acceptance-agnostic), API
+  `verify(aut, Witness) -> (ok, pattern)` + CLI (`VERIFY: ok/fail/no-witness`, exit
+  0/1/2), README + algorithm.md. Floor-level (imports only Witness + Spot). It is the
+  *suggestive* tier (corroborates; a fail is a real bad-certificate flag).
+- `aut2ltl/__main__.py` — stdout is now KIND-TAGGED, homogeneous: `LTL: <formula>` /
+  `NOT_LTL: <witness>` (Option B, chosen over the bare-formula filter — ltlfilt is a
+  no-op on our massaged output; a bare/pipe mode may be retrofitted, see TODO). `--dag`
+  and `-o` stay bare. stderr ASCII.
+- `survey/{build,verify,run,report}.py` — capture + strip the tag, replay the witness
+  via the verifier in a bounded subprocess, fill `validation` in the SAME
+  TRUE/FAIL/TIMEOUT/ERROR vocabulary as the LTL oracle. Incomplete / non-toggling
+  family ⇒ FAIL, which trips the hard run gate (soundness) like a non-equivalent
+  formula. New `check_s` column (verify wall time, both paths); witness carried in the
+  `formula` cell as a re-checkable certificate.
+
+Decisions: stdout tagged (not bare); ASCII only (no `—·ⁿωε`); validation mirrors the
+LTL vocabulary exactly, no witness-specific tokens — an uncertified NOT_LTL is FAIL,
+on purpose (it lights up the corpus as the goal to fix).
+
+Verified: verifier spec green; validation gate SUCCESS (81 TRUE); mod3 row clean
+(`validation=TRUE, check_s≈0.055`). Kinska scan (the payoff): 99 LTL/TRUE,
+54 NOT_LTL/TRUE, 9 NOT_LTL/FAIL, 3 TIMEOUT — survey goes FAIL. The 9 FAILs cluster in
+`samples/kinska/counting/2ap/` (`counting_buchi_2ap_{05,07,08,09,10,20,21,22,23}`).
+
+Also: the front-page mod3 example was `autfilt --small`'d (5→4 states, complement
+sink removed; equivalent, identical witness) and `docs/img/mod3_a.png` regenerated.
+
+OPEN (step 2): the counting/2ap FAILs are witnesses that arrive incomplete through
+PEELING — the witness must travel up the translator chain and be completed there — or
+genuine spurious groups ⇒ abstain. Reference CSV regeneration (NOT_LTL rows now carry
+`validation` + `check_s`; check `survey.diff.results` for the new column) is a separate
+step. README/IO refresh held until stable (TODO).
