@@ -3,9 +3,11 @@ now_eval.py — Rule 2: one-step temporal unrolling under boolean context.
 
 A boolean conjunct A in `A ∧ φ` is knowledge about the evaluation instant
 of φ — an "initial state" for that subformula, however deeply nested the
-And is (LTL adaptation of LogicSimplifier.evalInInitial, after Bonneland
-et al., PetriNets 2018). Each temporal operator is unrolled once at that
-instant; only SHRINKING rewrites are applied:
+And is. The per-operator LTL forms below are original to the user's
+ITS-Tools (LogicSimplifier.evalInInitial); they extend to LTL the core
+initial-state idea of Bonneland et al. (PetriNets 2018), which is CTL. Each
+temporal operator is unrolled once at that instant; only SHRINKING rewrites
+are applied:
 
     G f          ctx ⊨ ¬f          → false        (G f ≡ f ∧ XG f)
     F f          ctx ⊨ f           → true         (F f ≡ f ∨ XF f)
