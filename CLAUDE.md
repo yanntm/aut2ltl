@@ -59,6 +59,9 @@ leaf) + `aut2ltl/heur` (extracted heuristics, e.g. `fuse2`) + `aut2ltl/decomp`
   fix against the construction reference.
 - Keep files roughly under 500 LOC (a technical core may occasionally exceed this
   where a split would be artificial).
+- When documenting code, make sure to make the comment context free: this means
+  describing the code *in that file*, not its callers, not a specific use case.
+  Source documentation is also not a log.
 
 ## Working style (how the user wants me to operate)
 - **Diagnostics self-bound, ≤15s PER EXAMPLE.** Hard cap on any test/diagnostic
