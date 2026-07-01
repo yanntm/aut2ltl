@@ -30,7 +30,6 @@ from typing import Dict, List, Tuple, TYPE_CHECKING
 import spot
 
 from aut2ltl.language import Language
-from aut2ltl.verifier import revalidated
 from aut2ltl.result import LTLResult, Status
 from aut2ltl.printer import format_language, format_result
 from .shape import init_scc_states, scc_data, is_deterministic, exit_word, reroot
@@ -148,15 +147,23 @@ class DaisystarDet:
                 print(f"[daisystardet] delegating exit {dst} as language: "
                       + format_language(sub, sub.tgba()), file=sys.stderr)
             child = self._child(sub)
-            # Fold the exit label in; a NotLTL child has its witness lifted back to the
-            # hub by the reaching word h ⟶* p →(g) dst — `w[u ↦ w_dst·u]` — and
-            # daisystardet credited (algorithm.md).
-            res.prefix(child, "; ".join(exit_word(aut, C, h, dst)), _NAME)
+            if child.not_ltl:
+                # A NotLTL child lifts back to the hub by an EXACT reaching word
+                # h ⟶* p →(g) dst (every step's letters restricted to fork nowhere
+                # else — `shape.exit_word`), making the quotient argument sound
+                # with no replay; no exact word ⇒ the verdict does not lift.
+                w_dst = exit_word(aut, C, h, dst)
+                if w_dst is None:
+                    return _out(res.fail(Status.DECLINED,
+                        "PROBABLY_NOT_LTL -- a non-LTL residue does not lift: no "
+                        "exact reaching word through the SCC (every route's "
+                        "letters also enable another target), so no verdict is "
+                        "asserted"))
+                res.prefix(child, "; ".join(w_dst), _NAME)
+                return _out(res)
+            res.credit(child)
             if res.nok:
-                # A lifted NOT_LTL is kept only if its family replays against THIS
-                # language (the reaching-word lift needs exactness); else it
-                # degrades to a decline (witness/algorithm.md, Lifting).
-                return _out(revalidated(res, lang))
+                return _out(res)
             phi[dst] = child.formula
 
         cand = build_det_candidate(aut, C, h, L, O, exits, phi)
