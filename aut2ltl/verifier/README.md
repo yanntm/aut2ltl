@@ -1,10 +1,12 @@
 # aut2ltl/verifier — the non-LTL witness checker
 
-A `NOT_LTL` verdict from `aut2ltl` can carry a **witness**: a counting family
-`(u, v, x, p)` claiming that membership of `u . v^n . x` in the language toggles with
+A `NOT_LTL` verdict from `aut2ltl` can carry a **witness**: a counting family in one
+of two shapes — linear `(u, v, x, p)`, membership of `u . v^n . x` toggling with
+`n mod p`, or ω-power `(u, v, y, p)`, membership of `u . (v^n . y)^w` toggling with
 `n mod p`. This package **replays** that family against the input automaton and reports
 whether the claim holds — a standalone, acceptance-agnostic check that depends on
-nothing but the `Witness` value type and Spot.
+nothing but the `Witness` value type and Spot (plus, for `revalidated`, the result
+floor it filters).
 
 It is the independent verifier the witness docs name as a separate concern
 (`bls/definability/witness/algorithm.md`): the engine *produces* the witness; this
@@ -45,5 +47,6 @@ printed certificate does not check out.
 
 | module | concern |
 |---|---|
-| `check.py` | `member` (lasso membership), the sampler, `verify_suggestive`, `verify(aut, Witness)` |
+| `check.py` | `member` (lasso membership), the samplers (both shapes), `verify_suggestive` / `verify_omega`, `verify(aut, Witness)` |
+| `revalidate.py` | `revalidated(result, lang)`: keep a `NOT_LTL` only if its family replays against `lang`, else degrade to a `PROBABLY_NOT_LTL` decline — the boundary-crossing filter |
 | `__main__.py` | the CLI: detect HOA/LTL input, parse the witness line, replay, print the marker |
