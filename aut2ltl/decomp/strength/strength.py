@@ -15,6 +15,7 @@ from typing import List
 import spot
 
 from aut2ltl.combinators.decompose import decompose
+from aut2ltl.bls.definability.witness.reseed import reseed_witness
 
 _NAME = "strength"
 
@@ -39,4 +40,5 @@ def strength_pieces(aut: "spot.twa_graph") -> List["spot.twa_graph"]:
 # Any form works — the union is exact on a nondeterministic automaton too — so the
 # split queries the natural TGBA; no determinization is forced.
 StrengthDecompose = decompose(
-    lambda lang: strength_pieces(lang.tgba()), spot.formula.Or, _NAME)
+    lambda lang: strength_pieces(lang.tgba()), spot.formula.Or, _NAME,
+    reseed=reseed_witness)

@@ -14,6 +14,7 @@ from typing import List, TYPE_CHECKING
 import spot
 
 from aut2ltl.combinators.decompose import decompose
+from aut2ltl.bls.definability.witness.reseed import reseed_witness
 from .restrict import accepting_sccs, ensure_marked, restrict_marks
 
 if TYPE_CHECKING:
@@ -33,4 +34,4 @@ def _split(lang: "Language") -> List["spot.twa_graph"]:
     return [restrict_marks(aut, C) for C in accepting]
 
 
-SccDecompose = decompose(_split, spot.formula.Or, _NAME)
+SccDecompose = decompose(_split, spot.formula.Or, _NAME, reseed=reseed_witness)

@@ -16,6 +16,7 @@ from typing import List
 import spot
 
 from aut2ltl.combinators.decompose import decompose
+from aut2ltl.bls.definability.witness.reseed import reseed_witness
 
 _NAME = "acc"
 
@@ -40,4 +41,5 @@ def conjunct_pieces(aut: "spot.twa_graph") -> List["spot.twa_graph"]:
 # Streett shape instead of collapsing to parity), state-minimal — the form is asked
 # for, never assumed of the input.
 AccDecompose = decompose(
-    lambda lang: conjunct_pieces(lang.det_generic_minimal()), spot.formula.And, _NAME)
+    lambda lang: conjunct_pieces(lang.det_generic_minimal()), spot.formula.And, _NAME,
+    reseed=reseed_witness)
