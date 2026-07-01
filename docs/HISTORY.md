@@ -2324,3 +2324,41 @@ guard and the lift is daisy's, one line: `res.prefix(child, str(g), _NAME)`. The
 `u=[!c] …` and validates TRUE. algorithm.md gains the non-LTL stem child + guard lift.
 Three peelers now carry the lift (daisy, daisy2, daisystardet); no other peeler has been
 observed emitting a NOT_LTL witness yet.
+
+## 2026-07-01 — Memo op-cache + genaut reference refresh (consolidation, no breakthrough)
+
+WHY/WHAT landed this session:
+
+- **Memo brick keyed on `(operation, Language)` + shareable store** (`combinators/memo`,
+  commit 297b6d7c). Cache gains an op dimension (`id(child)`) and an optional shared
+  `store` (`Memo.new_store()`), a two-level `WeakKeyDictionary[Language, {op-id: result}]`.
+  One shared store now holds many operations as a BDD-style compute table where distinct
+  ops never shadow one another on a language. Default store stays per-instance, so
+  `roundtrip_best`'s single-`Memo` use is unchanged. Docs (README/algorithm/__init__)
+  updated to match. Motivation: the earlier language-only shared cache made the first
+  stage to resolve a language an undisplaceable "king" and could not memoize the
+  simplifier without shadowing.
+
+- **`deep_nobls_memo` puts every arm op on one shared store** (commit 2deaab3e). Threads
+  one store through the inlined `nobls` arm (each peel primitive, floor, decomp stage,
+  daisy fixpoint, whole, simplifier) plus the seed and final simplify. Output-neutral vs
+  `deep_nobls` on all three corpora — but PERF-FLAT (build ±2%). Root cause diagnosed:
+  the `cakedsdet` seed is only top-level memoized (called once by `as_translator` → the
+  entry is never reused); its bls/r3 internals are on no shared store and cannot share
+  with the arm. TODO added (commit ecf6707b) to instrument the memo and inline+depth-wrap
+  the seed. Full plan handed off in the untracked root `memo.md`.
+
+- **Null results (recorded, not landed):** the "super-memo" (every primitive on one
+  store) is perf-flat on validation/kinska/benchmark; the spotrun-limit boost
+  (`KR_TRANSLATE_INPROC_TREE_LIMIT=300`, `KR_TRANSLATE_TREE_LIMIT=3000`, timeout 3s) was a
+  clean no-op on all three corpora — the buchi towers did not collapse at 3k. Scratch in
+  `logs/opcache2/`, `logs/spotboost/`.
+
+- **genaut reference runs refreshed for all ≤1k shapes** (commits earlier 2state1ap1acc,
+  then 9d133379 for the set). `2state1ap1acc` (929) lands the recent size wins
+  (DAG 5432→4383, −19%; 750→759 LTL; 57→48 timeout) and, crucially, exercises the NEW
+  NOT_LTL witness validation for the first time: 76 witness TRUE / **46 witness FAIL**.
+  The 46 are witness-validation failures (a check the old reference never ran), NOT LTL
+  non-equivalence — the LTL side is clean (758/758 verified). This is the known-open
+  witness soundness gap (`nonltl.md` / TODO: completed-witness gating + `_distinguish`
+  widening ⇒ abstain, not reject); the shape is a strong regression fixture for it.
