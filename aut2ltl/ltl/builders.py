@@ -93,7 +93,21 @@ def _get_tl_simp(full: bool) -> "spot.tl_simplifier":
     global _tl_simp_basic, _tl_simp_full
     if full:
         if _tl_simp_full is None:
-            _tl_simp_full = spot.tl_simplifier()
+            opts = spot.tl_simplifier_options(
+                True,   # basics
+                True,   # synt_impl
+                True,   # event_univ
+                True,   # containment_checks
+                True,   # containment_checks_stronger
+            )
+            # Max reduction (= ltlfilt -r3): the last flag turns on the *semantic*
+            # language-containment rules — translate sub-languages and drop a term when
+            # subsumed (e.g. a leading X when Xφ≡φ). Spot's default simplifier leaves
+            # them off (cost), so it under-reduces; we want bricks fully collapsed before
+            # escalation (the buchi-tower collapse). The containment checks translate
+            # subformulas, so this is only affordable — and only reached — under the
+            # hybrid size gate (`_SIMP_FULL_LIMIT`); big formulas fall back to basics.
+            _tl_simp_full = spot.tl_simplifier(opts)
         return _tl_simp_full
     if _tl_simp_basic is None:
         opts = spot.tl_simplifier_options(
