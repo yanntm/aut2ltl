@@ -14,13 +14,41 @@ Everything that is not a `NOT_LTL` passes through untouched.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Callable, List, TYPE_CHECKING
 
 from aut2ltl.result import LTLResult
-from .check import verify
+from .check import member, verify_with
 
 if TYPE_CHECKING:
     from aut2ltl.language import Language
+
+
+def _degraded(res: "LTLResult") -> "LTLResult":
+    """The non-absorbing decline a failed crossing degrades to (provenance kept)."""
+    return LTLResult.decline(
+        "PROBABLY_NOT_LTL -- a non-LTL verdict crossed a language boundary but "
+        "its counting family does not certify against this language (the count "
+        "may not survive the (de)composition), so no verdict is asserted",
+        *res.technique,
+    )
+
+
+def _filtered(
+    res: "LTLResult", member_of: "Callable[[str], bool]"
+) -> "LTLResult":
+    """Keep a `NOT_LTL` only if its complete family replays through `member_of`;
+    degrade anything else claiming `NOT_LTL`; pass every other result through."""
+    if not res.not_ltl:
+        return res
+    witness = res.witness
+    if witness is not None and witness.complete:
+        try:
+            ok, _pattern = verify_with(member_of, witness)
+        except Exception:
+            ok = False
+        if ok:
+            return res
+    return _degraded(res)
 
 
 def revalidated(res: "LTLResult", lang: "Language") -> "LTLResult":
@@ -31,22 +59,22 @@ def revalidated(res: "LTLResult", lang: "Language") -> "LTLResult":
     family, incomplete, failed replay, replay error) is degraded to a decline
     with a `PROBABLY_NOT_LTL` diagnosis, keeping the technique provenance. A
     non-`NOT_LTL` result passes through untouched."""
-    if not res.not_ltl:
-        return res
-    witness = res.witness
-    if witness is not None and witness.complete:
-        try:
-            ok, _pattern = verify(lang.tgba(), witness)
-        except Exception:
-            ok = False
-        if ok:
-            return res
-    return LTLResult.decline(
-        "PROBABLY_NOT_LTL -- a non-LTL verdict crossed a language boundary but "
-        "its counting family does not certify against this language (the count "
-        "may not survive the (de)composition), so no verdict is asserted",
-        *res.technique,
-    )
+    return _filtered(res, lambda word: member(lang.tgba(), word))
 
 
-__all__ = ["revalidated"]
+def revalidated_by_parts(
+    res: "LTLResult", parts: List["Language"], conjunctive: bool
+) -> "LTLResult":
+    """`revalidated` for a host whose language is the conjunction (`∧`) or
+    disjunction (`∨`) of `parts` — a faithful split, so membership of any word in
+    the host IS the connective of its memberships in the parts. The replay runs
+    part-sized queries only; no host product or determinization is ever built."""
+    combine = all if conjunctive else any
+
+    def member_of(word: str) -> bool:
+        return combine(member(p.tgba(), word) for p in parts)
+
+    return _filtered(res, member_of)
+
+
+__all__ = ["revalidated", "revalidated_by_parts"]
