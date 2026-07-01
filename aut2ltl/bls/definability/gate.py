@@ -3,30 +3,40 @@ bls/definability/gate.py — the LTL-definability gate, as a Translator decorato
 
 The kr cascade is *unsound on a non-LTL language*: the holonomy decomposition still
 succeeds, but emits a group component the parser reads as a reset, yielding a wrong
-formula. So a non-definable Language must be intercepted and reported as NOT_LTL
-*before* the cascade builds. This module is that border — a decorator that wraps any
-Translator and gates it on definability:
+formula. So a non-definable Language must be intercepted *before* the cascade builds.
+This module is that border — a decorator that wraps any Translator and gates it on
+definability:
 
     safe = definability_gate(unsound_translator)
 
-`definability_gate(inner)` returns a Translator that, on each Language, asks the
-tester for the verdict and either:
-  * **not definable** → builds the proper NOT_LTL `LTLResult` itself — the prose
-    diagnosis (proof vs. strong-hint, per `conclusive`) and, knob-guarded, the
-    non-LTL *witness* (the counting family certifying non-definability) — and returns
-    it, short-circuiting the wrapped translator entirely; or
-  * **definable** → delegates to `inner` (the cascade builds).
+The gate has THREE outcomes, not two (see README.md; the algebra is one-sided —
+`tester/algorithm.md`, Soundness):
 
-It is the single owner of "why not LTL": both the explanation and the witness. The
-witness rides the `LTLResult` (beside the diagnosis) and travels up the portfolio by
-`credit`; `aut2cas` stays a pure cascade adapter that never sees this concern.
+  * **aperiodic reading** → delegate to `inner` (a proof of LTL; the cascade builds);
+  * **group + certified witness** → the absorbing `NOT_LTL`, carrying the counting
+    family — a proof of non-LTL, independent of the algebra. *Certified* means the
+    family is complete AND was replayed in-process against this Language's own
+    automaton, toggling with the claimed period (`aut2ltl.verifier`);
+  * **group + no certified witness** → a **non-absorbing decline** carrying a
+    `PROBABLY_NOT_LTL` diagnosis: the group may be an encoding artefact
+    (`gf_aa_parity`-class), so no verdict is asserted; `inner` is never called (the
+    cascade stays fenced), but every other translator — each sound by construction —
+    remains free to answer. A wrong absorbing rejection is thereby impossible.
 
-LAYERING / dependencies. The gate orchestrates its two peer leaves — so neither
-depends on the other:
+With the witness knob off (`kr.produce_witness=0`) nothing can certify, so a group
+reading always takes the decline branch: disabling witnesses disables absorbing
+rejections, never soundness.
 
-    gate ──► tester  (label_ltl_definable: definable, conclusive)
-         ──► witness (extract_witness: the Witness object)
-         ──► floor   (LTLResult, Translator)
+The suspect-branch work (GAP witness extraction + replay) is computed once per
+Language and cached, since the gate wraps several portfolio rungs and an uncertified
+decline lets the walk continue to the next gated arm.
+
+LAYERING / dependencies. The gate orchestrates its leaves — none depends on another:
+
+    gate ──► tester   (label_ltl_definable: definable, conclusive)
+         ──► witness  (extract_witness: the Witness material)
+         ──► replay   (aut2ltl.verifier.verify: in-process membership check)
+         ──► floor    (LTLResult, Translator)
 
 It imports neither `Cascade` nor `aut2cas`; it wraps an arbitrary `Translator`, so it
 composes around the cascade adapter without a cycle.
@@ -35,10 +45,12 @@ composes around the cascade adapter without a cycle.
 from __future__ import annotations
 
 import os
-from typing import Optional, TYPE_CHECKING
+import weakref
+from typing import Optional, Tuple, TYPE_CHECKING
 
 from aut2ltl.result import LTLResult
 from aut2ltl.translator import Translator
+from aut2ltl.verifier import verify
 from ..options import PRODUCE_WITNESS
 from .tester import label_ltl_definable
 from .witness import extract_witness
@@ -49,25 +61,78 @@ if TYPE_CHECKING:
 
 
 def _produce_witness() -> bool:
-    """Whether to extract a witness on the NOT_LTL branch (knob `kr.produce_witness`,
+    """Whether to extract a witness on the suspect branch (knob `kr.produce_witness`,
     default on). Read at the call site via env, like the tester's SAT-min threshold."""
     raw = os.environ.get(PRODUCE_WITNESS.env)
     return PRODUCE_WITNESS.default if raw is None else raw != "0"
 
 
-def _explain(conclusive: bool) -> str:
-    """The prose diagnosis for a non-aperiodic (NOT_LTL) language. When the verdict
-    was read above the SAT-min threshold (`not conclusive`) the form may be
-    non-minimal, so it is hedged as a strong hint rather than a proof."""
-    qualifier = "" if conclusive else (
-        "; the automaton was above the SAT-min threshold so it may be "
-        "non-minimal — treat as a strong hint, not a proof"
-    )
+def _certified(witness: Optional["Witness"]) -> str:
+    """The diagnosis of a certified rejection: the authority is the replayed family,
+    not the algebraic reading that suggested it."""
     return (
-        "the deterministic transition monoid is non-aperiodic (carries a "
-        "non-trivial group), so the language is not star-free / counter-free "
-        "and no LTL formula exists" + qualifier
+        f"the language counts modulo {witness.p if witness else '?'}: a counting "
+        f"family, certified by replay against the input, toggles membership with "
+        f"n mod {witness.p if witness else '?'} — no counter-free LTL formula can "
+        f"express this, so the language is not LTL-definable"
     )
+
+
+def _suspicion(reason: str) -> str:
+    """The diagnosis of an uncertified suspicion — a decline, never a verdict. The
+    `PROBABLY_NOT_LTL` marker is load-bearing: reporting layers key on it."""
+    return (
+        "PROBABLY_NOT_LTL -- the deterministic transition monoid carries a "
+        f"non-trivial group but {reason}; the group may be an encoding artefact "
+        "of the deterministic form, so no verdict is asserted (the cascade is "
+        "fenced; other translators may still answer)"
+    )
+
+
+# The suspect-branch outcome, once per Language: (witness material or None,
+# certified?, reason when not certified).
+_SUSPECT_CACHE: "weakref.WeakKeyDictionary[Language, Tuple[Optional[Witness], bool, str]]" \
+    = weakref.WeakKeyDictionary()
+
+
+def _certified_witness(
+    lang: "Language", *, gap_cmd: str, timeout: int, max_aps: int
+) -> Tuple[Optional["Witness"], bool, str]:
+    """Extract the counting family for a suspect `lang` and replay it against the
+    Language's own automaton. Returns `(witness, certified, reason)`: `certified`
+    only when the family is complete and its membership pattern toggles with the
+    claimed period on this input; otherwise `reason` says how far it got. Computed
+    once per Language (cached) — fail-safe on any error (uncertified, never a
+    verdict)."""
+    try:
+        return _SUSPECT_CACHE[lang]
+    except KeyError:
+        pass
+
+    witness: Optional["Witness"] = None
+    certified = False
+    reason = "witness extraction is disabled"
+    if _produce_witness():
+        try:
+            witness = extract_witness(
+                lang, complete=True, gap_cmd=gap_cmd, timeout=timeout, max_aps=max_aps
+            )
+            if witness is None:
+                reason = "no group element could be extracted"
+            elif not witness.complete:
+                reason = "no counting family completed (no phase-separating tail found)"
+            else:
+                ok, _pattern = verify(lang.tgba(), witness)
+                certified = bool(ok)
+                if not certified:
+                    reason = "the completed family failed replay against the input"
+        except Exception:
+            witness, certified = None, False
+            reason = "witness extraction or replay raised"
+
+    outcome = (witness, certified, reason)
+    _SUSPECT_CACHE[lang] = outcome
+    return outcome
 
 
 def definability_gate(
@@ -77,28 +142,25 @@ def definability_gate(
     timeout: int = 180,
     max_aps: int = 5,
 ) -> Translator:
-    """Wrap `inner` with the LTL-definability gate: report NOT_LTL (with diagnosis and,
-    knob-guarded, a witness) on a non-definable Language, else delegate to `inner`.
+    """Wrap `inner` with the LTL-definability gate: delegate on an aperiodic reading,
+    report the absorbing `NOT_LTL` only on a certified witness, and decline (with a
+    `PROBABLY_NOT_LTL` diagnosis, never calling `inner`) on an uncertified suspicion.
 
-    The verdict is cached on the Language (the downstream fail-safe), so this is the
-    single choke point for all wrapped cascade members. The witness is best-effort: a
-    failure to extract it never disturbs the (already decided) NOT_LTL verdict."""
+    The algebraic verdict is cached on the Language and the suspect-branch outcome in
+    a per-Language cache, so this is a single choke point for all wrapped rungs."""
 
     def gated(lang: "Language") -> LTLResult:
-        definable, conclusive = label_ltl_definable(
+        definable, _conclusive = label_ltl_definable(
             lang, gap_cmd=gap_cmd, timeout=timeout, max_aps=max_aps
         )
         if definable:
             return inner(lang)
-        witness: Optional["Witness"] = None
-        if _produce_witness():
-            try:
-                witness = extract_witness(
-                    lang, complete=True, gap_cmd=gap_cmd, timeout=timeout, max_aps=max_aps
-                )
-            except Exception:
-                witness = None  # best-effort: the verdict stands without a witness
-        return LTLResult.not_definable(_explain(conclusive), witness=witness)
+        witness, certified, reason = _certified_witness(
+            lang, gap_cmd=gap_cmd, timeout=timeout, max_aps=max_aps
+        )
+        if certified:
+            return LTLResult.not_definable(_certified(witness), "gate", witness=witness)
+        return LTLResult.decline(_suspicion(reason), "gate")
 
     return gated
 
