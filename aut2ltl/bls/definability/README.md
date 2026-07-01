@@ -20,13 +20,16 @@ outcomes, not two:
 | aperiodic | — | delegate to `inner` (the cascade builds) |
 | group | family completed **and** certified by replay | **`NOT_LTL`**, absorbing — a proof |
 | group | no certified family | **`PROBABLY_NOT_LTL`**, non-absorbing — `inner` is never called, other translators stay free to answer |
+| oracle could not run | — | non-absorbing decline (own reason, no suspicion marker) — `inner` is never called |
 
-The fail-safe invariant: an absorbing rejection is issued **only** on a
-certified counting family; an uncertified suspicion never rejects and never
-builds. A wrong absorbing `NOT_LTL` is thereby impossible, and the cost of a
-spurious group is bounded by the loss of the cascade on that one input — every
-other translator is individually sound (faithful-or-decline), so nothing else
-needs the fence.
+The fail-safe invariant, in both directions: an absorbing rejection is issued
+**only** on a certified counting family, and the cascade builds **only** behind
+a proved-aperiodic reading — everything the gate cannot certify takes the same
+fence (decline, never build), never a verdict and never a trusted delegation. A
+wrong absorbing `NOT_LTL` is thereby impossible, and the cost of a spurious
+group (or a blocked oracle) is bounded by the loss of the cascade on that one
+input — every other translator is individually sound (faithful-or-decline), so
+nothing else needs the fence.
 
 It builds no LTL itself; it gates the translator that does.
 
