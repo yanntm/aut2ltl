@@ -2422,3 +2422,20 @@ WHY/WHAT landed this session:
   completion seeded by the child v (no GAP), cascade self-fence, counter-free
   sibling search — are the new Open block). The 2026-07-01 genaut 2state1ap1acc
   background rerun mixed two code states (edits landed mid-run) and was discarded.
+
+## 2026-07-02 — plan item 1: local exact lifts + parts-algebra revalidation
+
+- LANDED: the daisy petal-drop (restricted guard g ∧ ¬σ ∧ ⋀¬g_other-target,
+  BDD-only — an exact left quotient makes the lift sound with NO replay; empty →
+  degrade) and the daisystardet exact reaching word (per-step restriction in
+  shape.exit_word, Optional — the deterministic L-partition covers in-C overlaps,
+  the restriction closes exits-en-route). daisy2 keeps the replay filter (it is a
+  heuristic — per user, no further investment).
+- LANDED: decompose revalidates through the PARTS (verifier.revalidated_by_parts
+  over verify_with/samples): membership of any word in the host is the connective
+  of part memberships (faithfulness), so the crossing filter never builds a
+  parent-sized product. Connective identified by the empty fold (And([]) = tt).
+- Battery: prefix_nonltl_1 (exact reaching word) and _2 (daisy2 replay) keep their
+  certified lifted witnesses; mod3_a / gf_aa_parity unchanged; evenblocks stays the
+  honest DECLINED (recovery = parent completion seeded by the child v, TODO).
+  Validation SUCCESS 83/83 TRUE.
