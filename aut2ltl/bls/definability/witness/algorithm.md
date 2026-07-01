@@ -82,22 +82,24 @@ before anything is built on it.
 
 From `v`'s induced transformation `t` on the states of `D`:
 
-- **anchor** — a state `q` on a `t`-orbit that **closes** with length exactly
-  `p` (`q, t(q), …, t^p(q) = q`, all distinct). Closure is mandatory: a spiral —
-  a transient leading into a shorter cycle — proves nothing, and its replay
-  signature (one accepting sample, then constant) must never reach the gate.
-  **All** orbits of length `p` are candidate anchors, not the first found: a
-  genuine count may separate on one orbit and not another.
+- **anchor** — a state `q` on a `t`-orbit that **closes**, of length `d ≥ 2`
+  (`q, t(q), …, t^d(q) = q`, all distinct) — every closed cycle of the action,
+  not only those realizing the full group order. Closure is mandatory: a
+  spiral — a transient leading into a shorter cycle — proves nothing, and its
+  replay signature (one accepting sample, then constant) must never reach the
+  gate. **All** cycles are candidate anchors, not the first found: a genuine
+  count may separate on one and not another.
 - **reach** — `u`: a shortest word from the initial state to `q` (BFS over the
   letter generators).
 - **separate** — `x`: a lasso accepted from one orbit phase and rejected from
   another, found per pair via `product(Dᵢ, complement(Dⱼ)).accepting_word()`.
-  **All** phase pairs `(i, j)`, `0 ≤ i < j < p`, are tried — a count can surface
+  **All** phase pairs `(i, j)`, `0 ≤ i < j < d`, are tried — a count can surface
   between non-adjacent phases only; comparing a phase solely to its successor is
-  sound but incomplete. A separator found between phases `i` and `j` yields a
-  family of period `p' = p / gcd(p, j−i) > 1` — the family's declared period is
-  the toggling period, not necessarily the group order. Trap: `x` must not be a
-  power of `v` (then `vⁿ·(vᵖ)^ω = v^ω` for every `n` and nothing toggles); the
+  sound but incomplete. The **declared period** is the minimal cyclic period of
+  the membership pattern of `x` around the whole cycle — the toggling period,
+  not the group order (a separator between phases at distance sharing a factor
+  with `d` toggles with a proper divisor). Trap: `x` must not be a power of `v`
+  (then `vⁿ·(vᵖ)^ω = v^ω` for every `n` and nothing toggles); the
   discriminating tail must enter a genuinely phase-distinguishing continuation.
 
 ### Completing the ω-power shape (u, y)
@@ -111,12 +113,18 @@ the **acceptance-enriched monoid** of `D`, whose element for a word `w` maps
 monoid on the finite set `Q × 2^C` (`C` the acceptance marks) — directly
 GAP-representable, letters as generators.
 
-Completion: anchor `u`, `q` and the orbit as in the linear shape; then search
-for a **return word** `y` such that the lasso `(vⁿ·y)^ω` read from `q` is
-accepted for some `n` and rejected for another, `n < p`. Two facts bound the
-search:
+Completion: anchor `u`, `q` as in the linear shape (falling back to the initial
+state when `v` has no state cycle — here the periodicity carrier is not the
+state orbit); then search for a **return word** `y` making the lasso membership
+toggle. Exact periodicity for **all** `n` is secured structurally, never
+sampled on faith: the enriched powers of `v` close into a cycle
+(`E_v^{a+c} = E_v^a`, index `a`, period `c`), and absorbing the index into the
+tail — `ŷ = vᵃ·y` — makes `n ↦ [(vⁿ·ŷ)^ω from q]` exactly `c`-periodic from
+`n = 0`, since equal enriched elements induce identical run skeletons, hence
+equal lasso acceptance. The declared period is the minimal cyclic period of
+that pattern over one `c`-cycle. Two facts bound the search:
 
-- membership of `u·(vⁿ·y)^ω` for each candidate is one lasso-membership query —
+- membership of `u·(vⁿ·ŷ)^ω` for each candidate is one lasso-membership query —
   cheap and exact;
 - `y` matters only through its enriched-monoid element, of which there are
   finitely many; BFS over the enriched monoid enumerates one shortest concrete
@@ -190,14 +198,20 @@ in either direction, and never as a formula built by the cascade.
 ## Modules
 
 - `witness.py` — the entry: prep the shared form, drive the witness GAP script,
-  lift and re-check `v`, complete the linear shape (all orbits × all phase
-  pairs), complete the ω-power shape (enriched-monoid candidates), return the
-  family.
+  lift `v`, then complete — linear first, ω-power when no tail separates.
+- `support.py` — shared primitives: letter rendering, the induced state action,
+  its closed cycles, shortest reaching words, re-rooting, minimal cyclic period.
+- `linear.py` — `complete_linear`: all cycles × all phase pairs, residual
+  separation, pattern read-back around the cycle.
+- `enriched.py` — the acceptance-enriched monoid: letter elements, composition,
+  power index/period, shortest-representative BFS.
+- `omega.py` — `complete_omega`: index absorption `ŷ = vᵃ·y`, candidate stream
+  from `enriched`, bounded membership scan.
 - the witness GAP script in `gap/` — group H-class, generator, order,
   factorization.
 - `aut2ltl/witness.py` (floor) — the `Witness` value: both shapes, serialization
-  (`p`, `u`, `v`, and `x=[…cycle{…}]` for F₁ / `y=[…]` loop form for F₂),
-  parsing, and the peel `prepend`.
+  (`p`, `u`, `v`, and `x=[…cycle{…}]` for F₁ / `y=[…]` for F₂, the sampled word
+  being `u·(vⁿ·y)^ω`), parsing, and the peel `prepend`.
 
 ## Layering
 
