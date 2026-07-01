@@ -16,6 +16,28 @@ and the `kr → bls` engine reorg all landed — see HISTORY 2026-06-17.)
   (time/effort cap on r3 containment) without losing the corpus-wide wins. Until then
   this is an **accepted new Pareto point** (size ↓ across the family, runtime ↑ on this
   one), and the reference runs reflect it.
+- **Profile / instrument the `Memo` object and diagnose.** The shared-store
+  `(operation, Language)` op-cache (`combinators/memo`, wired through `deep_nobls_memo`)
+  *should* save massive numbers of calls — but the survey is perf-flat (`deep_nobls_memo`
+  is output-identical to `deep_nobls` with build time within ±2% noise on all three
+  corpora, see `logs/opcache2/`). So the cache is not doing its job: either it barely
+  hits (few repeated `(op, language)` pairs at the granularity we wrap), or the cost the
+  memo was meant to collapse lives outside the memoized path (the un-memoized `cakedsdet`
+  seed internals, the final outer `Simplify`, or per-node work that does not recur).
+  Instrument `Memo` with hit/miss/insert counters per operation (and total children
+  computed vs cache size), run one telling input (kinska `counting_buchi_1ap_18`, the
+  `gate_count.py` motivation) and confirm whether the hit rate matches the expected
+  240×-style redundancy or is near zero. Fix the wiring (or conclude the redundancy
+  isn't there) from the numbers.
+  **Known wiring gap (prime suspect):** `deep_nobls_memo` depth-caches only the *arm*
+  (`_nobls_memo` inlines `nobls` so each primitive is store-wrapped); the forward seed is
+  `m(cakedsdet(options))` — the whole recipe wrapped in ONE `Memo`, so only its outermost
+  call is cached, and `as_translator` calls the seed once per top language, so that entry
+  is written once and never reused. None of cakedsdet's internal peel/decompose/bls work
+  is on the shared store, and it cannot share with the arm's re-presentation of the same
+  sub-languages (different, uncached instances). To make the memo actually save calls the
+  seed must be inlined and depth-wrapped on the same store, like `nobls` (cakedsdet is a
+  cake/bls engine, so its primitives differ from the arm's).
 - **Finer per-Spot-call control (decouple construction-translate from verify).**
   Surfaced by the `deep_nobls` @1000 genaut run (research_notes/roundtrip_log.md): the
   round trip's `ltl2tgba` calls are guarded only by a *flat-size* proxy
