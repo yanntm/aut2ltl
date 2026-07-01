@@ -13,7 +13,7 @@ guard data the read-off consumes:
 `aut2ltl.daisy.shape`.
 """
 
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 import spot
 import buddy
@@ -25,18 +25,29 @@ __all__ = ["init_scc_states", "scc_data", "is_deterministic", "exit_word", "rero
 
 def exit_word(
     aut: "spot.twa_graph", C: Set[int], h: int, dst: int
-) -> List[str]:
-    """A word that traverses `C` from the hub `h` to an exit into `dst`: one path of
-    in-`C` edges (self-loops skipped) reaching a state that carries an exit to `dst`,
-    then that exit guard. Returns the guards as Spot-syntax letter strings — one valid
-    path is enough; the order they spell reaches `dst` from `h`. Empty only if no such
-    path exists (not the case for a real exit target)."""
+) -> Optional[List[str]]:
+    """An EXACT word that traverses `C` from the hub `h` to an exit into `dst`: one
+    path of in-`C` edges (self-loops skipped) reaching a state that carries an exit
+    to `dst`, then that exit guard — with **every step's guard restricted to the
+    letters enabling no edge to a different target** from its source. Under that
+    restriction each step has a single continuation, so the word's left quotient IS
+    the residue past the exit — what a witness lift needs (parallel edges to the
+    same target are harmless: finite-prefix marks never touch an inf-set). Returns
+    the restricted guards as Spot-syntax letter strings, or `None` when no exact
+    path exists (every route's guards fully overlap other targets)."""
     d = aut.get_dict()
 
     def lit(cond: "buddy.bdd") -> str:
         return str(spot.bdd_to_formula(cond, d))
 
-    prev: Dict[int, Tuple[int, str]] = {}   # state -> (parent, guard reaching it)
+    def exact(cond: "buddy.bdd", src: int, target: int) -> "buddy.bdd":
+        """`cond` minus every out-guard of `src` leading elsewhere than `target`."""
+        for c, dd in [(e.cond, e.dst) for e in aut.out(src)]:
+            if dd != target:
+                cond = cond & buddy.bdd_not(c)
+        return cond
+
+    prev: Dict[int, Tuple[int, str]] = {}   # state -> (parent, exact guard reaching it)
     seen = {h}
     queue = [h]
     qi = 0
@@ -45,6 +56,9 @@ def exit_word(
         qi += 1
         for e in aut.out(p):                 # an exit p →(g) dst ends the word
             if e.dst == dst:
+                g = exact(e.cond, p, dst)
+                if g == buddy.bddfalse:
+                    continue                 # this exit's letters all fork; try another
                 word: List[str] = []
                 cur = p
                 while cur != h:
@@ -52,13 +66,16 @@ def exit_word(
                     word.append(guard)
                     cur = parent
                 word.reverse()
-                return word + [lit(e.cond)]
+                return word + [lit(g)]
         for e in aut.out(p):                 # else walk on through C (no self-loops)
             if e.dst in C and e.dst != p and e.dst not in seen:
+                g = exact(e.cond, p, e.dst)
+                if g == buddy.bddfalse:
+                    continue                 # no exact letter for this step
                 seen.add(e.dst)
-                prev[e.dst] = (p, lit(e.cond))
+                prev[e.dst] = (p, lit(g))
                 queue.append(e.dst)
-    return []
+    return None
 
 
 def init_scc_states(aut: "spot.twa_graph", h: int) -> Set[int]:
