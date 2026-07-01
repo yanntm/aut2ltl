@@ -2406,3 +2406,19 @@ WHY/WHAT landed this session:
   unsound in principle) — evenblocks default run still surfaces the child's stale
   linear family over the top gate's correct omega-power one. Plan: root
   `witness3.md`.
+
+## 2026-07-02 — fix 4: NOT_LTL boundary revalidation (phase 3 continued)
+
+- LANDED (docs first): the NOT_LTL crossing law in decompose/algorithm.md and the
+  exactness/revalidation notes in the three daisy-family algorithm.md; the verifier
+  gains `revalidated(result, lang)` (membership-only boundary filter, no GAP) wired
+  at the decompose combine and the three prefix() lift sites.
+- Effect: the evenblocks false certificate (an acc2 child family certified for the
+  child, false for the intersection) now degrades to an honest DECLINED under the
+  deep recipe; prefix_nonltl_{1,2} and mod3_a keep their certified lifted verdicts;
+  validation SUCCESS 83/83 TRUE.
+- Also: TODO/STATUS refreshed (the phase-2 soundness item is closed; the remaining
+  fronts — seam refinements (parts-algebra revalidation, daisy petal-drop), parent
+  completion seeded by the child v (no GAP), cascade self-fence, counter-free
+  sibling search — are the new Open block). The 2026-07-01 genaut 2state1ap1acc
+  background rerun mixed two code states (edits landed mid-run) and was discarded.
