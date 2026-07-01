@@ -126,7 +126,8 @@ def _certified_witness(
             if witness is None:
                 reason = "no group element could be extracted"
             elif not witness.complete:
-                reason = "no counting family completed (no phase-separating tail found)"
+                reason = ("no counting family completed in either shape "
+                          "(no phase-separating tail, no toggling return word)")
             else:
                 ok, _pattern = verify(lang.tgba(), witness)
                 certified = bool(ok)
