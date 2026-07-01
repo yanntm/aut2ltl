@@ -2362,3 +2362,21 @@ WHY/WHAT landed this session:
   non-equivalence — the LTL side is clean (758/758 verified). This is the known-open
   witness soundness gap (`nonltl.md` / TODO: completed-witness gating + `_distinguish`
   widening ⇒ abstain, not reject); the shape is a strong regression fixture for it.
+
+## 2026-07-01 — non-LTL soundness, phase 3 opened (fixtures + probes)
+
+- LANDED: `samples/fixtures/hoa/various/gf_aa_parity.hoa` — run-parity sibling of
+  `gf_aa.hoa` (same language `GF(a & Xa)`, Z2 in the transition monoid). FOUND:
+  `label_ltl_definable` reads it `(definable=False, conclusive=True)` on the real
+  `det_generic_minimal()` path — a live conclusive false reject, hidden in the default
+  recipe only by `first_success` arm ordering (daisy2 answers before any gated rung).
+- LANDED: `samples/fixtures/hoa/various/evenblocks_nonltl.hoa` — prefix-independent,
+  genuinely non-LTL. FOUND: the default run emits a complete FALSE witness
+  (`p=2 u=[] v=[a] x=[cycle{!a}]`, technique acc2+daisystar; `VERIFY: fail`), and no
+  linear family can ever witness a prefix-independent language — the omega-power shape
+  `u.(v^n.y)^w` is required (Arnold's two context shapes ⇒ the pair is complete).
+- LANDED: `tests/probes/omega_power_family.py` (both family-shape membership patterns),
+  `tests/probes/det_generic_form.py` (the tester's actual input form + verdict).
+- Findings, theory (quotient argument invalid — positive direction stands via Thomas;
+  minimization not decisive; linear-shape blindness) and the fix list: root
+  `witness3.md` (scratch). Session logs: `logs/nonltl_fixtures/`.
