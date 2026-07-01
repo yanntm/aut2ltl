@@ -111,6 +111,13 @@ CACHE_SIZE = OptionSpec(
 # Off by default, zero overhead. Bucket 3 (env-read; OptionSpec is discoverability).
 _TRACE = os.environ.get("AUT2LTL_LANG_TRACE", "") not in ("", "0")
 
+# The `Language.of` interception (DAG in -> Language out): trace the raw input
+# automaton and the resulting normalized `id`, so two translate backends handing
+# in isomorphic-but-renumbered automata (raw hash differs, id same) can be told
+# apart from a genuine language/structure divergence (id differs). On when
+# LANGUAGE_OF_TRACE or the global TRANSLATOR_TRACE_ON is set (presence).
+_OF_TRACE = "LANGUAGE_OF_TRACE" in os.environ or "TRANSLATOR_TRACE_ON" in os.environ
+
 TRACE = OptionSpec(
     "language.trace", False,
     "trace each formula->automaton translate to stderr with its wall time and DAG "
@@ -189,7 +196,11 @@ class Language:
         from aut2ltl.ltl import canon                  # deferred: keep the floor import-acyclic
         na = canon.normalize(aut)
         key = "A\n" + na.to_str("hoa")
-        return _intern(key, lambda: cls(aut=na, lid=_fingerprint(key)))
+        lang = _intern(key, lambda: cls(aut=na, lid=_fingerprint(key)))
+        if _OF_TRACE:
+            from aut2ltl.printer import format_language  # deferred: keep the floor import-acyclic
+            print("[language.of] " + format_language(lang, na), file=sys.stderr)
+        return lang
 
     @classmethod
     def of_ltl(cls, f: Union[str, "spot.formula"]) -> "Language":
@@ -221,6 +232,8 @@ class Language:
                 lang.set_ltl_definable(True, conclusive=True)
             return lang
 
+        if _OF_TRACE:
+            print(f"[language.of_ltl] f={f} -> id={_fingerprint(key)}", file=sys.stderr)
         return _intern(key, build)
 
     # --- base automaton (source as given, or the formula translated) ---
