@@ -53,13 +53,31 @@ def _lasso(prefix: List[str], cycle: List[str]) -> str:
 
 def _sample_word(u: List[str], v: List[str], n: int,
                  x_prefix: List[str], x_cycle: List[str]) -> str:
-    """The word  u . v^n . x  as a lasso string."""
+    """The linear-shape word  u . v^n . x  as a lasso string."""
     return _lasso(u + v * n + x_prefix, x_cycle)
+
+
+def _sample_word_omega(u: List[str], v: List[str], n: int, y: List[str]) -> str:
+    """The ω-power-shape word  u . (v^n . y)^w  as a lasso string."""
+    return _lasso(u, v * n + y)
 
 
 # --------------------------------------------------------------------------- #
 # The membership-tier check.
 # --------------------------------------------------------------------------- #
+def _decide(pattern: List[bool], p: int) -> bool:
+    """Whether a sampled membership pattern certifies the claimed period `p`:
+    non-constant, periodic with period `p`, and `p`-minimal (a smaller period
+    q < p fitting the sample would make the claimed `p` wrong)."""
+    non_constant = len(set(pattern)) > 1
+    periodic = all(pattern[i] == pattern[i + p] for i in range(len(pattern) - p))
+    minimal = all(
+        not all(pattern[i] == pattern[i + q] for i in range(len(pattern) - q))
+        for q in range(1, p)
+    )
+    return non_constant and periodic and minimal
+
+
 def verify_suggestive(
     aut: "spot.twa_graph",
     u: List[str],
@@ -68,37 +86,46 @@ def verify_suggestive(
     x_cycle: List[str],
     p: int,
 ) -> Tuple[bool, List[bool]]:
-    """Sample membership of `u.v^n.x` for n = 0..2p and decide whether the pattern
-    is non-constant and periodic with period exactly `p`.
-
-    Returns `(ok, pattern)`. `ok` is True iff the membership pattern toggles (so x
-    is phase-sensitive across the v-orbit) AND repeats with period exactly p over
-    the sample (a smaller period q<p would make the claimed `p` wrong). This is the
-    SUGGESTIVE verdict, not yet a periodicity proof.
-    """
+    """Sample membership of the linear-shape word `u.v^n.x` for n = 0..2p and
+    decide the pattern (`_decide`). Returns `(ok, pattern)`. This is the
+    SUGGESTIVE verdict, not yet a periodicity proof."""
     pattern = [
         member(aut, _sample_word(u, v, n, x_prefix, x_cycle))
         for n in range(2 * p + 1)
     ]
-    non_constant = len(set(pattern)) > 1
-    periodic = all(pattern[i] == pattern[i + p] for i in range(len(pattern) - p))
-    minimal = all(
-        not all(pattern[i] == pattern[i + q] for i in range(len(pattern) - q))
-        for q in range(1, p)
-    )
-    return (non_constant and periodic and minimal, pattern)
+    return (_decide(pattern, p), pattern)
+
+
+def verify_omega(
+    aut: "spot.twa_graph",
+    u: List[str],
+    v: List[str],
+    y: List[str],
+    p: int,
+) -> Tuple[bool, List[bool]]:
+    """Sample membership of the ω-power-shape word `u.(v^n.y)^w` for n = 0..2p
+    and decide the pattern (`_decide`). Returns `(ok, pattern)`. Same suggestive
+    tier as `verify_suggestive` — each sample is one lasso membership."""
+    pattern = [
+        member(aut, _sample_word_omega(u, v, n, y))
+        for n in range(2 * p + 1)
+    ]
+    return (_decide(pattern, p), pattern)
 
 
 def verify(aut: "spot.twa_graph", w: Witness) -> Tuple[Optional[bool], List[bool]]:
-    """Check a `Witness` against `aut` by membership. Returns `(ok, pattern)` as
-    `verify_suggestive`; `(None, [])` when the family is incomplete (no `u`/`x` to
-    replay), which the caller reads as "no checkable witness", not a failure."""
+    """Check a `Witness` against `aut` by membership, dispatching on its shape
+    (linear `u.v^n.x` or ω-power `u.(v^n.y)^w`). Returns `(ok, pattern)`;
+    `(None, [])` when the family is incomplete (nothing to replay), which the
+    caller reads as "no checkable witness", not a failure."""
     if not w.complete:
         return (None, [])
+    if w.omega_power:
+        return verify_omega(aut, u=w.u or [], v=w.v, y=w.y or [], p=w.p)
     return verify_suggestive(
         aut, u=w.u or [], v=w.v,
         x_prefix=w.x_prefix or [], x_cycle=w.x_cycle or [], p=w.p,
     )
 
 
-__all__ = ["member", "verify_suggestive", "verify"]
+__all__ = ["member", "verify_suggestive", "verify_omega", "verify"]
