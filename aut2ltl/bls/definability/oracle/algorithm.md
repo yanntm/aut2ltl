@@ -1,213 +1,223 @@
-# The syntactic ω-semigroup oracle
+# Deciding LTL-definability — the syntactic ω-semigroup oracle
 
-This module decides LTL-definability **exactly**, by computing the invariant
-object the rest of the definability border only approximates: the syntactic
-ω-semigroup `S(L)` of the language. It is the two-sided completion of the
-border. The tester's transition-monoid reading is one-sided (aperiodic proves
-LTL; a group is only a suspicion), and the witness's seeded completion is
-one-sided the other way (a certified family proves non-LTL; a failed search
-proves nothing). Between them lies an abstain zone — the spurious groups. This
-module closes it:
+The oracle decides, for the ω-regular language `L` of a `Language`, whether an
+LTL formula defining `L` exists. It emits no formula; it answers the decision
+problem exactly, with a checkable certificate on the negative side:
 
-| reading of `S(L)` | outcome |
+| answer | grounds |
 |---|---|
-| aperiodic | **LTL** — a theorem, *even when* `TM(D)` carries a group: the encoding artefact is certified as an artefact, not merely unresolved |
-| a group | **NOT_LTL** — a counting family is extracted (guaranteed to complete, see below), then replayed like any other before the gate absorbs |
-| resource cap | **INCONCLUSIVE** — the only abstention left is exhaustion (a size or time cap), never an algorithmic blind spot |
+| **LTL** | the syntactic ω-semigroup of `L` is aperiodic — a theorem |
+| **NOT_LTL** | a **counting family** was extracted and replayed against the input — a finite, representation-independent, machine-checkable certificate |
+| **INCONCLUSIVE** | a resource cap was hit (determinization, monoid size, time) — never an algorithmic blind spot |
 
-It emits no formula; like its siblings it is the algebraic half of a border,
-and the gate remains the single owner of verdict plumbing.
+Both decided answers are theorems; abstention is only ever exhaustion.
 
-## Why the tester's monoid is the wrong semigroup
+## The characterization
 
-The computable handle the tester uses, the transition monoid `TM(D)`, relates
-to `S(L)` in neither direction (see the tester's **Soundness** warning): it is
-too coarse where acceptance lives along the run (two words with equal state
-maps but different intermediate marks can be separated by an ω-power context),
-and too fine where the deterministic encoding manufactures a group the
-language does not have (`gf_aa_parity`). Both defects are defects of the
-*representation*. The syntactic ω-semigroup is representation-independent by
-construction, and for it the characterization is exact (Perrin 1984;
-Perrin–Pin, *Infinite Words*):
+For ω-regular languages the classical equivalences hold (Thomas 1979; Perrin
+1984; Perrin–Pin, *Infinite Words*; Diekert–Gastin, *First-order definable
+languages*, 2008):
 
 ```
-L is LTL-definable  ⟺  S(L) is aperiodic
+LTL-definable  =  FO[<]-definable  =  star-free  =  syntactic ω-semigroup aperiodic
 ```
 
-So the right move is not a sharper reading of `TM(D)` — it is to compute
-`S(L)` itself. That it *is* computable from bricks already present is the
-content of this module.
+**Aperiodic = group-free**: no element `s` has a non-trivial cyclic orbit
+`s, s², …, s^{a+p} = s^a` with period `p > 1`. A non-trivial group is exactly
+the ability to count modulo `p`, which counter-free LTL cannot express.
+
+The syntactic ω-semigroup `S(L)` (Arnold 1985) is the canonical invariant of
+the language — independent of any automaton chosen to present it. The oracle
+computes its semigroup part `S(L)₊` as a quotient of a finite monoid read off
+a deterministic recognizer, and reads aperiodicity off the quotient. Because
+the quotient *is* the invariant, the reading is exact in both directions.
+
+## The input
+
+One deterministic form of the language: `det_generic_minimal()` — determinized
+to deterministic generic-acceptance (Emerson–Lei), completed. Write `D` for
+this automaton, `Q` its states, `C` its acceptance marks, `Σ = 2^AP` its
+alphabet. Completion adds at most a sink — an idempotent, invisible to every
+algebraic reading below. No minimality is assumed anywhere.
+
+## The certificate: counting families
+
+A negative answer is not left as an algebraic claim; it is handed out as the
+object that any third party can check by membership queries alone. Two shapes:
+
+```
+linear    F₁(u, v, x, p) :  n ↦ [ u·vⁿ·x ∈ L ]         toggles with n mod p
+ω-power   F₂(u, v, y, p) :  n ↦ [ u·(vⁿ·y)^ω ∈ L ]     toggles with n mod p
+```
+
+with `p > 1`; `u`, `v`, `y` finite words; `x` an ultimately-periodic ω-word (a
+lasso). "Toggles with `n mod p`" means the membership function is determined
+by `n mod p` for **all** `n ≥ 0` and is not constant. Every sample of either
+shape is an ultimately-periodic word, so both shapes are checkable by
+membership queries alone.
+
+**Soundness (either shape ⟹ `L` is not LTL).** If `L` were star-free, `S(L)`
+would be aperiodic, so `[vⁿ]` would be eventually constant in `n`, making both
+membership functions eventually constant — contradicting a genuine period
+`p > 1` holding for all `n`. The argument is independent of any automaton and
+of the machinery that produced the family.
+
+**Completeness of the pair (two shapes, and no third).** The syntactic
+congruence of an ω-regular language separates two finite words by exactly two
+context shapes — linear `x·_·y·t^ω` and ω-power `x·(_·y)^ω` (Arnold 1985). If
+`L` is not star-free, some `[v]` has a cycle of period `p > 1` in `S(L)`; two
+of its powers are separated by a context of one of the two shapes, and
+unrolling that separation along the cycle yields a toggling family of the
+corresponding shape. Hence `L` is not LTL **iff** a family of shape F₁ or F₂
+exists; no further shape is ever required.
+
+**Both shapes are load-bearing.** If `L` is prefix-independent (`σw ∈ L ⟺
+w ∈ L` for every finite `σ`) then `u·vⁿ·x ∈ L ⟺ x ∈ L`: every linear family is
+constant, on every choice of `(u, v, x)`. Prefix-independent non-LTL languages
+exist — e.g. *"infinitely many `¬a` and eventually every `a`-block has even
+length"* (`samples/fixtures/hoa/definability/evenblocks_nonltl.hoa`), whose
+count is exhibited by the ω-power family `(aⁿ·¬a)^ω` and by no linear one.
 
 ## The recognizer: the acceptance-enriched monoid
 
-The starting object is the sibling witness's **acceptance-enriched monoid**
-`EM(D)` of the completed deterministic form `D = det_generic_minimal()`: the
-element of a finite word `w` maps `q ↦ (δ(q, w), marks collected from q along
-w)`; composition is `(f, M)·(g, N) : q ↦ (g(f(q)), M(q) ∪ N(f(q)))`; it is a
-transformation monoid on `Q × 2^C`, generated by the letters, materialized by
-BFS with one shortest concrete representative per element
-(`witness/enriched.py`).
+The algebraic handle on `D` must remember what acceptance reads: the marks
+visited *along* a run, not only its endpoints. The **acceptance-enriched
+monoid** `EM(D)` does exactly that. The element of a finite word `w` is the
+map
+
+```
+q  ↦  ( δ(q, w),  marks collected from q along w )
+```
+
+with composition `(f, M)·(g, N) : q ↦ (g(f(q)), M(q) ∪ N(f(q)))` — a
+transformation monoid on the finite set `Q × 2^C`, generated by the letters.
+It is materialized by BFS from the letter generators, keeping one shortest
+concrete word as the representative of each element.
 
 **The skeleton lemma.** Two finite words with the same enriched element are
 interchangeable in every ω-context: any run through either lands in the same
-states *and* collects the same marks per start state, so the inf-set of every
-surrounding ultimately-periodic word — hence of every ω-word, by
-determinism — is identical, and so is membership. (This is the same fact the
-witness's index-absorption argument rests on: equal enriched elements induce
-identical run skeletons.)
-
-Consequently the syntactic morphism `Σ⁺ → S(L)₊` factors through
-`Σ⁺ → EM(D)`, and the induced map
+states *and* collects the same marks per start state, so — `D` being
+deterministic — the run skeleton of every surrounding ω-word is identical, and
+so is its acceptance. Consequently the syntactic morphism `Σ⁺ → S(L)₊`
+factors through `Σ⁺ → EM(D)`, and the induced map
 
 ```
-EM(D)  ─►  S(L)₊        (surjective morphism)
+EM(D)  ─►  S(L)₊
 ```
 
-exhibits the semigroup part of `S(L)` as a **computable quotient** of a monoid
-we already build. What remains is to compute the kernel of that map — the
-syntactic congruence — and read aperiodicity off the quotient.
+is a surjective morphism: `EM(D)` recognizes `L`, and `S(L)₊` is a computable
+quotient of it. (The transition monoid — the same object with the marks
+forgotten — does *not* recognize `L` in this sense: two words with equal state
+maps but different intermediate marks can be separated by an ω-power context.
+The enrichment is what makes the quotient below correct.)
 
 ## The congruence
 
-Arnold (1985): the syntactic congruence of an ω-regular language separates two
-finite words by exactly two context shapes — linear `x·_·y·t^ω` and ω-power
-`x·(_·y)^ω` (the same pair, for the same reason, as the witness's two family
-shapes; see the witness's **Completeness of the pair**). By the skeleton
-lemma, contexts act only through their enriched elements, so quantifying over
-words reduces to quantifying over the finite monoid:
+By the skeleton lemma, Arnold's two context shapes act on words only through
+their enriched elements, so the syntactic congruence reduces to a relation on
+the finite monoid — for `e, f ∈ EM(D)`:
 
 ```
 e ~ f   iff   ∀ a, b ∈ EM¹, t ∈ EM :   Acc(a·e·b, t) = Acc(a·f·b, t)      (linear)
         and   ∀ a, b ∈ EM¹         :   Acc(a, e·b)  = Acc(a, f·b)         (ω-power)
 ```
 
-where `Acc(x, c)` is the acceptance of any word `u·w^ω` with `[u] = x`,
-`[w] = c`, from the initial state — well defined by the lemma, and computable
-per element pair with no membership query on the automaton: land via `x`'s
-state map, iterate `c`'s state map until the orbit closes, union `c`'s
-collected marks around the closed cycle, evaluate the Emerson–Lei condition on
-that inf-set. `EM¹` adjoins the identity (the empty context); `t` ranges over
-non-identity elements (an ω-word needs a non-empty cycle).
+where `Acc(x, c)` is the acceptance of any ω-word `w·z^ω` with `[w] = x`,
+`[z] = c`, from the initial state — well defined by the lemma, and computable
+with no query on the automaton: land via `x`'s state map, iterate `c`'s state
+map until the orbit closes, union `c`'s collected marks around the closed
+cycle, evaluate the Emerson–Lei condition on that inf-set. `EM¹` adjoins the
+identity (the empty context); `t` ranges over non-identity elements (an ω-word
+needs a non-empty cycle).
 
-**Theorem.** `EM(D)/~  =  S(L)₊`, and therefore (Perrin) `L` is LTL-definable
-iff `EM(D)/~` is aperiodic. Both directions are now theorems: a group in the
-quotient is never an encoding artefact — the quotient *is* the invariant.
+**Theorem.** `EM(D)/~  =  S(L)₊`. Hence `L` is LTL-definable iff `EM(D)/~` is
+aperiodic — and a group in the quotient is never an artefact of the
+presentation, because the quotient is presentation-independent.
 
-## Computation
+## The procedure
 
-- **Materialize `EM(D)`** — the existing BFS, under a size cap; blowing the
-  cap is an `INCONCLUSIVE`, not a verdict.
-- **Signatures.** For each element `x`, the trivial-context acceptance data
-  `σ(x) = ( t ↦ Acc(x, t) ;  a ↦ Acc(a, x) )` — `x` as the finite prefix
-  against every cycle, and `x` as the cycle behind every prefix. The initial
-  partition groups elements by `σ`.
-- **Refinement.** The congruence is the coarsest two-sided congruence refining
-  the `σ`-partition: repeatedly split a class when left- or right-translation
-  by a letter generator maps two of its members into different classes, until
-  stable. This is the standard syntactic-semigroup computation (Moore-style
-  partition refinement, both sides), and it terminates in at most `|EM|`
-  splits.
-- **Separating contexts.** Each split records its cause: the side, the
-  generator, and the already-finer split (or base `σ`-difference) it appealed
-  to. Chaining these records turns any two non-congruent elements into a
-  *concrete* separating context of one of the two shapes — the
-  distinguishing-word trick of DFA minimization, transported to a semigroup.
-  This bookkeeping is what makes the negative verdict constructive.
-- **Aperiodicity.** Power-iterate each class of the quotient until its orbit
-  closes; aperiodic iff every period is 1. The quotient is small and fully
-  materialized, so no GAP call is needed here — on this path GAP serves only
-  the tester's fast screen, and even that has a GAP-free fallback (power-
-  iterating `TM`), which makes the whole oracle runnable without GAP.
-
-## The verdicts
-
-**Positive — quotient aperiodic ⟹ LTL. A theorem.** Strictly stronger than
-the tester's positive direction: it holds regardless of what `TM(D)` looks
-like. The run-parity fixture (`gf_aa_parity.hoa`, a `Z2` in `TM`) gets a
-definitive **LTL** here — the abstain zone's canonical inhabitant, resolved.
-
-**Negative — a group class `[v]`, period `p > 1` ⟹ NOT_LTL, with a family
-that cannot fail to complete.** The powers of `[v]` close into a cycle of
-length `p` in the quotient; its classes are pairwise distinct, i.e. pairwise
-*separated* — a separating context exists by construction and is retrieved
-from the split records. Unrolling that context along the power cycle yields a
-counting family of the matching shape: linear context `(a, b, t)` gives
-`F₁(u, v, x)` with `u = rep(a)`, `v = rep([v])`, `x = rep(b)·rep(t)^ω`;
-ω-power context `(a, b)` gives `F₂(u, v, y)` with `y = rep(b)` — `rep` the
-BFS's shortest representatives. Exact periodicity for all `n` is structural,
-as in the witness: membership of the `n`-th sample depends only on the class
-of `vⁿ`, which is eventually `p`-periodic; absorbing the index into the anchor
-(`u ← u·v^index`) makes it exactly periodic from `n = 0`, and the declared
-period is the minimal cyclic period of the membership pattern read around one
-cycle — non-constant by the separation. The search that could come home
-empty — anchors, phase pairs, return-word BFS — is gone; the certificate falls
-out of the quotient computation.
-
-The completed family is then **material, not a verdict**, exactly as in the
-witness: it is replayed by membership against the input automaton before the
-gate absorbs, guarding the same transport risks (lift order, letter
-rendering). A family that fails replay signals corruption between the
-discovery form and the input; it is discarded and the outcome degrades to
-`INCONCLUSIVE` — the fail-safe invariant (absorb only on a replayed family) is
-untouched.
-
-**Inconclusive** — the deterministic form unavailable, the `EM` size cap or a
-time cap blown, or a replay discard. Nothing was decided; the fence is the
-gate's usual one (decline, never build).
-
-## Relation to the siblings
-
-- **The tester stays the fast screen.** By Thomas (1979), a deterministic
-  recognizer of a non-star-free language is never counter-free, so
-  `TM(D)`-aperiodic already settles LTL cheaply (one GAP boolean, no enriched
-  monoid); the oracle runs only on the suspect branch — the same ordering the
-  gate enforces today, with the oracle replacing "seeded completion or give
-  up" as the branch's authority.
-- **The witness's seeded completion becomes an optional first tier.** Seeded
-  by one `TM` group H-class, it is cheap when it certifies — take the family
-  and skip the `σ`-pass. But its failure no longer terminates the branch,
-  because it was never conclusive: the seed fixes `v` from *one* H-class of
-  the *wrong* monoid, while the genuine count may be carried by a different
-  element, possibly with an aperiodic `TM`-shadow (the enriched-only carriers
-  the ω-completion's no-state-cycle fallback already hints at). The
-  representative-per-element sufficiency argument quantifies `u`, `x`, `y`
-  through their elements but not `v`; the quotient quantifies everything.
-- **The gate** gains a decided branch where it had `PROBABLY_NOT_LTL`: the
-  non-absorbing suspicion outcome remains only as the tiered fast path's
-  interim state and for `INCONCLUSIVE` resource exits. The witness value,
-  serialization, replay, and the boundary revalidation/reseed rules are reused
-  unchanged — a family from the oracle is a first-class certificate like any
-  other.
+1. **Screen (sound shortcut).** If the transition monoid `TM(D)` is aperiodic,
+   `L` is star-free (Thomas 1979: a counter-free deterministic automaton whose
+   acceptance is a function of the inf-set recognizes a star-free language) —
+   answer **LTL** without building `EM`. The converse fails — a group in
+   `TM(D)` can be an artefact of the deterministic encoding (e.g. `GF(a ∧ Xa)`
+   has a 2-state deterministic recognizer whose letter `a` is a transposition:
+   `samples/fixtures/hoa/definability/gf_aa_parity.hoa`) — so a group here
+   decides nothing and the procedure continues.
+2. **Materialize `EM(D)`** by BFS under a size cap; blowing the cap is
+   **INCONCLUSIVE**.
+3. **Signatures.** For each element `x`, the trivial-context acceptance data
+   `σ(x) = ( t ↦ Acc(x, t) ;  a ↦ Acc(a, x) )` — `x` as the finite prefix
+   against every cycle, and `x` as the cycle behind every prefix. The initial
+   partition groups elements by `σ`.
+4. **Refinement.** The congruence is the coarsest two-sided congruence
+   refining the `σ`-partition: split a class whenever left- or
+   right-translation by a letter generator maps two of its members into
+   different classes; iterate to fixpoint (at most `|EM|` splits). **Each
+   split records its cause** — the side, the generator, and the finer split
+   (or base `σ`-difference) it appealed to — so that chaining the records
+   turns any two non-congruent elements into a *concrete* separating context
+   of one of the two shapes: the distinguishing-word construction of DFA
+   minimization, transported to a semigroup.
+5. **Aperiodicity.** Power-iterate each class of the quotient until its orbit
+   closes. Every period 1 ⟹ answer **LTL**.
+6. **Extraction (a group ⟹ a family, guaranteed).** Pick a class `[v]` with
+   period `p > 1`; its power cycle consists of `p` pairwise *distinct* —
+   hence pairwise *separated* — classes. Retrieve a separating context for
+   one pair from the split records; instantiate through the BFS
+   representatives: a linear context `(a, b, t)` gives `F₁` with `u = rep(a)`,
+   `v = rep([v])`, `x = rep(b)·rep(t)^ω`; an ω-power context `(a, b)` gives
+   `F₂` with `y = rep(b)`. Membership of the `n`-th sample depends only on
+   the class of `vⁿ`, so the pattern is eventually periodic; absorbing the
+   index into the anchor (`u ← u·v^index`) makes it exactly periodic from
+   `n = 0`. The **declared period** is the minimal cyclic period of the
+   membership pattern read around one cycle (`p` cheap `Acc` evaluations) —
+   non-constant because the chosen context separates. Nothing here can come
+   home empty: the certificate is a by-product of the quotient computation,
+   not a search.
+7. **Replay.** The family is material, not yet a verdict: it is replayed by
+   membership against the *input* automaton (the engine-agnostic verifier,
+   in-process, bounded — sampling `n = 0 … 2p` and checking the pattern is
+   `p`-periodic and non-constant). Replay guards the transport between the
+   discovery form and the input (letter rendering, composition order); the
+   toggle itself was established structurally in step 6. Success ⟹ answer
+   **NOT_LTL** with the family attached. A replay failure signals transport
+   corruption: the family is discarded and the answer degrades to
+   **INCONCLUSIVE** — a decided answer is never built on unreplayed material.
 
 ## Cost
 
-The dominant cost is materializing `EM(D)` — which the suspect branch *already
-pays* today (the ω-power completion's candidate space is the same object). On
-top of it, the `σ`-pass is `O(|EM|²)` lasso evaluations, each an `O(|Q|)`
-state-map walk (memoizable per cycle element), and refinement is
-`O(|EM|·|Σ|)` per split. So the complete answer costs the same asymptotic toll
-as the heuristic search it supersedes. `|EM|` is bounded by
-`(|Q|·2^|C|)^{|Q|}` and can genuinely explode; the cap converts explosion into
-an honest `INCONCLUSIVE`. Determinization up front is the unchanged entry
-toll.
+The dominant object is `|EM(D)|`, bounded by `(|Q|·2^{|C|})^{|Q|}` — the
+`|Q|` in the exponent is where the explosion lives; the size cap converts it
+into an honest **INCONCLUSIVE**. On top of materialization, the `σ`-pass is
+`O(|EM|²)` `Acc` evaluations, each an `O(|Q|)` state-map walk (memoizable per
+cycle element), and refinement costs `O(|EM|·|Σ|)` per split. Determinization
+up front is the unchanged entry toll of every consumer of a deterministic
+form.
+
+An opening on the explosion: enriched elements are relations on `Q × 2^C`,
+and both the BFS closure and the refinement are set-of-elements fixpoints —
+the shape symbolic reachability (BDD-represented relations, fixpoints over
+sets) is built for. A symbolic `EM` would attack the `|Q|` exponent directly;
+nothing in the congruence or the extraction depends on elements being
+enumerated explicitly, only on (a) closure, (b) `Acc` per element pair,
+(c) split bookkeeping.
 
 ## Modules (design)
 
 - `congruence.py` — the `σ`-signatures, the two-sided refinement, the split
   records and separating-context retrieval.
-- `oracle.py` — the entry: pull and complete the form, materialize `EM` under
-  the cap, quotient, power-iterate; on a group, assemble the family from the
-  split chain and hand it to replay; return the three-outcome verdict.
+- `oracle.py` — the entry: pull and complete the form, run the screen,
+  materialize `EM` under the cap, quotient, power-iterate; on a group,
+  assemble the family from the split chain, replay, and return the
+  three-outcome verdict.
 
-The enriched monoid stays where it lives (`witness/enriched.py`) and is
-imported across the sibling boundary, or is promoted to a `definability/`-
-level shared module if the cross-import reads badly — a wiring choice, not a
-design one.
+The enriched monoid (elements, composition, shortest-representative BFS) is a
+shared primitive of the `definability` package.
 
 ## Layering
 
-Same floor as the siblings: above `Language`, the extractor, and the
-engine-agnostic verifier; imports neither `Cascade` nor any `Translator`.
-Consumer: the gate (`../gate.py`), which composes tester → (optional seeded
-witness) → oracle on the suspect branch and keeps sole ownership of the
-absorbing/non-absorbing distinction.
+Above the floor (`Language`), the letter extractor, and the engine-agnostic
+verifier; imports neither `Cascade` nor any `Translator`. Consumer: the
+definability gate, which owns verdict plumbing (absorbing vs. non-absorbing)
+around whatever the oracle answers.
