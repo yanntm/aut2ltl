@@ -8,7 +8,10 @@ membership queries alone.
 
 This document is standalone and deliberately slow: the decision is assembled
 in numbered layers, each introducing one object and proving what it carries,
-so that every claim can be audited at the layer that makes it. Layers 1–2
+so that every claim can be audited at the layer that makes it. The assumed
+background is ω-automata with Emerson–Lei (`Inf`/`Fin`) acceptance and basic
+semigroup vocabulary; everything ω-semigroup-specific is restated where it is
+used. Layers 1–2
 state the problem and the certificate; layers 3–5 build the algebra down to
 two independently checkable conditions; layers 6–8 compute; layers 9–11 walk
 the edge cases, three worked examples, and the exactness argument. The reader
@@ -79,7 +82,10 @@ membership queries alone.
   `S(L)`; two of its powers are separated by a context of one of the two
   shapes, and unrolling that separation along the cycle yields a toggling
   family of the corresponding shape. Hence `L` is not LTL **iff** a family of
-  shape F₁ or F₂ exists; no further shape is ever required.
+  shape F₁ or F₂ exists; no further shape is ever required. This is the
+  keystone citation of the whole negative side: layers 5 and 7 *transport*
+  it — the congruence factoring and the two extraction branches are its
+  computable shadow — they never re-prove it.
 - **Both shapes are load-bearing.** If `L` is prefix-independent (`σw ∈ L ⟺
   w ∈ L` for every finite `σ`) then `u·vⁿ·x ∈ L ⟺ x ∈ L`: every linear family
   is constant, on every choice of `(u, v, x)`. Prefix-independent non-LTL
@@ -255,10 +261,14 @@ assemble**. The pieces, in the order they are produced:
   - a **residual difference**: the states `s = st_{vᵃ·b}(q)` and
     `s′ = st_{vᵃ⁺¹·b}(q)` have `L(s) ≠ L(s′)`. Now, and only now, one
     separator product runs: an ultimately-periodic `w` accepted from exactly
-    one of them. The family is **F₁** with `x = b·w`.
+    one of them. The family is **F₁** with `x = b·w`: the `n`-th sample word
+    is `u·vⁿ·b·w`, and its membership is exactly `[w ∈ L(st_{vⁿ·b}(q))]` —
+    reach `q`, ride the powers, close with `b`, let `w` interrogate the
+    residual.
   - a **profile difference**: `A(q, vᵃ·b) ≠ A(q, vᵃ⁺¹·b)`. The family is
-    **F₂** with `y = b` — and its membership pattern is a pure lookup in the
-    profile table already computed; F₂ never touches the automaton again.
+    **F₂** with `y = b`: the `n`-th sample word is `u·(vⁿ·b)^ω`, and its
+    membership is exactly `A(q, vⁿ·b)` — a pure lookup in the profile table
+    already computed; F₂ never touches the automaton again.
 - **The anchor.** In both shapes `u` is a shortest word from the initial
   state to `q` — BFS on `D`, not on the monoid; `q` is reachable because
   every state of the trimmed form is.
@@ -284,10 +294,17 @@ assemble**. The pieces, in the order they are produced:
 
 Two policy pieces wrap the construction; neither touches its soundness.
 
-- **The screen.** If the transition monoid of `D` is aperiodic, `L` is
-  star-free outright (Thomas 1979: a counter-free deterministic automaton
-  whose acceptance is a function of the inf-set recognizes a star-free
-  language) — answer **LTL** without building `EM`. The converse fails — a
+- **The screen.** If the transition monoid of `D` is aperiodic, the quotient
+  is aperiodic too — provable without building `EM`, because aperiodicity is
+  *inherited upward* through the enrichment. An enriched power unfolds as
+  `e^n = (f^n, q ↦ ⋃_{i<n} mk_e(f^i(q)))`: when the state part `f` is
+  aperiodic it stabilizes (`f^{N+1} = f^N`), and past that point the mark
+  part grows monotonically inside a finite lattice, so it stabilizes one step
+  later. Every element of `EM(D)` is then aperiodic, hence so is its quotient
+  `S(L)₊` (layer 3's surjection), hence `L` is star-free (layer 1).
+  (Historically this is Thomas 1979's counter-free theorem; here it is a
+  corollary of the document's own machinery.) Answer **LTL** without
+  building `EM`. The converse fails — a
   group there can be an encoding artefact (layer 10's second example) — so a
   group decides nothing and the pipeline proceeds. The screen is the existing
   GAP aperiodicity oracle; when it cannot run (no GAP, a timeout) it is
@@ -395,9 +412,11 @@ exists for this language; the pipeline never needed to know that in advance.
 
 ## 11 — Exactness
 
-- **The LTL answer is sound.** Two theorem paths, no heuristic one: the
-  screen (transition monoid aperiodic ⟹ star-free, Thomas) and the quotient
-  (`EM/~ = S(L)₊` by layers 3–5, aperiodic ⟹ star-free, Perrin). Trust
+- **The LTL answer is sound.** Two theorem paths, no heuristic one — and
+  both bottom out on the same characterization: the screen (transition-monoid
+  aperiodicity, which the enrichment *inherits* — layer 8's argument) and the
+  quotient (`EM/~ = S(L)₊` by layers 3–5); each ends at aperiodic ⟹
+  star-free (Perrin). Trust
   asymmetry to note: this answer has no independently checkable certificate —
   it rests on the congruence computation and the residual-equivalence
   primitives being correct. (The natural certificate for LTL would be an
