@@ -2505,3 +2505,41 @@ release-head dual (spec'd in simplify/algorithm.md, user-adopted).
 Suite test_slide_last.py 14/14; fold regression 42/42; fuzz clean.
 Acceptance met: collapse_example --use deep_anchor now F(b & X!a).
 Also fixed simplify/README stale test paths (tests/probes/ltl/simplify/).
+
+## 2026-07-02 — the k-anchor session (design -> algorithm.md -> graded brick)
+
+LANDED: aut2ltl/kanchor/, the graded anchored read-off, built doc-first
+from the anchor_next.md handoff (finishing touches logged above).
+Design settled in discussion: windows over ADJACENT letters with I(v)
+as the stutter abstraction (the last-k-anchors trap avoided); the start
+handled by 0-step anchors only (P0^2 = the partition test of the
+truncated windows rooted at q0); two elements derived beyond the
+handoff sketch and adopted -- the 0-step park disjunct (a run moving at
+position 0 and parking immediately is invisible to pair-park and GF)
+and the spurious-trigger corollary (the eager per-edge law is the only
+law LTL can state; P1^2/P2^2 are its license). Then the unification:
+truncated windows vanish at k=1, so anchor IS the construction at k=1
+-- one brick, no orchestration.
+Code: peer working copy of anchor/ (frozen for the clone period);
+formula.py split orthogonally into pieces.py (letter vocabulary, +
+sojourn-tautology collapse L|M=T => sojourn=T, disable-able) and
+label.py (level-agnostic assembler over TriggerEntry(trigger, offset,
+target) tables); windows.py owns the graded tests and table builders --
+the Sigma x Sigma relations never materialize (rectangle decomposition
+for P1^2/P2^2, exact recursive rectangle cover for Stay_k <= Enter_k,
+no doubled BDD variables); kanchor.py runs the k-ladder with graded
+decline diagnoses.
+Gates: kanchor_rail.py demands hash-consed identity of KAnchor
+(collapse=False) vs Anchor at k=1 -- byte-identical on all five anchor
+fixtures, mod3_a declines at both levels; new fixture gf_a_xa.hoa reads
+off EXACTLY GF(a & Xa) at k=2 (the worked example reproduced, no
+simplifier); with the collapse live gafb reduces to its bare fairness
+(the law was tautological -- total automaton) and t2_l3 to a single G
+clause, all spot-verified.
+Doc: kanchor/algorithm.md rewritten standalone (algorithm_k1.md copy
+absorbed and retired): twelve numbered layers, one relaxation each,
+k=1 fully developed before the window widens; two worked examples;
+exactness stated once for every level. User-reviewed, pushed.
+Open: STATUS/TODO do not yet mention kanchor; anchor/ frozen (bugfix-
+only, mirrored) until the subsume/retire decision; measurement and the
+recipe question deferred to a weaker-LLM session.
