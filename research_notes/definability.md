@@ -25,7 +25,7 @@ with the deciding source named.
 |---|---|---|---|
 | (a) | **Explicit implemented quotient construction** of `S(L)₊` | **supported, twice-narrowed** | invariant + effectiveness classical; R3 sharpens R1: Carton–Perrin–Pin *do* give a concrete high-level algorithm (max-plus matrix ω-semigroup from an NBA, then syntactic quotient by **saturation over all contexts**) — so claim "first *refinement-based*, deterministic-EL, implemented", not "first algorithm". Second narrowing: monoid-**closure** is implemented in the Ramsey-based inclusion line (us, D2). Unpreempted: refinement route + decision + implementation |
 | (b) | **The `~lin`/`~ω` collapse** | **nuanced — reframe** | the finitary×infinitary *split* is not ours: Arnold's two-part congruence, Preugschat–Wilke's realization, the FORC/FDFA leading/progress structure (R1+R3, D3–D4; R3: "strongly anticipated but not preempted … a new, clean formulation"). Ours is the **right-only forward realization**: one Moore refinement of one seed, no left translation, licensed by the rotation lemma (§4.1). Claim the mechanism, credit the split |
-| (c) | **Certified counting-family witnesses with replay** | **supported — strongest, 3/3** | all rounds concur; R3: "confirmed novel … no published precedent in this exact form", with the useful contrast that classical algebraic proofs exhibit a finite-order element in a group H-class but never package it replayable (D7). Frame as certifying algorithm (McConnell et al. 2011), lead with this |
+| (c) | **Certified counting-family witnesses with replay** | **supported — strongest, 3/3** | all rounds concur; R3: "confirmed novel … no published precedent in this exact form", with the useful contrast that classical algebraic proofs exhibit a finite-order element in a group H-class but never package it replayable (D7). P2 precision: frame as **negative-side certifying** (McConnell's strong/weak collapses under trivial precondition; positive side unwitnessed until §4.3), lead with this |
 | (d) | **First practical decider** | **supported, 3/3, hedged** | searched negative three times over (R1, R3: "very likely *the* first"; R2's contrary Spot claim was confabulation). Keep the "we are aware of no tool that…" phrasing until our own D6 sweep, but the claim is not under threat |
 
 The characterizations themselves (LTL = FO[<] = star-free = aperiodic
@@ -116,6 +116,14 @@ Muller/Rabin treatments" — reads as "likely novel as a construction tuned
 for the EL acceptance native to Spot". Take as encouragement for the
 packaging framing, not as evidence.
 
+*P2 sharpening (us, first-hand — §6, Fogarty–Vardi entry).* The precedent
+is for the **unoptimized** closure only: the practical Ramsey algorithms
+keep ⊑-minimal supergraphs and are explicitly "not closed under composition
+in the normal sense" — subsumption destroys the monoid. So the line's
+tools never hold the algebra a syntactic quotient needs; the honest
+statement upgrades from "they don't quotient" to "their central
+optimization is incompatible with quotienting".
+
 ### D3 — Preugschat–Wilke and TL-fragment characterizations
 
 *The closest neighbor: does their route anticipate the collapse?*
@@ -189,6 +197,15 @@ Yet R3 confirms the whole line stops at representation/learning: no
 star-freeness decision, no two-sorted syntactic extraction, no certificates.
 The gap statement survives its sharpest formulation — good. Absorb item:
 emit a **syntactic FDFA as an intermediate artifact** (§4.8).
+
+*P2 status (us, first-hand — §6, ABF/AF entries).* Neither paper we hold
+contains the canonical FDFA definitions — both defer to [AF14], now a
+fetch item (§7); R3's "syntactic FDFA is precisely leading + profiles"
+stays reviewer-sourced. What we did verify: ABF footnote 1 states the
+right-congruence-vs-two-sided axis verbatim (our bridge framing), and
+AF 2021 shows `FG(a∨Xa)` has trivial `∼_L` — the blindness of the linear
+half documented from *their* side, quotable as why profiles are the
+missing ingredient. No definability content anywhere in the line.
 
 ### D5 — Complexity of the ω-decision
 
@@ -266,6 +283,15 @@ exact form", with a contrast worth quoting in the paper: standard algebraic
 proofs witness non-aperiodicity by *exhibiting a finite-order element in a
 group H-class* — an object internal to the algebra, meaningless without
 trusting the construction — never by packaging it as a replayable family.
+
+*P2 resolution (us, first-hand).* The "strongly certifying" check is
+answered, against our belief: with a trivial precondition the three
+McConnell notions coincide (§6, L886–887), so that adjective buys nothing.
+What their taxonomy *does* demand is a witness on every output — ours
+covers only NOT_LTL, so the paper should say **negative-side certifying**
+and point at §4.3 for the symmetric completion. Cho–Huynh Prop 1.1(b) is
+now also pinned as the source of the representation-dependent pattern
+witness (on the *minimal* DFA) that the paragraph below contrasts against.
 
 **Our reading — one sharpening.** The finite-word world *does* have
 automaton-level witnesses: forbidden-pattern characterizations yield a
@@ -346,6 +372,22 @@ frontier-BFS-on-DDs. Keeps R1's framing: not symbolic automata, symbolic
   a theorem candidate. (a)'s contrast pinned exactly: CPP quotient by
   context saturation vs our single right refinement. (c)/(d) unscathed —
   DG's decider is a paper-only guessing procedure, no certificate.
+
+- **Paper round P2 — 2026-07-03, first-hand reading** (ABF 2018, AF 2021,
+  Cho–Huynh, McConnell, Fogarty–Vardi/Abdulla; pointers in §6). Queue items
+  5–8 resolved; no claim moved against us. Three sharpenings for us:
+  (i) D2 — the Ramsey line's subsumption *breaks* the monoid ("not closed
+  under composition in the normal sense"), so their practical data cannot
+  support a quotient even in principle; (ii) D7 — McConnell's "strongly
+  certifying" is moot under a trivial precondition, the honest claim is
+  *negative-side certifying* (positive side unwitnessed until §4.3);
+  (iii) D4 — AF 2021's trivial `∼_L` for `FG(a∨Xa)` is our blindness lemma
+  in FDFA vocabulary, and ABF's footnote 1 states the right-vs-two-sided
+  positioning axis verbatim. One hole found in `papers/`: the canonical
+  FDFA definitions are in [AF14], not in either paper we hold — fetch item
+  added (§7). Bonus: ABF's saturation-PSPACE proof guesses elements
+  letter-by-letter on the fly — a second complexity-shadow data point
+  beside DG 12.3.
 
 **Convergence after three rounds** (the narrowing-down target): all rounds
 agree that (i) the collapse *mechanism* — one right refinement, no left
@@ -534,25 +576,91 @@ below are **read at the source**, not reviewer claims.
   - Fact 1 (L220): finite-state `E` with infinite iteration monoid exists
     (non-regular corner) — trivia, not our regime.
 
-**Still unread** (grep targets for cheap entry): Maler–Staiger — grep
-`right congruence|syntactic` for whether `~lin` is theirs; ABF/AF — grep
-`syntactic FDFA|progress` for the exact leading/progress definitions;
-Cho–Huynh — the theorem statement only (input model); McConnell — grep
-`strongly certifying` for the definition; Fogarty–Vardi/Abdulla — grep
-`supergraph|arc|composition` to scope what they close; Wilke 1999, BLS
-related work, Tsai — low priority.
+- **Angluin–Boker–Fisman** (`Angluin_Boker_Fisman_2018_LMCS.txt`) — READ
+  (D4). The paper is the succinctness/complexity study of *saturated* FDFAs;
+  **the canonical periodic/syntactic/recurrent FDFA definitions are NOT
+  here** — they live in [AF14] ("Learning regular ω-languages"), which we
+  do not have (fetch item, §7): R3's "syntactic FDFA" parallel stays
+  reviewer-sourced until then. What it does give:
+  - Lineage **L104–107**: Klarlund [Kla94] fdfas = machine model for MS97's
+    families of right congruences; [AF14] redefined the acceptance.
+    Footnote 1 **L111–115** states our positioning axis verbatim: "A central
+    difference between the FDFA theory and the algebraic theory of
+    recognition by monoids, semigroups, ω-semigroups and Wilke structures is
+    that the former relates to right-congruences, while the latter is based
+    on two-sided congruences." (Our construction is exactly a bridge: the
+    two-sided syntactic invariant computed with right-only machinery.)
+  - Saturation (**L108–110**, Def 5.1 L542–544) is their semantic
+    well-formedness condition; deciding it is **PSPACE** (L521–534), and the
+    proof *guesses words letter-by-letter composing transition-function
+    elements on the fly* — the same complexity-shadow trick as DG Prop 12.3
+    (§4.2(iii) gets a second data point).
+  - dpa (n states, k colors) → fdfa of size (n, kn) (**L158–161**). Grep
+    negative: no aperiodic/star-free/counting/LTL content anywhere.
+- **Angluin–Fisman 2021** (`Angluin_Fisman_2021_InfComput.txt`) — READ (D4).
+  Classifies ω-languages by whether the syntactic right congruence `∼_L`
+  (= our `~lin` at word level, their L57–58) is "fully informative"
+  (rightcon automaton isomorphic to some acceptor, §5 **L411–417**).
+  - **Props 27–28, L731–753**: non-counting ⟹ "respective of `∼_L`",
+    converse fails — the nearest the line comes to aperiodicity, used as a
+    comparison property, never decided.
+  - **L756–758**: `FG(a ∨ Xa)` is LTL yet `|∼_L| = 1` — our layer-9
+    blindness lemma in their vocabulary (prefix-independent ⟹ the linear
+    half sees nothing). Documents from the FDFA side that the plain
+    syntactic right congruence cannot see LTL-ness — why the profile half
+    is load-bearing, quotable in related work.
+  - No definability decision, no algebra extraction. D4's gap holds.
+- **Cho–Huynh** (`Cho_Huynh_1991_TCS.txt`) — READ (theorem statement only).
+  Input model **L75–78**: a **minimum-state DFA** — hardness holds with
+  minimal deterministic input, no determinization slack. Prop 1.1(b)
+  **L107–109**: non-star-free ⟺ some word `u` and state `p` with
+  `δ(p,u) ≠ p`, `δ(p,u^r) = p` *on the minimal DFA* — the
+  representation-dependent pattern witness of D7's contrast, at its source.
+  Hardness from DFA intersection via "finite-automaton cycle existence"
+  (Defs 1.2–1.3, L111–133).
+- **McConnell et al.** (`McConnell_Mehlhorn_Naher_Schweitzer_2011.txt`) —
+  READ (taxonomy §5). **Resolves D7's open check against our belief**: the
+  strong/certifying/weak distinction is entirely about *preconditions*, and
+  **L886–887** says for a trivial precondition "the three notions coincide"
+  — ours is trivial (any automaton is a legal input), so "strongly
+  certifying" is not the axis. The axis that bites: a certifying algorithm
+  witnesses **every** output (bipartiteness **L924–927**: YES → 2-coloring,
+  NO → odd cycle); our oracle witnesses only NOT_LTL, so the honest term is
+  **negative-side certifying** — exactly what §4.3's symmetric
+  certification would repair. The witness-predicate properties
+  (**L899–912**: witness property, checkability, simplicity — witness
+  meaningful without trusting the producing algorithm) are what the
+  counting family satisfies; cite those, not "strongly".
+- **Fogarty–Vardi** (`Fogarty_Vardi_2010_TACAS.txt`; Abdulla et al. 2011
+  scoped by grep) — READ (D2 scoping). Their "graphs" compose exactly as
+  Büchi's arc matrices (Def 2 **L225**; composition credited to
+  Lee–Jones–Ben-Amram SCT 2001), so the *unoptimized* closure `Q̃_B` is the
+  enriched-matrix monoid closure, as suspected. **The upgrade, L365–382**:
+  the optimized algorithm keeps only ⊑-minimal graphs, and the result "will
+  be ⊑-closed under composition, but **not closed under composition in the
+  normal sense**" — subsumption deliberately destroys the monoid. The
+  Ramsey line's practical versions never even hold the algebra a quotient
+  needs: inclusion consumes downward-closed information only; the syntactic
+  quotient needs exact products. D2 sharpens from "they don't quotient" to
+  "their central optimization is *incompatible* with quotienting". Abdulla
+  et al. push the same subsumption further (simulation-based, their
+  L82–89) — same story, stronger pruning.
+
+**Still unread** (grep targets for cheap entry): AF14 — **not in `papers/`,
+fetch first** (the canonical FDFA definitions); Boker–Lehtinen–Sickert —
+related-work re-read; Wilke 1999, BLS related work, Tsai — low priority.
 
 ## 7. Reading queue (remaining; done items moved to §6)
 
 ~~1. Preugschat–Wilke~~ ~~2. Carton–Perrin–Pin~~ ~~3. Selivanov–Wagner~~
-~~Diekert–Gastin~~ — all resolved, see §6.
+~~Diekert–Gastin~~ ~~4. Maler–Staiger~~ ~~5. ABF 2018 + AF 2021~~
+~~6. Cho–Huynh~~ ~~7. McConnell et al.~~ ~~8. Fogarty–Vardi / Abdulla~~
+— all resolved, see §6.
 
-4. **Maler–Staiger**, TCS 1997 — is `~lin` theirs under another name?
-5. **Angluin–Boker–Fisman** LMCS 2018 + **Angluin–Fisman** IC 2021 — the
-   FDFA parallel, precisely (syntactic FDFA definition).
-6. **Cho–Huynh**, TCS 1991 — exact theorem statement (input model) only.
-7. **McConnell et al.** 2011 — the "strongly certifying" definition.
-8. **Fogarty–Vardi** 2010/2012, **Abdulla et al.** 2011 — scope exactly
-   what monoid-like object they close (supergraphs/arcs).
-9. **Boker–Lehtinen–Sickert** 2022 — related-work re-read.
-10. **Wilke** STACS 1999, **Tsai et al.** — low priority backdrop.
+9. **Angluin–Fisman, "Learning regular ω-languages"** (ALT 2014; journal
+   TCS 2016) — **to fetch, not in `papers/`**: the canonical
+   periodic/**syntactic**/recurrent FDFA definitions live there and nowhere
+   in what we hold; R3's "syntactic FDFA" parallel (D4) and §4.8's target
+   format verify here or not at all.
+10. **Boker–Lehtinen–Sickert** 2022 — related-work re-read.
+11. **Wilke** STACS 1999, **Tsai et al.** — low priority backdrop.
