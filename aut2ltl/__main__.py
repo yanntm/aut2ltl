@@ -73,7 +73,8 @@ def _epilog() -> str:
         "  --use muller         the general Muller-DNF leaf only\n"
         "  --use buchi          Buchi leaf only; DECLINES off the Buchi class\n"
         "  --use buchi,muller   first_success ladder, tried in that order\n"
-        "  --use <recipe>       a whole assembly, cited alone (e.g. default — the omit path)\n\n"
+        "  --use <recipe>       a whole assembly, cited alone (e.g. default — the omit path)\n"
+        "  --use definable      decide definability only (alias of -d; cited alone)\n\n"
         "examples:\n"
         "  python3 -m aut2ltl 'GFa & GFb'\n"
         "  python3 -m aut2ltl model.hoa --use bls -O kr.fuse_letters=0\n"
@@ -247,6 +248,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     try:
         options = _make_options(args)
         techniques = _parse_techniques(args.use)
+        # `--use definable` is the passthrough spelling of -d (harnesses like the
+        # survey hand --use through opaquely): cited alone it supersedes
+        # translation; in a ladder it is refused — the oracle is not a rung.
+        if techniques == ["definable"]:
+            args.definable = True
+            techniques = None
+        elif techniques and "definable" in techniques:
+            print("aut2ltl: --use definable must be cited alone", file=sys.stderr)
+            return 2
         translator = None if args.definable else build_portfolio(options, techniques)
         lang = _load_language(args)
     except (ValueError, RuntimeError) as e:
