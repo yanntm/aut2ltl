@@ -442,6 +442,78 @@ def _arm_unpad(node: "spot.formula") -> "spot.formula":
     return node
 
 
+def _impl(x: "spot.formula", y: "spot.formula") -> bool:
+    """x ⊨ y — sound, incomplete: hash-consed identity; y a conjunct of x /
+    x a disjunct of y; then the propositional-fragment BDD tests of
+    `_prop_part_implies` in both orientations."""
+    if x == y:
+        return True
+    if x._is(spot.op_And) and y in set(x):
+        return True
+    if y._is(spot.op_Or) and x in set(y):
+        return True
+    if _prop_part_implies(x, y, True):       # prop-conj(x) ⇒ y (y propositional)
+        return True
+    return _prop_part_implies(y, x, False)   # x ⇒ prop-disj(y) (x propositional)
+
+
+def _slide_last(node: "spot.formula") -> "spot.formula":
+    """Slide-to-last, keyed on a strong-until head (dually a release head) —
+    the inner rewrite alone is NOT a positional equivalence, only the head
+    makes it one:
+
+        r U ( h ∧ X(p U q) )  →  r U ( h ∧ Xq )    when p ⊨ h and h ⊨ r
+        F ( h ∧ X(p U q) )    →  F ( h ∧ Xq )      (r = ⊤)
+        r R ( h ∨ X(p R q) )  →  r R ( h ∨ Xq )    when h ⊨ p and r ⊨ h
+        G ( h ∨ X(p R q) )    →  G ( h ∨ Xq )      (r = ⊥)
+
+    `h` is the conjunction (dually disjunction) of the remaining children.
+    Backward is `q ⊨ p U q`; forward slides the head's witness to the LAST
+    position of the p-block: there every conjunct of h still holds (p ⊨ h,
+    or it is the original witness), q holds next, and r is maintained up to
+    it (h ⊨ r at the witness, p ⊨ h ⊨ r strictly between). Weak inner arms
+    (W/M) are excluded — their G-branch has no q to slide to. Removes the
+    inner U/R node: a fold in the canonical direction. Entailment is `_impl`
+    per part."""
+    if node._is(spot.op_U) or node._is(spot.op_F):
+        strong = node._is(spot.op_U)
+        r = node[0] if strong else None                   # None = ⊤
+        body = node[1] if strong else node[0]
+        if body._is(spot.op_And):
+            for s in body:
+                if s._is(spot.op_X) and s[0]._is(spot.op_U):
+                    p, q = s[0][0], s[0][1]
+                    rest = [t for t in body if t != s]
+                    if not all(_impl(p, t) for t in rest):
+                        continue
+                    if r is not None and not (
+                            _impl(spot.formula.And(rest), r)
+                            or any(_impl(t, r) for t in rest)):
+                        continue
+                    nb = spot.formula.And(rest + [spot.formula.X(q)])
+                    return _slide_last(spot.formula.U(r, nb) if strong
+                                       else spot.formula.F(nb))
+    elif node._is(spot.op_R) or node._is(spot.op_G):
+        strong = node._is(spot.op_R)
+        r = node[0] if strong else None                   # None = ⊥
+        body = node[1] if strong else node[0]
+        if body._is(spot.op_Or):
+            for s in body:
+                if s._is(spot.op_X) and s[0]._is(spot.op_R):
+                    p, q = s[0][0], s[0][1]
+                    rest = [t for t in body if t != s]
+                    if not all(_impl(t, p) for t in rest):
+                        continue
+                    if r is not None and not (
+                            _impl(r, spot.formula.Or(rest))
+                            or any(_impl(r, t) for t in rest)):
+                        continue
+                    nb = spot.formula.Or(rest + [spot.formula.X(q)])
+                    return _slide_last(spot.formula.R(r, nb) if strong
+                                       else spot.formula.G(nb))
+    return node
+
+
 def _arm_cofactor(node: "spot.formula") -> "spot.formula":
     """Boolean left-arm cofactoring of a binary temporal (both arms pure
     propositional):
@@ -620,7 +692,7 @@ def fold_simplify(f: "spot.formula") -> "spot.formula":
             if out._is(spot.op_And) or out._is(spot.op_Or):
                 out = _gffg_cofactor(_fold_node(out))
         elif list(n):
-            out = _arm_cofactor(_arm_unpad(n.map(walk)))
+            out = _arm_cofactor(_arm_unpad(_slide_last(n.map(walk))))
         else:
             out = n
         memo[n] = out
