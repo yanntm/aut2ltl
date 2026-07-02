@@ -2489,3 +2489,19 @@ degeneracies, no dispatch, no equivalence gate (exact by construction).
   L(s) ⊆ A(s) (every loop letter of s also anchors s).
 - NEXT: A/B deep_memo vs deep_anchor on the corpora; memo hit-rate
   measurement; own-simplify rules; then retire `partscc/` + `daisystardet/`.
+
+## 2026-07-02 — anchor finishing touches 1+2 (park drop, slide-to-last)
+
+LANDED: the two mechanical items from the anchor handoff (anchor_next.md).
+(1) Park-subsumption drop in anchor/formula.py (build-time BDD test
+L(s) & !A(s) == false on F_all states; skips F park(s) and G L(q0));
+documented in anchor/algorithm.md; new fixture park_drop.hoa where it
+fires (fair = bare GF(a & b)). Gates: all anchor probes green, mod3_a
+still declines, gafb output byte-identical, validation gate SUCCESS
+(83 TRUE, log tests/probes/logs/validation_after_park_drop.log).
+(2) Slide-to-last in simplify/fold_pass.py, generalized past the handoff
+form to r U (h & X(p U q)) -> r U (h & Xq) when p |= h |= r, plus the
+release-head dual (spec'd in simplify/algorithm.md, user-adopted).
+Suite test_slide_last.py 14/14; fold regression 42/42; fuzz clean.
+Acceptance met: collapse_example --use deep_anchor now F(b & X!a).
+Also fixed simplify/README stale test paths (tests/probes/ltl/simplify/).
