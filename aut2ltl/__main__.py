@@ -12,6 +12,12 @@ exactly which techniques may participate, or name a recipe (e.g. `--use best`).
 
 stdout carries ONLY the formula (pipe-friendly); the verbose report (technique,
 DAG/tree sizes, build time) goes to stderr and is silenced by -q. See --help.
+
+With -d/--definable the portfolio is bypassed: the exact definability oracle
+decides whether ANY LTL formula defines the language, printing `LTL` (bare —
+the oracle proves existence without producing a formula), `NOT_LTL: <witness>`
+(a replayed counting family, exit 3), or INCONCLUSIVE on a resource cap
+(exit 1, like DECLINED).
 """
 from __future__ import annotations
 
@@ -32,6 +38,8 @@ from aut2ltl.options import Options, OptionSpec, MD5_LENGTH, ROOT_OPTIONS
 from aut2ltl.language import Language, LANGUAGE_OPTIONS, UntranslatableLanguage
 from aut2ltl.result import LTLResult
 from aut2ltl.portfolio import build_portfolio, TECHNIQUES
+from aut2ltl.bls.definability.oracle import decide as oracle_decide, LTL as ORACLE_LTL, \
+    NOT_LTL as ORACLE_NOT_LTL
 from aut2ltl.bls.options import KR_OPTIONS, FLATTEN_TREE_LIMIT
 from aut2ltl.spotrun import SPOTRUN_OPTIONS
 from aut2ltl.ltl.metrics import dag_metrics
@@ -93,6 +101,11 @@ def build_parser() -> argparse.ArgumentParser:
                       help="force INPUT to be read as a HOA file path")
 
     g_cfg = p.add_argument_group("configuration")
+    g_cfg.add_argument("-d", "--definable", action="store_true",
+                       help="decide LTL-definability instead of translating (exact, "
+                            "via the syntactic omega-semigroup oracle): prints LTL "
+                            "(no formula), NOT_LTL with a replayable witness (exit 3), "
+                            "or INCONCLUSIVE on a resource cap (exit 1)")
     g_cfg.add_argument("--use", metavar="T1,T2,...",
                        help="cite the techniques that may participate (comma-separated, "
                             "in priority order); omit for the best default. "
@@ -179,6 +192,45 @@ def _parse_techniques(use: Optional[str]) -> Optional[List[str]]:
     return [t.strip() for t in use.split(",") if t.strip()]
 
 
+def _decide_definable(lang: Language, args: argparse.Namespace) -> int:
+    """Run the exact definability oracle and print/exit like the translate path.
+
+    stdout carries the kind-tagged verdict — `LTL` bare (the oracle proves a
+    formula exists without producing one) or `NOT_LTL: <witness>` — the prose
+    report goes to stderr (silenced by -q); INCONCLUSIVE mirrors DECLINED
+    (stderr reason, exit 1). Exit codes match the translate path: 0 / 3 / 1."""
+    t0 = time.monotonic()
+    verdict = oracle_decide(lang)
+    dt = time.monotonic() - t0
+
+    if verdict.answer == ORACLE_NOT_LTL:
+        msg = "aut2ltl: NOT_LTL -- the language is not LTL-definable"
+        msg += f"\n  ({verdict.reason})"
+        if verdict.witness is not None:
+            msg += f"\n  {verdict.witness.summary()}"
+        msg += "\ntechnique : oracle"
+        print(msg, file=sys.stderr)
+        if verdict.witness is not None:
+            print(f"NOT_LTL: {verdict.witness.serialize()}")
+        return 3
+
+    if verdict.answer != ORACLE_LTL:
+        msg = "aut2ltl: INCONCLUSIVE -- the oracle hit a cap, no verdict"
+        msg += f"\n  ({verdict.reason})"
+        print(msg, file=sys.stderr)
+        return 1
+
+    print("LTL")
+    if not args.quiet:
+        report = (
+            f"technique : oracle\n"
+            f"grounds   : {verdict.reason}\n"
+            f"build time: {dt:.3f}s"
+        )
+        print(report, file=sys.stderr)
+    return 0
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     # Forward interrupts to any external child group (GAP) before we exit, so a
     # Ctrl-C / SIGTERM doesn't orphan a multi-GB process. See aut2ltl/proc.py.
@@ -195,11 +247,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     try:
         options = _make_options(args)
         techniques = _parse_techniques(args.use)
-        translator = build_portfolio(options, techniques)
+        translator = None if args.definable else build_portfolio(options, techniques)
         lang = _load_language(args)
     except (ValueError, RuntimeError) as e:
         print(f"aut2ltl: {e}", file=sys.stderr)
         return 2
+
+    if args.definable:
+        return _decide_definable(lang, args)
 
     t0 = time.monotonic()
     try:
