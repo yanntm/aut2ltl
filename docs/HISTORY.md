@@ -2543,3 +2543,25 @@ exactness stated once for every level. User-reviewed, pushed.
 Open: STATUS/TODO do not yet mention kanchor; anchor/ frozen (bugfix-
 only, mirrored) until the subsume/retire decision; measurement and the
 recipe question deferred to a weaker-LLM session.
+
+## 2026-07-02 — the exact definability oracle (bls/definability/oracle/)
+
+DONE. Designed and landed the syntactic-ω-semigroup oracle: LTL-definability
+decided EXACTLY, both directions theorems, INCONCLUSIVE = resource caps only.
+The design session first produced `oracle/algorithm.md` (iterated standalone,
+procedure-first), whose key mathematics emerged while examining the algorithm
+symbolically: the COLLAPSE LEMMA — Acc(prefix, cycle) sees the prefix only
+through one state, so Arnold's congruence factors into ~lin (pointwise residual
+equality of state parts, a QxQ relation computed once on D) and ~w (a RIGHT
+congruence refinement seeded by a |Q|-bit acceptance profile); left translations
+vanish, and the factoring names the witness shape (~lin split -> F1 linear via a
+residual-product separator; ~w split -> F2 omega-power, pattern read off the
+profile table). Implementation: eight single-role modules (closure / residuals /
+profile / refine / quotient / family / oracle / __init__) + one-input probe.
+Validated: gf_aa_parity -> definitive LTL via the quotient (the former
+PROBABLY_NOT_LTL abstain class — TODO Route B superseded, no SAT search);
+mod3_a -> NOT_LTL p=3 linear (shorter v than the GAP-seeded path); evenblocks ->
+NOT_LTL p=2 omega-power; both prefix_nonltl -> NOT_LTL p=2; all ~0.5s. GAP is
+now optional on the oracle path (screen skipped if unrunnable; quotient decides).
+NOT wIRED into the gate yet (TODO). Prospective: symbolic EM via libITS (slots
+are right-slot-local; the one hard op is self-application for profiles).
