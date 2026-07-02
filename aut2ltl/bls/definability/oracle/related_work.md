@@ -3,9 +3,8 @@
 Companion to `algorithm.md`. That document constructs; this one positions:
 the papers the construction stands on or beside, what each establishes, and
 our exact relationship to it — why we even cite it. Claims here follow
-first-hand reading (the investigation notebook, with per-paper line pointers
-into the sources, is `research_notes/definability.md` at the repo root); the
-one item still resting on a reviewer's word is flagged where it appears.
+first-hand reading; the investigation notebook, with per-paper line pointers
+into the sources, is `research_notes/definability.md` at the repo root.
 
 ## 1. The foundations the oracle computes on
 
@@ -76,8 +75,9 @@ shared fixtures.
 
 ## 4. Right congruences as representations — the FDFA line
 
-**Klarlund 1994; Angluin–Boker–Fisman (LMCS 2018); Angluin–Fisman
-(Inf. Comput. 2021); the ROLL tool (Li et al.).** FDFAs — a leading
+**Klarlund 1994; Angluin–Fisman (TCS 2016); Angluin–Boker–Fisman (LMCS
+2018); Angluin–Fisman (Inf. Comput. 2021); the ROLL tool (Li et al.).**
+FDFAs — a leading
 automaton plus per-state progress DFAs — are the machine model of
 Maler–Staiger's families of right congruences, and are structurally our
 residuals + profiles. Angluin–Boker–Fisman state the axis themselves: FDFA
@@ -90,12 +90,21 @@ whose right congruence is *trivial* (`FG(a ∨ Xa)`) — layer 9's blindness in
 their vocabulary; the profile half is the repair. The entire line stops at
 representation, canonicity, and learning: no definability decision
 anywhere. *Why cited:* the structural kinship must be acknowledged and the
-gap named. Additionally, the quotient's data — residual classes as leading
-congruence, per-class acceptance as progress — is a syntactic FDFA in all
-but serialization, so emitting one is a cheap exportable artifact. (The
-exact "syntactic FDFA" definition is in Angluin–Fisman's learning paper,
-ALT 2014 — still on our first-hand reading queue; the one claim in this
-file resting on a reviewer's word.)
+gap named. The closest canonical object is the **syntactic FDFA** of
+Angluin–Fisman's learning paper (TCS 2016), after Maler–Staiger's syntactic
+FORC: leading automaton = the syntactic right congruence, one progress DFA
+per class. Read at the source, the kinship stops at the architecture: their
+progress components are *guarded* right congruences — the ω-test runs only
+over periods returning to the leading class, the left context stays
+anchored per class, and the infinitary data is an accepting-state marking,
+not a per-state acceptance profile. Nothing in the line plays the profile
+role, and the canonical FDFAs are learning *targets*, never computed from
+an automaton. The quotient's data — residual classes as leading congruence,
+per-class acceptance behavior as progress — is nonetheless a syntactic FDFA
+in all but serialization, so emitting one is a cheap exportable artifact;
+one practical detail, from their own subtlety, is that the syntactic FDFA
+is unsaturated under exact acceptance, so an emitted artifact must carry
+their *normalized* acceptance.
 
 ## 5. Complexity — the decision is PSPACE-complete, and by whom
 
