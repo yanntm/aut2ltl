@@ -2586,3 +2586,18 @@ states assumed background. Literature review deferred: root oracle_litt.md is
 the standalone prompt for the search-enabled sweep (Buchi-1962 root of the
 enrichment, explicit-SOSG prior art, Preugschat-Wilke, FDFA/right-congruence
 adjacency, omega PSPACE citation, tool landscape, certificate prior art).
+
+## 2026-07-03 — literature round P2 lands; algorithm.md/related_work.md split
+
+Paper round P2 (ABF 2018, AF 2021, Cho–Huynh, McConnell, Fogarty–Vardi)
+read first-hand and integrated into research_notes/definability.md (its
+first commit — rounds 1–3 and P1 land with it). Outcome folded into the
+oracle docs under a concern split settled with the user: algorithm.md
+stays in-source spec register and cites only what roots a definition or a
+soundness argument — it gains the layer-5 rotation lemma (the conjugacy
+step licensing right-only computation of a two-sided congruence, until now
+chased silently), the ~lin naming (Maler–Staiger 1997), and the
+PSPACE-completeness anchor for the caps; everything positioning-flavored
+moved to the new companion oracle/related_work.md, the paper-voice digest
+(eight sections, each neighbor with "why cited"). Sole reviewer-sourced
+item left: AF14's syntactic-FDFA definition, fetch pending.
