@@ -118,10 +118,15 @@ and the `kr → bls` engine reorg all landed — see HISTORY 2026-06-17.)
   - **Route B (completeness on spurious groups) — SUPERSEDED by the exact oracle**
     (`bls/definability/oracle/`, landed 2026-07-02): the syntactic-ω-semigroup
     quotient decides the abstain zone exactly (`gf_aa_parity` → definitive LTL, no
-    SAT search needed). **Remaining: wire the oracle into the gate** — replace the
-    `PROBABLY_NOT_LTL` decline branch with a `decide()` call (tester screen stays
-    the fast path), pick the `em_cap` policy, then refresh the reference CSVs
-    (declines become verdicts on both sides).
+    SAT search needed). ~~Wire the oracle into the gate~~ **DONE 2026-07-03**: the
+    suspect branch calls `decide(screen=False)` (tester screen stays the fast
+    path, its cached tag untouched — the cascade fence is form-based); `em_cap`
+    exposed as a gate parameter (default 20000). The old `witness/` seeded
+    completion is no longer wired anywhere (kept as a standalone sibling; the
+    corpus A/B of `oracle/algorithm.md` §14 may still revive it as a pre-tier).
+    **Remaining: refresh the reference CSVs** (declines become verdicts on both
+    sides; on genaut 2state1ap1acc the diff showed 76/76 sound NOT_LTL confirmed,
+    38 unsound overturned to proven-LTL declines, 8 newly certified).
   - **Housekeeping**: rerun genaut `2state1ap1acc` clean (the 2026-07-01 background
     run mixed two code states); refresh the validation/kinska/benchmark references
     (NOT_LTL rows changed technique and some verdicts became declines); fold the
