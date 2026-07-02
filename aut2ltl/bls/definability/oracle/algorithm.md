@@ -176,7 +176,8 @@ presentation, because the quotient is presentation-independent.
    `TM(D)` can be an artefact of the deterministic encoding (e.g. `GF(a ∧ Xa)`
    has a 2-state deterministic recognizer whose letter `a` is a transposition:
    `samples/fixtures/hoa/definability/gf_aa_parity.hoa`) — so a group here
-   decides nothing and the procedure continues.
+   decides nothing and the procedure continues. A screen that cannot run at
+   all (no GAP) is skipped, not fatal: the quotient decides regardless.
 2. **Materialize `EM(D)`** by BFS under a size cap; blowing the cap is
    **INCONCLUSIVE**.
 3. **Residual classes of states.** Compute `≃` on `Q` — `q ≃ q′` iff
@@ -190,17 +191,21 @@ presentation, because the quotient is presentation-independent.
    right-multiplication by a letter generator maps two of its members into
    different classes; iterate to fixpoint (at most `|EM|` splits). By the
    right-invariance of both seed components this single pass computes
-   `~ = ~lin ∩ ~ω` exactly. **Each split records the letter it appended and
-   the finer split (or seed difference) it appealed to**, so any two separated
-   elements chain to a concrete word `b` and a base difference — at a named
-   slot `q`, either in `≃` or in `Aprof`.
+   `~ = ~lin ∩ ~ω` exactly. **No split bookkeeping is kept**: whenever the
+   fixpoint separates two elements, a word `b` with
+   `seed(e·b) ≠ seed(f·b)` exists, and a shortest one is **chased on
+   demand** — a BFS over the pair graph of the right-translation tables, the
+   distinguishing-word construction run forward. The base difference the
+   chase ends on — at a named slot `q`, either in `≃` or in `Aprof` — names
+   the witness shape.
 5. **Aperiodicity.** Power-iterate each class of the quotient until its orbit
    closes. Every period 1 ⟹ answer **LTL**.
 6. **Extraction (a group ⟹ a family, guaranteed).** Pick a class `[v]` with
-   period `p > 1`; its power cycle consists of `p` pairwise *distinct* —
-   hence pairwise *separated* — classes. Chase the split chain for one pair
-   `(vⁱ, vʲ)`: it terminates in a base difference at a slot `q`, after a
-   (possibly empty) appended word `b`. In both cases `u` is a shortest word
+   period `p > 1`; the classes around its power cycle are pairwise
+   *distinct* (first-repeat detection makes the period minimal) — hence
+   pairwise *separated*, and two consecutive powers already suffice. Chase
+   that pair: the chase ends in a base difference at a slot `q`, after a
+   (possibly empty) word `b`. In both cases `u` is a shortest word
    from the initial state to `q` — BFS on `D`, not on `EM` — and `v` is the
    class representative:
    - a `≃` difference: the states `s = st_{vⁱ·b}(q)` and `s′ = st_{vʲ·b}(q)`
@@ -208,7 +213,9 @@ presentation, because the quotient is presentation-independent.
      accepting word of the product of one residual with the complement of the
      other) — the **linear family** `F₁` with `x = b·w`.
    - an `Aprof` difference: `A(q, vⁱ·b) ≠ A(q, vʲ·b)` — the **ω-power
-     family** `F₂` with `y = b`.
+     family** `F₂` with `y = b`. Its membership pattern is a pure lookup in
+     the already-computed profile table; only `F₁` touches the automaton
+     again (the one separator product).
    Membership of the `n`-th sample depends only on the class of `vⁿ`, so the
    pattern is eventually periodic; absorbing the index — into the anchor
    (`u ← u·v^index`) for `F₁`, into the return word (`y ← v^index·y`) for
@@ -293,9 +300,10 @@ every worker is a pure, total function of what it is handed.
 - **`profile.py`** — *the `~ω` seed*: the `A(q, c)` walk (orbit, cycle marks,
   condition evaluation) and the per-element profile, memoized along orbits.
 - **`refine.py`** — *the congruence*: the seed partition (`≃`-vector,
-  `Aprof`), right-letter splitting to fixpoint, and the split records. Its
-  second face is retrieval: chase the records for a given element pair down
-  to a concrete `(q, b, base difference)`.
+  `Aprof`) and right-letter splitting to fixpoint. Its second face is the
+  chase: for a separated element pair, the BFS over right-translation pairs
+  yielding a shortest separating word `b` — no split records are ever
+  stored.
 - **`quotient.py`** — *the algebra*: the classes as a semigroup
   (multiplication through representatives), power-iteration, the aperiodicity
   verdict — and on failure, a group class with its period.
