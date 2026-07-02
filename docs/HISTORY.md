@@ -2565,3 +2565,24 @@ NOT_LTL p=2 omega-power; both prefix_nonltl -> NOT_LTL p=2; all ~0.5s. GAP is
 now optional on the oracle path (screen skipped if unrunnable; quotient decides).
 NOT wIRED into the gate yet (TODO). Prospective: symbolic EM via libITS (slots
 are right-slot-local; the one hard op is self-application for profiles).
+
+## 2026-07-02 — oracle/algorithm.md matured: layers, spot primitive, external review
+
+DONE, same session as the oracle landing. (1) algorithm.md rewritten in the
+kanchor presentation style: 14 numbered layers, worked examples carrying the
+REAL pipeline numbers via the new tests/probes/oracle_dump.py (mod3 |EM1|=15
+quotient 9 empty chase; gf_aa_parity 10 elements fold to 6 classes aperiodic;
+evenblocks 1 residual class == the blindness lemma as data, chase discovers
+b=[!a]). (2) residuals.py now delegates the eager state equivalence to
+spot.language_map (twaalgos/langmap.hh — the exact primitive: dualized
+complement cached per state, on-the-fly intersects; our HOA-roundtrip
+hand-rolled version retired); verdicts and witnesses identical on all four
+decisive fixtures. (3) Integrated an end-to-end review by a second Fable: the
+screen is now justified INTERNALLY (aperiodicity inherited upward through the
+enrichment — e^n = (f^n, monotone bounded marks) — Thomas 1979 demoted to a
+historical remark, both LTL paths bottom out on Perrin); layer 2 completeness
+named the keystone citation; layer 7 unfolds the sample words in place; intro
+states assumed background. Literature review deferred: root oracle_litt.md is
+the standalone prompt for the search-enabled sweep (Buchi-1962 root of the
+enrichment, explicit-SOSG prior art, Preugschat-Wilke, FDFA/right-congruence
+adjacency, omega PSPACE citation, tool landscape, certificate prior art).
