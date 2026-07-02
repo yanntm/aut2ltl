@@ -1,0 +1,6 @@
+CSV: genaut/logs/definable/2state1ap1acc/survey_20260703_010245.csv
+survey: 929 inputs  (--use definable)
+aut2ltl: 845 LTL, 84 not-LTL  |  declined 0, timeout 0, crash 0
+validation: OFF (845 LTL + 84 not-LTL unverified)
+totals: DAG=0 temporals=0 build=550.163s
+SUCCESS
