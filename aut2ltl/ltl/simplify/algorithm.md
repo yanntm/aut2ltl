@@ -146,6 +146,38 @@ node added/removed): `_arm_unpad` drops padding — `(c ∧ Xd) U g → c U g` w
 and `g ⇒ d` (dual `R`); `_arm_cofactor` restricts a fully-propositional left arm —
 `φ U ψ → φ' U ψ` agreeing on `{ψ false}` (dual `R`/`M` on `{ψ true}`).
 
+Also at a temporal node, the *slide-to-last* rule, keyed on a **strong-until head**
+`r U body` (`F body` = `⊤ U body`) whose body is a conjunction containing an
+`X(p U q)` conjunct — `h` below is the conjunction of the remaining conjuncts
+(`⊤` if none), entailment the two-tier oracle:
+
+```
+r U ( h ∧ X(p U q) )   →   r U ( h ∧ Xq )        when  p ⊨ h  and  h ⊨ r
+F  ( h ∧ X(p U q) )    →   F  ( h ∧ Xq )         when  p ⊨ h              (r = ⊤)
+```
+
+Backward is unconditional (`q ⊨ p U q`). Forward **slides the witness to the last
+position of the `p`-block**: if the inner `U` discharges at `j`, then at `j−1` the
+letter still satisfies every conjunct of `h` (it satisfies `p`, or `j−1` *is* the
+original witness) with `q` next, and the head's `r` is maintained up to `j−1` (`h ⊨ r`
+at the original witness, `p ⊨ h ⊨ r` strictly between). CAUTION — why the rule is
+keyed on the head: the inner rewrite `p ∧ X(p U q) → p ∧ Xq` alone is **not** a
+positional equivalence (the slid witness may lie strictly later); it becomes one only
+under an eventual context. The De Morgan dual is keyed on a **release head**
+(`G body` = `⊥ R body`), body a disjunction:
+
+```
+r R ( h ∨ X(p R q) )   →   r R ( h ∨ Xq )        when  h ⊨ p  and  r ⊨ h
+G  ( h ∨ X(p R q) )    →   G  ( h ∨ Xq )         when  h ⊨ p              (r = ⊥)
+```
+
+Weak inner arms are excluded on both sides: `F(p ∧ X(p W q)) ≢ F(p ∧ Xq)` — on `p^ω`
+the `W`'s `Gp` branch accepts and the slide has no `q` to land on (dually `M` under a
+release head). `GF`/`FG` shapes need no extra case: the inner `F`/`G` node is rewritten
+where it sits in the DAG. Orientation: the rule removes the inner `U`/`R` node and its
+`p` occurrence — a fold in the canonical direction (strictly smaller tree, one fewer
+distinct temporal subformula).
+
 The **context-aware** S1/S2 (`ctx_subsume`) lives in this module but is applied during
 the *context pass* (its `bool_hook`): the initial-state knowledge discharges the missing
 `c`, so `X(c R d) ∨ G(c ∨ Xd) → X(c R d)` even with no bare-`c` sibling — the rule that
