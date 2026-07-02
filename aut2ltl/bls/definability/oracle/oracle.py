@@ -55,13 +55,16 @@ def decide(
     gap_timeout: int = 30,
     max_aps: int = 5,
     em_cap: int = 20000,
+    screen: bool = True,
 ) -> OracleVerdict:
     """Decide LTL-definability of `lang`'s ω-language exactly, up to the caps.
 
     Screen (transition-monoid aperiodicity, GAP) → enriched-monoid closure →
     congruence (residual classes + profiles, right refinement) → aperiodicity
     of the quotient → on a group, chase + family assembly + replay against the
-    input automaton. Every cap or failure degrades to INCONCLUSIVE."""
+    input automaton. Every cap or failure degrades to INCONCLUSIVE. A caller
+    that has already read the transition monoid (the definability gate's
+    tester) passes `screen=False` to skip the redundant GAP shortcut."""
     try:
         det = lang.det_generic_minimal()
         aut = spot.postprocess(det, "deterministic", "generic", "complete")
@@ -69,13 +72,14 @@ def decide(
     except Exception as exc:
         return OracleVerdict(INCONCLUSIVE, f"no deterministic letter form: {exc}")
 
-    try:  # the screen is a shortcut, never a blocker: unrunnable ⟹ skipped
-        if is_aperiodic_gens(gens, gap_cmd=gap_cmd, timeout=gap_timeout):
-            return OracleVerdict(
-                LTL, "the transition monoid is aperiodic (screen): the language "
-                     "is star-free, an LTL formula exists")
-    except Exception:
-        pass
+    if screen:
+        try:  # the screen is a shortcut, never a blocker: unrunnable ⟹ skipped
+            if is_aperiodic_gens(gens, gap_cmd=gap_cmd, timeout=gap_timeout):
+                return OracleVerdict(
+                    LTL, "the transition monoid is aperiodic (screen): the language "
+                         "is star-free, an LTL formula exists")
+        except Exception:
+            pass
 
     try:
         letters = letter_elems(aut, valuations)
