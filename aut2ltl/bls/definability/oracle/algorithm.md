@@ -180,7 +180,9 @@ e ~ω f    ⟺    ∀ b ∈ EM¹:   Aprof(e·b) = Aprof(f·b)        (right-inva
   condition `∀ b, t : A(st_b(s), t) = A(st_b(s′), t)` says `s` and `s′`
   accept the same ultimately-periodic words — and two ω-regular languages are
   equal iff they agree on ultimately-periodic words, so it says exactly
-  `L(s) = L(s′)`. Three consequences fall out: the mark parts of `e` are
+  `L(s) = L(s′)`. At the slot `q = init` alone this is the classical
+  syntactic right congruence of `L` (Maler–Staiger 1997); `~lin` demands it
+  at every start state at once. Three consequences fall out: the mark parts of `e` are
   entirely irrelevant to `~lin`; the whole `∀ b, t` quantification became a
   `Q × Q` relation computed **once on `D`, with no monoid involved**; and on
   a prefix-independent language every residual is `L` itself, so `~lin` is
@@ -194,6 +196,17 @@ e ~ω f    ⟺    ∀ b ∈ EM¹:   Aprof(e·b) = Aprof(f·b)        (right-inva
   equal languages are equal: `L(s) = L(s′) ⟹ L(δ_a(s)) = L(δ_a(s′))`), so
   `~` is the coarsest right-invariant equivalence refining a *single* seed —
   computed by one refinement to fixpoint in layer 6, not two.
+- **Left factors cost nothing: the rotation lemma.** `~` must be a
+  *two-sided* congruence for layer 6's class arithmetic, yet nothing above
+  ever multiplies on the left. The reason: a left factor `a` acts on the
+  seed only by re-indexing the slot. For `~lin` this is determinism —
+  `st_{a·e}(q) = st_e(st_a(q))`. For `~ω` it is conjugacy: `(a·e·b)^ω` read
+  from `q` is `a·(e·b·a)^ω`, and the finite `a`-prefix is invisible past the
+  collapse lemma, so `Aprof(a·e·b)(q) = Aprof(e·b·a)(st_a(q))` — a *right*
+  extension of `e`, read at a shifted slot. Seeds equal under all right
+  extensions therefore stay equal under every two-sided context; this
+  two-line rotation is what licenses computing a two-sided syntactic
+  congruence with right moves alone.
 - **The factoring mirrors the certificate.** `~lin` is exactly what a linear
   family can observe (a tail after the powers), `~ω` exactly what an ω-power
   family can (acceptance around a loop through the powers). The difference
@@ -233,8 +246,8 @@ right-multiplication.
 
 Aperiodicity is then read by power-iterating each class: the class of
 `v^{k+1}` is determined by the classes of `v^k` and `v` (the relation is a
-congruence), so the class power sequence is detected by its **first repeated
-class id** — which also makes the index minimal and the classes around the
+two-sided congruence — layer 5's rotation lemma), so the class power sequence
+is detected by its **first repeated class id** — which also makes the index minimal and the classes around the
 cycle pairwise distinct, two facts layer 7 leans on. The identity is
 idempotent and skipped; classes already seen are skipped (their sequence is
 determined); elements are scanned in BFS order, so the first group found has
@@ -440,7 +453,10 @@ exists for this language; the pipeline never needed to know that in advance.
 
 The dominant object is `|EM(D)|`, bounded by `(|Q|·2^{|C|})^{|Q|}` — the
 `|Q|` in the exponent is where the explosion lives; the closure cap converts
-it into an honest INCONCLUSIVE. Around materialization: the residual classes
+it into an honest INCONCLUSIVE. The explosion is not a defect of the route:
+the decision problem itself is PSPACE-complete (Cho–Huynh 1991;
+Diekert–Gastin 2008, Prop. 12.3), so a cap somewhere is a mathematical
+necessity, not an engineering apology. Around materialization: the residual classes
 cost one language-equivalence product per state × class, once, with no monoid
 involved; the profiles cost `O(|EM|·|Q|)`; refinement costs `O(|EM|·|Σ|)` per
 split; the chase and the separator are on-demand and touch one pair.
@@ -530,15 +546,10 @@ it also dominates on cost is an A/B on the survey corpora, not an argument.
 Until measured, the seeded completion is a candidate cheap first tier on the
 suspect branch, nothing more.
 
-**Literature.** The syntactic ω-semigroup and its two-shape congruence are
-Arnold (1985); star-free ⟺ aperiodic on ω-words is Perrin (1984), with the
-book treatment in Perrin–Pin, *Infinite Words*; the counter-free
-deterministic screen is Thomas (1979); the survey chain LTL = FO = star-free
-is Diekert–Gastin (2008). The computation itself — quotient a recognizing
-monoid by a context congruence via partition refinement — is the classical
-syntactic-monoid construction transported to ω-semantics; the collapse of
-layer 5 is what makes the transport cheap (a state relation plus a right
-congruence, instead of a two-sided refinement over context triples).
+**Literature.** Read the companion `related_work.md` (same directory) — the
+positioning digest: each neighboring paper, what it establishes, and our
+exact relationship to it. The layers above cite only what roots a
+definition or a soundness argument.
 
 **Out of scope (the assembly's concern).**
 
