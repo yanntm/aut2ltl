@@ -207,6 +207,14 @@ AF 2021 shows `FG(a∨Xa)` has trivial `∼_L` — the blindness of the linear
 half documented from *their* side, quotable as why profiles are the
 missing ingredient. No definability content anywhere in the line.
 
+*P3 resolution (us, first-hand — §6, AF16 entry).* AF16 fetched and read:
+R3's parallel holds architecturally, not mechanically — the progress
+components are guarded per-class right congruences (ω-tests only over
+class-returning `v`, left context anchored per class), the infinitary data
+is an accepting-state marking, and **nothing plays the profile role**.
+D4's gap statement survives its source-level test; §4.8 gains the
+normalized-acceptance requirement.
+
 ### D5 — Complexity of the ω-decision
 
 *Precise complexity of deciding LTL/FO-definability from deterministic
@@ -389,6 +397,18 @@ frontier-BFS-on-DDs. Keeps R1's framing: not symbolic automata, symbolic
   letter-by-letter on the fly — a second complexity-shadow data point
   beside DG 12.3.
 
+- **Paper round P3 — 2026-07-03, AF16 fetched and read** (the TCS 2016
+  journal version of AF14, dropped in by the user; §6 entry; body text
+  only — the paper's figures OCR poorly and were not relied on). The last
+  reviewer-sourced item resolves: R3's syntactic-FDFA parallel is right
+  architecturally, loose mechanically — progress components are guarded
+  per-class right congruences, not profiles; nothing plays the profile
+  role, confirming D4's belief at the source. New load-bearing detail for
+  §4.8: the syntactic FDFA is unsaturated under exact acceptance —
+  normalized acceptance (their Def 8) is the semantics to emit. Every
+  first-hand item is now closed except the low-priority backdrop (BLS
+  re-read, Wilke 1999, Tsai).
+
 **Convergence after three rounds** (the narrowing-down target): all rounds
 agree that (i) the collapse *mechanism* — one right refinement, no left
 translation — is the original theoretical piece while the split itself is
@@ -488,6 +508,26 @@ canonical object our oracle computes exactly rather than learns, (ii) make
 the `~lin`/`~ω` ↔ leading/progress correspondence concrete instead of
 rhetorical, and (iii) give the paper a second exportable artifact beside the
 witness. Cheap if true; check what ROLL's FDFA format accepts.
+
+*P3 caveat (§6, AF16 entry):* emit under **normalized acceptance** (AF16
+Def 8) — the syntactic FDFA is *not saturated* under exact acceptance, and
+the FDFA toolbox (Boolean operations, decision procedures) assumes
+saturation. Also note our emitted object is finer than their `≈su` (profiles
+at every state vs class-returning periods only): correspondence, not
+identity.
+
+### 4.9 Replay turns heuristics into deciders (the certificate's free corollary)
+
+Because a NOT_LTL answer rests only on a *replayed* family (the fence of
+`algorithm.md` layers 7–8), the producer of the family needs no soundness
+at all: any search — random power-walks in a partial closure, the seeded
+`witness/` completion, a bounded guess in Diekert–Gastin's style — that
+happens to emit a toggling family yields a decision-grade negative after
+replay. A cheap unsound pre-tier on the suspect branch can therefore dodge
+the `|Q|`-exponent entirely on many negative instances, with the full
+quotient as the complete backstop. The seeded completion is the first
+instance; the principle is general and worth stating in the paper — it is
+the practical payoff of designing the certificate first.
 
 ## 6. First-hand reading log (verified facts + grep-back pointers)
 
@@ -646,8 +686,37 @@ below are **read at the source**, not reviewer claims.
   et al. push the same subsumption further (simulation-based, their
   L82–89) — same story, stronger pruning.
 
-**Still unread** (grep targets for cheap entry): AF14 — **not in `papers/`,
-fetch first** (the canonical FDFA definitions); Boker–Lehtinen–Sickert —
+- **Angluin–Fisman 2016** (`Angluin_Fisman_2016_TCS.txt` — the TCS journal
+  version of AF14, fetched on demand) — READ; **the last reviewer-sourced
+  item resolves**.
+  - Def 1 **L166–172**: FORC (leading + per-class progress right
+    congruences, compatibility `x ≈u y ⟹ ux ∼ uy`). Def 2 **L175–176**,
+    credited to Maler–Staiger: `x ≈su y ⟺ ux ∼L uy ∧ ∀v (uxv ∼L u ⟹
+    (u(xv)^ω ∈ L ⇔ u(yv)^ω ∈ L))`. Def 4 **L202–204**: syntactic FDFA =
+    the `∼L` automaton + the `≈su` DFAs, accepting the `[v]` with
+    `uv ∼L u` and `uv^ω ∈ L`. Periodic (Def 5, L214–216) and recurrent
+    (Def 9, L373–375) variants; `|≈ru| ≤ |≈su| ≤ |∼L|·|≈ru|` (L385).
+  - **R3's parallel, graded**: right at the architecture level
+    (leading/progress ↔ residuals/profiles), loose at the mechanism level —
+    the progress components are *guarded right congruences* (the ω-test
+    runs only over `v` returning to the leading class), the left context
+    stays anchored (`u` fixed per class), the object is a *family* of
+    congruences rather than one, and the infinitary data is an
+    accepting-state marking. **Nothing plays the profile role** — D4's
+    "we believe not" is now read at the source. Our differentiators (state
+    collapse, per-element `|Q|`-bit profiles, one unguarded right
+    refinement licensed by rotation) survive contact intact.
+  - **Saturation subtlety, load-bearing for §4.8**: the syntactic FDFA
+    under exact acceptance is **not saturated** (L349–354, witness
+    `L = a^ω + ab^ω`); saturation holds under *normalized acceptance*
+    (Def 8 + Prop 4, L355–368). Any syntactic FDFA we emit must declare
+    the `⟦F⟧N` semantics, or ABF's saturation-based toolbox does not apply.
+  - Learning-only, as expected: the canonical FDFAs are *learning targets*
+    (algorithms polynomial in the periodic fdfa); no computation from an
+    automaton, no definability content (grep negative). The Ult example
+    (L190–193) echoes M–S Fact 1 (finite syntactic FORC ≠ regular).
+
+**Still unread** (grep targets for cheap entry): Boker–Lehtinen–Sickert —
 related-work re-read; Wilke 1999, BLS related work, Tsai — low priority.
 
 ## 7. Reading queue (remaining; done items moved to §6)
@@ -657,10 +726,7 @@ related-work re-read; Wilke 1999, BLS related work, Tsai — low priority.
 ~~6. Cho–Huynh~~ ~~7. McConnell et al.~~ ~~8. Fogarty–Vardi / Abdulla~~
 — all resolved, see §6.
 
-9. **Angluin–Fisman, "Learning regular ω-languages"** (ALT 2014; journal
-   TCS 2016) — **to fetch, not in `papers/`**: the canonical
-   periodic/**syntactic**/recurrent FDFA definitions live there and nowhere
-   in what we hold; R3's "syntactic FDFA" parallel (D4) and §4.8's target
-   format verify here or not at all.
+~~9. Angluin–Fisman TCS 2016~~ — fetched (thanks) and resolved, see §6.
+
 10. **Boker–Lehtinen–Sickert** 2022 — related-work re-read.
 11. **Wilke** STACS 1999, **Tsai et al.** — low priority backdrop.
