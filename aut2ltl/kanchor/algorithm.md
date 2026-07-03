@@ -605,39 +605,50 @@ State 1:         [!b]     → 1     [b]      → 0
 
 One terminal SCC, `q0 = 0`. The full inputs **overlap**: `I(0) = !a | b` and
 `I(1) = !b` share the idle letter `!a & !b` — both states wait on it — so the
-loop-free read-off declines. The anchor split:
+loop-free read-off declines. The raw split, and the promoted guards:
 
 ```
-L(0) = !a | b     A(0) = b          M(0) = a & !b     E(0) = ∅
-L(1) = !b         A(1) = a & !b     M(1) = b          E(1) = ∅
+L(0) = !a | b     A(0) = b          M(0) = a & !b     E(0) = ∅     P(0) = b
+L(1) = !b         A(1) = a & !b     M(1) = b          E(1) = ∅     P(1) = a & !b
+```
+
+Both loops carry a promotable part: `b` loops at 0 and enters 0 from 1 —
+every occurrence lands at 0; `a & !b` loops at 1 and enters 1 from 0 — the
+diagonal case of layer 4, looping *and* entering the same state, promotable
+all the same. What the promotion leaves behind is exactly the shared idle
+letter, at both states. The k = 1 form:
+
+```
+L(0) = !a & !b    A(0) = b          M(0) = a | b
+L(1) = !a & !b    A(1) = a & !b     M(1) = a | b
 ```
 
 P1: `A(0) ∧ A(1) = b ∧ (a & !b) = false`. P2: `L(0) ∧ A(1) = false`,
-`L(1) ∧ A(0) = false`. (The exempt overlap even occurs: `L(1) ∧ A(1) = a & !b
-≠ false` — read at 1 it loops at 1, read at 0 it moves to 1; either way the
-run is at 1 next.) The component is terminal, so `LEAVE = false`; with
-`F_1 = {0}`, `F_all = {0}`, the raw read-off is
+`L(1) ∧ A(0) = false`. The component is terminal, so `LEAVE = false`; with
+`F_1 = {0}`, `F_all = {0}`, the read-off is
 
 ```
-Final =  ( (!a | b) W (a & !b) )                          -- q0's sojourn
-      ∧  G( b → X( (!a | b) W (a & !b) ) )                -- the law of state 0's stretch
-      ∧  G( (a & !b) → X( !b W b ) )                      -- the law of state 1's stretch
-      ∧  ( GF b  ∨  G(!a | b)  ∨  F( b ∧ XG(!a | b) ) )   -- fair: anchor 0 i.o., or park on 0
+Final =  ( (!a & !b) W (a | b) )                              -- q0's sojourn
+      ∧  G( b → X( (!a & !b) W (a | b) ) )                    -- the law of state 0's stretch
+      ∧  G( (a & !b) → X( (!a & !b) W (a | b) ) )             -- the law of state 1's stretch
+      ∧  ( GF b  ∨  G(!a & !b)  ∨  F( b ∧ XG(!a & !b) ) )     -- fair: anchor 0 i.o., or park on 0
 ```
 
-Now watch the collapse (4.5) at work: `L(1) ∨ M(1) = !b ∨ b = ⊤` and
-`L(0) ∨ M(0) = (!a|b) ∨ (a&!b) = ⊤` — the automaton is *total*, every letter
-is legal from either state — so **both** sojourns are tautologies, the two law
-conjuncts and `q0`'s sojourn all evaporate, and the built label is the bare
-fairness
+Now watch the collapse (4.5) at work: at both states
+`L(s) ∨ M(s) = (!a & !b) ∨ a ∨ b = ⊤` — the automaton is *total*, every
+letter is legal from either state — so **both** sojourns are tautologies, the
+two law conjuncts and `q0`'s sojourn all evaporate, and the built label is
+the bare fairness
 
 ```
-Final =  GF b  ∨  G(!a | b)  ∨  F( b ∧ XG(!a | b) )
+Final =  GF b  ∨  G(!a & !b)  ∨  F( b ∧ XG(!a & !b) )
 ```
 
 — equivalent to `G(a → Fb)`, whose safety content was an illusion all along.
-The park term for state 0 is *not* droppable (`L(0) = !a | b ⊄ A(0) = b`); the
-sibling fixture `park_drop.hoa` shows the drop firing.
+The park terms for state 0 are *not* droppable — the shared idle letter
+survives promotion (`L(0) = !a & !b ⊄ A(0) = b`), so a run may park on
+letters no trigger sees; the sibling fixture `park_drop.hoa` shows the drop
+firing.
 
 ### 9.2 — k = 2: `GF(a ∧ Xa)`
 
