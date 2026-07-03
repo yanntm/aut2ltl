@@ -147,18 +147,43 @@ loops are not a problem at all, and the split is corrected before anything
 else is built. A loop letter `σ` every one of whose in-`C` occurrences is at
 `s` — `σ ∧ (L(t) ∨ A(t)) = false` for every `t ≠ s` — still *names its
 state*: whoever reads it knows the run sits at `s`. Such a letter is an
-anchor in everything but edge shape, and it is **promoted** at build time —
-into `A(s)` on the trigger side, into `M(s)` on the consequence side (a unit
-re-entry ends a sojourn exactly as a move does — the promoted letter must be
-a legal stay-ender wherever `M(s)` legislates), out of `L(s)`. From here on
-`A(s)`, `M(s)` and `L(s)` denote the promoted split: `A(s)` collects all of `s`'s *identifying* letters, entering
-or looping; `L(s)` keeps only the **necessary** stay letters — those a run
-could also be reading somewhere else, which no stateless observer can
-attribute. Nothing above changes: a promoted letter fires `s`'s own row and
-promises one more step at `s`, which is exactly what its loop does; and the
-same correction applies verbatim at every window width below (a loop
-*window* shared with no other state's windows identifies its state and
-joins the triggers). What this layer actually has to solve is the residual
+anchor in everything but edge shape, and its loop is **promoted** at build
+time: the self-loop `(s, σ, s)` is reclassified as an *entering* edge —
+arriving at `s` on `σ` and staying at `s` on `σ` are indistinguishable, and
+either reading is true. The **entering-edge set**
+
+```
+δ↑  =  { (v, g, s) ∈ δ|C : v ≠ s }  ∪  { (s, σ, s) : σ promoted at s }
+```
+
+is the raw material *every* window level builds its triggers from: a
+promoted edge contributes a trigger row, a fairness disjunct, a park term
+and a leave witness at each level, exactly as any other entry does (layers
+5–7 range over `δ↑` throughout). At k = 1 the contribution takes the form
+of the split: `σ` joins `A(s)` on the trigger side and `M(s)` on the
+consequence side (a unit re-entry ends a sojourn exactly as a move does —
+the promoted letter must be a legal stay-ender wherever `M(s)` legislates),
+and is removed from `L(s)`. From here on `A(s)`, `M(s)` and `L(s)` denote
+the promoted split: `A(s)` collects all of `s`'s *identifying* letters,
+entering or looping; `L(s)` keeps only the **necessary** stay letters —
+those a run could also be reading somewhere else, which no stateless
+observer can attribute.
+
+- **Promotion is sound at every width.** Two obligations, both discharged
+  by the defining property — `σ` has no in-`C` occurrence outside `s`.
+  *Truthfulness*: every window a promoted edge contributes ends on `σ`, and
+  any in-`C` reading of `σ` sits at `s` at both ends, so the promise the
+  trigger makes (a sojourn at `s` next; `s`'s colors visited) is true under
+  every reading, spurious context included. *Visibility*: a run staying at
+  `s` on promoted letters fires `s`'s own entering windows at each such
+  position — the law hands over to `s`'s rows, the `GF` disjuncts count the
+  visits, and past the run's last promoted letter the park terms take the
+  residual tail. And the preconditions are indifferent: `σ` meets no other
+  state's loop or entering guard, so P1/P2 and their graded versions are
+  decided identically with or without the promotion — promotion trades
+  label size, never coverage.
+
+What this layer actually has to solve is the residual
 `L(s)`: genuinely ambiguous stuttering, where the phase is a function of the
 **last anchor** only — the state entered by the last identifying letter,
 unchanged by the ambiguous letters read since. That recovery needs one test
@@ -327,8 +352,9 @@ abstraction; the window stays rigid and the law stays `X`-shaped.
 Two relations over `Σ × Σ`, one per phase-relevant reading of a pair:
 
 ```
-Enter₂(s)  =  ⋁ { I(v) × g : (v, g, s) ∈ δ,  v, s ∈ C,  v ≠ s }   -- pairs that move the run INTO s
-Stay₂(s)   =  I(s) × L(s)                                          -- pairs that keep the run AT s
+Enter₂(s)  =  ⋁ { I(v) × g : (v, g, s) ∈ δ↑ }   -- pairs that put the run AT s; a promoted
+                                                 --   self-loop contributes the rectangle I(s) × σ
+Stay₂(s)   =  I(s) × L(s)                        -- pairs that keep the run at s on necessary loops
 ```
 
 These relations are conceptual: both are unions of *rectangles*
@@ -372,16 +398,23 @@ The layer-4 derivations re-run through pairs, same mechanism:
   predecessor letter disambiguates the current letter's role. The phase is a
   function of the last *two* letters where it was not a function of the last
   one.
+- **Promoted rectangles collide with nothing foreign.** The second
+  coordinate of a promoted rectangle `I(s) × σ` has no in-`C` occurrence
+  outside `s`, so the rectangle meets no other state's `Enter₂` or `Stay₂`:
+  P1² and P2² are decided identically with or without the promotion, at
+  this width as at every other (the layer-4 soundness note, re-derived on
+  pairs).
 
 ### 5.4 — The phase lemma (pairs), and its license
 
 Under P1² + P2² (+ P0² of layer 6 for the start), for a word whose run has
 stayed in `C`: any pair `(w_{i−1}, w_i)` of the word that lies in `Enter₂(s)`
 puts the run **at `s`** after position `i` — the run's actual step read that
-pair either as a loop at its current state `u` (then
-`Stay₂(u) ∧ Enter₂(s) ≠ false` forces `u = s`: it was already there) or as a
-move into some `t` (then `Enter₂(t) ∧ Enter₂(s) ≠ false` forces `t = s`). A
-pair lying in no `Enter₂` was a loop: the run is where it was. Hence the phase
+pair either as a stay on a necessary loop of its current state `u` (then
+`Stay₂(u) ∧ Enter₂(s) ≠ false` forces `u = s`: it was already there) or as an
+entry into some `t` — a move, or a promoted loop at `t` (then
+`Enter₂(t) ∧ Enter₂(s) ≠ false` forces `t = s`). A pair lying in no `Enter₂`
+was a necessary loop: the run is where it was. Hence the phase
 is the target of the **last entering pair**, with the start rule of layer 6
 standing in before any pair has entered. As at layer 4, a word has at most one
 run within `C` and every other run is an exit branch of it.
@@ -428,25 +461,30 @@ instead — an automaton surgery — is noted in layer 12, not taken.)
 Layer 4's letter-level pieces `sojourn(s)`, `leave(s)`, `park`, `F_all` are
 reused unchanged (their soundness needed only the disjointness re-derived in
 5.3). Triggers become pairs, consequences gain one `X`, and position 0 gets
-the 0-step law. Conjuncts are grouped per source–target pair
+the 0-step law. Rows range over the entering edges `δ↑` of layer 4; for a
+promoted self-loop the source *is* the target, so its full row reads
+`I(s) ∧ X σ → XX sojourn(s)`, and a promoted loop at `q0` contributes 0-step
+rows with target `q0` — a word may enter the transcription at position 0 on
+a promoted `q0`-letter, and position 0 having no predecessor pair, only a
+0-step row can anchor it. Conjuncts are grouped per source–target pair
 (`(A → C) ∧ (B → C) ≡ (A ∨ B) → C`), written per edge below for clarity:
 
 ```
-enter₂(s)  =  ⋁_{(v,g,s) ∈ δ|C, v≠s} ( I(v) ∧ X g )                  -- the pair-anchor, as LTL
-step₂      =  ⋀_{(v,g,s) ∈ δ|C, v≠s} ( I(v) ∧ X g  →  XX sojourn(s) )
-start      =  ⋀_{(q0,g,s) ∈ δ|C, s≠q0} ( g → X sojourn(s) )          -- position 0 only, not G-wrapped
+enter₂(s)  =  ⋁_{(v,g,s) ∈ δ↑} ( I(v) ∧ X g )                  -- the pair-anchor, as LTL
+step₂      =  ⋀_{(v,g,s) ∈ δ↑} ( I(v) ∧ X g  →  XX sojourn(s) )
+start      =  ⋀_{(q0,g,s) ∈ δ↑} ( g → X sojourn(s) )           -- position 0 only, not G-wrapped
 
 fair₂      =  ⋀_{i=1..m} GF( ⋁_{s ∈ F_i} enter₂(s) )
-           ∨  ⋁_{s ∈ F_all ∩ C} F( enter₂(s) ∧ XXG L(s) )            -- park after a pair-entry
-           ∨  ⋁_{(q0,g,s) ∈ δ|C, s ∈ F_all, s≠q0} ( g ∧ XG L(s) )    -- park after the 0-step entry
-           ∨  [ q0 ∈ F_all ] ∧ G L(q0)                               -- park on q0 from position 0
+           ∨  ⋁_{s ∈ F_all ∩ C} F( enter₂(s) ∧ XXG L(s) )      -- park after a pair-entry
+           ∨  ⋁_{(q0,g,s) ∈ δ↑, s ∈ F_all} ( g ∧ XG L(s) )     -- park after the 0-step entry
+           ∨  [ q0 ∈ F_all ] ∧ G L(q0)                         -- park on q0 from position 0
 
 STAY∞      =  sojourn(q0) ∧ start ∧ G step₂ ∧ fair₂
 
 LEAVE      =  leave(q0)
-           ∨  ⋁_{(q0,g,s) ∈ δ|C, s≠q0} ( g ∧ X leave(s) )            -- move at 0, exit from s's stretch
+           ∨  ⋁_{(q0,g,s) ∈ δ↑} ( g ∧ X leave(s) )             -- enter at 0, exit from s's stretch
            ∨  ( sojourn(q0) ∧ start ∧
-                ( step₂ U ⋁_{(v,g,s) ∈ δ|C, v≠s} ( I(v) ∧ X g ∧ XX leave(s) ) ) )
+                ( step₂ U ⋁_{(v,g,s) ∈ δ↑} ( I(v) ∧ X g ∧ XX leave(s) ) ) )
 
 Final      =  STAY∞ ∨ LEAVE
 ```
@@ -459,16 +497,18 @@ Final      =  STAY∞ ∨ LEAVE
   of a live `step₂` trigger. Identification comes from the pair (P1²/P2² make
   it unambiguous), legality from the consequence: layer 2's division of labor,
   intact.
-- **The start.** If `w₀` moves within `C`, its target is unique by P0² and
-  `start` supplies the promise `G step₂` cannot reach. If `w₀` loops,
-  `sojourn(q0)` covers it and the eventual first move is pair-covered (its
+- **The start.** If `w₀` enters within `C` — a move, or a promoted
+  `q0`-loop letter — its target is unique by P0² (a promoted letter lies
+  inside the self-loop guard, one of P0²'s targets) and `start` supplies the
+  promise `G step₂` cannot reach. If `w₀` is a necessary loop letter,
+  `sojourn(q0)` covers it and the eventual first entry is pair-covered (its
   predecessor is a `q0`-loop letter, in `I(q0)`). Entries at position 1 are
   the *only* pair-less entries; everything later has a full window.
 - **Fairness.** Moving forever: every stay is finite and opened by an entering
   pair, so color visits are `GF` of pair-entries — the single pair-less entry
   at position 1 is invisible to `GF` and harmless. Parking now has three
   shapes: after a pair entry, after the 0-step entry (`g ∧ XG L(s)`: the run
-  that moves at position 0 and parks immediately — a case the pair term cannot
+  that enters at position 0 and parks immediately — a case the pair term cannot
   see, and the `GF` cannot rescue), and never moving at all (`G L(q0)`, the
   construction-time `q0 ∈ F_all` test of layer 4).
 - **The park drop generalizes:** `Stay₂(s) ⊆ Enter₂(s)` (the rectangle-cover
@@ -491,9 +531,10 @@ The letter and pair constructions are one production graded by the window
 width `k`; nothing in the label is hand-matched between levels.
 
 - **Windows.** An entry at position `p` has `p` letters of history. Positions
-  `p ≥ k` use **full windows**: `k` adjacent letters, `I`-weakened context
-  components, the entering guard last. Positions `0 < p < k` use **truncated
-  windows rooted at `q0`**: actual paths of length `p` out of `q0`, the
+  `p ≥ k` use **full windows**: `k` adjacent letters ending on a `δ↑` edge's
+  guard, `I`-weakened context components. Positions `0 < p < k` use **truncated
+  windows rooted at `q0`**: actual paths of length `p` out of `q0` ending on
+  a `δ↑` edge, the
   certainty of being at `q0` at time 0 standing in for the missing context
   letters. `p = 0` is the run that never entered anything — `sojourn(q0)` and
   the `G L(q0)` park, present at every level.
@@ -649,7 +690,10 @@ level:
   corollary: the window still pins the run at the promised target, whose
   actual future is a legal sojourn). Its color visits fall into the
   moving-forever / parked dichotomy that `fair` transcribes — at k = 2 the
-  position-1 entry covered by the 0-step park term. Leaving: from `q0`'s
+  position-1 entry covered by the 0-step park term (a park may keep reading
+  promoted letters: infinitely many keep firing `s`'s own entering windows
+  and the `GF` disjunct accepts; finitely many leave a residual tail the
+  park term takes past the last one). Leaving: from `q0`'s
   stretch (`leave(q0)`), from the first stretch after a position-0 move (the
   truncated leave disjunct), or after at least one full window — the `U`'s
   witness (strictly earlier sojourns end in genuine moves).
@@ -661,7 +705,8 @@ level:
   over). In `STAY∞`, each `fair` disjunct certifies the acceptance of *that*
   run: entering windows firing infinitely often yield real visits to every
   color when the run keeps moving — and a parked run's windows are staying
-  windows, which P2/P2² bar from firing foreign entries, so parks are
+  windows or `s`'s own promoted entries, the former barred by P2/P2² from
+  firing foreign rows and the latter re-asserting `s` itself, so parks are
   letter-exact and a park term pins the run on its `F_all`-state forever. In
   `LEAVE`, the law holds strictly before the `U`'s witness, so the final
   window is still constrained by the last active sojourn (it must be a legal
