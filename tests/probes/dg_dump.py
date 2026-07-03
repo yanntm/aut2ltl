@@ -13,56 +13,29 @@ quotient is reported and exits 2. No verdict logic of its own.
 from __future__ import annotations
 
 import sys
-from typing import List
 
-import spot
-
-from aut2ltl.language import Language
-from aut2ltl.bls.extract import extract_generators
-from aut2ltl.bls.definability.witness.enriched import letter_elems
-from aut2ltl.bls.definability.witness.support import valuation_to_letter
-from aut2ltl.bls.definability.oracle.closure import close, Monoid
-from aut2ltl.bls.definability.oracle.profile import Profile, profile
-from aut2ltl.bls.definability.oracle.quotient import find_group
-from aut2ltl.bls.definability.oracle.refine import refine
-from aut2ltl.bls.definability.oracle.residuals import state_classes
-from aut2ltl.bls.definability.dg.morphism import Alg, build
+from dg_common import print_d_line, quotient_of_hoa
 
 
 def main(path: str) -> int:
-    lang = Language.of(spot.automaton(path))
-    det = lang.det_generic_minimal()
-    aut = spot.postprocess(det, "deterministic", "generic", "complete")
-    gens, _masks, valuations = extract_generators(aut)
-    names: List[str] = [valuation_to_letter(v) for v in valuations]
-    init: int = aut.get_init_state_number()
-    print(f"D        : {aut.num_states()} states, letters {names}, "
-          f"init {init}, acc {aut.get_acceptance()}")
-
-    letters = letter_elems(aut, valuations)
-    mon: Monoid = close(letters, aut.num_states(), 20000)
-    if mon is None:
+    data = quotient_of_hoa(path)
+    if data is None:
         print("closure  : blew the cap")
         return 2
-
-    st_cls = state_classes(aut)
-    lin = [tuple(st_cls[st] for (st, _m) in el) for el in mon.elems]
-    acc = aut.acc()
-    prof: List[Profile] = [profile(acc, el) for el in mon.elems]
-    cls: List[int] = refine(mon, list(zip(lin, prof)))
-    print(f"quotient : |EM1| = {len(mon)} elements -> {max(cls) + 1} classes")
-    if find_group(mon, cls) is not None:
+    print_d_line(data)
+    alg = data.alg
+    k: int = len(alg)
+    print(f"quotient : |EM1| = {len(data.mon)} elements -> {k} classes")
+    if data.group is not None:
         print("verdict  : NOT aperiodic -- not a dg input")
         return 2
 
-    alg: Alg = build(mon, cls, prof, names, init)
-    k: int = len(alg)
     print("classes  :")
     for i in range(k):
         tag = "  idempotent" if alg.idem[i] else ""
         print(f"  {i}: [{alg.key(i)}]{tag}")
     print("letters  : " + ", ".join(
-        f"{names[li]} -> {alg.letter_cls[li]}" for li in range(len(names))))
+        f"{alg.letters[li]} -> {alg.letter_cls[li]}" for li in range(len(alg.letters))))
 
     print("mult     :  (row i, col j) = i.j")
     for i in range(k):
