@@ -152,8 +152,18 @@ K₂ = ⋃_{n ∈ T₁}          n T₁^ω  ∩  n [ n⁻¹σ(N) ∩ T₁^ω ]_g
 where `[·]_g` is `≈g`-saturation. Each saturation is recognized by `g` —
 a morphism onto the *strictly smaller* aperiodic `T'` — so the monoid
 induction yields its formula in the `L_{n,T}` form, with the leading block
-`n` as the prepend letter. The regime guards and the shapes `nT₁*m`,
-`nT₁^ω` are directly definable over `T`.
+`n` as the prepend letter. The regime guards and shapes are directly
+`[XU]`-definable over `T`, from the phantom position (writing `⋁T₁` for
+the disjunction of the `T₁`-letters, `end` for `¬X⊤`, `inf` for `G X⊤`):
+
+```
+K₀-shape (one T₂-letter m)  :   X(m ∧ end-of-word: ¬X⊤)
+n T₁* m                     :   X( n ∧ ( (⋁T₁) XU (m ∧ ¬X⊤) ) )
+n T₁^ω                      :   X( n ∧ G(⋁T₁) ) ∧ inf
+```
+
+(the `XU` in the middle shape allows an empty `T₁*` — the `m` may
+immediately follow `n`; a one-letter word has no middle case at all).
 
 **The saturation is a table on the finite side.** For `w ∈ T₁*`, membership
 of `n·w·m` in `σ(N)` depends on `w` only through `g(w)`: the `Δ`-word it
@@ -212,43 +222,71 @@ occurrence of their `T`-atom across the compressed formula — this is
 precisely where the project's hash-consed DAG is load-bearing: the flat
 form may repeat `φₙ` hundreds of times, the DAG holds it once.
 
-## 6 — The ω-class calculus (`T₂`, and `K₂`'s class sets)
+## 6 — The ω-word letters: pair-letters, and the lemma that licenses them
 
-The one genuinely construction-level piece of engineering [DG] leaves
-implicit is the finite handling of the infinite-word classes:
+The one construction-level piece [DG] leaves implicit is the finite
+handling of the infinite-word classes. The theory says a `T₂`-letter is an
+`≈_{h|A}`-class of `A^∞`-words; the construction takes something coarser to
+build and provably as good: **the linked pairs themselves, unmerged**.
+Every ω-word has at least one Ramsey pair ([DG] 5.2), distinct pairs may
+denote overlapping ω-sets, and no identity test is performed. `T₂` is then
+the linked pairs of `h|A` (plus the finite-tail fibers on the `Σ^∞` frame),
+enumerated and keyed canonically.
 
-- **Representation.** A `T₂`-letter is an `≈_{h|A}`-class of `A^ω`-words
-  (plus, on the `Σ^∞` frame, the finite-word tail cases carried by the
-  contract's class-set presentation). Every class contains an
-  ultimately-periodic word `s·e^ω` for a linked pair of `h|A` ([DG] 5.2),
-  so classes are presented by linked pairs — with the caveat that distinct
-  pairs can present the same class.
-- **Finer is safe.** If pair-identity is tested by a *sound but incomplete*
-  equivalence, classes over-split: `T₂` grows, `σ` stays a well-defined
-  function, `K₀/K₁` union over more letters, and nothing downstream breaks
-  — the cost is alphabet size, never correctness. The implementation may
-  therefore start with a cheap sound merge (at the root, where `h` is
-  *syntactic*, the left-context acceptance vector `x ↦ P(x·s, e)` is a
-  natural exact key candidate) and refine only if measurements demand it.
-  Pinning the cheapest *exact* identity test is open point **O2**.
-- **Evaluation.** The `K₂` class sets need "is `n·(class member) ∈ σ(N)`":
-  render the class's linked-pair representative into `Δ`-words (per-letter
-  `A*`-representatives from a BFS over the `A`-generated submonoid), read
-  the resulting ultimately-periodic word's pair off the tables, look up
-  `P`. Constancy across the class's `T₁^ω`-members is [DG]'s auxiliary
-  results; the implementation just evaluates one representative.
+**The pair-letter lemma.** Every table entry the assembly reads about a
+`T₂`-letter is independent of which admitted pair names a word. Proof in
+three steps, each one line:
+
+1. *A pair language is one similarity block.* All members of
+   `h⁻¹(s)·(h⁻¹(e))^ω` factor with the same image sequence `s, e, e, …`,
+   so they are pairwise `∼h`-similar; a recognized `N` therefore contains
+   all of it or none, and `P(s, e) = [w ∈ N]` for **every** `w` admitting
+   `(s, e)`.
+2. *Two pairs of one word agree.* If `w` admits `(s, e)` and `(s′, e′)`,
+   both values equal `[w ∈ N]` by step 1.
+3. *Prefixing preserves admission.* If `h(u) = y` and `w` admits `(s, e)`,
+   then `u·w` admits `(y·s, e)` (prepend `u` to the factorization; linked
+   since `(y·s)·e = y·s`). So the `X_{n,m}` lookups `P(n·x·s, e)` all
+   equal `[u·w ∈ N]` — agreement across the tail's pairs, again by step 1.
+
+Every `K₀` test is a step-1 instance, every `K₁`/`X_{n,m}` test a step-3
+instance, and the `K₂` class sets at the next level repeat the argument
+verbatim with `g` and the saturation target — the recursion's targets are
+always morphism-recognized, which is all step 1 uses. Overlapping letters
+therefore cost **redundant disjuncts, never correctness**; and since pairs
+are keyed canonically (layer 8), the normal form survives. Merging pairs
+(an exact `≈`-identity, or any coarsening) is purely an output-size
+optimization — deferred, measurement-driven (O2), and *illegal without
+this lemma's discipline*: layer 13 shows a plausible merge key that is
+strictly coarser than `≈`.
+
+**Evaluation.** Where a class-set query is not already covered by the
+lemma's table forms, the evaluator is: render the pair's representative
+words (per-letter `A*`-reps from a BFS over the `A`-generated submonoid),
+read the rendered ultimately-periodic word's pair off the tables, look up
+`P`. Constancy across a letter's members is the lemma.
 
 ## 7 — Unwinding the device at the root
 
-The root call returns `φ` with `L = L_{fresh,Σ}(φ)` — evaluated on `fresh·w`.
-Since `L ⊆ Σ^ω` never contains `ε`, [DG] Remark 7.1 / Prop 8.1(1) convert:
-strip the anchor by taking the `X`-successor view of `φ` (`L_Σ(φ') = L` for
-`φ'` obtained by the Remark's letter-substitution, or directly
-`φ' = X-shifted φ` since only position 0 sees the fresh letter). The final
-formula is standard pure-future LTL over `Σ^ω`; internal `XU` unfolds as
-`X(· U ·)` for the host DAG. The internal `Σ^∞` semantics never leaks: all
-finite-word formulas live inside lifted (`·^c`) contexts, where the block's
-end is a real position of the host word.
+The root call returns `φ` with `L = L_{fresh,Σ}(φ)` — evaluated on
+`fresh·w` at position 0, the phantom position whose letter is `fresh`.
+[DG] Remark 7.1 converts this to an ordinary formula by **partial
+evaluation at the phantom position** — a top-down pass touching only the
+subterms evaluated at position 0:
+
+```
+PE(a)         =  ⊤ if a = fresh, else ⊥        (the phantom's letter is known)
+PE(¬φ)        =  ¬PE(φ)
+PE(φ ∨ ψ)     =  PE(φ) ∨ PE(ψ)
+PE(φ XU ψ)    =  φ U ψ        — anchored at position 0 of w; the operands
+                                speak of real positions and pass through
+```
+
+`L = L_Σ(PE(φ))` since `L` never contains `ε`. The result is pure-future
+LTL over `Σ^ω`; the remaining internal `XU` nodes render as `X(· U ·)` in
+the host DAG. The internal `Σ^∞` semantics never leaks: every finite-word
+formula lives inside a lifted (`·^c`) context, where the block's end is a
+real position of the host word.
 
 ## 8 — Canonicity: the fixed choices
 
@@ -325,17 +363,14 @@ nodes memoize on hash-consed keys (the descent is a DAG, not a tree), and
   `LTL[XU]` over `Σ^∞`, the `L_{c,A}` prepend device, `ε` never a model.
   The earlier draft's "LTLf boundary discipline" dissolves into Lemmas
   8.3/8.4's exact clauses.
-- **O2 — the ω-class identity test.** "Finer is safe" (layer 6): a
-  refinement of `≈_{h|A}` costs alphabet size, never correctness; a
-  *coarsening* is unsafe without proof. The draft's candidate key —
-  left-context acceptance vectors — is **demonstrably coarser than `≈`**:
-  layer 13 exhibits three pairwise distinct rejecting ω-classes sharing
-  the all-zero vector. So the open question stands in sharpened form:
-  the default must be an exact `≈`-identity decision (linked pairs modulo
-  provable merges — conjugation `(s·x, y·x)-(s·y·…)` style moves), and
-  the acceptance-vector *merge* is admissible only under a congruence
-  lemma ("every query the recursion will ever issue against a `T₂`-letter
-  factors through the vector") — to prove or drop, not to assume.
+- **O2 — CLOSED for v0 by the pair-letter lemma (layer 6).** History: the
+  draft's candidate merge key (left-context acceptance vectors) was
+  falsified by layer 13; the resolution is that no identity test is
+  needed at all — `T₂` = the linked pairs unmerged, sound by the layer-6
+  lemma (every table query is the membership of a genuine word, hence
+  pair-choice-independent). What survives of O2 is an *optimization*:
+  an exact `≈`-identity or a proven-congruent merge shrinks `T₂` and
+  tightens the normal form — post-prototype, measurement-driven.
 - **O3 — pivot heuristics.** v0 pins least-visible-letter; deterministic
   size-minimizing pivots are a later, measured change of normal form.
 - **O4 — worked examples: DONE** (both instalments, layers 12–13, from
@@ -345,16 +380,8 @@ nodes memoize on hash-consed keys (the descent is a DAG, not a tree), and
   pairs, prefix-independence arriving as a constant row, and one
   falsified design assumption (see O2). A third walk is only warranted
   when implementation surfaces a shape neither covers.
-- **O5 — module map** (draft, one role per module, mirroring the oracle):
-  `morphism.py` (the layer-1 tables + canonical re-keying), `divisor.py`
-  (the local divisor: carrier, `∘`, the strict-decrease assert),
-  `compress.py` (the `c`-factorization data: `T₁`, `T₂`, `σ`-tables, the
-  `X_{n,m}` sets), `omega_classes.py` (layer 6), `lift.py` (Lemmas
-  8.3/8.4, the only formula-producing module), `dg.py` (the induction
-  driver: pivot, the `K` assembly, caps — the only sequencing). Probes:
-  `tests/probes/dg_dump.py` (exists: the canonical algebra dump feeding
-  layer 12), then `tests/probes/dg_probe.py` (end-to-end, one HOA per
-  invocation, Spot-verifies, ≤15 s).
+- **O5 — RESOLVED: the architecture is layer 14** (module map,
+  responsibilities, build order).
 - **O6 — wiring.** Whether this surfaces as a `Translator`, and where it
   sits relative to the gate (an LTL verdict with a formula attached), is
   the assembly's concern — out of scope here, exactly as gate wiring was
@@ -516,6 +543,79 @@ the merge happens to be harmless (every query the assembly issues factors
 through `P(1, e′)`), which is exactly the shape of the congruence lemma
 O2 now demands before any such merge is allowed. Ground truth from a
 six-line probe output; this is what the walks are for.
+
+## 14 — Architecture: the module map and the build order
+
+One module per role, mirroring the oracle's discipline: each owns one
+algorithmic step and one data shape, consumes value objects from above,
+and is exercisable alone. The driver owns **no algorithm** — sequencing,
+the pivot rule, memoization and caps only.
+
+```
+        oracle output  (Monoid, class ids, profiles)
+                          │
+                    morphism.py         the algebra as a value: canonical ids
+                          │             (shortlex re-key), mult table, letter
+                          │             map, P, the linked pairs   (layers 1, 8)
+        ┌─────────────────┼─────────────────┐
+   divisor.py        compress.py       formulas.py
+   Alg × c → Alg     one node's data:  the internal [XU]-AST over abstract
+   carrier, ∘,       A, T₁, T₂, g,     letter atoms: build, lift^b, tilde,
+   strict-decrease   X_{n,m}, K sets   PE-unwind, render to the host DAG
+   assert (lyr 3)    (layers 4–6)      (layers 2, 5, 7)
+        └─────────────────┼─────────────────┘
+                      synth.py          the induction driver: base case,
+                          │             pivot, K assembly, memo, caps —
+                          │             the only sequencing   (all layers)
+              tests/probes/dg_probe.py      end-to-end + Spot verify
+              tests/probes/dg_canon.py      the layer-8 DAG-identity claim
+```
+
+- **`morphism.py`** — consumes the oracle's `Monoid` + refined classes;
+  produces the frozen `Alg` value: canonically re-keyed class ids, the
+  multiplication table, the letter map, `P`, the linked-pair enumeration.
+  `tests/probes/dg_dump.py` becomes its display client.
+- **`divisor.py`** — `Alg × element → Alg`: the `∘`-algebra of `mT ∩ Tm`,
+  the embedding maps, and the strict-decrease invariant as an assert.
+- **`compress.py`** — `Alg × pivot → node data`: `A`, `T₁` (the generated
+  submonoid with `A*`-representatives), `T₂` (linked pairs of `h|A` +
+  finite fibers), the `g`-letter map into the divisor `Alg`, the
+  `X_{n,m}` tables, the `K₀`/`K₂` letter and class sets. Pure tables —
+  produces no formula.
+- **`formulas.py`** — the internal hash-consed `[XU]`-AST whose atoms are
+  *abstract letters* of whatever alphabet a node speaks; the three exact
+  [DG] transformations (lift `·^b`, substitution `·~`, the phantom
+  partial evaluation) as structural recursions; the final render to the
+  host DAG (`XU ↦ X(· U ·)`, root letters ↦ AP cubes). By construction
+  only `Σ`-letters survive to the render — every `T`-atom is eliminated
+  by a tilde one level up.
+- **`synth.py`** — the recursion node
+  `(alphabet, Alg, target, prepend) → formula`, memoized on canonical
+  keys; the base case; the pivot rule; the `K` assembly; the caps
+  (node count, DAG size, time) exiting as a decline. The only impure-ish
+  module in the sense of owning policy.
+
+**Build order** — each step lands with its check green before the next,
+and layers 12–13 are the precomputed expected values (the walks *are* the
+unit fixtures):
+
+1. `morphism.py`, re-basing `dg_dump.py` on it — expected output: the
+   exact tables printed in layers 12–13.
+2. `divisor.py` — expected: `6 → {1, 5}` on the flagship, `3 → {1}` on
+   fairness, assert fires on a group-bearing input.
+3. `compress.py` — expected: the `T₁`/`T₂`/`g`/`X_{n,m}`/`K` numbers of
+   both walks, digit for digit.
+4. `formulas.py` — the three transformations tested standalone on toy
+   ASTs against the [DG] clause semantics (no automata involved).
+5. `synth.py` + `tests/probes/dg_probe.py` — first targets the two walked
+   fixtures: Spot-equivalence to `GF(a ∧ Xa)` and `GFa ∧ FGb`; then the
+   LTL-definable slice of the validation corpus.
+6. `tests/probes/dg_canon.py` — the headline: `gf_aa_parity.hoa` vs a
+   fresh Spot translation of `GF(a ∧ Xa)`, assert hash-consed DAG
+   identity.
+
+Each module sits well under the 500-LOC discipline; `synth.py` is the
+largest and owns no table computation.
 
 ## Related ideas
 
