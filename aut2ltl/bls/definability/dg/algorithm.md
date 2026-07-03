@@ -196,7 +196,7 @@ class-set is well-defined by [DG]'s three auxiliary results inside Lemma
 
 The compressed formula over `T` is translated back to `Δ` by two exact,
 paper-given transformations — these are the implementation's workhorses and
-neither is improvised:
+neither is improvised (one printed modality is corrected, argument below):
 
 - **Lifting ([DG] 8.3).** For a letter `b`, `φ ↦ φ^b` evaluates `φ` on the
   largest `b`-free factor starting at the current position (the current
@@ -223,8 +223,17 @@ neither is improvised:
   - homomorphic through `¬`, `∨`; and
 
   ```
-  (ξ₁ XU ξ₂)~  =  (¬c ∨ ξ̃₁)  U  (c ∧ ξ̃₂)
+  (ξ₁ XU ξ₂)~  =  (¬c ∨ ξ̃₁)  XU  (c ∧ ξ̃₂)
   ```
+
+  **Erratum in [DG] here**: the paper prints a non-strict `U` in this
+  clause. The anchor position always carries the letter `c`, so a
+  non-strict `U` admits the anchor itself as witness (`σ`-position
+  `k = 0`) where the left-hand `XU` demands a strictly later one —
+  e.g. `ξ = ⊤ XU m` on a one-letter compressed word. The paper's own
+  proof constructs only `k > 0` witnesses and leaves the converse to
+  "similarly", which is where the case slips in; strict `XU` transports
+  exactly (checked exhaustively on small words by the toy-clause tests).
 
 The assembly of one visible-pivot node is exactly: compress (layer 4),
 recurse (monoid side for the saturations, alphabet side for the block
