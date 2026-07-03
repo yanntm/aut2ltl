@@ -2624,3 +2624,113 @@ scrubbed the dangling references (kanchor prose, TODO own-simplify item,
 fixtures README — the samples/fixtures/hoa/anchor/ automata stay, exercising
 kanchor). Validation gate after retirement: SUCCESS, diff vs reference 0
 regressions, DAG +0.0%.
+
+2026-07-03 — archived: root anchor_next.md (untracked development notes on
+anchor/kanchor, written 2026-07-02), reproduced verbatim below. All of it
+landed and was superseded by aut2ltl/kanchor (anchor itself retired today),
+except the partscc/daisystardet retirement, which remains tracked in TODO.md.
+
+# anchor — handoff (untracked): where to go next
+
+Bootstrap for a session on the `anchor` algorithm. Read in this order:
+`STATUS.md` → `aut2ltl/anchor/algorithm.md` (THE reference — the algorithm, its
+notation L/A/M/E, preconditions P1/P2, the label, exactness) → this note. Do not
+read `docs/HISTORY.md`. Sanity-run before changing anything:
+
+    timeout 15 python3 tests/probes/anchor_probe.py samples/fixtures/hoa/anchor/gafb_response.hoa
+
+expect `status=OK` and `VERIFY: ok`.
+
+## What exists (2026-07-02)
+
+- `aut2ltl/anchor/` — `algorithm.md` (reviewed, authoritative), `shape.py`
+  (L/A/M/E split + `anchored_violation` P1/P2 test), `formula.py`
+  (`build_final`: sojourn/step/park/F_all-fairness/leave → `STAY∞ ∨ LEAVE`),
+  `lift.py` (`exit_word`, the NOT_LTL witness lift), `anchor.py` (the
+  Translator; trace env `ANCHOR_TRACE`). Exact by construction; NO equivalence
+  gate — do not add one.
+- Fixtures `samples/fixtures/hoa/anchor/`; probe `tests/probes/anchor_probe.py`
+  (ONE HOA per invocation, self-fixpoint child, spot-verifies OK labels).
+  Verified: gafb_response, t2_successes_l3/l6, fairness_example,
+  collapse_example; mod3_a correctly DECLINES on P1.
+- Recipes (`--use <name>`, registered, default unchanged):
+  `deep_memo` = deep_nobls_memo finished (whole pipeline inlined on ONE Memo
+  store; the rich arm ≡ nobls is ONE instance shared with the deep arm);
+  `deep_anchor` = its A/B copy, peel per level =
+  `Daisy → Simplify(Anchor, "hi") → Daisy2 → Daisystar`, no PartScc floors,
+  incumbent floors on bare `bls`.
+- Validation gate (`python3 -m survey --folder samples/validation`) passes.
+
+## Finishing touches (mechanical, do in order)
+
+1. **Fairness drop rules in `aut2ltl/anchor/formula.py` (BDD-only, build time).**
+   In `build_final`, the park disjuncts are redundant exactly when the parked
+   state's loop letters all fire its own anchor (then the `GF` disjunct already
+   covers the parked run):
+   - skip the `F park(s)` term for `s ∈ f_all` when
+     `(L[s] & buddy.bdd_not(A[s])) == buddy.bddfalse`;
+   - skip the `G L(q0)` term under the same test on `q0`.
+   Soundness: only valid because `s ∈ F_all` (it carries every color) — keep the
+   tests inside the existing `if m > 0` branch. Acceptance: all probe fixtures
+   still `VERIFY: ok`; the gafb output must be UNCHANGED (its park is not
+   droppable: `L(0) = !a|b ⊄ A(0) = b`). Add a fixture where the rule fires
+   (loop letters ⊆ anchors on an F_all state) if you can craft one.
+
+2. **Own-simplify rule `F(p ∧ X(p U q)) → F(p ∧ X q)`.**
+   Valid both ways (slide to the last `p` of the block). CAUTION: the inner
+   rewrite `p ∧ X(p U q) → p ∧ Xq` alone is NOT valid positionally — the rule
+   only holds under `F` (an eventual context), so key it on the `F` node. Rules
+   live in `aut2ltl/ltl/simplify/` (read that package's README first; follow its
+   existing rule style). Acceptance:
+   `python3 -m aut2ltl samples/fixtures/hoa/various/collapse_example.hoa --use deep_anchor`
+   should now print `F(b & X!a)` (today: `F(b & X(b U !a))`), and the validation
+   gate must stay SUCCESS.
+
+3. **A/B + memo measurement (when asked — do NOT start benchmarks unprompted).**
+   Survey `--use deep_memo` vs `--use deep_anchor` on validation, then
+   benchmark; diff sizes/techniques. Memo hit rates: `tests/probes/gate_count.py`
+   on kinska `counting_buchi_1ap_18` against `deep_memo` (details in the TODO.md
+   Memo item). Known single-datapoint tension to settle on corpus data, not one
+   example: on gafb, `daisy2`'s gated form is 6 tree nodes vs anchor's exact 17
+   (anchor sits earlier as an exact producer); options are reorder (Anchor after
+   Daisy2), a per-level `best_of`, or accept.
+
+4. **Retirement of `aut2ltl/partscc/` + `aut2ltl/daisystardet/` — gated on the
+   A/B, bigger than it looks.** `portfolio/builder.py`'s `daisy_trio_det*`,
+   `peel*`, `core` blocks import them, and the cake*/nobls/deep_nobls* recipes
+   build on those blocks — so retirement = porting or retiring those recipes
+   too, plus README/CLAUDE.md layout mentions. Do not start it piecemeal.
+
+## The k-anchor direction (bring the strong model; design agreed 2026-07-02)
+
+Target: "k-definite modulo stuttering". THE TRAP (avoid): "the last k anchors
+with stretches between them" — unbounded gaps force U-nested triggers and the
+law stops being X-shaped. THE FIX: the window is over ADJACENT letters; the
+stretch is absorbed by weakening the pair's FIRST component to `I(v)` (any
+letter consistent with being at `v` = its loops ∨ its anchors), not `A(v)`.
+
+k=2 data — relations over Σ×Σ (BDDs over doubled APs, transition-relation
+style):
+    Enter₂(s) = ⋁_{edge (v,g,s), v≠s} I(v) × g
+    Stay₂(s)  = I(s) × L(s)
+Preconditions (s ≠ t): P1² `Enter₂(s) ∧ Enter₂(t) = false`;
+P2² `Stay₂(s) ∧ Enter₂(t) = false`; P0² q0's out-edges to distinct targets
+have disjoint guards (position 0 has no predecessor; the virtual anchor gives
+the source). k=1 (P1/P2 on second components) strictly implies these — try k
+incrementally; k=1 stays the degenerate case.
+
+Law: one conjunct per in-C non-self EDGE:
+    step₂ = ⋀_{(v,g,s)} ( I(v) ∧ X g → XX sojourn(s) )
+fair/park/LEAVE keep their shape with the pair-anchor `I(v) ∧ Xg` substituted
+and one extra X; park drop rule generalizes to `Stay₂(s) ⊆ Enter₂(s)`.
+
+Worked target `GF(a ∧ Xa)` (3-state DBA: s0 last-¬a, s1 last-a-after-¬a, s2
+aa-seen accepting; P1 AND P2 fail on `a`): Enter₂(s1)=¬a×a, Enter₂(s2)=a×a,
+Enter₂(s0)=a×¬a, Stay₂(s0)=¬a×¬a, Stay₂(s2)=a×a — P1²/P2² pass. Every step₂
+consequence is a tautological sojourn (pure liveness), park(s2) drops by
+`Stay₂ ⊆ Enter₂`, and `Final = GF(a ∧ Xa)` EXACTLY — minimal, no simplifier.
+Requires one build-time collapse today's `build_final` misses (add it at k=1
+already): `sojourn(s) ≡ true` when `L[s] | M[s] == buddy.bddtrue` (this is why
+`!b W b` survives in the gafb output). Literature: k-testable / k-definite
+languages; the law is the (k+1)-factor constraint, I(v) the stutter
+abstraction. Cost: linear in edges at k=2; per-path at general k — cap at 2–3.
