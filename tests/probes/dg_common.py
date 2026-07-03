@@ -66,3 +66,29 @@ def print_d_line(data: DgData) -> None:
     """The one-line description of the deterministic form."""
     print(f"D        : {data.aut.num_states()} states, letters {data.names}, "
           f"init {data.init}, acc {data.aut.get_acceptance()}")
+
+
+def ast_to_spot(ast, root: int, letters: List[str]) -> "spot.formula":
+    """A `spot.formula` built bottom-up over the DAG — one Spot node per
+    arena node (Spot hash-conses internally), never the flat string."""
+    atoms = [spot.formula(s) for s in letters]
+    memo: dict = {}
+
+    def go(i: int):
+        f = memo.get(i)
+        if f is None:
+            n = ast.node(i)
+            if n[0] == "top":
+                f = spot.formula.tt()
+            elif n[0] == "atom":
+                f = atoms[n[1]]
+            elif n[0] == "not":
+                f = spot.formula.Not(go(n[1]))
+            elif n[0] == "or":
+                f = spot.formula.Or([go(n[1]), go(n[2])])
+            else:
+                f = spot.formula.X(spot.formula.U(go(n[1]), go(n[2])))
+            memo[i] = f
+        return f
+
+    return go(root)
