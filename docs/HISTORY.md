@@ -2745,3 +2745,20 @@ key). `dg_dump.py` re-based as its display client. Validated digit-for-digit
 against the layer 12–13 hand-walk tables on gf_aa_parity and
 fairness_example; mod3_a still refused as non-aperiodic. First contact with
 reality: zero design corrections needed.
+
+## 2026-07-03 — dg build steps 2-5: divisor, frame, compress, formulas, synth
+
+The DG synthesis went from design to running code in one session, following
+the layer-14 build order. divisor.py (local divisor, strict-decrease assert —
+fires on evenblocks' Z2). frame.py (recursion-node value: omega-universe,
+conjugacy; a split the implementation demanded). compress.py (layers 4-6
+tables; walk-validated digit for digit; X_{n,m} restricted to realizable
+middles g(T1*) after the universe-escape assert caught it). formulas.py +
+tests/smoke/dg_formulas.py: the toy-clause tests caught a genuine erratum in
+[DG] Lemma 8.4 (non-strict U printed where strict XU is required; confirmed
+on the PDF page; recorded in algorithm.md layer 5). synth.py: the memoized
+(frame, target) induction — prepend-independence discovered and recorded.
+End-to-end: gf_aa_parity and fairness_example synthesize and Spot-verify
+equivalent; collapse_example builds (the mission) but its flat tree exceeds
+Spot's translate budget — downstream limit, probe exit 3. Next: canonicity
+probe (step 6), LTLResult wrapping, survey wiring, O(DAG) simplifier brick.
