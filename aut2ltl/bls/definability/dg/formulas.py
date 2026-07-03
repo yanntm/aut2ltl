@@ -95,6 +95,34 @@ class Ast:
         """Strictly-later eventually: `⊤ XU φ` — "at some later position"."""
         return self.xu(self.top(), i)
 
+    def f_(self, i: int) -> int:
+        """Eventually (non-strict): `F φ = φ ∨ (⊤ XU φ)`."""
+        return self.or_(i, self.xf(i))
+
+    def map_atoms(self, i: int, f: Callable[[int], int]) -> int:
+        """The formula with every atom `a` renamed to `f(a)` — the embedding
+        of a sub-alphabet formula into the parent's letter indices."""
+        memo: Dict[int, int] = {}
+
+        def go(j: int) -> int:
+            r: Optional[int] = memo.get(j)
+            if r is None:
+                n = self._nodes[j]
+                if n[0] == _TOP:
+                    r = j
+                elif n[0] == _ATOM:
+                    r = self.atom(f(n[1]))
+                elif n[0] == _NOT:
+                    r = self.neg(go(n[1]))
+                elif n[0] == _OR:
+                    r = self.or_(go(n[1]), go(n[2]))
+                else:
+                    r = self.xu(go(n[1]), go(n[2]))
+                memo[j] = r
+            return r
+
+        return go(i)
+
     # -- the three transformations ----------------------------------------
     def lift(self, i: int, b: int) -> int:
         """`φ^b` ([DG] 8.3): `φ` read on the largest `b`-free factor
@@ -167,6 +195,21 @@ class Ast:
         return r
 
     # -- rendering ---------------------------------------------------------
+    def tree_size(self, i: int) -> int:
+        """The node count of the unshared tree of `i` — the flat size the
+        DAG avoids, computed without materializing it."""
+        memo: Dict[int, int] = {}
+
+        def go(j: int) -> int:
+            r: Optional[int] = memo.get(j)
+            if r is None:
+                n = self._nodes[j]
+                r = 1 + sum(go(k) for k in n[1:] if n[0] not in (_ATOM,))
+                memo[j] = r
+            return r
+
+        return go(i)
+
     def to_spot(self, i: int, letters: Sequence[str]) -> str:
         """Spot-syntax string of node `i`; `letters[a]` is the cube of atom
         `a` (e.g. `'!a & b'`). `XU` renders as `X(· U ·)`. For display and
