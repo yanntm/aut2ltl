@@ -1,12 +1,13 @@
 # Synthesizing LTL from the syntactic ω-semigroup — the Diekert–Gastin route
 
-**STATUS: DRAFT** — design document, pre-implementation, now grounded
+Design and reference document of the implemented module, grounded
 clause-by-clause against the reference text (`papers/Diekert_Gastin_2008`,
 §5 for recognition, §8 for the construction; cited below as [DG], with the
 proposition/lemma numbers of that text). This is the companion and consumer
 of `../oracle/algorithm.md`: the objects defined there (`D`, `EM(D)`, the
 quotient `S(L)₊ = EM(D)/~`, profiles `Aprof`, shortest representatives) are
-used without being redefined. Open points are collected in layer 11.
+used without being redefined. The remaining open points are collected in
+layer 11; the module map and build order are layer 14.
 
 ## 0 — Why this exists
 
@@ -224,8 +225,7 @@ neither is improvised (one printed modality is corrected, argument below):
     infinite `A`-tail and lies in class `m`", `ψₘ` from the same alphabet
     induction (`L_{c,A}(ψₘ) = A^∞ ∩ m`). That this target is *legal* — a
     recognized language, presentable by a pair set — is exactly what
-    layer 6's fact 3 buys; a single pair language would not be (the gap
-    the deep pass of 2026-07-03 caught before code did).
+    layer 6's fact 3 buys; a single pair language would not be.
   - homomorphic through `¬`, `∨`; and
 
   ```
@@ -356,9 +356,9 @@ choice is a function of the algebra alone, never of `D`:
   `h(c) ≠ 1`. (Deterministic alternatives — e.g. minimizing `|T'|` — are
   open point O3; they change the normal form, not its canonicity.)
 - **`T₂` keys.** Linked pairs ordered by their element-id pair `(s, e)`
-  after the O2 merge — element ids are shortlex-canonical at the root and
-  every deeper id is derived from them — each conjugacy class keyed by its
-  least member pair.
+  after the conjugacy merge (layer 6) — element ids are shortlex-canonical
+  at the root and every deeper id is derived from them — each conjugacy
+  class keyed by its least member pair.
 - **Prepend-independence.** A node's formula is a function of
   `(frame, target)` alone: the prepend letter anchors evaluation but never
   enters the assembly (every shape reads position 0's real letter or looks
@@ -427,36 +427,20 @@ nodes memoize on hash-consed keys (the descent is a DAG, not a tree), and
 - Extend `../oracle/related_work.md` with the positioning digest when this
   lands; this document cites only what roots a definition.
 
-## 11 — Open points (why this is a draft)
+## 11 — Open points
 
-- **O1 — RESOLVED by the paper.** No separate finite-word logic: one
-  `LTL[XU]` over `Σ^∞`, the `L_{c,A}` prepend device, `ε` never a model.
-  The earlier draft's "LTLf boundary discipline" dissolves into Lemmas
-  8.3/8.4's exact clauses.
-- **O2 — CLOSED: the exact ω-class identity is linked-pair conjugacy**
-  (layer 6; [PP] Prop 2.6/2.8/Cor 2.9). History, kept because each step
-  taught something: the first candidate key (left-context acceptance
-  vectors) was falsified by layer 13 — strictly coarser than `≈`; the
-  second attempt (pairs unmerged, no identity at all) was sound for the
-  table queries but made the `T₂`-atom targets of layer 5 unrecognized
-  languages — illegal induction targets, caught in the deep pass;
-  conjugacy is exact in both directions, canonical, and one table scan.
-  Nothing of O2 remains open.
 - **O3 — pivot heuristics.** v0 pins least-visible-letter; deterministic
   size-minimizing pivots are a later, measured change of normal form.
-- **O4 — worked examples: DONE** (both instalments, layers 12–13, from
-  `tests/probes/dg_dump.py` tables). Between them the two walks cover:
-  divisor-carried vs `T₂`-carried assembly, `K` pieces trivializing to
-  `⊤` and to `⊥`, an invisible letter in the wild, multiple accepting
-  pairs, prefix-independence arriving as a constant row, and one
-  falsified design assumption (see O2). A third walk is only warranted
-  when implementation surfaces a shape neither covers.
-- **O5 — RESOLVED: the architecture is layer 14** (module map,
-  responsibilities, build order).
 - **O6 — wiring.** Whether this surfaces as a `Translator`, and where it
   sits relative to the gate (an LTL verdict with a formula attached), is
   the assembly's concern — out of scope here, exactly as gate wiring was
   for the oracle.
+
+(The other design-time points closed into the layers above: O1, the
+finite-word logic, dissolved into the `Σ^∞` frame and prepend device of
+layers 2 and 5; O2, the ω-class identity, is layer 6's linked-pair
+conjugacy; O4, the worked examples, are layers 12–13; O5, the
+architecture, is layer 14. `docs/HISTORY.md` keeps their history.)
 
 ## 12 — Worked example: `gf_aa_parity`, by hand
 
@@ -608,14 +592,16 @@ divisor two levels down. Semantically the assembly collapses to
 `FGb ∧ GFa` ≡ the input.
 
 **What this walk bought, beyond symmetry with layer 12:** it *falsified*
-the draft's O2 candidate. The three rejecting ω-classes `(0,0), (1,0),
-(2,0)` are pairwise `≈`-distinct (their members' prefixes are separated by
-first-block images) yet share the all-zero left-context acceptance vector
-— so the vector is a strict coarsening of `≈`, not an identity key. Here
-the merge happens to be harmless (every query the assembly issues factors
-through `P(1, e′)`), which is exactly the shape of the congruence lemma
-O2 now demands before any such merge is allowed. Ground truth from a
-six-line probe output; this is what the walks are for.
+a design-time candidate for the ω-class identity — left-context acceptance
+vectors, before layer 6 settled on conjugacy. The three rejecting
+ω-classes `(0,0), (1,0), (2,0)` are pairwise `≈`-distinct (their members'
+prefixes are separated by first-block images) yet share the all-zero
+left-context acceptance vector — so the vector is a strict coarsening of
+`≈`, not an identity key. Here the merge happens to be harmless (every
+query the assembly issues factors through `P(1, e′)`), which is exactly
+the congruence obligation any key coarser than conjugacy would have to
+discharge before it could be trusted. Ground truth from a six-line probe
+output; this is what the walks are for.
 
 ## 14 — Architecture: the module map and the build order
 
