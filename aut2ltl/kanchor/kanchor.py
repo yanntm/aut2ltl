@@ -72,6 +72,12 @@ class KAnchor:
         aut = spot.postprocess(lang.tgba(), "sbacc")
         if _TRACE:
             print("[kanchor] in " + format_language(lang, aut), file=sys.stderr)
+        return self.core(aut)
+
+    def core(self, aut: "spot.twa_graph") -> "LTLResult":
+        """The read-off after form acquisition: takes a prepared state-based
+        automaton untouched — the delegation hook of `language_adapter/`
+        (its algorithm.md), bypassing the `Language` input above."""
         res = LTLResult.start(_NAME)
 
         # State-based generalized Büchi is what the fairness read-off
