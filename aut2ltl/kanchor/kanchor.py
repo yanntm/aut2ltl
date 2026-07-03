@@ -82,7 +82,14 @@ class KAnchor:
 
         q0 = aut.get_init_state_number()
         C = init_scc_states(aut, q0)
-        L, A, M, exits = lame_data(aut, C)
+        Lr, Ar, Mr, exits, P = lame_data(aut, C)
+        # The k = 1 form of the δ↑ reclassification (algorithm.md, layer 4):
+        # the promoted guard joins the triggers (A) and the legal stay-enders
+        # (M) and leaves the loops (L); the k = 2 windows consume P directly
+        # as the pseudo-edges (s, P[s], s).
+        L = {s: Lr[s] - P[s] for s in C}
+        A = {s: Ar[s] | P[s] for s in C}
+        M = {s: Mr[s] | P[s] for s in C}
 
         # The k-ladder: smallest level first; every level's label is exact.
         table: Optional[TriggerTable] = None
@@ -93,9 +100,9 @@ class KAnchor:
         else:
             whys.append(f"k=1: {why1}")
             if self._k_max >= 2:
-                why2 = k2_violation(aut, C, q0, L, A)
+                why2 = k2_violation(aut, C, q0, L, A, P)
                 if why2 is None:
-                    table = k2_table(aut, C, q0, L, A)
+                    table = k2_table(aut, C, q0, L, A, P)
                 else:
                     whys.append(f"k=2: {why2}")
         if table is None:
