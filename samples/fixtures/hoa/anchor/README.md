@@ -14,4 +14,5 @@ folders, these are not generated from an `ltl/` list.
   fires: the sole accepting state has `L = A = a & b`, so its `F park` term is
   redundant and the built `fair` is the bare `GF(a & b)`; states 0 and 1 share
   the idle letter `!a & !b`, keeping the loop-free read-off out. (`gafb`'s park
-  is the non-droppable contrast: `L(0) = !a | b ⊄ A(0) = b`.)
+  is the non-droppable contrast: the shared idle survives promotion,
+  `L(0) = !a & !b ⊄ A(0) = b`.)
