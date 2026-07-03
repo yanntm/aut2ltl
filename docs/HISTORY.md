@@ -2734,3 +2734,14 @@ already): `sojourn(s) ≡ true` when `L[s] | M[s] == buddy.bddtrue` (this is why
 `!b W b` survives in the gafb output). Literature: k-testable / k-definite
 languages; the law is the (k+1)-factor constraint, I(v) the stutter
 abstraction. Cost: linear in edges at k=2; per-path at general k — cap at 2–3.
+
+## 2026-07-03 — dg build step 1: morphism.py (the frozen algebra)
+
+The Diekert-Gastin synthesis leaves the drawing board: build-order step 1
+of dg/algorithm.md layer 14. `dg/morphism.py` freezes the oracle's quotient
+into the canonical `Alg` value (shortlex re-keyed classes, letter map, mult
+table, idempotents, P on linked pairs; all-tuple, hashable — a ready memo
+key). `dg_dump.py` re-based as its display client. Validated digit-for-digit
+against the layer 12–13 hand-walk tables on gf_aa_parity and
+fairness_example; mod3_a still refused as non-aperiodic. First contact with
+reality: zero design corrections needed.
