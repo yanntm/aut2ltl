@@ -33,6 +33,13 @@ definitive **LTL**, and NOT_LTL families fall out of the quotient constructively
 (no search). Standalone component, validated on the definability fixtures; **not
 yet wired into the gate**.
 
+The **Diekert–Gastin LTL synthesis** (`aut2ltl/bls/definability/dg/` — read its
+`algorithm.md`) makes the oracle's LTL verdict constructive: a defining formula
+from the aperiodic quotient, complete on the fragment, canonical (same language ⟹
+same DAG). Design is settled (grounded clause-by-clause on the paper, two hand-run
+walks as fixtures); **implementation in progress** (2026-07-03), following the
+build order of `algorithm.md` §14 step by step.
+
 ## How to work in it
 
 - The project is **large**. You will be pointed at the part in play — stay there;
