@@ -325,18 +325,26 @@ nodes memoize on hash-consed keys (the descent is a DAG, not a tree), and
   `LTL[XU]` over `Σ^∞`, the `L_{c,A}` prepend device, `ε` never a model.
   The earlier draft's "LTLf boundary discipline" dissolves into Lemmas
   8.3/8.4's exact clauses.
-- **O2 — the ω-class identity test.** "Finer is safe" (layer 6) makes a
-  sound merge sufficient for correctness; the open question is the cheapest
-  *exact* test for `[s·e^ω] = [s′·e′^ω]` under `≈_{h|A}`, to keep `T₂`
-  minimal and the normal form tight. Candidate at the root: left-context
-  acceptance vectors (exactness to argue from syntacticity).
+- **O2 — the ω-class identity test.** "Finer is safe" (layer 6): a
+  refinement of `≈_{h|A}` costs alphabet size, never correctness; a
+  *coarsening* is unsafe without proof. The draft's candidate key —
+  left-context acceptance vectors — is **demonstrably coarser than `≈`**:
+  layer 13 exhibits three pairwise distinct rejecting ω-classes sharing
+  the all-zero vector. So the open question stands in sharpened form:
+  the default must be an exact `≈`-identity decision (linked pairs modulo
+  provable merges — conjugation `(s·x, y·x)-(s·y·…)` style moves), and
+  the acceptance-vector *merge* is admissible only under a congruence
+  lemma ("every query the recursion will ever issue against a `T₂`-letter
+  factors through the vector") — to prove or drop, not to assume.
 - **O3 — pivot heuristics.** v0 pins least-visible-letter; deterministic
   size-minimizing pivots are a later, measured change of normal form.
-- **O4 — worked examples.** First instalment done: `gf_aa_parity` is
-  hand-walked in layer 12 from `tests/probes/dg_dump.py`'s tables.
-  Remaining: `fairness_example` (mixed acceptance, more than one accepting
-  pair) — expected to exercise `K₂`'s class sets non-trivially where the
-  flagship collapses them.
+- **O4 — worked examples: DONE** (both instalments, layers 12–13, from
+  `tests/probes/dg_dump.py` tables). Between them the two walks cover:
+  divisor-carried vs `T₂`-carried assembly, `K` pieces trivializing to
+  `⊤` and to `⊥`, an invisible letter in the wild, multiple accepting
+  pairs, prefix-independence arriving as a constant row, and one
+  falsified design assumption (see O2). A third walk is only warranted
+  when implementation surfaces a shape neither covers.
 - **O5 — module map** (draft, one role per module, mirroring the oracle):
   `morphism.py` (the layer-1 tables + canonical re-keying), `divisor.py`
   (the local divisor: carrier, `∘`, the strict-decrease assert),
@@ -428,6 +436,86 @@ right pivot — blocks are the units of counting), the `X_{n,m}` table lemma
 (`K₁` computed by two table lookups), the depth-1 appearance of finite
 `T₂`-letters, and the collapse behavior the cost layer hopes for (`T₁` =
 3 of a possible 6, `T₂` = 4 of a possible 36).
+
+## 13 — Worked example: `fairness_example`, by hand
+
+`L = GFa ∧ FGb` (`samples/fixtures/hoa/various/fairness_example.hoa`) — the
+mirror image of layer 12: there the divisor carried everything and `T₂` was
+a bystander; here the divisor is trivial at every turn and the whole
+construction rides on the ω-class calculus. Probe output:
+
+```
+D        : 1 state, letters ['!a&!b', 'a&!b', '!a&b', 'a&b'], acc Fin(0) & Inf(1)
+quotient : |EM1| = 4 elements -> 3 classes
+  0: [eps]     idempotent      letters: !a&!b -> 1, a&!b -> 1,
+  1: [!a&!b]   idempotent               !a&b -> 0, a&b -> 2
+  2: [a&b]     idempotent
+                                mult    0: 0 1 2   P: (1,2) = (2,2) = 1,
+                                        1: 1 1 1      all other linked
+                                        2: 2 1 2      pairs = 0
+```
+
+Readable invariants: `1` = "contains a `¬b`" (left-absorbing: row 1 is
+constant), `2` = "all-`b`, contains an `a`", `0` = the identity class —
+which is *fat*: the letter `¬a∧b` maps to it. **An invisible letter in the
+wild**: inserting or deleting `¬a∧b` changes no membership in any context
+(it feeds neither `GFa` nor `¬FGb`), and the construction's stance on it —
+never pivotable, survives into every sub-alphabet, dissolved by the
+all-invisible base case — is exercised for real. Two accepting pairs,
+`(1,2)` and `(2,2)`; the language is prefix-independent and `D` has one
+state, so the `~lin` side is fully blind and every distinction above is
+profile-borne (oracle layer 9, arriving here as data).
+
+**The root node.** Pivot: least visible letter = `c = ¬a∧¬b` (`h = 1`).
+`A = {a¬b, ¬ab, ab}` — note `A` keeps a `¬b`-letter.
+
+**The local divisor is trivial**: `1·M = M·1 = {1}`, so `T' = {1}` — the
+descent `3 → 1` in one step, and the entire monoid-side recursion is the
+base case: under `g` *every* compressed letter is invisible, `≈g` merges
+everything, and the saturations are full shapes. All discrimination
+migrates into the `K`-assembly's table tests and the `T₂`-letters.
+
+**The compressed data.** `T₁ = h(A*) = {0, 1, 2}` (all of `M`: `A` still
+generates `1` through `a¬b`). `T₂`: four finite classes and **six
+ω-classes** — `(s, e)` with `s·e = s`: `(0,0), (1,0), (2,0)` (tails dying
+into `(¬ab)^ω`, distinguished by their prefix content), `(1,1)`
+(`¬b` forever recurring), and the accepting `(1,2), (2,2)`. Thirteen
+letters of `T` against the bound `3 + 3² = 12`-ish — the ceiling brushed,
+harmlessly, because the divisor below is trivial.
+
+**The three pieces** for the target `{(1,2), (2,2)}`:
+
+- `K₀` (no `c`): the `A^ω`-words of `L` — exactly the two accepting
+  `T₂`-letters. In.
+- `K₁` (finitely many `c`, ≥ 1): the prefix through the last `c` has
+  `M`-value `n·1·… = 1` *whatever happened before* — row 1 is constant:
+  prefix-independence arrives as one row of the multiplication table. The
+  table test `P(1·s′, e′) = P(1, e′)` keeps exactly `e′ = 2`: the tail
+  must be one of the same two accepting letters. Every `n`, every `x`:
+  the `X_{n,m}` sets are again decided without recursion.
+- `K₂` (infinitely many `c`): `c` is a `¬b`-letter, so `FGb` fails on
+  every preimage — the class set is **empty**, `K₂ = ⊥`. The flagship's
+  carrier is this walk's contradiction.
+
+**Reassembly.** The formula is `K₀ ∪ K₁` lifted: "(no `¬a¬b` ever, or
+finitely many) and the `A`-tail after the last one satisfies `ψ_m`" for
+the two accepting `T₂`-letters — whose formulas come from the *alphabet*
+induction on `(A, h|A)`: pivot `a¬b` (divisor at `1`: trivial again), then
+`(\{¬ab, ab\}, ·)`: pivot `ab`, whose divisor `2M ∩ M2 = {1, 2}` with
+identity `2` and `1` absorbing is the first non-trivial inner algebra —
+"a `¬b` in the cycle is poison", which is `FGb` speaking through a
+divisor two levels down. Semantically the assembly collapses to
+`FGb ∧ GFa` ≡ the input.
+
+**What this walk bought, beyond symmetry with layer 12:** it *falsified*
+the draft's O2 candidate. The three rejecting ω-classes `(0,0), (1,0),
+(2,0)` are pairwise `≈`-distinct (their members' prefixes are separated by
+first-block images) yet share the all-zero left-context acceptance vector
+— so the vector is a strict coarsening of `≈`, not an identity key. Here
+the merge happens to be harmless (every query the assembly issues factors
+through `P(1, e′)`), which is exactly the shape of the congruence lemma
+O2 now demands before any such merge is allowed. Ground truth from a
+six-line probe output; this is what the walks are for.
 
 ## Related ideas
 
