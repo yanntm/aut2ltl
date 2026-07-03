@@ -491,9 +491,9 @@ never straddles a `¬a`.
 - `K₂` (infinitely many `¬a`): the compressed word lives in
   `{0, 2, 5}^ω ⊆ T₁^ω`, and `≈g` on it has exactly three ω-classes — the
   pairs `(1,1)` and `(5,1)` (finitely many visible `5`'s; conjugacy-
-  distinct, both rejected — the draft said two, implementation counted)
-  and `(5,5)` (infinitely many, accepted: the class set is this singleton
-  for every leading `n`). The `(T, T')`-node pivots on the letter `5`
+  distinct, both rejected) and `(5,5)` (infinitely many, accepted: the
+  class set is this singleton for every leading `n`). The `(T, T')`-node
+  pivots on the letter `5`
   (the only one `g` sees), its local divisor is `5T'∩T'5 = {5}` — the
   trivial monoid, `2 → 1`, base case — and the compressed formula is the
   `GF`-shape "infinitely many `5`-letters".
