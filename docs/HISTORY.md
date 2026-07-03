@@ -2762,3 +2762,20 @@ End-to-end: gf_aa_parity and fairness_example synthesize and Spot-verify
 equivalent; collapse_example builds (the mission) but its flat tree exceeds
 Spot's translate budget — downstream limit, probe exit 3. Next: canonicity
 probe (step 6), LTLResult wrapping, survey wiring, O(DAG) simplifier brick.
+
+## 2026-07-03 — dg/algorithm.md sheds its DRAFT tag
+
+Build-order steps 1-5 are landed and both walk fixtures Spot-verify, so the
+document is no longer pre-implementation: header rewritten as the design and
+reference document of the implemented module. Layer 11 pruned to the points
+still open (O3 pivot heuristics, O6 wiring); the closed ones (O1 finite-word
+logic, O2 omega-class identity, O4 worked examples, O5 architecture) reduced
+to a pointer note naming the layer each resolved into. The O2 saga, for the
+record: candidate 1, left-context acceptance vectors — falsified by the
+fairness walk (strictly coarser than the syntactic congruence); candidate 2,
+unmerged linked pairs — sound for table queries but made the T2-atom targets
+unrecognized languages, an illegal induction target; final, linked-pair
+conjugacy ([PP] Prop 2.6/2.8/Cor 2.9) — exact both directions, canonical,
+one table scan. Dangling references rewritten in place (layer 8 "O2 merge"
+-> conjugacy merge; layer 13 walk names the falsified candidate directly;
+layer 5 drops the dated deep-pass aside).
