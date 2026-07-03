@@ -87,10 +87,11 @@ unwound at the very end (layer 7).
 
 **The contract ([DG] Prop 8.1(2)).** Given `(Δ, h : Δ* → T, N, c)` — an
 alphabet, a morphism onto a finite aperiodic monoid, a language `N ⊆ Δ^∞`
-recognized by `h` (presented finitely: a set of elements of `T` for the
-finite-word part, and for the ω-part a set of ω-classes, each named by a
-**conjugacy class of linked pairs** — layer 6's calculus), and the prepend
-letter — synthesize `φ ∈ LTL_Δ[XU]` with `N = L_{c,Δ}(φ)`.
+recognized by `h` (presented finitely by its `≈`-classes: an explicit `ε`
+flag — `{ε}` is its own `≈`-class, no fiber covers it — a set of elements
+of `T` for the non-empty finite words, and for the ω-part a set of
+ω-classes, each named by a **conjugacy class of linked pairs** — layer 6's
+calculus), and the prepend letter — synthesize `φ ∈ LTL_Δ[XU]` with `N = L_{c,Δ}(φ)`.
 Induction on `(|T|, |Δ|)`, lexicographic. The root call is
 `(Σ, h, L, fresh)`.
 
@@ -179,9 +180,12 @@ denotes has prefix value `n·g(w)` in `T` (the interleaved `c`'s are exactly
 X_{n,m}  =  { x ∈ T' | Accept(n·x, m) }
 ```
 
-— and `Accept(element, ω-class)` is a `P`-table lookup once `m` is
-represented by a linked pair (`P(n·x·s, e)` for `m ∋ rep = s·e^ω`-shaped
-words). No search, no witnesses: the finite-side recursion target is
+— for an ω-letter `m` with representative pair `(s, e)`, `Accept(n·x, m)`
+classifies the pair `(n·x·s, e)` in the node's own ω-universe and tests
+the target's ω-part (at the root that is exactly the `P` lookup
+`P(n·x·s, e)`); for the finite tail letters it is a fiber test of the
+target's finite part (`[ε]`: `n·x ∈ fin`; fiber `f`: `n·x·f ∈ fin`).
+No search, no witnesses: the finite-side recursion target is
 computed by pure table arithmetic. On the ω side (`K₂`) the analogous
 class-set is well-defined by [DG]'s three auxiliary results inside Lemma
 8.2 (σ-images of `(A*c)^ω`-words that are `≈g`-equivalent have
@@ -284,12 +288,22 @@ repeat the argument verbatim with `g` and the saturation target; the
 recursion's targets are always morphism-recognized, which is all the
 argument uses.
 
-**Evaluation.** Class-set queries not already in table form are answered
-on a representative: render the pair's words (per-letter `A⁺`-reps from a
-BFS over the `A`-generated subsemigroup), read the rendered
-ultimately-periodic word's data off the tables ([PP] Prop 2.11 licenses
-the exact-image splitting), look up `P`. Constancy across the class is
-the query-independence lemma.
+**Evaluation.** Every query the assembly issues is one level of table
+arithmetic — no block is ever rendered as a word of the original
+alphabet. ω-letters and ω-targets are always presented in the issuing
+node's own universe, so `Accept` is a multiplication plus a pair-class
+lookup in that universe; the `K₂` class sets render a class's least pair
+as words over the *compressed* letters (shortlex reps from the BFS over
+the `T₁`-images), fold the denoted prefix and cycle values in the node's
+monoid (`h(z) = n₁·m·⋯·n_j·m`), raise the cycle value to its idempotent
+power ([PP] Prop 2.11 licenses the exact-image splitting; aperiodicity
+makes the power sequence a fixpoint), and classify the resulting pair one
+level up. Constancy across the class is the query-independence lemma.
+One closure note makes `K₂`'s bookkeeping legal: conjugacy over the full
+compressed alphabet and over its `T₁`-letters agree (`T₂`-images are the
+neutral element, so both generate the same `S¹`), hence the `T₁^ω`
+classes inject into the child's universe and the class sets are reported
+in the child's own ids — the universe the child target speaks.
 
 ## 7 — Unwinding the device at the root
 
@@ -326,8 +340,10 @@ choice is a function of the algebra alone, never of `D`:
 - **The pivot rule.** v0: the least letter `c` (in the fixed order) with
   `h(c) ≠ 1`. (Deterministic alternatives — e.g. minimizing `|T'|` — are
   open point O3; they change the normal form, not its canonicity.)
-- **`T₂` keys.** Linked pairs ordered by (shortlex `s`-rep, shortlex
-  `e`-rep) after the O2 merge.
+- **`T₂` keys.** Linked pairs ordered by their element-id pair `(s, e)`
+  after the O2 merge — element ids are shortlex-canonical at the root and
+  every deeper id is derived from them — each conjugacy class keyed by its
+  least member pair.
 
 Consequence, and the headline experiment: two different presentations of
 the same language — `gf_aa_parity.hoa` and a fresh Spot translation of
@@ -473,9 +489,11 @@ never straddles a `¬a`.
   is in `L`, the sub-target is the trivial `⊤`-class set, no recursion
   needed. Semantically: `K₀ ∪ K₁` is exactly `FG a ⟹ accept`.
 - `K₂` (infinitely many `¬a`): the compressed word lives in
-  `{0, 2, 5}^ω ⊆ T₁^ω`, and `≈g` on it has exactly two ω-classes —
-  finitely many visible `5`'s (pair `(·, 1)`, rejected) vs infinitely many
-  (pair `(·, 5)`, accepted). The `(T, T')`-node pivots on the letter `5`
+  `{0, 2, 5}^ω ⊆ T₁^ω`, and `≈g` on it has exactly three ω-classes — the
+  pairs `(1,1)` and `(5,1)` (finitely many visible `5`'s; conjugacy-
+  distinct, both rejected — the draft said two, implementation counted)
+  and `(5,5)` (infinitely many, accepted: the class set is this singleton
+  for every leading `n`). The `(T, T')`-node pivots on the letter `5`
   (the only one `g` sees), its local divisor is `5T'∩T'5 = {5}` — the
   trivial monoid, `2 → 1`, base case — and the compressed formula is the
   `GF`-shape "infinitely many `5`-letters".
@@ -591,12 +609,15 @@ the pivot rule, memoization and caps only.
                     morphism.py         the algebra as a value: canonical ids
                           │             (shortlex re-key), mult table, letter
                           │             map, P, the linked pairs   (layers 1, 8)
+                     frame.py           the recursion node's value: letters,
+                          │             images, monoid, ω-universe (pairs +
+                          │             conjugacy), Target       (layers 2, 6)
         ┌─────────────────┼─────────────────┐
    divisor.py        compress.py       formulas.py
-   Alg × c → Alg     one node's data:  the internal [XU]-AST over abstract
-   carrier, ∘,       A, T₁, T₂, g,     letter atoms: build, lift^b, tilde,
-   strict-decrease   X_{n,m}, K sets   PE-unwind, render to the host DAG
-   assert (lyr 3)    (layers 4–6)      (layers 2, 5, 7)
+   table × m → ∘     one node's data:  the internal [XU]-AST over abstract
+   carrier, ∘,       fa/fc frames, T₁, letter atoms: build, lift^b, tilde,
+   strict-decrease   T₂, g, X_{n,m},   PE-unwind, render to the host DAG
+   assert (lyr 3)    K sets (lyr 4–6)  (layers 2, 5, 7)
         └─────────────────┼─────────────────┘
                       synth.py          the induction driver: base case,
                           │             pivot, K assembly, memo, caps —
@@ -609,13 +630,23 @@ the pivot rule, memoization and caps only.
   produces the frozen `Alg` value: canonically re-keyed class ids, the
   multiplication table, the letter map, `P`, the linked-pair enumeration.
   `tests/probes/dg_dump.py` becomes its display client.
-- **`divisor.py`** — `Alg × element → Alg`: the `∘`-algebra of `mT ∩ Tm`,
-  the embedding maps, and the strict-decrease invariant as an assert.
-- **`compress.py`** — `Alg × pivot → node data`: `A`, `T₁` (the generated
-  submonoid with `A*`-representatives), `T₂` (linked pairs of `h|A` +
-  finite fibers), the `g`-letter map into the divisor `Alg`, the
-  `X_{n,m}` tables, the `K₀`/`K₂` letter and class sets. Pure tables —
-  produces no formula.
+- **`frame.py`** — the recursion node's value `Frame`: abstract letters,
+  their images, the monoid table, and the ω-class universe (linked pairs
+  over the letter-generated subsemigroup, conjugacy classes keyed by least
+  member pair, shortlex letter-word reps); `Target`, the `≈`-class
+  presentation of layer 2 (ε flag, fiber set, ω-class set);
+  `root_frame`/`root_target` bridge from `Alg` — the latter asserts
+  `P`-constancy per conjugacy class, the query-independence lemma checked
+  on ground data.
+- **`divisor.py`** — `mult table × element → Divisor`: the `∘`-algebra of
+  `mT ∩ Tm` (uniform over the base `Alg` and over a `Divisor`'s own table
+  further down), carrier as ascending base ids, and the strict-decrease
+  invariant as an assert.
+- **`compress.py`** — `Frame × Target × pivot → NodeData`: the
+  sub-alphabet frame `fa` (its ω-classes are `T₂`'s ω-letters), `T₁`, the
+  `g`-letter map into the divisor, the child frame `fc`, the `X_{n,m}`
+  tables, the `K₀`/`K₂` sets (`K₂` computed on the `T₁`-only frame,
+  reported in `fc` ids). Pure tables — produces no formula.
 - **`formulas.py`** — the internal hash-consed `[XU]`-AST whose atoms are
   *abstract letters* of whatever alphabet a node speaks; the three exact
   [DG] transformations (lift `·^b`, substitution `·~`, the phantom
@@ -637,8 +668,8 @@ unit fixtures):
    exact tables printed in layers 12–13.
 2. `divisor.py` — expected: `6 → {1, 5}` on the flagship, `3 → {1}` on
    fairness, assert fires on a group-bearing input.
-3. `compress.py` — expected: the `T₁`/`T₂`/`g`/`X_{n,m}`/`K` numbers of
-   both walks, digit for digit.
+3. `frame.py` + `compress.py` — expected: the `T₁`/`T₂`/`g`/`X_{n,m}`/`K`
+   numbers of both walks, digit for digit.
 4. `formulas.py` — the three transformations tested standalone on toy
    ASTs against the [DG] clause semantics (no automata involved).
 5. `synth.py` + `tests/probes/dg_probe.py` — first targets the two walked
