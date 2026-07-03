@@ -11,7 +11,9 @@ place that knows what a window is. Each level contributes a violation test
   (tested by `shape.anchored_violation`, reused).
 * k = 2 — full windows are adjacent pairs: per-(source, target) triggers
   `I(v) ∧ X g` at offset 2, truncated windows the `q0`-rooted single
-  letters `g` at offset 1; the preconditions are P1²/P2²/P0².
+  letters `g` at offset 1; the preconditions are P1²/P2²/P0². The edges
+  range over the entering set `δ↑` — promoted self-loops included, each
+  contributing its rows exactly as any other entry (algorithm.md, layer 4).
 
 The Σ×Σ relations of algorithm.md never materialize. `Enter₂`/`Stay₂` are
 unions of *rectangles* `first × second` (both plain letter BDDs), and every
@@ -31,14 +33,20 @@ from .label import TriggerEntry, TriggerTable
 
 __all__ = ["k1_violation", "k1_table", "k2_violation", "k2_table"]
 
-# An in-C non-self edge (source, guard, target); the raw material of windows.
+# An entering edge (source, guard, target) of `δ↑`; the raw material of
+# windows. A promoted self-loop appears with source == target.
 Edge = Tuple[int, "buddy.bdd", int]
 
 
-def _edges(aut: "spot.twa_graph", C: Set[int]) -> List[Edge]:
-    """The in-`C` non-self edges, source-sorted for deterministic output."""
+def _edges(aut: "spot.twa_graph", C: Set[int],
+           P: Dict[int, "buddy.bdd"]) -> List[Edge]:
+    """The entering edges `δ↑` (algorithm.md, layer 4): the in-`C` non-self
+    edges plus, per state with a nonempty promoted guard, the reclassified
+    self-loop `(s, P[s], s)`. Source-sorted for deterministic output."""
     out: List[Edge] = []
     for src in sorted(C):
+        if P[src] != buddy.bddfalse:
+            out.append((src, P[src], src))
         for e in aut.out(src):
             if e.dst != src and e.dst in C:
                 out.append((src, e.cond, int(e.dst)))
@@ -104,9 +112,10 @@ def k1_table(aut: "spot.twa_graph", C: Set[int],
 # ---------------------------------------------------------------- k = 2 ----
 
 def k2_violation(aut: "spot.twa_graph", C: Set[int], q0: int,
-                 L: Dict[int, "buddy.bdd"], A: Dict[int, "buddy.bdd"]
-                 ) -> Optional[str]:
-    """P1² + P2² + P0², decomposed over rectangles:
+                 L: Dict[int, "buddy.bdd"], A: Dict[int, "buddy.bdd"],
+                 P: Dict[int, "buddy.bdd"]) -> Optional[str]:
+    """P1² + P2² + P0², decomposed over rectangles; the edges range over
+    `δ↑`, promoted self-loops included:
 
     * P1² — entering pairs partition: for edges `(v,g,s)`, `(v',g',t)` with
       `s ≠ t`, not both `I(v) ∧ I(v')` and `g ∧ g'` nonempty.
@@ -116,7 +125,7 @@ def k2_violation(aut: "spot.twa_graph", C: Set[int], q0: int,
       toward distinct targets (self-loop included) are pairwise disjoint.
     """
     I = _inputs(L, A)
-    edges = _edges(aut, C)
+    edges = _edges(aut, C, P)
     for i, (v, g, s) in enumerate(edges):
         for v2, g2, t in edges[i + 1:]:
             if s != t and (I[v] & I[v2]) != buddy.bddfalse \
@@ -145,18 +154,20 @@ def k2_violation(aut: "spot.twa_graph", C: Set[int], q0: int,
 
 
 def k2_table(aut: "spot.twa_graph", C: Set[int], q0: int,
-             L: Dict[int, "buddy.bdd"], A: Dict[int, "buddy.bdd"]
-             ) -> TriggerTable:
+             L: Dict[int, "buddy.bdd"], A: Dict[int, "buddy.bdd"],
+             P: Dict[int, "buddy.bdd"]) -> TriggerTable:
     """Full windows `(I(v) ∧ X g, 2, s)` grouped per (source, target) pair;
-    truncated windows `(g, 1, s)` for `q0`'s in-`C` non-self out-edges; the
-    park drop by rectangle cover."""
+    truncated windows `(g, 1, s)` for `q0`'s `δ↑` edges; the park drop by
+    rectangle cover. The edges range over `δ↑`: a promoted self-loop yields
+    the full row `(I(s) ∧ X P[s], 2, s)` and, at `q0`, the truncated row
+    `(P[q0], 1, q0)`."""
     d = aut.get_dict()
 
     def f(bdd: "buddy.bdd") -> "spot.formula":
         return spot.bdd_to_formula(bdd, d)
 
     I = _inputs(L, A)
-    edges = _edges(aut, C)
+    edges = _edges(aut, C, P)
     grouped: Dict[Tuple[int, int], "buddy.bdd"] = {}
     for v, g, s in edges:
         grouped[(v, s)] = grouped.get((v, s), buddy.bddfalse) | g
