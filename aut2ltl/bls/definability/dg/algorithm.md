@@ -158,13 +158,15 @@ where `[·]_g` is `≈g`-saturation. Each saturation is recognized by `g` —
 a morphism onto the *strictly smaller* aperiodic `T'` — so the monoid
 induction yields its formula in the `L_{n,T}` form, with the leading block
 `n` as the prepend letter. The regime guards and shapes are directly
-`[XU]`-definable over `T`, from the phantom position (writing `⋁T₁` for
-the disjunction of the `T₁`-letters, `end` for `¬X⊤`, `inf` for `G X⊤`):
+`[XU]`-definable over `T`, in the `σ(v), 0` convention the substitution
+lemma consumes — position 0 is the first compressed letter, read directly
+(writing `⋁T₁` for the disjunction of the `T₁`-letters, `end` for `¬X⊤`,
+`inf` for `¬F end`):
 
 ```
-K₀-shape (one T₂-letter m)  :   X(m ∧ end-of-word: ¬X⊤)
-n T₁* m                     :   X( n ∧ ( (⋁T₁) XU (m ∧ ¬X⊤) ) )
-n T₁^ω                      :   X( n ∧ G(⋁T₁) ) ∧ inf
+K₀-shape (one T₂-letter m)  :   m ∧ end
+n T₁* m                     :   n ∧ ( (⋁T₁) XU (m ∧ end) )
+n T₁^ω                      :   n ∧ ¬XF¬(⋁T₁) ∧ inf
 ```
 
 (the `XU` in the middle shape allows an empty `T₁*` — the `m` may
@@ -177,8 +179,12 @@ denotes has prefix value `n·g(w)` in `T` (the interleaved `c`'s are exactly
 
 ```
 [ n⁻¹σ(N) ∩ T₁* m ]_g  =  { w·m  |  g(w) ∈ X_{n,m} },
-X_{n,m}  =  { x ∈ T' | Accept(n·x, m) }
+X_{n,m}  =  { x ∈ g(T₁*) | Accept(n·x, m) }
 ```
+
+`x` ranges over the realizable middles `g(T₁*) = ⟨g(T₁)⟩ ∪ {m}`, not all
+of `T'`: an unrealizable `x` denotes no compressed word, and away from
+the root its `Accept` pairs need not even be letter-generated.
 
 — for an ω-letter `m` with representative pair `(s, e)`, `Accept(n·x, m)`
 classifies the pair `(n·x·s, e)` in the node's own ω-universe and tests
@@ -353,6 +359,12 @@ choice is a function of the algebra alone, never of `D`:
   after the O2 merge — element ids are shortlex-canonical at the root and
   every deeper id is derived from them — each conjugacy class keyed by its
   least member pair.
+- **Prepend-independence.** A node's formula is a function of
+  `(frame, target)` alone: the prepend letter anchors evaluation but never
+  enters the assembly (every shape reads position 0's real letter or looks
+  strictly later, and block formulas never read their anchor). Memoization
+  across prepends is therefore sound, and the root unwinding may partially
+  evaluate against a fresh letter matching no atom.
 
 Consequence, and the headline experiment: two different presentations of
 the same language — `gf_aa_parity.hoa` and a fresh Spot translation of
@@ -663,11 +675,11 @@ the pivot rule, memoization and caps only.
   host DAG (`XU ↦ X(· U ·)`, root letters ↦ AP cubes). By construction
   only `Σ`-letters survive to the render — every `T`-atom is eliminated
   by a tilde one level up.
-- **`synth.py`** — the recursion node
-  `(alphabet, Alg, target, prepend) → formula`, memoized on canonical
-  keys; the base case; the pivot rule; the `K` assembly; the caps
-  (node count, DAG size, time) exiting as a decline. The only impure-ish
-  module in the sense of owning policy.
+- **`synth.py`** — the recursion node `(frame, target) → formula`
+  (prepend-independent — layer 8), memoized on canonical keys; the base
+  case; the pivot rule; the `K` assembly; the caps (node count, DAG size)
+  exiting as a decline. The only impure-ish module in the sense of owning
+  policy.
 
 **Build order** — each step lands with its check green before the next,
 and layers 12–13 are the precomputed expected values (the walks *are* the
