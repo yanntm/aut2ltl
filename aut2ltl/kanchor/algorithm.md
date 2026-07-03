@@ -14,8 +14,7 @@ This document is standalone and deliberately slow: the construction is built
 in numbered layers, each relaxing exactly one assumption of the previous one,
 and each layer's formula survives verbatim as a degenerate case of the next —
 so every term can be audited at the layer that introduces it. Layers 2–4
-develop the single-letter window (k = 1 — the construction implemented by the
-incumbent `aut2ltl/anchor`, whose `algorithm.md` this document absorbs);
+develop the single-letter window (k = 1);
 layers 5–6 widen the window to adjacent pairs (k = 2); layer 7 shows the two
 are one construction graded by k. The reader in a hurry can read layer 6's
 label and layer 7 — but the hurry will cost more than the layers do.

@@ -63,11 +63,11 @@ and the `kr → bls` engine reorg all landed — see HISTORY 2026-06-17.)
 ## Portfolio / combinators
 
 - **Own-simplify rules for anchor-shaped output.** The anchored read-off
-  (`aut2ltl/anchor`, wired in `recipes/deep_anchor.py`) emits machine-shaped
+  (`aut2ltl/kanchor`, wired in `recipes/kanchor.py`) emits machine-shaped
   patterns Spot's simplifier does not reduce; add targeted O(DAG) own rules.
   First confirmed candidate: `F(p ∧ X(p U q)) ≡ F(p ∧ X q)` (slide to the last
   `p` of the block — seen as `F(b & X(b U !a))` vs the default's `F(b & X!a)` on
-  `collapse_example`). Collect more from the deep_memo/deep_anchor A/B diffs.
+  `collapse_example`). Collect more from the deep_memo/kanchor A/B diffs.
 
 - **daisystar (non-deterministic case): close the flat `LEAVE`.** For a
   *non-deterministic* rejecting star the flat `daisystar` `LEAVE` reuses daisy2's

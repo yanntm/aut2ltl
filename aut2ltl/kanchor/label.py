@@ -14,8 +14,8 @@ the park-redundancy verdicts, all BDD reasoning having happened upstream in
 Degenerate inputs need no cases: empty guards and empty tables collapse the
 connectives, so a loop-free, exit-free, rejecting or single-state component
 yields the reduced forms the algorithm derives; with an empty `starts` list
-and per-state offset-1 triggers this emits `aut2ltl/anchor`'s label clause
-for clause.
+and per-state offset-1 triggers this emits the single-letter (k = 1) label,
+clause for clause.
 """
 
 from dataclasses import dataclass, field

@@ -25,7 +25,7 @@ from aut2ltl.ltl.simplify.fold_pass import fold_simplify
 
 # (input, expected or None, note)
 CASES = [
-    # the handoff instance (collapse_example's deep_anchor shape)
+    # the handoff instance (collapse_example's anchored-read-off shape)
     ("F(b & X(b U !a))", "F(b & X!a)", "F head, p = h identity"),
     # generalized conjunct: p ⊨ h by the conjunct tier
     ("F(a & X((a & b) U c))", "F(a & Xc)", "p = a&b entails h = a"),
