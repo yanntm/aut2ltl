@@ -111,8 +111,13 @@ def compress(frame: Frame, target: Target, c: int) -> NodeData:
         s, e = fa.omega[tl[1]][0]
         return omega_in_target((mult[nx][s], e))
 
+    # x ranges over the realizable middles g(T₁*) = ⟨g(T₁)⟩ ∪ {m}, not all
+    # of T': an unrealizable x denotes no word, and its Accept pair need not
+    # be letter-generated — the query would escape the node's ω-universe.
+    fk: Frame = make_frame(g_img[:len(t1)], div.mult, div.unit)
+    xs: Tuple[int, ...] = tuple(sorted(set(fk.gen) | {div.unit}))
     x: Tuple[Tuple[FrozenSet[int], ...], ...] = tuple(
-        tuple(frozenset(xp for xp in range(len(div))
+        tuple(frozenset(xp for xp in xs
                         if accept(mult[n][div.carrier[xp]], tl))
               for tl in t2)
         for n in t1)
@@ -124,7 +129,6 @@ def compress(frame: Frame, target: Target, c: int) -> NodeData:
     # K₂: classify each T₁^ω ω-class (the T₁-only frame fk) by rendering its
     # least pair one level up. w₁, w₂ are T₁-letter words; the denoted word's
     # parent pair is (n·g(w₁)·e_T, e_T) with h(z) = n₁·m·⋯·n_j·m, e_T = h(z)^!.
-    fk: Frame = make_frame(g_img[:len(t1)], div.mult, div.unit)
     k2_sets: List[FrozenSet[int]] = []
     for n in t1:
         keep: List[int] = []
