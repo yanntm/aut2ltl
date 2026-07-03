@@ -1,5 +1,5 @@
 """
-aut2ltl.roundtrip_decomp — the `roundtrip_decomp` Rewriter (see algorithm.md).
+aut2ltl.roundtrip.roundtrip_decomp — the `roundtrip_decomp` Rewriter (see algorithm.md).
 
 `roundtrip_decomp(R, Φ)` locates `N = Φ(φ)`, re-presents each operand of `N` with the
 Rewriter `R`, rebuilds `N` and relinks once. The operand-decomposition peer of

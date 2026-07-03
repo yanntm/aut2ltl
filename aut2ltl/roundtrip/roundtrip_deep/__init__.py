@@ -1,5 +1,5 @@
 """
-aut2ltl.roundtrip_deep — the `deep_roundtrip` Rewriter (see algorithm.md).
+aut2ltl.roundtrip.roundtrip_deep — the `deep_roundtrip` Rewriter (see algorithm.md).
 
 `deep_roundtrip(R)` is a Rewriter (`LTLResult → LTLResult`): re-present every node of
 the formula DAG bottom-up with `R`, memoized on node identity (one pass, DAG-complexity).

@@ -30,7 +30,7 @@ from aut2ltl.combinators.compose import compose
 from aut2ltl.combinators.first_success import first_success
 from aut2ltl.combinators.memo import Memo
 from aut2ltl.ltl_rewriter import identity, relabel, as_translator
-from aut2ltl.roundtrip_deep import deep_roundtrip
+from aut2ltl.roundtrip import deep_roundtrip
 from aut2ltl.simplify_ltl import Simplify
 from aut2ltl.daisy import Daisy
 from aut2ltl.daisy2 import Daisy2
