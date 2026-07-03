@@ -143,10 +143,27 @@ Final     =  STAY∞ ∨ LEAVE
 ## 4 — Relaxing L: stuttering, and the k = 1 label
 
 Now reinstate the self-loops. A letter in `L(s)` read at `s` does not move the
-run, so the phase is no longer a function of the last letter — but it *is* a
-function of the **last anchor**: the state entered by the last moving letter,
-unchanged by the loop letters read since. That recovery needs one test beyond
-P1 (which constrains only the anchors, not the full inputs):
+run, so the phase is no longer a function of the last letter — but half of the
+loops are not a problem at all, and the split is corrected before anything
+else is built. A loop letter `σ` every one of whose in-`C` occurrences is at
+`s` — `σ ∧ (L(t) ∨ A(t)) = false` for every `t ≠ s` — still *names its
+state*: whoever reads it knows the run sits at `s`. Such a letter is an
+anchor in everything but edge shape, and it is **promoted** at build time —
+into `A(s)` on the trigger side, into `M(s)` on the consequence side (a unit
+re-entry ends a sojourn exactly as a move does — the promoted letter must be
+a legal stay-ender wherever `M(s)` legislates), out of `L(s)`. From here on
+`A(s)`, `M(s)` and `L(s)` denote the promoted split: `A(s)` collects all of `s`'s *identifying* letters, entering
+or looping; `L(s)` keeps only the **necessary** stay letters — those a run
+could also be reading somewhere else, which no stateless observer can
+attribute. Nothing above changes: a promoted letter fires `s`'s own row and
+promises one more step at `s`, which is exactly what its loop does; and the
+same correction applies verbatim at every window width below (a loop
+*window* shared with no other state's windows identifies its state and
+joins the triggers). What this layer actually has to solve is the residual
+`L(s)`: genuinely ambiguous stuttering, where the phase is a function of the
+**last anchor** only — the state entered by the last identifying letter,
+unchanged by the ambiguous letters read since. That recovery needs one test
+beyond P1 (which constrains only the anchors, not the full inputs):
 
 - **P2 — loop letters never fake an anchor elsewhere.**
   `L(s) ∧ A(t) = false` for `s ≠ t`. A letter that loops somewhere is not an
@@ -154,7 +171,9 @@ P1 (which constrains only the anchors, not the full inputs):
 
 `s = t` is deliberately exempt: a letter in `L(s) ∧ A(s)` — looping at `s` and
 also entering `s` from elsewhere — is harmless, since every reading of it
-lands the run at `s`.
+lands the run at `s`. (After promotion the exemption is mostly moot: such a
+letter, unshared, was already promoted out of `L(s)`; shared, it trips P1 or
+P2 through the other state. The diagonal was never the problem.)
 
 ### 4.1 — Derived facts
 
@@ -177,8 +196,14 @@ Several facts are *derived*, not assumed:
   `s` leaves each machine step deterministic, yet is ambiguous to the
   observer; P2 rules exactly this out.)
 - **The loop-free condition is strictly subsumed.** If the full inputs `I(s)`
-  are pairwise disjoint, P1 and P2 hold a fortiori. The converse fails on any
-  component with a shared idle letter (see the worked example, 9.1).
+  are pairwise disjoint, P1 and P2 hold a fortiori — and every loop promotes,
+  so `L = ∅`: this layer adds nothing, the stays decompose into unit
+  re-entries, and the label is layer 2–3's one-step law. The sojourn `W`
+  below therefore survives exactly where it is load-bearing — on stay
+  letters genuinely shared across states, where the last anchor is the only
+  carrier of the phase. The converse fails on any component with a shared
+  idle letter (see the worked example, 9.1): a shared idle promotes nowhere
+  and is precisely what the residual `L` machinery exists for.
 
 ### 4.2 — The phase lemma (letters)
 
