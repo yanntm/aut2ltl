@@ -2614,3 +2614,13 @@ kanchor_rail probe's premise is broken by design, its fate TBD. Validation:
 --use kanchor run SUCCESS, diff vs committed reference 0 regressions, kanchor
 takes over the partscc/daisystardet rows at DAG +0.0% (458->458, tree 584),
 build -16%.
+
+2026-07-03 — aut2ltl/anchor RETIRED (with a warm salute). It was the stage to
+kanchor: kanchor/algorithm.md had absorbed its reference and the k = 1 level
+subsumes its construction. Removed the package, recipes/deep_anchor.py and its
+registry entries, tests/probes/anchor_probe.py (kanchor_probe.py does the job)
+and kanchor_rail.py (its byte-identity premise died with the promotion);
+scrubbed the dangling references (kanchor prose, TODO own-simplify item,
+fixtures README — the samples/fixtures/hoa/anchor/ automata stay, exercising
+kanchor). Validation gate after retirement: SUCCESS, diff vs reference 0
+regressions, DAG +0.0%.
