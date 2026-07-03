@@ -2601,3 +2601,16 @@ PSPACE-completeness anchor for the caps; everything positioning-flavored
 moved to the new companion oracle/related_work.md, the paper-voice digest
 (eight sections, each neighbor with "why cited"). Sole reviewer-sourced
 item left: AF14's syntactic-FDFA definition, fetch pending.
+
+2026-07-03 — kanchor: the identifiability promotion LANDED. A loop letter whose
+every in-C occurrence is at s (disjoint from every other state's L and A) is
+promoted at build time out of L[s] into A[s] (trigger side) and M[s] (a unit
+re-entry is a legal stay-ender); L[s] keeps only the necessary stay letters.
+Stated as definition in kanchor/algorithm.md layer 4 (+ the 4.1 degeneration:
+disjoint full inputs => L = 0 => the one-step law; the P2 diagonal exemption
+mostly moot), implemented in shape.py lame_data. collapse=False no longer
+claims byte-identity to aut2ltl/anchor (kanchor.py/pieces.py doc scrub) — the
+kanchor_rail probe's premise is broken by design, its fate TBD. Validation:
+--use kanchor run SUCCESS, diff vs committed reference 0 regressions, kanchor
+takes over the partscc/daisystardet rows at DAG +0.0% (458->458, tree 584),
+build -16%.
