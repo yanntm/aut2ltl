@@ -25,7 +25,6 @@ from .cake import cake
 from .cakeds import cakeds
 from .cakedsdet import cakedsdet
 from .nobls import nobls
-from .deep_anchor import deep_anchor
 from .deep_memo import deep_memo
 from .kanchor import kanchor
 from .deep_nobls import deep_nobls
@@ -47,7 +46,6 @@ RECIPES: Dict[str, Callable[[Optional[Options]], Translator]] = {
     "cakeds": cakeds,
     "cakedsdet": cakedsdet,
     "nobls": nobls,
-    "deep_anchor": deep_anchor,
     "deep_memo": deep_memo,
     "kanchor": kanchor,
     "deep_nobls": deep_nobls,
@@ -68,6 +66,6 @@ RECIPES["default"] = RECIPES["deep_nobls"]
 
 __all__ = ["RECIPES", "best", "best_daisy2", "best_inv", "best_inv_loop",
            "best_inv_all", "cake", "cakeds", "cakedsdet", "kanchor", "nobls",
-           "deep_anchor", "deep_memo", "deep_nobls", "deep_nobls_memo",
+           "deep_memo", "deep_nobls", "deep_nobls_memo",
            "deep_nobls_sort", "deep_nobls_sort_decomp", "roundtrip",
            "roundtrip_best_recipe", "roundtrip_decomp_recipe"]
