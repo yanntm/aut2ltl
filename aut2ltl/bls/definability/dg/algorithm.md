@@ -332,23 +332,102 @@ nodes memoize on hash-consed keys (the descent is a DAG, not a tree), and
   acceptance vectors (exactness to argue from syntacticity).
 - **O3 — pivot heuristics.** v0 pins least-visible-letter; deterministic
   size-minimizing pivots are a later, measured change of normal form.
-- **O4 — worked examples.** Hand-walk `fairness_example` and
-  `gf_aa_parity` (the flagship: the input whose cascade is form-blocked;
-  `|S¹| = 6`) through layers 3–7; the walks become a layer of this
-  document, in the oracle document's style, and double as the first
-  fixtures for O2's class calculus.
+- **O4 — worked examples.** First instalment done: `gf_aa_parity` is
+  hand-walked in layer 12 from `tests/probes/dg_dump.py`'s tables.
+  Remaining: `fairness_example` (mixed acceptance, more than one accepting
+  pair) — expected to exercise `K₂`'s class sets non-trivially where the
+  flagship collapses them.
 - **O5 — module map** (draft, one role per module, mirroring the oracle):
   `morphism.py` (the layer-1 tables + canonical re-keying), `divisor.py`
   (the local divisor: carrier, `∘`, the strict-decrease assert),
   `compress.py` (the `c`-factorization data: `T₁`, `T₂`, `σ`-tables, the
   `X_{n,m}` sets), `omega_classes.py` (layer 6), `lift.py` (Lemmas
   8.3/8.4, the only formula-producing module), `dg.py` (the induction
-  driver: pivot, the `K` assembly, caps — the only sequencing). Probe:
-  `tests/probes/dg_probe.py`, one HOA per invocation, Spot-verifies, ≤15 s.
+  driver: pivot, the `K` assembly, caps — the only sequencing). Probes:
+  `tests/probes/dg_dump.py` (exists: the canonical algebra dump feeding
+  layer 12), then `tests/probes/dg_probe.py` (end-to-end, one HOA per
+  invocation, Spot-verifies, ≤15 s).
 - **O6 — wiring.** Whether this surfaces as a `Translator`, and where it
   sits relative to the gate (an LTL verdict with a formula attached), is
   the assembly's concern — out of scope here, exactly as gate wiring was
   for the oracle.
+
+## 12 — Worked example: `gf_aa_parity`, by hand
+
+`L = GF(a ∧ Xa)` — infinitely many `aa`-factors — from the fixture whose
+2-state presentation carries the `Z2` that blocks the TM cascade. All data
+below is `tests/probes/dg_dump.py` output (canonical keying, layer 8):
+
+```
+D        : 2 states, letters ['!a', 'a'], acc Inf(0)
+quotient : |EM1| = 10 elements -> 6 classes
+  0: [eps]     idempotent          letters: !a -> 1, a -> 2
+  1: [!a]      idempotent
+  2: [a]                           mult    0 1 2 3 4 5
+  3: [!a;a]    idempotent               1: 1 1 3 3 1 5
+  4: [a;!a]    idempotent               2: 2 4 5 2 5 5
+  5: [a;a]     idempotent (absorbing)   3: 3 1 5 3 5 5
+                                        4: 4 4 2 2 4 5
+  P: only accepting linked pair = (5,5) 5: 5 5 5 5 5 5
+```
+
+The classes are readable invariants: for an `aa`-free word, (first letter,
+last letter) — `1/3/4/2` are `¬a·¬a / ¬a·a / a·¬a / a·a` — and class `5`
+is "contains `aa`", two-sided absorbing. `w ∈ L` iff its Ramsey pair is
+`(5, 5)`: the accepting-pair set of the root call is the singleton.
+
+**The root node** `(Σ = {¬a, a}, h, L, fresh)`. Pivot: the least letter
+with `h ≠ 1` is `c = ¬a` (`h(¬a) = 1`, the class — not the identity `0`).
+`A = {a}`.
+
+**The local divisor** at `m = 1`: `1·S = {1,3,5}`, `S·1 = {1,4,5}`, so
+`T' = {1, 5}` with `∘`-identity `1` and `5 ∘ 5 = 5` — the two-element
+absorbing monoid. One descent: `6 → 2`.
+
+**The compressed alphabet.** `T₁ = h(a*) = {0, 2, 5}` (`ε`, `a`,
+`a^{≥2}`). `T₂` = the `≈_{h|A}`-classes of `{a}^∞`: three finite ones
+(`[ε]`, `[a]`, `[a^{≥2}]`) and one infinite, `[a^ω]` — so even on a pure
+ω-input, finite `T₂`-letters exist from depth 1 on: the `Σ^∞` frame is
+load-bearing immediately, exactly as layer 2 contracts. The compressed
+morphism `g` reads `g(0) = 1·0·1 = 1`, `g(2) = 1·2·1 = 1`, `g(5) =
+1·5·1 = 5`: **single-`a` blocks are invisible in the divisor; only
+`aa`-blocks survive** — the algebra has silently discovered that an `aa`
+never straddles a `¬a`.
+
+**The three pieces** for the target `{(5,5)}`:
+
+- `K₀` (no `¬a`): `a^ω ∈ L`, so `K₀ = {[a^ω]}` — one `T₂`-letter, in.
+- `K₁` (finitely many `¬a`): the tail is `a^ω`, and
+  `X_{n,[a^ω]} = {x ∈ T' : P(n·x·5, 5)} = T'` for every `n` (column 5 of
+  the multiplication table is constantly 5, and `P(5,5) = 1`): the
+  saturation-is-a-table lemma of layer 4, exercised — **every** such word
+  is in `L`, the sub-target is the trivial `⊤`-class set, no recursion
+  needed. Semantically: `K₀ ∪ K₁` is exactly `FG a ⟹ accept`.
+- `K₂` (infinitely many `¬a`): the compressed word lives in
+  `{0, 2, 5}^ω ⊆ T₁^ω`, and `≈g` on it has exactly two ω-classes —
+  finitely many visible `5`'s (pair `(·, 1)`, rejected) vs infinitely many
+  (pair `(·, 5)`, accepted). The `(T, T')`-node pivots on the letter `5`
+  (the only one `g` sees), its local divisor is `5T'∩T'5 = {5}` — the
+  trivial monoid, `2 → 1`, base case — and the compressed formula is the
+  `GF`-shape "infinitely many `5`-letters".
+
+**Reassembly** (layer 5): the `T₁`-atom `5` substitutes as
+`φ₅^{¬a} ∧ XF ¬a` — "the `a`-block starting here has ≥ 2 `a`'s" — with
+`φ₅` from the alphabet node `({a}, h|A, h⁻¹(5))`, a two-step chain to the
+all-invisible base. Modulo the final simplification pass the assembled
+formula reads
+
+```
+FG a  ∨  GF( ¬a-anchored block with aa )    ≡    GF(a ∧ Xa)
+```
+
+— the language back, from the algebra alone, with the descent chain
+`6 → 2 → 1` and never more than seven letters of compressed alphabet. The
+walk validates, concretely: the pivot rule (the *idle* letter `¬a` is the
+right pivot — blocks are the units of counting), the `X_{n,m}` table lemma
+(`K₁` computed by two table lookups), the depth-1 appearance of finite
+`T₂`-letters, and the collapse behavior the cost layer hopes for (`T₁` =
+3 of a possible 6, `T₂` = 4 of a possible 36).
 
 ## Related ideas
 
@@ -369,3 +448,19 @@ via linked pairs, is well-defined from the infinity set alone (Maler–Staiger
 1997 is the entry point; the residual quotient alone is provably too coarse
 — `gf_aa_parity`'s is a single state). Parked here, not pursued: the DG
 route needs none of those layers.
+
+**The canonical hash — language identity without the formula.** The
+synthesized formula would decide language equivalence by normal-form
+comparison, but the path stops one object earlier: the formula is a
+*function* of the algebra, so it adds nothing to the invariant. The
+canonically keyed presentation — classes keyed by shortlex-least
+representative over `Σ`, the letter map, the multiplication table, and the
+acceptance data (the accepting ω-classes; the algebra alone would confuse
+`L` with its complement) — is already a **complete language invariant**:
+two languages over the same `AP` are equal iff these tables are identical.
+Hash the tables and language equality becomes hash equality. Notably this
+needs no aperiodicity — it covers *all* ω-regular languages, LTL-definable
+or not — and its sweet spot is many-to-many identity (bucketing a corpus by
+true language, e.g. deduplicating the genaut census by hash join) where
+pairwise product checks cost quadratically many Spot calls. Per pair it is
+rarely cheaper than one product check: the `EM` toll gates it, as always.
