@@ -57,8 +57,8 @@ class KAnchor:
     (`Language → LTLResult`). Constructed with the child labeler for exit
     targets; holds no state. Tries the window levels k = 1 … `k_max` in order
     and adopts the first whose preconditions pass; declines when none does.
-    `collapse=False` disables the sojourn-tautology collapse (the k = 1 label
-    is then byte-identical to `aut2ltl/anchor`'s — the regression rail)."""
+    `collapse=False` disables the sojourn-tautology collapse (the label then
+    transcribes every sojourn literally)."""
 
     name = _NAME
 

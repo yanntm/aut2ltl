@@ -12,8 +12,8 @@ Collapses: empty arms reduce the connectives (`false W m = m`,
 `l W false = G l`, no exit = `false`), and — the tautology collapse —
 `sojourn(s) ≡ ⊤` when `L(s) ∨ M(s) = true`: at each position either a loop
 or a move is legal, so the weak until imposes nothing. The flag
-`collapse=False` disables only the tautology collapse (the k = 1 label is
-then byte-identical to `aut2ltl/anchor`'s, the regression rail).
+`collapse=False` disables only the tautology collapse (the label then
+transcribes every sojourn literally).
 """
 
 from typing import Dict, List, Optional, Tuple
