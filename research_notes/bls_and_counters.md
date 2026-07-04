@@ -173,3 +173,259 @@ python3 tests/probes/bls_ungated.py     samples/fixtures/hoa/definability/gf_aa_
    oracle for *minimized* forms; if the counterexample exists, the gate needs
    a per-sub-term screen (Experiment 2's ground-truth automata are exactly the
    objects to screen).
+
+---
+
+# Log 2026-07-04 (cont.) — the theoretical program
+
+Direction set: no counterexample hunt (random-formula experiments and the
+genaut exhaustive census have revealed no error — absence of evidence, but a
+lot of it); solve (A) theoretically, starting from the semantic fact (L is
+LTL, i.e. S(L) aperiodic) and eliminating the contradictors. The SOSG oracle
+(`aut2ltl/bls/definability/oracle/algorithm.md`) supplies the vocabulary: the
+acceptance-enriched monoid EM(D), the loop-profile function A(q,c), and the
+collapse of the syntactic congruence into residual equality (~lin) +
+loop-profile equality (~omega). Note its layer 14 already records the
+conservative policy this investigation may discharge: "a proven-LTL language
+can still present an encoding group the holonomy parser misreads."
+
+The program:
+
+- Contradictor of (A), formalized: a state q0 of the minimized form D whose
+  recurrence language Inf(q0) = "run visits q0 infinitely often" is
+  non-star-free while L(D) is star-free. Inf(q0) is recognized by the SAME
+  semiautomaton with different marks (transitions leaving q0), so L and
+  Inf(q0) share the transition monoid and differ only in enrichment.
+- Sweep observation: while pumping v^n, the run sweeps the whole v-orbit
+  every period, so the swept part of any loop's visited set is
+  phase-invariant. Phase-dependence of "visits q0" can only enter through
+  the continuation path (the finite context read from a phase-dependent
+  state).
+- Fallback (B) if (A) falls: the assembly consumes Fin(C) only through the
+  lifted acceptance combination; orbit-level recurrence is always
+  phase-invariant, hence star-free; if the construction's per-Fin errors are
+  confined to phase-discrimination (mod3's errors were pure
+  under-approximations on exactly the modular words), the assembled
+  combination over a phase-saturated acceptance set could still be correct.
+  "Wrong sub-terms, right total, whenever L is star-free."
+
+# Attempt at (A) — reduction and partial eliminations
+
+Setting: D deterministic, complete, trim, MIN-SIZE in its acceptance class
+(parity sbacc; see "cracks" below for how honest that assumption is w.r.t.
+the pipeline), L = L(D) star-free. All state languages L(q) are residuals of
+L; recall L(x) = L(y) implies L(delta(x,u)) = L(delta(y,u)) for every finite
+u (residuals of equal languages are equal) — context-wise residual equality
+comes for free.
+
+## Step 0 — on-theorem zone (cited)
+
+If TM(D) is aperiodic, EVERY enrichment of D is star-free (oracle layer 8:
+aperiodicity is inherited upward through any mark enrichment — the state
+part stabilizes, then the mark part grows monotonically in a finite lattice
+and stabilizes one step later). So all Fin(q) are star-free and (A) holds.
+The whole question lives where TM(D) has a group that dies in L's quotient.
+
+## Step 1 — the contradictor reduces to a two-state pattern
+
+Suppose Inf(q0) is not star-free. By the certificate completeness (oracle
+layer 2, Arnold), Inf(q0) admits a counting family, linear or omega-power.
+
+Linear shape: n |-> [ q0 visited i.o. on u v^n x ] toggles with n mod p,
+p > 1, x a fixed lasso. Let x_n = delta(iota, u v^n). Since S(L) is
+aperiodic, [u v^n]_{S(L)} is eventually constant in n, so the residuals
+L(x_n) are eventually CONSTANT. Pick N past both indices: x = x_N and
+y = x_{N+1} satisfy
+
+  (R-pattern)  x != y reachable,  L(x) = L(y),  and a single lasso rho
+               visits q0 i.o. from x and finitely often from y.
+
+(x != y because the recurrence differs; determinism.) The omega-power shape
+reduces analogously via conjugation — u (v^n y)^omega toggling gives two
+phase-shifted loops from residual-equal states whose closed cycles disagree
+on visiting q0; same pattern with rho the rotated loop word. [Stated, not
+fully written out; the linear case is the load-bearing one below.]
+
+So the contradictor of (A) is exactly: a min-size D of a star-free L
+containing a reachable residual-equal pair (x, y) and a state q0 with a
+lasso rho on which the two runs disagree FOREVER about q0-recurrence.
+Note what is automatic: rho itself, and every ultimately-periodic variant,
+gets the SAME acceptance from x and from y (that is what L(x) = L(y) says)
+— the q0-discrepancy swings no acceptance decision from this pair. The
+contradictor requires recurrence that is acceptance-orthogonal along the
+pair.
+
+## Step 2 — elimination: the automorphism lemma (kills decorations)
+
+Lemma. A min-size deterministic automaton has no nontrivial mark-preserving
+automorphism h (a permutation of Q commuting with delta and preserving
+marks... with h(iota) = iota... more precisely: any h whose orbit
+equivalence is delta-compatible and mark-compatible). Proof: the quotient
+D/h is deterministic (delta-compatibility), the projection of the D-run is
+the D/h-run with identical marks, so L(D/h) = L(D) with fewer states —
+contradicting min-size. QED.
+
+Consequence: every "decorated" contradictor dies — in particular the padded
+mod-3 counter (redundant product component the acceptance ignores): its
+phase shift IS a mark-preserving automorphism, so it cannot survive
+minimization. This is the formal version of "minimization strips redundant
+counters."
+
+## Step 3 — elimination: the leak lemma (kills mark-correlated recurrence)
+
+Worked non-example (instructive failure). Try to build the R-pattern
+directly: Q = {x, y, x'}, letter a swaps x,y (the Z2; x' -a-> y), letter b:
+x -> x' -> x (2-cycle), y -> y. Put the only Buchi mark on x -b-> x'. Then
+rho = b^omega from x visits x' i.o., from y never — the wanted eternal
+discrepancy with q0 = x'. But check the premise: rho = b^omega is ACCEPTED
+from x (mark i.o.) and REJECTED from y (no marks): L(x) != L(y), and the
+pair (x,y) is a-phase-connected, so u a^n b^omega toggles membership in L
+with n mod 2 — a counting family for L itself: L is not star-free. The
+construction violated the hypothesis, not the conclusion.
+
+Lemma (leak). If visits to q0 correlate with acceptance along the pair — if
+some ultimately-periodic continuation distinguishes x from y in ACCEPTANCE
+— then L(x) != L(y), the phase family transports it to a counting family
+for L, and L was not star-free. Contrapositive: under the hypothesis of
+(A), the discrepant recurrence must be invisible to acceptance from (x, y)
+under EVERY continuation. The contradictor cannot put its marks anywhere
+the pair can see them differently.
+
+## Step 4 — the residual gap, stated precisely
+
+What survives Steps 2–3 is narrow but not yet empty:
+
+  a min-size parity-sbacc D, a reachable pair x != y with L(x) = L(y),
+  a lasso rho whose two runs disagree forever on visiting q0, where
+  (i) the pair structure is NOT a mark-preserving automorphism (q0 and its
+      partner-path states carry genuinely different marks or wiring — they
+      are needed globally, for L from iota via OTHER prefixes), yet
+  (ii) from x and y all continuations agree on acceptance (Step 3).
+
+"Globally load-bearing, locally orthogonal." gf_aa_parity shows pieces of
+this can coexist (residual-equal distinct states, a mark-load-bearing Z2 —
+but there every discrepancy is transient: the phase runs merge on !a and
+sweep on a, so no ETERNAL q0-discrepancy exists and all Inf(q) are
+star-free). The open question is whether min-size can afford an eternal
+discrepancy that pays no acceptance rent from its own pair while paying
+rent from elsewhere.
+
+## Step 5 — the pattern is decidable: a census predicate
+
+The reduction buys a concrete search primitive, much sharper than "run bls
+and verify the formula": the R-pattern is a STRUCTURAL, decidable predicate
+on a deterministic automaton —
+
+  exists x != y with L(x) = L(y)          (spot language_map, exact)
+  and exists q0 with nonempty
+      Inf(q0)-from-x  intersect  Fin(q0)-from-y   (pair-product emptiness)
+
+Run it over the genaut census / the validation corpus on the pipeline's
+minimized forms of star-free languages: empty outcome = strong evidence for
+(A) plus an induction target; a hit = feed that automaton to fin_ground.py
+and see whether the cascade actually breaks (it might not — fallback (B)).
+Either outcome is decisive information, and the probe costs one product per
+state pair.
+
+## Cracks to keep honest
+
+- The pipeline's "minimized" is best-effort (SAT-min only under a size
+  threshold). A proved (A) covers practice only where min-size actually
+  holds; above the threshold the theorem's hypothesis is unverified.
+- Minimality is class-relative (min among parity-sbacc). Step 2's quotient
+  stays in class (automorphism quotients preserve the acceptance shape), so
+  the lemma is sound; but any future merge argument stronger than
+  automorphisms must not accidentally compare against recognizers outside
+  the class.
+- Step 1's omega-power branch is sketched, not written out; the conjugation
+  bookkeeping (rotating the loop to align phase partners) needs a careful
+  paragraph before (A) can be called reduced in full.
+
+## Next
+
+1. Attack Step 4: either prove that an eternal acceptance-orthogonal
+   discrepancy forces a size reduction (a merge subtler than an
+   automorphism — the pair-closure of (x,y) along rho is the object to
+   quotient), or extract from the attempt the shape of the counterexample.
+2. Implement the Step-5 census predicate as a probe; run it over genaut
+   minimized star-free forms.
+3. Write out the omega-power branch of Step 1.
+4. Literature check against the gap: Preugschat–Wilke (per-SCC definability
+   tests) and Carton–Michel prophetic automata (canonical objects make
+   per-state questions language invariants) — the gap may already be a
+   known lemma in canonical-form clothing (papers/ has both).
+
+---
+
+# Log 2026-07-04 (cont.) — Experiment 3: the padded form, run for real
+
+Question asked (user): off-minimal, is it actually TRUE that the cascade can
+build bad stuff despite the language being LTL — or was that only a
+sub-term-level thought experiment? Answer: now demonstrated. And fallback
+(B) is refuted by the same run.
+
+## The fixture
+
+`samples/fixtures/hoa/definability/gfa_pad2.hoa` — GFa (last-letter 2-state
+recognizer) product an acceptance-inert position-parity bit: 4 states
+(q,i), every letter flips i, accepting = both phases of q1. All states
+reachable, deterministic, complete, sbacc. Language = GFa exactly
+(checked against the reference formula in the run). The padding is the
+smallest mark-preserving-automorphism specimen: Z2 in the transition monoid
+(both letters flip the bit), acceptance saturated across phases, and every
+per-state recurrence question "visit (q,i) i.o." = "q at fixed position
+parity i.o." is non-star-free.
+
+## The bypass
+
+The pipeline can never see this form: `decompose_aut` re-postprocesses its
+input and the reduction merges the bisimilar phases (the probe prints it:
+4 states in, postprocess would leave 2). A Language-level mock is not
+enough — `decompose_lang` routes through `decompose_aut`, whose docstring
+calls the re-normalization "harmless" (true for the language, form-
+destroying for this experiment). So the probe `tests/probes/bls_padded.py`
+replicates `decompose_aut` BELOW its postprocess line — determinism check,
+`extract_generators`, `decompose_gens`, context fields — feeding the padded
+automaton verbatim as the working D, then grounds every Fin(C) and runs the
+ungated hierarchy dispatch.
+
+## Result
+
+```
+python3 tests/probes/bls_padded.py samples/fixtures/hoa/definability/gfa_pad2.hoa 'GFa'
+```
+
+- all four Fin(C) sub-terms WRONG (each mixes the phases; witnesses are
+  parity-shifted lassos);
+- the assembled buchi formula is WRONG: `ok=True`, technique buchi, but
+  NOT equivalent to the input. Containment: formula STRICTLY UNDER the
+  language (extra: none) — it misses `a; a; cycle{a; !a}`, a word with
+  infinitely many a's, plainly in GFa;
+- input == GFa confirmed; output != GFa.
+
+## Consequences
+
+1. **Established, not conjectured: the cascade lies on an LTL language when
+   fed a non-minimal form.** The wrongness is real at the answer level, on
+   the simplest liveness language there is.
+2. **Fallback (B) is refuted.** The acceptance here is phase-saturated by
+   construction — the exact situation (B) said could cancel — and the
+   errors did not cancel: the total is strictly under-approximating, same
+   error shape as mod3's sub-terms.
+3. **The "deeper semantics" idea is qualified at answer granularity.** The
+   construction is not sound "because it is semantic": on an arbitrary form
+   of a star-free language it can be wrong. What it is, per Experiment 2,
+   is *per-question semantic*: right exactly where the questions the form
+   makes it ask are star-free.
+4. **Minimization is load-bearing, not a convenience.** The pipeline's
+   aggressive normalization (postprocess reduction) is a soundness
+   component: it is what keeps padded forms out. The benchmark record
+   (random formulas, genaut census, no failures) is now explained ONLY if
+   conjecture (A) holds for the forms the normalization actually produces.
+   (A) is the whole ballgame; there is no (B) safety net.
+5. **Gate consequence.** The semantic oracle alone (language-level LTL-ness)
+   is NOT a sufficient admission criterion in general — it is sufficient
+   only in conjunction with the minimizing normalization, conditional on
+   (A). The oracle doc's layer-14 caution ("delegation policy stays with
+   the form reading") was right to be conservative; the precise discharge
+   is: oracle-LTL + minimized form + (A) proved.

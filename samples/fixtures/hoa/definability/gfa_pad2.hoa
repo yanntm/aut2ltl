@@ -1,0 +1,23 @@
+HOA: v1
+name: "GFa padded with an acceptance-inert position-parity bit (Z2 in TM, language star-free; Inf((q1,0)) is 'a at fixed position parity i.o.' -- non-LTL)"
+States: 4
+Start: 0
+AP: 1 "a"
+acc-name: Buchi
+Acceptance: 1 Inf(0)
+properties: trans-labels explicit-labels state-acc complete
+properties: deterministic
+--BODY--
+State: 0 "q0,0"
+[0] 1
+[!0] 2
+State: 1 "q1,1" {0}
+[0] 3
+[!0] 0
+State: 2 "q0,1"
+[0] 3
+[!0] 0
+State: 3 "q1,0" {0}
+[0] 1
+[!0] 2
+--END--
