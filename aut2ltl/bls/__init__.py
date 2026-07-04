@@ -32,17 +32,14 @@ from .operators import (
     wreach,
     fin_c,
 )
-from .hierarchy_class import make_hierarchy_class, hierarchy_class
+from .hierarchy_class import make_hierarchy_class, hierarchy_class, bls
 from .aut2cas import as_translator
 from .definability import definability_gate
 from .operators import TRACE_ON  # for KR_TRACE=1 dev traces of inductive construction
-from aut2ltl.translator import Translator
 
-# The default public cascade endpoint: the pure adapter (`as_translator`) gated on
-# LTL-definability (`definability_gate` → NOT_LTL + witness on a non-LTL language).
-# Composed here so callers get a SAFE brick; the ungated `as_translator` stays
-# available for explicit composition.
-reconstruct: Translator = definability_gate(as_translator(hierarchy_class))
+# `bls` (in `hierarchy_class.py`) is the recommended endpoint: the pure adapter
+# (`as_translator`) gated on LTL-definability (`definability_gate`). The ungated
+# `as_translator` stays available for explicit composition.
 
 __all__ = [
     "Cascade",
@@ -60,8 +57,8 @@ __all__ = [
     "is_deterministic",
     "make_hierarchy_class",
     "hierarchy_class",
+    "bls",
     "as_translator",
-    "reconstruct",
     "simplify_ltl",
     "normalize_ltl",
     "reach",

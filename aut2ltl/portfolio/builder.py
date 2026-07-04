@@ -26,9 +26,7 @@ from aut2ltl.options import Options
 from aut2ltl.combinators.first_success import first_success
 from aut2ltl.combinators.recurse import recurse
 from aut2ltl.combinators.compose import compose
-from aut2ltl.bls.aut2cas import as_translator
-from aut2ltl.bls.definability import definability_gate
-from aut2ltl.bls.hierarchy_class import make_hierarchy_class
+from aut2ltl.bls import bls
 from aut2ltl.daisy import Daisy
 from aut2ltl.daisy2 import Daisy2
 from aut2ltl.daisystar import Daisystar
@@ -40,14 +38,9 @@ from aut2ltl.decomp.scc import SccDecompose
 from aut2ltl.decomp.strength import StrengthDecompose
 
 
-def bls(options: Optional[Options] = None) -> Translator:
-    """The bls cascade engine as a Translator. Lifts the acceptance-dispatch ladder
-    (acc → weak → buchi → cobuchi → muller) over the Krohn-Rhodes holonomy
-    decomposition (`as_translator`), gated by `definability_gate` (the cached
-    LTL-definability check, run first). The general-case floor: it always answers —
-    a formula, or a NOT_LTL verdict (with a witness) when the language is not
-    LTL-definable."""
-    return definability_gate(as_translator(make_hierarchy_class(options)))
+# `bls` (the recommended bls endpoint: `hierarchy_class` gated on definability) is
+# defined once in `aut2ltl.bls` and re-exported here as the registered recipe block,
+# so recipes compose it uniformly with the peel/floor builders below.
 
 
 def daisy(child: Translator) -> Translator:

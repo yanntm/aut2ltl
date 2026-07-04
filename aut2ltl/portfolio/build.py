@@ -44,7 +44,7 @@ from aut2ltl.contract import CascadeTranslator, Translator
 from aut2ltl.options import Options
 from aut2ltl.bls.aut2cas import as_translator
 from aut2ltl.bls.definability import definability_gate
-from aut2ltl.bls.hierarchy_class import make_hierarchy_class
+from aut2ltl.bls import bls
 from aut2ltl.bls.acc import acc as _acc
 from aut2ltl.bls.buchi import buchi as _buchi
 from aut2ltl.bls.cobuchi import cobuchi as _cobuchi
@@ -99,7 +99,7 @@ def _from_techniques(options: Options, techniques: Iterable[str]) -> Translator:
             # The integrated cascade (the full bls engine) as ONE producer (its own
             # lift, independent of any individually cited kr leaves), gated on
             # LTL-definability (the cascade is unsound on a non-LTL language).
-            rungs.append(definability_gate(as_translator(make_hierarchy_class(options))))
+            rungs.append(bls(options))
 
     if not rungs:
         raise ValueError(
