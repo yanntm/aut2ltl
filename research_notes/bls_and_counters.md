@@ -646,3 +646,456 @@ sharpened. stag1.hoa kept as the fixture record of the method.
   verdict-live duty somewhere while keeping it verdict-dead from the pair
   — the two routes above say precisely what such a beast must defeat.
 - The omega-power branch of Step 1 still owes its conjugation paragraph.
+
+---
+
+# Log 2026-07-04 (cont.) — Literature: the tension is a named phenomenon, and the canonical object is prophetic, not minimal
+
+Direction (user): the census avenue is stale (natural search over reachable
+sizes turned up no counterexample despite trying; the stag constraints push the
+minimal witness past a small sweep). Back to pen/paper via the literature. This
+entry records what the in-hand papers already settle and how they reshape (A).
+Three new PDFs pulled into `papers/` (pdftotext'd alongside): Carton–Michel 2003
+(`Carton_Michel_2003_TCS`), Löding 2001 (`Loding_2001_IPL`), Schewe 2010
+(`Schewe_2010_FSTTCS`).
+
+## Diekert–Gastin 2008 §11 — our tension is KNOWN, and ω-specific
+
+`papers/Diekert_Gastin_2008.txt`, "Counter-free and aperiodic Büchi automata":
+
+- **Lemma 11.2** (classical, McNaughton–Papert): over FINITE words the *minimal
+  DFA* of an aperiodic language IS counter-free. Deterministic + minimal ⟹
+  counter-free — cleanly true on finite words.
+- **Lemma 11.6**: for DETERMINISTIC automata, counter-free ⟺ aperiodic
+  transition monoid (nondeterministic: only cf ⟹ aperiodic). Def. 11.5 gives the
+  weaker "aperiodic" notion for the nondeterministic direction.
+- **Remark 11.13** (our exact crux, stated as settled): *"There is no canonical
+  minimal Büchi automaton for languages of infinite words,"* and a *minimal-size*
+  automaton of an aperiodic ω-language *need not be counter-free*. Their witness
+  (L = {ε,a²}∪a⁴a*, Fig. 3) is finite-word/nondeterministic; `gf_aa_parity` is
+  the DETERMINISTIC-ω instance of the same fact — a state-minimal parity form of
+  a star-free language carrying a Z2.
+- **Prop. 11.4 / 11.11**: L aperiodic ⟺ recognized by *some* counter-free Büchi
+  automaton — but the construction routes through a ⋃ U·Vω union and yields a
+  (generally nondeterministic) counter-free BA that is NOT the minimal
+  deterministic form the pipeline feeds the cascade.
+
+Consequence: the finite-word "min ⟹ counter-free" (Lemma 11.2) provably does NOT
+lift to ω. Conjecture (A) is therefore not resolved by "just minimize"; the very
+object our gate relies on (state-minimal deterministic ω-form) is the one Diekert–
+Gastin flag as non-canonical and possibly non-counter-free.
+
+## Preugschat–Wilke 2013 / Carton–Michel — the RIGHT canonical object
+
+`papers/Preugschat_Wilke_2013_LMCS.txt` builds on **Carton–Michel automata**
+(prophetic / strongly-unambiguous complete Büchi: any infinite word labels
+exactly one path visiting final states i.o. — `papers/Carton_Michel_2003_TCS`,
+main theorem: every rational ω-set is so recognized). These are CANONICAL and
+"separate the finitary fraction from the infinitary fraction" (§3):
+
+- **left quotient** (reverse semi-DFA via the left congruence ≡A) = finitary
+  fraction;
+- **loop language** LL(q) = ⋃_{q'≡A q} S(q') = "all loops at q and congruent
+  states" = infinitary fraction — this IS our per-state recurrence object, in
+  canonical congruence-collapsed form;
+- **Theorem 3.2**: an LTL formula lies in a temporal-operator fragment ⟺
+  forbidden-pattern conditions on the left quotient + conditions on the loop
+  languages. Star-freeness (full LTL) is the aperiodicity end of this table.
+
+So the finitary/infinitary split that (A) needs — residual part vs recurrence
+part, each screened for star-freeness — is a THEOREM on the prophetic form, not
+on the minimal-deterministic form.
+
+## The three new papers, and what each pins down
+
+- **Carton–Michel 2003** — source of the prophetic canonical automaton; the
+  object to read for a recurrence/loop-language star-freeness lemma (does the
+  enrichment "mark one state, ask visited-i.o." stay aperiodic on this form?).
+- **Löding 2001** — deterministic *weak* ω-automata are the ONE class with a
+  unique minimal automaton (O(n log n), via DFA minimization). Confirms
+  explicitly: "for ω-automata in general there is no unique minimal automaton and
+  no congruence characterization as for DFA." Our Büchi/parity forms are outside
+  the clean class.
+- **Schewe 2010** — minimising deterministic Büchi/parity automata is
+  NP-complete; introduces "almost equivalence" (strictly between DFA- and
+  DBA-language-equivalence). Hard evidence backing Remark 11.13: no cheap
+  canonical minimal form exists, so a gate resting on "the" minimized form rests
+  on a non-canonical, expensive-to-certify object.
+
+## Reframe of the program
+
+(A) is currently phrased over the *minimal deterministic* automaton — the object
+the literature says has no clean theorem (non-canonical; min ≠ counter-free;
+NP-hard to reach). The clean statement lives on the **prophetic (Carton–Michel)
+form**, where loop languages carry recurrence and star-freeness is a per-part
+condition (Preugschat–Wilke Thm 3.2). Two readings:
+
+1. The bridge to prove: relate the cascade's `Fin(C)` over the min-deterministic
+   form's configs to the prophetic form's loop languages. If min-det `Fin(C)`
+   star-freeness follows from loop-language star-freeness, (A) closes.
+2. Or the gate belongs on the prophetic form outright — screen the loop languages
+   (Preugschat–Wilke's decidable conditions), not the min-deterministic reading.
+   This would replace 4.5' (dead-bit fold on min-det) with a loop-language
+   screen, sidestepping the NP-hard minimality dependence entirely.
+
+Either way, 4.5' likely relocates OFF the minimal deterministic automaton and
+ONTO the loop languages. The dead-bit-fold intuition survives as: minimization
+folds mark-symmetric groups, and the surviving mark-load-bearing groups have
+set-equal (finitary/infinitary-separable) recurrence — exactly what the prophetic
+form makes a language invariant.
+
+## Next
+
+- Read `Carton_Michel_2003_TCS` for a recurrence-preservation / loop-language
+  star-freeness lemma (the "mark one state" enrichment on the prophetic form).
+- Hand the browser-LLM query (below) out for anything post-2013 that states the
+  loop-language star-freeness of a canonical ω-form of a star-free language
+  directly.
+- Hold the theoretical attack on 4.5' and the ω-power branch until the prophetic
+  reframe settles which object 4.5' should live on.
+
+### Browser-LLM literature query (kept for the record)
+
+> Fix a state-based deterministic parity/Büchi automaton D for a star-free
+> ω-language L (aperiodic syntactic ω-semigroup; FO/LTL-definable), state-minimal
+> in its acceptance class. For state q let Inf_q = {w : run of D on w visits q
+> i.o.}, recognized by the SAME transition structure with Büchi condition {q}. Is
+> Inf_q necessarily star-free whenever L is? Equivalently: can the transition
+> monoid of a state-minimal deterministic ω-automaton of a star-free language
+> carry a group making some per-state recurrence condition non-aperiodic, or does
+> minimality confine every surviving group to acceptance-symmetric positions
+> where recurrence sets are unaffected? Known: (Diekert–Gastin 2008) finite-word
+> minimal DFA of an aperiodic language is counter-free, but for ω there is no
+> canonical minimal automaton and a minimal-size aperiodic ω-automaton need not be
+> counter-free; (Preugschat–Wilke 2013 / Carton–Michel prophetic automata) the
+> canonical prophetic automaton separates a finitary from an infinitary fraction,
+> loop languages capturing recurrence. Want: (1) any theorem that per-state
+> recurrence / per-SCC loop languages of a canonical/minimal ω-automaton of a
+> star-free language are themselves star-free; (2) preservation of
+> star-freeness/aperiodicity under the "add a Büchi/parity mark on one state"
+> enrichment of a fixed deterministic transition structure; (3) canonicity /
+> minimization results for deterministic parity/Büchi automata bearing on whether
+> transition-monoid groups survive state-minimization.
+
+---
+
+# Log 2026-07-04 (cont.) — Investigating the papers: the group is forced into residual fibers
+
+Read for structure (not re-derived): `Carton_Perrin_Pin_2008` (ω-semigroups,
+linked pairs, prophetic automata §7), `Preugschat_Wilke_2013` (loop-language
+schema), `Carton_Michel_2003` (prophetic construction), `Loding_2001` (weak
+minimal), `Schewe_2010` (Büchi/parity min NP-complete). What the papers give,
+and the one new structural theorem the ω-semigroup view hands us.
+
+## What each paper does / does NOT give us
+
+- **Carton–Michel 2003** — the *construction* of prophetic (co-deterministic,
+  co-complete) Büchi automata: every ω-word labels exactly one final path. It is
+  the canonical-object existence result, NOT a star-free characterization. No
+  aperiodicity/loop-language lemma here to lift directly.
+- **Preugschat–Wilke 2013** — the schema we want, but only for PROPER fragments
+  ({X},{F},{XF},{X,F},{U}). Table 1: fragment membership ⟺ (forbidden-pattern
+  condition on the left quotient = finitary part) ∧ (loop languages lie in a
+  *-language class: 1-locally-testable / locally-testable / stutter-invariant).
+  The FULL-LTL (star-free) row is not tabulated — they explicitly exclude the
+  top fragment. But the schema's shape is unambiguous: the analog star-free row
+  is "left quotient counter-free ∧ every loop language star-free." Loop languages
+  = infinitary fraction, computed on the prophetic GCMA.
+- **Carton–Perrin–Pin 2008** — the ω-semigroup backbone. Linked pair (s,e):
+  se=s, e²=e, realising u·vω with s=φ(u), e=φ(v). L star-free ⟺ its syntactic
+  ω-semigroup has aperiodic +-part (via Thomas [33]). Prophetic = co-deterministic
+  + co-complete (§7.2). Gives vocabulary + backbone, no ready (A).
+- **Löding 2001** — deterministic WEAK ω-automata are the ONE class with a
+  unique minimal automaton (Myhill–Nerode-style congruence, O(n log n) via DFA
+  min). Confirms explicitly the others have no congruence characterisation. Our
+  breaking cases (GFa recurrence, gf_aa Büchi) are Büchi-proper, OUTSIDE the weak
+  class — so no canonical min to lean on for them.
+- **Schewe 2010** — minimising deterministic Büchi/parity is NP-complete;
+  "almost equivalence" (agree except finitely often) is the finitary/infinitary
+  boundary made precise. Reinforces: a gate resting on "the" minimised form rests
+  on a non-canonical, NP-hard-to-certify object.
+
+## New theorem (ω-semigroup): the group lives in residual fibers
+
+The right congruence u ~ v ⟺ u⁻¹L = v⁻¹L (residual ω-languages) has finitely
+many classes and its transition monoid DIVIDES the syntactic ω-semigroup's
++-part S+. For star-free L, S+ is aperiodic, so:
+
+> **(R-aperiodicity)** In ANY deterministic recognizer D of a star-free L, the
+> residual-action monoid is aperiodic. Hence every group in TM(D) acts trivially
+> on residuals — it is confined to a single residual class (states x≠y with
+> L(x)=L(y)).
+
+This is exactly Step 1's R-pattern seed, now DERIVED rather than reduced-to: the
+contradictor's group pair (x,y) is forced to be residual-equal because a group
+cannot show up in the (aperiodic) residual quotient. The group in a min-det form
+of a star-free language is a pure ACCEPTANCE-DETECTION group: it tracks the
+transient positional info the automaton needs to DETECT the acceptance pattern
+(gf_aa: "was the last letter a", to see an aa-adjacency), invisible to residuals.
+
+Corner confirmation this is minimality-essential, not automatic: the padded form
+`gfa_pad2` (Exp 3) is a deterministic recognizer of star-free GFa with Inf((q,i))
+non-star-free — so (A) is FALSE for arbitrary deterministic D and genuinely needs
+minimality. Its padding group is residual-trivial AND acceptance-invisible (a
+mark-preserving automorphism) — the dead bit that minimality is supposed to fold.
+
+## Where this leaves (A) — the chain is complete up to one link
+
+1. L star-free ⟹ residual monoid aperiodic ⟹ any TM(D) group sits in a residual
+   fiber (R-aperiodicity, above; = Step 1 seed, now a theorem).
+2. Leak lemma (Step 3): if the fiber group's phase were visible to L-acceptance
+   from that class under any continuation, L(x)≠L(y) — contra (1). So the group
+   is acceptance-invisible from its own class: globally L-invisible (residual-
+   invisible by (1), acceptance-invisible by (3)).
+3. Sweep/phase (Step 4): pumping the group generator sweeps the whole orbit, so
+   the i.o.-set of a group-loop is phase-invariant (set-equal, harmless to Fin).
+   Phase-dependence of some Inf_q can only enter via a DIFFERENT loop word the
+   group permutes into distinct fates (mod3's !a) — but mod3's L is non-star-free,
+   i.e. that fate-difference IS a residual/acceptance leak, excluded by (1)-(2)
+   for star-free L.
+4. THE OPEN LINK (4.5' / rotation-iso, unchanged): a globally L-invisible
+   within-fiber group must FOLD at minimality (admit a mark-preserving quotient
+   of its delta-closed region). Löding gives this for the weak class (canonical
+   min). For Büchi/parity it is exactly the dead-bit-fold conjecture, and the
+   papers do NOT close it — Schewe says minimisation there is genuinely hard, so
+   the fold, if true, is not a cheap congruence collapse.
+
+## Consequence / reframe sharpened
+
+Two clean routes remain, both better-founded now:
+
+- **Prophetic gate (sidesteps (4)).** Prove the star-free analog of the
+  Preugschat–Wilke schema: L star-free ⟺ prophetic left quotient counter-free ∧
+  every loop language star-free. On the canonical prophetic form this is a
+  language invariant (no minimisation dependence, no NP-hardness). Then screen
+  the gate on the prophetic loop languages, not the min-det reading. This is the
+  most promising concrete target — likely assembling from Thomas [33] +
+  Preugschat–Wilke's machinery rather than needing new mathematics.
+- **Min-det closure (needs (4)).** Prove the dead-bit fold for Büchi/parity: a
+  globally verdict-dead within-fiber group folds under state-minimality. This is
+  the harder, bespoke ω-semigroup argument; Schewe is the warning that it cannot
+  be a one-line congruence.
+
+Net: the literature CONFIRMS the tension is real & ω-specific, DERIVES the
+R-pattern seed as a theorem (groups forced into residual fibers), and localises
+the entire remaining gap to link (4). No paper contains (4); the prophetic route
+is the way to make the gap disappear rather than close it head-on.
+
+---
+
+# Log 2026-07-04 (cont.) — The prophetic result: loop languages of a star-free ω-language are star-free
+
+Pursuing the prophetic route (the clean, canonical, minimisation-free object).
+Read the precise machinery: Preugschat–Wilke §2–3 (CMA/GCMA, loops, anchor,
+loop language) and Carton–Michel §6.3 (the semigroup construction of the
+prophetic automaton). A proof architecture for the standalone result emerges —
+the ω-analog of Schützenberger/McNaughton–Papert with the RIGHT canonical object.
+
+## Definitions nailed (Preugschat–Wilke §2, Carton–Michel §6.3)
+
+- **CMA** (Carton–Michel automaton): every ω-word has EXACTLY ONE final run
+  (prophetic = co-deterministic + co-complete). Canonical where minimal-
+  deterministic is not.
+- **Loop at q**: u ∈ A⁺ with u·q = q and u passes through a final state
+  (∃ v,w: vw=u, wq ∈ F). S(q) = loops at q.
+- **Anchor (CM Lemma 2.2)**: every u ∈ A⁺ is a loop at EXACTLY ONE state uↅ.
+  So {S(q)} PARTITIONS A⁺ — a finite partition, an anchor map A⁺ → Q.
+- **Loop language** LL(q) = ⋃_{q'≡q} S(q'), ≡ the left congruence (finitary
+  fraction). LL(q) = the infinitary fraction; regular (PW §7: unions recognised
+  by reverse DFAs).
+- **Linked pair / conjugacy (CM Prop 60)**: [s₁,e₁]=[s₂,e₂] ⟺
+  φ⁻¹(s₁)φ⁻¹(e₁)ω ∩ φ⁻¹(s₂)φ⁻¹(e₂)ω ≠ ∅. Conjugacy classes S̃ = the ω-word
+  "types"; φ extends to φ: Aω → S̃. Chain expansion (CM §6.3.2): the prophetic
+  automaton's states are the strict R-chains Ŝ of S, with a left action of A*
+  factoring through S (Prop 69).
+
+## Theorem (P) [target]: LL(q) star-free when L is star-free
+
+**Claim.** For a star-free L with syntactic ω-semigroup (S₊ aperiodic), every
+loop language of the canonical (chain-expansion) prophetic automaton is
+star-free. Equivalently the canonical prophetic automaton is COUNTER-FREE — the
+ω-analog of "min DFA of an aperiodic finite-word language is counter-free"
+(Diekert–Gastin Lemma 11.2), with the prophetic automaton replacing the (non-
+existent) minimal deterministic ω-automaton.
+
+**Proof architecture (two routes, one crux each).**
+
+Route A — via φ-saturation (cleaner):
+1. A loop u at q is a PURELY RECURRENT object: u·q = q, no transient. Its type is
+   the linked pair (φ(u), e), e = φ(u)^π (idempotent power, well-defined in the
+   finite S₊).
+2. CRUX (SAT): S(q), hence LL(q), is saturated by φ — u ∈ LL(q) depends only on
+   φ(u). Justification: loops ↔ linked pairs, and linked-pair conjugacy classes
+   are φ-determined (Prop 60), so words of equal φ-image anchor at ≡-equivalent
+   states. (The chain φ̂(u) that breaks saturation for TRANSIENT prefixes is
+   absent for a loop — u fixes its state.)
+3. Then LL(q) = φ⁻¹(X) for X ⊆ S₊. S₊ aperiodic ⟹ LL(q) star-free
+   (Schützenberger: recognised by an aperiodic monoid ⟹ star-free). ∎
+
+Route B — via counter-freeness of the chain automaton:
+1. The prophetic automaton's transitions = left action of A* on strict R-chains
+   Ŝ, factoring through S₊ (Prop 69); it is a deterministic (co-deterministic)
+   action, so aperiodic ⟺ counter-free (Diekert–Gastin Lemma 11.6.2).
+2. CRUX (EXP-AP): the left action of an aperiodic S₊ on its R-chains is aperiodic
+   — (left-mult by φ(u))^n stabilises on chains because φ(u)^n = φ(u)^{n+1} in
+   S₊ and the R-order reduction = is deterministic (adds no period). [Care: this
+   is the aperiodicity-preservation of the R-chain expansion; must be checked,
+   not assumed — Rhodes-type expansions need not preserve aperiodicity in
+   general, but this specific left-action quotient plausibly does.]
+3. Counter-free automaton ⟹ its finite-word loop languages aperiodic ⟹
+   star-free. ∎
+
+Route A is preferable: it sidesteps the expansion-aperiodicity technicality and
+uses only Prop 60 + Schützenberger. The single load-bearing lemma is (SAT):
+loop languages are φ-saturated.
+
+## Consistency check against the fixtures (by hand, no run)
+
+- **gf_aa_parity** (L = GF(a∧Xa), star-free, S₊ aperiodic): (P) predicts the
+  prophetic loop languages star-free — matches Exp 2, where every Fin(C) built
+  correctly and the GT languages were LTL. The Z2 lived only in the min-det
+  form, not in S₊; the prophetic form has no group.
+- **mod3_a** (non-star-free, S₊ has Z3): (P)'s hypothesis fails (S₊ not
+  aperiodic), so loop languages need not be star-free — matches Exp 2's two
+  non-LTL Fin sub-terms. Consistent: the group is REAL in S₊ here, not a form
+  artifact.
+- **gfa_pad2** (L = GFa star-free; non-minimal det form, Inf non-star-free):
+  (P) still predicts the PROPHETIC loops star-free — the non-star-free Inf is a
+  pure artifact of the padded min-det form, exactly as (P)'s canonical-object
+  framing says. The padding group is absent from S₊.
+
+All three consistent: the group that matters is the one in S₊ (⟺ L non-star-free);
+groups in a deterministic FORM beyond S₊ are artifacts the canonical prophetic
+object does not carry.
+
+## What (P) does and does NOT settle
+
+- SETTLES (modulo lemma SAT): the per-state recurrence question is star-free on
+  the canonical prophetic form whenever L is — the intuition from literature
+  item 4 ("canonical objects make per-state questions language invariants") is a
+  theorem, not a hope. This is a clean standalone result worth writing up: the
+  ω-word Schützenberger analog stated on prophetic automata, filling the gap
+  Diekert–Gastin Remark 11.13 leaves open (no canonical minimal automaton) with
+  the RIGHT canonical object.
+- Does NOT yet settle (A) for the TOOL: the cascade runs on the min-DETERMINISTIC
+  form, a different automaton from the prophetic one. (P) proves the target is
+  clean canonically; the residual work is the BRIDGE — relate the min-det form's
+  Fin(C) to the prophetic loop languages. gfa_pad2 shows a NON-minimal det form
+  breaks, so the bridge must use state-minimality (this is exactly link (4), now
+  with a known-clean target to aim the fold at).
+
+## Next
+
+1. Prove lemma SAT rigorously (Route A): loop languages are φ-saturated. Needs
+   the precise chain-state definition (CM §6.3.3, unread) to confirm S(q) unions
+   to φ-classes. This closes (P).
+2. Draft (P) as a standalone statement/proof once SAT lands — the McNaughton–
+   Papert-for-ω-via-prophetic-automata result.
+3. The bridge for (A): does state-minimality of the deterministic form force its
+   recurrence structure to be a quotient of the prophetic loop structure (so
+   min-det Fin(C) inherits star-freeness from prophetic LL)? This is link (4)
+   re-aimed: fold the min-det "extra" groups against the clean prophetic target.
+
+---
+
+# Log 2026-07-04 (cont.) — (P) PROVEN: the canonical prophetic automaton of a star-free ω-language is counter-free
+
+Read Carton–Michel §6.3.3 (the automaton A_S built from a recognizing
+semigroup). It supplies a rigorous proof of (P) — and the route is NOT the
+SAT-saturation lemma of the previous entry (that one is false as stated: the
+anchor's chain coordinate genuinely depends on φ̂(u), not φ(u)). The clean
+route is the transition-monoid one, and Prop. 70 makes it rigorous. Correcting
+the record and recording the finished proof.
+
+## The construction (CM §6.3.3), exactly
+
+Given L = φ⁻¹(P) ⊆ Aω, φ: A⁺ → S a recognizing morphism, P ⊆ S̃ (conjugacy
+classes of linked pairs). The prophetic automaton:
+
+  Q = { ([s,e], (s₁,…,sₙ)) ∈ S̃ × Ŝ  |  s R sₙ }
+  transitions read letter a by the LEFT ACTION on both coordinates:
+      a·[s,e] = [φ(a)s, e]                       (first coord)
+      a·(s₁,…,sₙ) = =(φ(a), φ(a)s₁, …, φ(a)sₙ)   (second coord, R-order reduce =)
+  co-deterministic + complete; one final-set F (final transitions:
+      φ(a)s D e AND the chain step is "cutting").
+  Run of x visits state (φ(xᵢ), φ̂(xᵢ)) at position i — a function of the SUFFIX.
+
+Two coordinates: [s,e] = the RECURRENT type (linked pair = which ω-behavior);
+(s₁,…,sₙ) = the strict R-chain = finitary prefix bookkeeping (φ̂, not a
+morphism).
+
+## Proof of (P): S aperiodic ⟹ A_S counter-free ⟹ loop languages star-free
+
+Take S = the syntactic ω-semigroup of L; L star-free ⟺ S₊ aperiodic
+(Thomas / Perrin–Pin). Show the transition monoid of A_S is aperiodic, i.e.
+(u-action)ⁿ = (u-action)ⁿ⁺¹ on Q for n large, coordinatewise:
+
+- FIRST coordinate. (u-action)ⁿ[s,e] = [φ(u)ⁿ s, e]. S₊ aperiodic ⟹
+  φ(u)ⁿ = φ(u)ⁿ⁺¹ for n ≥ |S₊| ⟹ stabilises. (This is literally the left-
+  regular representation of S₊ on the s-coordinate — aperiodic iff S₊ is; this
+  is where a group in S₊, i.e. L NON-star-free, would break it.) ✓
+
+- SECOND coordinate (the expansion — the only nontrivial step). By Prop. 70,
+  once the path uⁿ·c accumulates more than |c| ≤ |S| cutting transitions,
+  uⁿ·c = φ̂(uⁿ). Cutting MUST accumulate (chains are length-bounded by |S|, so
+  a non-cutting period would grow the chain past the bound), so for n ≥ N,
+  uⁿ·c = φ̂(uⁿ). And φ̂(uⁿ) is eventually constant in n because φ(uᵏ)
+  R-stabilises at the idempotent φ(u)^π. Hence uⁿ·c = uⁿ⁺¹·c for n large,
+  INDEPENDENT of the starting chain c. ✓
+
+Both coordinates aperiodic ⟹ transition monoid of A_S aperiodic. A_S is
+co-deterministic, and counter-freeness (Diekert–Gastin Def. 11.1) is
+reversal-invariant, so aperiodic transition monoid ⟹ A_S counter-free
+(DG Lemma 11.6.2 on the reverse). ∎ (counter-free)
+
+Loop languages: S(q) = { u ∈ A⁺ : u·q = q and some factorization u = vw has
+w·q final } is recognised by the (aperiodic) transition monoid enriched with a
+monotone "crossed a final transition" bit — the enrichment stays aperiodic
+(absorbing bit, no group; the oracle-layer-8 phenomenon). Recognised by an
+aperiodic monoid ⟹ star-free (Schützenberger). LL(q) = ⋃_{q'≡q} S(q'), a finite
+union ⟹ star-free. ∎ (P)
+
+## The theorem, stated
+
+> **(P) / prophetic Schützenberger.** For the canonical Carton–Michel prophetic
+> automaton A_S built from the syntactic ω-semigroup of an ω-regular L:
+> A_S is counter-free  ⟺  S₊ aperiodic  ⟺  L star-free.
+> Consequently every loop language LL(q) (the per-state recurrence / infinitary
+> fraction) of A_S is star-free whenever L is.
+
+This is the ω-word analogue of "the minimal DFA of an aperiodic finite-word
+language is counter-free" (Diekert–Gastin Lemma 11.2), stated on the RIGHT
+canonical object — the prophetic automaton — precisely where DG Remark 11.13
+says the minimal DETERMINISTIC automaton fails to exist/be counter-free. The
+group that can survive in a minimal deterministic form (gf_aa_parity's Z2) is a
+forward-determinism artifact; the co-deterministic canonical form has no group
+when L is star-free.
+
+## Fixture check (unchanged, now against a proof)
+
+- gf_aa_parity: L star-free ⟹ S₊ aperiodic ⟹ A_S counter-free ⟹ loop
+  languages star-free. The Z2 was never in S₊.
+- mod3_a: S₊ has a real Z3 (L non-star-free) ⟹ first-coordinate action
+  non-aperiodic ⟹ A_S NOT counter-free ⟹ loop languages need not be star-free.
+- gfa_pad2: L=GFa star-free ⟹ A_S counter-free; the padded min-det form's
+  non-star-free Inf is a pure forward-form artifact, absent from S₊/A_S.
+- CM's own examples confirm the ⟺: Ex 72 (aAω, S₁ left-zero = aperiodic,
+  A_S counter-free) and Ex 73 (GFb, S₂ = U₁ aperiodic, A_S counter-free).
+
+## Status
+
+(P) is proven and is a clean standalone result (the prophetic Schützenberger
+analogue). What remains for the TOOL is unchanged and now sharply posed: the
+BRIDGE from A_S's loop languages to the min-DETERMINISTIC form's Fin(C) that the
+cascade actually consumes. gfa_pad2 shows an arbitrary deterministic form breaks,
+so the bridge must invoke state-minimality — the open link (4), now aiming the
+"fold the extra forward-determinism groups" argument at a proven-clean target.
+
+## Next
+
+1. Write (P) up as a self-contained lemma+proof (candidate paper/appendix
+   material): construction recap, the two-coordinate aperiodicity argument,
+   Prop. 70 citation, the ⟺ statement, DG Remark 11.13 as the motivation.
+2. The bridge (link 4): relate min-det Fin(C) to A_S loop languages under
+   state-minimality. Concretely: is there a cover from the min-det form's
+   config-recurrence to A_S's loops that transports star-freeness back?
