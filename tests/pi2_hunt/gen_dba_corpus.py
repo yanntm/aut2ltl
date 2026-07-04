@@ -68,20 +68,26 @@ def _random(aps: Sequence[str], k: int, seeds: int, tree: Tuple[int, int]) -> It
             yield str(next(g))
 
 
-def _minimal_recurrence(f_str: str, max_states: int) -> "spot.twa_graph | None":
-    """Minimal deterministic form of the formula, or None if it is not a genuine
-    recurrence within the state bound (trivial acceptance or too large)."""
+def _target_form(f_str: str, max_states: int) -> "spot.twa_graph | None":
+    """The minimal deterministic recurrence form for this formula -- the TARGET the
+    P3 test grounds configs on verbatim (the hunt is about the minimal automaton,
+    so the corpus IS minimal forms; the predicate grounds on them without letting
+    decompose_aut re-postprocess and pad). Kept only when the form is SAT-minimal
+    (n == sat_minimize(n)), a genuine recurrence (acceptance mentions Inf), complete
+    (needed for the holonomy), and within the state bound; else None."""
     try:
         f = spot.formula(f_str)
     except Exception:
         return None
     det = Language.of(spot.translate(f)).det_generic_minimal()
     n = det.num_states()
-    if n < 2 or n > max_states:
+    if n < 2 or n > max_states or "Inf" not in str(det.get_acceptance()):
         return None
-    acc = str(det.get_acceptance())
-    if "Inf" not in acc:  # drop all-accept / all-reject safety forms
+    m = spot.sat_minimize(det)
+    if m is None or m.num_states() != n:
         return None
+    if not spot.is_complete(det):
+        det = spot.complete(det)
     return det
 
 
@@ -104,18 +110,16 @@ def main(argv: List[str]) -> int:
     considered = 0
     for f_str in itertools.chain(_structured(aps), _random(aps, args.random, args.seeds, (lo, hi))):
         considered += 1
-        det = _minimal_recurrence(f_str, args.max_states)
-        if det is None:
+        g = _target_form(f_str, args.max_states)
+        if g is None:
             continue
-        hoa = det.to_str("hoa")
-        key = normalize_hoa(hoa)
+        key = normalize_hoa(g.to_str("hoa"))
         if key in seen:
             continue
         seen.add(key)
-        name = f"c3a_{kept:04d}_s{det.num_states()}"
-        det.set_name(f_str)
-        with open(os.path.join(args.out, f"{name}.hoa"), "w") as fh:
-            fh.write(det.to_str("hoa"))
+        g.set_name(f_str)
+        with open(os.path.join(args.out, f"c3a_{kept:04d}_s{g.num_states()}.hoa"), "w") as fh:
+            fh.write(g.to_str("hoa"))
         kept += 1
 
     print(f"considered={considered} kept={kept} -> {args.out}", file=sys.stderr)
