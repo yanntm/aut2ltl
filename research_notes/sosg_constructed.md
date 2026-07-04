@@ -141,7 +141,47 @@ standard PSL front end, so Figure 1 needs no hand construction.
 
 ---
 
-## 2. The object
+## 2. The objects, in plain terms
+
+The reader we write for practices ω-automata — Büchi acceptance, ω-regular languages —
+but need not keep Perrin–Pin open. This section fixes the few algebraic objects the
+construction stands on, each with the intuition we ourselves had to reconstruct from
+the book, shown on the three running examples. There is one genuinely new idea; the
+rest is boolean bookkeeping.
+
+**We only ever look at lassos.** A **lasso** (ultimately-periodic word) is `u·v^ω`: a
+finite stem `u`, then a finite loop `v` repeated forever. The organizing fact: *two
+ω-regular languages are equal iff they agree on all lassos* [PP04]. Classifying `L` is
+therefore nothing but sorting lassos into finitely many **types**, and every object
+below is machinery for naming and sorting them.
+
+**The algebra is a finite monoid plus one operation — "loop forever."** Finite words
+are classified by a finite **monoid**: an associative product with a unit,
+concatenation collapsed onto finitely many values (`φ(uv) = φ(u)φ(v)`). Infinite words
+need exactly one thing more — a way to say "repeat this loop forever" — because no
+product of finite pieces expresses `v^ω`. Adjoin that single operation, an **infinite
+power** `s ↦ s^ω`, to a finite monoid and you have an **ω-semigroup** `S = (S₊, S_ω)`:
+`S₊` the types of finite words, `S_ω` the types of ω-words [PP04, Ch. II]. That is the
+whole exotic content. A morphism `φ : Σ^∞ → S` **recognizes** `L` when membership
+depends only on the type — `L = φ⁻¹(P)` for a set `P` of accepting ω-types.
+
+**A linked pair is the name of a lasso.** Read a lasso `u·v^ω` through a finite `φ`
+(Ramsey's theorem): the loop's repeated image settles on an **idempotent** value
+`e = e·e` — in a finite monoid, powers `φ(v), φ(v)², …` cannot stay new forever, so one
+of them is idempotent — and the stem settles on an `s` with `s·e = s` (the stem sits
+before the loop and is absorbed by it). The pair `(s, e)` with `s·e = s`, `e² = e` is a
+**linked pair**: `s` names the stem, `e` names the loop, and together they name the
+lasso `u·v^ω` (`φ(u) = s`, `φ(v) = e`). Since a recognizer is fixed by which lassos it
+accepts, it is fixed by its set of **accepting linked pairs** — which is why (§5) the
+acceptance datum of our object is a *set of pairs*, not merely a subset of a monoid.
+
+*Example (where each language keeps its verdict).* `GF(aa)` decides on the **loop** `e`:
+`u·v^ω` has infinitely many `aa` iff the loop does, so the accepting pairs are those
+with an `aa` in `e`, any `s`. `Even` decides on the **stem** `s`: once a `!a` is seen
+the loop is irrelevant, and acceptance is fixed by whether the stem is "an even block
+of `a`'s then `!a`". `EvenBlocks` decides on the loop again but is **stem-blind** — a
+finite stem never matters — accepting iff the loop completes only even blocks. Loop,
+stem, loop-but-stem-blind: the three cases the construction must cover.
 
 We fix a finite alphabet `Σ` (for LTL applications `Σ = 2^AP`), write `Σ*`, `Σ^ω`,
 `Σ^∞ = Σ* ∪ Σ^ω`, and take `L ⊆ Σ^ω` regular. The input is any **deterministic,
@@ -165,43 +205,23 @@ states pairwise (`q₀ ≠ q₁` because one `!a` accepts, the other rejects) bu
 both states of `EvenBlocks` to a single residual — the prefix-independence that
 Proposition 4.6 will read algebraically.
 
-**ω-semigroups and linked pairs (what we import, and why).** Finite words are
-classified by a *monoid* — one associative product. Infinite words need a *two-sorted*
-algebra, because an ω-word is built by an infinite product that a plain semigroup
-cannot express; this is the ω-semigroup of Perrin and Pin [PP04, Ch. II], which we
-recall in the form we use. An **ω-semigroup** `S = (S₊, S_ω)` has an associative
-product on the finite sort `S₊`, a mixed product `S₊ × S_ω → S_ω`, and an infinite
-power `π : S₊ → S_ω` (the image of `s·s·s·⋯`), satisfying the natural associativity
-axioms. A morphism `φ : Σ^∞ → S` **recognizes** `L` when `L = φ⁻¹(P)` for some
-accepting set `P ⊆ S_ω`. The bridge from words to this algebra is **Ramsey's
-theorem**: for any morphism into a finite `S₊`, every `α ∈ Σ^ω` admits a
-factorization `α = w₀ w₁ w₂ ⋯` into finite blocks whose images are, from some point on,
-a single idempotent `e = e²`; collecting the prefix into `s` with `se = s` gives
-`α ∈ φ⁻¹(s)·φ⁻¹(e)^ω`. The pair `(s, e)` — `se = s`, `e² = e` — is a **linked pair**,
-the algebraic address of the ultimately-periodic word `u·z^ω` with `φ(u) = s`,
-`φ(z) = e` [CPP08, PP04]. Because two regular ω-languages coincide iff they agree on
-ultimately-periodic words, a recognizer is pinned down entirely by which linked pairs
-it accepts — this is why the accepting *set of linked pairs* (not just an accepting
-subset of a monoid) is the acceptance datum of the SOSG (§5).
-
-*Example.* In `GF(aa)`, write `α` = an ω-word with a suffix `s` in `S₊` and idempotent
-loop `e`. Membership "`aa` infinitely often" is a property of the loop `e` alone: the
-accepting linked pairs are exactly those whose `e` contains an `aa`. In `Even`, the
-loop is irrelevant once a `!a` has been seen — acceptance is fixed by the finite prefix
-`s` (even-then-`!a` or not); the linked pairs split by their `s`. `EvenBlocks` is the
-mirror: the prefix `s` never matters (prefix-independence), and acceptance is read off
-`e` — whether the recurring loop completes only even blocks. The three examples thus
-place their acceptance in `e` (`GF(aa)`), in `s` (`Even`), and in `e` again but
-prefix-blindly (`EvenBlocks`) — the spread the two keys must all handle.
+With the objects named, the algebra is built by settling one question: *when are two
+finite words the same ingredient* — interchangeable inside every lasso, so that
+swapping one for the other never changes membership? Agreement on the **stem** side is
+just agreement of residuals (the futures `L(q)` above), the finitary half which §4 will
+call `~lin`; agreement on the **loop** side is subtler. Arnold's congruence pins both
+down at once. (This is also the one place a linked pair is *computed* rather than
+named: reading a lasso, iterate the loop's image until it stops changing — that fixed
+value is the idempotent `e`; §5 uses exactly this.)
 
 **The syntactic congruence (Arnold), recalled in full.** Everything downstream
 transports one 1985 definition of Arnold [Arn85], so we state it precisely and say
 what it delivers. On finite words, the syntactic congruence declares `u ≈ v` when
 they are interchangeable in every context `x·_·y` — same membership under any left
-and right finite padding. On infinite words a context must yield an ω-word, and there
-are exactly two ways to do so: pad `u` on both sides and make the result infinite with
-a trailing loop, or place the mutated factor *inside* the recurring loop. These are
-Arnold's two shapes. Two finite words `u, v ∈ Σ*` are **syntactically congruent** for
+and right finite padding. On infinite words a context must yield a lasso, and the
+mutation can sit in only two places: in the **stem** (a finite change, with a loop
+appended to make it infinite), or **inside the loop**. These are Arnold's two shapes,
+and they are exactly the stem/loop split of the on-ramp. Two finite words `u, v ∈ Σ*` are **syntactically congruent** for
 `L`, written `u ≈_L v`, when interchangeable in both:
 
 ```
@@ -228,17 +248,19 @@ shape does, with `y` closing a block: `(a·!a)^ω` completes odd blocks forever 
 rejected, `(aa·!a)^ω` completes even blocks and is accepted, so `a ≉_L aa` witnessed
 only in the loop. The two examples are exactly the two shapes made concrete.
 
-**The characterization.** We *decide against*, and never re-prove, the classical
-equivalences
+**What we read off the algebra.** The classical chain we decide against, and never
+re-prove:
 
 ```
     L is LTL-definable  ⟺  L is FO[<]-definable  ⟺  L is star-free  ⟺  S(L)₊ is aperiodic,
 ```
 
-where **aperiodic** = group-free: no `s ∈ S(L)₊` has a nontrivial orbit
-`s^a, …, s^{a+p} = s^a` with period `p > 1` [Kam68, Tho79, Per84, PP04, DG08]. A
-nontrivial group is precisely a modulo-`p` counter, which star-free logic cannot
-express.
+where **aperiodic** = **group-free**: no element `s ∈ S(L)₊` has a nontrivial cycle
+`s^a, …, s^{a+p} = s^a` with period `p > 1` [Kam68, Tho79, Per84, PP04, DG08]. A group
+is exactly a modulo-`p` counter on how many times a loop is taken — the one thing LTL
+cannot express (`star-free` = built from letters by boolean operations and
+concatenation, with *no* unbounded repetition). So the whole verdict is a single
+question about the object we build: **does the algebra of `L` contain a group?**
 
 *On the threads.* For `Even`, the letter `a` toggles the a-count parity before the
 first `!a`, and no finite context can undo that parity: `a` has order 2 in `S(Even)₊`
