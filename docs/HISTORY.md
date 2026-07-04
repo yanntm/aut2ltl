@@ -2779,3 +2779,90 @@ conjugacy ([PP] Prop 2.6/2.8/Cor 2.9) — exact both directions, canonical,
 one table scan. Dangling references rewritten in place (layer 8 "O2 merge"
 -> conjugacy merge; layer 13 walk names the falsified candidate directly;
 layer 5 drops the dated deep-pass aside).
+
+## 2026-07-04 — bls/counters investigation LANDED (bf91ed09)
+Why: delineate what the cascade actually covers (gate debate: form screen too
+strong on gf_aa_parity, necessary on mod3_a). Paper check: counter-freeness is
+load-bearing only in Prop. 6; Lemmas 4/7 unconditional on a reset cascade.
+Probes casc_cover_check.py + fin_ground.py established: SgpDec cover always
+genuine, only the reset premise breaks (one group letter each, parser labels
+it reset unchecked), and per-Fin(C) grounding gives the law: sub-term built
+correctly iff its target language is LTL (9/9). Note with crux question
+(minimal form of LTL language => all Fin(C) LTL?) in
+research_notes/bls_and_counters.md.
+
+## 2026-07-04 — padded-form experiment LANDED (00973a12)
+Why: settle whether the cascade can actually lie on an LTL language given a
+bad (non-minimal) form. It can: gfa_pad2.hoa (GFa x acceptance-inert parity
+bit) fed below decompose_aut's postprocess via tests/probes/bls_padded.py
+yields a wrong buchi formula (strictly under GFa). Fallback (B) refuted;
+minimization identified as a soundness component; conjecture (A) — every
+Fin(C) of a minimized form of a star-free language is star-free — is now
+the single open question for replacing the form gate with the SOSG oracle.
+Log: research_notes/bls_and_counters.md.
+
+## 2026-07-04 — Session: counter-freeness investigation → the SOSG paper
+
+Long research session. Started on "does our minimization silently stand in for the
+paper's counter-freeness requirement?", ended having written up two standalone
+theoretical results as papers under research_notes/. Nothing in aut2ltl/ changed;
+all output is research_notes/ documents (git-inspectable, per project policy).
+
+### Investigation (research_notes/bls_and_counters.md, appended throughout)
+- Literature reframe. Pulled + pdftotext'd into papers/: Diekert-Gastin 2008,
+  Carton-Michel 2003, Loding 2001, Schewe 2010, Bousquet-Loding 2010,
+  Carton-Rispal 2006 (LATIN; not the prophetic paper). Key facts: DG Remark 11.13
+  (no canonical minimal Buchi automaton; min-size need not be counter-free);
+  DG Lemma 11.2 (finite-word min DFA of aperiodic L is counter-free); DG Rem 11.14
+  (subset construction preserves counter-freeness); Preugschat-Wilke loop-language
+  finitary/infinitary split on Carton-Michel prophetic automata.
+- Result (P), PROVEN and written up as research_notes/prophetic_counterfree.md:
+  the canonical Carton-Michel (prophetic) automaton A_S of a star-free omega-language
+  is counter-free (equivalently S_+ aperiodic, equivalently L star-free); hence its
+  per-state loop languages (recurrence) are star-free. The omega-analogue of
+  McNaughton-Papert on the right canonical object (prophetic, not minimal-det).
+  Converse routes through DG Prop 11.11 (not an algebraic argument: linked-pair
+  conjugacy collapses the group). Draft fixed a wrong first (=>) direction.
+- Weak rung closed (Proposition W): min DWA of a star-free weak L is counter-free
+  (Loding: min DWA = min DFA on residuals; residual monoid divides aperiodic S_+),
+  so BLS runs inside its own hypothesis. No gap at Delta_1.
+- Pi_2 conjecture ("state-minimal + star-free L => every Inf(C) star-free") REFUTED
+  experimentally (research_notes/pi2_hunt_report.md, run by a separate session per
+  research_notes/experiment_pi2_hunt.md): GF(a & X(b & Xb)) is star-free, minimal at
+  3 states, yet Inf(C) counts mod 2; ~24% of a recurrence corpus is group-bearing.
+  Also corrected an inherited error: gf_aa_parity's minimal form is aperiodic (its
+  Z2 was decompose_aut postprocess padding). Upshot: minimality is the wrong
+  invariant; transition-monoid aperiodicity of the grounded form is the right one;
+  the gate is form-level, sound-but-incomplete.
+- Q1 (does every LTL language have a constructible counter-free deterministic form?)
+  left open. Best lead (user's): the right-Cayley automaton of the aperiodic
+  EM(D)/~ quotient is counter-free iff LTL -- the forward mirror of A_S, constructible
+  from the SOSG; open lemma is its acceptance condition (well-defined from the
+  infinity set alone). Attempt via prophetic + determinization not supported by the
+  literature (unambiguous-Buchi determinization is not off-the-shelf subset-based).
+
+### The SOSG paper (the session's main deliverable)
+Pivoted to writing up the definability construction itself as a standalone paper,
+object-first: "The SOSG, Constructed" (research_notes/sosg_constructed.md). Thesis:
+we construct the syntactic omega-semigroup from an automaton for the first time --
+not blocked by size alone but by needing (1) a recognizer that sees acceptance
+along runs (EM(D)) and (2) computing the two-sided syntactic congruence with
+right-moves only (Arnold decomposition collapsed to ~lin + ~omega via a rotation
+lemma). Main theorem EM(D)/~ = S(L). Exports (section 6): decide LTL, portable
+non-LTL certificate (counting families), reify as LTL formula (Diekert-Gastin
+synthesis) and as automaton (Cayley), language-equality hash. Sources: the
+oracle/ and dg/ algorithm.md docs (stripped of code refs, raised to paper level).
+Supporting docs: sosg_paper_outline.md (blueprint), sosg_figures_task.md
+(delegation note that produced sosg_figs/), sosg_figs/figures.md + img/ (Spot
+renderings + tables), sosg_format.md (v1 canonical serialization format for the
+SOSG: complete invariant on its core, optional residuals, canonical AP order).
+Running examples: GF(aa) (LTL, fake Z2 killed by the quotient), Even (mod-2
+linear/F1), EvenBlocks (mod-2 prefix-independent/omega-power/F2), all in
+single-atom !a form matching what Spot builds.
+Readability passes: aired sections 3-5 on external-LLM feedback (corrected two of
+the reviewer's own errors, rejected one wrong fix); reworked section 2 as a
+lasso-first self-contained on-ramp ("only lassos matter" + "monoid plus loop-
+forever" + "a linked pair names a lasso"); removed the LTL-characterization
+paragraph from section 2 as decision material already in sections 1 and 6.1.
+
+All research_notes/ work committed and pushed to master across the session.
