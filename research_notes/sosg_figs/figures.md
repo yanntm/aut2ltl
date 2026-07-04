@@ -130,24 +130,26 @@ reached (class `[¬a]`), every loop accepts.
 
 ## Figure 2 — the exportable invariant `𝓘(GF(aa))`
 
-The serialized SOSG: an HOA-like ASCII record of the keyed classes, the letter
-map, the multiplication table, and the accepting linked pairs. Two languages
-are equal iff these blocks are byte-identical after canonical keying — and
-`𝓘(GF(aa))` computed from the run-parity form (Figure 1a, `|EM¹| = 10`) is
-**identical** to the one computed from a minimal reset form (`|EM¹| = 7`),
-though the automata are not isomorphic.
+The serialized SOSG (format v1, [`sosg_format.md`](../sosg_format.md)): the
+keyed classes, the letter map, the multiplication table of `S(L)₊¹`, and the
+saturated set of accepting linked pairs. These core sections are a **complete
+language invariant** — two languages are equal iff their cores are
+byte-identical after canonical keying — and `𝓘(GF(aa))` computed from the
+run-parity form (Figure 1a, `|EM¹| = 10`) is identical to the one computed from
+a minimal reset form (`|EM¹| = 7`), though the automata are not isomorphic. The
+optional `residuals` block carries the right-congruence automaton (here a single
+state — `GF(aa)` is prefix-independent) and does not enter the equality test.
 
 ```
-SOSG: v1
-alphabet: !a a
+SOSG v1
+ap: a
 classes: 6
-# id  key(shortlex-least word; ';'-joined; eps=empty)  [idem]
-0   eps  idem
-1   !a  idem
-2   a
-3   !a;a  idem
-4   a;!a  idem
-5   a;a  idem
+0  eps
+1  !a
+2  a
+3  !a;a
+4  a;!a
+5  a;a
 letters: !a->1  a->2
 mult:
      0 1 2 3 4 5
@@ -157,8 +159,19 @@ mult:
   3  3 1 5 3 5 5
   4  4 4 2 2 4 5
   5  5 5 5 5 5 5
-accept:            # accepting linked pairs (s,e): e idem, s.e=s
-  (5,5)
+accept:
+  5 5
+residuals: 1
+0  eps
+res-mult:
+     !a a
+  0  0 0
 ```
+
+To test membership of `u·z^ω`: fold `u`, `z` to class ids through
+`letters`+`mult`, iterate `z` to an idempotent `e`, set `s = u·e`, and accept
+iff `(s, e)` is listed under `accept`. For `(a·!a)^ω`: `z = a·!a` folds to class
+`4`, already idempotent (`4·4 = 4`), `s = 4`; `4 4` is not in `accept`, so it is
+rejected — correctly, no `aa` recurs.
 
 <!-- from: samples/fixtures/hoa/sosg/gf_aa.sosg (== gf_aa_reset.sosg, byte-identical) -->

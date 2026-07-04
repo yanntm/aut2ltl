@@ -12,7 +12,7 @@ for the import discipline); each is single-input and self-bound.
 
 | script | reads | produces |
 |---|---|---|
-| `build_sosg.py` | one HOA file **or** LTL/PSL formula | plain-text dump of *every* table part for that one language — the Figure-1 line, the Table-1 fingerprint row, the `EM(D)` elements with `(st, mk)` vectors and their surjection onto `S(L)₊`, the canonical algebra `S(L)₊¹`, and (with `--sosg PATH`) the `.sosg` invariant serialization. Also exports the reusable compute helpers the other scripts import. |
+| `build_sosg.py` | one HOA file **or** LTL/PSL formula | plain-text dump of *every* table part for that one language — the Figure-1 line, the Table-1 fingerprint row, the `EM(D)` elements with `(st, mk)` vectors and their surjection onto `S(L)₊`, the canonical algebra `S(L)₊¹`, and (with `--sosg PATH`) the `.sosg` invariant in the v1 serialization of [`research_notes/sosg_format.md`](../../research_notes/sosg_format.md). Also exports the reusable compute helpers the other scripts import. |
 | `assemble.py` | one or more `label=input` specs | a single renderable **Markdown** algebra report (a leading fingerprint table + one section per input). Reuses `build_sosg.py`; the generic "what algebra does this automaton hold" diagnosis tool, and the raw material `figures.md` is curated from. |
 | `render_svg.py` | one HOA file **or** formula | the automaton drawn as Spot draws it: `.svg` (Spot's own `_repr_svg_`) or `.png` (rasterized by `rsvg-convert` to a fixed, page-safe width, aspect preserved). |
 

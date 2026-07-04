@@ -31,7 +31,8 @@ from __future__ import annotations
 import os
 import sys
 import time
-from typing import List, Optional, Tuple
+from collections import deque
+from typing import Dict, List, Optional, Tuple
 
 import spot
 
@@ -188,28 +189,72 @@ def print_table3(data: DgData) -> None:
           + " ".join(f"([{alg.key(s)}],[{alg.key(e)}])" for (s, e) in ap))
 
 
+def residual_lines(data: DgData) -> List[str]:
+    """The optional `residuals` section: the minimal DFA of the right
+    congruence `u ∼ v ⟺ u⁻¹L = v⁻¹L`, canonically keyed. Residual classes are
+    numbered by shortlex-least reaching word (id 0 = `ε`, the residual `L`),
+    with a derivative table `residual × Σ → residual`."""
+    mon = data.mon
+    names = data.names
+    n_letters = len(names)
+    st_cls = state_classes(data.aut)          # state -> residual partition id
+
+    def delta(state: int, li: int) -> int:
+        # element 0 of the closed monoid is the identity, so its right-mult by
+        # letter `li` is the letter element; its st-part is δ(·, letter).
+        return mon.elems[mon.right[0][li]][state][0]
+
+    canon: Dict[int, int] = {}                 # partition id -> canonical id
+    key: Dict[int, Tuple[int, ...]] = {}       # canonical id -> reaching word
+    rep_state: Dict[int, int] = {}             # canonical id -> a witness state
+    r0 = st_cls[data.init]
+    canon[r0], key[0], rep_state[0] = 0, (), data.init
+    queue: deque = deque([0])
+    nxt = 1
+    while queue:                               # BFS ⇒ shortlex-least keys
+        cid = queue.popleft()
+        for li in range(n_letters):
+            dst = delta(rep_state[cid], li)
+            rp = st_cls[dst]
+            if rp not in canon:
+                canon[rp], key[nxt], rep_state[nxt] = nxt, key[cid] + (li,), dst
+                queue.append(nxt)
+                nxt += 1
+    lines = [f"residuals: {nxt}"]
+    for r in range(nxt):
+        lines.append(f"{r}  " + (";".join(names[li] for li in key[r]) or "eps"))
+    lines.append("res-mult:")
+    lines.append("     " + " ".join(names))
+    for r in range(nxt):
+        row = " ".join(str(canon[st_cls[delta(rep_state[r], li)]])
+                       for li in range(n_letters))
+        lines.append(f"  {r}  {row}")
+    return lines
+
+
 def sosg_text(data: DgData) -> str:
-    """The .sosg export: an HOA-like ASCII serialization of I(L)."""
+    """The `.sosg` export: the canonical serialization of `𝓘(L)` per
+    `research_notes/sosg_format.md` — core sections (the complete language
+    invariant) followed by the optional `residuals` derivative automaton."""
     alg = data.alg
     k = len(alg)
+    names = data.names
     out: List[str] = []
-    out.append("SOSG: v1")
-    out.append("alphabet: " + " ".join(data.names))
+    out.append("SOSG v1")
+    out.append("ap: " + " ".join(str(p) for p in data.aut.ap()))
     out.append(f"classes: {k}")
-    out.append("# id  key(shortlex-least word; ';'-joined; eps=empty)  [idem]")
     for i in range(k):
-        tag = "  idem" if alg.idem[i] else ""
-        out.append(f"{i}   {alg.key(i)}{tag}")
+        out.append(f"{i}  {alg.key(i)}")
     out.append("letters: " + "  ".join(
-        f"{data.names[li]}->{alg.letter_cls[li]}"
-        for li in range(len(data.names))))
+        f"{names[li]}->{alg.letter_cls[li]}" for li in range(len(names))))
     out.append("mult:")
     out.append("     " + " ".join(f"{j}" for j in range(k)))
     for i in range(k):
         out.append(f"  {i}  " + " ".join(f"{alg.mult[i][j]}" for j in range(k)))
-    out.append("accept:            # accepting linked pairs (s,e): e idem, s.e=s")
+    out.append("accept:")
     for (s, e) in alg.accepting_pairs():
-        out.append(f"  ({s},{e})")
+        out.append(f"  {s} {e}")
+    out += residual_lines(data)
     return "\n".join(out) + "\n"
 
 
