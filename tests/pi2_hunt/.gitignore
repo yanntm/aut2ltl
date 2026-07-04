@@ -1,0 +1,4 @@
+# generated (reproducible via gen_dba_corpus.py / canon_corpus.py)
+corpus_*/
+# raw per-file sweep output (the .md death-histogram reports ARE tracked)
+logs/*.lines.txt
