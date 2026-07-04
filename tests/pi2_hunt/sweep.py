@@ -18,6 +18,8 @@ import os
 import re
 import sys
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Lock
 from typing import List, Tuple
 
 from aut2ltl import bounded
@@ -99,6 +101,7 @@ def main(argv: List[str]) -> int:
     ap.add_argument("--timeout", type=int, default=15)
     ap.add_argument("--limit", type=int, default=0, help="stop after N files (0 = all)")
     ap.add_argument("--refresh", type=int, default=10, help="rewrite the report every N files")
+    ap.add_argument("--jobs", type=int, default=1, help="parallel worker threads (each an isolated bounded subprocess)")
     args = ap.parse_args(argv)
 
     files = _find_hoa(args.folder)
@@ -115,14 +118,22 @@ def main(argv: List[str]) -> int:
     hist: "Counter[str]" = Counter()
     hits: List[str] = []
     benign: List[str] = []
+    total = len(files)
 
-    # Raw per-file lines are appended and flushed as we go, so an interrupted run
-    # loses nothing and the file can be tailed live; the markdown report is
-    # rewritten every --refresh files (and at the end) from the running tallies.
-    with open(raw_path, "w") as raw:
-        for i, path in enumerate(files, 1):
-            line = _run_one(path, args.timeout)
-            bucket = _classify(line)
+    # Each file runs as its own bounded subprocess; --jobs>1 fans those out over a
+    # thread pool (threads only wait on subprocesses, so GAP concurrency is exactly
+    # the number of in-flight workers and each child still reaps its own process
+    # group). Results are folded under a lock as they complete: raw lines appended
+    # and flushed (interrupt-safe, tailable), the report rewritten every --refresh.
+    lock = Lock()
+    done = 0
+
+    def _fold(line: str, raw) -> None:
+        nonlocal done
+        bucket = _classify(line)
+        with lock:
+            done += 1
+            i = done
             hist[bucket] += 1
             raw.write(f"{bucket}\t{line}\n")
             raw.flush()
@@ -130,11 +141,21 @@ def main(argv: List[str]) -> int:
                 hits.append(line)
             elif bucket == "P3-benign":
                 benign.append(line)
-            if i % args.refresh == 0 or i == len(files):
+            if i % args.refresh == 0 or i == total:
                 with open(out, "w") as fh:
-                    fh.write(_render(args.folder, len(files), i, hist, hits, benign))
+                    fh.write(_render(args.folder, total, i, hist, hits, benign))
             if bucket in ("HIT", "TIMEOUT", "ERROR") or i % args.refresh == 0:
-                print(f"[{i}/{len(files)}] {bucket}", file=sys.stderr)
+                print(f"[{i}/{total}] {bucket}", file=sys.stderr)
+
+    with open(raw_path, "w") as raw:
+        if args.jobs <= 1:
+            for path in files:
+                _fold(_run_one(path, args.timeout), raw)
+        else:
+            with ThreadPoolExecutor(max_workers=args.jobs) as pool:
+                futs = [pool.submit(_run_one, p, args.timeout) for p in files]
+                for fut in as_completed(futs):
+                    _fold(fut.result(), raw)
 
     print(f"done: {out} (+ {raw_path})", file=sys.stderr)
     return 0 if hits else 1
