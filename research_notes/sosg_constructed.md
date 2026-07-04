@@ -248,20 +248,6 @@ shape does, with `y` closing a block: `(a·!a)^ω` completes odd blocks forever 
 rejected, `(aa·!a)^ω` completes even blocks and is accepted, so `a ≉_L aa` witnessed
 only in the loop. The two examples are exactly the two shapes made concrete.
 
-**What we read off the algebra.** The classical chain we decide against, and never
-re-prove:
-
-```
-    L is LTL-definable  ⟺  L is FO[<]-definable  ⟺  L is star-free  ⟺  S(L)₊ is aperiodic,
-```
-
-where **aperiodic** = **group-free**: no element `s ∈ S(L)₊` has a nontrivial cycle
-`s^a, …, s^{a+p} = s^a` with period `p > 1` [Kam68, Tho79, Per84, PP04, DG08]. A group
-is exactly a modulo-`p` counter on how many times a loop is taken — the one thing LTL
-cannot express (`star-free` = built from letters by boolean operations and
-concatenation, with *no* unbounded repetition). So the whole verdict is a single
-question about the object we build: **does the algebra of `L` contain a group?**
-
 *On the threads.* For `Even`, the letter `a` toggles the a-count parity before the
 first `!a`, and no finite context can undo that parity: `a` has order 2 in `S(Even)₊`
 — a real group, so `Even` is not LTL. For `GF(aa)`, a run-parity presentation makes
