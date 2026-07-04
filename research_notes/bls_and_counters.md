@@ -1099,3 +1099,287 @@ so the bridge must invoke state-minimality — the open link (4), now aiming the
 2. The bridge (link 4): relate min-det Fin(C) to A_S loop languages under
    state-minimality. Concretely: is there a cover from the min-det form's
    config-recurrence to A_S's loops that transports star-freeness back?
+
+---
+
+# Log 2026-07-04 (cont.) — The weak rung is CLOSED: minimal DWA of a star-free weak language is counter-free
+
+Direction (user): do the simple case first (weak, Δ₁ obligation), show why (A)
+holds there, make the general approach explicit and see what breaks climbing the
+Manna–Pnueli / temporal ladder. Result: the weak case is not just true but
+DEGENERATE — minimality delivers counter-freeness outright, so BLS's OWN
+hypothesis is met and there is no gap to bridge at this rung.
+
+## The two ingredients (both in hand)
+
+- **Löding 2001.** Deterministic weak automata (DWA) capture exactly the
+  Gδ∩Fσ (Staiger–Wagner) ω-languages and have a UNIQUE minimal automaton.
+  Prop. 1: Lω(A) = →(L∗(A)) where →U = {α : infinitely many prefixes in U}.
+  Minimization is achieved by fixing a normal-form coloring and then running
+  STANDARD DFA MINIMIZATION. Consequence: the minimal DWA's transition structure
+  is a minimal DFA — its states are the ω-language-equivalence (= residual)
+  classes of L, merged exactly as Nerode classes.
+- **R-aperiodicity** (proven earlier): the residual monoid of a star-free L
+  divides the syntactic S₊ and is aperiodic.
+
+## (i) Minimal DWA of a star-free weak L is counter-free
+
+The minimal DWA D merges ω-language-equivalent states, so its states are the
+L-residual classes and its transition monoid is the residual monoid of L
+(δ(u⁻¹L, a) = (ua)⁻¹L). By R-aperiodicity that monoid is aperiodic; D is
+deterministic, so aperiodic transition monoid ⟺ counter-free (Diekert–Gastin
+Lemma 11.6.2). Hence D is counter-free. This is the ω-analogue of McNaughton–
+Papert working AT MINIMALITY precisely because Löding makes the minimal DWA a
+minimal DFA — the one ω-class where the finite-word canonical form survives.
+
+## (ii) Therefore the cascade is sound on weak inputs — via BLS's own theorem
+
+D counter-free ⟹ its holonomy/Krohn–Rhodes decomposition is a GENUINE RESET
+cascade (no group levels): counter-free = group-free, so Prop. 6's reset cascade
+carries no mislabeled group. That is exactly the hypothesis BLS assumes. So the
+construction's Lemma 4 / Lemma 7 apply verbatim, every Fin(C) is star-free, and
+the output LTL is correct — no appeal to (A) needed. Equivalently at the language
+level (oracle layer 8 / Step 0): aperiodic TM(D) ⟹ every mark enrichment,
+including each Inf_q(D), is star-free.
+
+For weak, "why does the tool work" has the flat answer: **the minimizer reaches a
+counter-free automaton (Löding's canonical min DWA), so BLS is being used inside
+its stated precondition.** No group ever reaches the operators. (Caveat: the
+pipeline's minimization must actually reach the DWA minimum; Löding gives an
+O(n log n) exact procedure, well within reach — unlike the SAT-min threshold that
+governs the general parity case.)
+
+## What this makes explicit about the ladder
+
+The whole game is: **is the minimal form counter-free?** (A) ⟸ "min form
+counter-free", and for counter-free forms BLS needs no help.
+
+- **Weak / Δ₁ (obligation):** minimal form IS counter-free (this entry). Gap = ∅.
+- **Büchi / Π₂ (recurrence) and up:** minimal form need NOT be counter-free —
+  gf_aa_parity is a minimal recurrence form carrying a Z2. This is the FIRST rung
+  where minimality stops delivering counter-freeness, because recurrence
+  acceptance needs transient acceptance-detection memory that a DWA never needs
+  (its acceptance is settling-SCC, residual-determined). So the entire hard core
+  of (A) — the residual-fiber acceptance-detection group and the dead-bit fold
+  (link 4) — lives at the recurrence rung and above, NOT at weak.
+
+The climb pinpoints the enemy: it is exactly the acceptance-detection group that
+appears the moment acceptance stops being residual-determined (weak → Büchi).
+The prophetic result (P) says that group is a forward-determinism artifact absent
+from the canonical co-deterministic form; the open (A) is whether state-minimality
+alone (without Löding's DFA-collapse, unavailable above weak) still folds it.
+
+## Next
+
+- (b) banked: weak rung closed. Consider writing it as an application section of
+  the prophetic note (or a short companion): "for the one ω-class with a canonical
+  minimal automaton, minimality = counter-freeness, and the BLS precondition holds
+  on the nose."
+- (a): attack the recurrence rung (Büchi/Π₂) — the first place minimality and
+  counter-freeness part company — via the A_S re-marking fold.
+
+---
+
+# Working basis — Proposition W (weak) + the recurrence attack
+
+Consolidated, oriented at us, as the platform for climbing to Π₂.
+
+## Proposition W (weak rung, clean)
+
+Let L be star-free and weak (Δ₁; topologically Gδ∩Fσ). Let D be its minimal DWA
+(unique, Löding). Then D is counter-free, and the BLS cascade on D is a genuine
+reset cascade whose output is correct; every Inf_q(D) is star-free.
+
+*Proof.* Löding: the minimal DWA is obtained by DFA-minimizing a normal-form
+coloring of any DWA for L, so its states are the ω-language classes of L and its
+transition monoid is the residual monoid Res(L)=A⁺/(u~v ⟺ u⁻¹L=v⁻¹L). Res(L)
+divides the syntactic S₊, which is aperiodic (L star-free) — R-aperiodicity.
+Deterministic + aperiodic transition monoid ⟹ counter-free (DG Lemma 11.6.2).
+Counter-free = group-free ⟹ the holonomy decomposition is a reset cascade with no
+group level ⟹ BLS's own hypothesis holds and Lemmas 4/7 apply; equivalently
+aperiodic TM(D) ⟹ every mark enrichment, each Inf_q(D) included, is star-free
+(Step 0). ∎
+
+*Why it is special to weak.* Weak acceptance = settling SCC is RESIDUAL-DETERMINED,
+so language-equivalent states are mergeable and min D = the residual automaton.
+This is the only ω-class where the finite-word Myhill–Nerode canonical form
+survives. It fails one rung up.
+
+## The recurrence rung: the correct picture
+
+**Correction that unlocks the rung.** For deterministic Büchi, language-equivalent
+states need NOT be mergeable: merging redirects transitions and can create new
+runs that change acceptance. So a minimal DBA can hold x≠y with L(x)=L(y) — a
+residual fiber of size >1 (e.g. gf_aa's two states both accepting "infinitely
+many aa", tracking last-letter, unmergeable). This is R-aperiodicity's group
+orbit, and it does NOT contradict minimality. Precisely here weak's argument
+dies: the residual automaton still exists but may admit NO Büchi acceptance for L;
+the min DBA adds acceptance-DETECTION states over the residuals, and those can
+carry a group.
+
+**Sharp reduction (the new content).** Suppose some Inf_q0(D) is non-star-free,
+D a min DBA of star-free L. A counting family witnesses it: u v^n ℓ^ω with
+membership in Inf_q0 toggling as n mod p (p>1), v the orbit word, ℓ a fixed
+lasso. Now watch the two monoids:
+
+- In S₊: φ(v)^n stabilizes at the idempotent φ(v)^π (S₊ aperiodic), so
+  φ(u v^n) = φ(u)φ(v)^n is eventually CONSTANT in n. The syntactic/linked-pair
+  type of u v^n ℓ^ω is eventually constant.
+- In TM(D): the D-action of v permutes the orbit {x,y,…} with order p and is
+  NEVER idempotent; Inf_q0 membership toggles mod p forever.
+
+So Inf_q0(D) separates words of eventually-equal syntactic type — its syntactic
+ω-semigroup does NOT divide S₊ and carries a group of order p that S₊ does not.
+Under the syntactic morphism ρ: TM(D) → S₊ this orbit group lies in ker ρ: it is
+an L-INVISIBLE group (dies in the residual/syntactic quotient) that Inf_q0
+nonetheless SEES. By the leak lemma its phase is also acceptance-invisible from
+(x,y). In one line:
+
+  Inf_q0(D) non-star-free  ⟺  D carries a group in ker ρ that some Inf_q0 reads,
+  i.e. an acceptance-detection orbit that is L-invisible yet recurrence-visible.
+
+**The fold, and exactly where it stands.** To contradict minimality, merge the
+L-invisible orbit and re-derive acceptance. Two facts make this nearly free:
+
+1. δ-compatibility on residuals is AUTOMATIC. Any letter a preserves residual
+   classes (L(x)=L(y) ⟹ L(δ(x,a))=L(δ(y,a))), so a cannot split the orbit across
+   residuals — only within a fiber. The orbit-merge is therefore consistent at the
+   residual (aperiodic) level; the residual automaton is the maximal such quotient
+   and is counter-free.
+2. L's acceptance on runs through the orbit is group-blind: S₊ is aperiodic
+   (kills the orbit group) and the leak lemma makes the orbit phase
+   acceptance-invisible. So the only thing the merge destroys is Inf_q0's
+   non-blindness — the very pathology.
+
+**The one remaining crux (link 4, now sharp).** The merge is a clean quotient iff
+the orbit-equivalence is δ-compatible AT THE FIBER LEVEL (a mark-preserving
+automorphism of the δ-closed region) — in which case Step 2' already forbids it at
+minimality, done. The hard case is a set-different twin whose orbit is NOT a
+fiber-level automorphism: some letter distinguishes the orbit within its residual
+fiber (globally load-bearing), while the recurrence discrepancy stays L-invisible
+(locally orthogonal). For that case the naive quotient is mark-inconsistent (the
+stag deaths); the fold must RE-MARK the merged carrier. The A_S re-marking is the
+candidate: A_S recognizes L, is counter-free, and its recurrence is the
+group-collapsed, L-correct one (loops ↔ conjugacy classes, Prop 60 — indeed
+[s_x,e]=[s_y,e] since s_x R s_y on the orbit, so A_S does NOT distinguish the twin
+that D does). The obstruction to finishing: A_S is not state-minimal, so "D
+distinguishes more recurrence than A_S" does not by itself give "D not minimal" —
+we must convert the L-superfluous fiber distinction into a state saving ON D.
+
+## Target for the next session
+
+Prove: a set-different twin cycle (L-invisible orbit group read by some Inf_q0)
+in a min DBA of a star-free L forces a strictly smaller DBA for L — by re-marking
+the orbit-quotient of D using A_S's star-free loop languages to supply a
+group-blind Büchi acceptance. Refutation would hand the counterexample DBA
+(feed it to fin_ground.py). This is (A) at Π₂ and, by the ladder, the whole hard
+core.
+
+---
+
+# The re-marking construction, worked — and why it cannot be a minimization argument
+
+Attempted the explicit fold. It fails in a DIAGNOSTIC way that reshapes the whole
+attack: the lever is not state-minimality.
+
+## The construction
+
+Input: D a min sbacc-Büchi automaton, L=L(D) star-free, and (for contradiction) a
+set-different twin making some Inf_q0(D) non-star-free — an L-invisible orbit
+group (in ker ρ) read set-differently by q0.
+
+- Base R = the residual automaton (states = residuals of L). R is counter-free
+  (Res(L) aperiodic). D covers R via ρ; D = R decorated with acceptance-detection
+  fibers.
+- A_S = canonical prophetic automaton: counter-free, recognizes L, recurrence
+  group-blind ([s_x,e]=[s_y,e] on the orbit, Prop 60), loop languages star-free.
+
+Re-marking D': collapse the L-invisible orbit over R and re-derive a Büchi
+acceptance from A_S's (star-free, group-blind) loop languages. The intent: D'
+recognizes L, is counter-free, and is SMALLER — contradicting minimality.
+
+## Why it fails — and what the failure tells us
+
+Collapsing the orbit removes memory that L genuinely NEEDS. L is not
+DBA-recognizable on R alone (e.g. gf_aa: R has one residual, GF(a∧Xa) needs the
+last-letter fiber). The orbit is carrying, over R, the acceptance-detection memory
+L requires — it is doing DOUBLE DUTY: (a) L-needed acceptance detection,
+(b) L-invisible q0-recurrence. Re-providing (a) counter-freely is possible (via
+A_S), but **the counter-free re-recognition costs MORE states, not fewer**: A_S
+(chains expansion) is generally far larger than D, and any counter-free DBA for a
+star-free recurrence language can exceed the min sbacc size (gf_aa_parity: the
+group form appears to BE size-optimal among sbacc forms — the Z2 is in both the
+generic-minimal and the parity-sbacc form). So D' ≥ D in state count; no
+contradiction with minimality.
+
+**The diagnostic: minimization is the WRONG lever.** A group in a min sbacc form of
+a star-free L can be genuinely size-optimal — the group is not "waste" a smaller
+automaton would shed. Hence (A) at Π₂ is NOT reducible to "min ⟹ counter-free"
+(that implication is false: gf_aa_parity is min and not counter-free), and the
+dead-bit-fold program (build a smaller recognizer) is BLOCKED at its root: there
+may be no smaller recognizer. The whole stag/census effort was aiming the wrong
+weapon — it kept finding "the bit folds," but folding needs a smaller automaton,
+which for a size-optimal group does not exist.
+
+## What must replace it: a DIRECT star-freeness argument
+
+(A) at Π₂ must be proved by showing Inf_q0(D) is star-free DIRECTLY — not by
+shrinking D. Equivalently: every recurrent orbit-cycle in a min sbacc form of a
+star-free L is SET-EQUAL (phase-invariant i.o.-set), so no Inf_q toggles. The set
+must be shown phase-invariant from the language's star-freeness plus minimality,
+without producing a competitor automaton.
+
+Where this stands: set-different does NOT obviously leak. If C1∋q0 and C2∌q0 read
+the same loop word ℓ from x and y=vx, the leak lemma forces C1,C2 to have the same
+α-status but ALLOWS q0∈α with C2 accepting via a different state — a
+set-different, acceptance-orthogonal twin with no leak. So "set-different ⟹ leak"
+(which would close it) is UNPROVEN and not obviously true.
+
+## The conjecture (stated)
+
+> **Conjecture (Π₂).** In a state-minimal sbacc deterministic Büchi automaton of a
+> star-free language, every recurrent group-orbit cycle is set-equal; equivalently
+> every Inf_q is star-free; equivalently no L-invisible group is read
+> set-differently by a recurrence question. (General form, Δ₂/parity: same with
+> "Inf_q" replaced by the Fin(C) the Muller/parity encoding requires.)
+
+Status: strongly supported (every contrived counterexample has collapsed under the
+oracle — but note now: they collapsed to LARGER counter-free forms or leaked, and
+we had mis-attributed the collapses to "folding"). NOT proved. The minimization
+lever is dead; a direct sweep-invariance argument is the remaining hope UP.
+
+## If we cannot prove it — walk DOWN
+
+Since the fold is blocked, the honest move is to hunt the counterexample from the
+general case DOWN, with the now-sharp specification (a much tighter target than the
+old census):
+
+  a min sbacc parity D of a star-free L with
+  (1) an orbit group ⟨v⟩ with ⟨v⟩ ∩ ker ρ ≠ {id}   (L-invisible group),
+  (2) a lasso word ℓ and state q0 with C_i = (ℓ-attractor from v^i x) NOT all
+      equal — q0 in some, not others (set-different twin),
+  (3) NO leak: all C_i share α-status (forced if L star-free — so (3) is the
+      consistency check, not a design freedom),
+  (4) genuine state-minimality (SAT-min sbacc), so the group is not sheddable.
+
+Design method (proven productive): pick S₊ aperiodic with a target D-cover carrying
+an order-p orbit whose ρ-image is aperiodic; wire ℓ so the p orbit points fall into
+≥2 ℓ-attractors; place marks to keep all attractors α-equal (dodge the leak). Judge
+with the SOSG oracle (exact, instant, certificates) at every step. A hit → feed to
+fin_ground.py and confirm the cascade actually breaks (it may still not — the
+BLS operators might compute Inf correctly even when the language is non-star-free
+at the sub-term, though gfa_pad2 says otherwise). An empty exhaustive-under-a-bound
+sweep of this tightened spec is now strong evidence, and the certificates say WHY
+each candidate dies — feeding the direct proof.
+
+## Fallback if the conjecture is FALSE
+
+If a counterexample exists at min state, then state-minimality is genuinely not
+enough and the tool's soundness rests on MORE than "minimized": it rests on the
+specific normalization the pipeline runs (parity sbacc SAT-min + postprocess), or
+must be enforced by the definability gate screening the prophetic loop languages
+(decidable via (P): the gate declines any L whose canonical A_S is not
+counter-free — which is exactly L non-star-free — but that only gates the
+LANGUAGE, not this sub-term pathology, so a form-level screen on the produced D's
+Inf_q star-freeness, computable via fin_ground-style GT automata, would be the
+actual guard). This is the precise shape of "min state is not enough."
