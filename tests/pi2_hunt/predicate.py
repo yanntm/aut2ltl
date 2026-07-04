@@ -30,11 +30,28 @@ import spot
 import buddy
 
 from aut2ltl.language import Language
-from aut2ltl.bls.gap import decompose_aut
+from aut2ltl.bls.gap import decompose_gens
+from aut2ltl.bls.generators import extract_generators, is_deterministic
 from aut2ltl.bls.gate.aperiodic import label_ltl_definable
 from aut2ltl.bls.definability.oracle import decide, LTL, NOT_LTL
 from aut2ltl.bls.aut2cas import as_translator
 from aut2ltl.bls.hierarchy_class import make_hierarchy_class
+
+
+def build_cascade_unstripped(aut: "spot.twa_graph") -> "object":
+    """Build the holonomy cascade on `aut` VERBATIM -- decompose_aut minus its
+    spot.postprocess. decompose_aut re-normalizes ("parity min even" / complete /
+    sbacc) and thereby PADS a minimal input into a larger form on which a group can
+    appear; grounding unstripped keeps the configs on the minimal target automaton,
+    which is what the conjecture is about. Requires deterministic complete input."""
+    assert is_deterministic(aut), "input must be deterministic"
+    gens, masks, valuations = extract_generators(aut, max_aps=5)
+    casc = decompose_gens(gens)
+    casc.aps = [str(ap) for ap in aut.ap()]
+    casc.letter_masks = masks
+    casc.letter_valuations = valuations
+    casc.original_aut = aut
+    return casc
 
 
 def _gt_fin_automaton(casc: "object", c0: Tuple[int, ...]) -> "spot.twa_graph":
@@ -66,22 +83,25 @@ def eval_p1(aut: "spot.twa_graph") -> Tuple[bool, str]:
     return (v.answer == LTL, str(v.answer))
 
 
-def eval_p2(aut: "spot.twa_graph") -> Tuple[bool, int, int]:
-    """P2: is aut state-minimal? Returns (holds, input_states, minimal_states).
+def eval_p2(d: "spot.twa_graph") -> Tuple[bool, int, int]:
+    """P2 on the form the cascade GROUNDS ON. Returns (holds, n_grounded, n_min).
 
-    The minimal count comes from Language.det_generic_minimal, whose small-form
-    path runs spot.sat_minimize (so this is SAT-min, not bisimulation, minimality).
+    The counterexample must be minimal in the acceptance class the pipeline
+    actually builds -- i.e. `d = casc.original_aut`, NOT the raw input: decompose_aut
+    re-postprocesses (parity-min / complete / sbacc) and can PAD a minimal input
+    into a larger form on which a group then appears (the gfa_pad2 phenomenon). So
+    P2 holds iff `d` equals its own SAT-min within the class it already carries.
     """
-    n_in = aut.num_states()
-    det_min = Language.of(aut).det_generic_minimal()
-    n_min = det_min.num_states()
-    return (n_in == n_min, n_in, n_min)
+    n = d.num_states()
+    m = spot.sat_minimize(d)
+    n_min = m.num_states() if m is not None else n
+    return (n == n_min, n, n_min)
 
 
 Reading = Tuple[Tuple[int, ...], Optional[bool], Optional[str]]
 
 
-def eval_p3(aut: "spot.twa_graph") -> Tuple[bool, List[Reading]]:
+def eval_p3(casc: "object") -> Tuple[bool, List[Reading]]:
     """P3: does some config C have Inf(C) genuinely NON-star-free (as a language)?
 
     Two tiers per config: the cheap aperiodicity SCREEN on the Fin(C) form
@@ -91,9 +111,6 @@ def eval_p3(aut: "spot.twa_graph") -> Tuple[bool, List[Reading]]:
     group (set-equal twin), NOT a P3 witness; P3 holds iff some config's language is
     oracle-NOT_LTL. Returns (holds, per-config [(C, screen, oracle-or-None)]).
     """
-    casc = decompose_aut(aut)
-    if casc is None:
-        raise RuntimeError("decomposition failed")
     readings: List[Reading] = []
     for c in casc.all_configs():
         gt = _gt_fin_automaton(casc, c)
@@ -119,21 +136,22 @@ def _assembled_output_verdict(aut: "spot.twa_graph") -> str:
 
 def main(path: str) -> int:
     aut = spot.automaton(path)
-    if not spot.is_deterministic(aut):
-        # det_generic_minimal still works, but P2's "input states" is only
-        # meaningful on a deterministic input; flag rather than silently compare.
-        print(f"{path}: WARN input non-deterministic; P2 compares against its "
-              f"determinized minimal form")
-
     p1, ans = eval_p1(aut)
-    p2, n_in, n_min = eval_p2(aut)
+
+    if not spot.is_complete(aut):
+        aut = spot.complete(aut)
     try:
-        p3, readings = eval_p3(aut)
-    except RuntimeError as e:
-        print(f"{path}: ERROR {e}")
+        casc = build_cascade_unstripped(aut)
+    except Exception as e:
+        print(f"{path}: ERROR {type(e).__name__}: {e}")
         return 2
+    d = casc.original_aut                       # the minimal target we ground on
+    n_in = aut.num_states()
+    n_d = d.num_states()
+    p2, _n_d, n_dmin = eval_p2(d)
+    p3, readings = eval_p3(casc)
+
     nonsf_configs = [c for c, _s, o in readings if o == str(NOT_LTL)]
-    screen_groups = [c for c, s, _o in readings if s is False]
     benign = [c for c, s, o in readings if s is False and o != str(NOT_LTL)]
     blocked = [c for c, s, _o in readings if s is None]
 
@@ -141,9 +159,11 @@ def main(path: str) -> int:
     if not p1:
         reasons.append(f"P1-fail(oracle={ans})")
     if not p2:
-        reasons.append(f"P2-fail({n_in}->{n_min})")
+        # decompose_aut expanded a minimal input past its class-minimal -> "pad";
+        # otherwise the grounded form is simply not minimal.
+        tag = "P2-pad" if n_d > n_in else "P2-fail"
+        reasons.append(f"{tag}(in={n_in} grounded={n_d} min={n_dmin})")
     if not p3:
-        # distinguish "no group in any config" from "group(s) but benign (star-free)"
         if benign:
             reasons.append(f"P3-benign(group_configs={len(benign)}_all_star_free)")
         else:
@@ -152,15 +172,14 @@ def main(path: str) -> int:
             reasons.append(f"P3-blocked({len(blocked)})")
 
     if p1 and p2 and p3:
-        print(f"{path}: HIT  states={n_in} oracle={ans} "
+        print(f"{path}: HIT  grounded_states={n_d} oracle={ans} "
               f"nonSF_configs={nonsf_configs}")
         print(f"  assembled-output: {_assembled_output_verdict(aut)}")
         return 0
 
     print(f"{path}: near-miss  {' '.join(reasons)}  "
-          f"[states={n_in}/{n_min} oracle={ans} "
-          f"screen_groups={len(screen_groups)} nonSF={len(nonsf_configs)} "
-          f"blocked={len(blocked)}]")
+          f"[in={n_in} grounded={n_d}/{n_dmin} oracle={ans} "
+          f"nonSF={len(nonsf_configs)} blocked={len(blocked)}]")
     return 1
 
 
