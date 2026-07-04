@@ -28,7 +28,7 @@ from typing import List, Optional, TYPE_CHECKING
 
 import spot
 
-from aut2ltl.bls.extract import extract_generators
+from ..generators import extract_generators
 from aut2ltl.bls.gap.witness_eval import eval_word
 from .witness import _induced_transform, extract_witness
 

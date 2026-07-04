@@ -20,7 +20,7 @@ import buddy
 import spot
 
 from aut2ltl.witness import Witness
-from aut2ltl.bls.extract import extract_generators
+from ..generators import extract_generators
 from .linear import complete_linear
 from .omega import complete_omega
 from .support import valuation_to_letter

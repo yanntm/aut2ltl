@@ -19,7 +19,7 @@ from typing import Optional, TYPE_CHECKING
 import spot
 
 from aut2ltl.witness import Witness
-from aut2ltl.bls.extract import extract_generators
+from ..generators import extract_generators
 from aut2ltl.bls.gap.witness_group import witness_group
 from .linear import complete_linear
 from .omega import complete_omega

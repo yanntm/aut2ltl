@@ -18,7 +18,7 @@ from typing import List, Optional, Tuple, TYPE_CHECKING
 import spot
 
 from aut2ltl.verifier import verify
-from ...extract import extract_generators
+from ..generators import extract_generators
 from ...gap.aperiodic import is_aperiodic_gens
 from ..witness.enriched import letter_elems
 from .closure import close
