@@ -16,9 +16,11 @@ constraints are normative.
 All canonicity flows from one declared order. A file **must** fix it and derive the
 rest:
 
-1. **`AP` order.** The atomic propositions are listed in a fixed order `a₁, …, a_k`.
-   This is the only free choice; it is declared, and everything below is a function of
-   it (and of `L`).
+1. **`AP` order.** The atomic propositions are listed in the **canonical order** —
+   lexicographic by proposition name — `a₁ < … < a_k`. This is a *convention*, not a
+   free choice: the declaration merely echoes it, so that two files produced
+   independently for the same `L` are byte-identical rather than equal-up-to-a-chosen-
+   order. Everything below is then a function of `L` alone.
 2. **Letter order.** A letter is a subset `σ ⊆ AP` (`Σ = 2^AP`). Letters are ordered by
    their characteristic tuple `(χ_σ(a₁), …, χ_σ(a_k))` lexicographically, with
    `absent (0) < present (1)`. (For a single `a`: `!a < a`.)

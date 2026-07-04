@@ -1383,3 +1383,203 @@ counter-free — which is exactly L non-star-free — but that only gates the
 LANGUAGE, not this sub-term pathology, so a form-level screen on the produced D's
 Inf_q star-freeness, computable via fin_ground-style GT automata, would be the
 actual guard). This is the precise shape of "min state is not enough."
+
+---
+
+# Experiment in: Π₂ conjecture REFUTED — and it refines the gap exactly as hoped
+
+The hunt (research_notes/pi2_hunt_report.md) returned a triply-verified
+counterexample: GF(a & X(b & Xb)) is star-free, its form is state-minimal at 3
+states, yet its recurrence sub-question Inf(C) at configs (1,1,1),(2,1,1) counts
+mod 2 (non-star-free). The form's transition monoid carries a Z2 (letter {a,b}
+has period 2). ~24% of a recurrence-formula corpus is group-bearing. Conjecture
+(Π₂) is false; state-minimality is NOT sufficient.
+
+## Reconciliation — this is consistent with everything we proved
+
+- R-aperiodicity was about the RESIDUAL monoid (aperiodic ✓). The minimal DBA's
+  transition monoid is strictly larger; the Z2 lives in ker ρ (acceptance-detection
+  fibers), L-invisible. The sharp reduction ("Inf non-star-free ⟺ L-invisible
+  group read set-differently") is exactly what the experiment realized.
+- The re-marking analysis correctly PREDICTED the fold cannot shrink D (the group
+  is size-optimal). What was genuinely open — "does minimality forbid the
+  set-different case" — is answered NO, and commonly.
+- (P) is VINDICATED and its motivation is now empirical: the minimal deterministic
+  form is confirmed to be the wrong canonical object (carries groups in ~24% of
+  recurrence cases); the prophetic co-deterministic form is the counter-free one.
+
+## Factual correction (inherited error)
+
+gf_aa_parity's MINIMAL form is aperiodic (2 states) — its "Z2" was a decompose_aut
+POSTPROCESS PADDING artifact, not a genuine minimal-form group. Earlier entries
+(and some of my worked examples) claimed gf_aa_parity's minimal form carries a Z2;
+that premise was wrong. The honest minimal-group witness is GF(a & X(b & Xb)) at 3
+states. The argument STRUCTURE (ker ρ group) stands; only the example was wrong.
+Separately-real soundness fact: decompose_aut's postprocess pads even SAT-minimal
+inputs and can INJECT groups — grounding must be verbatim on the minimal form.
+
+## The reframe (settled)
+
+Minimality is the wrong invariant. The right one is APERIODICITY OF THE TRANSITION
+MONOID of the form the cascade grounds on. The gate is form-level, hence sound but
+INCOMPLETE: it declines LTL languages whose minimal form is not counter-free.
+
+---
+
+# Q1 — a CONSTRUCTIBLE counter-free deterministic form (attack)
+
+The incompleteness is not fundamental: GF(a & X(b & Xb)) DOES have a counter-free
+deterministic form — the pattern-matcher for the window abb (states ε→a→ab→abb,
+wrong letters reset) is the min-DFA of Σ*abbΣ*, counter-free (McNaughton–Papert),
+with "reach abb i.o." as Büchi. ~4 states, no group. MINIMIZATION introduced the
+group; the unrolled form is counter-free at +1 state. So:
+
+> **Q1.** Does every star-free (LTL) ω-language have a counter-free DETERMINISTIC
+> parity form (generally larger than state-minimal)? And — the real prize —
+> is it CONSTRUCTIBLE?
+
+The user's point: nobody knows how to construct the star-free/counter-free form
+from an arbitrary input even where it exists. A constructible substitute
+(prophetic) that discharges what counter-freeness is a rug for is the win.
+
+## Attempt A — direct forward (right-multiplication / forward Rhodes expansion)
+
+States = S₊ (or forward strict R-chains), δ(s,a) = s·φ(a). Transition monoid = the
+RIGHT-regular representation of S₊ = aperiodic iff S₊ aperiodic. So the transition
+structure is counter-free, forward-deterministic, constructible. OBSTRUCTION: the
+ACCEPTANCE. ω-acceptance depends on the recurring FUTURE idempotent e of the linked
+pair (s,e); a forward-deterministic run only sees the state i.o.-set of prefixes,
+which R-stabilizes but need NOT determine e. A parity condition on the forward-chain
+i.o.-set is the candidate, but "state i.o.-set determines the linked pair" is not
+generally true forward — this is exactly the future-dependence of ω-acceptance that
+forward determinism cannot read, and is WHY Carton–Michel went co-deterministic
+(prophetic) in the first place. Attempt A gives a counter-free semiautomaton but no
+evident correct parity acceptance.
+
+## Attempt B — via the prophetic form + counter-free-preserving determinization
+
+This is the promising path and it puts the prophetic result to work as the bridge.
+
+1. Construct A_S (Carton–Michel; constructible from any Büchi automaton / the
+   syntactic ω-semigroup). By (P), A_S is counter-free. It is UNAMBIGUOUS
+   (prophetic: exactly one final run per word).
+2. Determinize A_S forward. The LEVER: Diekert–Gastin Remark 11.14 — the SUBSET
+   construction PRESERVES counter-freeness (if A is counter-free, its subset
+   automaton B is counter-free; and B counter-free ⟹ A aperiodic). So any
+   determinization whose transition structure is subset-based stays counter-free.
+3. Crux lemma (the whole ballgame): determinizing the UNAMBIGUOUS/prophetic A_S to
+   a deterministic PARITY automaton for L can be done SUBSET-BASED (no Safra-tree
+   memory), so the result is counter-free (step 2) AND recognizes L. Unambiguity is
+   what should make Safra unnecessary — the unique final run is trackable by a
+   subset + a bounded, counter-free index, not a tree.
+
+If the crux lemma holds:
+- Q1 is answered YES, CONSTRUCTIVELY: A_S (Carton–Michel) → subset-determinize →
+  counter-free deterministic parity for L. This is the construction "nobody knows",
+  with the prophetic form as the intermediate that everyone can build.
+- BLS becomes COMPLETE on all LTL inputs: run the cascade on this counter-free
+  deterministic form; every Fin(C) is star-free; the gate can ADMIT rather than
+  decline. Soundness was never at risk; this closes the completeness gap.
+
+## The crux lemma, isolated — and what to read
+
+Target: "the forward determinization of a counter-free UNAMBIGUOUS Büchi automaton
+to deterministic parity preserves counter-freeness." Ingredients in hand:
+DG Remark 11.14 (subset preserves counter-free). Missing: that unambiguous-Büchi
+determinization is subset-based (avoids Safra). Papers to grab:
+- Bousquet, Löding, "Equivalence and inclusion problem for strongly unambiguous
+  Büchi automata" — determinization/analysis of exactly this class.
+- Carton–Michel §on complementation (they stress prophetic automata are easy to
+  complement/determinize — check whether that construction is subset-based and
+  counter-free-preserving).
+- Whether the parity index the determinization assigns is itself a counter-free
+  function of the subset (the analogue of A_S's cutting-transition / Prop 70 index).
+
+## Deliverable framing (even if the crux is hard)
+
+The prophetic form ALREADY is the constructible counter-free "rug": it is buildable
+(Carton–Michel), counter-free (P), and discharges the exact semantic obligation
+counter-freeness serves — every recurrence sub-question (loop language) is star-free
+(Cor 2). What Q1 adds is pushing that rug under the FORWARD cascade BLS actually
+runs. If the determinization crux resists, the standalone value stands: a
+constructible canonical form on which the definability sub-questions are provably
+LTL — which is precisely what the field lacks a forward-deterministic construction
+for.
+
+## Next
+
+- Chase the crux lemma via Bousquet–Löding / Carton–Michel complementation
+  (grab the papers).
+- Or: characterize the sub-class where Attempt A's forward form DOES carry a correct
+  parity acceptance (state i.o.-set determines the linked pair) — likely the
+  "bounded-recurrence" LTL (GF/FG over aperiodic-detectable windows), which covers
+  the pattern-matching cases and much of practice, giving a constructive
+  counter-free form for a large explicit fragment now.
+
+---
+
+# Q1 update — the literature does NOT give a forward determinization (Attempt B unsupported)
+
+Grabbed Bousquet–Löding 2010 (strongly unambiguous Büchi) and checked
+Carton–Michel 2003 §5.1. Finding: the strongly-unambiguous / prophetic class is
+expressively complete and cheap for COMPLEMENTATION and DECISION, but neither
+paper forward-determinizes it, and both stay co-deterministic/nondeterministic.
+
+- Bousquet–Löding: poly-time equivalence/inclusion for strongly unambiguous Büchi,
+  via reduction to "does a deterministic Büchi accept some vω" — a decision
+  procedure, NOT a construction of a deterministic recognizer of L.
+- Carton–Michel 2003 §5.1: complement = swap the initial set; output is
+  UNAMBIGUOUS and complete, i.e. still co-deterministic — not deterministic.
+- (The Carton_Michel_2006_LATIN file the user grabbed is actually Carton–RISPAL,
+  scattered linear orderings — unrelated.)
+
+Consequence: Attempt B's crux lemma ("subset-based determinization of an
+unambiguous Büchi automaton, counter-free-preserving via DG Rem 11.14") has NO
+off-the-shelf construction. General Büchi determinization is Safra, which is not
+subset-based and not known counter-free-preserving; unambiguity's benefit in these
+papers is for complementation/decision, not determinization. So the forward
+counter-free deterministic form is genuinely not constructible via prophetic +
+these tools. This is consistent with the practitioner folklore (nobody constructs
+the star-free form from an arbitrary input).
+
+## Redirect
+
+Q1 splits, and the honest state differs per half:
+
+- **Q1-existence** ("every star-free ω-language has SOME deterministic counter-free
+  parity form"): OPEN as far as our sources go. DG go nondeterministic; Carton–
+  Michel go co-deterministic; both AVOID forward-deterministic-counter-free — a
+  signal it is the hard direction. Check the Perrin–Pin book for a deterministic
+  aperiodic-Muller characterization; if absent there, treat as genuinely open.
+- **Q1-construction** (build it): the only concrete candidate is Attempt A — the
+  FORWARD Rhodes/chains automaton (states = forward strict R-chains of S₊,
+  δ(s,a)=s·φ(a)), whose transition monoid is the right-regular rep of S₊, hence
+  APERIODIC (counter-free) and constructible. The single open piece is a CORRECT
+  parity acceptance readable forward: does the i.o.-set of forward chains determine
+  the recurring linked pair (s,e)? For the pattern-matching fragment it does
+  (bounded windows); in general it is the future-idempotent problem. THIS is the
+  construction to test — it is the forward mirror of Carton–Michel's co-deterministic
+  A_S, and its counter-freeness is already proved; only the acceptance is open.
+
+## Banked regardless (the user's "nice result in itself")
+
+The CO-deterministic prophetic form A_S IS the constructible counter-free object:
+buildable (Carton–Michel), counter-free (P), discharging the semantic obligation
+(every recurrence loop language star-free, Cor 2). It is the field's constructible
+canonical form on which the definability sub-questions are provably LTL. Q1 is the
+attempt to carry that guarantee to the FORWARD cascade; if it resists, the
+co-deterministic result stands alone and is publishable as-is.
+
+## Two live routes (either advances)
+
+1. Attempt A, finished: put a parity acceptance on the forward Rhodes/chains
+   automaton and prove/refute that the forward chain i.o.-set determines the linked
+   pair. Success = the constructive Q1 answer (forward counter-free det parity) and
+   BLS completeness. Refutation = a star-free language with NO forward counter-free
+   deterministic form = a genuine limit, and the prophetic co-deterministic form is
+   then provably the best constructible object (strengthening (P)'s standalone role).
+2. Backward/prophetic BLS: run the reachability construction on A_S's counter-free
+   semiautomaton (Krohn–Rhodes applies to the transition structure regardless of
+   acceptance direction), yielding PAST-LTL, then dualize. The reachability formulas
+   have an evident backward reading; the reset cascade exists because A_S is
+   counter-free. This sidesteps forward determinization entirely.

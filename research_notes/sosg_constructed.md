@@ -97,12 +97,47 @@ via Diekert–Gastin) and a counter-free automaton (`L` *as an automaton*, via t
 Cayley construction). We keep the tool out of the argument entirely: every claim
 below is about the object.
 
-Two examples run throughout. **`GF(aa) := GF(a ∧ Xa)`** ("infinitely many
-`aa`-factors"), which *is* LTL but has a natural presentation whose transition
-monoid carries a spurious group; and **`Even := (aa)*·b·Σ^ω`** ("an even number of
-`a`'s, then a `b`, then anything"), the canonical mod-2 language, which is *not* LTL
-and whose group is genuine. The first shows the SOSG destroying a fake group; the
-second, exhibiting a real one and handing out its refutation.
+Three small examples run throughout, chosen to exercise both halves of the
+construction and both of Arnold's context shapes. Their automata are collected in
+Figure 1 and their algebraic fingerprints in Table 1; every notion introduced below
+is stated once and then immediately read off these three.
+
+- **`GF(aa) := GF(a ∧ Xa)`** — "infinitely many `aa`-factors." It *is* LTL, but a
+  natural presentation encodes the letter `a` as a transposition, so its transition
+  monoid carries a spurious group. The SOSG *destroys* that group.
+- **`Even := (aa)*·!a·Σ^ω`** — over the single atom `a`, an even number of `a`'s then a
+  `!a` then anything; in PSL, the words with a prefix matching the SERE
+  `{a[*2]}[*] ; !a`. The canonical mod-2 language; *not* LTL, its group genuine, and —
+  because a prefix fixes the parity — refuted by Arnold's *linear* (first) shape.
+- **`EvenBlocks`** — "infinitely many `!a`'s, and eventually every completed `a`-block
+  has even length"; the same `{a[*2]}` even-block SERE, now recurring. Also *not* LTL
+  with a genuine mod-2 group, but *prefix-independent*: no finite prefix changes
+  membership, so its group is invisible to the linear shape and only Arnold's
+  *ω-power* (second) shape can witness it. This is the example that keeps both shapes
+  honest.
+
+The two non-LTL examples are deliberately PSL/SERE properties: SEREs are the standard
+ω-regular superset of LTL used in hardware specification (IEEE 1850), and the mod-`p`
+counting that takes a property out of the star-free/LTL fragment lives *syntactically*
+in an even-repetition `{·}[*2]`. Deciding whether a written PSL property is in fact
+LTL — simpler, and far better tool-supported — is itself a use of the object (§6);
+these two are its minimal witnesses. Both are built directly from their SERE text by a
+standard PSL front end, so Figure 1 needs no hand construction.
+
+> **Figure 1** (rendered in the companion [figures](sosg_figs/figures.md)). The
+> deterministic Emerson–Lei automata `D` of the three running examples: **(a)**
+> `GF(aa)` — 2 states, `a` a transposition, `Inf(0)` closing each `aa` (a `Z₂` in the
+> transition monoid); **(b)** `Even` — 4 states, `Inf(0)`, a parity pair with an
+> accepting and a rejecting sink; **(c)** `EvenBlocks` — 2 states, `Fin(0) ∧ Inf(1)`,
+> prefix-independent.
+
+> **Table 1** (in the companion [figures](sosg_figs/figures.md)). Algebraic
+> fingerprints — PSL/SERE source, `|Q|`, `|EM(D)¹|`, `|S(L)₊¹|`, group in the
+> transition monoid?, group in `S(L)₊`?, LTL?, and either the certificate shape
+> (`F₁`/`F₂`) or the synthesized formula. The `GF(aa)` row is the story in miniature:
+> `|EM¹| = 10` with a `Z₂`, `|S(L)₊¹| = 6` with *no* group, LTL, formula `GF(a ∧ Xa)`;
+> the `Even` (`7 → 5`) and `EvenBlocks` (`16 → 7`) rows carry a real group into
+> `S(L)₊` and a `{·}[*2]`-rooted witness out.
 
 ---
 
@@ -118,31 +153,80 @@ Rabin, and Muller. For a state `q`, its **residual** is the ω-language
 `L(q) = { α ∈ Σ^ω : the run of D from q on α satisfies Acc }`; determinism makes
 `L(ι·u) = u⁻¹L` for every finite prefix `u`.
 
-**ω-semigroups and linked pairs.** An ω-semigroup `S = (S₊, S_ω)` carries an
-associative product on `S₊` and a mixed product `S₊ × S_ω → S_ω` and infinite power
-`S₊ → S_ω`, subject to the usual associativity axioms [PP04, Ch. II]. A morphism
-`φ : Σ^∞ → S` recognizes `L` if `L = φ⁻¹(P)` for `P ⊆ S_ω`. By Ramsey's theorem
-every `α ∈ Σ^ω` admits a factorization into finite blocks whose images are
-eventually a single idempotent `e`, so `α ∈ φ⁻¹(s)·φ⁻¹(e)^ω` for a **linked pair**
-`(s, e)` — `se = s`, `e² = e` — of `S₊`; linked pairs are the algebraic addresses of
-ultimately-periodic words [CPP08, PP04]. Two regular ω-languages coincide iff they
-agree on ultimately-periodic words, so a recognizer's verdict on linked pairs
-determines it entirely.
+*Example (Figure 1).* The three running automata instantiate `Acc` across the
+Emerson–Lei range. `GF(aa)` reads `Inf(c)` for a single mark `c` placed on the
+`a`-transition taken from the "just saw an `a`" state — the run passes `c`
+infinitely often iff `aa` recurs. `Even` is a guarantee: `Inf(acc)` for the mark on
+the accepting sink's self-loops — the run reaches the sink (after an even `a`-prefix
+closed by `!a`) or never does. `EvenBlocks` needs the full `Fin(0) ∧ Inf(1)` shape:
+`Inf(1)` forces infinitely many `!a`'s (block completions), `Fin(0)` forbids an
+odd-length completed block infinitely often. The residuals separate `Even`'s four
+states pairwise (`q₀ ≠ q₁` because one `!a` accepts, the other rejects) but collapse
+both states of `EvenBlocks` to a single residual — the prefix-independence that
+Proposition 4.6 will read algebraically.
 
-**The syntactic congruence (Arnold).** Two finite words `u, v ∈ Σ*` are
-**syntactically congruent** for `L`, written `u ≈_L v`, when they are
-interchangeable in both of Arnold's context shapes [Arn85]:
+**ω-semigroups and linked pairs (what we import, and why).** Finite words are
+classified by a *monoid* — one associative product. Infinite words need a *two-sorted*
+algebra, because an ω-word is built by an infinite product that a plain semigroup
+cannot express; this is the ω-semigroup of Perrin and Pin [PP04, Ch. II], which we
+recall in the form we use. An **ω-semigroup** `S = (S₊, S_ω)` has an associative
+product on the finite sort `S₊`, a mixed product `S₊ × S_ω → S_ω`, and an infinite
+power `π : S₊ → S_ω` (the image of `s·s·s·⋯`), satisfying the natural associativity
+axioms. A morphism `φ : Σ^∞ → S` **recognizes** `L` when `L = φ⁻¹(P)` for some
+accepting set `P ⊆ S_ω`. The bridge from words to this algebra is **Ramsey's
+theorem**: for any morphism into a finite `S₊`, every `α ∈ Σ^ω` admits a
+factorization `α = w₀ w₁ w₂ ⋯` into finite blocks whose images are, from some point on,
+a single idempotent `e = e²`; collecting the prefix into `s` with `se = s` gives
+`α ∈ φ⁻¹(s)·φ⁻¹(e)^ω`. The pair `(s, e)` — `se = s`, `e² = e` — is a **linked pair**,
+the algebraic address of the ultimately-periodic word `u·z^ω` with `φ(u) = s`,
+`φ(z) = e` [CPP08, PP04]. Because two regular ω-languages coincide iff they agree on
+ultimately-periodic words, a recognizer is pinned down entirely by which linked pairs
+it accepts — this is why the accepting *set of linked pairs* (not just an accepting
+subset of a monoid) is the acceptance datum of the SOSG (§5).
+
+*Example.* In `GF(aa)`, write `α` = an ω-word with a suffix `s` in `S₊` and idempotent
+loop `e`. Membership "`aa` infinitely often" is a property of the loop `e` alone: the
+accepting linked pairs are exactly those whose `e` contains an `aa`. In `Even`, the
+loop is irrelevant once a `!a` has been seen — acceptance is fixed by the finite prefix
+`s` (even-then-`!a` or not); the linked pairs split by their `s`. `EvenBlocks` is the
+mirror: the prefix `s` never matters (prefix-independence), and acceptance is read off
+`e` — whether the recurring loop completes only even blocks. The three examples thus
+place their acceptance in `e` (`GF(aa)`), in `s` (`Even`), and in `e` again but
+prefix-blindly (`EvenBlocks`) — the spread the two keys must all handle.
+
+**The syntactic congruence (Arnold), recalled in full.** Everything downstream
+transports one 1985 definition of Arnold [Arn85], so we state it precisely and say
+what it delivers. On finite words, the syntactic congruence declares `u ≈ v` when
+they are interchangeable in every context `x·_·y` — same membership under any left
+and right finite padding. On infinite words a context must yield an ω-word, and there
+are exactly two ways to do so: pad `u` on both sides and make the result infinite with
+a trailing loop, or place the mutated factor *inside* the recurring loop. These are
+Arnold's two shapes. Two finite words `u, v ∈ Σ*` are **syntactically congruent** for
+`L`, written `u ≈_L v`, when interchangeable in both:
 
 ```
     (linear)    ∀ x, y ∈ Σ*, t ∈ Σ⁺ :   x·u·y·t^ω ∈ L  ⟺  x·v·y·t^ω ∈ L
     (ω-power)   ∀ x, y ∈ Σ*         :   x·(u·y)^ω  ∈ L  ⟺  x·(v·y)^ω  ∈ L
 ```
 
-`≈_L` is a congruence of finite index; its quotient `S(L)₊ = Σ⁺/≈_L`, completed with
-the linked-pair data into an ω-semigroup `S(L)`, is the **SOSG**. It is
-presentation-independent (defined from `L` alone) and it is the coarsest congruence
-saturating `L` [Arn85]. The two shapes are not redundant: they are the linear tail
-after a mutation and the loop through it, and §4.4 shows each is needed.
+Arnold proves three facts we rely on. First, `≈_L` has **finite index** (its classes
+are the finitely many behaviors an ω-regular `L` can distinguish). Second, its
+quotient, completed with the linked-pair (infinite-power) data, is a finite
+ω-semigroup that **recognizes `L`** — the quotient morphism is a recognizer. Third,
+it is the **coarsest** congruence saturating `L`, hence *canonical*: any two automata
+for `L` yield the same quotient. This quotient `S(L)₊ = Σ⁺/≈_L`, with its linked-pair
+completion `S(L)`, is the **SOSG**. The two shapes are genuinely independent — §4.4
+and Proposition 4.6 exhibit a language separated by one shape and blind to the other —
+so a construction may not drop either.
+
+*Example.* `Even` is separated by the *linear* shape and only it: taking `x = ε`,
+`y = ε`, tail `t = !a·a` (any lasso opening with `!a`), the words `a` and `aa` give
+`a·!a·(a)^ω ∉ Even` (odd prefix) but `aa·!a·(a)^ω ∈ Even` (even prefix) — so `a ≉_L aa`
+witnessed linearly. `EvenBlocks` is the opposite: *no* linear context separates any
+two words (prefix-independence — a finite mutation is swallowed), yet the *ω-power*
+shape does, with `y` closing a block: `(a·!a)^ω` completes odd blocks forever and is
+rejected, `(aa·!a)^ω` completes even blocks and is accepted, so `a ≉_L aa` witnessed
+only in the loop. The two examples are exactly the two shapes made concrete.
 
 **The characterization.** We *decide against*, and never re-prove, the classical
 equivalences
@@ -157,7 +241,7 @@ nontrivial group is precisely a modulo-`p` counter, which star-free logic cannot
 express.
 
 *On the threads.* For `Even`, the letter `a` toggles the a-count parity before the
-first `b`, and no finite context can undo that parity: `a` has order 2 in `S(Even)₊`
+first `!a`, and no finite context can undo that parity: `a` has order 2 in `S(Even)₊`
 — a real group, so `Even` is not LTL. For `GF(aa)`, a run-parity presentation makes
 `a` a transposition of two states, but at infinity the parity is invisible to
 membership (an `aa` factor either recurs or not, a threshold not a count); the group
@@ -194,6 +278,21 @@ elements `⟦a⟧` (`a ∈ Σ`), with identity `⟦ε⟧ : q ↦ (q, ∅)`.
 Write `st_e(q)`, `mk_e(q)` for the two components of `e ∈ EM(D)` at `q`. The map
 `⟦·⟧ : Σ* → EM(D)` is a monoid morphism by construction.
 
+*Example (Table 2).* On `GF(aa)`, the elements `⟦a⟧` and `⟦aa⟧` already differ in
+`EM`, and precisely in the *mark* part: reading a second `a` closes an `aa` and
+collects the `Inf`-mark that reading a single `a` (from a fresh state) does not. Their
+*state* parts can nonetheless coincide, which is the whole point of the enrichment
+(Proposition 3.4). Closing `⟦a⟧`, `⟦¬a⟧` under composition yields the ten elements of
+`EM(GF(aa))` — the empty word, the four `aa`-free "(first letter, last letter)"
+behaviors, and the absorbing "contains `aa`" behavior, each in one or two mark states —
+tabulated in Table 2 alongside their fold to the six SOSG classes of §4.
+
+> **Table 2** (in the companion [figures](sosg_figs/figures.md)). The `10` elements of
+> `EM(GF(aa))` as `(st, mk)` vectors over `Q = {0,1}`, and their fold onto the `6`
+> classes of `S(GF(aa))₊`: four distinct elements collapse into the absorbing
+> "contains `aa`" class and `a·!a·a` rejoins `[a]`. The mark part alone separates
+> `⟦a⟧` from `⟦aa⟧` — the enrichment doing its one job.
+
 **Lemma 3.2 (skeleton).** If two ω-words `α, β` factor into blocks with the same
 sequence of enriched elements read from `ι` — i.e. `α = w₁w₂⋯`, `β = w'₁w'₂⋯` with
 `⟦w₁⋯w_k⟧ = ⟦w'₁⋯w'_k⟧` for all `k` — then `α ∈ L ⟺ β ∈ L`.
@@ -222,13 +321,18 @@ membership. So `⟦u⟧ = ⟦v⟧ ⟹ u ≈_L v`, i.e. the enriched congruence r
 recognize `L`: there are words `u, v` with `st_{⟦u⟧} = st_{⟦v⟧}` (equal state maps)
 but `u ≉_L v`.
 
-*Proof.* Take a state `p` with a self-loop on some letter `a` carrying a mark that
-`Acc` reads (say `Inf`-required), and let `u = a`, `v` a word looping `p` to itself
-on marks that `Acc` does not require. Then `st_{⟦u⟧}(p) = st_{⟦v⟧}(p) = p` but the
-ω-power context `_^ω` at `p` separates them: `u^ω` collects the required mark
-infinitely often and `v^ω` does not, so exactly one is accepted from `p`, and a
-prefix reaching `p` transports the separation to a linear/ω-power context on the full
-language. ∎
+*Proof (a one-state witness).* Let `D` have a single state `p` over `Σ = {a, b}`, both
+letters self-looping, an `Inf`-mark `c` on the `a`-loop only, and `Acc = Inf(c)` — so
+`L = ` "infinitely many `a`" `= GF a`. The transition monoid is *trivial*: every word
+induces the identity map on `{p}`, so `st_{⟦a⟧} = st_{⟦b⟧}`. Yet `a ≉_L b`, separated
+by the ω-power context `_^ω`: `a^ω` collects `c` infinitely often and is accepted,
+`b^ω` never collects `c` and is rejected. The enriched elements *do* separate them —
+`mk_{⟦a⟧}(p) = {c} ≠ ∅ = mk_{⟦b⟧}(p)` — which is exactly the information the transition
+monoid discards. ∎
+
+The starkness is the message: a trivial transition monoid under a nontrivial language.
+No amount of state bookkeeping recovers acceptance; the marks-along-the-run are
+irreducible data, and `EM` is the smallest recognizer that keeps them.
 
 Proposition 3.4 is why a group in the transition monoid proves nothing about `L`: it
 can be pure encoding, invisible to `EM` and hence to the SOSG. (Symmetrically,
@@ -295,6 +399,15 @@ state simultaneously. The ω half is a right-congruence condition seeded by prof
 Neither has a left translation. What remains is to show the *two-sided* congruence
 needs none.
 
+*Example (the two halves divide the labor).* The two non-LTL threads sit at opposite
+ends. In `Even`, `~lin` is already discriminating — the four states have four distinct
+residuals — and the group is visible on the *state* side: `st_{⟦a⟧}` swaps `q₀ ↔ q₁`,
+an order-2 action `~lin` sees directly. In `EvenBlocks`, `~lin` is *total* (one
+residual, prefix-independence), so the linear half sees nothing at all; the entire
+order-2 group is carried by `~ω`, where the profile of a loop `⟦aⁿb⟧` flips with the
+parity of `n`. One example loads the finitary half, the other the infinitary — and the
+construction needs both computed, which is Proposition 4.3 made concrete.
+
 **Lemma 4.4 (rotation).** `~` is the coarsest right-invariant equivalence contained
 in the seed `(~lin, Aprof)`; equivalently, seeds equal under all right extensions are
 equal under every two-sided context.
@@ -328,6 +441,14 @@ linked-pair data (the accepting pairs, §5) completes it to `S(L)`. The stated
 computation realizes `~` by Lemma 4.4: right-invariance of both seed components makes
 one Moore-style refinement to fixpoint compute `~lin ∧ ~ω` exactly. ∎
 
+> **Table 3** (in the companion [figures](sosg_figs/figures.md)). `S(GF(aa))₊`: the
+> six classes keyed `[ε], [¬a], [a], [¬a·a], [a·¬a], [a·a]`, the multiplication table,
+> and the single accepting linked pair `([a·a], [a·a])`. An `aa`-free word is fixed by
+> its (first letter, last letter); `[a·a]` = "contains `aa`" is two-sided absorbing;
+> every power cycle has period `1`, so the transition monoid's `Z₂` is gone. The
+> companion `S(Even)₊`, where `{[a], [a·a]}` is a period-2 cycle, is the group that
+> survives.
+
 **Proposition 4.6 (prefix-independence, as a theorem not a case).** `L` is
 prefix-independent (`σα ∈ L ⟺ α ∈ L` for all `σ ∈ Σ*`) iff `L` has a single residual
 iff `~lin` is total. In that case all discrimination is carried by `~ω`.
@@ -336,9 +457,19 @@ iff `~lin` is total. In that case all discrimination is carried by `~ω`.
 gives one residual class, so `~lin`, which compares residuals of reached states, is
 total. Conversely one residual class forces every prefix to preserve membership. ∎
 
+*Example.* `EvenBlocks` is prefix-independent (deleting or inserting a finite prefix
+changes neither "infinitely many `!a`" nor "eventually every completed `a`-block is
+even"), so its `~lin` is total — the finitary half is blind, and the whole
+non-LTL-ness is invisible until `~ω` is computed. This is not a corner case to be
+handled specially; it is the generic situation for tail properties, and it is why a
+construction resting on the right congruence alone (or on residuals alone) cannot even
+*see* that `EvenBlocks` fails to be LTL.
+
 Angluin and Fisman note the same blindness from the learning side: LTL languages with
 a *trivial right congruence* exist, e.g. `FG(a ∨ Xa)` [AF21] — the profile half is the
-repair. This is precisely why the negative certificate must come in two shapes (§6.2).
+repair. This is precisely why the negative certificate must come in two shapes (§6.2),
+and why `EvenBlocks`, blind to the linear shape, can be refuted only in the ω-power
+one.
 
 *On the threads, resolved.* For `GF(aa)`, the ten enriched elements refine to **six**
 `~`-classes, every class power-cycle of period 1: the run-parity words the transition
@@ -378,6 +509,25 @@ any downstream consumer can read, and two such artifacts are language-equal iff
 byte-equal after canonical keying. Notably `𝓘` needs no aperiodicity: it is defined
 for *all* regular ω-languages, LTL or not. What one does with the object is the
 subject of §6; that one *has* it is the point of this section.
+
+*Example (canonicity you can see).* Compute `𝓘(GF(aa))` from the run-parity
+presentation of Figure 1(a) — two states, a `Z₂` transition monoid — and again from
+the minimal reset presentation — a different state count, a different, aperiodic
+transition monoid. The two runs return the *identical* `𝓘`: six classes keyed
+`[ε], [¬a], [a], [¬a·a], [a·¬a], [a·a]`, one multiplication table, the single accepting
+pair `([a·a],[a·a])` (Table 3). No automaton-level object does this — the two
+presentations are not isomorphic and neither is "the" minimal one — which is the
+precise sense in which the algebra is canonical where the automata are not. Swapping
+`P` for its complement, keeping every other table byte-for-byte, yields `𝓘` of the
+complement language: the algebra is shared between `L` and `L̄`, and `P` alone
+separates them — the reason `P` is part of the invariant.
+
+> **Figure 2** (in the companion [figures](sosg_figs/figures.md); format
+> [`sosg_format.md`](sosg_format.md)). The exportable artifact `𝓘(GF(aa))`: a
+> "semantic HOA" block listing the keyed classes, the letter map, the multiplication
+> table, the saturated accepting-pair set, and an optional residuals section — the
+> serialization two tools compare byte-for-byte (on its core) to decide language
+> equality.
 
 A first, aperiodicity-free use: **language equality is table equality.** Where
 pairwise equivalence of `N` languages costs `O(N²)` automaton products, hashing `𝓘`
@@ -442,7 +592,7 @@ finite-order element of a group `H`-class) is representation-bound and meaningle
 without trusting the construction under audit. We know of no prior packaging of
 non-star-freeness as a replayable, representation-independent certificate.
 
-*Thread.* `Even`: `v = a`, `p = 2`, `x = b·a^ω`; the sample `aⁿ·b·a^ω ∈ Even ⟺ n
+*Thread.* `Even`: `v = a`, `p = 2`, `x = !a·a^ω`; the sample `aⁿ·!a·a^ω ∈ Even ⟺ n
 even` — a linear `F₁`. (The prefix-independent mod-2 "every `a`-block eventually
 even" is the `F₂` cameo: `~lin` blind, the witness necessarily an ω-power.)
 
