@@ -43,7 +43,7 @@ from aut2ltl.combinators.first_success import first_success
 from aut2ltl.contract import CascadeTranslator, Translator
 from aut2ltl.options import Options
 from aut2ltl.bls.aut2cas import as_translator
-from aut2ltl.bls.definability import definability_gate
+from aut2ltl.bls.gate import cascade_gate
 from aut2ltl.bls import bls
 from aut2ltl.bls.acc import acc as _acc
 from aut2ltl.bls.buchi import buchi as _buchi
@@ -93,7 +93,7 @@ def _from_techniques(options: Options, techniques: Iterable[str]) -> Translator:
                     members[0] if len(members) == 1
                     else first_success(members, name="kr")
                 )
-                rungs.append(definability_gate(as_translator(chain)))
+                rungs.append(cascade_gate(as_translator(chain)))
                 kr_rung_placed = True
         elif t == "bls":
             # The integrated cascade (the full bls engine) as ONE producer (its own

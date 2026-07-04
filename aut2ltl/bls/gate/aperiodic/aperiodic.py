@@ -1,26 +1,26 @@
 """
-bls/definability/tester/tester.py — the Language LTL-definability labeler ("LtlTester").
+bls/gate/aperiodic/aperiodic.py — the Language LTL-definability screen.
 
-A Translator that is *unsound when its input is not LTL-definable* — the kr
-cascade — must check definability before it builds, and report the impossibility
-instead of constructing a wrong formula from a group component. This module is
-that gate, factored out of any one Translator: a free function that takes a
-`Language`, decides whether an LTL formula exists, and TAGS the Language
-(`set_ltl_definable`) so the verdict is computed once and shared.
+`label_ltl_definable` takes a `Language`, reads one deterministic form of its
+ω-language, decides whether an LTL formula defining it exists, and TAGS the
+Language (`set_ltl_definable`) so the reading is computed once and shared.
 
-WHY a dedicated, sbacc-FREE form (and not the cascade's own automaton).
-LTL == star-free == counter-free == the deterministic transition monoid is
-APERIODIC. The cascade is built from `det_parity_sbacc()`, whose FORCED
-state-based acceptance degeneralizes generalized-Büchi conditions (e.g.
-Inf(0)&Inf(1)&Inf(2) for `GFa & GFb & GFc`) into a "which mark am I waiting for"
-counter — a spurious cyclic group that reads as non-aperiodic even though the
-language IS LTL. So the oracle must run on a form WITHOUT that degeneralization:
-`det_generic_minimal()` (deterministic, generic acceptance, simulation-reduced
-and SAT-minimized when small). See `bls/aut2cas.py` for the consumer.
+The characterization: LTL == star-free == counter-free == the deterministic
+transition monoid is APERIODIC. The screen reads `det_generic_minimal()`
+(deterministic, generic acceptance, simulation-reduced and SAT-minimized when
+small) — NOT a state-based (`sbacc`) form: forcing state-based acceptance
+degeneralizes a generalized-Büchi condition (e.g. Inf(0)&Inf(1)&Inf(2) for
+`GFa & GFb & GFc`) into a "which mark am I waiting for" counter, a spurious
+cyclic group that reads as non-aperiodic on a language that IS LTL. The generic
+form carries no such counter.
 
-LAYERING: this sits above the floor (it reads `Language`) and above the gap
-oracle (`gap/aperiodic.is_aperiodic_gens`); it imports neither Cascade nor any
-Translator, so it composes into the cascade gate without a cycle.
+The verdict `(definable, conclusive)`: `definable` is the aperiodicity of the
+transition monoid (True == an LTL formula exists); `conclusive` records whether
+the form was SAT-minimized (the state-minimal regime). The aperiodicity oracle
+is `gap/aperiodic.is_aperiodic_gens`.
+
+LAYERING: above the floor (reads `Language`) and the gap oracle; imports neither
+Cascade nor any Translator.
 """
 
 from __future__ import annotations

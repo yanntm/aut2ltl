@@ -36,7 +36,7 @@ from .cobuchi import cobuchi as _cobuchi
 from .weak import weak as _weak
 from .muller import muller as _muller
 from .aut2cas import as_translator
-from .definability import definability_gate
+from .gate import cascade_gate
 from aut2ltl.translator import Translator
 
 
@@ -76,15 +76,14 @@ def bls(options: Optional[Options] = None) -> Translator:
     """The bls cascade engine as a Translator — the recommended bls endpoint.
 
     Lifts the acceptance-dispatch ladder (acc → weak → buchi → cobuchi → muller)
-    over the Krohn-Rhodes holonomy decomposition (`as_translator`), gated by
-    `definability_gate` (the cached LTL-definability check, run first). The
-    general-case floor: it always answers — a formula, or a NOT_LTL verdict (with
-    a witness) when the language is not LTL-definable.
+    over the Krohn-Rhodes holonomy decomposition (`as_translator`), fronted by
+    `cascade_gate` (the cached LTL-definability screen, run first): a formula on
+    an aperiodic (star-free) language, a PROBABLY_NOT_LTL decline otherwise.
 
     This is bls's own recipe: `hierarchy_class` gated. Portfolio imports it as the
     registered `bls` block; callers should use that rather than re-assembling the
     gate around the cascade by hand."""
-    return definability_gate(as_translator(make_hierarchy_class(options)))
+    return cascade_gate(as_translator(make_hierarchy_class(options)))
 
 
 __all__ = ["make_hierarchy_class", "hierarchy_class", "bls"]

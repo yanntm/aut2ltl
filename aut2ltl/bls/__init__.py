@@ -34,12 +34,11 @@ from .operators import (
 )
 from .hierarchy_class import make_hierarchy_class, hierarchy_class, bls
 from .aut2cas import as_translator
-from .definability import definability_gate
 from .operators import TRACE_ON  # for KR_TRACE=1 dev traces of inductive construction
 
 # `bls` (in `hierarchy_class.py`) is the recommended endpoint: the pure adapter
-# (`as_translator`) gated on LTL-definability (`definability_gate`). The ungated
-# `as_translator` stays available for explicit composition.
+# (`as_translator`) fronted by the LTL-definability gate (`bls.gate.cascade_gate`).
+# The ungated `as_translator` stays available for explicit composition.
 
 __all__ = [
     "Cascade",
