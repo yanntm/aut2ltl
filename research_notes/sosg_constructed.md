@@ -310,12 +310,13 @@ morphism `Σ* → S(L)₊` factors through `⟦·⟧ : Σ* → EM(D)`. Consequen
 surjective ω-semigroup morphism `EM(D) ↠ S(L)`, and `S(L)` is a computable quotient
 of `EM(D)`.
 
-*Proof.* By Lemma 3.2, acceptance in any context depends on the constituent finite
-words only through their enriched elements: if `⟦u⟧ = ⟦v⟧` then substituting `v` for
-`u` in any block factorization preserves the enriched-element sequence, hence
-membership. So `⟦u⟧ = ⟦v⟧ ⟹ u ≈_L v`, i.e. the enriched congruence refines `≈_L`;
-`≈_L` therefore factors through `EM(D)`, and its quotient `S(L)` is a quotient of
-`EM(D)`. ∎
+*Proof.* Recall from §2 (Ramsey) that every ω-word factors into finite blocks whose
+enriched images stabilise, and that Lemma 3.2 makes acceptance depend only on that
+sequence of images. So if `⟦u⟧ = ⟦v⟧`, replacing one occurrence of `u` by `v` inside
+any such block factorization leaves the enriched-element sequence — and hence, by
+Lemma 3.2, membership — unchanged. Thus `⟦u⟧ = ⟦v⟧ ⟹ u ≈_L v`: the enriched congruence
+refines `≈_L`, so `≈_L` factors through `EM(D)` and its quotient `S(L)` is a quotient
+of `EM(D)`. ∎
 
 **Proposition 3.4 (enrichment is necessary).** The transition monoid alone does not
 recognize `L`: there are words `u, v` with `st_{⟦u⟧} = st_{⟦v⟧}` (equal state maps)
@@ -371,12 +372,28 @@ state `st_x(ι)` the prefix reaches — which cycles through the functional grap
 `st_c` and repeats the marks `mk_c` around the closed cycle. Hence `Acc(x, c)` is a
 function of `st_x(ι)` and `c` only, namely `A(st_x(ι), c)`. ∎
 
-**Definition 4.2.** For `e, f ∈ EM(D)` let
+**Definition 4.2.** For `e, f ∈ EM(D)` (images of non-empty words) let
 
 ```
     e ~lin f   ⟺   ∀ q ∈ Q :   L(st_e(q)) = L(st_f(q)),
     e ~ω  f    ⟺   ∀ b ∈ EM(D)¹ :   Aprof(e·b) = Aprof(f·b),        where  Aprof(c) = (q ↦ A(q, c)).
 ```
+
+Here `b` ranges over `EM(D)¹`, the identity **included**: `b = 1` is the ω-power
+context with empty right padding `y = ε`, whose loop is `e` itself — a case we must
+keep. This is harmless: `e` is the image of a non-empty word, so the loop `e·b` is
+non-empty for every `b`, and `A(·, e·b)` is a genuine loop verdict; the degenerate
+`A(·, 1)` (an empty loop) would arise only from comparing the identity class with
+itself, which is trivial.
+
+*Example (a profile, read off the automaton).* In `GF(aa)`'s run-parity form
+(Figure 1, Table 2) the letter `⟦a⟧` transposes the two states — `0 → 1` collecting no
+mark, `1 → 0` collecting the `Inf`-mark `0`. Iterating `⟦a⟧` from either state runs
+around the 2-cycle `{0, 1}`, whose marks are `{0}`; since `Acc = Inf(0)` accepts,
+`A(0, ⟦a⟧) = A(1, ⟦a⟧) = 1`, so `Aprof(⟦a⟧) = (1, 1)` — matching `aᵂ ∈ GF(aa)`. By
+contrast `⟦!a⟧` resets both states to `0` with no mark, so its cycle `{0}` carries `∅`,
+`Inf(0)` fails, and `Aprof(⟦!a⟧) = (0, 0)` — matching `(!a)ᵂ ∉ GF(aa)`. The profile is
+exactly this per-state loop verdict, one bit per state.
 
 **Proposition 4.3 (factorization).** `e ~ f  ⟺  e ~lin f  ∧  e ~ω f`.
 
@@ -404,25 +421,39 @@ ends. In `Even`, `~lin` is already discriminating — the four states have four 
 residuals — and the group is visible on the *state* side: `st_{⟦a⟧}` swaps `q₀ ↔ q₁`,
 an order-2 action `~lin` sees directly. In `EvenBlocks`, `~lin` is *total* (one
 residual, prefix-independence), so the linear half sees nothing at all; the entire
-order-2 group is carried by `~ω`, where the profile of a loop `⟦aⁿb⟧` flips with the
-parity of `n`. One example loads the finitary half, the other the infinitary — and the
-construction needs both computed, which is Proposition 4.3 made concrete.
+order-2 group is carried by `~ω`. Concretely, right-extend by `b = ⟦!a⟧` (close the
+block): the loop `⟦a·!a⟧` is a length-1 (**odd**) block, so `(a·!a)ᵂ` violates `Fin(0)`
+and `Aprof(⟦a·!a⟧)` rejects, whereas `⟦aa·!a⟧` is an **even** block and
+`Aprof(⟦aa·!a⟧)` accepts. So `~ω` separates `⟦a⟧` from `⟦aa⟧` — their reached states
+being identical, `~lin` never could. One example loads the finitary half, the other
+the infinitary — and the construction needs both computed, which is Proposition 4.3
+made concrete.
 
-**Lemma 4.4 (rotation).** `~` is the coarsest right-invariant equivalence contained
-in the seed `(~lin, Aprof)`; equivalently, seeds equal under all right extensions are
-equal under every two-sided context.
+**Lemma 4.4 (rotation).** Let `R` be the equivalence that equates `e` and `f` exactly
+when they have the same `~lin`-class *and* the same profile `Aprof`. Then `~` is the
+coarsest **right-invariant** equivalence refining `R` — equivalently, two elements
+that stay `R`-equal under every right extension are equal under every two-sided
+context.
 
-*Proof.* A left factor `a` acts on the seed only by re-indexing the slot. For `~lin`:
-`st_{a·e}(q) = st_e(st_a(q))`, so a left `a` merely evaluates `~lin` at the shifted
-slot `st_a(q)` — determinism. For `~ω`: reading `(a·e·b)^ω` from `q` equals reading
-`a·(e·b·a)^ω`, and by Lemma 4.1 the finite `a`-prefix is invisible to the loop's
-verdict, so `Aprof(a·e·b)(q) = Aprof(e·b·a)(st_a(q))` — a **right** extension `e·b·a`
-of `e`, read at the shifted slot `st_a(q)`. Hence any two-sided context reduces to a
-right extension at a re-indexed slot; if `e, f` agree under all right extensions at
-all slots they agree under all two-sided contexts. Finally `~lin` is itself
-right-invariant (derivatives of equal languages are equal:
-`L(s) = L(s') ⟹ L(δ(s,a)) = L(δ(s',a))`), so `~` is the coarsest right-invariant
-refinement of a single seed. ∎
+*Proof.* A left factor `a` acts on `R` only by re-indexing a slot. For `~lin`:
+`st_{a·e}(q) = st_e(st_a(q))`, so prepending `a` merely evaluates `~lin` at the shifted
+slot `st_a(q)` — pure determinism. For `~ω`, take the two mini-steps explicitly. First,
+factor the ultimately-periodic word `(a·e·b)^ω = a·(e·b·a)^ω`: its acceptance from `q`
+depends only on the loop `(e·b·a)^ω` read from the state reached *after* the prefix
+`a`, which is `st_a(q)` — the prefix `a` changes nothing but the loop's starting state.
+Second, by Lemma 4.1 that acceptance is exactly `A(st_a(q), e·b·a)`. Combining,
+
+```
+    Aprof(a·e·b)(q)  =  A(st_a(q), e·b·a)  =  Aprof(e·b·a)(st_a(q)),
+```
+
+so the left factor `a` has turned into a **right** extension `e·b·a` read at the
+shifted slot `st_a(q)`, carrying no information of its own. Hence every two-sided
+context reduces to a right extension at a re-indexed slot: if `e, f` stay `R`-equal
+under all right extensions at all slots, they agree under all two-sided contexts.
+Finally `R` is itself right-invariant (`~lin` because derivatives of equal languages
+are equal, `L(s) = L(s') ⟹ L(δ(s,a)) = L(δ(s',a))`; `Aprof` by definition), so `~` is
+the coarsest right-invariant equivalence refining the single seed `R`. ∎
 
 Lemma 4.4 is the load-bearing step against Maler–Staiger: they *display* the
 finitary × infinitary split; the rotation lemma is what makes the two-sided
@@ -430,9 +461,12 @@ syntactic congruence computable with the one operation a monoid's closure table
 offers for free — right multiplication.
 
 **Theorem 4.5 (the SOSG, constructed).** `EM(D)/~ = S(L)`, where `~ = ~lin ∧ ~ω` is
-the right-computable congruence of Definition 4.2. Concretely, `S(L)₊` is the
-partition of `EM(D)` obtained by seeding with `(~lin`-class, `Aprof)` and refining by
-right multiplication to fixpoint.
+the right-computable congruence of Definition 4.2. Concretely, `S(L)₊` is computed by
+partition refinement (Moore's algorithm on `EM(D)`): start with blocks that group
+elements sharing the same `~lin`-class and the same profile `Aprof` — the seed `R` of
+Lemma 4.4; then repeatedly **split** a block whenever it contains `e, f` and a letter
+`a ∈ Σ` with `e·⟦a⟧` and `f·⟦a⟧` in different blocks; stop when no split applies (at
+most `|EM(D)|` splits). The final blocks are the classes of `~`.
 
 *Proof.* By Corollary 3.3, `≈_L` factors through `EM(D)`, and by construction its
 transported relation is exactly interchangeability in the two shapes, i.e. `~`; by
@@ -487,7 +521,11 @@ table, the images of the letters, and — to recover `L` and not merely its alge
 the set of **accepting linked pairs** `P = { (s, e) : e² = e, se = s, u·z^ω ∈ L for
 ⟦u⟧ ∈ s, ⟦z⟧ ∈ e }`. We key each class by its **shortlex-least representative word**
 over `Σ` (a language invariant, independent of `D`), so the data is a function of `L`
-alone.
+alone. `P` is read directly off the automaton: for each pair of classes `(s, e)` with
+`e·e = e` and `s·e = s`, take their shortlex-least representative words `w_s, w_e` and
+test the ultimately-periodic word `w_s·(w_e)^ω` for acceptance on `D`; put `(s, e)` in
+`P` iff it accepts. Any representatives give the same verdict — that is exactly what
+`(s, e)` being a linked pair guarantees (Lemma 3.2).
 
 **Theorem 5.1 (complete invariant).** For a fixed `Σ`, the tuple `𝓘(L) = ` (keyed
 classes, multiplication table, letter map, accepting-pair set `P`) determines `L`
