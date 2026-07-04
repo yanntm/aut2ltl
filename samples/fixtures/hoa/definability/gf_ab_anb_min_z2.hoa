@@ -1,0 +1,28 @@
+HOA: v1
+name: "GF(a & X(b & X(a & !b))) -- COUNTEREXAMPLE: star-free language, 4-state SAT-minimal, transition monoid carries Z2 (word (a&!b).(a&b) has period 2, image (3,3,1,1)); Inf((1,2)),(1,3),(2,2),(2,3) NON-star-free (period-2 families). Grounded verbatim (no padding) the ungated cascade builds a WRONG formula (assembled output NOT equivalent). Refutes 'minimal + star-free => every Inf(C) star-free'."
+States: 4
+Start: 0
+AP: 2 "a" "b"
+acc-name: Buchi
+Acceptance: 1 Inf(0)
+properties: trans-labels explicit-labels trans-acc complete
+properties: deterministic
+--BODY--
+State: 0
+[!0] 0
+[0] 1
+State: 1
+[!0&!1] 0
+[!0&1] 2
+[0&!1] 1
+[0&1] 3
+State: 2
+[!0] 0
+[0&!1] 0 {0}
+[0&1] 1
+State: 3
+[!0&!1] 0
+[!0&1] 2
+[0&!1] 0 {0}
+[0&1] 3
+--END--
