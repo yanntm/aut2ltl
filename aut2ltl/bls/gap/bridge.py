@@ -14,14 +14,14 @@ The heavy/IO-bound work lives in siblings, kept out of this file on purpose:
 
 See also:
 - bls/cascade.py : the result data model + config automaton helpers
-- bls/extract.py : Spot aut -> generator images (assumes complete deterministic input)
+- bls/generators.py : Spot aut -> generator images (assumes complete deterministic input)
 """
 
 from __future__ import annotations
 from typing import List
 
 from ..cascade import Cascade
-from ..extract import extract_generators, ExtractionError, is_deterministic
+from ..generators import extract_generators, ExtractionError, is_deterministic
 from .export import generate_gap_script
 from .runner import run_gap_script, check_gap_available  # noqa: F401 (re-exported)
 from .parse import parse_cascade_output  # noqa: F401 (re-exported)

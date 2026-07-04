@@ -11,7 +11,7 @@ from typing import List, NamedTuple, Optional
 import spot
 
 from aut2ltl.language import Language
-from aut2ltl.bls.extract import extract_generators
+from aut2ltl.bls.generators import extract_generators
 from aut2ltl.bls.definability.witness.enriched import letter_elems
 from aut2ltl.bls.definability.witness.support import valuation_to_letter
 from aut2ltl.bls.definability.oracle.closure import close, Monoid

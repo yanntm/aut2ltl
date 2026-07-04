@@ -24,7 +24,7 @@ from .gap import (
     run_gap_script,
     check_gap_available,
 )
-from .extract import extract_generators, ExtractionError, is_deterministic
+from .generators import extract_generators, ExtractionError, is_deterministic
 from .operators import (
     simplify_ltl,
     normalize_ltl,

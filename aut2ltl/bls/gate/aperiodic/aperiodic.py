@@ -31,7 +31,7 @@ from typing import Optional, Tuple, TYPE_CHECKING
 import spot
 
 from aut2ltl.language import SAT_MIN_STATES
-from ...extract import extract_generators
+from ...generators import extract_generators
 from ...gap.aperiodic import is_aperiodic_gens
 
 if TYPE_CHECKING:

@@ -17,7 +17,7 @@ import sys
 
 import spot  # noqa: E402
 
-from aut2ltl.bls.extract import extract_generators  # noqa: E402
+from aut2ltl.bls.generators import extract_generators  # noqa: E402
 from aut2ltl.bls.gap.export import generate_gap_script  # noqa: E402
 from aut2ltl.bls.gap.runner import run_gap_script  # noqa: E402
 from aut2ltl.bls.gap.parse import parse_cascade_output  # noqa: E402

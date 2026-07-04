@@ -21,7 +21,7 @@ from typing import List
 
 import spot  # noqa: E402
 
-from aut2ltl.bls.extract import extract_generators  # noqa: E402
+from aut2ltl.bls.generators import extract_generators  # noqa: E402
 from aut2ltl.bls.gap.export import _format_transformation  # noqa: E402
 from aut2ltl.bls.gap.runner import run_gap_script  # noqa: E402
 
