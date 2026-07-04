@@ -23,7 +23,7 @@ from typing import List
 import spot
 
 from aut2ltl.language import Language
-from aut2ltl.bls.generators import extract_generators
+from aut2ltl.bls.definability.generators import extract_generators
 from aut2ltl.bls.definability.witness import extract_witness
 from aut2ltl.verifier import verify_suggestive
 
