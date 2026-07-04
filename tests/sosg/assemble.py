@@ -149,7 +149,8 @@ def main(argv: List[str]) -> int:
         path = to_hoa_path(inp, sub) if not os.path.isfile(inp) else inp
         built.append((label, inp, quotient_of_hoa(path)))
 
-    doc: List[str] = ["# SOSG algebra summary", ""]
+    names = ", ".join(label for label, _inp, _d in built)
+    doc: List[str] = [f"# SOSG algebra summary — {names}", ""]
     doc.append("Canonical syntactic ω-semigroup `S(L)₊` read off each input "
                "automaton. `TM` = transition monoid; a group in `TM` may be a "
                "presentation artifact, a group in `S(L)₊` is intrinsic "

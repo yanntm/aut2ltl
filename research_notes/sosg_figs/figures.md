@@ -49,6 +49,12 @@ The `GF(aa)` row is the story in miniature: a group in `EM`, **no** group in
 defining formula is produced as a 19-node DAG (its flat tree has 1 991 717
 nodes) and verified Spot-equivalent to `GF(a ∧ Xa)`.
 
+> **Full per-example summaries.** The complete, unedited tool output for each
+> language — every `EM` element with its `(st, mk)` vector and fold to `S(L)₊`,
+> the full multiplication and acceptance tables, and the residual automaton —
+> is in [`sources/`](sources/): [**`GF(aa)`**](sources/gf_aa.md),
+> [**`Even`**](sources/even.md), [**`EvenBlocks`**](sources/evenblocks.md).
+
 <!-- from: tests/sosg/build_sosg.py on each fixture; DG metrics from dg_probe.py -->
 
 ---
