@@ -429,3 +429,220 @@ python3 tests/probes/bls_padded.py samples/fixtures/hoa/definability/gfa_pad2.ho
    (A). The oracle doc's layer-14 caution ("delegation policy stays with
    the form reading") was right to be conservative; the precise discharge
    is: oracle-LTL + minimized form + (A) proved.
+
+---
+
+# Log 2026-07-04 (cont.) — Step 4 worked: the pair-closure argument
+
+Direction (user): no exhaustive search; either state-minimality yields the
+guarantee, or the failure is constructively explainable and the example
+designable — or shown impossible. Also in play: the idea that OUR
+minimization quietly replaced the paper's counter-freeness in a semantic
+way. Status after this session: (A) not closed, but reduced to one
+candidate closing theorem; two lemmas strengthened; every naive
+counterexample design provably dies. D is min-size state-based (sbacc), L
+star-free, throughout.
+
+## 4.1 The pattern refines: the pair is a genuine group orbit
+
+In the R-pattern (Step 1), x and y are not arbitrary: x = delta(iota, u
+v^N), y = delta(x, v). Choosing N so that f = st_{v^N} is idempotent, both
+x and y are f-fixed, and t = st_v restricted to Fix(f) is a permutation
+with y = t(x): the pair sits on a genuine cyclic orbit realized by the
+word v (reading v^p from x returns to x). The toggling lasso is u v^n rho.
+
+## 4.2 Step 2' — the automorphism lemma strengthens to closed regions
+
+Lemma 2'. Min-size forbids a mark-preserving automorphism phi of ANY
+delta-closed region R (not just global ones). Proof: quotient only R by
+phi-orbits; delta-consistency inside R is phi-equivariance; in-edges from
+outside R redirect to the class of their target; determinism is preserved;
+a run entering R projects onto the quotient run, and with state-based
+acceptance and phi mark-preserving, the inf-mark behavior is unchanged, so
+the language is unchanged and the automaton got smaller. QED.
+
+This upgrades the padding argument: any LOCAL mark-preserving phase
+symmetry in the reachable closure of the pair is fatal to minimality.
+
+## 4.3 The dichotomy: set-equal vs set-different pair cycles
+
+Consider the pair closure P from (x, y) (product dynamics; diagonal
+absorbing). On the discrepancy lasso rho the pair sequence eventually
+enters a recurrent pair-cycle with component cycles C1 (x-side) and C2
+(y-side), both reading the same loop word. Two cases:
+
+- C1 = C2 AS SETS (same cycle entered at shifted phase). No recurrence
+  discrepancy exists — both runs visit the same states i.o. This is
+  exactly gf_aa_parity: its pair closure from (0,2) has the single
+  non-diagonal cycle ((0,2),(2,0)), set-equal, and !a hits the diagonal.
+  Transient discrepancies are harmless for Fin.
+- C1 != C2 as sets, q0 in C1 \ C2. This IS the contradictor.
+
+So (A) restates cleanly: **in a min-size state-based form of a star-free
+language, every residual-equal-seeded recurrent pair-cycle is set-equal.**
+
+## 4.4 The constraint cascade on a would-be counterexample
+
+Chasing the design through the lemmas (each attempted concrete automaton
+below died to the named constraint):
+
+1. Verdict-blindness is automatic and is NOT extra information: "all
+   ultimately-periodic continuations get equal verdicts from x and y" is
+   literally L(x) = L(y). The leak lemma is its transport to L's
+   star-freeness via the v-pump.
+2. The separate-loops letter (b: x->..->x and y->..->y, cycles disjoint —
+   the eternal-discrepancy carrier) leaks INSTANTLY unless the two b-cycles
+   are verdict-equal: unequal cycle verdicts separate residuals, the v-pump
+   turns that into a counting family for L. Adding such a letter to
+   gf_aa_parity (b as identity) makes b^omega accept from 0 and reject
+   from 2 — L stops being star-free on the spot. The padded fixture dodged
+   this only by mark-SYMMETRIC cycles, which is Step 2' food.
+3. So the twin cycles must be verdict-equal with DIFFERENT mark sets
+   (e.g. 2-cycles marked at shifted positions — verdict-equal for Buchi,
+   set-different, mark-different). Every explicit 4-state attempt at this
+   (two coupled Z2's, swap letter a, loop letter b, marks at shifted
+   positions) turned out phi-equivariant for the shifted-mark isomorphism
+   psi (x1<->y2, x2<->y1) — psi extends over the swap letter automatically
+   in every symmetric wiring — and dies to Step 2'.
+4. What the survivor must therefore be: twin recurrent cycles, verdict-
+   equal in every context, mark-set-different, admitting NO mark-
+   isomorphism of the delta-closed region containing them, plus min-size
+   of the whole automaton. Note gf_aa_parity already realizes
+   "residual-equal, unmergeable, mark-asymmetric, no mark-preserving
+   automorphism, min-size" — everything EXCEPT set-different recurrent
+   twin cycles. The entire question now lives in that one ingredient.
+
+## 4.5 The candidate closing theorem
+
+Conjecture (rotation-iso). For state-based acceptance: if two disjoint
+recurrent cycles reading the same loop word are verdict-equal under EVERY
+context (entry offsets and exit words), then some rotation-style alignment
+of them is a mark-isomorphism of the omega-recurrent closure.
+
+If true, (A) follows: the contradictor's twin cycles admit a mark-iso of a
+closed region (transients cannot carry the discrepancy), Step 2' contradicts
+min-size, done. The natural tool is the oracle's rotation lemma
+(`definability/oracle/algorithm.md` layer 5): conjugacy already moves loop
+profiles around cycles with right-extensions only; the missing step is
+lifting profile equality to a state-level isomorphism on the recurrent
+part. This is where the argument currently stops.
+
+## 4.6 On "minimization replaced counter-freeness semantically"
+
+The emerging shape supports the intuition, with a precise reading:
+counter-freeness says NO groups in the form; minimization (via Step 2')
+says no SYMMETRIC groups — every group whose phases are mark-equivalent is
+folded. What survives minimization is exactly the mark-load-bearing groups
+(parity's Z2), and those are precisely the ones our experiments show the
+cascade tolerating — their discrepancies are transient/set-equal, i.e.
+invisible to Fin questions. Minimization is a semantic filter: it keeps a
+group only when the group carries mark-placement content, and (if the
+rotation-iso conjecture holds) mark-placement content forces set-equal
+recurrence, which Fin cannot see. That is the subtle sense in which
+"minimized" stands in for "counter-free": not by removing groups, but by
+removing exactly the groups whose recurrence would be Fin-visible.
+
+## Next
+
+- Prove or refute the rotation-iso conjecture (4.5). Attack: two disjoint
+  same-word verdict-equal-in-all-contexts cycles; use the enriched element
+  of the loop word and its rotations; show mark profiles must align under
+  some power of the rotation, then extend the alignment over the recurrent
+  closure by determinism. Refutation would hand us the counterexample
+  blueprint directly (the wiring my symmetric attempts could not reach).
+- If proved: assemble (A) end-to-end (Steps 1, 2', 4.3, 4.5) and state the
+  gate discharge: oracle-LTL + min-size sbacc form => cascade sound.
+- The omega-power branch of Step 1 still needs its conjugation paragraph.
+
+---
+
+# Log 2026-07-04 (cont.) — 4.5 attacked from the refutation side: three stags, one death mechanism
+
+Attempted to build the counterexample ("the stag": twin same-word antler
+cycles, verdict-equal, mark-set-different, no mark-iso). Three designs,
+each killed — and the deaths align into a single structural reason that
+now looks like the missing proof step.
+
+## Stag 1 — shifted marks, 4 states (samples/fixtures/hoa/definability/stag1.hoa)
+
+Antlers b: x<->x1, y<->y1; swap a: x<->y; symmetry broken at y1-a->x
+(equivariant would be y1-a->x1); marks alpha = {x1, y} (shifted so the
+aligned pairing is not mark-preserving). Hand-checked verdict-equality on
+five lasso families. The SOSG oracle (tests/probes/oracle_dump.py) is the
+right judge and answered instantly: det_generic_minimal has ONE state — L
+is UNIVERSAL. Reject-cycles would have to avoid alpha, i.e. live inside
+{x, y1}, which has no cycle. Dead: maximally non-minimal.
+
+## Stag 2 — marks on the tips, 4 states (paper only)
+
+Same skeleton, alpha = {x1, y1}. Now a^omega rejects (cycle {x,y} unmarked)
+and L is non-trivial. Worked the language out by hand: reject iff the tail
+is a-only, i.e. L = GF(!a). Star-free, yes — but recognizable with 2
+states, so the 4-state stag is fat: not min-size. (Notably NOT
+bisimulation-reducible — x and y have marks-differing successors — the
+shrink needs SAT-min. The stag survives cheap reduction and dies to
+minimality proper.)
+
+## Stag 3 — two non-isomorphic bb-detectors, 6 states (paper only)
+
+The most principled attempt: L = GF(b & Xb); antler sides = the two
+non-isomorphic 3-state recognizers of it (the gf_aa-style aperiodic form
+and the gf_aa_parity-style shifted form), linked by a side-swapping reset
+letter a. Sides never merge (every letter preserves-or-swaps the side), all
+states residual-equal, and the sides are structurally non-isomorphic — no
+automorphism exists at all, dodging Step 2' completely. Dead anyway: L is
+GF(b & Xb), recognizable in 3 states; the side bit is fat; not min-size.
+
+## The common death: verdict-dead bits fold
+
+Why every stag's language collapses to something smaller than its body,
+articulated once:
+
+1. For state-based acceptance (Buchi/parity/EL over Inf/Fin of states),
+   the verdict of a run depends ONLY on its i.o.-set; transient states and
+   transient marks are verdict-dead. A recurrent cycle's verdict is
+   intrinsic (entry-point-independent): Buchi reads C-cap-alpha != empty,
+   parity reads min color on C — no memory of how the cycle was entered.
+2. The stag's side-bit (which antler am I in) is verdict-dead by
+   construction on the recurrent part (verdict-equal twins) and cannot
+   earn relevance from transients (1). So the side distinction never
+   influences any verdict from any start: it is globally verdict-dead.
+3. In every construction, a recognizer without the side bit therefore
+   existed, and min-size rejected the stag.
+
+## Upgraded conjecture (the dead-bit fold) — the remaining formal gap
+
+Conjecture 4.5'. In a min-size deterministic state-based automaton, there
+is no globally verdict-dead distinction: any equivalence on states that is
+delta-closed-as-a-pairing (the pair closure of a residual-equal pair) and
+never influences a verdict admits a strictly smaller recognizer of L.
+
+If 4.5' holds, (A) follows for the pipeline's forms: the contradictor's
+set-different twin cycles are exactly a globally verdict-dead distinction;
+4.5' hands the smaller recognizer; min-size contradiction; every Fin(q0)
+of a min-size state-based form of a star-free language is star-free.
+
+What is genuinely missing: the general FOLD construction. The naive
+quotient by the pairing is mark-inconsistent precisely in the interesting
+(mark-shifted) cases — the smaller recognizer in the examples was found by
+re-recognizing L, not by quotienting D. Two candidate routes:
+- via omega-semigroup recognition: L star-free + verdict-dead side-bit =>
+  the syntactic morphism factors through the side-collapsed monoid; bound
+  the min-size recognizer by the factored object (this would use
+  star-freeness a second time, which feels right — 4.5' may be false for
+  general omega-regular L and true under aperiodicity);
+- via a marked-product construction: run the folded semiautomaton and
+  re-derive marks from a bounded window (the gf_aa vs gf_aa_parity lesson:
+  shifted marks recognize the same threshold language — maybe provably
+  always re-markable on the folded carrier).
+
+Note the loop that worked here: design stag -> oracle judges (exact,
+instant, with certificates) -> death mechanism extracted -> conjecture
+sharpened. stag1.hoa kept as the fixture record of the method.
+
+## Next
+
+- Prove 4.5' (either route), or find the stag that gives the side bit a
+  verdict-live duty somewhere while keeping it verdict-dead from the pair
+  — the two routes above say precisely what such a beast must defeat.
+- The omega-power branch of Step 1 still owes its conjugation paragraph.
