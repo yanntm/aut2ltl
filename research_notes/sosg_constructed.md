@@ -369,7 +369,7 @@ sequence of enriched elements read from `ι` — i.e. `α = w₁w₂⋯`, `β = 
 runs are at the same state `p_k = st_{⟦w₁⋯w_k⟧}(ι) = st_{⟦w'₁⋯w'_k⟧}(ι)`, and the
 marks collected within block `k` are equal, `mk(p_{k-1}, w_k) = mk(p_{k-1}, w'_k)`, by
 equality of the enriched elements and the composition law. Hence the two runs visit
-the same states at boundaries and the same multiset of marks within each block, so
+the same states at boundaries and the same set of marks within each block, so
 they have the same set of marks visited infinitely often — and `Acc`, an Emerson–Lei
 condition, is a function of that inf-set alone. Thus the runs agree on acceptance. ∎
 
@@ -421,8 +421,8 @@ survives the quotient.
 Corollary 3.3 leaves us the syntactic congruence `≈_L` transported to a relation `~`
 on the finite monoid `EM(D)` — congruent elements are those interchangeable in both
 context shapes. Naively `~` quantifies over left context, right context, and loop.
-We now collapse it into two relations that quantify over none of these on the left,
-and prove the two-sided congruence is a right-refinement.
+We now collapse it into two relations, neither of which quantifies over a left
+context, and prove the two-sided congruence is a right-refinement.
 
 Throughout, `Acc(x, c)` for `x, c ∈ EM(D)` denotes the acceptance of an
 ultimately-periodic word `w·z^ω` with `⟦w⟧ = x`, `⟦z⟧ = c` — well-defined by
