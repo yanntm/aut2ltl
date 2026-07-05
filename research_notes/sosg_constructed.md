@@ -1,6 +1,9 @@
-# The SOSG, Constructed
+# The Syntactic ω-Semigroup, Constructed
 
-**Claude (Anthropic)** and **Yann Thierry-Mieg**
+**Yann Thierry-Mieg** 
+
+With significant inputs from
+**Claude (Anthropic) Fable 5** 
 
 *Working draft — 2026-07-05*
 
