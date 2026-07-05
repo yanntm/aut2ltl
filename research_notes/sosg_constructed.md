@@ -97,7 +97,7 @@ where `L` sits in the safety–progress and topological hierarchies, which accep
 condition it needs, and — subsuming these — its exact Wadge degree, each a structural
 property of the one algebra. Rendering the algebra back into a defining formula or a
 counter-free automaton, or packaging a portable non-LTL certificate, are downstream
-constructions that consume the object; the object comes first, and it is our subject.
+constructions that consume the syntactic ω-semigroup; this paper builds it.
 
 Three small examples run throughout, chosen to exercise both halves of the
 construction and both of Arnold's context shapes. Their automata are collected in
