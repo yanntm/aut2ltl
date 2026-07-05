@@ -1,12 +1,17 @@
 """Render ONE automaton to an image the way Spot draws it in Jupyter.
 
 Input is an HOA file or an LTL/PSL formula; the drawing is Spot's own styled
-SVG (`spot.twa._repr_svg_`, the exact picture a notebook shows). The output
-format follows the OUT extension: `.svg` writes that SVG verbatim; `.png`
-rasterizes it with `rsvg-convert` (librsvg — the layout stays Spot's, only the
-pixels are ours) to a fixed display WIDTH in pixels, height scaled to keep the
-aspect ratio (never stretched). The default width is a reasonable on-screen
-automaton size, well under a page; pass a smaller/larger width to taste.
+SVG (`spot.twa._repr_svg_`, the exact picture a notebook shows). `spot.setup()`
+is called first so the picture carries the fancy display defaults — rounded
+pale-yellow states in the Lato font, UTF-8 colour bullets for the acceptance
+sets, vee arrowheads — the same styling the notebook and the online Spot app
+use, driven by the `SPOT_DOTDEFAULT` / `SPOT_DOTEXTRA` environment variables
+`setup()` exports. The output format follows the OUT extension: `.svg` writes
+that SVG verbatim; `.png` rasterizes it with `rsvg-convert` (librsvg — the
+layout stays Spot's, only the pixels are ours) to a fixed display WIDTH in
+pixels, height scaled to keep the aspect ratio (never stretched). The default
+width is a reasonable on-screen automaton size, well under a page; pass a
+smaller/larger width to taste.
 
 Usage (module run from repo root):
   python3 -m tests.sosg.render_svg <file.hoa | 'LTL/PSL formula'> OUT[.svg|.png] [width_px]
@@ -18,6 +23,11 @@ import subprocess
 import sys
 
 import spot
+
+# Spot's fancy display defaults (colour bullets, filled states, Lato font),
+# exported as SPOT_DOTDEFAULT/SPOT_DOTEXTRA and read by print_dot at render
+# time. Must run before any automaton is drawn.
+spot.setup()
 
 
 def load(arg: str) -> "spot.twa_graph":
