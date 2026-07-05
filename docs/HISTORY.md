@@ -2880,3 +2880,6 @@ Follow-up same day: DV13 PDF added to papers/, verified (Thm 3), wired into §6 
 
 ## 2026-07-05 — paper 2 shadow draft started
 LANDED research_notes/sos_learning.md: shadow draft (placeholder-carrying paper skeleton) for learning the SoS via the rotation lemma transported to a MAT observation-table discipline. Crux flagged: the omega-harvest counterexample lemma. Working outline absorbed into the draft and removed.
+
+## 2026-07-05 — sos_learning: crux solved, saturation finding
+LANDED the solved core into research_notes/sos_learning.md: harvest via replacement chains (stem + loop-head, junction query, binary search), the acceptance-correct-vs-algebra-correct gap as headline finding, left-saturation over class reps as the repair, saturated-fixpoint theorem (= S(L)+1, canonical export) and real complexity bounds. Crux TBDs all discharged; remaining TBDs are implementation/example-gated.
