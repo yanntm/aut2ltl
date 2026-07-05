@@ -281,7 +281,8 @@ membership (an `aa` factor either recurs or not, a threshold not a count); the g
 is an artifact of the presentation and, as §4 shows, is absent from `S(GF(aa))₊`,
 which is aperiodic.
 
-The task is to build `S(L)` from `D`. The two keys follow.
+The task is to build the syntactic ω-semigroup `S(L)` from the deterministic
+automaton `D`. The two keys follow.
 
 ---
 
