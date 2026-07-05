@@ -166,11 +166,11 @@ miniature — a `Z₂` in `EM` but **none** in `S(L)₊`, hence LTL — while `E
 
 ## 2. The objects, in plain terms
 
-The reader we write for practices ω-automata — Büchi acceptance, ω-regular languages —
-but need not keep Perrin–Pin open. This section fixes the few algebraic objects the
-construction stands on, each with the intuition we ourselves had to reconstruct from
-the book, shown on the three running examples. There is one genuinely new idea; the
-rest is Boolean bookkeeping.
+We expect the reader has prior knowledge of ω-automata — Büchi acceptance, ω-regular languages —
+and is familiar with linear-time temporal logic LTL. This section fixes the few algebraic objects the
+construction stands on, adapted from the presentation of Perrin and Pin, each with the intuition 
+that links the algebra to the concepts of languages over infinite words. We exhibit the concepts on
+the three running examples. There is one genuinely new idea; the rest is Boolean bookkeeping.
 
 **We only ever look at lassos.** A **lasso** (ultimately-periodic word) is `u·v^ω`: a
 finite stem `u`, then a finite loop `v` repeated forever. The organizing fact: *two
