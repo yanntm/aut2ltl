@@ -125,7 +125,7 @@ class HoaTeacher:
         (up to ``bound``, default ``eq_bound``). Returns `Equivalent` tagged with
         the certifying bound, or a minimal `Counterexample`."""
         b = self.eq_bound if bound is None else bound
-        cx = bounded_counterexample(self.member, self.alphabet, hypothesis, b)
+        cx, complete = bounded_counterexample(self.member, self.alphabet, hypothesis, b)
         if cx is None:
-            return Equivalent(strategy=f"bounded:{b}")
+            return Equivalent(strategy=f"bounded:{b}" if complete else f"bounded:{b}:capped")
         return Counterexample(lasso=cx)
