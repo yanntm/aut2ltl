@@ -9,33 +9,43 @@ that folder's `README.md` for a source map.
 Spot (`ltl2tgba`, `autfilt`, the `spot` Python module) and `rsvg-convert`
 (librsvg) on `PATH`. The definability pipeline is the in-tree `aut2ltl` package.
 
-## 1. Build and verify the fixtures
+## 1. The automata (bundled, with provenance)
 
-The four HOA fixtures under `samples/fixtures/hoa/sosg/`.
+The four deterministic HOAs are bundled next to this guide in
+[`sources/`](sources/) — `gf_aa_parity.hoa`, `gf_aa_reset.hoa`, `even.hoa`,
+`evenblocks.hoa` — so every step below is self-contained. They are the exact
+fixtures under `samples/fixtures/hoa/sosg/`, copied in. Their provenance:
 
 ```sh
-# GF(aa) — two presentations of the same language (canonicity check):
-#   (a) run-parity form, carries a Z2 in the transition monoid
+# GF(aa) — two presentations of one language (canonicity check):
+#   (a) run-parity form (Figure 1a, Table 2): a Z2 in the transition monoid
 cp samples/fixtures/hoa/definability/gf_aa_parity.hoa samples/fixtures/hoa/sosg/gf_aa_parity.hoa
-#   (b) minimal reset form, aperiodic transition monoid
+#   (b) minimal reset form: aperiodic transition monoid, same S(L)
 cp samples/fixtures/hoa/definability/gf_aa.hoa        samples/fixtures/hoa/sosg/gf_aa_reset.hoa
 
 # Even = (aa)*.b.Sigma^w, with b := !a  (strong SERE match of an initial prefix)
 ltl2tgba -D -C --name='Even = (aa)*.b.Sigma^w  [b := !a]' \
   '{ {a[*2]}[*] ; !a }!' -H > samples/fixtures/hoa/sosg/even.hoa
 
-# EvenBlocks is a hand-built Fin&Inf automaton (see the fixture header);
-# its PSL reference formula is  GF(!a) & FG( !a -> X{ {a[*2]}[*] ; !a }! ).
+# EvenBlocks is a hand-built Fin(0) & Inf(1) automaton (see the fixture header).
+# Each !a-transition carries exactly one mark for the parity of the block it
+# completes — mark 1 on an even block (Inf(1)), mark 0 on an odd one (Fin(0)) —
+# so no edge is double-labelled. PSL reference:
+#   GF(!a) & FG( !a -> X{ {a[*2]}[*] ; !a }! ).
+
+# Bundle the four into sources/ for a self-contained artifact:
+cp samples/fixtures/hoa/sosg/{gf_aa_parity,gf_aa_reset,even,evenblocks}.hoa \
+   research_notes/sosg_figs/sources/
 ```
 
-Language identity against the sources (each must print `EQUIV`):
+Language identity against the references (each must print `EQUIV`):
 
 ```sh
-autfilt -q --equivalent-to=<(ltl2tgba 'G F (a & X a)') samples/fixtures/hoa/sosg/gf_aa_parity.hoa && echo EQUIV
-autfilt -q --equivalent-to=<(ltl2tgba 'G F (a & X a)') samples/fixtures/hoa/sosg/gf_aa_reset.hoa  && echo EQUIV
-autfilt -q --equivalent-to=<(ltl2tgba '{ {a[*2]}[*] ; !a }!') samples/fixtures/hoa/sosg/even.hoa  && echo EQUIV
+autfilt -q --equivalent-to=<(ltl2tgba 'G F (a & X a)') research_notes/sosg_figs/sources/gf_aa_parity.hoa && echo EQUIV
+autfilt -q --equivalent-to=<(ltl2tgba 'G F (a & X a)') research_notes/sosg_figs/sources/gf_aa_reset.hoa  && echo EQUIV
+autfilt -q --equivalent-to=<(ltl2tgba '{ {a[*2]}[*] ; !a }!') research_notes/sosg_figs/sources/even.hoa  && echo EQUIV
 autfilt -q --equivalent-to=<(ltl2tgba 'GF(!a) & FG( !a -> X{ {a[*2]}[*] ; !a }! )') \
-        samples/fixtures/hoa/sosg/evenblocks.hoa && echo EQUIV
+        research_notes/sosg_figs/sources/evenblocks.hoa && echo EQUIV
 ```
 
 ## 2. Compute the algebra (all table parts, per input)
@@ -46,13 +56,13 @@ surjection onto `S(L)₊`, the canonical algebra, and the `.sosg` invariant; wit
 `--sosg PATH` it also writes the serialization.
 
 ```sh
-python3 -m tests.sosg.build_sosg samples/fixtures/hoa/sosg/gf_aa_parity.hoa \
+python3 -m tests.sosg.build_sosg research_notes/sosg_figs/sources/gf_aa_parity.hoa \
         --sosg samples/fixtures/hoa/sosg/gf_aa.sosg
-python3 -m tests.sosg.build_sosg samples/fixtures/hoa/sosg/gf_aa_reset.hoa \
+python3 -m tests.sosg.build_sosg research_notes/sosg_figs/sources/gf_aa_reset.hoa \
         --sosg samples/fixtures/hoa/sosg/gf_aa_reset.sosg
-python3 -m tests.sosg.build_sosg samples/fixtures/hoa/sosg/even.hoa \
+python3 -m tests.sosg.build_sosg research_notes/sosg_figs/sources/even.hoa \
         --sosg samples/fixtures/hoa/sosg/even.sosg
-python3 -m tests.sosg.build_sosg samples/fixtures/hoa/sosg/evenblocks.hoa \
+python3 -m tests.sosg.build_sosg research_notes/sosg_figs/sources/evenblocks.hoa \
         --sosg samples/fixtures/hoa/sosg/evenblocks.sosg
 ```
 
@@ -67,7 +77,7 @@ python3 -m tests.sosg.build_sosg 'G F (a & X a)' --sosg tests/sosg/logs/gf_from_
 diff samples/fixtures/hoa/sosg/gf_aa.sosg tests/sosg/logs/gf_from_formula.sosg && echo IDENTICAL
 
 # GF(aa) is LTL: the synthesized formula is verified Spot-equivalent.
-python3 -m tests.probes.dg_probe samples/fixtures/hoa/sosg/gf_aa_parity.hoa   # VERIFY: equivalent
+python3 -m tests.probes.dg_probe research_notes/sosg_figs/sources/gf_aa_parity.hoa   # VERIFY: equivalent
 ```
 
 Expected verdicts: `GF(aa)` → LTL; `Even` → not LTL, `F₁` (linear);
@@ -80,20 +90,28 @@ Spot draws the SVG; `rsvg-convert` rasterizes to a page-safe PNG (fixed width,
 aspect preserved).
 
 ```sh
-python3 -m tests.sosg.render_svg samples/fixtures/hoa/sosg/gf_aa_parity.hoa research_notes/sosg_figs/img/gf_aa.png
-python3 -m tests.sosg.render_svg samples/fixtures/hoa/sosg/even.hoa        research_notes/sosg_figs/img/even.png
-python3 -m tests.sosg.render_svg samples/fixtures/hoa/sosg/evenblocks.hoa  research_notes/sosg_figs/img/evenblocks.png
+python3 -m tests.sosg.render_svg research_notes/sosg_figs/sources/gf_aa_parity.hoa research_notes/sosg_figs/img/gf_aa.png
+python3 -m tests.sosg.render_svg research_notes/sosg_figs/sources/even.hoa        research_notes/sosg_figs/img/even.png
+python3 -m tests.sosg.render_svg research_notes/sosg_figs/sources/evenblocks.hoa  research_notes/sosg_figs/img/evenblocks.png
 ```
 
-## 5. Assemble the generic Markdown report (optional)
+## 5. Regenerate the per-example source reports
 
-`assemble.py` renders a full Markdown algebra summary for any set of inputs —
-the raw material the curated [`figures.md`](figures.md) is picked from. It is a
-general diagnosis tool: point it at any HOA to see the algebra it holds.
+`assemble.py` renders the full algebra summary behind each file in
+[`sources/`](sources/) — the raw material the curated [`figures.md`](figures.md)
+is picked from — one input per file, each self-bound (≤ 15 s):
 
 ```sh
-python3 -m tests.sosg.assemble tests/sosg/logs/sosg_report.md \
-  'GF(aa)=samples/fixtures/hoa/sosg/gf_aa_parity.hoa' \
-  'Even=samples/fixtures/hoa/sosg/even.hoa' \
-  'EvenBlocks=samples/fixtures/hoa/sosg/evenblocks.hoa'
+python3 -m tests.sosg.assemble research_notes/sosg_figs/sources/gf_aa.md \
+  'GF(aa)=research_notes/sosg_figs/sources/gf_aa_parity.hoa'
+python3 -m tests.sosg.assemble research_notes/sosg_figs/sources/gf_aa_reset.md \
+  'GF(aa) reset=research_notes/sosg_figs/sources/gf_aa_reset.hoa'
+python3 -m tests.sosg.assemble research_notes/sosg_figs/sources/even.md \
+  'Even=research_notes/sosg_figs/sources/even.hoa'
+python3 -m tests.sosg.assemble research_notes/sosg_figs/sources/evenblocks.md \
+  'EvenBlocks=research_notes/sosg_figs/sources/evenblocks.hoa'
 ```
+
+The run-parity `gf_aa.md` is the presentation the paper uses (Figure 1a,
+Tables 1–2); `gf_aa_reset.md` is the second, aperiodic presentation whose
+`.sosg` is byte-identical — the canonicity check made visible.
