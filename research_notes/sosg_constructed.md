@@ -3,7 +3,7 @@
 **Yann Thierry-Mieg** 
 
 With significant inputs from
-**Claude (Anthropic) Fable 5** 
+**Claude (Anthropic)** 
 
 *Working draft — 2026-07-05*
 
@@ -32,7 +32,7 @@ language, LTL-definable or not. That one object is a *semantic benchmark*: the
 classical taxonomy of ω-regular languages falls out as read-offs of its structure —
 language equality as table equality, LTL-definability as aperiodicity, the
 safety–progress and topological hierarchies, the minimal acceptance (parity) index,
-and, subsuming them, the exact Wadge degree — several of them with no practical tool
+and, subsuming them, the exact Wagner degree — several of them with no practical tool
 today. The construction is uniform over finite and infinite words; its finite-word
 specialization is the classical syntactic monoid, of independent interest to the
 learning community.
@@ -94,7 +94,7 @@ canonical, complete, *exportable* representation of the language — what a mini
 deterministic ω-automaton would be if one existed, which for ω-words it does not
 (§5). The classifications then become read-offs (§6): not merely *is `L` LTL*, but
 where `L` sits in the safety–progress and topological hierarchies, which acceptance
-condition it needs, and — subsuming these — its exact Wadge degree, each a structural
+condition it needs, and — subsuming these — its exact Wagner degree, each a structural
 property of the one algebra. Rendering the algebra back into a defining formula or a
 counter-free automaton, or packaging a portable non-LTL certificate, are downstream
 constructions that consume the syntactic ω-semigroup; this paper builds it.
@@ -165,11 +165,10 @@ miniature — a `Z₂` in `EM` but **none** in `S(L)₊`, hence LTL — while `E
 
 ## 2. The objects, in plain terms
 
-We expect the reader has prior knowledge of ω-automata — Büchi acceptance, ω-regular languages —
-and is familiar with linear-time temporal logic LTL. This section fixes the few algebraic objects the
-construction stands on, adapted from the presentation of Perrin and Pin, each with the intuition 
-that links the algebra to the concepts of languages over infinite words. We exhibit the concepts on
-the three running examples. There is one genuinely new idea; the rest is Boolean bookkeeping.
+We assume the reader is comfortable with ω-automata — Büchi acceptance, ω-regular languages — and
+with linear temporal logic (LTL). This section fixes the few algebraic objects the construction
+stands on, adapting the presentation of Perrin and Pin [PP04], each paired with the intuition tying
+the algebra back to infinite-word languages, illustrated on the three running examples.
 
 **We only ever look at lassos.** A **lasso** (ultimately-periodic word) is `u·v^ω`: a
 finite stem `u`, then a finite loop `v` repeated forever. The organizing fact: *two
@@ -224,8 +223,8 @@ for any regular `L`.
 
 Acceptance reads only which marks *recur* — the set of marks seen infinitely often
 along the run. `Acc` is an **Emerson–Lei** condition — a positive Boolean combination
-of `Inf(c)` (“`c` occurs infinitely often”) and `Fin(c)` (“`c` occurs only finitely
-often”) over `c ∈ C` — evaluated on that infinitely-often set; it is the most general
+of `Inf(c)` ("`c` occurs infinitely often") and `Fin(c)` ("`c` occurs only finitely
+often") over `c ∈ C` — evaluated on that infinitely-often set; it is the most general
 ω-regular acceptance, subsuming Büchi, co-Büchi, Rabin, and Muller as special shapes.
 A word is **accepted** — a member of `L(D)` — exactly when its run from `ι` satisfies
 `Acc`, and we require `L(D) = L`. More generally, for any state `q` its **residual**
@@ -243,7 +242,7 @@ closed by `!a`) or never does. `EvenBlocks` needs the full `Fin(0) ∧ Inf(1)` s
 each `!a`-transition marked by the parity of the block it closes — mark `1` on an
 even block, mark `0` on an odd one: `Inf(1)` forces infinitely many even-block
 completions, `Fin(0)` forbids an odd one infinitely often, so together eventually
-every completed block is even and infinitely many complete. The residuals separate `Even`'s four
+every completed block is even and infinitely many blocks are completed. The residuals separate `Even`'s four
 states pairwise (`q₀ ≠ q₁` because one `!a` accepts, the other rejects) but collapse
 both states of `EvenBlocks` to a single residual — the prefix-independence that
 Proposition 4.6 will read algebraically.
@@ -251,7 +250,7 @@ Proposition 4.6 will read algebraically.
 With the objects named, the algebra is built by settling one question: *when are two
 finite words the same ingredient* — interchangeable inside every lasso, so that
 swapping one for the other never changes membership? Agreement on the **stem** side is
-just agreement of residuals (the futures `L(q)` above), the finitary half which §4 will
+just agreement of residuals (the futures `L(q)` above), the finitary half, which §4 will
 call `~lin`; agreement on the **loop** side is subtler. Arnold's congruence pins both
 down at once. (This is also the one place a linked pair is *computed* rather than
 named: reading a lasso, iterate the loop's image until it stops changing — that fixed
@@ -264,7 +263,7 @@ they are interchangeable in every context `x·_·y` — same membership under an
 and right finite padding. On infinite words a context must yield a lasso, and the
 mutation can sit in only two places: in the **stem** (a finite change, with a loop
 appended to make it infinite), or **inside the loop**. These are Arnold's two shapes,
-and they are exactly the stem/loop split of the on-ramp. Two finite words `u, v ∈ Σ*` are **syntactically congruent** for
+and they are exactly the stem/loop split of a lasso. Two finite words `u, v ∈ Σ*` are **syntactically congruent** for
 `L`, written `u ≈_L v`, when interchangeable in both:
 
 ```
@@ -722,7 +721,7 @@ deduplicating large language sets.
 The syntactic ω-semigroup earns the phrase *semantic benchmark*. The classical taxonomy of ω-regular
 languages — by acceptance type, by the safety–progress hierarchy, by topological
 complexity, by temporal-logic fragment, by acceptance index, and up to the complete
-Wadge classification — is, theorem by theorem, a taxonomy of *structural properties of
+Wagner classification — is, theorem by theorem, a taxonomy of *structural properties of
 the syntactic ω-semigroup*. Each question was historically answered by a construction
 tailored to a presentation: the cycles of a Muller automaton, the index of a parity
 automaton, the variety of a monoid. The SωS answers them all by reading one canonical
@@ -791,7 +790,7 @@ tool to answer it. It is exactly the aperiodicity test above, and the two non-LT
 examples — both plain SEREs — are its minimal witnesses.
 
 Below star-free, the first-order fragments refine the classification further, and are
-decidable on the algebra too — though, honestly, not as one-line read-offs. Over infinite
+decidable on the algebra too — though not as one-line read-offs. Over infinite
 words the two-variable fragment `FO²` is characterized by membership of the finite part
 in the variety **DA** *together with* a closure condition in an alphabetic topology, and
 `FO² ≠ Δ₂` here, unlike over finite words [DK09]; the quantifier-alternation levels
@@ -808,7 +807,7 @@ that recognizes `L` deterministically — Büchi, co-Büchi, parity `[i, j]`, or
 Rabin/Streett-`k`? This is the parity (Rabin, Mostowski) **index**, decidable for
 deterministic ω-automata, and its algebraic form is a chain condition: the index is the
 length of the longest **alternating chain** — a sequence of ultimately-periodic
-behaviours whose membership in `L` flips step by step. Introduced on automata by Wagner,
+behaviours whose membership in `L` flips step by step. Introduced on automata by Wagner [Wag79],
 this length is, by a theorem of Carton and Perrin, computable in the *syntactic*
 ω-semigroup itself [CP97, Cor. 1].
 Deterministic-Büchi realizability (the recurrence rung of §6.1) is the bottom case, where
@@ -822,16 +821,16 @@ needs a genuine Rabin pair, its `Fin(0) ∧ Inf(1)` not reducible to a Büchi co
 Every classification above is a coarsening of one datum. **Wagner's hierarchy** is the
 complete classification of ω-regular languages up to continuous (Wadge) reducibility —
 the finest topological classification there is, an ordinal-indexed refinement of the
-Borel levels of §6.1. Introduced by Wagner in 1979, it was recast by Carton and Perrin,
+Borel levels of §6.1. Introduced by Wagner in 1979 [Wag79], it was recast by Carton and Perrin,
 who define Wagner's *chains* and *superchains* directly in the ω-semigroup and prove
 their maximal lengths a function of the language alone — computable in the *syntactic*
 ω-semigroup [CP97, Cor. 1, Thm 5; CP99] — with Selivanov supplying the matching
-automaton-independent index [SW08]. The exact Wadge degree of `L` is therefore fixed by
+automaton-independent index [SW08]. The exact Wagner degree of `L` is therefore fixed by
 the maximal chain and superchain lengths in `S(L)`: one traversal of the object's chain
 structure.
 
 This is the precise sense in which the syntactic ω-semigroup is the semantic benchmark. It is a complete
-invariant not merely for language identity (Theorem 5.1) but for the entire Wadge
+invariant not merely for language identity (Theorem 5.1) but for the entire Wagner
 classification, and the classical decision problems — safety versus liveness, the
 acceptance index, LTL-definability alongside as the orthogonal aperiodicity axis — are
 its projections. The object was built to decide one question, LTL-definability; having
@@ -849,9 +848,9 @@ practical tool answers it today.
 | aperiodic | star-free `=` FO `=` **LTL** | [Sch65, DG08] | `S(L)₊` group-free | none |
 | aperiodic | FO² · Σ₂ · Δ₂ · until-rank | [DK09, Wilke99] | variety of `S(L)₊` + topological side condition | none |
 | index | parity / Rabin / Mostowski `[i,j]` | [CP97, CP99] | longest alternating chain in `S(L)` | partial |
-| complete | **Wagner / Wadge degree** | [CP97, CP99, SW08] | chain / superchain structure of `S(L)` | none |
+| complete | **Wagner degree** | [CP97, CP99, SW08] | chain / superchain structure of `S(L)` | none |
 
-Every row above the last is a projection of it: the Wadge degree is the complete
+Every row above the last is a projection of it: the Wagner/Wadge degree is the complete
 coordinate, and each classical decision reads one of its facets off the same table.
 
 ---
@@ -892,7 +891,7 @@ enriched monoid and the rotation-collapsed Arnold decomposition are exactly thos
 keys, and Theorem 4.5 assembles them into the object. Reified, it is a canonical,
 complete, exportable semantic representation of the language, LTL or not — and, more than
 that, the *semantic benchmark*: the classical taxonomy of ω-regular languages, from
-safety versus liveness through the acceptance index up to the exact Wadge degree, is a
+safety versus liveness through the acceptance index up to the exact Wagner degree, is a
 taxonomy of its structure, decided uniformly by one read-off, with LTL-definability a
 single coordinate. Restricted to finite words the construction degenerates to the
 classical syntactic monoid, so the same object also serves the finite-word
@@ -907,22 +906,22 @@ worth building.
 
 ## References
 
-- **[Arn85]** A. Arnold. *A syntactic congruence for rational ω-languages.* TCS 39
-  (1985) 333–335.
 - **[ABF18]** D. Angluin, U. Boker, D. Fisman. *Families of DFAs as acceptors of
   ω-regular languages.* LMCS 14(1) 2018.
 - **[AF16]** D. Angluin, D. Fisman. *Learning regular omega languages.* TCS 650
   (2016) 57–72.
 - **[AF21]** D. Angluin, D. Fisman. *Regular ω-languages with an informative right
   congruence.* Inf. Comput. 278 (2021).
+- **[Arn85]** A. Arnold. *A syntactic congruence for rational ω-languages.* TCS 39
+  (1985) 333–335.
+- **[CH91]** S. Cho, D. T. Huynh. *Finite-automaton aperiodicity is PSPACE-complete.*
+  TCS 88 (1991) 99–116.
 - **[CP97]** O. Carton, D. Perrin. *Chains and superchains for ω-rational sets, automata
   and semigroups.* Int. J. Algebra Comput. 7(6) (1997) 673–695.
 - **[CP99]** O. Carton, D. Perrin. *The Wagner hierarchy.* Int. J. Algebra Comput. 9(5)
   (1999) 597–620.
 - **[CPP08]** O. Carton, D. Perrin, J.-É. Pin. *Automata and semigroups recognizing
   infinite words.* 2008.
-- **[CH91]** S. Cho, D. T. Huynh. *Finite-automaton aperiodicity is PSPACE-complete.*
-  TCS 88 (1991) 99–116.
 - **[DG08]** V. Diekert, P. Gastin. *First-order definable languages.* In *Logic and
   Automata*, 2008.
 - **[DK09]** V. Diekert, M. Kufleitner. *Fragments of first-order logic over infinite
@@ -948,5 +947,6 @@ worth building.
   ω-languages.* Fund. Inform. 83(1–2) (2008).
 - **[Tho79]** W. Thomas. *Star-free regular sets of ω-sequences.* Information and
   Control 42 (1979) 148–156.
+- **[Wag79]** K. Wagner. *On ω-regular sets.* Information and Control 43 (1979) 123–177.
 - **[Wilke99]** T. Wilke. *Classifying discrete temporal properties.* STACS 1999,
   LNCS 1563, 32–46.
