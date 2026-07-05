@@ -22,21 +22,20 @@ def check_gfa_partition() -> None:
     table.fill()
     p = Partition(table)
 
-    # eps + {no-a} + {has-a} = 3 classes; the seed omega column already splits.
-    assert p.n == 3, p.n
+    # Canonical GF a from the seed omega column: 2 classes. The no-a letter is
+    # congruent to eps (both give False on p^omega), so it merges into the start
+    # (identity) class; only the has-a letter splits off.
+    assert p.n == 2, p.n
     assert p.is_closed(), p.unclosed()
     assert p.inconsistency() is None, p.inconsistency()
 
     A, NOA = (1,), (0,)
-    # eps is its own class (the start); the two letters land in different classes.
     assert p.class_of[EMPTY] == p.start
-    assert p.class_of[A] != p.class_of[NOA]
-    assert p.class_of[A] != p.start and p.class_of[NOA] != p.start
+    assert p.class_of[NOA] == p.start          # no-a letter merged with eps
+    assert p.class_of[A] != p.start
 
     # fold coherence on the domain: psi(w) == class(w).
     for w in table.domain():
-        if w == EMPTY:
-            continue
         assert p.fold(w) == p.class_of[w], (w, p.fold(w), p.class_of[w])
     print(f"OK GF a table: {p.n} classes, closed, consistent, folds coherent")
 

@@ -15,6 +15,7 @@ from __future__ import annotations
 from sosl.contract import Counterexample, Equivalent
 from sosl.objects import EMPTY, Alphabet, Hypothesis
 from sosl.teacher import HoaTeacher
+from sosl.objects.cayley import loop_reps
 from sosl.teacher.equiv import resolve_prediction
 
 
@@ -55,8 +56,8 @@ def check_broken_hypothesis() -> None:
     assert isinstance(res, Counterexample), res
     cx = res.lasso
     # It genuinely distinguishes: hypothesis prediction != teacher membership.
-    assert resolve_prediction(t.member, h, cx) != t.member(cx)
-    # Minimal: empty stem, single-letter loop {a}.
+    assert resolve_prediction(t.member, h, cx, loop_reps(h)) != t.member(cx)
+    # Minimal: empty stem, single-letter loop a.
     assert cx.stem == EMPTY and cx.loop == (1,), (cx.stem, cx.loop)
     print(f"OK broken hypothesis -> minimal Counterexample stem={cx.stem} loop={cx.loop}")
 

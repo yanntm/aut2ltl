@@ -3,8 +3,10 @@
 Groups the table's words into classes by their column signature (`Table.bit_row`)
 and exposes the semigroup skeleton the learner reasons over:
 
-  - the empty word is class 0, a permanent singleton and the fold start;
-  - every other word joins the class of words with its exact bit-row;
+  - every word joins the class of words with its exact bit-row; the empty word
+    is classified like any other, so it merges with a letter congruent to it;
+  - ``start`` is the class containing the empty word — the identity and the
+    fold start;
   - ``rep[c]`` is the shortlex-least *row* of class ``c`` (``None`` if the class
     holds only frontier words — an *unclosed* class);
   - ``step(c, a)`` is the class of ``rep[c].a`` (defined once closed);
@@ -28,13 +30,10 @@ class Partition:
 
     def __init__(self, table: Table) -> None:
         self.table = table
-        self.members: List[List[Word]] = [[EMPTY]]        # class 0 = {eps}
-        self.class_of: Dict[Word, int] = {EMPTY: 0}
-        self.start = 0
+        self.members: List[List[Word]] = []
+        self.class_of: Dict[Word, int] = {}
         groups: Dict[Tuple[bool, ...], int] = {}
         for w in table.domain():
-            if w == EMPTY:
-                continue
             br = table.bit_row(w)
             idx = groups.get(br)
             if idx is None:
@@ -43,8 +42,9 @@ class Partition:
                 self.members.append([])
             self.members[idx].append(w)
             self.class_of[w] = idx
-        self.rep: List[Optional[Word]] = [EMPTY]
-        for idx in range(1, len(self.members)):
+        self.start = self.class_of[EMPTY]
+        self.rep: List[Optional[Word]] = []
+        for idx in range(len(self.members)):
             rows = [w for w in self.members[idx] if w in table.row_set]
             self.rep.append(min(rows, key=shortlex_key) if rows else None)
 
@@ -57,7 +57,7 @@ class Partition:
         """One shortlex-least frontier witness per class lacking a row (each
         such witness should be promoted to a row to close the table)."""
         out: List[Word] = []
-        for idx in range(1, self.n):
+        for idx in range(self.n):
             if self.rep[idx] is None:
                 out.append(min(self.members[idx], key=shortlex_key))
         return out

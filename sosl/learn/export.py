@@ -11,14 +11,21 @@ byte-comparable with a reference-built one.
 """
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from sosl.learn.columns import Member
 from sosl.learn.partition import Partition
-from sosl.objects.alphabet import EMPTY
+from sosl.objects.alphabet import Word, shortlex_key
 from sosl.objects.canonical import canonicalize
 from sosl.objects.invariant import Invariant
 from sosl.objects.lasso import Lasso
+
+
+def _loop_rep(p: Partition, c: int) -> Optional[Word]:
+    """The shortlex-least non-empty word of class ``c`` (a loop must be
+    non-empty), or ``None`` if the class is strictly the empty word."""
+    cands = [w for w in p.members[c] if w]
+    return min(cands, key=shortlex_key) if cands else None
 
 
 def export(p: Partition, member: Member) -> Invariant:
@@ -31,10 +38,13 @@ def export(p: Partition, member: Member) -> Invariant:
 
     accept = set()
     for e in range(n):
-        if p.rep[e] == EMPTY or mult[e][e] != e:  # identity is never a loop
+        if mult[e][e] != e:
+            continue
+        loop = _loop_rep(p, e)
+        if loop is None:  # a strictly-empty class cannot be a loop
             continue
         for s in range(n):
-            if mult[s][e] == s and member(Lasso(p.rep[s], p.rep[e])):
+            if mult[s][e] == s and member(Lasso(p.rep[s], loop)):
                 accept.add((s, e))
 
     return canonicalize(ab, p.start, letter_class, mult, accept)

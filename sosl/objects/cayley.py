@@ -18,10 +18,11 @@ answer the cached bit for the resulting ``(stem-value, loop-value)`` pair.
 """
 from __future__ import annotations
 
+from collections import deque
 from dataclasses import dataclass
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from sosl.objects.alphabet import Alphabet, Word
+from sosl.objects.alphabet import EMPTY, Alphabet, Word
 from sosl.objects.lasso import Lasso
 
 
@@ -71,3 +72,29 @@ class Hypothesis:
         """The cached verdict for ``lasso``, or ``None`` if the reduced pair is
         not yet in the cache (the caller must then query the teacher)."""
         return self.accept.get(self.stabilized_pair(lasso))
+
+
+def loop_reps(h: Hypothesis) -> List[Optional[Word]]:
+    """Per class, a non-empty word folding to it via ``step`` from the start —
+    a representative usable as a loop (a loop must be non-empty). Computed from
+    the step table alone, so it works for a deserialized hypothesis. ``None``
+    for a class no non-empty word reaches (a strictly-empty identity, which no
+    loop folds to); any non-empty member gives the same membership, so which one
+    is returned does not matter."""
+    letters = h.alphabet.letters()
+    word_to: List[Optional[Word]] = [None] * h.n   # some word reaching a class
+    nonempty: List[Optional[Word]] = [None] * h.n   # a non-empty such word
+    word_to[h.start] = EMPTY
+    queue = deque([h.start])
+    while queue:
+        c = queue.popleft()
+        w = word_to[c]
+        for a in letters:
+            d = h.step[c][a]
+            wd = w + (a,)
+            if nonempty[d] is None:
+                nonempty[d] = wd
+            if word_to[d] is None:
+                word_to[d] = wd
+                queue.append(d)
+    return nonempty

@@ -11,7 +11,10 @@ step) is derived separately in `sosl.learn.partition`.
     is seeded with the single omega column ``([], [])`` (the bit of ``p`` is
     whether ``p^omega`` is in L).
   - ``entry[(word, col_index)]`` — the cached membership bit, filled lazily by
-    `fill`; the empty word skips omega columns (it is a permanent singleton).
+    `fill`. The empty word is classified like any other: on an omega column
+    whose loop would be empty (only ``eps`` on a ``([], [])``-shaped column) the
+    bit is ``False`` — there is no such omega word — so ``eps`` merges with any
+    word congruent to it rather than being forced into its own class.
 
 Every membership query passes through `_q`, which counts them (``n_member``).
 """
@@ -63,19 +66,21 @@ class Table:
         return out
 
     def fill(self) -> None:
-        """Query every missing ``(word, column)`` bit (omega columns skip the
-        empty word)."""
+        """Query every missing ``(word, column)`` bit. On an omega column whose
+        loop ``word + col.y`` is empty the bit is ``False`` (no such omega word),
+        so the empty word is filled like any other."""
         for w in self.domain():
             for i, col in enumerate(self.columns):
-                if w == EMPTY and is_omega(col):
-                    continue
                 key = (w, i)
-                if key not in self.entry:
+                if key in self.entry:
+                    continue
+                if is_omega(col) and not (w + col.y):
+                    self.entry[key] = False
+                else:
                     self.entry[key] = self._q(col, w)
 
     def bit_row(self, w: Word) -> Tuple[bool, ...]:
-        """The full column signature of a non-empty word ``w`` (must be filled)."""
-        assert w != EMPTY, "the empty word has no omega bits; it is a singleton"
+        """The full column signature of word ``w`` (must be filled)."""
         return tuple(self.entry[(w, i)] for i in range(len(self.columns)))
 
     def add_row(self, w: Word) -> bool:

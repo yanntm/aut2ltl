@@ -6,9 +6,12 @@ soundness criterion of the whole tool). Canonicity is inherited from the
 invariant — classes in id order, letters in mask order, accept pairs sorted — so
 `dump` only has to be deterministic; it does not re-key.
 
-A letter is written as its sorted set of true propositions, ``{a,c}`` (``{}`` for
-the empty letter); a word as its letters joined by ``;`` (``eps`` for the empty
-word). These are the same name-based, spot-free encodings the wire protocol uses.
+A letter is written as a Boolean cube over *all* the propositions in canonical
+order — each proposition, or its negation, joined by ``&`` (``a&!b``); the
+0-proposition alphabet's one letter is ``t``. A word is its letters joined by
+``;`` (``eps`` for the empty word). This is the cube form of
+research_notes/sosg_format.md; a letter names every proposition, so it is
+unambiguous over a multi-AP alphabet (``a&!b``, not ``{a}``).
 """
 from __future__ import annotations
 
@@ -25,15 +28,21 @@ CAYLEY_MAGIC = "CAYLEY v1"
 # --- letters and words -----------------------------------------------------
 
 def render_letter(ab: Alphabet, a: Letter) -> str:
-    """``{a,c}`` — the sorted true propositions of ``a`` in braces (``{}`` empty)."""
-    return "{" + ",".join(ab.true_aps(a)) + "}"
+    """``a&!b`` — a Boolean cube naming every proposition (``t`` for a 0-AP
+    alphabet)."""
+    if not ab.aps:
+        return "t"
+    trues = set(ab.true_aps(a))
+    return "&".join(name if name in trues else f"!{name}" for name in ab.aps)
 
 
 def parse_letter(ab: Alphabet, tok: str) -> Letter:
     """Inverse of `render_letter`."""
-    inner = tok.strip()[1:-1]
-    names = [x for x in inner.split(",") if x]
-    return ab.letter_of(names)
+    tok = tok.strip()
+    if tok == "t":
+        return ab.letter_of([])
+    trues = [lit for lit in tok.split("&") if not lit.startswith("!")]
+    return ab.letter_of(trues)
 
 
 def render_word(ab: Alphabet, w: Word) -> str:

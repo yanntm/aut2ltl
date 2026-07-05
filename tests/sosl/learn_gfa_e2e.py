@@ -20,13 +20,15 @@ from sosl.teacher import HoaTeacher
 
 
 def gfa_invariant() -> Invariant:
+    # Canonical GF a: 2 classes -- 0 = identity {eps, !a} (the no-a letter is
+    # congruent to eps), 1 = the "contains an a" class.
     ab = Alphabet.of(["a"])
     return Invariant(
         alphabet=ab,
-        keys=(EMPTY, (0,), (1,)),
-        letter_class=(1, 2),
-        mult=((0, 1, 2), (1, 1, 2), (2, 2, 2)),
-        accept=frozenset({(2, 2)}),
+        keys=(EMPTY, (1,)),
+        letter_class=(0, 1),   # !a (mask 0) -> identity, a (mask 1) -> class 1
+        mult=((0, 1), (1, 1)),
+        accept=frozenset({(1, 1)}),
         identity=0,
     )
 
