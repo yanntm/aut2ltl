@@ -92,7 +92,7 @@ main theorem is that this right-computable quotient *is* the SωS (Theorem 4.5).
 **The object first, its uses second.** Having built the SωS, we reify it as a
 canonical, complete, *exportable* representation of the language — what a minimal
 deterministic ω-automaton would be if one existed, which for ω-words it does not
-(§5). The classifications then become read-offs (§6): not merely *is `L` LTL*, but
+(§5). The classifications then become read-offs (§7): not merely *is `L` LTL*, but
 where `L` sits in the safety–progress and topological hierarchies, which acceptance
 condition it needs, and — subsuming these — its exact Wagner degree, each a structural
 property of the one algebra. Rendering the algebra back into a defining formula or a
@@ -122,7 +122,7 @@ The two non-LTL examples are deliberately PSL/SERE properties: SEREs are the sta
 ω-regular superset of LTL used in hardware specification (IEEE 1850), and the mod-`p`
 counting that takes a property out of the star-free/LTL fragment lives *syntactically*
 in an even-repetition `{·}[*2]`. Deciding whether a written PSL property is in fact
-LTL — simpler, and far better tool-supported — is itself a use of the object (§6);
+LTL — simpler, and far better tool-supported — is itself a use of the object (§7);
 these two are its minimal witnesses.
 
 ---
@@ -651,7 +651,7 @@ that for ω-words no canonical minimal deterministic automaton exists. It is
 any downstream consumer can read, and two such artifacts are language-equal iff
 byte-equal after canonical keying. Notably `𝓘` needs no aperiodicity: it is defined
 for *all* regular ω-languages, LTL or not. What one does with the object is the
-subject of §6; that one *has* it is the point of this section.
+subject of §7; that one *has* it is the point of this section.
 
 *Example (canonicity you can see).* Compute `𝓘(GF(aa))` from the run-parity
 presentation of Figure 1(a) — two states, a `Z₂` transition monoid — and again from
@@ -715,7 +715,70 @@ deduplicating large language sets.
 
 ---
 
-## 6. One object, every classification
+## 6. The finite-word specialization
+
+Nothing in this section is new — the finite-word syntactic monoid has been computed
+routinely for three decades (§1). The point is uniformity: the construction of
+§3–4, run on a DFA, lands exactly on that classical object, each key degenerating
+in a way that measures what infinity alone costs — and the degenerate case being
+the known answer is a check on the machinery. It also addresses two neighboring
+communities: LTLf, which lives on finite traces, and automata learning, which
+reconstructs languages — finite or ω — from finite observations.
+
+**Proposition 6.1 (degeneration).** Let `D` be a complete DFA for `L ⊆ Σ*`, with
+final states in place of marks. Then (i) the enrichment is vacuous and `EM(D)` is
+the plain transition monoid of `D`; (ii) the ω-power shape disappears with the
+ω-words it quantified over, and the whole congruence is the linear half:
+`e ~ f ⟺ ∀ reachable q : L(st_e(q)) = L(st_f(q))`, with finite-word residuals
+`L(q) ⊆ Σ*`; (iii) the quotient is the syntactic monoid of `L`, equal to the
+transition monoid of the minimal DFA.
+
+*Proof.* (i) With no marks there is no `mk` component. (ii) is the linear-shape
+argument of Proposition 4.3 with the tail `t^ω` deleted: acceptance of `x·e·y`
+from `ι` depends on `x` only through the reached state (the Lemma 4.1 collapse,
+now trivial — a finite run has no inf-set), so two-sided contexts reduce to
+residual equality at every reachable slot. No rotation is needed and no
+refinement iterates: residual equality is already left- and right-invariant, so
+the seed is the congruence. (iii) follows: quotienting the transition maps by
+residual equality of their targets is computing the transition monoid of the
+residual (minimal) automaton, the classical presentation of the syntactic
+monoid. ∎
+
+Read against §3–4, the specialization audits the two keys. Key I is the price of
+acceptance *along* runs: endpoint acceptance costs nothing, and Proposition 3.4
+has no finite-word analogue. Key II is the price of the loop: only the ω-power
+shape forces the profile relation and the rotation lemma. The invariant
+specializes the same way: `𝓘` keeps `(𝒞, λ, M)` and swaps the accepting linked
+pairs `P` for a plain accepting subset `F ⊆ 𝒞` — the §2 point that ω-acceptance
+is a *set of pairs*, not a subset, in exact counterpoint. One format serves both
+worlds. And where §5 noted that no canonical minimal deterministic ω-automaton
+exists, on finite words the minimal DFA *does* exist — yet definability is still
+read off the algebra, not the automaton: the same moral, in the easier world.
+
+*Example.* The finite core of `Even` is `W = (aa)*·!a`, with `Even = W·Σ^ω` (the
+guarantee rung of §7.1 made literal). Its minimal DFA is Figure 1(b) read as a
+DFA — the accepting sink cut back to a final state whose successors fall to the
+rejecting sink — and its syntactic monoid keeps the same `Z₂`: `[a]·[a] = [a·a]`,
+`[a·a]·[a] = [a]`, the period-2 cycle of Table 3. So `W` is not LTLf-definable,
+for the same reason and by the same read-off that `Even` is not LTL.
+
+The read-off has the same consumer, one level down. **LTLf** — LTL interpreted on
+finite traces, the specification idiom of AI planning, business-process modeling
+and runtime verification — equals first-order logic on finite words, hence
+star-free, hence aperiodicity of the syntactic monoid [Sch65; DG08, Thm 1.1]:
+"is this regular trace property actually LTLf?" is the finite twin of §7.2's PSL
+question, decided on the same object by the same group search. Finally, for the
+**learning** community [Kla94, AF16, ABF18, AF21], whose central obstruction is
+that the right congruence alone does not characterize an ω-language [AF21]: the
+rotation lemma shows the two-sided syntactic congruence is determined by
+right-extension observations at prefix-indexed slots — precisely the row/column
+discipline of an `L*`-style observation table — which suggests that learning the
+syntactic ω-semigroup *directly*, rather than a presentation-dependent family of
+DFAs, is feasible; we leave this as a prospect.
+
+---
+
+## 7. One object, every classification
 
 The syntactic ω-semigroup earns the phrase *semantic benchmark*. The classical taxonomy of ω-regular
 languages — by acceptance type, by the safety–progress hierarchy, by topological
@@ -735,12 +798,12 @@ the topological ladder [Lan69], the chain-based index tests of Wagner and Carton
 [CP97, CP99], the variety-membership characterizations of the first-order fragments
 [DK09, Wilke99] — and a mature tool such as Spot implements a good number of the
 topological and acceptance-type ones. Our contribution is not to decide any of these
-faster: materializing the algebra is exponential (§7) and we do not pretend otherwise. It
+faster: materializing the algebra is exponential (§8) and we do not pretend otherwise. It
 is that they are all the *same* object, decided by one read-off of it — and that a few of
 them, LTL-definability itself and the exact Wagner degree, carry no off-the-shelf
 implementation at all.
 
-### 6.1 One ladder under three names
+### 7.1 One ladder under three names
 
 Verification's safety–progress hierarchy of Manna and Pnueli [MP92] (safety, guarantee,
 obligation, recurrence/response, persistence, reactivity), Landweber's finite Borel
@@ -771,7 +834,7 @@ open set — makes the decoupling explicit: the topological ladder of this subse
 the aperiodic cut of the next are orthogonal axes on one object, and a language may be
 simple on one and hard on the other.
 
-### 6.2 The aperiodic cut, and finer logical fragments
+### 7.2 The aperiodic cut, and finer logical fragments
 
 The famous cut is a single group-theoretic read-off: `S(L)₊` is **aperiodic**
 (group-free) iff `L` is **star-free** `= FO[<] =` **LTL** `=` counter-free
@@ -799,7 +862,7 @@ The syntactic ω-semigroup carries exactly the data these tests consume — the 
 residual/topological structure of §4 — so each is a decidable property of the object; we
 claim the data, not a slogan.
 
-### 6.3 The acceptance index — what condition do you need?
+### 7.3 The acceptance index — what condition do you need?
 
 A separate and thoroughly practical question: what is the *minimal* acceptance condition
 that recognizes `L` deterministically — Büchi, co-Büchi, parity `[i, j]`, or a genuine
@@ -809,18 +872,18 @@ length of the longest **alternating chain** — a sequence of ultimately-periodi
 behaviours whose membership in `L` flips step by step. Introduced on automata by Wagner [Wag79],
 this length is, by a theorem of Carton and Perrin, computable in the *syntactic*
 ω-semigroup itself [CP97, Cor. 1].
-Deterministic-Büchi realizability (the recurrence rung of §6.1) is the bottom case, where
+Deterministic-Büchi realizability (the recurrence rung of §7.1) is the bottom case, where
 the chain collapses. This is the most operational classification of all: it names the
 acceptance a tool should target, and whether a given Emerson–Lei condition carries more
 than the language needs. `GF(aa)` needs only Büchi (`GF` is recurrence); `EvenBlocks`
 needs a genuine Rabin pair, its `Fin(0) ∧ Inf(1)` not reducible to a Büchi condition.
 
-### 6.4 The complete invariant — the Wagner degree
+### 7.4 The complete invariant — the Wagner degree
 
 Every classification above is a coarsening of one datum. **Wagner's hierarchy** is the
 complete classification of ω-regular languages up to continuous (Wadge) reducibility —
 the finest topological classification there is, an ordinal-indexed refinement of the
-Borel levels of §6.1. Introduced by Wagner in 1979 [Wag79], it was recast by Carton and Perrin,
+Borel levels of §7.1. Introduced by Wagner in 1979 [Wag79], it was recast by Carton and Perrin,
 who define Wagner's *chains* and *superchains* directly in the ω-semigroup and prove
 their maximal lengths a function of the language alone — computable in the *syntactic*
 ω-semigroup [CP97, Cor. 1, Thm 5; CP99] — with Selivanov supplying the matching
@@ -854,19 +917,19 @@ coordinate, and each classical decision reads one of its facets off the same tab
 
 ---
 
-## 7. Complexity
+## 8. Complexity
 
 The construction is dominated by the size of the enriched monoid,
 `|EM(D)| ≤ (|Q|·2^{|C|})^{|Q|}`, and the `|Q|` in the exponent is the source of the
 explosion. That a size bound sits somewhere is a mathematical necessity, not an
 engineering apology: deciding aperiodicity of a regular ω-language — the
-LTL-definability question of §6.2 — is PSPACE-complete, with hardness transferred from
+LTL-definability question of §7.2 — is PSPACE-complete, with hardness transferred from
 minimal-DFA finite-word aperiodicity [CH91] and the ω upper bound from [DG08,
 Prop. 12.3], and the surrounding classifications are no cheaper. Everything around the
 materialized object is benign by contrast. Each enriched element is a vector of `|Q|`
 slots over the small local domain `Q × 2^C`, each generator a slot-wise map; the two
 congruence relations of §4 and the partition refinement of Theorem 4.5 are polynomial
-in `|EM(D)|` and `|Q|`; and each export of §6 is a further polynomial-time read-off of
+in `|EM(D)|` and `|Q|`; and each export of §7 is a further polynomial-time read-off of
 the resulting table. The cost is entirely the object's size, and that size is intrinsic
 to the problem, not to the construction.
 
@@ -880,7 +943,7 @@ diagrams.
 
 ---
 
-## 8. Conclusion
+## 9. Conclusion
 
 The syntactic ω-semigroup is the canonical algebra of an ω-regular language and, for
 four decades, a phantom — defined, central, and never built from an automaton. It was
@@ -893,9 +956,8 @@ that, the *semantic benchmark*: the classical taxonomy of ω-regular languages, 
 safety versus liveness through the acceptance index up to the exact Wagner degree, is a
 taxonomy of its structure, decided uniformly by one read-off, with LTL-definability a
 single coordinate. Restricted to finite words the construction degenerates to the
-classical syntactic monoid, so the same object also serves the finite-word
-classification program, of independent interest to the learning community
-[Kla94, AF16, ABF18, AF21]. Turning the algebra back into a defining formula or a
+classical syntactic monoid (§6), so the same object also serves LTLf and the
+finite-word learning program. Turning the algebra back into a defining formula or a
 counter-free automaton, packaging the refuting certificate, and implementing and
 measuring the construction are all downstream of the object: they consume it, and this
 paper delivers it. The syntactic ω-semigroup is not only definable; it is buildable, and
