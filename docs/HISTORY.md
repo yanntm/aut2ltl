@@ -2877,3 +2877,6 @@ abstract claimed finite/infinite uniformity with no supporting body text; LTLf +
 learning communities get a findable section instead of one conclusion sentence.
 DV13 (De Giacomo-Vardi, LTLf) deliberately left uncited pending PDF in papers/.
 Follow-up same day: DV13 PDF added to papers/, verified (Thm 3), wired into §6 together with a blind [MP71]; the one-stop [DG08, Thm 1.1] cite replaced by the stepwise chain.
+
+## 2026-07-05 — paper 2 shadow draft started
+LANDED research_notes/sos_learning.md: shadow draft (placeholder-carrying paper skeleton) for learning the SoS via the rotation lemma transported to a MAT observation-table discipline. Crux flagged: the omega-harvest counterexample lemma. Working outline absorbed into the draft and removed.
