@@ -237,13 +237,28 @@ unaided.)
 *Example (day one, on `Even`).* `Even = (aa)*·!a·Σ^ω` over `Σ = {a, !a}` — an
 even block of `a`, then `!a`, then anything; membership of any word is fixed by
 the parity of the `a`-count before its first `!a`. Initialize `R = {ε, a, !a}`,
-`E_ω = {(ε, ε)}`, `E_lin = ∅`. Two entries: `[a^ω ∈ L] = 0` and
-`[(!a)^ω ∈ L] = 1`, so `a` and `!a` split at once. The frontier folds in:
-`aa` and `a·!a` land with `a` (their bits are `0`), `!a·a` and `!a·!a` with
-`!a`. Two of these merges are quietly wrong — `aa ≉_L a` (alive with opposite
-parity) and `a·!a ≉_L a` (`a·!a` is doomed: its first `!a` closed an odd
-block) — and the single column cannot see either. The run below catches both,
-by two different mechanisms (§4.1, §4.3).
+`E_ω = {(ε, ε)}`, `E_lin = ∅`; Table 1 is the whole state of knowledge.
+`a` and `!a` split at once, and every frontier word folds into one of them by
+its single bit. Two of these merges are quietly wrong — `aa ≉_L a` (alive with
+opposite parity) and `a·!a ≉_L a` (`a·!a` is doomed: its first `!a` closed an
+odd block) — and the single column cannot see either. The run below catches
+both, by two different mechanisms (§4.1, §4.3).
+
+| word | `(ε,ε)_ω` | class |
+|---|:--:|---|
+| `ε` | — | `[ε]` |
+| `a` | `0` | `[a]` |
+| `!a` | `1` | `[!a]` |
+| *frontier:* | | |
+| `a·a` | `0` | → `[a]` ✗ |
+| `a·!a` | `0` | → `[a]` ✗ |
+| `!a·a` | `1` | → `[!a]` |
+| `!a·!a` | `1` | → `[!a]` |
+
+**Table 1.** Day one on `Even`: rows above the frontier line, one ω-column
+(the entry of word `p` is `[p^ω ∈ L]`), `→` the class each frontier word folds
+into. The two merges marked `✗` are wrong (`≉_L`) but invisible: no observed
+context separates the words yet.
 
 **Definition 3.2 (closed, consistent; minting).** The table is observed on its
 **words** `W(T) = R ∪ R·Σ` (rows and frontier). `T` is **closed** when every
@@ -369,9 +384,36 @@ flat and the flip is in the **loop chain**: `δ_1 = [a·(aa!a)^ω] = 1`,
 `δ_2 = [a·(rep(ψ(aa))·!a)^ω] = [a·(a!a)^ω] = 0` (recurring odd blocks). Same
 flip position, same pair `u = aa`, `v = a`, but the minted column is the
 ω-column `(a, !a)` — the prefixed cousin of the `(ε, !a)` we exhibited in §3,
-found by the machinery rather than by inspection. One word, two languages,
-Arnold's two shapes: the counterexample analysis is the two-shape split of the
-congruence, run backwards.
+found by the machinery rather than by inspection. Table 2 shows both tables
+after the split. One word, two languages, Arnold's two shapes: the
+counterexample analysis is the two-shape split of the congruence, run
+backwards.
+
+*(a) `Even`, after the stem harvest:*
+
+| word | `(ε,ε)_ω` | **`(ε, !a, aa!a)_lin`** | class |
+|---|:--:|:--:|---|
+| `a` | `0` | **`0`** | `[a]` |
+| `!a` | `1` | **`1`** | `[!a]` |
+| **`aa`** | `0` | **`1`** | **`[aa]`** |
+| *frontier:* | | | |
+| `a·!a` | `0` | **`0`** | → `[a]` ✗ still |
+| `aa·!a` | `1` | **`1`** | → `[!a]` |
+
+*(b) `EvenBlocks`, after the loop harvest:*
+
+| word | `(ε,ε)_ω` | **`(a, !a)_ω`** | class |
+|---|:--:|:--:|---|
+| `a` | `0` | **`0`** | `[a]` |
+| `!a` | `1` | **`1`** | `[!a]` |
+| **`aa`** | `0` | **`1`** | **`[aa]`** |
+
+**Table 2.** The same counterexample `(ε, aa!a)` processed in the two
+languages (minted column and promoted row in bold; `ε`-row and unchanged
+frontier omitted). In (a) the flip landed in the stem chain and minted a
+*linear* column; in (b) the stem chain was flat and the loop chain minted an
+*ω-column*. Both pull `aa` out of `[a]` — and in (a) the doomed `a·!a` still
+hides there, which is §4.3's catch.
 
 ### 4.2 The gap: acceptance-correct is not algebra-correct
 
@@ -445,7 +487,20 @@ two words under that same context: `A = [(a·a!a)^ω] = [(aa!a)^ω] = 1`,
 did the work of an equivalence round: this merge was transient (the very next
 equivalence query would have returned `(ε, a!a)`), but the sweep neither knew
 nor needed to know that — and §4.2's permanent stall, should it exist, is
-caught by nothing else.
+caught by nothing else. Table 3 shows the resulting table, which is final.
+
+| word | `(ε,ε)_ω` | `(ε,!a,aa!a)_lin` | **`(a, ε)_ω`** | class |
+|---|:--:|:--:|:--:|---|
+| `a` | `0` | `0` | **`0`** | `[a]` |
+| `!a` | `1` | `1` | **`0`** | `[!a]` |
+| `aa` | `0` | `1` | **`0`** | `[aa]` |
+| **`a·!a`** | `0` | `0` | **`1`** | **`[a!a]`** |
+
+**Table 3.** `Even` at the fixpoint (saturated column and promoted row in
+bold; `ε`-row omitted). The four bit-signatures are pairwise distinct — with
+`[ε]`, the five classes of `S(Even)₊¹` — and every frontier word now folds
+cleanly: e.g. `a·!a·a` has signature `(0, 0, 1)` and joins `[a!a]`, as the
+absorbing reject should.
 
 Saturation checks are free; escalations are bounded by the total number of
 splits. The sweep runs after closedness and consistency, before each equivalence
@@ -532,12 +587,12 @@ fixpoint to be canonical — §4.2 exhibits the non-canonical stall — it is th
 saturation rule, i.e. the rotation lemma's slot collapse, that pins the fixpoint
 to the syntactic object.
 
-*Example (the run, completed, on `Even`).* After §4.3's split the table has five
-classes and the next sweep and equivalence query are clean. The whole run:
-five classes from **two splits — one per mechanism** (the stem chain split
-`aa` from `a`, the saturation escalation split `a·!a` from `a`) — on **three
-columns** (`(ε,ε)_ω` initial, `(ε, !a, aa!a)_lin` harvested, `(a, ε)_ω`
-saturated). The BFS re-keying returns `ε, !a, a, a!a, aa`; the exported
+*Example (the run, completed, on `Even`).* After §4.3's split the table is
+Table 3, and the next sweep and equivalence query are clean. The whole run,
+Tables 1 → 2(a) → 3: five classes from **two splits — one per mechanism** (the
+stem chain split `aa` from `a`, the saturation escalation split `a·!a` from
+`a`) — on **three columns** (`(ε,ε)_ω` initial, `(ε, !a, aa!a)_lin` harvested,
+`(a, ε)_ω` saturated). The BFS re-keying returns `ε, !a, a, a!a, aa`; the exported
 multiplication table is the syntactic one — `[a]·[a] = [aa]`, `[aa]·[a] = [a]`,
 the intact `Z₂` that makes `Even` non-LTL readable straight off the learned
 object; the linked-pair enumeration finds eight pairs, of which the three with
