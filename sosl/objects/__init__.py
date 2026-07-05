@@ -3,6 +3,12 @@ from sosl.objects.alphabet import EMPTY, Alphabet, Letter, Word, shortlex_key
 from sosl.objects.cayley import Hypothesis
 from sosl.objects.invariant import Invariant
 from sosl.objects.lasso import Lasso
+from sosl.objects.serialize import (
+    dump_hypothesis,
+    dump_invariant,
+    load_hypothesis,
+    load_invariant,
+)
 
 __all__ = [
     "Alphabet",
@@ -13,4 +19,8 @@ __all__ = [
     "Lasso",
     "Invariant",
     "Hypothesis",
+    "dump_invariant",
+    "load_invariant",
+    "dump_hypothesis",
+    "load_hypothesis",
 ]
