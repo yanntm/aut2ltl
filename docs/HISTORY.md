@@ -2876,3 +2876,4 @@ directly via the rotation lemma (right-extension observation tables). Rationale:
 abstract claimed finite/infinite uniformity with no supporting body text; LTLf +
 learning communities get a findable section instead of one conclusion sentence.
 DV13 (De Giacomo-Vardi, LTLf) deliberately left uncited pending PDF in papers/.
+Follow-up same day: DV13 PDF added to papers/, verified (Thm 3), wired into §6 together with a blind [MP71]; the one-stop [DG08, Thm 1.1] cite replaced by the stepwise chain.
