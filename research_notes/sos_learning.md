@@ -118,7 +118,7 @@ letter known in advance, because a counterexample-driven harvest of at most `|�
 target is; this paper makes the ω-instance an algorithm, and runs it.
 
 Three running examples — `GF(aa)`, `Even`, `EvenBlocks` [SωS26] — recur
-throughout. Two of them are traced *live* through §3–5: `Even`
+throughout (descriptions and automata in §2, Figure 1). Two of them are traced *live* through §3–5: `Even`
 (`(aa)*·!a·Σ^ω`, co-safety: membership is decided by a finite prefix, i.e. on
 the stem) and `EvenBlocks`
 (prefix-independent, trivial right congruence — outside [MP95]'s class,
@@ -190,6 +190,43 @@ left extension is a right extension read from a shifted start, and left
 contexts as a whole act only by re-indexing finitely many slots. Nothing else
 from that construction is used here: §4 transports the lemma's two halves into
 the query model, and the algorithm never sees an automaton.
+
+**The three specimens, concretely.** For the reader who wants to check every
+bit below by hand, here are the running examples — descriptions and automata
+reproduced from [SωS26]:
+
+- **`GF(aa) := GF(a ∧ Xa)`** — "infinitely many `aa`-factors." It *is* LTL, but a
+  natural presentation encodes the letter `a` as a transposition, so its transition
+  monoid carries a spurious group. The SωS *destroys* that group.
+- **`Even := (aa)*·!a·Σ^ω`** — over the single atom `a`, an even number of `a`'s then a
+  `!a` then anything; in PSL, the words with a prefix matching the SERE
+  `{a[*2]}[*] ; !a`. The canonical mod-2 language; *not* LTL, its group genuine, and —
+  because a prefix fixes the parity — refuted by Arnold's *linear* (first) shape.
+- **`EvenBlocks`** — "infinitely many `!a`'s, and eventually every completed `a`-block
+  has even length"; the same `{a[*2]}` even-block SERE, now recurring. Also *not* LTL
+  with a genuine mod-2 group, but *prefix-independent*: no finite prefix changes
+  membership, so its group is invisible to the linear shape and only Arnold's
+  *ω-power* (second) shape can witness it. This is the example that keeps both shapes
+  honest.
+
+<table>
+<tr>
+<td align="center"><img src="sosg_figs/img/gf_aa.png" alt="GF(aa) run-parity automaton" width="280"></td>
+<td align="center"><img src="sosg_figs/img/even.png" alt="Even automaton" width="280"></td>
+<td align="center"><img src="sosg_figs/img/evenblocks.png" alt="EvenBlocks automaton" width="280"></td>
+</tr>
+<tr>
+<td align="center"><b>(a) <code>GF(aa)</code></b><br>2 states, <code>Inf(0)</code> (Büchi).<br>The <code>a</code>-letter transposes the<br>two states — a <code>Z₂</code> in the<br>transition monoid.</td>
+<td align="center"><b>(b) <code>Even</code></b><br>4 states, <code>Inf(0)</code> (Büchi).<br>Parity pair <code>2/1</code>, an accepting<br>sink <code>0</code>, a rejecting sink <code>3</code>.</td>
+<td align="center"><b>(c) <code>EvenBlocks</code></b><br>2 states, <code>Fin(0) ∧ Inf(1)</code>.<br>Prefix-independent; the parity<br>of a completed block lives on<br>the <code>!a</code>-transitions' marks.<br>PSL: <code>GF!a ∧ FG(!a → X{a[*2][*];!a}!)</code></td>
+</tr>
+</table>
+
+**Figure 1.** The deterministic, complete, transition-based Emerson–Lei
+automata of the three running examples, reproduced from [SωS26] (acceptance
+reads the transition marks seen infinitely often: `Inf(c)` — mark `c` recurs,
+`Fin(c)` — it does not). In this paper the automata belong to the *teacher*:
+the learner only ever sees their answers.
 
 **The query model.** A teacher for `L` answers **membership queries** on lassos
 (`u·v^ω ∈ L`?) and **equivalence queries** on hypotheses `𝓗` (an invariant-shaped
@@ -312,18 +349,61 @@ prediction *is* the teacher's verdict on the representative lasso
 always a pair of concrete lassos — the queried one and its representative
 collapse — on which the *teacher's own bits differ*.
 
-*Example (a prediction, and its miss).* `EvenBlocks` — infinitely many `!a` and
-eventually every completed `a`-block even — reaches on day one the same shape of
-three-class table as `Even`: `[(!a)^ω ∈ L] = 1` against `[a^ω ∈ L] = 0`, and
-every frontier word merges by its single bit; note `!a·a` lands with `a` here
-(bit `0`: `(!a·a)^ω` completes odd blocks forever), not with `!a`. Predict the
-lasso `(ε, aa!a)`: the fold gives `ψ(aa!a) = [a]`, the orbit is already stable
-(`ψ((aa!a)²) = [a]`, so `k = 1`), the pair is `([a], [a])`, and the cache
-queries the teacher on the representative lasso `a·a^ω` — rejected, no `!a` at
-all. Prediction: `0`. But `(aa!a)^ω ∈ L` — every recurring block has length
-two. The teacher's bits on the queried lasso and on its representative collapse
-differ, and the minimization of §2 makes `(ε, aa!a)` exactly the counterexample
-returned by the first equivalence query.
+*Example (a prediction, and its miss).* We now run the prediction procedure in
+slow motion, on `EvenBlocks`: infinitely many `!a`, and eventually every
+completed `a`-block has even length — a *block* being a maximal run of `a`,
+*completed* when the next `!a` closes it. Day one (Table 2) has the same shape
+as `Even`'s: the single ω-column splits `a` from `!a`, and every frontier word
+merges by its one bit. One entry deserves a pause: `!a·a` lands with `a` here,
+not with `!a` as it did in `Even` — `(!a·a)^ω` completes an odd block forever,
+bit `0`. So the hypothesis's worldview is: there are three kinds of finite
+words — the empty one, the pure `!a`-blocks, and *everything that has ever
+seen an `a`*. Its `step` function says exactly that: from `[!a]`, reading `a`
+moves to `[a]`; from `[a]`, no letter ever leaves.
+
+| word | `(ε,ε)_ω` | class |
+|---|:--:|---|
+| `ε` | — | `[ε]` |
+| `a` | `0` | `[a]` |
+| `!a` | `1` | `[!a]` |
+| *frontier:* | | |
+| `a·a` | `0` | → `[a]` |
+| `a·!a` | `0` | → `[a]` |
+| `!a·a` | `0` | → `[a]`  (≠ `Even`!) |
+| `!a·!a` | `1` | → `[!a]` |
+
+**Table 2.** Day one on `EvenBlocks`: same shape as Table 1, one telling
+difference — `!a·a` folds to `[a]`, so `[a]` is absorbing and the fold sees
+only "have I read an `a` yet".
+
+Now predict the lasso `(ε, aa!a)`, following the definition step by step.
+*Fold the loop:* `ψ(aa!a)` walks `[ε] →_a [a] →_a [a] →_{!a} [a]`, so
+`c_1 = [a]`. *Find the idempotent power:* `c_2 = ψ((aa!a)²)` continues the
+walk from `[a]` — absorbed, so `c_2 = [a]` — and the least `k` with
+`c_{2k} = c_k` is `k = 1`: the hypothesis believes `[a]` is already
+idempotent. *Form the pair:* `s = ψ(ε·aa!a) = [a]`, `e = [a]`. This step is
+the whole point of a prediction: the hypothesis has just **named** the queried
+lasso by the pair `([a], [a])` — the same name it gives `a·a^ω`, `(a·!a)^ω`,
+`(!a·a)^ω`, and every other lasso whose folds collapse into `[a]` — and one
+name gets one verdict. *Look up the name:* the cache has no entry for
+`([a],[a])`, so it costs one membership query on the shortlex keys,
+`w_{[a]}·(w_{[a]})^ω = a·a^ω` — rejected, no `!a` at all. Cached; prediction
+`0`.
+
+The miss: `(aa!a)^ω ∈ L` — infinitely many `!a`, and every recurring completed
+block is `aa`, length two. The hypothesis gave one name to two lassos that the
+language distinguishes, and that is all a counterexample ever is in this
+design: the queried lasso and its representative collapse, two concrete
+lassos, teacher bits `1` and `0`.
+
+The minimization policy of §2 explains why this exact lasso is the one
+returned. Enumerating stems shortest-first and loops shortest-then-shortlex:
+`(ε, a)`, `(ε, !a)`, `(ε, aa)`, `(ε, a!a)`, `(ε, !a·a)`, `(ε, !a!a)` and
+`(ε, aaa)` are all predicted correctly — each folds to a name whose
+representative lasso the language happens to treat the same way — and
+`(ε, aa!a)` is the first place the name `([a],[a])` cracks. A misprediction is
+an equality the table wrongly believes; the harvest of §4.1 turns this one
+into the column that refutes it.
 
 ## 4. The learner
 
@@ -384,7 +464,7 @@ flat and the flip is in the **loop chain**: `δ_1 = [a·(aa!a)^ω] = 1`,
 `δ_2 = [a·(rep(ψ(aa))·!a)^ω] = [a·(a!a)^ω] = 0` (recurring odd blocks). Same
 flip position, same pair `u = aa`, `v = a`, but the minted column is the
 ω-column `(a, !a)` — the prefixed cousin of the `(ε, !a)` we exhibited in §3,
-found by the machinery rather than by inspection. Table 2 shows both tables
+found by the machinery rather than by inspection. Table 3 shows both tables
 after the split. One word, two languages, Arnold's two shapes: the
 counterexample analysis is the two-shape split of the congruence, run
 backwards.
@@ -408,7 +488,7 @@ backwards.
 | `!a` | `1` | **`1`** | `[!a]` |
 | **`aa`** | `0` | **`1`** | **`[aa]`** |
 
-**Table 2.** The same counterexample `(ε, aa!a)` processed in the two
+**Table 3.** The same counterexample `(ε, aa!a)` processed in the two
 languages (minted column and promoted row in bold; `ε`-row and unchanged
 frontier omitted). In (a) the flip landed in the stem chain and minted a
 *linear* column; in (b) the stem chain was flat and the loop chain minted an
@@ -487,7 +567,7 @@ two words under that same context: `A = [(a·a!a)^ω] = [(aa!a)^ω] = 1`,
 did the work of an equivalence round: this merge was transient (the very next
 equivalence query would have returned `(ε, a!a)`), but the sweep neither knew
 nor needed to know that — and §4.2's permanent stall, should it exist, is
-caught by nothing else. Table 3 shows the resulting table, which is final.
+caught by nothing else. Table 4 shows the resulting table, which is final.
 
 | word | `(ε,ε)_ω` | `(ε,!a,aa!a)_lin` | **`(a, ε)_ω`** | class |
 |---|:--:|:--:|:--:|---|
@@ -496,7 +576,7 @@ caught by nothing else. Table 3 shows the resulting table, which is final.
 | `aa` | `0` | `1` | **`0`** | `[aa]` |
 | **`a·!a`** | `0` | `0` | **`1`** | **`[a!a]`** |
 
-**Table 3.** `Even` at the fixpoint (saturated column and promoted row in
+**Table 4.** `Even` at the fixpoint (saturated column and promoted row in
 bold; `ε`-row omitted). The four bit-signatures are pairwise distinct — with
 `[ε]`, the five classes of `S(Even)₊¹` — and every frontier word now folds
 cleanly: e.g. `a·!a·a` has signature `(0, 0, 1)` and joins `[a!a]`, as the
@@ -588,8 +668,8 @@ saturation rule, i.e. the rotation lemma's slot collapse, that pins the fixpoint
 to the syntactic object.
 
 *Example (the run, completed, on `Even`).* After §4.3's split the table is
-Table 3, and the next sweep and equivalence query are clean. The whole run,
-Tables 1 → 2(a) → 3: five classes from **two splits — one per mechanism** (the
+Table 4, and the next sweep and equivalence query are clean. The whole run,
+Tables 1 → 3(a) → 4: five classes from **two splits — one per mechanism** (the
 stem chain split `aa` from `a`, the saturation escalation split `a·!a` from
 `a`) — on **three columns** (`(ε,ε)_ω` initial, `(ε, !a, aa!a)_lin` harvested,
 `(a, ε)_ω` saturated). The BFS re-keying returns `ε, !a, a, a!a, aa`; the exported
