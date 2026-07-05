@@ -114,10 +114,15 @@ letter known in advance, because a counterexample-driven harvest of at most `|�
 target is; this paper makes the ω-instance an algorithm, and runs it.
 
 Three running examples — `GF(aa)`, `Even`, `EvenBlocks`, the triptych of [SωS26] —
-recur at every definition. The third is the important one here: prefix-independent
-with a trivial right congruence, it lies outside [MP95]'s class, degenerates the
-leading automaton of any FDFA for it, and is precisely the case the ω-sort of our
-columns is built for.
+recur throughout. Two of them are traced *live* through §3–5: `Even`
+(`(aa)*·!a·Σ^ω`, a guarantee property deciding on the stem) and `EvenBlocks`
+(prefix-independent, trivial right congruence — outside [MP95]'s class,
+degenerate for any FDFA's leading automaton, and precisely the case the ω-sort
+of our columns is built for). The trace has a punchline worth spoiling: both
+languages hand the learner the *same* first counterexample, and the algorithm
+routes it through opposite Arnold shapes. `GF(aa)`, whose transition-monoid
+group is a presentation artifact the algebra destroys, remains the evaluation's
+third specimen (§6).
 
 ## 2. Background and query model
 
@@ -175,6 +180,19 @@ row-function (prefix-independence: a stem mutation is swallowed), and the entire
 language lives in the ω-sort: the column `(ε, !a)` separates rows `a` and `aa`,
 since `(a·!a)^ω ∉ L` and `(aa·!a)^ω ∈ L`. A learner without the ω-sort cannot even
 represent what distinguishes them — this is [AF21]'s obstruction, met head-on.
+(§4.1 shows the learner *finding* `(a, !a)`, that column's prefixed cousin,
+unaided.)
+
+*Example (day one, on `Even`).* `Even = (aa)*·!a·Σ^ω` over `Σ = {a, !a}` — an
+even block of `a`, then `!a`, then anything; membership of any word is fixed by
+the parity of the `a`-count before its first `!a`. Initialize `R = {ε, a, !a}`,
+`E_ω = {(ε, ε)}`, `E_lin = ∅`. Two entries: `[a^ω ∈ L] = 0` and
+`[(!a)^ω ∈ L] = 1`, so `a` and `!a` split at once. The frontier folds in:
+`aa` and `a·!a` land with `a` (their bits are `0`), `!a·a` and `!a·!a` with
+`!a`. Two of these merges are quietly wrong — `aa ≉_L a` (alive with opposite
+parity) and `a·!a ≉_L a` (`a·!a` is doomed: its first `!a` closed an odd
+block) — and the single column cannot see either. The run below catches both,
+by two different mechanisms (§4.1, §4.3).
 
 **Definition 3.2 (closed, consistent; minting).** The table is observed on its
 **words** `W(T) = R ∪ R·Σ` (rows and frontier). `T` is **closed** when every
@@ -218,6 +236,19 @@ prediction *is* the teacher's verdict on the representative lasso
 `w_s·(w_e)^ω`. That definition is load-bearing: a counterexample is therefore
 always a pair of concrete lassos — the queried one and its representative
 collapse — on which the *teacher's own bits differ*.
+
+*Example (a prediction, and its miss).* `EvenBlocks` — infinitely many `!a` and
+eventually every completed `a`-block even — reaches on day one the same shape of
+three-class table as `Even`: `[(!a)^ω ∈ L] = 1` against `[a^ω ∈ L] = 0`, and
+every frontier word merges by its single bit; note `!a·a` lands with `a` here
+(bit `0`: `(!a·a)^ω` completes odd blocks forever), not with `!a`. Predict the
+lasso `(ε, aa!a)`: the fold gives `ψ(aa!a) = [a]`, the orbit is already stable
+(`ψ((aa!a)²) = [a]`, so `k = 1`), the pair is `([a], [a])`, and the cache
+queries the teacher on the representative lasso `a·a^ω` — rejected, no `!a` at
+all. Prediction: `0`. But `(aa!a)^ω ∈ L` — every recurring block has length
+two. The teacher's bits on the queried lasso and on its representative collapse
+differ, and the minimization of §2 makes `(ε, aa!a)` exactly the counterexample
+returned by the first equivalence query.
 
 ## 4. The learner
 
@@ -263,6 +294,25 @@ one class — the frontier word `u` leaves the class of `v` — so `|𝒞_T|` gr
 one per equivalence query, at a cost of `O(log(|w| + |𝒞_T|·|z|))` membership
 queries.
 
+*Example (one counterexample, two shapes).* Both running specimens return the
+*same* minimal counterexample from their first equivalence query: `(ε, aa!a)`,
+predicted `0` through the pair `([a],[a])`, truly in both languages. The
+junction query `[a·(aa!a)^ω ∈ L]` routes them oppositely. On `Even` it answers
+`0` — the prepended `a` flips the parity — against `γ_0 = [(aa!a)^ω] = 1`: the
+flip is in the **stem chain**. Walking it: `γ_1 = [a·a!a·(aa!a)^ω] = 1` (first
+`!a` after two `a`), `γ_2 = [a·!a·(aa!a)^ω] = 0` (after one). The flip at
+`1→2` hands over `u = rep(ψ(a))·a = aa`, `v = rep(ψ(aa)) = a`, and the linear
+column `(ε, !a, aa!a)`: entries `1` for `aa`, `0` for `a` — the parity merge of
+day one, split. On `EvenBlocks` the junction answers `1` — a prefix cannot harm
+a prefix-independent language — equal to `γ_0`, so the whole stem chain is
+flat and the flip is in the **loop chain**: `δ_1 = [a·(aa!a)^ω] = 1`,
+`δ_2 = [a·(rep(ψ(aa))·!a)^ω] = [a·(a!a)^ω] = 0` (recurring odd blocks). Same
+flip position, same pair `u = aa`, `v = a`, but the minted column is the
+ω-column `(a, !a)` — the prefixed cousin of the `(ε, !a)` we exhibited in §3,
+found by the machinery rather than by inspection. One word, two languages,
+Arnold's two shapes: the counterexample analysis is the two-shape split of the
+congruence, run backwards.
+
 ### 4.2 The gap: acceptance-correct is not algebra-correct
 
 The harvest reacts to *membership* disagreements — and membership's error signal
@@ -277,7 +327,11 @@ flavored acceptor: an FDFA in algebraic clothing. This is the obstruction of
 [AF21] reborn one level up — the table's *columns* are two-sided, but its *error
 signal* is not — and it is, we believe, the honest reason no observation-table
 route to the syntactic algebra existed: the missing ingredient is not a cleverer
-column format.
+column format. Neither running specimen realizes the stall *permanently* — in
+both, the wrong merge eventually poisons some prediction, so an equivalence
+query would catch it later (a transient stall). But nothing in the correctness
+argument excludes a permanent one, canonicity is unprovable without the repair
+below, and §5 flags the hunt for a concrete permanent stall as an open exhibit.
 
 ### 4.3 The repair: left-saturation over class representatives
 
@@ -312,6 +366,23 @@ under the same context: `A = [x°·r·u·y°·t°^ω]`, `B = [x°·r·v·y°·t�
   binary search finds it, and Lemma 4.1's argument — with `x°` riding along in
   the column's prefix slot — yields a frontier/row pair split by a column
   `(x°·rep(·), ·, t°)`. Either way one class splits. ∎
+
+*Example (a saturation catch, on `Even`).* Resume `Even` after §4.1's split: four
+classes `[ε], [a], [!a], [aa]`, with `a·!a` still merged into `[a]` — the doomed
+word still passing for an alive one. The sweep compares `a·!a` against its
+representative `a` under every class; at `d = [a]` (representative `r = a`) the
+folds diverge: `fold([a], a·!a)` steps `[a] →_a [aa] →_{!a} [!a]` (the frontier
+word `aa·!a` sits in `[!a]` — an even block just closed), while
+`fold([a], a) = [aa]`. The classes `[!a]` and `[aa]` are separated by the
+original ω-column `(ε, ε)` — entries `1` and `0` — so the escalation queries the
+two words under that same context: `A = [(a·a!a)^ω] = [(aa!a)^ω] = 1`,
+`B = [(a·a)^ω] = 0`. They differ: first branch, mint the ω-column
+`(a, ε)` — the left factor absorbed into the column prefix — whose entries
+`[a·(a!a)^ω] = 1` and `[a·a^ω] = 0` split `a·!a` from `a`. Two membership bits
+did the work of an equivalence round: this merge was transient (the very next
+equivalence query would have returned `(ε, a!a)`), but the sweep neither knew
+nor needed to know that — and §4.2's permanent stall, should it exist, is
+caught by nothing else.
 
 Saturation checks are free; escalations are bounded by the total number of
 splits. The sweep runs after closedness and consistency, before each equivalence
@@ -374,6 +445,20 @@ The theorem earns the paper's title: nothing about the *language* forced the
 fixpoint to be canonical — §4.2 exhibits the non-canonical stall — it is the
 saturation rule, i.e. the rotation lemma's slot collapse, that pins the fixpoint
 to the syntactic object.
+
+*Example (the run, completed, on `Even`).* After §4.3's split the table has five
+classes and the next sweep and equivalence query are clean. The whole run:
+five classes from **two splits — one per mechanism** (the stem chain split
+`aa` from `a`, the saturation escalation split `a·!a` from `a`) — on **three
+columns** (`(ε,ε)_ω` initial, `(ε, !a, aa!a)_lin` harvested, `(a, ε)_ω`
+saturated). The BFS re-keying returns `ε, !a, a, a!a, aa`; the exported
+multiplication table is the syntactic one — `[a]·[a] = [aa]`, `[aa]·[a] = [a]`,
+the intact `Z₂` that makes `Even` non-LTL readable straight off the learned
+object; the linked-pair enumeration finds eight pairs, of which the three with
+stem class `[!a]` are accepting. Five classes is exactly `|S(Even)₊¹|`, and the
+`.sosg` export is byte-equal to the construction from the automaton — Theorem
+5.1 made concrete. `EvenBlocks` completes the same way: three further splits
+beyond the one traced in §4.1, all in the ω-sort, to its seven classes.
 
 **Proposition 5.2 (query complexity).** Writing `N = |S(L)₊¹|` and `ℓ` for the
 longest counterexample returned: the learner poses at most `N` equivalence
