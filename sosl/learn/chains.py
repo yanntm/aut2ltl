@@ -70,7 +70,7 @@ def process_counterexample(table: Table, p: Partition, lasso: Lasso) -> None:
     a_bit = member(Lasso(wp, zp))
     junction = member(Lasso(repfold(wp), zp))
     if TRACE_ON:
-        trace("chain", f"normalize k={k} |w'|={len(wp)} |z'|={len(zp)}; "
+        trace("CHAIN", f"normalize k={k} |w'|={len(wp)} |z'|={len(zp)}; "
               f"A={a_bit} J={junction} -> {'stem' if a_bit != junction else 'loop'} chain")
 
     if a_bit != junction:
@@ -84,7 +84,7 @@ def process_counterexample(table: Table, p: Partition, lasso: Lasso) -> None:
 
         i = _find_flip(g, 0, length)
         if TRACE_ON:
-            trace("chain", f"stem flip i={i} -> LinCol(eps, y={wp[i + 1:]}, t=|{len(zp)}|)")
+            trace("CHAIN", f"stem flip i={i} -> LinCol(eps, y={wp[i + 1:]}, t=|{len(zp)}|)")
         table.add_column(LinCol(EMPTY, wp[i + 1:], zp))
     else:
         length = len(zp)
@@ -98,5 +98,5 @@ def process_counterexample(table: Table, p: Partition, lasso: Lasso) -> None:
 
         i = _find_flip(d, 0, length)
         if TRACE_ON:
-            trace("chain", f"loop flip i={i} -> OmCol(x=|{len(sw)}|, y={zp[i + 1:]})")
+            trace("CHAIN", f"loop flip i={i} -> OmCol(x=|{len(sw)}|, y={zp[i + 1:]})")
         table.add_column(OmCol(sw, zp[i + 1:]))

@@ -60,18 +60,18 @@ def _stabilize(table: Table) -> Partition:
         unclosed = p.unclosed()
         if unclosed:
             if TRACE_ON:
-                trace("stab", f"close: +{len(unclosed)} rows "
+                trace("STAB", f"close: +{len(unclosed)} rows "
                       f"(rows={len(table.rows)} cols={len(table.columns)} classes={p.n})")
             for w in unclosed:
                 table.add_row(w)
             continue
         if _make_consistent(table, p):
             if TRACE_ON:
-                trace("stab", f"consist: mint col -> {len(table.columns)} "
+                trace("STAB", f"consist: mint col -> {len(table.columns)} "
                       f"(rows={len(table.rows)} classes={p.n})")
             continue
         if TRACE_ON:
-            trace("stab", f"stable: rows={len(table.rows)} "
+            trace("STAB", f"stable: rows={len(table.rows)} "
                   f"cols={len(table.columns)} classes={p.n}")
         return p
 
@@ -90,12 +90,12 @@ def learn(
         p = _stabilize(table)
         n_equiv += 1
         if TRACE_ON:
-            trace("learn", f"round {n_equiv}: classes={p.n} "
+            trace("LEARN", f"round {n_equiv}: classes={p.n} "
                   f"rows={len(table.rows)} cols={len(table.columns)} cex_so_far={n_cex}")
         result = teacher.equiv(_build_hypothesis(table, p))
         if isinstance(result, Equivalent):
             if TRACE_ON:
-                trace("learn", f"EQUIVALENT ({result.strategy}) classes={p.n}")
+                trace("LEARN", f"EQUIVALENT ({result.strategy}) classes={p.n}")
             inv = export(p, teacher.member)
             if stats is not None:
                 stats.update(
@@ -108,6 +108,6 @@ def learn(
         assert isinstance(result, Counterexample)
         n_cex += 1
         if TRACE_ON:
-            trace("learn", f"counterexample stem={result.lasso.stem} "
+            trace("LEARN", f"counterexample stem={result.lasso.stem} "
                   f"loop={result.lasso.loop}")
         process_counterexample(table, p, result.lasso)

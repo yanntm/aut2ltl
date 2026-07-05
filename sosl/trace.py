@@ -11,13 +11,15 @@ CPython simply skips the branch:
 `TRACE_ON` is set once from the environment at import:
 
     TRACE_ON=1            enable every tag
-    TRACE_ON=learn,chain  enable only these tags
+    TRACE_ON=learn,chain  enable only these tags (case-insensitive)
 
-When ``TRACE_ON`` is unset the constant is ``False`` and the guarded block is
-dead. When it is set, `trace` additionally filters by tag, so with several tags
-enabled only the requested ones print (to stderr). The call-site guard is what
-makes leaving these calls in permanently free; the tag filter is a convenience
-for when tracing is already on.
+Tags are case-insensitive; by convention they are written UPPERCASE at the call
+site (``trace("LEARN", ...)``) so the trace lines stand out from the code and
+read as inline documentation of the control flow. When ``TRACE_ON`` is unset the
+constant is ``False`` and the guarded block is dead. When it is set, `trace`
+additionally filters by tag, so with several tags enabled only the requested
+ones print (to stderr). The call-site guard is what makes leaving these calls in
+permanently free; the tag filter is a convenience for when tracing is already on.
 """
 from __future__ import annotations
 
@@ -32,7 +34,7 @@ TRACE_ON = bool(_spec)
 
 _ALL = _spec in ("1", "all", "*")
 _TAGS = frozenset() if (not _spec or _ALL) else frozenset(
-    t.strip() for t in _spec.split(",") if t.strip()
+    t.strip().lower() for t in _spec.split(",") if t.strip()
 )
 
 
@@ -40,5 +42,5 @@ def trace(tag: str, msg: str) -> None:
     """Print ``msg`` on stderr under ``tag`` if that tag is enabled. Only call
     inside an ``if TRACE_ON:`` guard — that guard, not this test, is what keeps
     the message string from being built when tracing is off."""
-    if _ALL or tag in _TAGS:
+    if _ALL or tag.lower() in _TAGS:
         sys.stderr.write(f"[{tag}] {msg}\n")
