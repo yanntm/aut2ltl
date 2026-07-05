@@ -221,9 +221,11 @@ Emerson–Lei range. `GF(aa)` reads `Inf(0)` for a single mark `0` placed on the
 `a`-transition taken from the "just saw an `a`" state — the run passes `0`
 infinitely often iff `aa` recurs. `Even` is a guarantee: `Inf(0)` for the mark on
 the accepting sink's self-loops — the run reaches the sink (after an even `a`-prefix
-closed by `!a`) or never does. `EvenBlocks` needs the full `Fin(0) ∧ Inf(1)` shape:
-`Inf(1)` forces infinitely many `!a`'s (block completions), `Fin(0)` forbids an
-odd-length completed block infinitely often. The residuals separate `Even`'s four
+closed by `!a`) or never does. `EvenBlocks` needs the full `Fin(0) ∧ Inf(1)` shape,
+each `!a`-transition marked by the parity of the block it closes — mark `1` on an
+even block, mark `0` on an odd one: `Inf(1)` forces infinitely many even-block
+completions, `Fin(0)` forbids an odd one infinitely often, so together eventually
+every completed block is even and infinitely many complete. The residuals separate `Even`'s four
 states pairwise (`q₀ ≠ q₁` because one `!a` accepts, the other rejects) but collapse
 both states of `EvenBlocks` to a single residual — the prefix-independence that
 Proposition 4.6 will read algebraically.
