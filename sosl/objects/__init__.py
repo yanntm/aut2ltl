@@ -1,5 +1,6 @@
 """sosl.objects — shared vocabulary. Re-exports; see README.md / algorithm.md."""
 from sosl.objects.alphabet import EMPTY, Alphabet, Letter, Word, shortlex_key
+from sosl.objects.cayley import Hypothesis
 from sosl.objects.invariant import Invariant
 from sosl.objects.lasso import Lasso
 
@@ -11,4 +12,5 @@ __all__ = [
     "shortlex_key",
     "Lasso",
     "Invariant",
+    "Hypothesis",
 ]
