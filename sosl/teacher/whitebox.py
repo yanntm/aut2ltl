@@ -17,8 +17,11 @@ from typing import Dict, List, Optional
 import buddy
 import spot
 
+from sosl.contract import Counterexample, Equivalent, EquivResult
 from sosl.objects.alphabet import Alphabet, Letter
+from sosl.objects.cayley import Hypothesis
 from sosl.objects.lasso import Lasso
+from sosl.teacher.equiv import bounded_counterexample
 
 
 def _prepare(aut: "spot.twa_graph") -> "spot.twa_graph":
@@ -38,10 +41,11 @@ class HoaTeacher:
     ``twa_graph``.
     """
 
-    def __init__(self, aut: "spot.twa_graph") -> None:
+    def __init__(self, aut: "spot.twa_graph", eq_bound: int = 8) -> None:
         self.aut = _prepare(aut)
         self.acc = self.aut.acc()
         self.init = self.aut.get_init_state_number()
+        self.eq_bound = eq_bound
         # AP name -> buddy variable, registered once before any BDD op.
         self._var: Dict[str, int] = {
             ap.ap_name(): self.aut.register_ap(ap) for ap in self.aut.ap()
@@ -113,3 +117,15 @@ class HoaTeacher:
         for m in trace[seen[config]:]:
             inf |= m
         return bool(self.acc.accepting(inf))
+
+    # -- equivalence ---------------------------------------------------------
+
+    def equiv(self, hypothesis: Hypothesis, bound: Optional[int] = None) -> EquivResult:
+        """Decide whether ``hypothesis`` captures L by bounded lasso enumeration
+        (up to ``bound``, default ``eq_bound``). Returns `Equivalent` tagged with
+        the certifying bound, or a minimal `Counterexample`."""
+        b = self.eq_bound if bound is None else bound
+        cx = bounded_counterexample(self.member, self.alphabet, hypothesis, b)
+        if cx is None:
+            return Equivalent(strategy=f"bounded:{b}")
+        return Counterexample(lasso=cx)
