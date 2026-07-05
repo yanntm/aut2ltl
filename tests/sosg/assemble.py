@@ -79,7 +79,11 @@ def section(label: str, inp: str, data: DgData) -> List[str]:
     out.append("### Deterministic form `D`")
     out.append("")
     out.append("```hoa")
-    out.append(data.aut.to_str("hoa").rstrip())
+    # 't' forces transition-based acceptance in the dump, so a terminal-Büchi
+    # form (state-representable, which Spot would otherwise print state-based)
+    # still shows its marks on transitions — consistent with EM(D) reading
+    # marks along runs, and with the other examples.
+    out.append(data.aut.to_str("hoa", "t").rstrip())
     out.append("```")
     out.append("")
 

@@ -21,11 +21,11 @@ Start: 2
 AP: 1 "a"
 acc-name: Buchi
 Acceptance: 1 Inf(0)
-properties: trans-labels explicit-labels state-acc complete
+properties: trans-labels explicit-labels trans-acc complete
 properties: deterministic terminal
 --BODY--
-State: 0 {0}
-[t] 0
+State: 0
+[t] 0 {0}
 State: 1
 [0] 2
 [!0] 3
