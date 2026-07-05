@@ -2866,3 +2866,13 @@ forever" + "a linked pair names a lasso"); removed the LTL-characterization
 paragraph from section 2 as decision material already in sections 1 and 6.1.
 
 All research_notes/ work committed and pushed to master across the session.
+
+## 2026-07-05 — sosg paper: finite-word specialization section
+LANDED new §6 in research_notes/sosg_constructed.md (old §6-8 → §7-9): Prop 6.1
+(DFA degeneration: EM = transition monoid, ~ = ~lin, quotient = syntactic monoid),
+I specializes P → F, Even's finite core W = (aa)*·!a as example, LTLf read-off
+[Sch65; DG08, Thm 1.1], and a single priority-stake sentence on learning the SωS
+directly via the rotation lemma (right-extension observation tables). Rationale:
+abstract claimed finite/infinite uniformity with no supporting body text; LTLf +
+learning communities get a findable section instead of one conclusion sentence.
+DV13 (De Giacomo-Vardi, LTLf) deliberately left uncited pending PDF in papers/.
