@@ -123,8 +123,7 @@ The two non-LTL examples are deliberately PSL/SERE properties: SEREs are the sta
 counting that takes a property out of the star-free/LTL fragment lives *syntactically*
 in an even-repetition `{·}[*2]`. Deciding whether a written PSL property is in fact
 LTL — simpler, and far better tool-supported — is itself a use of the object (§6);
-these two are its minimal witnesses. Both are built directly from their SERE text by a
-standard PSL front end, so Figure 1 needs no hand construction.
+these two are its minimal witnesses.
 
 ---
 
@@ -144,7 +143,7 @@ standard PSL front end, so Figure 1 needs no hand construction.
 **Figure 1.** The deterministic, complete, transition-based Emerson–Lei automata
 `D` of the three running examples, as Spot renders them — a transposition-carrying `GF(aa)`, a four-state
 `Even`, a prefix-independent `EvenBlocks`. Every value in this paper is read off
-these three.
+these three examples.
 
 ---
 
@@ -290,7 +289,7 @@ shape does, with `y` closing a block: `(a·!a)^ω` completes odd blocks forever 
 rejected, `(aa·!a)^ω` completes even blocks and is accepted, so `a ≉_L aa` witnessed
 only in the loop. The two examples are exactly the two shapes made concrete.
 
-*On the threads.* For `Even`, the letter `a` toggles the a-count parity before the
+*On the examples.* For `Even`, the letter `a` toggles the a-count parity before the
 first `!a`, and no finite context can undo that parity: `a` has order 2 in `S(Even)₊`
 — a real group, so `Even` is not LTL. For `GF(aa)`, a run-parity presentation makes
 `a` a transposition of two states, but at infinity the parity is invisible to
@@ -407,9 +406,9 @@ Proposition 3.4 is why a group in the transition monoid proves nothing about `L`
 can be pure encoding, invisible to `EM` and hence to the SωS. (Symmetrically,
 aperiodicity of the transition monoid is *sufficient* for aperiodicity of `S(L)₊`,
 inherited upward through the enrichment — a one-directional convenience, not part of
-the object.) The `GF(aa)` thread is exactly this situation, resolved in §4.
+the object.) The `GF(aa)` example is exactly this situation, resolved in §4.
 
-*On the threads.* The enriched monoid of `GF(aa)`'s 2-state run-parity presentation
+*On the examples.* The enriched monoid of `GF(aa)`'s 2-state run-parity presentation
 has 10 elements; that of `Even` has the four sink-and-parity behaviors closed under
 the two letters. Both carry a group in `EM` — the question §4 answers is which one
 survives the quotient.
@@ -484,7 +483,7 @@ state simultaneously. The ω half is a right-congruence condition seeded by prof
 Neither has a left translation. What remains is to show the *two-sided* congruence
 needs none.
 
-*Example (the two halves divide the labor).* The two non-LTL threads sit at opposite
+*Example (the two halves divide the labor).* The two non-LTL examples sit at opposite
 ends. In `Even`, `~lin` is already discriminating — the four states have four distinct
 residuals — and the group is visible on the *state* side: `st_{⟦a⟧}` swaps `q₀ ↔ q₁`,
 an order-2 action `~lin` sees directly. In `EvenBlocks`, `~lin` is *total* (one
@@ -603,7 +602,7 @@ a *trivial right congruence* exist, e.g. `FG(a ∨ Xa)` [AF21] — the profile h
 repair, and the reason `EvenBlocks`, blind to the linear shape, is separated only in the
 ω-power one.
 
-*On the threads, resolved.* For `GF(aa)`, the ten enriched elements refine to **six**
+*On the examples, resolved.* For `GF(aa)`, the ten enriched elements refine to **six**
 `~`-classes, every class power-cycle of period 1: the run-parity words the transition
 monoid kept apart are `~`-equivalent (at infinity the parity collapses to the
 threshold "contains `aa`"), so `S(GF(aa))₊` is aperiodic — `GF(aa)` is LTL, its
