@@ -3,3 +3,6 @@
 Depends on sosl.contract + sosl.objects only (no spot, no reference, no aut2ltl):
 its sole knowledge of L is the teacher interface.
 """
+from sosl.learn.learner import learn
+
+__all__ = ["learn"]

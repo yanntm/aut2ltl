@@ -71,12 +71,16 @@ class Partition:
         assert r is not None, "step on an unclosed class"
         return self.class_of[r + (a,)]
 
-    def fold(self, w: Word) -> int:
-        """The class reached by folding ``w`` letterwise from the start."""
-        c = self.start
+    def fold_from(self, c: int, w: Word) -> int:
+        """The class reached by folding ``w`` letterwise starting from class
+        ``c`` (requires the visited classes closed)."""
         for a in w:
             c = self.step(c, a)
         return c
+
+    def fold(self, w: Word) -> int:
+        """The class reached by folding ``w`` letterwise from the start."""
+        return self.fold_from(self.start, w)
 
     def separating_column(self, u: Word, v: Word) -> Optional[int]:
         """A column index where non-empty ``u`` and ``v`` differ, or ``None`` if
