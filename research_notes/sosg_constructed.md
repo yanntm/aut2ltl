@@ -9,24 +9,24 @@ With significant inputs from
 
 ## Abstract
 
-The syntactic ω-semigroup (SOSG) of a regular ω-language `L` is its canonical
+The syntactic ω-semigroup of a regular ω-language `L` is its canonical
 algebra: the ω-analogue of the syntactic monoid that underpins the entire
 finite-word theory of regular languages. Introduced by Arnold in 1985 as the
 coarsest congruence saturating `L`, it is presentation-independent and complete —
 it determines membership, equivalence, and every definability property of `L`,
 including whether `L` is expressible in linear temporal logic. Yet, unlike the
 finite-word syntactic monoid, which has been computed routinely for three decades,
-the SOSG has never been constructed from an automaton. The obstruction is not
+the syntactic ω-semigroup has never been constructed from an automaton. The obstruction is not
 merely its size: computing it requires two ingredients the literature holds only
 separately — a recognizer that remembers *acceptance along runs* rather than only
 transitions, and a way to compute the inherently *two-sided* syntactic congruence
 without ever quantifying over two-sided contexts. We supply both. The first is the
 acceptance-enriched monoid `EM(D)`, read off any deterministic form `D` of `L`; we
-prove it recognizes `L` and that the SOSG is a quotient of it. The second is a
+prove it recognizes `L` and that the syntactic ω-semigroup is a quotient of it. The second is a
 collapse of Arnold's two context shapes into two independently checkable
 relations — pointwise residual equality and right-invariant acceptance-profile
 equality — together with a rotation lemma proving that the two-sided congruence is
-computable by right multiplications alone. This yields the SOSG explicitly, for the
+computable by right multiplications alone. This yields the syntactic ω-semigroup explicitly, for the
 first time, as a canonical and *exportable* semantic representation of an ω-regular
 language, LTL-definable or not. That one object is a *semantic benchmark*: the
 classical taxonomy of ω-regular languages falls out as read-offs of its structure —
@@ -52,13 +52,13 @@ this one algebra.
 
 Infinite words have the exact analogue in principle. Arnold [Arn85] defined the
 **syntactic congruence** of a regular ω-language `L` — the coarsest congruence that
-saturates `L` — whose quotient is the **syntactic ω-semigroup**, which we abbreviate
-**SOSG**. It is presentation-independent and it is *complete*: it fixes membership,
+saturates `L` — whose quotient is the **syntactic ω-semigroup** (SωS). It is
+presentation-independent and it is *complete*: it fixes membership,
 equivalence, and definability, and — by the classical chain
-`LTL = FO[<] = star-free = aperiodic SOSG` [Kam68, Tho79, Per84, DG08] — reading
+`LTL = FO[<] = star-free = aperiodic SωS` [Kam68, Tho79, Per84, DG08] — reading
 aperiodicity off it decides LTL-definability exactly, in both directions.
 
-And yet the SOSG is, in practice, a phantom. It is defined everywhere and built
+And yet the syntactic ω-semigroup is, in practice, a phantom. It is defined everywhere and built
 nowhere: no tool, to our knowledge, materializes it from an ω-automaton, and the
 existing algorithmic accounts of aperiodicity for ω-languages are nondeterministic
 on-the-fly complexity arguments [DG08, Prop. 12.3] that emit no algebra and no
@@ -81,15 +81,15 @@ the literature *in isolation*, were never combined into a construction:
    of a finitary and an infinitary part — but compute no quotient, and their
    infinitary part still quantifies a two-sided context inside the loop.
 
-Our contribution is to supply both missing pieces and thereby construct the SOSG.
+Our contribution is to supply both missing pieces and thereby construct the SωS.
 For (1) we define the **acceptance-enriched monoid** `EM(D)` and prove it recognizes
-`L`, with the SOSG a quotient of it (§3). For (2) we **collapse** Arnold's two
+`L`, with the SωS a quotient of it (§3). For (2) we **collapse** Arnold's two
 shapes: the linear shape becomes pointwise residual equality, the ω-power shape
 becomes right-invariant profile equality, and a two-line **rotation lemma** proves
 the two-sided congruence is computable with right multiplications alone (§4). The
-main theorem is that this right-computable quotient *is* the SOSG (Theorem 4.5).
+main theorem is that this right-computable quotient *is* the SωS (Theorem 4.5).
 
-**The object first, its uses second.** Having built the SOSG, we reify it as a
+**The object first, its uses second.** Having built the SωS, we reify it as a
 canonical, complete, *exportable* representation of the language — what a minimal
 deterministic ω-automaton would be if one existed, which for ω-words it does not
 (§5). The classifications then become read-offs (§6): not merely *is `L` LTL*, but
@@ -107,7 +107,7 @@ is stated once and then immediately read off these three.
 
 - **`GF(aa) := GF(a ∧ Xa)`** — "infinitely many `aa`-factors." It *is* LTL, but a
   natural presentation encodes the letter `a` as a transposition, so its transition
-  monoid carries a spurious group. The SOSG *destroys* that group.
+  monoid carries a spurious group. The SωS *destroys* that group.
 - **`Even := (aa)*·!a·Σ^ω`** — over the single atom `a`, an even number of `a`'s then a
   `!a` then anything; in PSL, the words with a prefix matching the SERE
   `{a[*2]}[*] ; !a`. The canonical mod-2 language; *not* LTL, its group genuine, and —
@@ -156,7 +156,7 @@ these three.
 | `EvenBlocks` | `GF!a ∧ FG(!a → X{a[*2][*];!a}!)` | 2 | **16** | 7 | yes | yes (`Z₂`) | no | `F₂` (ω-power): `(aⁿ·!a)^ω`, by parity of `n` |
 
 **Table 1.** Algebraic fingerprints of the three examples. `|EM¹|` is the
-acceptance-enriched monoid, `|S(L)₊¹|` the constructed SOSG (identity adjoined); a group
+acceptance-enriched monoid, `|S(L)₊¹|` the constructed SωS (identity adjoined); a group
 in the *transition* monoid may be a presentation artifact, whereas a group in `S(L)₊` is
 intrinsic and equivalent to non-LTL-definability. The `GF(aa)` row is the story in
 miniature — a `Z₂` in `EM` but **none** in `S(L)₊`, hence LTL — while `Even` and
@@ -260,7 +260,7 @@ quotient, completed with the linked-pair (infinite-power) data, is a finite
 ω-semigroup that **recognizes `L`** — the quotient morphism is a recognizer. Third,
 it is the **coarsest** congruence saturating `L`, hence *canonical*: any two automata
 for `L` yield the same quotient. This quotient `S(L)₊ = Σ⁺/≈_L`, with its linked-pair
-completion `S(L)`, is the **SOSG**. The two shapes are genuinely independent —
+completion `S(L)`, is the **syntactic ω-semigroup** (SωS). The two shapes are genuinely independent —
 Proposition 4.6 exhibits a language separated by one shape and blind to the other —
 so a construction may not drop either.
 
@@ -318,7 +318,7 @@ collects the `Inf`-mark that reading a single `a` (from a fresh state) does not.
 (Proposition 3.4). Closing `⟦a⟧`, `⟦¬a⟧` under composition yields the ten elements of
 `EM(GF(aa))` — the empty word, the four `aa`-free "(first letter, last letter)"
 behaviors, and the absorbing "contains `aa`" behavior, each in one or two mark states —
-tabulated in Table 2 alongside their fold to the six SOSG classes of §4.
+tabulated in Table 2 alongside their fold to the six SωS classes of §4.
 
 ---
 
@@ -355,7 +355,7 @@ the same states at boundaries and the same multiset of marks within each block, 
 they have the same set of marks visited infinitely often — and `Acc`, an Emerson–Lei
 condition, is a function of that inf-set alone. Thus the runs agree on acceptance. ∎
 
-**Corollary 3.3 (`EM` recognizes `L`; the SOSG is a quotient).** The syntactic
+**Corollary 3.3 (`EM` recognizes `L`; the SωS is a quotient).** The syntactic
 morphism `Σ* → S(L)₊` factors through `⟦·⟧ : Σ* → EM(D)`. Consequently there is a
 surjective ω-semigroup morphism `EM(D) ↠ S(L)`, and `S(L)` is a computable quotient
 of `EM(D)`.
@@ -386,7 +386,7 @@ No amount of state bookkeeping recovers acceptance; the marks-along-the-run are
 irreducible data, and `EM` is the smallest recognizer that keeps them.
 
 Proposition 3.4 is why a group in the transition monoid proves nothing about `L`: it
-can be pure encoding, invisible to `EM` and hence to the SOSG. (Symmetrically,
+can be pure encoding, invisible to `EM` and hence to the SωS. (Symmetrically,
 aperiodicity of the transition monoid is *sufficient* for aperiodicity of `S(L)₊`,
 inherited upward through the enrichment — a one-directional convenience, not part of
 the object.) The `GF(aa)` thread is exactly this situation, resolved in §4.
@@ -510,7 +510,7 @@ finitary × infinitary split; the rotation lemma is what makes the two-sided
 syntactic congruence computable with the one operation a monoid's closure table
 offers for free — right multiplication.
 
-**Theorem 4.5 (the SOSG, constructed).** `EM(D)/~ = S(L)`, where `~ = ~lin ∧ ~ω` is
+**Theorem 4.5 (the SωS, constructed).** `EM(D)/~ = S(L)`, where `~ = ~lin ∧ ~ω` is
 the right-computable congruence of Definition 4.2. Concretely, `S(L)₊` is computed by
 partition refinement (Moore's algorithm on `EM(D)`): start with blocks that group
 elements sharing the same `~lin`-class and the same profile `Aprof` — the seed `R` of
@@ -554,7 +554,7 @@ so the transition monoid's `Z₂` is gone; the single accepting linked pair is
 [a·a]  4   1    2    3      4
 ```
 
-**Table 3.** Multiplication tables of the two SOSGs. In `S(Even)₊`, `[a]·[a] = [a·a]`
+**Table 3.** Multiplication tables of the two SωSs. In `S(Even)₊`, `[a]·[a] = [a·a]`
 and `[a·a]·[a] = [a]`: the pair `{[a], [a·a]}` is a **period-2 cycle**, the `Z₂` that
 makes `Even` non-LTL. Its accepting linked pairs are `([¬a],[¬a])`, `([¬a],[a·¬a])`,
 `([¬a],[a·a])` — once the accepting sink (class `[¬a]`) is reached, every loop accepts.
@@ -615,7 +615,7 @@ computing `(⟦u⟧, ⟦z⟧)`, reducing to its linked pair, and testing `P`. Si
 `L`. Conversely `𝓘` is a function of `L` (Theorem 4.5, canonical keying), so equal
 languages have equal `𝓘`. ∎
 
-Theorem 5.1 is what makes the SOSG worth building as an object rather than as a means
+Theorem 5.1 is what makes the syntactic ω-semigroup worth building as an object rather than as a means
 to a verdict. It is a **canonical, complete, presentation-independent semantic
 representation** of `L` — what a minimal deterministic ω-automaton would be, except
 that for ω-words no canonical minimal deterministic automaton exists. It is
@@ -689,17 +689,17 @@ deduplicating large language sets.
 
 ## 6. One object, every classification
 
-The SOSG earns the phrase *semantic benchmark*. The classical taxonomy of ω-regular
+The syntactic ω-semigroup earns the phrase *semantic benchmark*. The classical taxonomy of ω-regular
 languages — by acceptance type, by the safety–progress hierarchy, by topological
 complexity, by temporal-logic fragment, by acceptance index, and up to the complete
 Wadge classification — is, theorem by theorem, a taxonomy of *structural properties of
 the syntactic ω-semigroup*. Each question was historically answered by a construction
 tailored to a presentation: the cycles of a Muller automaton, the index of a parity
-automaton, the variety of a monoid. The SOSG answers them all by reading one canonical
+automaton, the variety of a monoid. The SωS answers them all by reading one canonical
 object, because each classification *is*, by its own characterization theorem, a
 property of that object. We claim no economy for a single verdict — a dedicated
 algorithm for one class will usually beat materializing the whole algebra — but a
-*unifying* one: build the SOSG once and each decision below is a table lookup, several
+*unifying* one: build the SωS once and each decision below is a table lookup, several
 of them decisions for which no practical tool exists today.
 
 Many of these problems come with dedicated decision procedures already — Landweber's for
@@ -717,7 +717,7 @@ implementation at all.
 Verification's safety–progress hierarchy of Manna and Pnueli [MP92] (safety, guarantee,
 obligation, recurrence/response, persistence, reactivity), Landweber's finite Borel
 hierarchy [Lan69], and the deterministic-acceptance hierarchy are three vocabularies for
-one ladder, and on the SOSG they become literally the same conditions on linked pairs. A
+one ladder, and on the SωS they become literally the same conditions on linked pairs. A
 **safety** property (topologically closed, `Π⁰₁`) is one an ω-word fails only by
 committing to failure on a finite prefix; a **guarantee** / co-safety property (open,
 `Σ⁰₁`) is its dual, witnessed by a good prefix; their Boolean combinations are the
@@ -728,7 +728,7 @@ and their combinations, **reactivity**, exhaust the ladder [Lan69, SW08, PW13].
 
 Landweber decides these on a Muller automaton by conditions on *realizable cycles*: his
 `Gδ` test asks that the family of accepting cycles be closed under union with cycles
-reachable at the same state [Lan69, Thm 4.2]. Transported to the SOSG a realizable cycle
+reachable at the same state [Lan69, Thm 4.2]. Transported to the SωS a realizable cycle
 *is* a linked pair, and each rung is a closure condition on the accepting linked-pair set
 `P` — the very data Theorem 5.1 isolates. The level in the ladder is read off `P`
 directly, with no automaton reanalysis.
@@ -767,7 +767,7 @@ in the variety **DA** *together with* a closure condition in an alphabetic topol
 `FO² ≠ Δ₂` here, unlike over finite words [DK09]; the quantifier-alternation levels
 `Σ₂, Δ₂` likewise pair a variety condition with an openness condition in that topology,
 and the until-nesting hierarchy of LTL is graded by a semigroup power condition [Wilke99].
-The SOSG carries exactly the data these tests consume — the variety of `S(L)₊` and the
+The syntactic ω-semigroup carries exactly the data these tests consume — the variety of `S(L)₊` and the
 residual/topological structure of §4 — so each is a decidable property of the object; we
 claim the data, not a slogan.
 
@@ -800,18 +800,18 @@ automaton-independent index [SW08]. The exact Wadge degree of `L` is therefore f
 the maximal chain and superchain lengths in `S(L)`: one traversal of the object's chain
 structure.
 
-This is the precise sense in which the SOSG is the semantic benchmark. It is a complete
+This is the precise sense in which the syntactic ω-semigroup is the semantic benchmark. It is a complete
 invariant not merely for language identity (Theorem 5.1) but for the entire Wadge
 classification, and the classical decision problems — safety versus liveness, the
 acceptance index, LTL-definability alongside as the orthogonal aperiodicity axis — are
 its projections. The object was built to decide one question, LTL-definability; having
-it, that question is a single coordinate, and the SOSG is the coordinate system.
+it, that question is a single coordinate, and the SωS is the coordinate system.
 
 The table gathers that coordinate system in one view: each row is a classical decision,
-the reference that defines it, the structural test it becomes on the SOSG, and whether a
+the reference that defines it, the structural test it becomes on the SωS, and whether a
 practical tool answers it today.
 
-| Band | Classification | Defined by | Test on the SOSG | Practical tool |
+| Band | Classification | Defined by | Test on the SωS | Practical tool |
 |---|---|---|---|---|
 | identity | equality · complement · emptiness | Thm 5.1 | `𝓘` equality · `P ↦ P^c` · `P = ∅` | yes |
 | ladder | safety · guarantee · obligation | [MP92, Lan69] | closure conditions on the accepting set `P` | partial (Spot) |
