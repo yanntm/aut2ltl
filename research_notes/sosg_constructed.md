@@ -2,7 +2,7 @@
 
 **Claude (Anthropic)** and **Yann Thierry-Mieg**
 
-*Working draft — 2026-07-04*
+*Working draft — 2026-07-05*
 
 ## Abstract
 
@@ -124,20 +124,40 @@ LTL — simpler, and far better tool-supported — is itself a use of the object
 these two are its minimal witnesses. Both are built directly from their SERE text by a
 standard PSL front end, so Figure 1 needs no hand construction.
 
-> **Figure 1** (rendered in the companion [figures](sosg_figs/figures.md)). The
-> deterministic Emerson–Lei automata `D` of the three running examples: **(a)**
-> `GF(aa)` — 2 states, `a` a transposition, `Inf(0)` closing each `aa` (a `Z₂` in the
-> transition monoid); **(b)** `Even` — 4 states, `Inf(0)`, a parity pair with an
-> accepting and a rejecting sink; **(c)** `EvenBlocks` — 2 states, `Fin(0) ∧ Inf(1)`,
-> prefix-independent.
+---
 
-> **Table 1** (in the companion [figures](sosg_figs/figures.md)). Algebraic
-> fingerprints — PSL/SERE source, `|Q|`, `|EM(D)¹|`, `|S(L)₊¹|`, group in the
-> transition monoid?, group in `S(L)₊`?, LTL?, and either the certificate shape
-> (`F₁`/`F₂`) or the synthesized formula. The `GF(aa)` row is the story in miniature:
-> `|EM¹| = 10` with a `Z₂`, `|S(L)₊¹| = 6` with *no* group, LTL, formula `GF(a ∧ Xa)`;
-> the `Even` (`7 → 5`) and `EvenBlocks` (`16 → 7`) rows carry a real group into
-> `S(L)₊` and a `{·}[*2]`-rooted witness out.
+<table>
+<tr>
+<td align="center"><img src="sosg_figs/img/gf_aa.png" alt="GF(aa) run-parity automaton" width="280"></td>
+<td align="center"><img src="sosg_figs/img/even.png" alt="Even automaton" width="280"></td>
+<td align="center"><img src="sosg_figs/img/evenblocks.png" alt="EvenBlocks automaton" width="280"></td>
+</tr>
+<tr>
+<td align="center"><b>(a) <code>GF(aa)</code></b><br>2 states, <code>Inf(0)</code> (Büchi).<br>The <code>a</code>-letter transposes the<br>two states — a <code>Z₂</code> in the<br>transition monoid.</td>
+<td align="center"><b>(b) <code>Even</code></b><br>4 states, <code>Inf(0)</code> (Büchi).<br>Parity pair <code>2/1</code>, an accepting<br>sink <code>0</code>, a rejecting sink <code>3</code>.</td>
+<td align="center"><b>(c) <code>EvenBlocks</code></b><br>2 states, <code>Fin(0) ∧ Inf(1)</code>.<br>Prefix-independent; the parity<br>of a completed block lives on<br>the <code>!a</code>-transitions' marks.</td>
+</tr>
+</table>
+
+**Figure 1.** The deterministic Emerson–Lei automata `D` of the three running
+examples, as Spot renders them — a transposition-carrying `GF(aa)`, a four-state
+`Even`, a prefix-independent `EvenBlocks`. Every value in this paper is read off
+these three.
+
+---
+
+| example | PSL/SERE source | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | group in TM? | group in `S(L)₊`? | LTL? | witness shape / defining formula |
+|---|---|:--:|:--:|:--:|:--:|:--:|:--:|---|
+| `GF(aa)` | `G F(a & Xa)` | 2 | **10** | **6** | yes (`Z₂`) | **no** | **yes** | defining formula ≡ `GF(a ∧ Xa)` |
+| `Even` | `{ {a[*2]}[*] ; !a }!` | 4 | 7 | 5 | yes | **yes (`Z₂`)** | no | `F₁` (linear): `aⁿ·!a·a^ω ∈ L ⟺ n` even |
+| `EvenBlocks` | `GF!a ∧ FG(!a → X{a[*2][*];!a}!)` | 2 | **16** | 7 | yes | yes (`Z₂`) | no | `F₂` (ω-power): `(aⁿ·!a)^ω`, by parity of `n` |
+
+**Table 1.** Algebraic fingerprints of the three examples. `|EM¹|` is the
+acceptance-enriched monoid, `|S(L)₊¹|` the constructed SOSG (identity adjoined); a group
+in the *transition* monoid may be a presentation artifact, whereas a group in `S(L)₊` is
+intrinsic and equivalent to non-LTL-definability. The `GF(aa)` row is the story in
+miniature — a `Z₂` in `EM` but **none** in `S(L)₊`, hence LTL — while `Even` and
+`EvenBlocks` carry a real group into `S(L)₊` and a `{·}[*2]`-rooted witness out.
 
 ---
 
@@ -147,7 +167,7 @@ The reader we write for practices ω-automata — Büchi acceptance, ω-regular 
 but need not keep Perrin–Pin open. This section fixes the few algebraic objects the
 construction stands on, each with the intuition we ourselves had to reconstruct from
 the book, shown on the three running examples. There is one genuinely new idea; the
-rest is boolean bookkeeping.
+rest is Boolean bookkeeping.
 
 **We only ever look at lassos.** A **lasso** (ultimately-periodic word) is `u·v^ω`: a
 finite stem `u`, then a finite loop `v` repeated forever. The organizing fact: *two
@@ -194,9 +214,9 @@ Rabin, and Muller. For a state `q`, its **residual** is the ω-language
 `L(ι·u) = u⁻¹L` for every finite prefix `u`.
 
 *Example (Figure 1).* The three running automata instantiate `Acc` across the
-Emerson–Lei range. `GF(aa)` reads `Inf(c)` for a single mark `c` placed on the
-`a`-transition taken from the "just saw an `a`" state — the run passes `c`
-infinitely often iff `aa` recurs. `Even` is a guarantee: `Inf(acc)` for the mark on
+Emerson–Lei range. `GF(aa)` reads `Inf(0)` for a single mark `0` placed on the
+`a`-transition taken from the "just saw an `a`" state — the run passes `0`
+infinitely often iff `aa` recurs. `Even` is a guarantee: `Inf(0)` for the mark on
 the accepting sink's self-loops — the run reaches the sink (after an even `a`-prefix
 closed by `!a`) or never does. `EvenBlocks` needs the full `Fin(0) ∧ Inf(1)` shape:
 `Inf(1)` forces infinitely many `!a`'s (block completions), `Fin(0)` forbids an
@@ -235,8 +255,8 @@ quotient, completed with the linked-pair (infinite-power) data, is a finite
 ω-semigroup that **recognizes `L`** — the quotient morphism is a recognizer. Third,
 it is the **coarsest** congruence saturating `L`, hence *canonical*: any two automata
 for `L` yield the same quotient. This quotient `S(L)₊ = Σ⁺/≈_L`, with its linked-pair
-completion `S(L)`, is the **SOSG**. The two shapes are genuinely independent — §4.4
-and Proposition 4.6 exhibit a language separated by one shape and blind to the other —
+completion `S(L)`, is the **SOSG**. The two shapes are genuinely independent —
+Proposition 4.6 exhibits a language separated by one shape and blind to the other —
 so a construction may not drop either.
 
 *Example.* `Even` is separated by the *linear* shape and only it: taking `x = ε`,
@@ -295,11 +315,28 @@ collects the `Inf`-mark that reading a single `a` (from a fresh state) does not.
 behaviors, and the absorbing "contains `aa`" behavior, each in one or two mark states —
 tabulated in Table 2 alongside their fold to the six SOSG classes of §4.
 
-> **Table 2** (in the companion [figures](sosg_figs/figures.md)). The `10` elements of
-> `EM(GF(aa))` as `(st, mk)` vectors over `Q = {0,1}`, and their fold onto the `6`
-> classes of `S(GF(aa))₊`: four distinct elements collapse into the absorbing
-> "contains `aa`" class and `a·!a·a` rejoins `[a]`. The mark part alone separates
-> `⟦a⟧` from `⟦aa⟧` — the enrichment doing its one job.
+---
+
+| `⟦w⟧` | at state `0` | at state `1` | → `S(L)₊` class |
+|---|:--:|:--:|:--:|
+| `ε` | `(0, ∅)` | `(1, ∅)` | `[ε]` |
+| `!a` | `(0, ∅)` | `(0, ∅)` | `[¬a]` |
+| `a` | `(1, ∅)` | `(0, {0})` | `[a]` |
+| `!a·a` | `(1, ∅)` | `(1, ∅)` | `[¬a·a]` |
+| `a·!a` | `(0, ∅)` | `(0, {0})` | `[a·¬a]` |
+| `a·a` | `(0, {0})` | `(1, {0})` | `[a·a]` |
+| `!a·a·a` | `(0, {0})` | `(0, {0})` | `[a·a]` |
+| `a·!a·a` | `(1, ∅)` | `(1, {0})` | `[a]` |
+| `a·a·a` | `(1, {0})` | `(0, {0})` | `[a·a]` |
+| `!a·a·a·a` | `(1, {0})` | `(1, {0})` | `[a·a]` |
+
+**Table 2.** The `10` elements of `EM(GF(aa))` as `(st, mk)` vectors over `Q = {0,1}`,
+folded onto the `6` classes of `S(GF(aa))₊`. Reading a second `a` collects the
+`Inf`-mark `0` — the only difference between `⟦a⟧` and `⟦aa⟧`, invisible to the
+transition monoid. Four distinct elements collapse into the absorbing "contains `aa`"
+class and `a·!a·a` rejoins `[a]`: **10 → 6**.
+
+---
 
 **Lemma 3.2 (skeleton).** If two ω-words `α, β` factor into blocks with the same
 sequence of enriched elements read from `ι` — i.e. `α = w₁w₂⋯`, `β = w'₁w'₂⋯` with
@@ -398,9 +435,9 @@ itself, which is trivial.
 (Figure 1, Table 2) the letter `⟦a⟧` transposes the two states — `0 → 1` collecting no
 mark, `1 → 0` collecting the `Inf`-mark `0`. Iterating `⟦a⟧` from either state runs
 around the 2-cycle `{0, 1}`, whose marks are `{0}`; since `Acc = Inf(0)` accepts,
-`A(0, ⟦a⟧) = A(1, ⟦a⟧) = 1`, so `Aprof(⟦a⟧) = (1, 1)` — matching `aᵂ ∈ GF(aa)`. By
+`A(0, ⟦a⟧) = A(1, ⟦a⟧) = 1`, so `Aprof(⟦a⟧) = (1, 1)` — matching `a^ω ∈ GF(aa)`. By
 contrast `⟦!a⟧` resets both states to `0` with no mark, so its cycle `{0}` carries `∅`,
-`Inf(0)` fails, and `Aprof(⟦!a⟧) = (0, 0)` — matching `(!a)ᵂ ∉ GF(aa)`. The profile is
+`Inf(0)` fails, and `Aprof(⟦!a⟧) = (0, 0)` — matching `(!a)^ω ∉ GF(aa)`. The profile is
 exactly this per-state loop verdict, one bit per state.
 
 **Proposition 4.3 (factorization).** `e ~ f  ⟺  e ~lin f  ∧  e ~ω f`.
@@ -430,7 +467,7 @@ residuals — and the group is visible on the *state* side: `st_{⟦a⟧}` swaps
 an order-2 action `~lin` sees directly. In `EvenBlocks`, `~lin` is *total* (one
 residual, prefix-independence), so the linear half sees nothing at all; the entire
 order-2 group is carried by `~ω`. Concretely, right-extend by `b = ⟦!a⟧` (close the
-block): the loop `⟦a·!a⟧` is a length-1 (**odd**) block, so `(a·!a)ᵂ` violates `Fin(0)`
+block): the loop `⟦a·!a⟧` is a length-1 (**odd**) block, so `(a·!a)^ω` violates `Fin(0)`
 and `Aprof(⟦a·!a⟧)` rejects, whereas `⟦aa·!a⟧` is an **even** block and
 `Aprof(⟦aa·!a⟧)` accepts. So `~ω` separates `⟦a⟧` from `⟦aa⟧` — their reached states
 being identical, `~lin` never could. One example loads the finitary half, the other
@@ -483,13 +520,41 @@ linked-pair data (the accepting pairs, §5) completes it to `S(L)`. The stated
 computation realizes `~` by Lemma 4.4: right-invariance of both seed components makes
 one Moore-style refinement to fixpoint compute `~lin ∧ ~ω` exactly. ∎
 
-> **Table 3** (in the companion [figures](sosg_figs/figures.md)). `S(GF(aa))₊`: the
-> six classes keyed `[ε], [¬a], [a], [¬a·a], [a·¬a], [a·a]`, the multiplication table,
-> and the single accepting linked pair `([a·a], [a·a])`. An `aa`-free word is fixed by
-> its (first letter, last letter); `[a·a]` = "contains `aa`" is two-sided absorbing;
-> every power cycle has period `1`, so the transition monoid's `Z₂` is gone. The
-> companion `S(Even)₊`, where `{[a], [a·a]}` is a period-2 cycle, is the group that
-> survives.
+---
+
+`S(GF(aa))₊`, classes `0=[ε] 1=[¬a] 2=[a] 3=[¬a·a] 4=[a·¬a] 5=[a·a]`, letters
+`!a → [¬a]`, `a → [a]`:
+
+```
+ ·    [ε] [¬a] [a] [¬a·a] [a·¬a] [a·a]
+[ε]    0   1    2    3      4      5
+[¬a]   1   1    3    3      1      5
+[a]    2   4    5    2      5      5
+[¬a·a] 3   1    5    3      5      5
+[a·¬a] 4   4    2    2      4      5
+[a·a]  5   5    5    5      5      5
+```
+
+`[a·a]` = "contains `aa`" is two-sided absorbing and every power cycle has period `1`,
+so the transition monoid's `Z₂` is gone; the single accepting linked pair is
+`([a·a], [a·a])`. For `Even` the group survives — `S(Even)₊`, classes
+`0=[ε] 1=[¬a] 2=[a] 3=[a·¬a] 4=[a·a]`:
+
+```
+ ·    [ε] [¬a] [a] [a·¬a] [a·a]
+[ε]    0   1    2    3      4
+[¬a]   1   1    1    1      1
+[a]    2   3    4    1      2
+[a·¬a] 3   3    3    3      3
+[a·a]  4   1    2    3      4
+```
+
+**Table 3.** Multiplication tables of the two SOSGs. In `S(Even)₊`, `[a]·[a] = [a·a]`
+and `[a·a]·[a] = [a]`: the pair `{[a], [a·a]}` is a **period-2 cycle**, the `Z₂` that
+makes `Even` non-LTL. Its accepting linked pairs are `([¬a],[¬a])`, `([¬a],[a·¬a])`,
+`([¬a],[a·a])` — once the accepting sink (class `[¬a]`) is reached, every loop accepts.
+
+---
 
 **Proposition 4.6 (prefix-independence, as a theorem not a case).** `L` is
 prefix-independent (`σα ∈ L ⟺ α ∈ L` for all `σ ∈ Σ*`) iff `L` has a single residual
@@ -567,12 +632,48 @@ precise sense in which the algebra is canonical where the automata are not. Swap
 complement language: the algebra is shared between `L` and `L̄`, and `P` alone
 separates them — the reason `P` is part of the invariant.
 
-> **Figure 2** (in the companion [figures](sosg_figs/figures.md); format
-> [`sosg_format.md`](sosg_format.md)). The exportable artifact `𝓘(GF(aa))`: a
-> "semantic HOA" block listing the keyed classes, the letter map, the multiplication
-> table, the saturated accepting-pair set, and an optional residuals section — the
-> serialization two tools compare byte-for-byte (on its core) to decide language
-> equality.
+---
+
+`𝓘(GF(aa))` serialized (format v1, [`sosg_format.md`](sosg_format.md)):
+
+```
+SOSG v1
+ap: a
+classes: 6
+0  eps
+1  !a
+2  a
+3  !a;a
+4  a;!a
+5  a;a
+letters: !a->1  a->2
+mult:
+     0 1 2 3 4 5
+  0  0 1 2 3 4 5
+  1  1 1 3 3 1 5
+  2  2 4 5 2 5 5
+  3  3 1 5 3 5 5
+  4  4 4 2 2 4 5
+  5  5 5 5 5 5 5
+accept:
+  5 5
+residuals: 1
+0  eps
+res-mult:
+     !a a
+  0  0 0
+```
+
+**Figure 2.** The exportable artifact `𝓘(GF(aa))` — a "semantic HOA" listing the keyed
+classes, letter map, multiplication table, and saturated accepting-pair set (this core
+is the complete language invariant), plus an optional residuals block (here a single
+state, `GF(aa)` being prefix-independent) that does not enter the equality test. To test
+membership of `u·z^ω`: fold `u, z` to class ids, iterate `z` to an idempotent `e`, set
+`s = u·e`, and accept iff `(s, e)` is listed under `accept`. For `(a·!a)^ω`: `z = a·!a`
+folds to class `4`, already idempotent, `s = 4`; `4 4` is not in `accept`, so it is
+rejected — correctly, no `aa` recurs.
+
+---
 
 A first, aperiodicity-free use: **language equality is table equality.** Where
 pairwise equivalence of `N` languages costs `O(N²)` automaton products, hashing `𝓘`
@@ -678,8 +779,8 @@ this length is, by a theorem of Carton and Perrin, computable in the *syntactic*
 Deterministic-Büchi realizability (the recurrence rung of §6.1) is the bottom case, where
 the chain collapses. This is the most operational classification of all: it names the
 acceptance a tool should target, and whether a given Emerson–Lei condition carries more
-than the language needs. `GF(aa)` has index `[1,1]` (Büchi suffices); `EvenBlocks` needs
-a full Rabin pair, its `Fin(0) ∧ Inf(1)` irreducible to Büchi.
+than the language needs. `GF(aa)` needs only Büchi (`GF` is recurrence); `EvenBlocks`
+needs a genuine Rabin pair, its `Fin(0) ∧ Inf(1)` not reducible to a Büchi condition.
 
 ### 6.4 The complete invariant — the Wagner degree
 
@@ -712,7 +813,7 @@ practical tool answers it today.
 | ladder | recurrence (DBA) · persistence (DCA) | [Lan69] | `Gδ`/`Fσ` linked-pair conditions | partial (Spot) |
 | aperiodic | star-free `=` FO `=` **LTL** | [Sch65, DG08] | `S(L)₊` group-free | none |
 | aperiodic | FO² · Σ₂ · Δ₂ · until-rank | [DK09, Wilke99] | variety of `S(L)₊` + topological side condition | none |
-| index | parity / Rabin / Mostowski `[i,j]` | [CP97, CP99] | longest alternating linked-pair chain | partial |
+| index | parity / Rabin / Mostowski `[i,j]` | [CP97, CP99] | longest alternating chain in `S(L)` | partial |
 | complete | **Wagner / Wadge degree** | [CP97, CP99, SW08] | chain / superchain structure of `S(L)` | none |
 
 Every row above the last is a projection of it: the Wadge degree is the complete
