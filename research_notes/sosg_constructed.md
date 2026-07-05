@@ -207,7 +207,9 @@ finite stem never matters — accepting iff the loop completes only even blocks.
 stem, loop-but-stem-blind: the three cases the construction must cover.
 
 We fix a finite alphabet `Σ` (for LTL applications `Σ = 2^AP`), write `Σ*`, `Σ^ω`,
-`Σ^∞ = Σ* ∪ Σ^ω`, and take `L ⊆ Σ^ω` regular. The input is any **deterministic,
+`Σ^∞ = Σ* ∪ Σ^ω`, and take `L ⊆ Σ^ω` regular. The running examples use the single
+atom `a`, so `Σ = {a, !a}`, with `!a` the letter where `a` does not hold. The input
+is any **deterministic,
 complete** automaton `D = (Q, ι, δ, C, Acc)` with `L(D) = L`: a finite state set `Q`,
 an **initial** state `ι ∈ Q`, a transition function `δ : Q × Σ → Q`, a finite set `C`
 of acceptance **marks** carried on transitions, and an acceptance condition `Acc`
@@ -333,7 +335,7 @@ Write `st_e(q)`, `mk_e(q)` for the two components of `e ∈ EM(D)` at `q`. The m
 `EM`, and precisely in the *mark* part: reading a second `a` closes an `aa` and
 collects the `Inf`-mark that reading a single `a` (from a fresh state) does not. Their
 *state* parts can nonetheless coincide, which is the whole point of the enrichment
-(Proposition 3.4). Closing `⟦a⟧`, `⟦¬a⟧` under composition yields the ten elements of
+(Proposition 3.4). Closing `⟦a⟧`, `⟦!a⟧` under composition yields the ten elements of
 `EM(GF(aa))` — the empty word, the four `aa`-free "(first letter, last letter)"
 behaviors, and the absorbing "contains `aa`" behavior, each in one or two mark states —
 tabulated in Table 2 alongside their fold to the six SωS classes of §4.
@@ -343,10 +345,10 @@ tabulated in Table 2 alongside their fold to the six SωS classes of §4.
 | `⟦w⟧` | at state `0` | at state `1` | → `S(L)₊` class |
 |---|:--:|:--:|:--:|
 | `ε` | `(0, ∅)` | `(1, ∅)` | `[ε]` |
-| `!a` | `(0, ∅)` | `(0, ∅)` | `[¬a]` |
+| `!a` | `(0, ∅)` | `(0, ∅)` | `[!a]` |
 | `a` | `(1, ∅)` | `(0, {0})` | `[a]` |
-| `!a·a` | `(1, ∅)` | `(1, ∅)` | `[¬a·a]` |
-| `a·!a` | `(0, ∅)` | `(0, {0})` | `[a·¬a]` |
+| `!a·a` | `(1, ∅)` | `(1, ∅)` | `[!a·a]` |
+| `a·!a` | `(0, ∅)` | `(0, {0})` | `[a·!a]` |
 | `a·a` | `(0, {0})` | `(1, {0})` | `[a·a]` |
 | `!a·a·a` | `(0, {0})` | `(0, {0})` | `[a·a]` |
 | `a·!a·a` | `(1, ∅)` | `(1, {0})` | `[a]` |
@@ -545,37 +547,37 @@ one Moore-style refinement to fixpoint compute `~lin ∧ ~ω` exactly. ∎
 
 ---
 
-`S(GF(aa))₊`, classes `0=[ε] 1=[¬a] 2=[a] 3=[¬a·a] 4=[a·¬a] 5=[a·a]`, letters
-`!a → [¬a]`, `a → [a]`:
+`S(GF(aa))₊`, classes `0=[ε] 1=[!a] 2=[a] 3=[!a·a] 4=[a·!a] 5=[a·a]`, letters
+`!a → [!a]`, `a → [a]`:
 
 ```
- ·    [ε] [¬a] [a] [¬a·a] [a·¬a] [a·a]
+ ·    [ε] [!a] [a] [!a·a] [a·!a] [a·a]
 [ε]    0   1    2    3      4      5
-[¬a]   1   1    3    3      1      5
+[!a]   1   1    3    3      1      5
 [a]    2   4    5    2      5      5
-[¬a·a] 3   1    5    3      5      5
-[a·¬a] 4   4    2    2      4      5
+[!a·a] 3   1    5    3      5      5
+[a·!a] 4   4    2    2      4      5
 [a·a]  5   5    5    5      5      5
 ```
 
 `[a·a]` = "contains `aa`" is two-sided absorbing and every power cycle has period `1`,
 so the transition monoid's `Z₂` is gone; the single accepting linked pair is
 `([a·a], [a·a])`. For `Even` the group survives — `S(Even)₊`, classes
-`0=[ε] 1=[¬a] 2=[a] 3=[a·¬a] 4=[a·a]`:
+`0=[ε] 1=[!a] 2=[a] 3=[a·!a] 4=[a·a]`:
 
 ```
- ·    [ε] [¬a] [a] [a·¬a] [a·a]
+ ·    [ε] [!a] [a] [a·!a] [a·a]
 [ε]    0   1    2    3      4
-[¬a]   1   1    1    1      1
+[!a]   1   1    1    1      1
 [a]    2   3    4    1      2
-[a·¬a] 3   3    3    3      3
+[a·!a] 3   3    3    3      3
 [a·a]  4   1    2    3      4
 ```
 
 **Table 3.** Multiplication tables of the two SωSs. In `S(Even)₊`, `[a]·[a] = [a·a]`
 and `[a·a]·[a] = [a]`: the pair `{[a], [a·a]}` is a **period-2 cycle**, the `Z₂` that
-makes `Even` non-LTL. Its accepting linked pairs are `([¬a],[¬a])`, `([¬a],[a·¬a])`,
-`([¬a],[a·a])` — once the accepting sink (class `[¬a]`) is reached, every loop accepts.
+makes `Even` non-LTL. Its accepting linked pairs are `([!a],[!a])`, `([!a],[a·!a])`,
+`([!a],[a·a])` — once the accepting sink (class `[!a]`) is reached, every loop accepts.
 
 ---
 
@@ -647,7 +649,7 @@ subject of §6; that one *has* it is the point of this section.
 presentation of Figure 1(a) — two states, a `Z₂` transition monoid — and again from
 the minimal reset presentation — a different state count, a different, aperiodic
 transition monoid. The two runs return the *identical* `𝓘`: six classes keyed
-`[ε], [¬a], [a], [¬a·a], [a·¬a], [a·a]`, one multiplication table, the single accepting
+`[ε], [!a], [a], [!a·a], [a·!a], [a·a]`, one multiplication table, the single accepting
 pair `([a·a],[a·a])` (Table 3). No automaton-level object does this — the two
 presentations are not isomorphic and neither is "the" minimal one — which is the
 precise sense in which the algebra is canonical where the automata are not. Swapping
