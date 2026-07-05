@@ -142,8 +142,8 @@ standard PSL front end, so Figure 1 needs no hand construction.
 </tr>
 </table>
 
-**Figure 1.** The deterministic Emerson–Lei automata `D` of the three running
-examples, as Spot renders them — a transposition-carrying `GF(aa)`, a four-state
+**Figure 1.** The deterministic, complete, transition-based Emerson–Lei automata
+`D` of the three running examples, as Spot renders them — a transposition-carrying `GF(aa)`, a four-state
 `Even`, a prefix-independent `EvenBlocks`. Every value in this paper is read off
 these three.
 
