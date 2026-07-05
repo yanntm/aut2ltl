@@ -208,13 +208,30 @@ stem, loop-but-stem-blind: the three cases the construction must cover.
 
 We fix a finite alphabet `Σ` (for LTL applications `Σ = 2^AP`), write `Σ*`, `Σ^ω`,
 `Σ^∞ = Σ* ∪ Σ^ω`, and take `L ⊆ Σ^ω` regular. The input is any **deterministic,
-complete** automaton `D = (Q, ι, δ, C, Acc)` with `L(D) = L`: `δ : Q × Σ → Q`, a
-finite set `C` of acceptance **marks** carried on transitions, and an **Emerson–Lei**
-acceptance condition `Acc` — a positive Boolean combination of `Inf(c)` and `Fin(c)`
-over `c ∈ C`, the most general ω-regular acceptance, subsuming Büchi, co-Büchi,
-Rabin, and Muller. For a state `q`, its **residual** is the ω-language
-`L(q) = { α ∈ Σ^ω : the run of D from q on α satisfies Acc }`; determinism makes
-`L(ι·u) = u⁻¹L` for every finite prefix `u`.
+complete** automaton `D = (Q, ι, δ, C, Acc)` with `L(D) = L`: a finite state set `Q`,
+an **initial** state `ι ∈ Q`, a transition function `δ : Q × Σ → Q`, a finite set `C`
+of acceptance **marks** carried on transitions, and an acceptance condition `Acc`
+(below). Reading a word steps `D` from state to state: at `q`, a letter `a` moves to
+the single successor `δ(q, a)` — *deterministic* because `δ` is a function (one
+successor, never a choice), *complete* because it is total (a successor for every
+letter, so no run ever stalls). An ω-word `α = a₀a₁⋯` thus traces one infinite
+**run** `q₀ →^{a₀} q₁ →^{a₁} ⋯` from `q₀ = ι`, with `q_{i+1} = δ(q_i, a_i)` — unique,
+and defined for every `α`; each step's transition carries a (possibly empty) subset
+of `C`, the marks collected there. Determinization of an arbitrary Emerson–Lei
+automaton is always possible, if worst-case exponential [Saf88], so such a `D` exists
+for any regular `L`.
+
+Acceptance reads only which marks *recur* — the set of marks seen infinitely often
+along the run. `Acc` is an **Emerson–Lei** condition — a positive Boolean combination
+of `Inf(c)` (“`c` occurs infinitely often”) and `Fin(c)` (“`c` occurs only finitely
+often”) over `c ∈ C` — evaluated on that infinitely-often set; it is the most general
+ω-regular acceptance, subsuming Büchi, co-Büchi, Rabin, and Muller as special shapes.
+A word is **accepted** — a member of `L(D)` — exactly when its run from `ι` satisfies
+`Acc`, and we require `L(D) = L`. More generally, for any state `q` its **residual**
+is the ω-language `L(q) = { α ∈ Σ^ω : the run of D from q on α satisfies Acc }` — what
+`D` would accept were `q` the start. Determinism ties residuals to the language: a
+finite prefix `u` read from `ι` lands in one state, so `L(ι·u) = u⁻¹L` for every
+`u ∈ Σ*`.
 
 *Example (Figure 1).* The three running automata instantiate `Acc` across the
 Emerson–Lei range. `GF(aa)` reads `Inf(0)` for a single mark `0` placed on the
@@ -282,7 +299,7 @@ is an artifact of the presentation and, as §4 shows, is absent from `S(GF(aa))�
 which is aperiodic.
 
 The task is to build the syntactic ω-semigroup `S(L)` from the deterministic
-automaton `D`. The two keys follow.
+automaton `D`. The two keys to do so follow.
 
 ---
 
@@ -904,6 +921,7 @@ worth building.
   Games.* Elsevier, 2004.
 - **[PW13]** S. Preugschat, T. Wilke. *Effective characterizations of simple fragments of
   temporal logic using Carton–Michel automata.* LMCS 9(2:08) (2013).
+- **[Saf88]** S. Safra. *On the complexity of ω-automata.* FOCS 1988, 319–327.
 - **[Sch65]** M. P. Schützenberger. *On finite monoids having only trivial subgroups.*
   Information and Control 8 (1965) 190–194.
 - **[SW08]** V. Selivanov, K. W. Wagner. *Complexity of topological properties of regular
