@@ -15,16 +15,18 @@ equivalence, and every definability property of `L` — LTL-definability include
 are read. It has recently been constructed from a deterministic automaton for
 the first time [SωS26]. This paper shows it is *learnable*: we give an active-learning
 algorithm in the MAT model whose queries are memberships of ultimately-periodic
-words only, and whose hypotheses and target are the exportable invariant
-`𝓘(L) = (𝒞, λ, M, P)`. Two results carry the paper. First, a *harvest theorem*:
+words only, whose target is the exportable invariant `𝓘(L) = (𝒞, λ, M, P)`, and
+whose hypotheses are its automaton-like Cayley form. Two results carry the
+paper. First, a *harvest theorem*:
 any lasso on which a hypothesis errs surrenders a separating table column, by a
 two-phase replacement chain — stem first, then loop-head, where a left extension
 of a loop is nothing but a rotation of it — with a binary search in each phase. Second,
-a finding we did not anticipate: an observation table with two-sided columns is
+a finding of independent interest: an observation table with two-sided columns is
 *still not enough*, because membership's error signal is one-sided — the table can
 stabilize on a correct acceptor coarser than the algebra, an FDFA in algebraic
-clothing. What restores two-sidedness is a query-free *left-saturation* sweep over
-class representatives, the rotation lemma's slot collapse reborn on the learner's
+clothing. What restores two-sidedness is a *left-saturation* sweep over class
+representatives whose checks cost no queries at all — the rotation lemma's slot
+collapse reborn on the learner's
 side; with it, the fixpoint is exactly `S(L)₊`, after at most `|𝒞|` class splits
 and `O(|𝒞|²·|Σ|)` membership queries plus a logarithmic-cost analysis per
 counterexample — output-polynomial in the canonical target. The established FDFA
@@ -105,8 +107,9 @@ automata presentation of the free algebra — `Syn(L) ≅ Min(lin(L))` [US20,
 Thm 5.14] — and learn that automaton by a generalized L\*. Instantiated to Wilke
 algebras this covers ω-regular languages, in principle. In instance it is not
 effective: the presentation validating the isomorphism carries the sorted alphabet
-`Σ₊,ω = {ω} ∪ {·v^ω : v ∈ Σ⁺}` — one letter per finite word `v`, Arnold's ω-power
-contexts recast as an *infinite alphabet* — while the finite restriction to `{ω}`
+`Σ₊,ω = {ω} ∪ {·v^ω : v ∈ Σ⁺}`, whose letters are *operations* — `ω` sends `w` to
+`w^ω`, and `·v^ω` sends `w` to `w·v^ω`: one letter per finite word `v`, Arnold's
+ω-power contexts recast as an *infinite alphabet* — while the finite restriction to `{ω}`
 alone is only a *weak* presentation, outside the theorem, of which [US20] itself
 notes that the resulting learned object resembles a family of DFAs. The rotation
 lemma is exactly the missing finiteness: no ω-power context need be an alphabet
@@ -116,7 +119,8 @@ target is; this paper makes the ω-instance an algorithm, and runs it.
 
 Three running examples — `GF(aa)`, `Even`, `EvenBlocks` [SωS26] — recur
 throughout. Two of them are traced *live* through §3–5: `Even`
-(`(aa)*·!a·Σ^ω`, a guarantee property deciding on the stem) and `EvenBlocks`
+(`(aa)*·!a·Σ^ω`, co-safety: membership is decided by a finite prefix, i.e. on
+the stem) and `EvenBlocks`
 (prefix-independent, trivial right congruence — outside [MP95]'s class,
 degenerate for any FDFA's leading automaton, and precisely the case the ω-sort
 of our columns is built for). The trace has a punchline worth spoiling: both
@@ -153,14 +157,17 @@ For ω-regular `L` the congruence has **finitely many classes** [Arn85]; write
 `𝒞` for the classes, `[u]` for the class of `u`, and adjoin `[ε]` as an
 identity. Being a congruence means exactly that the class of a concatenation is
 a function of the classes: `[u]·[v] := [u·v]` is well defined — the classes
-form a finite monoid, and this multiplication is the table `M` below.
+form a finite monoid, and this multiplication is the table `M` below. This
+quotient monoid is written `S(L)₊`, or `S(L)₊¹` when the identity `[ε]` is
+counted with it; completed with the acceptance datum `P` below, it is the
+**syntactic ω-semigroup** of `L`.
 
-**Linked pairs name lassos.** Iterate a class: `[v], [v]², [v]³, …` moves in a
-finite monoid, so it stabilizes — there is `k` with `[v]^k·[v]^k = [v]^k`, an
-**idempotent**. A **linked pair** is a pair of classes `(s, e)` with
-`e·e = e` and `s·e = s`; folding a lasso `u·v^ω` as `(u·v^k)·(v^k)^ω` lands on
-one — `s = [u·v^k]`, `e = [v^k]` — and membership of the lasso depends *only*
-on that pair. So the acceptance datum of the algebra is a set `P` of accepting
+**Linked pairs name lassos.** Iterate a class: the powers `[v], [v]², [v]³, …`
+move in a finite monoid, so they eventually cycle, and some power is an
+**idempotent** — there is `k` with `[v]^k·[v]^k = [v]^k`. A **linked pair** is
+a pair of classes `(s, e)` with `e·e = e` and `s·e = s`; folding a lasso
+`u·v^ω` as `(u·v^k)·(v^k)^ω` lands on one — `s = [u·v^k]`, `e = [v^k]` — and
+membership of the lasso depends *only* on that pair [PP04]. So the acceptance datum of the algebra is a set `P` of accepting
 pairs, not a set of accepting classes: loops are named separately from stems.
 
 **The invariant.** Packaging the above: `𝓘(L) = (𝒞, λ, M, P)` with each class
@@ -170,8 +177,8 @@ is decided from `𝓘(L)` alone — fold the stem and loop through `λ` and `M`,
 iterate the loop's class to its idempotent, look up the pair in `P` — and
 `𝓘(L)` is a **complete, canonical invariant**: two ω-regular languages over the
 same alphabet are equal iff their invariants are byte-equal after keying
-[SωS26, Thm 5.1]. This is the learner's target, and (one sentence for the
-temporal-logic reader) it answers definability directly: `L` is LTL-expressible
+[SωS26, Thm 5.1]. This is the learner's target, and it answers definability
+directly: `L` is LTL-expressible
 iff no power sequence `c, c², c³, …` in `M` cycles with period `> 1` — the
 aperiodicity read-off [SωS26].
 
@@ -202,8 +209,8 @@ this realization.
 ## 3. The observation table
 
 **Definition 3.1 (table).** A table is `T = (R, E_lin, E_ω)` where `R ⊆ Σ*` is a
-finite, shortlex-reduced set of **rows** containing `ε` and `Σ`, observed
-together with its frontier `R·Σ`, and the columns are of two sorts:
+finite set of **rows** containing `ε` and `Σ`, observed together with its
+frontier `R·Σ`, and the columns are of two sorts:
 
 - `E_lin ⊆ Σ* × Σ* × Σ⁺` — **linear columns**; the entry of row `u` at
   `(x, y, t)` is the bit `[ x·u·y·t^ω ∈ L ]`;
@@ -253,19 +260,27 @@ permanent row for the adjoined identity `[ε]` (it seeds folds and is never
 compared), matching the keying of `𝓘`.
 
 **Lemma 3.3 (coherence).** Maintain rows as *access words*: `ε`, the letters, and
-promoted frontier words `rep(c)·a`, where `rep(c)` is the shortlex-least row of
-class `c`. On a closed and consistent table, the transition
-`step(c, a) := class of rep(c)·a` is well defined and agrees on every member of
-`c`; the letterwise **fold** `ψ(u) := step(…step([ε], u₁)…, u_n)` therefore
-satisfies `ψ(u) = [u]_{≡_T}` for every table word `u`, and `≡_T` is a right
-congruence on rows.
+promoted frontier words `rep(c)·a`, where `rep(c)` — written `w_c` for short —
+is the shortlex-least row of class `c`. On a closed and consistent table, the
+transition `step(c, a) := class of w_c·a` is well defined and agrees on every
+member of `c`; the letterwise **fold** `ψ(u) := step(…step([ε], u₁)…, u_n)`
+therefore satisfies `ψ(u) = [u]_{≡_T}` for every table word `u`, and `≡_T` is a
+right congruence on rows.
 
 *Proof.* Consistency is precisely the agreement of `step` across members;
 coherence follows by induction along access words, closedness supplying the row
 at each step. ∎
 
+More generally, write `fold(d, u)` for the letterwise `step`-walk on `u`
+started at an arbitrary class `d`, so that `ψ(u) = fold([ε], u)`. Folds compose
+over *literal* concatenation — `ψ(x·y) = fold(ψ(x), y)`, immediately from the
+definition — a small identity used repeatedly below; note that it concatenates
+*words*, not classes: nothing yet says `fold(d, u)` and `fold(d, w_{ψ(u)})`
+agree, and §4.2 turns exactly on that gap.
+
 **The hypothesis, in Cayley form.** A closed, consistent table presents the
-hypothesis `𝓗 = (𝒞_T, λ, step, P)`: the classes, `λ(a) = ψ(a)`, the transition
+hypothesis `𝓗 = (𝒞_T, λ, step, P)`: the table's class set (written `𝒞_T`, to
+keep it apart from the target's `𝒞`), `λ(a) = ψ(a)`, the transition
 function `step` — a deterministic automaton *on classes* — and an accepting-pair
 cache `P`. No monoid product is computed mid-learning; the multiplication table
 is exported only at the end (§5). `P` is a **cache of teacher truths**: on demand,
@@ -273,8 +288,9 @@ is exported only at the end (§5). `P` is a **cache of teacher truths**: on dema
 so `P` is never "wrong," only indexed by classes that may later split.
 
 **Prediction.** For a lasso `w·z^ω`: compute the fold orbit `c_j = ψ(z^j)` (each
-step folds the literal `z` once); since the orbit is deterministic over `𝒞_T`,
-there is `k ≤ 2·|𝒞_T|` with `c_{2k} = c_k` — take the least — and predict with
+step folds the literal `z` once); the orbit is deterministic over `𝒞_T`, so its
+index and period are each at most `|𝒞_T|` and there is
+`k ≤ 2·|𝒞_T|` with `c_{2k} = c_k` — take the least — and predict with
 the pair `s = ψ(w·z^k)`, `e = c_k`:  `𝓗` answers `P(s, e)`. By construction the
 prediction *is* the teacher's verdict on the representative lasso
 `w_s·(w_e)^ω`. That definition is load-bearing: a counterexample is therefore
@@ -333,7 +349,7 @@ is the definition of `step`. Replacing the prefix *at the head of the loop* and
 letting the ω-column's `(x, y)` format carry the rest is the rotation lemma
 enacted: no search over rotations is ever needed. ∎
 
-**Corollary 4.3 (progress).** Each counterexample adds the flip column and splits
+**Theorem 4.3 (harvest).** Each counterexample adds the flip column and splits
 one class — the frontier word `u` leaves the class of `v` — so `|𝒞_T|` grows by
 one per equivalence query, at a cost of `O(log(|w| + |𝒞_T|·|z|))` membership
 queries.
@@ -394,21 +410,25 @@ then two membership queries and at most one frozen-prefix binary search yield a
 new separating column and a class split.
 
 *Proof.* Since `c_a ≠ c_b`, some existing column `κ` separates their
-representatives; say `κ = (x°, y°, t°)` (the ω-sort is symmetric), so the table
+representatives — distinct classes differ on some column, by definition of
+`≡_T`; say `κ = (x°, y°, t°)` (the ω-sort is symmetric), so the table
 already holds `[x°·w_{c_a}·y°·t°^ω] ≠ [x°·w_{c_b}·y°·t°^ω]`. Query the two words
 under the same context: `A = [x°·r·u·y°·t°^ω]`, `B = [x°·r·v·y°·t°^ω]`.
 - If `A ≠ B`: mint the column `(x°·r, y°, t°)`. It separates `u` from `v`
   directly — a genuine Arnold context — splitting their shared class.
 - If `A = B`: the bits `A, B` cannot both agree with the two differing
-  representative bits; say `A ≠ [x°·w_{c_a}·y°·t°^ω]`, where `c_a = ψ(r·u)`
-  (folds compose over *literal* concatenation). So the word `r·u` and its own
-  class representative behave differently under `x°·_·y°·t°^ω`. Run the stem
+  representative bits; say `A ≠ [x°·w_{c_a}·y°·t°^ω]`, where
+  `c_a = fold(d, u) = fold(ψ(r), u) = ψ(r·u)` — folds composing over the
+  literal concatenation `r·u`. So the word `r·u` and its own class
+  representative behave differently under `x°·_·y°·t°^ω`. Run the stem
   chain of §4.1 on the segment `r·u` with the prefix `x°` **frozen** in place:
   `γ''_j = [ x° · rep(ψ((r·u)[1..j])) · (r·u)[j+1..] · y°·t°^ω ]`, from
   `γ''_0 = A` to `γ''_{|ru|} = [x°·w_{c_a}·y°·t°^ω] ≠ A`. The flip exists,
-  binary search finds it, and Lemma 4.1's argument — with `x°` riding along in
-  the column's prefix slot — yields a frontier/row pair split by a column
-  `(x°·rep(·), ·, t°)`. Either way one class splits. ∎
+  binary search finds it, and Lemma 4.1's argument applies verbatim with `x°`
+  frozen: the flip at position `j` separates the frontier word
+  `rep(ψ((r·u)[1..j]))·(r·u)[j+1]` from the row `rep(ψ((r·u)[1..j+1]))` by the
+  column `(x°, (r·u)[j+2..]·y°, t°)` — the prefix is `x°` alone, the unconsumed
+  segment migrating into the middle component. Either way one class splits. ∎
 
 *Example (a saturation catch, on `Even`).* Resume `Even` after §4.1's split: four
 classes `[ε], [a], [!a], [aa]`, with `a·!a` still merged into `[a]` — the doomed
@@ -459,30 +479,53 @@ export
     keys: shortlex-least word reaching each class — a BFS on the fold automaton
 ```
 
-is `𝓘(L)`, byte-equal to the teacher-side construction.
+is exactly `𝓘(L)` — in particular byte-equal to the output of any construction
+of it [SωS26, Thm 5.1].
 
-*Proof.* *Termination.* Every split is witnessed by an Arnold context separating
-two concrete words, so distinct classes are `≈_L`-distinct at all times:
-`|𝒞_T| ≤ |S(L)₊¹|`, and every round that does not terminate splits (Corollary
-4.3, Lemma 4.4).
+*Proof.* *Termination.* Every mechanism that keeps a round going adds a class:
+a promotion introduces a frontier word differing from every row on some column,
+a consistency minting separates the violating pair on the minted column, a
+saturation escalation and a counterexample harvest each split a class
+(Theorem 4.3, Lemma 4.4). Every such witness is an Arnold context separating
+two concrete words, so distinct classes are `≈_L`-distinct at all times, and
+`|𝒞_T| ≤ |S(L)₊¹|` bounds the total.
 
-*The kernel is a two-sided congruence.* Right: Lemma 3.3. Left: a clean
-saturation sweep gives `fold(d, u) = fold(d, rep(ψ(u)))` for every table word and
-class; by induction on word length this extends to all of `Σ*` — each step passes
-through a frontier word, which the sweep covers — so
-`ψ(u) = ψ(v) ⟹ ψ(x·u) = fold(ψ(x), u) = fold(ψ(x), v) = ψ(x·v)`.
+*The kernel is a two-sided congruence.* Right-invariance is Lemma 3.3. For
+left-invariance, first extend the sweep's guarantee from table words to all
+words: **claim** — `fold(d, u) = fold(d, w_{ψ(u)})` for every `d ∈ 𝒞_T` and
+every `u ∈ Σ⁺`. Induction on `|u|`; for `u = u₁·a`:
+
+```
+    fold(d, u₁·a) = step(fold(d, u₁), a)             (definition)
+                  = step(fold(d, w_{ψ(u₁)}), a)      (induction hypothesis)
+                  = fold(d, w_{ψ(u₁)}·a)             (definition)
+                  = fold(d, w_{ψ(u)})                (sweep: w_{ψ(u₁)}·a is a
+                                                      frontier word, and
+                                                      ψ(w_{ψ(u₁)}·a) = ψ(u))
+```
+
+The claim gives left-invariance: if `ψ(u) = ψ(v)` then for any `x`,
+`ψ(x·u) = fold(ψ(x), u) = fold(ψ(x), w_{ψ(u)}) = fold(ψ(x), w_{ψ(v)})
+= fold(ψ(x), v) = ψ(x·v)`.
 
 *The kernel saturates `L`.* Predictions are everywhere correct (equivalence
-granted) and depend on a lasso only through `ψ`-values of its literal words;
-since the kernel is a congruence, replacing `u` by `v` with `ψ(u) = ψ(v)` in any
-Arnold context changes no `ψ`-value along the fold, hence no prediction, hence no
-membership: `u ≈_L v`. So the kernel refines `≈_L`; splits being sound, it also
-coarsens it on representatives — and every word is `≈_L`-equivalent to its class
-representative (`ψ(u) = ψ(w_{ψ(u)})` plus the refinement), so the class map is a
-bijection, multiplicative by definition of the exported `M`, matching `λ` and `P`
-on representatives. Shortlex keys are recovered exactly because the fold is a
-deterministic automaton: the shortlex-least word reaching class `c` is computed
-by BFS and equals the shortlex-least word of the `≈_L`-class. ∎
+granted) and depend on a lasso only through `ψ`-values of its literal words.
+Let `ψ(u) = ψ(v)` and take any Arnold context; replacing `u` by `v` in it,
+occurrence by occurrence, changes no `ψ`-value along the fold — the kernel is a
+two-sided congruence — hence no prediction, hence no membership: `u ≈_L v`.
+
+*The bijection.* Three facts assemble it. (i) `ψ`-equal implies `≈_L`-equal —
+just proved — so the map `c ↦ [w_c]_{≈_L}` is well defined on classes, and
+every word `u` satisfies `u ≈_L w_{ψ(u)}` (coherence gives `ψ(u) = ψ(w_{ψ(u)})`).
+(ii) Distinct classes are `≈_L`-distinct — every split was witnessed by an
+Arnold context — so the map is injective. (iii) Every `≈_L`-class is hit: any
+word `u` lands, by (i), in the same `≈_L`-class as the representative of
+`ψ(u)`. So `𝒞_T ≅ S(L)₊¹`; the map is multiplicative by definition of the
+exported `M` (`M(c, c') = fold(c, w_{c'}) = ψ(w_c·w_{c'})`, folds composing
+over literal concatenation), and
+matches `λ` and `P` on representatives. Shortlex keys are recovered exactly
+because the fold is a deterministic automaton: the shortlex-least word reaching
+class `c` under BFS is the shortlex-least word of its `≈_L`-class. ∎
 
 The theorem earns the paper's title: nothing about the *language* forced the
 fixpoint to be canonical — §4.2 exhibits the non-canonical stall — it is the
@@ -506,8 +549,10 @@ beyond the one traced in §4.1, all in the ω-sort, to its seven classes.
 **Proposition 5.2 (query complexity).** Writing `N = |S(L)₊¹|` and `ℓ` for the
 longest counterexample returned: the learner poses at most `N` equivalence
 queries and `O(N²·|Σ| + N·log(N·ℓ))` membership queries — table entries
-`O(N·|Σ|)` words × `O(N)` columns, plus per split a junction query, a binary
-search `O(log(N·ℓ))`, two saturation probes, and one `P`-cache miss. All queried
+`O(N·|Σ|)` words × `O(N)` columns; per split a junction query, a binary
+search `O(log(N·ℓ))` and two saturation probes; and one membership query per
+linked pair of the final table for `P` (at most `N²`, absorbed by the entry
+term). All queried
 words have length polynomial in `N`, `ℓ`, and the column lengths, themselves
 harvested substrings of counterexamples. Output-polynomial in the canonical
 target `N` is the honest yardstick — `N` can be exponentially larger than a
@@ -560,7 +605,7 @@ baseline. On the passive side, Bohn and Löding extend RPNI to deterministic
 ω-automata [BL21] and learn deterministic Büchi automata from samples by
 combinations of DFAs [BL22]. All of these target acceptors. ⟨TBD: one sentence
 on Michaliszyn–Otop's loop-index queries — nearest cousin of the ω-columns —
-once the paper is in `papers/`.⟩
+once vetted.⟩
 
 **Algebraic learning.** Van Heerdt, Sammartino and Silva's CALF [vHSS17] frames
 automata learning categorically but instantiates no ω-algorithm. The decisive
