@@ -547,8 +547,8 @@ one Moore-style refinement to fixpoint compute `~lin ∧ ~ω` exactly. ∎
 
 ---
 
-`S(GF(aa))₊`, classes `0=[ε] 1=[!a] 2=[a] 3=[!a·a] 4=[a·!a] 5=[a·a]`, letters
-`!a → [!a]`, `a → [a]`:
+`S(GF(aa))₊`, classes `0=[ε] 1=[!a] 2=[a] 3=[!a·a] 4=[a·!a] 5=[a·a]`, letter map
+`λ(!a) = [!a]`, `λ(a) = [a]`:
 
 ```
  ·    [ε] [!a] [a] [!a·a] [a·!a] [a·a]
@@ -563,7 +563,7 @@ one Moore-style refinement to fixpoint compute `~lin ∧ ~ω` exactly. ∎
 `[a·a]` = "contains `aa`" is two-sided absorbing and every power cycle has period `1`,
 so the transition monoid's `Z₂` is gone; the single accepting linked pair is
 `([a·a], [a·a])`. For `Even` the group survives — `S(Even)₊`, classes
-`0=[ε] 1=[!a] 2=[a] 3=[a·!a] 4=[a·a]`:
+`0=[ε] 1=[!a] 2=[a] 3=[a·!a] 4=[a·a]`, letter map `λ(!a) = [!a]`, `λ(a) = [a]`:
 
 ```
  ·    [ε] [!a] [a] [a·!a] [a·a]
@@ -578,6 +578,9 @@ so the transition monoid's `Z₂` is gone; the single accepting linked pair is
 and `[a·a]·[a] = [a]`: the pair `{[a], [a·a]}` is a **period-2 cycle**, the `Z₂` that
 makes `Even` non-LTL. Its accepting linked pairs are `([!a],[!a])`, `([!a],[a·!a])`,
 `([!a],[a·a])` — once the accepting sink (class `[!a]`) is reached, every loop accepts.
+In these single-atom examples `λ` is injective — each letter keys its own class — but
+in general it collapses interchangeable letters: over `Σ = 2^{a,b}` a property depending
+only on `a ⊕ b` maps `a!b` and `!ab` (the two `a⊕b`-true letters) to one class.
 
 ---
 
@@ -613,20 +616,28 @@ into `S(Even)₊`: a genuine `Z₂`, so `Even` is not LTL.
 
 ## 5. The reified object
 
-Theorem 4.5 produces `S(L)` as concrete data: a set of classes, a multiplication
-table, the images of the letters, and — to recover `L` and not merely its algebra —
-the set of **accepting linked pairs** `P = { (s, e) : e² = e, se = s, u·z^ω ∈ L for
-⟦u⟧ ∈ s, ⟦z⟧ ∈ e }`. We key each class by its **shortlex-least representative word**
-over `Σ` (a language invariant, independent of `D`), so the data is a function of `L`
-alone. `P` is read directly off the automaton: for each pair of classes `(s, e)` with
-`e·e = e` and `s·e = s`, take their shortlex-least representative words `w_s, w_e` and
-test the ultimately-periodic word `w_s·(w_e)^ω` for acceptance on `D`; put `(s, e)` in
-`P` iff it accepts. Any representatives give the same verdict — that is exactly what
-`(s, e)` being a linked pair guarantees (Lemma 3.2).
+Theorem 4.5 gives the syntactic ω-semigroup `S(L)` concretely, as the tuple
+`𝓘(L) = (𝒞, λ, M, P)`:
 
-**Theorem 5.1 (complete invariant).** For a fixed `Σ`, the tuple `𝓘(L) = ` (keyed
-classes, multiplication table, letter map, accepting-pair set `P`) determines `L`
-exactly: two regular ω-languages over `Σ` are equal iff their `𝓘` coincide.
+- `𝒞` — the finite set of **classes**, the `~`-classes of Theorem 4.5, each **keyed**
+  by its **shortlex-least representative word** over `Σ` (a language invariant,
+  independent of `D`);
+- `λ : Σ → 𝒞` — the **letter map** `λ(a) = [a]`, sending each letter to its class;
+- `M : 𝒞 × 𝒞 → 𝒞` — the **multiplication table** `M(s, t) = s·t`, the Cayley table of
+  `S(L)₊` (Table 3);
+- `P ⊆ 𝒞 × 𝒞` — the set of **accepting linked pairs**
+  `{ (s, e) : e² = e, se = s, u·z^ω ∈ L for ⟦u⟧ ∈ s, ⟦z⟧ ∈ e }`, recovering `L`
+  itself and not merely its algebra.
+
+Shortlex keying makes every component a function of `L` alone. `P` is read directly
+off the automaton: for each `(s, e)` with `e·e = e` and `s·e = s`, take the
+shortlex-least words `w_s, w_e` and test `w_s·(w_e)^ω` for acceptance on `D`; put
+`(s, e)` in `P` iff it accepts. Any representatives give the same verdict — exactly
+what `(s, e)` being a linked pair guarantees (Lemma 3.2).
+
+**Theorem 5.1 (complete invariant).** For a fixed `Σ`, the tuple `𝓘(L) = (𝒞, λ, M, P)`
+determines `L` exactly: two regular ω-languages over `Σ` are equal iff their `𝓘`
+coincide.
 
 *Proof.* `𝓘(L)` encodes the syntactic morphism `⟦·⟧` up to the canonical keying and
 the accepting set. Membership of any ultimately-periodic word `u·z^ω` is decided by
