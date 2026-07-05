@@ -25,10 +25,21 @@ def check_letter_roundtrip() -> None:
     # Every letter round-trips through its set of true propositions.
     for a in ab.letters():
         assert ab.letter_of(ab.true_aps(a)) == a, a
-    # Bits map to positions: {a} is bit 0, {b} bit 1, {c} bit 2.
+    # First AP is the most significant bit: a=bit2, b=bit1, c=bit0.
     assert ab.true_aps(ab.letter_of(["a"])) == ["a"]
+    assert ab.letter_of(["a"]) == 0b100
+    assert ab.letter_of(["c"]) == 0b001
     assert ab.letter_of(["a", "c"]) == 0b101
     print("OK letter <-> true-AP round trip")
+
+
+def check_canonical_letter_order() -> None:
+    # Two APs: canonical order is by characteristic tuple, a most significant,
+    # absent<present: {} < {b} < {a} < {a,b} (research_notes/sosg_format.md).
+    ab = Alphabet.of(["a", "b"])
+    order = [ab.true_aps(a) for a in ab.letters()]
+    assert order == [[], ["b"], ["a"], ["a", "b"]], order
+    print("OK canonical letter order (char-tuple, a most significant)")
 
 
 def check_shortlex() -> None:
@@ -59,6 +70,7 @@ def check_lasso() -> None:
 def main() -> int:
     check_canonical_order()
     check_letter_roundtrip()
+    check_canonical_letter_order()
     check_shortlex()
     check_lasso()
     print("ALL OK")

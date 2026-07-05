@@ -66,11 +66,13 @@ class HoaTeacher:
     # -- compilation ---------------------------------------------------------
 
     def _point_bdd(self, mask: int) -> "buddy.bdd":
-        """The full minterm for the letter ``mask`` over the canonical AP order."""
+        """The full minterm for the letter ``mask`` over the canonical AP order.
+        The bit layout is delegated to `Alphabet.true_aps`, so this is agnostic
+        to how masks encode propositions."""
+        trues = set(self.alphabet.true_aps(Letter(mask)))
         point = buddy.bddtrue
-        for i, name in enumerate(self.alphabet.aps):
-            var = self._var[name]
-            lit = buddy.bdd_ithvar(var) if (mask >> i) & 1 else buddy.bdd_nithvar(var)
+        for name, var in self._var.items():
+            lit = buddy.bdd_ithvar(var) if name in trues else buddy.bdd_nithvar(var)
             point = point & lit
         return point
 

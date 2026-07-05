@@ -1,10 +1,14 @@
 """Letters over a set of atomic propositions, and the alphabet Sigma = 2^AP.
 
 A letter is a valuation of AP: which propositions hold. It is encoded as a
-bitmask over the alphabet's canonical proposition order — bit ``i`` is set iff
-the ``i``-th proposition (``aps[i]``) is true. The mask is meaningful only
-relative to its `Alphabet`; there it doubles as the letter's rank, so integer
-order on masks is the canonical letter order used for shortlex.
+bitmask over the alphabet's canonical proposition order, with the **first**
+proposition on the **most significant** bit: ``aps[i]`` occupies bit
+``k-1-i`` (``k = |AP|``). This makes the integer value of a mask equal to the
+canonical letter *rank* — letters ordered by their characteristic tuple
+``(chi(a_1), ..., chi(a_k))`` lexicographically with absent (0) < present (1),
+``a_1`` most significant (for a single ``a``: ``!a`` < ``a``). Integer order on
+masks is therefore the canonical letter order used for shortlex, matching the
+serialization format in research_notes/sosg_format.md.
 
 A word is a tuple of letters; the empty word is the empty tuple. Word
 concatenation and repetition are ordinary tuple ``+`` and ``*``.
@@ -56,14 +60,17 @@ class Alphabet:
         return [Letter(m) for m in range(self.size)]
 
     def true_aps(self, a: Letter) -> List[str]:
-        """The propositions true in letter ``a``, in canonical order."""
-        return [name for i, name in enumerate(self.aps) if (a >> i) & 1]
+        """The propositions true in letter ``a``, in canonical order (``aps[i]``
+        sits on bit ``k-1-i``)."""
+        k = len(self.aps)
+        return [name for i, name in enumerate(self.aps) if (a >> (k - 1 - i)) & 1]
 
     def letter_of(self, trues: Iterable[str]) -> Letter:
         """The letter whose true propositions are exactly ``trues`` (which must
         all be alphabet propositions)."""
+        k = len(self.aps)
         index = {name: i for i, name in enumerate(self.aps)}
         mask = 0
         for name in trues:
-            mask |= 1 << index[name]
+            mask |= 1 << (k - 1 - index[name])
         return Letter(mask)
