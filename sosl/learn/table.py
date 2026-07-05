@@ -39,6 +39,12 @@ class Table:
         self.n_member += 1
         return query(col, self._member, w)
 
+    def query_lasso(self, lasso) -> bool:
+        """A counted direct membership query (used by counterexample chains,
+        which query lassos the column machinery does not shape)."""
+        self.n_member += 1
+        return self._member(lasso)
+
     def domain(self) -> List[Word]:
         """Rows then frontier (``rows . Sigma``), de-duplicated, in a stable
         order — the words the table classifies."""

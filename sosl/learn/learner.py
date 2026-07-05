@@ -11,13 +11,14 @@ the successors ``p.a`` / ``q.a`` moves the letter ``a`` into the column's prefix
 (``(x, a.y, t)`` linear, ``(x, a.y)`` omega), which splits the offending class.
 
 Saturation (the two-sided-congruence phase) is not part of this loop yet; this
-is the acceptance-correct M2 learner. Counterexample processing is likewise a
-stub until the chains land — a returned counterexample raises rather than
-silently looping.
+is the acceptance-correct M2 learner.
 """
 from __future__ import annotations
 
+from typing import Dict, Optional
+
 from sosl.contract import Counterexample, Equivalent, Teacher
+from sosl.learn.chains import process_counterexample
 from sosl.learn.columns import LinCol, OmCol
 from sosl.learn.export import export
 from sosl.learn.partition import Partition
@@ -25,7 +26,7 @@ from sosl.learn.table import Table
 from sosl.objects.alphabet import Alphabet
 from sosl.objects.cayley import Hypothesis
 from sosl.objects.invariant import Invariant
-from sosl.objects.lasso import Lasso
+from sosl.trace import TRACE_ON, trace
 
 
 def _build_hypothesis(table: Table, p: Partition) -> Hypothesis:
@@ -58,24 +59,55 @@ def _stabilize(table: Table) -> Partition:
         p = Partition(table)
         unclosed = p.unclosed()
         if unclosed:
+            if TRACE_ON:
+                trace("stab", f"close: +{len(unclosed)} rows "
+                      f"(rows={len(table.rows)} cols={len(table.columns)} classes={p.n})")
             for w in unclosed:
                 table.add_row(w)
             continue
         if _make_consistent(table, p):
+            if TRACE_ON:
+                trace("stab", f"consist: mint col -> {len(table.columns)} "
+                      f"(rows={len(table.rows)} classes={p.n})")
             continue
+        if TRACE_ON:
+            trace("stab", f"stable: rows={len(table.rows)} "
+                  f"cols={len(table.columns)} classes={p.n}")
         return p
 
 
-def learn(teacher: Teacher, alphabet: Alphabet) -> Invariant:
-    """Learn the canonical invariant of the teacher's language over ``alphabet``."""
+def learn(
+    teacher: Teacher, alphabet: Alphabet, stats: Optional[Dict[str, int]] = None
+) -> Invariant:
+    """Learn the canonical invariant of the teacher's language over ``alphabet``.
+
+    If ``stats`` is given it is populated with basic run counters (learned class
+    count, membership queries, equivalence queries, counterexamples)."""
     table = Table(alphabet, teacher.member)
+    n_equiv = 0
+    n_cex = 0
     while True:
         p = _stabilize(table)
+        n_equiv += 1
+        if TRACE_ON:
+            trace("learn", f"round {n_equiv}: classes={p.n} "
+                  f"rows={len(table.rows)} cols={len(table.columns)} cex_so_far={n_cex}")
         result = teacher.equiv(_build_hypothesis(table, p))
         if isinstance(result, Equivalent):
-            return export(p, teacher.member)
+            if TRACE_ON:
+                trace("learn", f"EQUIVALENT ({result.strategy}) classes={p.n}")
+            inv = export(p, teacher.member)
+            if stats is not None:
+                stats.update(
+                    learned_classes=inv.n,
+                    n_member=table.n_member,
+                    n_equiv=n_equiv,
+                    n_cex=n_cex,
+                )
+            return inv
         assert isinstance(result, Counterexample)
-        raise NotImplementedError(
-            "counterexample chains land in the next increment; "
-            f"got {result.lasso}"
-        )
+        n_cex += 1
+        if TRACE_ON:
+            trace("learn", f"counterexample stem={result.lasso.stem} "
+                  f"loop={result.lasso.loop}")
+        process_counterexample(table, p, result.lasso)
