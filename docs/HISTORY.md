@@ -2883,3 +2883,6 @@ LANDED research_notes/sos_learning.md: shadow draft (placeholder-carrying paper 
 
 ## 2026-07-05 — sos_learning: crux solved, saturation finding
 LANDED the solved core into research_notes/sos_learning.md: harvest via replacement chains (stem + loop-head, junction query, binary search), the acceptance-correct-vs-algebra-correct gap as headline finding, left-saturation over class reps as the repair, saturated-fixpoint theorem (= S(L)+1, canonical export) and real complexity bounds. Crux TBDs all discharged; remaining TBDs are implementation/example-gated.
+
+## 2026-07-05 — sos_learner_spec for delegation
+LANDED research_notes/sos_learner_spec.md: standalone engineer-facing spec (tool I/O, components, soundness harness, experiments E0-E6, milestones) so implementation/experimentation can proceed off-thread while this thread stays on the math.
