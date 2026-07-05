@@ -2886,3 +2886,6 @@ LANDED the solved core into research_notes/sos_learning.md: harvest via replacem
 
 ## 2026-07-05 — sos_learner_spec for delegation
 LANDED research_notes/sos_learner_spec.md: standalone engineer-facing spec (tool I/O, components, soundness harness, experiments E0-E6, milestones) so implementation/experimentation can proceed off-thread while this thread stays on the math.
+
+## 2026-07-05 — sos_learning: worked examples woven through §3-5
+LANDED the Even/EvenBlocks live traces as Example paragraphs at each mechanism (day-one table, prediction miss, same-counterexample-two-shapes harvest, saturation catch, completed run). All bits hand-verified; Even endpoint matches paper-1 Table 3 and accepting pairs.
