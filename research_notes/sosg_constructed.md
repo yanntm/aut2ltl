@@ -97,8 +97,7 @@ where `L` sits in the safety–progress and topological hierarchies, which accep
 condition it needs, and — subsuming these — its exact Wadge degree, each a structural
 property of the one algebra. Rendering the algebra back into a defining formula or a
 counter-free automaton, or packaging a portable non-LTL certificate, are downstream
-constructions that consume the object; the object comes first, and it is our subject. We
-keep the tool out of the argument entirely: every claim below is about the object.
+constructions that consume the object; the object comes first, and it is our subject.
 
 Three small examples run throughout, chosen to exercise both halves of the
 construction and both of Arnold's context shapes. Their automata are collected in
@@ -872,6 +871,14 @@ congruence relations of §4 and the partition refinement of Theorem 4.5 are poly
 in `|EM(D)|` and `|Q|`; and each export of §6 is a further polynomial-time read-off of
 the resulting table. The cost is entirely the object's size, and that size is intrinsic
 to the problem, not to the construction.
+
+On a more optimistic note, every object and operation here is BDD-friendly and the
+redundancy is high, so a symbolic approach is likely to alleviate much of this inherent
+complexity. The ingredients are all Boolean — the alphabet `2^AP`, the mark-sets over
+`C`, the positive-Boolean `Acc` — and every step is a set operation, not an arithmetic
+one: closing `EM(D)` under composition, the two congruences, and the partition
+refinement are all images, fixpoints, and quotients over sets, native to decision
+diagrams.
 
 ---
 
