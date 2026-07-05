@@ -764,8 +764,9 @@ for the same reason and by the same read-off that `Even` is not LTL.
 
 The read-off has the same consumer, one level down. **LTLf** — LTL interpreted on
 finite traces, the specification idiom of AI planning, business-process modeling
-and runtime verification — equals first-order logic on finite words, hence
-star-free, hence aperiodicity of the syntactic monoid [Sch65; DG08, Thm 1.1]:
+and runtime verification [DV13] — equals first-order logic on finite words
+[DV13, Thm 3], hence star-free [MP71], hence aperiodicity of the syntactic
+monoid [Sch65]:
 "is this regular trace property actually LTLf?" is the finite twin of §7.2's PSL
 question, decided on the same object by the same group search. Finally, for the
 **learning** community [Kla94, AF16, ABF18, AF21], whose central obstruction is
@@ -987,11 +988,14 @@ worth building.
   Automata*, 2008.
 - **[DK09]** V. Diekert, M. Kufleitner. *Fragments of first-order logic over infinite
   words.* STACS 2009; Theory Comput. Syst. 48(3) (2011) 486–516.
+- **[DV13]** G. De Giacomo, M. Y. Vardi. *Linear temporal logic and linear dynamic
+  logic on finite traces.* IJCAI 2013.
 - **[Kam68]** H. Kamp. *Tense Logic and the Theory of Linear Order.* PhD thesis, UCLA,
   1968.
 - **[Kla94]** N. Klarlund. *A homomorphism concept for ω-regularity.* CSL 1994.
 - **[Lan69]** L. H. Landweber. *Decision problems for ω-automata.* Math. Systems Theory
   3(4) (1969) 376–384.
+- **[MP71]** R. McNaughton, S. Papert. *Counter-Free Automata.* MIT Press, 1971.
 - **[MP92]** Z. Manna, A. Pnueli. *The Temporal Logic of Reactive and Concurrent
   Systems: Specification.* Springer, 1992.
 - **[MS97]** O. Maler, L. Staiger. *On syntactic congruences for ω-languages.* TCS 183
