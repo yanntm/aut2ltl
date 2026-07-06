@@ -1080,9 +1080,19 @@ congruence obstruction is [AF21]. Li, Chen, Zhang and Liu [LCZL21] give the
 classification-tree FDFA learner implemented in ROLL [LSTCX19], our experimental
 baseline. On the passive side, Bohn and Löding extend RPNI to deterministic
 ω-automata [BL21] and learn deterministic Büchi automata from samples by
-combinations of DFAs [BL22]. All of these target acceptors. ⟨TBD: one sentence
-on Michaliszyn–Otop's loop-index queries — nearest cousin of the ω-columns —
-once vetted.⟩
+combinations of DFAs [BL22]. All of these target acceptors. Nearest to our
+ω-columns in spirit are Michaliszyn and Otop's *loop-index queries* [MO22]:
+alongside membership and equivalence, their teacher reveals, for each lasso,
+after how many letters *the target automaton* enters its final cycle — an
+oracle that, by design, "depend[s] on a particular automaton" [MO22]. It buys
+polynomial-time learning of deterministic Büchi automata and, through
+LimSup-weighted automata, of deterministic parity automata — the full
+ω-regular class — at the price that both the auxiliary query and the learned
+object are tied to the teacher's presentation. Our ω-columns probe the same
+loop structure through plain lasso memberships, and the limit is
+presentation-independent; indeed [MO22]'s own motivation notes that at ω
+"there is no notion of the canonical (syntactic) automaton" — true of
+automata, and precisely the gap the algebra fills.
 
 **Algebraic learning.** Van Heerdt, Sammartino and Silva's CALF [vHSS17] frames
 automata learning categorically but instantiates no ω-algorithm. The decisive
@@ -1144,6 +1154,8 @@ headline.⟩
   Comput. 281 (2021) 104678.
 - **[LSTCX19]** Y. Li, X. Sun, A. Turrini, Y.-F. Chen, J. Xu. *ROLL 1.0:
   ω-regular language learning library.* TACAS 2019.
+- **[MO22]** J. Michaliszyn, J. Otop. *Learning infinite-word automata with
+  loop-index queries.* Artif. Intell. 307 (2022) 103710.
 - **[MP95]** O. Maler, A. Pnueli. *On the learnability of infinitary regular
   sets.* Inf. Comput. 118 (1995).
 - **[MS97]** O. Maler, L. Staiger. *On syntactic congruences for ω-languages.* TCS
