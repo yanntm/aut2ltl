@@ -19,18 +19,16 @@ import spot
 
 from sosl.contract import Counterexample, Equivalent, EquivResult
 from sosl.sos.alphabet import Alphabet, Letter
+from sosl.sos.build import canonical
 from sosl.sos.hypothesis import Hypothesis
 from sosl.sos.lasso import Lasso
 from sosl.teacher.equiv import bounded_counterexample
 
 
 def _prepare(aut: "spot.twa_graph") -> "spot.twa_graph":
-    """Return a deterministic, complete view of ``aut`` (completion adds a
-    rejecting sink if needed); raise if it is not deterministic."""
-    aut = spot.complete(aut)
-    if not spot.is_deterministic(aut):
-        raise ValueError("HoaTeacher requires a deterministic automaton")
-    return aut
+    """Return the deterministic, complete form D of ``aut`` via the sos import
+    layer, determinizing and completing a nondeterministic or partial input."""
+    return canonical(aut)
 
 
 class HoaTeacher:
