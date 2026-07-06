@@ -1,4 +1,4 @@
-# The Syntactic ω-Semigroup, Constructed
+# Constructing the Syntactic ω-Semigroup from a Deterministic Emerson–Lei Automaton
 
 **Yann Thierry-Mieg** 
 

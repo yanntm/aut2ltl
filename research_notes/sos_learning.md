@@ -998,8 +998,9 @@ headline.⟩
   and Games.* Elsevier, 2004.
 - **[RS93]** R. L. Rivest, R. E. Schapire. *Inference of finite automata using
   homing sequences.* Inf. Comput. 103 (1993).
-- **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *The syntactic
-  ω-semigroup, constructed.* Working draft, 2026.
+- **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing the
+  syntactic ω-semigroup from a deterministic Emerson–Lei automaton.* Working
+  draft, 2026.
 - **[US20]** H. Urbat, L. Schröder. *Automata learning: an algebraic approach.*
   LICS 2020.
 - **[vHSS17]** G. van Heerdt, M. Sammartino, A. Silva. *CALF: categorical
