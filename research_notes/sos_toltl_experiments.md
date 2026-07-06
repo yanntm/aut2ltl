@@ -183,6 +183,10 @@ notch at a time, smallest-first):
   (§5.5); the witness lasso pair is a paper figure.
 - **H4**: smallest LTL specimen whose extraction must invoke the DG
   fallback at all (= H2 ∪ H3 minimum).
+- **H5**: a non-LTL specimen whose ω-power patterns are *all constant*
+  (certificate exists in linear shape only) — the dual of the paper's
+  Proposition 4.2 blindness; a hit settles the open question of §4.1, an
+  exhausted census is evidence toward "F₂ always available".
 **Prediction:** H2/H3 do not exist at 2 states / 1 AP; first hits appear
 ⟨TBD: record where⟩. Each hit's `.sos`, layers, and witness go into
 `tests/**/logs/` and the paper's §7 empirical map.
@@ -192,9 +196,14 @@ notch at a time, smallest-first):
 For every non-LTL census specimen: extract the certificate (group orbit,
 witness words, context shape, period `p`); verify by `2p` lasso membership
 tests against the reference automaton *only* (no algebra on the verifier
-side); record word lengths against the `O(|𝒞|)` bound. **Prediction:** all
-verify; `Even` and `EvenBlocks` yield the paper's Table-1 witnesses with
-`p = 2`, linear resp. ω-power shape.
+side); record word lengths against the paper's Theorem-4.3 bounds (each
+component `< |𝒞|`, the absorbed index power quadratic). **Prediction:** all
+verify; `Even` emits `F₁(u=a, v=a, x=(!a)^ω, p′=2)` (samples
+`a^{n+1}·(!a)^ω`, accept iff `n` odd) and `EvenBlocks` emits
+`F₂(u=ε, v=a, y=a·!a, p′=2)` (samples `(a^{n+1}·!a)^ω`, accept iff `n`
+odd) — the paper's §4.3 canonical derivations, byte-exact; also record each
+specimen's shape so E6/H5 can read off whether any non-LTL specimen is
+linear-only.
 
 ## 5. Expected failures (read before filing bugs)
 

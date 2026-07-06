@@ -72,9 +72,8 @@ nobody:
 Both rebuilds consume the same input: the exportable invariant
 `𝓘(L) = (𝒞, λ, M, P)` of [SωS26] — classes keyed by shortlex representatives,
 letter map, multiplication table, accepting linked pairs. The non-LTL side is
-the shorter story and is summarized in §4 ⟨TBD: import/condense the
-certificate construction from the working notes⟩. The LTL side is the body of
-the paper, and its thesis is:
+the shorter story and is closed in §4. The LTL side is the body of the paper,
+and its thesis is:
 
 **The formula should be a *transcription* of the canonical object, not the
 residue of a generic induction.** The invariant contains, as read-offs, every
@@ -209,28 +208,215 @@ the formula's shape follow the language's.
 
 ## 4. The non-LTL side: the witness certificate
 
-⟨TBD: this section imports the certificate construction from the working
-notes (non_ltl_certificates.md) and [SωS26]'s aperiodicity read-off. Fixed
-decisions, so the section can be written into:⟩
+On this side the read-off is a power orbit of eventual period `p > 1` among
+the classes of `M` — a group, and by canonicity never a presentation
+artifact [SωS26, Prop 3.4, Thm 4.5]. A verdict alone, though, is exactly
+what §1 said satisfies nobody: the user holds a PSL/SERE specification in
+which the offending mod-`p` count may sit in one innocuous `{·}[*2]`, and
+is owed a refutation checkable *without trusting us or our algebra*. This
+section defines that refutation, extracts it from `𝓘(L)` by pure table
+computation — no automaton, no group-theory oracle, no language-equivalence
+product is ever consulted — and proves the extraction total: on the non-LTL
+side it cannot fail to assemble.
 
-- The verdict: a power orbit `c, c², …` of eventual period `p > 1` in `M` — a
-  group element, intrinsic by canonicity (never a presentation artifact,
-  [SωS26, Prop 3.4 / Thm 4.5]).
-- The certificate: a *counting family* — concrete words `x, u, y` (shortlex
-  keys of the classes involved) and a context shape (linear or ω-power,
-  matching which of Arnold's shapes witnesses the separation) such that
-  membership of the family's lassos is periodic in the pump count with
-  period `p`. For `Even`: `a^n·!a·a^ω ∈ L ⟺ n even` (linear shape). For
-  `EvenBlocks`: `(a^n·!a)^ω ∈ L ⟺ n even` (ω-power shape) — the two shapes'
-  minimal witnesses, [SωS26, Table 1].
-- Checkability: the certificate is verified against any acceptor of `L` by
-  `2p` lasso membership tests — no algebra needed on the verifier's side.
-- ⟨TBD: the formal statement — soundness (a valid family refutes
-  counter-freeness, hence LTL), completeness (every non-LTL `L` yields one
-  with words of length `O(|𝒞|)`), and the extraction algorithm's cost.⟩
-- ⟨TBD: relation to the census — at 2 states / 1 AP / 1 acceptance set no
-  non-LTL specimen exists; the smallest non-LTL specimens and their
-  certificates, tabulated.⟩
+### 4.1 Counting families
+
+Non-LTL-ness is never exhibited by a single ω-word: membership of any one
+word is consistent with some LTL formula. The obstruction is inherently a
+*family that toggles*, and two shapes of family suffice — Arnold's two
+context shapes [Arn85], met at the word level:
+
+```
+linear     F₁(u, v, x, p) :  n ↦ [ u·vⁿ·x ∈ L ]         toggles with n mod p
+ω-power    F₂(u, v, y, p) :  n ↦ [ u·(vⁿ·y)^ω ∈ L ]     toggles with n mod p
+```
+
+with `p > 1`, words `u, v, y ∈ Σ*`, `x` a lasso. "Toggles with `n mod p`"
+means: membership of the `n`-th sample is determined by `n mod p` for
+**all** `n ≥ 0`, and is not constant in `n`. Every sample of either shape
+is a lasso, so a family is checkable by lasso-membership queries alone —
+against any acceptor of `L` whatsoever.
+
+**Theorem 4.1 (soundness).** A valid family of either shape refutes
+aperiodicity of `S(L)₊`; hence `L` is not LTL, by the classical chain of §1.
+
+*Proof.* Membership of the `n`-th sample depends on `n` only through the
+class `[vⁿ]`: writing `x = x_s·(x_ℓ)^ω`, the F₁ sample's verdict is the
+lasso verdict of `([u]·[v]ⁿ·[x_s], [x_ℓ])`, the F₂ sample's that of
+`([u], [v]ⁿ·[y])`. Were `S(L)₊` aperiodic, `[vⁿ]` would be eventually
+constant in `n`, making both membership functions eventually constant —
+contradicting a non-constant pattern of exact period `p > 1` holding for
+all `n`, which takes both verdicts infinitely often. ∎
+
+Soundness is deliberately independent of everything upstream: a verifier
+needs only the sample verdicts and the one classical implication
+(LTL ⟹ star-free ⟹ syntactic aperiodicity). Neither the algebra, nor the
+construction that produced the family, nor even its declared group is
+trusted.
+
+**Proposition 4.2 (both shapes are load-bearing).** If `L` is
+prefix-independent, every linear family is constant, on every choice of
+`(u, v, x)`; prefix-independent non-LTL languages exist (`EvenBlocks`), so
+F₂ is a requirement, not an optimization. On the invariant the blindness
+is one equation: prefix-independence makes `P` *loop-determined* —
+`(s, e) ∈ P ⟺ (e, e) ∈ P` — so no stem manipulation moves any verdict.
+
+*Proof.* `σα ∈ L ⟺ α ∈ L` gives `u·vⁿ·x ∈ L ⟺ x ∈ L`: constancy. For the
+equation: a linked pair `(s, e)` names the lassos `w·z^ω` with `[w] ∈ s`
+and `e` the idempotent power of `[z]`; prefix-independence gives
+`w·z^ω ∈ L ⟺ z^ω ∈ L`, and the pair of `z^ω` is `(e, e)`. ∎
+
+The converse blindness — a non-LTL language whose group is visible to
+linear contexts only, every ω-power pattern constant — has, to our
+knowledge, neither a witness nor an impossibility proof; the census hunts
+it (§8, H5).
+
+### 4.2 Extraction: three scans of the table
+
+Everything below is a computation on `(𝒞, λ, M, P)` alone. Write `d^π` for
+the unique idempotent among the powers of a class `d` (iterate `d, d², …`
+to the first repeat; the closed cycle contains exactly one idempotent), and
+
+```
+Val(c, d)  =  [ (c·d^π, d^π) ∈ P ]           c ∈ 𝒞¹,  d ∈ 𝒞 \ {[ε]}
+```
+
+for the membership verdict of any lasso `w·z^ω` with `[w] = c`, `[z] = d`
+[SωS26, Thm 5.1]: `Val` is the invariant's membership oracle, and Arnold's
+two context shapes evaluate through it —
+
+```
+linear   (x, y, t) ∈ 𝒞¹ × 𝒞¹ × (𝒞 \ {[ε]}) :   phase h  ↦  Val(x·h·y, t)
+ω-power  (x, y)    ∈ 𝒞¹ × 𝒞¹               :   phase h  ↦  Val(x, h·y)
+```
+
+**Step 1 — the group.** Power-iterate each class (shortlex order of keys,
+skipping classes already met in an earlier orbit); the first repeated class
+id closes the orbit, giving index `m ≥ 1` and period `p`. The first class
+`g` whose orbit has `p > 1` is the group carrier; set `v = key(g)`. The
+powers `g, g², …, g^{m+p−1}` are pairwise distinct classes, none of them
+`[ε]` (products of non-identity classes never reach the fresh identity), so
+`m + p ≤ |𝒞|`.
+
+**Step 2 — the separating context.** Scan linear contexts in shortlex order
+of `(key(x), key(y), key(t))`, then ω-power contexts likewise; for each,
+evaluate the **pattern** `π = (verdict at g^{m+i})_{i=0..p−1}`; stop at the
+first non-constant `π`.
+
+The scan cannot exhaust: the cycle classes are *distinct classes of the
+syntactic congruence*, so already `g^m ≉_L g^{m+1}`, and Arnold's
+definition [Arn85] hands over a separating word context of one of the two
+shapes; word contexts act on verdicts only through the classes of their
+components, so the corresponding class context differs at two phases — a
+non-constant pattern.
+
+**Step 3 — assembly.** Let `p′` be the minimal cyclic period of `π` (the
+rotation-invariance periods of a length-`p` cycle form a subgroup of `Z_p`,
+so `p′ | p`, and `p′ > 1` by non-constancy). Emit, absorbing the index so
+the toggle is exact from `n = 0`:
+
+```
+linear    F₁( key(x)·vᵐ,  v,  key(y)·key(t)^ω,  p′ )
+ω-power   F₂( key(x),     v,  vᵐ·key(y),        p′ )
+```
+
+Membership of the `n`-th sample is the pattern at phase `n mod p` — for
+every `n ≥ 0`, since `m + n ≥ m` keeps the power on the closed cycle. The
+family is valid, with declared period `p′`.
+
+**Theorem 4.3 (totality and cost).** If `S(L)₊` is not aperiodic the
+extraction emits a valid family. Every component word is a shortlex key, of
+length `< |𝒞|`; the absorbed index power `vᵐ` costs a further
+`m·|v| < |𝒞|²` letters, and this quadratic term is the only super-linear
+one. The computation is `O(|𝒞|²)` table steps to precompute all idempotent
+powers, then at most `|𝒞¹|²·|𝒞|` contexts of `p ≤ |𝒞| − 1` verdicts each,
+two products and one `P`-lookup per verdict — `O(|𝒞|⁴)` table operations
+worst case, with no call outside the table.
+
+*Proof.* Totality: steps 1–2 as argued; validity and the declared period as
+in step 3. Key lengths: a shortest representative of a class has length
+`< |𝒞|` — in a longer word two prefixes share a class and the repeat
+excises, by congruence — and the shortlex-least representative is a
+shortest one. The operation counts are read off the loops. ∎
+
+The contrast with extraction from an *automaton* deserves one sentence:
+there, finding the group needs a group-theory oracle on a transformation
+monoid, separating residuals needs per-pair language-equivalence products,
+and the toggle needs a firewall against the traps of working on the wrong
+monoid — orbits that spiral instead of closing, separators that degenerate
+to powers of `v`, phases separated only non-adjacently. On the canonical
+object every one of those hazards is not handled but *absent*: the group is
+a cycle of class ids, separation is a finite scan that provably succeeds,
+and the toggle is exact by construction. Canonicity also transfers to the
+output: with the scan orders fixed as above, the emitted family is a
+function of `L` alone — two presentations of the language yield the
+byte-identical certificate.
+
+### 4.3 The specimens, extracted
+
+Running the three scans on the triptych's invariants [SωS26, Table 3]:
+
+- **`Even`.** Step 1: `[a]² = [a·a]`, `[a·a]·[a] = [a]` — carrier
+  `g = [a]`, `v = a`, index `m = 1`, period `p = 2`, cycle `{[a], [a·a]}`.
+  Step 2 stops at the very first linear context
+  `(x, y, t) = ([ε], [ε], [!a])`: at phase `[a]` the pair is
+  `([a]·[!a], [!a]) = ([a·!a], [!a]) ∉ P` — reject; at phase `[a·a]` it is
+  `([a·a]·[!a], [!a]) = ([!a], [!a]) ∈ P` — accept. Pattern `(0, 1)`,
+  `p′ = 2`. Emitted: `F₁(u = a, v = a, x = (!a)^ω, p′ = 2)` — samples
+  `a^{n+1}·(!a)^ω`, accepted iff `n` is odd: Table 1's linear witness of
+  [SωS26], in canonical dress (same shape and period, the tail and index
+  shift chosen by the scan order rather than by hand).
+- **`EvenBlocks`.** Step 1: carrier `g = [a]`, `v = a`, index `m = 1`,
+  period `p = 2`, cycle `{[a], [a·a]}`. Step 2: every linear context comes
+  back constant — not an unlucky scan but Proposition 4.2 arriving as data:
+  the language is prefix-independent, `P` is loop-determined, the linear
+  half has nothing to say. The ω-power scan stops at
+  `(x, y) = ([ε], [!a])`: at phase `[a]` the loop class is
+  `[a]·[!a] = [a·!a]`, whose idempotent power is `[!a·a·!a]`, and
+  `([!a·a·!a], [!a·a·!a]) ∉ P` — reject; at phase `[a·a]` the loop class is
+  `[a·a]·[!a] = [!a]`, idempotent, and `([!a], [!a]) ∈ P` — accept. Pattern
+  `(0, 1)`, `p′ = 2`. Emitted: `F₂(u = ε, v = a, y = a·!a, p′ = 2)` —
+  samples `(a^{n+1}·!a)^ω`, accepted iff `n` is odd: Table 1's ω-power
+  witness.
+- **`GF(aa)`.** Step 1 exhausts with every period 1: no group, the side is
+  not taken, extraction proceeds to §5. The run-parity `Z₂` of its
+  transition monoid died in the quotient [SωS26, §4]; nothing of it reaches
+  this section — the scan runs on the invariant, where artifacts cannot
+  live.
+
+The two derivations also exhibit the factoring of §5's engines one section
+early: `Even`'s toggle is caught by a *stem* manipulation against a fixed
+tail (the linear shape — the walk side), `EvenBlocks`' only by a *loop*
+manipulation (the ω-power shape — the window side). The certificate
+machinery is the extraction machinery, run on the other side of the
+verdict.
+
+### 4.4 The verification contract
+
+A family is *material*; the deliverable is the family plus its check:
+
+- **The toggle check** — `2p′ + 1` lasso membership queries (`n = 0 … 2p′`)
+  against the verifier's own acceptor of `L`, confirming the pattern is
+  `p′`-periodic and non-constant on the window. Under Theorem 4.3 the
+  universal claim is structural, so the finite window's role is to certify
+  *transport*: that the concrete words, rendered over the verifier's
+  alphabet, denote what the extraction meant.
+- **The skeptic's closure** — a verifier trusting nothing but their own
+  deterministic acceptor `D′` can settle the "for all `n`" claim with
+  finitely many further queries: the run behavior of `vⁿ` in `D′` (states
+  reached and acceptance marks collected) is eventually periodic in `n`,
+  with index and period bounded by a count of run behaviors computable from
+  `D′`; checking the toggle over one full stabilized cycle proves it
+  forever. The certificate supports full independence, at a price the
+  verifier chooses.
+- **Portability** — the family references no automaton and no algebra: it
+  is words and one period, `O(|𝒞|²)` symbols in total, attachable to the
+  specification it refutes.
+
+In the assembled architecture (§5.5) this extraction runs at step 0, on
+`𝓘(L)` itself, before any decomposition or combinator — so there is no
+boundary a negative verdict must cross, and no lifting question: the
+certificate is born at the top, canonical.
 
 ## 5. The LTL side: transcribing the Cayley walk
 
@@ -873,6 +1059,8 @@ algebra says exactly when, and exactly why.⟩
 
 ## References
 
+- **[Arn85]** A. Arnold. *A syntactic congruence for rational ω-languages.*
+  TCS 39 (1985) 333–335.
 - **[DA26]** aut2ltl, *The daisy algorithm* (construction note,
   `aut2ltl/daisy/algorithm.md`), 2026.
 - **[DG08]** V. Diekert, P. Gastin. *First-order definable languages.* In
@@ -907,4 +1095,4 @@ algebra says exactly when, and exactly why.⟩
   1999.
 - ⟨TBD: Cohen–Perrin–Pin (TL[F]); Brzozowski–Simon (locally testable);
   Perles–Rabin–Shamir (definite); De Giacomo–Vardi (LTLf template);
-  Landweber; Schützenberger; the certificate-note references.⟩
+  Landweber; Schützenberger.⟩
