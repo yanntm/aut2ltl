@@ -154,7 +154,8 @@ these three examples.
 | `EvenBlocks` | `GF!a ∧ FG(!a → X{a[*2][*];!a}!)` | 2 | **16** | 7 | yes | yes (`Z₂`) | no | `F₂` (ω-power): `(aⁿ·!a)^ω`, by parity of `n` |
 
 **Table 1.** Algebraic fingerprints of the three examples. `|EM¹|` is the
-acceptance-enriched monoid, `|S(L)₊¹|` the constructed SωS (identity adjoined); a group
+acceptance-enriched monoid, `|S(L)₊¹|` the constructed SωS (a fresh identity
+adjoined unconditionally — the convention fixed in §2); a group
 in the *transition* monoid may be a presentation artifact, whereas a group in `S(L)₊` is
 intrinsic and equivalent to non-LTL-definability. The `GF(aa)` row is the story in
 miniature — a `Z₂` in `EM` but **none** in `S(L)₊`, hence LTL — while `Even` and
@@ -276,7 +277,18 @@ quotient, completed with the linked-pair (infinite-power) data, is a finite
 ω-semigroup that **recognizes `L`** — the quotient morphism is a recognizer. Third,
 it is the **coarsest** congruence saturating `L`, hence *canonical*: any two automata
 for `L` yield the same quotient. This quotient `S(L)₊ = Σ⁺/≈_L`, with its linked-pair
-completion `S(L)`, is the **syntactic ω-semigroup** (SωS). The two shapes are genuinely independent —
+completion `S(L)`, is the **syntactic ω-semigroup** (SωS).
+
+A notational convention is fixed here, deliberately: `S(L)₊¹` denotes
+`S(L)₊` with a **fresh** identity `[ε]` adjoined *unconditionally* — not the
+standard `S¹` of semigroup theory, which adjoins a unit only when none
+exists. The distinction is not idle, because `S(L)₊` can own a neutral
+element of its own: in `S(Even)₊` below, `[a·a]` multiplies as the identity
+on every word class (Table 3). Under the convention it nonetheless remains a
+class of its own, keyed by a non-empty word, and `[ε]` is always a separate
+class keyed by the empty word. Canonicity is unaffected — the fresh
+adjunction is a function of `L` — and every class except `[ε]` carries a
+non-empty key, which the acceptance read-off of §5 depends on. The two shapes are genuinely independent —
 Proposition 4.6 exhibits a language separated by one shape and blind to the other —
 so a construction may not drop either.
 
@@ -573,7 +585,10 @@ so the transition monoid's `Z₂` is gone; the single accepting linked pair is
 
 **Table 3.** Multiplication tables of the two SωSs. In `S(Even)₊`, `[a]·[a] = [a·a]`
 and `[a·a]·[a] = [a]`: the pair `{[a], [a·a]}` is a **period-2 cycle**, the `Z₂` that
-makes `Even` non-LTL. Its accepting linked pairs are `([!a],[!a])`, `([!a],[a·!a])`,
+makes `Even` non-LTL. Read `[a·a]`'s full row and column against the headers:
+it multiplies as the identity on all four word classes — `S(Even)₊` owns a
+neutral element, the very situation §2's fresh-identity convention is fixed
+for; `[ε]` remains a separate class regardless. Its accepting linked pairs are `([!a],[!a])`, `([!a],[a·!a])`,
 `([!a],[a·a])` — once the accepting sink (class `[!a]`) is reached, every loop accepts.
 In these single-atom examples `λ` is injective — each letter keys its own class — but
 in general it collapses interchangeable letters: over `Σ = 2^{a,b}` a property depending
@@ -623,12 +638,15 @@ Theorem 4.5 gives the syntactic ω-semigroup `S(L)` concretely, as the tuple
 - `M : 𝒞 × 𝒞 → 𝒞` — the **multiplication table** `M(s, t) = s·t`, the Cayley table of
   `S(L)₊` (Table 3);
 - `P ⊆ 𝒞 × 𝒞` — the set of **accepting linked pairs**
-  `{ (s, e) : e² = e, se = s, u·z^ω ∈ L for ⟦u⟧ ∈ s, ⟦z⟧ ∈ e }`, recovering `L`
+  `{ (s, e) : e² = e, se = s, u·z^ω ∈ L for ⟦u⟧ ∈ s, ⟦z⟧ ∈ e }`, both
+  components ranging over the word classes (`e = [ε]` would name an empty
+  loop, and `se = s` with `e ≠ [ε]` excludes `s = [ε]` too), recovering `L`
   itself and not merely its algebra.
 
 Shortlex keying makes every component a function of `L` alone. `P` is read directly
-off the automaton: for each `(s, e)` with `e·e = e` and `s·e = s`, take the
-shortlex-least words `w_s, w_e` and test `w_s·(w_e)^ω` for acceptance on `D`; put
+off the automaton: for each such `(s, e)` of word classes with `e·e = e` and
+`s·e = s`, take the shortlex-least words `w_s, w_e` — non-empty by the §2
+convention — and test `w_s·(w_e)^ω` for acceptance on `D`; put
 `(s, e)` in `P` iff it accepts. Any representatives give the same verdict — exactly
 what `(s, e)` being a linked pair guarantees (Lemma 3.2).
 
@@ -750,7 +768,13 @@ has no finite-word analogue. Key II is the price of the loop: only the ω-power
 shape forces the profile relation and the rotation lemma. The invariant
 specializes the same way: `𝓘` keeps `(𝒞, λ, M)` and swaps the accepting linked
 pairs `P` for a plain accepting subset `F ⊆ 𝒞` — the §2 point that ω-acceptance
-is a *set of pairs*, not a subset, in exact counterpoint. One format serves both
+is a *set of pairs*, not a subset, in exact counterpoint. One convention
+difference is deliberate: on finite words the congruence is taken on `Σ*`
+directly — no context shape degenerates on the empty word — so a
+neutrally-acting word *shares* the identity's class, exactly as in the
+classical syntactic monoid; at ω the identity is fresh (§2), and where a
+neutral element exists the two counts differ by that one redundant unit.
+One format serves both
 worlds. And where §5 noted that no canonical minimal deterministic ω-automaton
 exists, on finite words the minimal DFA *does* exist — yet definability is still
 read off the algebra, not the automaton: the same moral, in the easier world.

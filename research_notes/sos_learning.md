@@ -158,14 +158,26 @@ For ω-regular `L` the congruence has **finitely many classes** [Arn85]; write
 identity. Being a congruence means exactly that the class of a concatenation is
 a function of the classes: `[u]·[v] := [u·v]` is well defined — the classes
 form a finite monoid, and this multiplication is the table `M` below. This
-quotient monoid is written `S(L)₊`, or `S(L)₊¹` when the identity `[ε]` is
-counted with it; completed with the acceptance datum `P` below, it is the
-**syntactic ω-semigroup** of `L`.
+quotient is written `S(L)₊`; with the identity counted, `S(L)₊¹`. One
+convention is fixed here once and for all: `[ε]` is a **fresh** identity,
+adjoined unconditionally and never identified with the class of a non-empty
+word — even when `S(L)₊` owns a neutral element of its own, which happens:
+in `Even` below, `[aa]` multiplies as the identity on every word class. This
+deliberately departs from the semigroup-theory convention that `S¹` adjoins
+a unit only when none exists; the fresh unit costs one redundant class and
+buys a guarantee the learner leans on throughout — every class other than
+`[ε]` consists of non-empty words, so it carries a non-empty shortlex key,
+and every representative lasso built from keys (§3) has a non-empty loop.
+Canonicity is unaffected: the fresh adjunction is a function of `L` alone.
+Completed with the acceptance datum `P` below, this is the **syntactic
+ω-semigroup** of `L`.
 
 **Linked pairs name lassos.** Iterate a class: the powers `[v], [v]², [v]³, …`
 move in a finite monoid, so they eventually cycle, and some power is an
 **idempotent** — there is `k` with `[v]^k·[v]^k = [v]^k`. A **linked pair** is
-a pair of classes `(s, e)` with `e·e = e` and `s·e = s`; folding a lasso
+a pair of classes `(s, e)` with `e·e = e` and `s·e = s`, both classes of
+non-empty words (`e = [ε]` would name an empty loop, and `s·e = s` with
+`e ≠ [ε]` then keeps `s` out of `[ε]` as well); folding a lasso
 `u·v^ω` as `(u·v^k)·(v^k)^ω` lands on one — `s = [u·v^k]`, `e = [v^k]` — and
 membership of the lasso depends *only* on that pair [PP04]. So the acceptance datum of the algebra is a set `P` of accepting
 pairs, not a set of accepting classes: loops are named separately from stems.
@@ -345,7 +357,9 @@ index and period are each at most `|𝒞_T|` and there is
 `k ≤ 2·|𝒞_T|` with `c_{2k} = c_k` — take the least — and predict with
 the pair `s = ψ(w·z^k)`, `e = c_k`:  `𝓗` answers `P(s, e)`. By construction the
 prediction *is* the teacher's verdict on the representative lasso
-`w_s·(w_e)^ω`. That definition is load-bearing: a counterexample is therefore
+`w_s·(w_e)^ω` — a genuine lasso: no word ever joins the permanent singleton
+`[ε]`, so `e ≠ [ε]` and the loop `w_e` is non-empty, §2's fresh-identity
+convention earning its keep. That definition is load-bearing: a counterexample is therefore
 always a pair of concrete lassos — the queried one and its representative
 collapse — on which the *teacher's own bits differ*.
 
