@@ -23,6 +23,7 @@ from sosl.sos.build import canonical
 from sosl.sos.hypothesis import Hypothesis
 from sosl.sos.lasso import Lasso
 from sosl.teacher.equiv import bounded_counterexample
+from sosl.teacher.exact import exact_counterexample
 
 
 def _prepare(aut: "spot.twa_graph") -> "spot.twa_graph":
@@ -39,11 +40,14 @@ class HoaTeacher:
     ``twa_graph``.
     """
 
-    def __init__(self, aut: "spot.twa_graph", eq_bound: int = 8) -> None:
+    def __init__(
+        self, aut: "spot.twa_graph", eq_bound: int = 8, eq_mode: str = "bounded"
+    ) -> None:
         self.aut = _prepare(aut)
         self.acc = self.aut.acc()
         self.init = self.aut.get_init_state_number()
         self.eq_bound = eq_bound
+        self.eq_mode = eq_mode
         # AP name -> buddy variable, registered once before any BDD op.
         self._var: Dict[str, int] = {
             ap.ap_name(): self.aut.register_ap(ap) for ap in self.aut.ap()
@@ -52,14 +56,14 @@ class HoaTeacher:
         self._compile()
 
     @classmethod
-    def of_hoa(cls, path: str) -> "HoaTeacher":
+    def of_hoa(cls, path: str, eq_mode: str = "bounded") -> "HoaTeacher":
         """Load a HOA automaton file as a teacher."""
-        return cls(spot.automaton(path))
+        return cls(spot.automaton(path), eq_mode=eq_mode)
 
     @classmethod
-    def of_ltl(cls, formula: str) -> "HoaTeacher":
+    def of_ltl(cls, formula: str, eq_mode: str = "bounded") -> "HoaTeacher":
         """Translate an LTL/PSL formula to a deterministic automaton teacher."""
-        return cls(spot.translate(formula, "deterministic", "generic"))
+        return cls(spot.translate(formula, "deterministic", "generic"), eq_mode=eq_mode)
 
     # -- compilation ---------------------------------------------------------
 
@@ -121,9 +125,17 @@ class HoaTeacher:
     # -- equivalence ---------------------------------------------------------
 
     def equiv(self, hypothesis: Hypothesis, bound: Optional[int] = None) -> EquivResult:
-        """Decide whether ``hypothesis`` captures L by bounded lasso enumeration
-        (up to ``bound``, default ``eq_bound``). Returns `Equivalent` tagged with
-        the certifying bound, or a minimal `Counterexample`."""
+        """Decide whether ``hypothesis`` captures L, per ``self.eq_mode``:
+        ``"bounded"`` (lasso enumeration up to ``bound``, default ``eq_bound`` —
+        complete only in the limit) or ``"exact"`` (the transformation-closure
+        decision, complete). Returns `Equivalent` tagged with the certifying
+        strategy, or a minimal `Counterexample`."""
+        if self.eq_mode == "exact":
+            cx, _ = exact_counterexample(
+                self.member, self.alphabet, hypothesis,
+                self._dst, self._mark, self.init, self.aut.num_states(),
+            )
+            return Counterexample(lasso=cx) if cx else Equivalent(strategy="exact")
         b = self.eq_bound if bound is None else bound
         cx, complete = bounded_counterexample(self.member, self.alphabet, hypothesis, b)
         if cx is None:
