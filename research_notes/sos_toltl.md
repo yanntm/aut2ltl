@@ -170,9 +170,6 @@ reproduced in [SωS26, Table 3] and used here without re-derivation.
 
 ## 3. The prior route, and why it explodes
 
-⟨TBD: compress to ~1 page the §8 construction of [DG08], in the form
-established in the working discussion:⟩
-
 The Diekert–Gastin induction takes any morphism `h : Σ* → M` onto a finite
 aperiodic monoid recognizing `L` and builds `φ` by a double induction on
 `(|M|, |Σ|)`. One step: fix any letter `c` with `h(c) ≠ 1`; factor every word
@@ -707,9 +704,12 @@ not "eventually `aa`": Lemma 5.2(ii)'s two refutation instances live in this
 very layer. Acceptance turns on what recurs after the walk freezes — the
 single accepting pair `([a·a], [a·a])` demands a tail whose recurring loop
 idempotent is `[a·a]` — and condition (B) holds here at width 2: among
-tails confined to `{5}`, the recurring 2-window set determines the verdict
-(the window `aa` recurs iff the loop idempotent is `[a·a]` ⟨TBD: two-line
-check⟩), yielding the frozen-layer brick `GF(a ∧ Xa)`. The moving layers,
+tails confined to `{5}`, the recurring 2-window set determines the verdict.
+The check is two lines: a tail `α` induces the pair `(5, e)` with `e` a
+Ramsey idempotent of `α`, and `(5, e) ∈ P ⟺ e = [a·a]`; since `[a·a]` is
+the class of the words containing `aa`, `e = [a·a]` iff sufficiently
+merged Ramsey blocks contain `aa` iff the window `aa` recurs in `α`. This
+yields the frozen-layer brick `GF(a ∧ Xa)`. The moving layers,
 by contrast, are *rejecting* as final layers — no pair off class `5` is in
 `P` — so their `STAY∞` branches are `false` by the label's own degeneracy
 (an all-rejecting final layer has `W(R) = false`; no rejecting-layer test
@@ -720,7 +720,7 @@ label is `GF(a ∧ Xa)` — an `F(…)`-shaped reach wrapper around the child �
 and since the reach wrapper is implied by the child (recurrence implies
 occurrence), the simplified form is `GF(a ∧ Xa)` exactly. A
 prefix-independence read-off (one residual ⟹ the reach wrapper is always
-redundant ⟨TBD: prove as a simplification rule⟩) would emit it directly.
+redundant — Lemma 5.9 below) would emit it directly.
 The experiment suite checks this prediction end to end (E0 in the companion
 spec).
 
@@ -751,13 +751,41 @@ they are two engines. For a prefix-independent `L` (one residual, [SωS26,
 Prop 4.6]) the stem side carries no membership information at all — the
 walk still runs (classes move even when residuals do not: `GF(aa)` has one
 residual and four layers), but every `STAY∞` and every reach wrapper it
-emits is either `false` or redundant, and the language lives entirely in
-the window engine.
+emits is either `false` or redundant (Lemma 5.9), and the language lives
+entirely in the window engine.
+
+**Lemma 5.9 (reach absorption).** Let `L` be prefix-independent. Then
+(i) `Σ*·L = L`; (ii) `T_c = L` for *every* frozen class `c` (frozen tails,
+Lemma 5.10 below); (iii) consequently, if the extraction's exact label
+contains a frozen-class disjunct `ψ` — necessarily defining `T_c = L` —
+the whole label is equivalent to `ψ`, and every reach wrapper
+(`L(F ψ) = Σ*·L(ψ)`) is redundant: the extractor may emit `ψ` directly.
+
+*Proof.* (i) `u·α ∈ L ⟺ α ∈ L` gives `Σ*·L ⊆ L`; `u = ε` gives the other
+inclusion. (ii) By Proposition 4.2, `P` is loop-determined:
+`(s, e) ∈ P ⟺ (e, e) ∈ P`. So `α ∈ T_c ⟺ (c, e(α)) ∈ P ⟺
+(e(α), e(α)) ∈ P ⟺ α ∈ L` — the frozen class drops out. (iii) `ψ` and the
+full label both define `L`, so they are equivalent; and
+`L(F ψ) = Σ*·L(ψ) = Σ*·L = L` by (i). ∎
 
 **The no-recursion trap.** The frozen tail language at a frozen class `c` is
-`T_c = {α : (c, e(α)) ∈ P}` — prefix-independent by construction ⟨TBD:
-well-definedness lemma: all Ramsey idempotents of the same tail give one
-verdict against a fixed `c`⟩. It is tempting to "recurse" on `T_c` — build
+`T_c = {α : (c, e(α)) ∈ P}` — well-defined and prefix-independent:
+
+**Lemma 5.10 (frozen tails).** At a frozen class `c`, `T_c` is exactly the
+residual `u⁻¹L` of any representative `u` of `c`; in particular it does not
+depend on the choice of Ramsey idempotent `e(α)`, and it is
+prefix-independent.
+
+*Proof.* `c` frozen means every letter is neutral at `c`, so `c·[w] = c`
+for every finite `w`; hence `(c, e)` is linked for every idempotent `e`
+arising from a tail. For `[u] = c`, membership of `u·α` is evaluated by
+the invariant through *any* Ramsey factorization of `α`, with one verdict
+[SωS26, Thm 5.1], and that verdict is `(c, e(α)) ∈ P` for each choice of
+factorization — so all choices agree and `T_c = u⁻¹L`. Prefix-independence:
+membership of `u·w·α` is the lookup `(c·[w], e(α)) = (c, e(α))` — the same
+lookup, so `w·α ∈ T_c ⟺ α ∈ T_c`. ∎
+
+It is tempting to "recurse" on `T_c` — build
 its invariant, extract, wrap. The temptation must be resisted, and `GF(aa)`
 shows why: there `T_5 = GF(aa) = L` itself. Prefix-independent languages
 are fixed points of the walk-then-tail decomposition; the frozen engine is
@@ -809,11 +837,12 @@ are the ladder's:
   on *order* among recurring factors, the classical separator between
   `FO[<]` and locally testable (`FO[+1]`, Thérien–Weiss; cite-TBD). Here
   and only here does a DG-style descent survive, demoted to "the engine
-  inside one frozen layer" and scoped to that layer's tail algebra ⟨TBD:
-  which is not smaller in general — `T_c = L` above — so the honest
-  statement is: this stratum is where extraction still pays DG's price,
-  and the census measures how rare it is; an ω-specific descent that beats
-  DG on this stratum is the paper's main open problem⟩.
+  inside one frozen layer" and scoped to that layer's tail algebra — which
+  is not smaller in general (`T_c = L` whenever `L` is prefix-independent,
+  Lemma 5.9(ii)), so the honest statement is: this stratum is where
+  extraction still pays DG's price, and the census measures how rare it is
+  (§8). An ω-specific descent that beats DG on this stratum is the paper's
+  main open problem.
 
 The architecture, assembled — the paper's picture:
 
@@ -825,7 +854,7 @@ extract(𝓘):
      of the class-defined prefix language + fixed template, stop
   2.5 combinators (§5.6): OR-split P by final layer; AND-split by subdirect
       factorization; re-canonicalize each piece (a divisor — never leaves
-      LTL, Prop 5.9), recurse on pieces whose read-offs improved, combine
+      LTL, Prop 5.11), recurse on pieces whose read-offs improved, combine
       with ∨ / ∧
   3. walk engine (stem side): descend the R-order of Cay(L); per layer:
        (A) at k ≤ cap  ⟹ flat law/leave bricks, exits to memoized class
@@ -876,7 +905,7 @@ word's stem class `s` lies in exactly one final layer, so
 — a *disjoint* union, exact by construction, with no surgery of any kind.
 Two properties come with it:
 
-**Proposition 5.9 (decomposition never leaves LTL).** Any language
+**Proposition 5.11 (decomposition never leaves LTL).** Any language
 recognized by `(𝒞, λ, M)` with *any* pair set — every `L_R`, every
 single-pair piece, every Boolean combination — has a syntactic ω-semigroup
 dividing `M`. In particular if `L` is LTL, so is every piece, and every
@@ -935,7 +964,7 @@ tables shown.⟩
 
 The combinators compose (OR of ANDs, complement flips via `P^c` choosing
 the cheaper side), they all commute with re-canonicalization, and
-Proposition 5.9 makes the whole combinator layer safe: no move ever
+Proposition 5.11 makes the whole combinator layer safe: no move ever
 leaves LTL or grows the algebra. They slot into the architecture as step
 2.5, between the ladder templates and the walk engine.
 
@@ -946,28 +975,44 @@ Extraction as computed is a **class-indexed DAG**: one node per
 computes it at scale ⟨TBD: cite the implementation's numbers once §8
 exists⟩. Three renderings:
 
-1. **The DAG itself** — the working format; size ⟨TBD: bound —
-   polynomial in `|𝒞|` for the anchored+ladder fragment?⟩. Not an LTL
-   formula, but every downstream *computation* (model checking the formula
-   against the automaton, equivalence tests) can consume it directly.
+1. **The DAG itself** — the working format, and polynomial on the
+   anchored+ladder fragment: the walk side has one label per layer and one
+   memoized child per class, each class contributing its letter split and
+   exit disjuncts — `O(|𝒞|·|Σ_λ|)` in total — and the window side one term
+   per final layer, `O(k′·|Σ_λ|^{k′})` apiece (the exact constant awaits
+   the `W(R)` normal form, §5.2). Not an LTL formula, but every downstream
+   *computation* (model checking the formula against the automaton,
+   equivalence tests) can consume it directly.
 2. **Flat LTL** — the standard, and the intrinsically large one: no sharing
    in the syntax, so DAG unfolding multiplies along the R-order antichains.
-   The honest statements: nesting depth ≤ R-depth when all layers anchor
-   (each layer contributes bricks of fixed modal depth; only the exit
-   recursion nests), and the until-rank read-off *lower-bounds* the depth
-   any extraction can achieve — so on census specimens we certify "the flat
-   explosion is the language's, not ours". ⟨TBD: both bounds, stated and
-   proved; the size ledger DG vs. ours on the triptych + census.⟩
+   Two honest statements about depth. The upper bound is structural: every
+   brick of §5.2 has fixed modal depth — a constant depending only on the
+   widths, four at `k = 1`, `k′ + 2` for a window term — and a child label
+   occurs only under `leave(·)`, strictly lower in the R-order; so when all
+   layers anchor, flat nesting depth is at most `c(k)·d + c′(k′)` for
+   R-depth `d`: linear in the R-depth, the constant owned by the widths.
+   The lower bound is the language's: the until-rank read-off
+   *lower-bounds* the depth any extraction whatsoever can achieve — so on
+   census specimens we certify "the flat explosion is the language's, not
+   ours". ⟨TBD: the until-rank lower bound, blocked on the §2 read-off
+   (C6); the size ledger DG vs. ours on the triptych + census.⟩
 3. **LTL with definitions** — one fresh proposition `p_n` per DAG node `n`,
    a conjunction of `G(p_n ↔ brick_n(…))` definitions plus a root: linear
-   in the DAG, printable, and defining `L` up to projection of the fresh
-   atoms. The standard succinctness trick, offered as a first-class export
-   format with its semantics stated precisely ⟨TBD: the projection
-   statement; relation to QPTL/second-order quantification — a fresh
-   disambiguating proposition is refused *inside* the transcription (its
-   projection leaves LTL for QPTL; that wall *is* the (A)-fail stratum),
-   while as an *output wrapper* the same move is legitimate; the
-   distinction deserves a remark⟩.
+   in the DAG, printable, and defining `L` exactly, in the following
+   sense. Let `Def = ⋀_n G(p_n ↔ brick_n)` over the extended alphabet
+   `2^{AP ∪ {p_n}}`, each `brick_n` reading only `AP` and propositions of
+   DAG-lower nodes. The DAG being acyclic, every ω-word `α` over `2^{AP}`
+   has *exactly one* extension `α̂` satisfying `Def` — by induction along
+   the DAG order, each `p_n`'s truth at each position is a function of `α`
+   and the lower traces — and `α ∈ L ⟺ α̂ ⊨ p_root`. So `L` is the
+   projection of `L(Def ∧ p_root)` onto `AP`, and the second-order
+   quantifier hidden in that projection is *deterministic*: a definitional
+   extension, never a guess. That is the remark the format deserves:
+   *inside* the transcription a fresh disambiguating proposition is
+   refused — there it would be a genuine guess, its projection leaves LTL
+   for QPTL, and that wall *is* the (A)-fail stratum — while as an output
+   wrapper the quantifier adds no expressive power and the semantics stays
+   exact.
 
 ## 7. The inner frontier
 
