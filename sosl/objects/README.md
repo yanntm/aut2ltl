@@ -16,16 +16,18 @@ defined here.
 - **The invariant `I(L)`.** The learned/reference algebra
   `(C, key, λ, M, P)` — congruence classes, canonical shortlex keys, letter
   map, class multiplication table, accepting linked pairs — together with the
-  membership read-off (decide any lasso from `I(L)` alone).
+  membership read-off (decide any lasso from `I(L)` alone). The classes are
+  those of the non-empty words plus a **fresh** adjoined identity `[ε]`, never
+  merged with any word's class (see `algorithm.md`, "the identity convention").
 - **The Cayley hypothesis.** The *mid-learning* object exchanged during an
   equivalence query. It is deliberately weaker than an invariant (no
   multiplication table is trusted before the end): a step table plus a cache of
   accepting-pair verdicts, with a normative prediction semantics shared by
   teacher and learner.
 - **Canonical serialization.** Byte-comparable text formats: the invariant
-  form (currently `.sosg`, being renamed *SoS*) and the Cayley form. Two
-  languages over the same `AP` are equal iff their serialized invariants are
-  byte-equal — this equality *is* the soundness criterion of the whole tool.
+  form (`.sos`) and the Cayley form. Two languages over the same `AP` are equal
+  iff their serialized invariants are byte-equal — this equality *is* the
+  soundness criterion of the whole tool.
 
 ## Orientation map
 
@@ -33,7 +35,7 @@ defined here.
     lasso       Lasso(u, v) and lasso algebra (fold, pump)
     invariant   Invariant(C, key, λ, M, P) + membership read-off
     cayley      the Hypothesis (step table + pair-cache) and its prediction
-    serialize   SoS (invariant) and Cayley (hypothesis) canonical text I/O
+    serialize   .sos (invariant) and Cayley (hypothesis) canonical text I/O
 
 ## See also
 

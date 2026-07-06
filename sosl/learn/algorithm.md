@@ -17,8 +17,17 @@ document is the working reconstruction the implementation follows.
     is `member(x·p·y, t^ω)` i.e. `member` of the lasso `(x·p·y, t)`;
   - `E_om` — omega columns, each a pair `(x, y)`; the entry of `p` is
     `member(x, (p·y))` read as the lasso `(x, p·y)` — `p` sits in the *period*.
-  `entry[word][column]` is the resulting bit matrix. `ε` never enters omega-column
-  comparisons; it is a permanent singleton class, the identity.
+  `entry[word][column]` is the resulting bit matrix. `ε` is a **permanent
+  singleton class** — the fresh adjoined identity. It is never grouped with any
+  word by its bit-row, not even a non-empty word that happens to have the same
+  bit-row (one that is right-congruent to `ε`, or acts neutrally). No word is
+  ever merged into `[ε]`. This is not an optimization to skip: if a non-empty
+  word `w` joined `[ε]`, a loop could fold to `[ε]`, and the P-cache would be
+  asked for the representative lasso `key(s)·ε^ω` — an empty loop, which is not
+  a lasso. Keeping `[ε]` a singleton makes that failure structurally impossible:
+  every non-identity class then has a non-empty key, so every representative
+  lasso is well-formed. (Matches the `objects/algorithm.md` identity convention;
+  the reference builder adjoins its `[ε]` the same way.)
 - **Partition.** Classes over rows+frontier by equal bit-rows. Each class has a
   representative `rep(c)` = its shortlex-least word, and a step
   `step(c, a) = class(rep(c)·a)`.
@@ -46,8 +55,25 @@ All query counts are logged by phase (fill / harvest / saturation / P).
    class split. See the chains section.
 6. **export** — at fixpoint: `M(c, c') = fold(c, key(c'))`; re-key every class by
    BFS over `step` from `[ε]` in shortlex letter order; enumerate the linked
-   pairs of `M` and fill `P` by one membership query each (or from cache); emit
-   the canonical invariant.
+   pairs of `M` over the **non-identity** classes only (a linked pair can never
+   involve `[ε]` — assert `s ≠ [ε]` and `e ≠ [ε]`), fill `P` by one membership
+   query each (or from cache) on `member(key(s), key(e))` — both keys non-empty
+   by the identity convention; emit the canonical invariant.
+
+   **Two-sidedness caveat.** The exported invariant decides a lasso by
+   multiplying *classes*: `M(c, c') = fold(c, key(c'))` substitutes a class
+   representative *in the middle of a product*. That substitution is sound only
+   when the partition is a congruence on **both** sides (`u ~ v` must give both
+   `u·x ~ v·x` and `x·u ~ x·v`). A table closed under fill/close/consist alone
+   guarantees only the right-hand half, so an export taken from a fixpoint
+   reached **without saturation** can be acceptance-wrong even when every one of
+   the hypothesis's own predictions is correct — the hypothesis folds the
+   literal letters of the queried lasso and never substitutes a representative,
+   so the two read-offs of the same partition can disagree. Pre-saturation
+   exports are therefore **diagnostic artifacts, not deliverables**: an acceptor
+   check for a `--no-saturation` run targets the Cayley hypothesis, not the
+   exported `.sos`. Saturation (below) is what makes the partition two-sided and
+   the export sound.
 
 **Main loop.** `fill; close; consist;` to fixpoint, then `saturate` (restart on
 any split), then `equiv`. On a counterexample, process it (one split) and

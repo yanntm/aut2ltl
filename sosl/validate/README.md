@@ -10,12 +10,21 @@ canonical equality (the soundness criterion) and a weaker acceptance check
   defensively (re-sort accepting pairs, normalize whitespace), and compare
   byte-for-byte. Byte-equality is the tool's soundness verdict: `SOUND` /
   `MISMATCH`.
-- **`sos_validate --acceptor learned <hoa> --bound B`** — check the invariant's
-  membership read-off against direct automaton simulation on all lassos up to
-  bound `B`. This certifies *acceptance-correctness* separately from canonicity:
-  a `--no-saturation` run can be acceptance-correct yet not byte-equal
+- **`sos_validate --acceptor learned <hoa> --bound B`** — check a membership
+  read-off against direct automaton simulation on all lassos up to bound `B`.
+  This certifies *acceptance-correctness* separately from canonicity: a
+  `--no-saturation` run can be acceptance-correct yet not byte-equal
   (`ACCEPTOR_ONLY`), and this check is how that outcome is recognized rather
   than hidden.
+
+  **Scope rule (normative).** `--acceptor` accepts either a `.sos` invariant or
+  a `CAYLEY` hypothesis. For any fixpoint reached **without** saturation it must
+  be pointed at the **Cayley hypothesis**: the `.sos` read-off multiplies
+  classes and so presumes a two-sided congruence (`objects/algorithm.md` /
+  `learn/algorithm.md` export caveat), which a pre-saturation partition does not
+  yet satisfy — the exported `.sos` can legitimately fail the acceptor check
+  there while the hypothesis passes it. That divergence is an expected outcome
+  (spec §9, row F2), not a bug.
 
 Thin wrapper: the invariant read-off is `sosl.objects`, the reference and the
 simulator are `sosl.reference` / `sosl.teacher`. No `algorithm.md` — the

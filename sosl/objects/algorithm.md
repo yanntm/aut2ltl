@@ -20,6 +20,41 @@ plain right-congruence learner stalls (cf. `learn/algorithm.md`, saturation).
 
 The quotient is a finite monoid once the empty word is adjoined as identity.
 
+## The identity convention (normative)
+
+The class set is the congruence classes of the **non-empty** words, plus a
+**fresh** adjoined identity class `[ε]` — always, even when some non-empty word
+already acts neutrally. The identity is adjoined as a fresh element; it is never
+the image of any word. Consequences, all mandatory:
+
+- The class count is `(number of non-empty-word classes) + 1`, and it comes out
+  the same from every automaton presenting the same language. This
+  presentation-independence is exactly what makes `.sos` byte-equality a sound
+  language test; drop it and byte-equality stops meaning language equality.
+- `[ε]` is never merged with the class of any non-empty word — even a word `w`
+  that acts neutrally (`w·u ~ u` and `u·w ~ u` for every non-empty `u`). Such
+  neutral classes exist and stay ordinary classes of their own, keyed by their
+  shortlex-least non-empty word. There is no contradiction with the identity:
+  `M(c, [ε]) = c` and `M([ε], c) = c` hold for every class `c`, including a
+  neutral one; both facts sit in the multiplication table together.
+- `[ε]` can never occur in a linked pair. A linked pair needs `M(s, e) = s`
+  with `M(e, e) = e`; if `s = [ε]` then `M([ε], e) = e` forces `e = [ε]`, and an
+  empty loop is not a lasso. So linked pairs are enumerated over non-identity
+  classes only, with `s ≠ [ε]` and `e ≠ [ε]` asserted.
+- Every non-identity class therefore has a non-empty key, so every
+  representative lasso `key(s)·key(e)^ω` is well-formed. The membership read-off
+  below and the learner's prediction / P-cache both rely on this.
+
+The trap this rules out is a quotient taken over monoid *elements* alone. In
+some presentations a non-empty word's element literally equals the identity
+element `⟦ε⟧` — e.g. `!a` in a one-state automaton for `GF a` has the same state
+map and no marks as the empty word — and an element-quotient then silently
+merges `[!a]` into `[ε]`, making the class count presentation-dependent (2 for
+`GF a` from that presentation, 3 from another). The convention forbids this:
+quotient only the images of non-empty words, adjoin the identity as a fresh
+element, and a word whose element coincides with `⟦ε⟧` is still an ordinary
+class (key `!a` for `GF a`, giving 3 classes from every presentation).
+
 ## The invariant `I(L) = (C, key, λ, M, P)`
 
 - `C` — the finite set of congruence classes.

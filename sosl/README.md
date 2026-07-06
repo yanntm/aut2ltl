@@ -76,9 +76,11 @@ through the teacher interface. Everything else may lean on `aut2ltl` and spot.
 
 ## Status
 
-Skeleton. The folders, their READMEs, and the `algorithm.md` sketches are in
-place; the code is being filled in per the milestones in
-`research_notes/sos_learner_spec.md` (the specification of record). The
-reference invariant builder already exists in-repo (`tests/sosg/`) and is
-wrapped by `reference/`; the serialization id is currently `.sosg` and will be
-renamed to *SoS* in a planned refactor — treat the id as not-yet-frozen.
+The objects, teacher, validator, and the query learner (without saturation) are
+in place: the learner reconstructs the invariant end to end and, on many census
+cases, byte-matches the reference. The reference builder wraps the in-repo
+definability pipeline behind the `sosl.objects` vocabulary. Current work is
+milestone M2.5 — aligning both sides on the fresh-identity convention
+(`objects/algorithm.md`, `reference/algorithm.md`) — ahead of M3 (saturation +
+exact equivalence). The serialization is `.sos`; milestones and acceptance
+gates are in `research_notes/sos_learner_spec.md` (the specification of record).

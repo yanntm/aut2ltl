@@ -11,11 +11,18 @@ ground truth of the soundness harness.
   and hand it back as a `sosl.objects` invariant, serializable to the same
   canonical form the learner emits.
 
-This is an **adapter**. The real construction already exists in-repo
-(`tests/sosg/` over `aut2ltl/bls/definability` and `tests/probes/dg_common`); it
-is spot-backed and heavy. This module wraps it behind the `sosl.objects`
-vocabulary so the teacher and the validator can use one reference without
-knowing where it comes from.
+This is mostly an **adapter**: the acceptance-enriched monoid it starts from is
+computed by the in-repo definability pipeline (`tests/probes/dg_common` over
+`aut2ltl/bls/definability`), which is spot-backed and heavy. This module wraps
+that behind the `sosl.objects` vocabulary so the teacher and the validator can
+use one reference without knowing where it comes from.
+
+It is not *only* plumbing, though. The pipeline quotients over monoid
+*elements*, which merges a non-empty word into the identity whenever their
+enriched elements coincide (e.g. `!a` in one-state `GF a`) — a
+presentation-dependent class count that breaks byte-equality. Adjoining the
+identity as a **fresh** element, so no word class collides with it, is this
+wrapper's own obligation. See `algorithm.md`.
 
 ## Who uses it, who must not
 
@@ -26,10 +33,10 @@ knowing where it comes from.
   pulling the reference in would let automaton structure bypass the teacher
   interface. The layering forbids the edge.
 
-## Status
+## See also
 
-Skeleton. Wraps the existing `tests/sosg` builder for now; a planned *SoS*
-refactor promotes that builder out of `tests/` into a first-class module, at
-which point this adapter thins to a rename. No `algorithm.md` here — the
-algorithm lives in the definability pipeline (`docs/algorithm.md`,
-`aut2ltl/bls/definability`), not in this wrapper.
+`algorithm.md` — the fresh-identity adjunction this wrapper owns (the one part
+that is not plumbing) and the regression fingerprints it must reproduce. The
+enriched-monoid construction underneath lives in the definability pipeline
+(`aut2ltl/bls/definability`, `docs/algorithm.md`), not here. The specification
+of record is `research_notes/sos_learner_spec.md` §1.1.
