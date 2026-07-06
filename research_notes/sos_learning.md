@@ -16,7 +16,10 @@ are read. It has recently been constructed from a deterministic automaton for
 the first time [SωS26]. This paper shows it is *learnable*: we give an active-learning
 algorithm in the MAT model whose queries are memberships of ultimately-periodic
 words only, whose target is the exportable invariant `𝓘(L) = (𝒞, λ, M, P)`, and
-whose hypotheses are its automaton-like Cayley form. Two results carry the
+whose hypotheses are its automaton-like Cayley form. To our knowledge it is
+the first MAT learner for the full ω-regular class whose limit is a canonical
+object of the language itself, rather than an acceptor chosen from a family.
+Two results carry the
 paper. First, a *harvest theorem*:
 any lasso on which a hypothesis errs surrenders a separating table column, by a
 two-phase replacement chain — stem first, then loop-head, where a left extension
@@ -39,6 +42,19 @@ invariants. ⟨TBD: one-sentence experimental headline on the census benchmark�
 ---
 
 ## 1. Introduction
+
+Active learning asks a machine to reconstruct an unknown language *exactly*,
+from experiments alone. In Angluin's minimally adequate teacher (MAT) model
+[Ang87] — the setting of this paper, recalled in §2.1 — the learner poses
+membership queries ("is this word in the language?") and equivalence queries
+("is this hypothesis the language?", answered by *yes* or by a
+counterexample), and the L\* algorithm learns the minimal DFA of any regular
+language with polynomially many queries. The paradigm's reach is practical —
+assume–guarantee verification [FCC+08]; state-machine models learned from
+black-box implementations of smart cards, network protocols, and legacy
+software (see [Vaa17] for a survey) — and its
+engine is always the same: convergence to a *canonical* target, an object
+owned by the language rather than by any machine presenting it.
 
 Active learning of ω-regular languages has a structural handicap that finite words
 never had. For finite words, Angluin's L\* rests on the Myhill–Nerode theorem: the
@@ -79,7 +95,12 @@ the two-sidedness that membership errors cannot signal (§4.2, the failure we di
 not anticipate) is enforced by a query-free sweep (§4.3). On top of the two halves
 we build an L\*-style learner whose hypotheses are not automata but the invariant
 `𝓘(L)` itself: classes keyed by shortlex representatives, letter map,
-multiplication table, accepting linked pairs.
+multiplication table, accepting linked pairs. The result is, to our
+knowledge, the first active-learning algorithm for the *full* class of
+ω-regular languages whose limit is a canonical object of the language — the
+algebra its definability questions are read from — rather than an acceptor
+chosen from a family; placing ω-learning back on the L\* footing that
+Myhill–Nerode's failure at ω seemed to forbid is what this paper is for.
 
 **Contributions.**
 1. A two-sorted observation table for Arnold's congruence, with lasso membership
@@ -120,7 +141,7 @@ letter known in advance, because a counterexample-driven harvest of at most `|�
 target is; this paper makes the ω-instance an algorithm, and runs it.
 
 Three running examples — `GF(aa)`, `Even`, `EvenBlocks` [SωS26] — recur
-throughout (descriptions and automata in §2, Figure 1). Two of them are traced *live* through §3–5: `Even`
+throughout (descriptions and automata in §2.3, Figure 1). Two of them are traced *live* through §3–5: `Even`
 (`(aa)*·!a·Σ^ω`, co-safety: membership is decided by a finite prefix, i.e. on
 the stem) and `EvenBlocks`
 (prefix-independent, trivial right congruence — outside [MP95]'s class,
@@ -131,24 +152,96 @@ routes it through opposite Arnold shapes. `GF(aa)`, whose transition-monoid
 group is a presentation artifact the algebra destroys, remains the evaluation's
 third specimen (§6).
 
-## 2. The objects, minimally
+## 2. Background
 
-Everything in this section is prior work — the definitions are Arnold's
-[Arn85], the two construction facts are from [SωS26] — but we state it
-self-contained and only as far as the learner uses it. The reader we have in mind knows
-observation tables and MAT learning; no algebra beyond what follows is assumed.
+This section fixes notation and recalls the two bodies of prior work the
+paper stands on: active learning in the MAT model (§2.1), and the syntactic
+theory of ω-regular languages (§2.2); §2.3 introduces the running examples
+and the teacher used in the experiments. Nothing in it is new, except one
+bookkeeping convention flagged where it is fixed.
+
+### 2.1 Active learning in the MAT model
+
+**Exact learning from queries.** Active learning reconstructs a finite
+description of an unknown language `L` that is available only through an
+interface — a black-box implementation, a simulator, a system too opaque to
+open. In Angluin's *minimally adequate teacher* (MAT) model [Ang87] the
+interface is two queries: a **membership query** — is the word `w` in
+`L`? — answered by a bit, and an **equivalence query** — is the hypothesis
+`𝓗` exactly `L`? — answered by *yes* or by a **counterexample**, a word on
+which `𝓗` and `L` disagree. The learner chooses its queries adaptively and
+must terminate with an exact description of `L`.
+
+**L\* in one paragraph.** For regular languages of finite words the model is
+solved by Angluin's L\* [Ang87]. The learner maintains an **observation
+table**: rows are access words (prefixes), columns are distinguishing
+experiments (suffixes), and the entry at `(u, e)` is the membership bit of
+`u·e`. A table that is **closed** (every one-letter extension of a row
+matches some row's bit-vector) and **consistent** (rows with equal
+bit-vectors have equal one-letter successors) induces a deterministic
+automaton on the row classes — the hypothesis. Each counterexample is
+processed into a new distinguishing experiment that splits at least one row
+class; the binary search of Rivest and Schapire [RS93] does it with
+logarithmically many membership queries. §3 will reuse every one of these
+notions, changed only where ω-words force a change.
+
+**Why it converges: a canonical target.** The bookkeeping above is not what
+makes L\* work; the Myhill–Nerode theorem is. The right congruence
+`u ~_L v ⟺ (∀y: u·y ∈ L ⟺ v·y ∈ L)` of a regular language has finitely many
+classes, and its quotient *is* the minimal DFA — a **canonical object**, a
+function of `L` and not of any machine presenting it. Canonicity is
+load-bearing three times over. It is the progress measure: every split is
+witnessed by a genuine `~_L`-separation, so the class count is bounded by
+the target's size and each counterexample makes irreversible progress. It
+makes complexity meaningful: queries are counted against the size of the
+language's own invariant — *output-polynomial* — not against whichever
+automaton the teacher happens to hold. And it makes the result usable:
+questions about `L` are answered on the learned object itself. On this
+view, active learning *is* the reconstruction of a canonical invariant
+through queries, and the table is its bookkeeping.
+
+**What survives at ω, and what breaks.** For ω-regular languages the query
+interface survives intact. Infinite words cannot be typed into a teacher,
+but the **lassos** — ultimately-periodic words `u·v^ω`, finite objects —
+determine an ω-regular language completely (§2.2), so membership queries
+are posed on lassos and counterexamples are returned as lassos; this has
+been the standard move since [MP95, FCC+08, AF16]. What breaks is the
+target. Myhill–Nerode fails at ω: the right congruence of an ω-regular `L`
+can be trivial while `L` is complex [AF21], so there is no minimal
+deterministic acceptor to converge to — and the history of ω-learning (§7)
+is a history of substitute targets: a subclass where the right congruence
+happens to suffice [MP95], encodings into finite words [FCC+08], families
+of DFAs in three competing normal forms [AF16, ABF18]. All are acceptors;
+none is a canonical object of `L` alone. This paper keeps the L\* view and
+changes the target: the canonical invariant an ω-regular language actually
+owns is the quotient of Arnold's syntactic congruence — recalled next — and
+§§3–5 supply what was missing, a query-level route to a *two-sided*
+congruence.
+
+**Conventions.** One lasso membership query counts as one query; equivalence
+queries are counted separately; all bounds are stated against the size of
+the canonical target.
+
+### 2.2 The syntactic ω-semigroup
+
+Everything in this subsection is prior work — the congruence is Arnold's
+[Arn85], its algebraic packaging Wilke's and Perrin–Pin's [Wil93, PP04], and
+the two construction facts are from [SωS26] — restated in the exact form the
+learner consumes.
 
 **Lassos.** `Σ` is a finite alphabet (for temporal-logic applications,
 `Σ = 2^AP`). A **lasso** is an ultimately-periodic word `u·v^ω`: a finite stem
 `u`, a finite non-empty loop `v` repeated forever. Two ω-regular languages are
-equal iff they agree on all lassos, so lassos are the only infinite words that
+equal iff they agree on all lassos [PP04], so lassos are the only infinite
+words that
 ever need to be mentioned: every query below is one, and "the language" means
 its lasso membership function.
 
 **The congruence.** Fix an ω-regular `L ⊆ Σ^ω`. Two finite words are
 **syntactically congruent**, `u ≈_L v`, when swapping one for the other never
-changes membership — and in a lasso the swap can sit in only two places, the
-stem or the loop. These are Arnold's two context shapes [Arn85]:
+changes membership; Arnold matches the swap positions to the anatomy of a
+lasso — the swapped factor sits in the stem, or recurs inside the loop —
+giving two context shapes [Arn85]:
 
 ```
     (linear)    ∀ x, y ∈ Σ*, t ∈ Σ⁺ :   x·u·y·t^ω ∈ L  ⟺  x·v·y·t^ω ∈ L
@@ -207,7 +300,9 @@ contexts as a whole act only by re-indexing finitely many slots. Nothing else
 from that construction is used here: §4 transports the lemma's two halves into
 the query model, and the algorithm never sees an automaton.
 
-**The three specimens, concretely.** For the reader who wants to check every
+### 2.3 The running examples, and the teacher
+
+For the reader who wants to check every
 bit below by hand, here are the running examples — descriptions and automata
 reproduced from [SωS26]:
 
@@ -244,11 +339,12 @@ reads the transition marks seen infinitely often: `Inf(c)` — mark `c` recurs,
 `Fin(c)` — it does not). In this paper the automata belong to the *teacher*:
 the learner only ever sees their answers.
 
-**The query model.** A teacher for `L` answers **membership queries** on lassos
-(`u·v^ω ∈ L`?) and **equivalence queries** on hypotheses `𝓗` (an invariant-shaped
-tuple, §3), returning a lasso counterexample on failure. This is the standard MAT
-model [Ang87] restricted to ultimately-periodic words, which is no restriction at
-all: lassos determine `L`, and every query the algorithm ever poses is one.
+**The query model, instantiated.** The MAT teacher of §2.1, for this paper:
+membership queries are lassos (`u·v^ω ∈ L`?); equivalence queries take a
+hypothesis `𝓗` (an invariant-shaped tuple, §3) and return a lasso
+counterexample on failure. The restriction to ultimately-periodic words costs
+nothing — lassos determine `L` (§2.2) — and every query the algorithm ever
+poses is one.
 
 In our experiments the teacher is built on the construction of [SωS26]:
 membership is one deterministic run, and an equivalence query builds `𝓘` of the hypothesis's
@@ -414,7 +510,7 @@ language distinguishes, and that is all a counterexample ever is in this
 design: the queried lasso and its representative collapse, two concrete
 lassos, teacher bits `1` and `0`.
 
-The minimization policy of §2 explains why this exact lasso is the one
+The minimization policy of §2.3 explains why this exact lasso is the one
 returned. Enumerating stems shortest-first and loops shortest-then-shortlex:
 `(ε, a)`, `(ε, !a)`, `(ε, aa)`, `(ε, a!a)`, `(ε, !a·a)`, `(ε, !a!a)` and
 `(ε, aaa)` are all predicted correctly — each folds to a name whose
@@ -465,7 +561,8 @@ enacted: no search over rotations is ever needed. ∎
 **Theorem 4.3 (harvest).** Each counterexample adds the flip column and splits
 one class — the frontier word `u` leaves the class of `v` — so `|𝒞_T|` grows by
 one per equivalence query, at a cost of `O(log(|w| + |𝒞_T|·|z|))` membership
-queries.
+queries: the normalized lengths are `n ≤ |w| + 2|𝒞_T|·|z|` and
+`m ≤ 2|𝒞_T|·|z|`, since the stabilization power satisfies `k ≤ 2|𝒞_T|`.
 
 *Example (one counterexample, two shapes).* Both running specimens return the
 *same* minimal counterexample from their first equivalence query: `(ε, aa!a)`,
@@ -586,7 +683,7 @@ the difference between the algebra and an acceptor.
 
 ### 4.3 The repair: left-saturation over class representatives
 
-The missing ingredient is the other half of the rotation lemma (§2): a left
+The missing ingredient is the other half of the rotation lemma (§2.2): a left
 factor acts only by re-indexing a slot, and slots are finitely many; on the
 learner's side, left contexts need range only over **class representatives**. Augment the loop with a **left-saturation sweep**: for every
 table word `u` with class representative `v = rep(ψ(u))`, `u ≠ v`, and every
@@ -769,9 +866,13 @@ The claim gives left-invariance: if `ψ(u) = ψ(v)` then for any `x`,
 
 *The kernel saturates `L`.* Predictions are everywhere correct (equivalence
 granted) and depend on a lasso only through `ψ`-values of its literal words.
-Let `ψ(u) = ψ(v)` and take any Arnold context; replacing `u` by `v` in it,
-occurrence by occurrence, changes no `ψ`-value along the fold — the kernel is a
-two-sided congruence — hence no prediction, hence no membership: `u ≈_L v`.
+Let `ψ(u) = ψ(v)` and take any Arnold context. The two lassos it builds fold
+to the same predicting pair: the kernel being a two-sided congruence, the
+orbit values agree — `ψ(x·u·y·t^j) = ψ(x·v·y·t^j)` in the linear shape,
+`ψ(x·(u·y)^j) = ψ(x·(v·y)^j)` in the ω-power shape, for every `j` — so index,
+period, and the pair `(s, e)` coincide, and the two lassos receive the same
+prediction. Predictions being everywhere correct, membership agrees:
+`u ≈_L v`.
 
 *The bijection.* Three facts assemble it. (i) `ψ`-equal implies `≈_L`-equal —
 just proved — so the map `c ↦ [w_c]_{≈_L}` is well defined on classes, and
@@ -1003,6 +1104,8 @@ headline.⟩
   draft, 2026.
 - **[US20]** H. Urbat, L. Schröder. *Automata learning: an algebraic approach.*
   LICS 2020.
+- **[Vaa17]** F. Vaandrager. *Model learning.* Commun. ACM 60(2) (2017)
+  86–95.
 - **[vHSS17]** G. van Heerdt, M. Sammartino, A. Silva. *CALF: categorical
   automata learning framework.* CSL 2017.
 - **[Wil93]** T. Wilke. *An algebraic theory for regular languages of finite and
