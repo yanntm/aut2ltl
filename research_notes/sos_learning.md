@@ -409,11 +409,20 @@ both, by two different mechanisms (§4.1, §4.3).
 into. The two merges marked `✗` are wrong (`≉_L`) but invisible: no observed
 context separates the words yet.
 
-**Definition 3.2 (closed, consistent; minting).** The table is observed on its
+**Definition 3.2 (closed, consistent; access words; minting).** The table is
+observed on its
 **words** `W(T) = R ∪ R·Σ` (rows and frontier). `T` is **closed** when every
 frontier word is `≡_T` to some row (else the offending frontier word is promoted
 to `R`), and **consistent** when `u ≡_T v` implies `u·a ≡_T v·a` for all rows
-`u, v` and letters `a`. A consistency violation at column `c` **mints** a new
+`u, v` and letters `a` — §2.1's notions, with two sorts of experiments in
+place of suffixes. Rows are maintained as **access words**: `R` starts as
+`{ε} ∪ Σ`, and every later row is a promoted frontier word `w_c·a`, where
+the **representative** `rep(c)` of a class, written `w_c`, is its
+shortlex-least row. Two structural facts follow and are used below: every
+letter-prefix of a row is itself a row (rows are only ever created by
+extending a row with one letter), and each promotion adds one letter to an
+existing row while creating a new class, so rows — hence representatives —
+have length `O(|𝒞_T|)`. A consistency violation at column `c` **mints** a new
 column by migrating the letter into the column: for `c = (x, y, t)` linear, the
 column `(x, a·y, t)`; for `c = (x, y)` ω, the column `(x, a·y)`. Minting is sound
 bookkeeping — the entry of `u` at the minted column *is* the entry of `u·a` at
@@ -423,17 +432,25 @@ exactly because `c` separated their `a`-successors. The empty word is kept as a
 permanent row for the adjoined identity `[ε]` (it seeds folds and is never
 compared), matching the keying of `𝓘`.
 
-**Lemma 3.3 (coherence).** Maintain rows as *access words*: `ε`, the letters, and
-promoted frontier words `rep(c)·a`, where `rep(c)` — written `w_c` for short —
-is the shortlex-least row of class `c`. On a closed and consistent table, the
-transition `step(c, a) := class of w_c·a` is well defined and agrees on every
-member of `c`; the letterwise **fold** `ψ(u) := step(…step([ε], u₁)…, u_n)`
-therefore satisfies `ψ(u) = [u]_{≡_T}` for every table word `u`, and `≡_T` is a
-right congruence on rows.
+**Lemma 3.3 (coherence).** On a closed and consistent table, the transition
+`step(c, a) := class of w_c·a` is well defined and agrees on every member of
+`c` — for any row `u` of class `c`, the table word `u·a` has class
+`step(c, a)`. Consequently the letterwise **fold**
+`ψ(u) := step(…step([ε], u₁)…, u_n)` satisfies `ψ(u) = [u]_{≡_T}` for every
+table word `u`, and `≡_T` is a right congruence on rows.
 
-*Proof.* Consistency is precisely the agreement of `step` across members;
-coherence follows by induction along access words, closedness supplying the row
-at each step. ∎
+*Proof.* *Well-definedness:* `w_c·a` is a table word (a row, or a frontier
+word), and closedness assigns every table word the class of some row.
+*Agreement:* for a row `u` of class `c` we have `u ≡_T w_c`, both rows, so
+consistency gives `u·a ≡_T w_c·a`, i.e. `class(u·a) = step(c, a)`.
+*Coherence*, by induction on `|u|` over table words. Base: `ψ(ε) = [ε]` by
+definition. Step: every non-empty table word is `u = p·a` with `p` a row —
+a frontier word extends a row by definition, and a non-empty row was created
+as a one-letter extension of a row (Definition 3.2's access discipline) — and
+`p`, a shorter table word, is covered by the hypothesis:
+`ψ(u) = step(ψ(p), a) = step([p], a) = class(p·a) = [u]`, the third equality
+by agreement. *Right congruence:* for rows `u ≡_T v` and a letter `a`,
+agreement twice gives `[u·a] = step([u], a) = step([v], a) = [v·a]`. ∎
 
 More generally, write `fold(d, u)` for the letterwise `step`-walk on `u`
 started at an arbitrary class `d`, so that `ψ(u) = fold([ε], u)`. Folds compose
@@ -566,25 +583,33 @@ queries: the normalized lengths are `n ≤ |w| + 2|𝒞_T|·|z|` and
 
 *Example (one counterexample, two shapes).* Both running specimens return the
 *same* minimal counterexample from their first equivalence query: `(ε, aa!a)`,
-predicted `0` through the pair `([a],[a])`, truly in both languages. The
-junction query `[a·(aa!a)^ω ∈ L]` routes them oppositely. On `Even` it answers
-`0` — the prepended `a` flips the parity — against `γ_0 = [(aa!a)^ω] = 1`: the
-flip is in the **stem chain**. Walking it: `γ_1 = [a·a!a·(aa!a)^ω] = 1` (first
-`!a` after two `a`), `γ_2 = [a·!a·(aa!a)^ω] = 0` (after one). The flip at
-`1→2` hands over `u = rep(ψ(a))·a = aa`, `v = rep(ψ(aa)) = a`, and the linear
-column `(ε, !a, aa!a)`: entries `1` for `aa`, `0` for `a` — the parity merge of
-day one, split. On `EvenBlocks` the junction answers `1` — a prefix cannot harm
-a prefix-independent language — equal to `γ_0`, so the whole stem chain is
-flat and the flip is in the **loop chain**: `δ_1 = [a·(aa!a)^ω] = 1`,
-`δ_2 = [a·(rep(ψ(aa))·!a)^ω] = [a·(a!a)^ω] = 0` (recurring odd blocks). Same
-flip position, same pair `u = aa`, `v = a`, but the minted column is the
-ω-column `(a, !a)` — the prefixed cousin of the `(ε, !a)` we exhibited in §3,
-found by the machinery rather than by inspection. Table 3 shows both tables
-after the split. One word, two languages, Arnold's two shapes: the
-counterexample analysis is the two-shape split of the congruence, run
-backwards.
+predicted `0` through the pair `([a],[a])`, truly in both languages.
+Normalization is trivial in both (`k = 1`, so `w' = z' = aa!a`), and the
+junction query `[a·(aa!a)^ω ∈ L]` routes them oppositely. On `Even` it
+answers `0` — the prepended `a` flips the parity — against
+`γ_0 = [(aa!a)^ω] = 1`: the flip is in the **stem chain**, Table 3(a). On
+`EvenBlocks` it answers `1` — a prefix cannot harm a prefix-independent
+language — equal to `γ_0`, so the stem chain is flat and the flip is in the
+**loop chain**, Table 3(c). The two flips sit at the same position and hand
+over the same pair — frontier word `u = rep(ψ(a))·a = aa`, row
+`v = rep(ψ(aa)) = a` — but mint columns of different sorts: from (a) the
+linear column `(ε, !a, aa!a)`, entries `1` for `aa` and `0` for `a` — the
+parity merge of day one, split; from (c) the ω-column `(a, !a)` — the
+prefixed cousin of the `(ε, !a)` we exhibited in §3, found by the machinery
+rather than by inspection. Tables 3(b) and 3(d) show the tables after the
+split. One word, two languages, Arnold's two shapes: the counterexample
+analysis is the two-shape split of the congruence, run backwards.
 
-*(a) `Even`, after the stem harvest:*
+*(a) `Even`, the stem chain `γ` — replace a growing stem prefix by its rep:*
+
+| `i` | prefix | its rep | queried lasso | `γ_i` |
+|:--:|---|:--:|---|:--:|
+| 0 | — | — | `aa!a·(aa!a)^ω` | `1` |
+| 1 | `a` | `a` | `a·a!a·(aa!a)^ω` | `1` |
+| 2 | `aa` | `a` | `a·!a·(aa!a)^ω` | **`0`** |
+| 3 | `aa!a` | `a` | `a·(aa!a)^ω` | `0` |
+
+*(b) `Even`, after the stem harvest:*
 
 | word | `(ε,ε)_ω` | **`(ε, !a, aa!a)_lin`** | class |
 |---|:--:|:--:|---|
@@ -595,7 +620,17 @@ backwards.
 | `a·!a` | `0` | **`0`** | → `[a]` ✗ still |
 | `aa·!a` | `1` | **`1`** | → `[!a]` |
 
-*(b) `EvenBlocks`, after the loop harvest:*
+*(c) `EvenBlocks`, the loop chain `δ` — stem pinned to `w_s = a`, replace a
+growing loop prefix by its rep:*
+
+| `i` | prefix | its rep | queried lasso | `δ_i` |
+|:--:|---|:--:|---|:--:|
+| 0 | — | — | `a·(aa!a)^ω` | `1` |
+| 1 | `a` | `a` | `a·(a·a!a)^ω` | `1` |
+| 2 | `aa` | `a` | `a·(a·!a)^ω` | **`0`** |
+| 3 | `aa!a` | `a` | `a·(a)^ω` | `0` |
+
+*(d) `EvenBlocks`, after the loop harvest:*
 
 | word | `(ε,ε)_ω` | **`(a, !a)_ω`** | class |
 |---|:--:|:--:|---|
@@ -605,10 +640,14 @@ backwards.
 
 **Table 3.** The same counterexample `(ε, aa!a)` processed in the two
 languages (minted column and promoted row in bold; `ε`-row and unchanged
-frontier omitted). In (a) the flip landed in the stem chain and minted a
-*linear* column; in (b) the stem chain was flat and the loop chain minted an
-*ω-column*. Both pull `aa` out of `[a]` — and in (a) the doomed `a·!a` still
-hides there, which is §4.3's catch.
+frontier omitted). In the chains, row `i = 1` replaces the prefix `a` by its
+own representative — a no-op, bit unchanged — and the flips sit at
+`1 → 2` in both. In (a), row 3 is the junction `γ_3 = δ_0`, already `0`: the
+stem chain flipped, minting a *linear* column. In (c) the junction is `1`
+and the loop chain flips instead, minting an *ω-column*; note row 3's lasso
+is `a·a^ω` — the representative lasso of the predicting pair, i.e. the
+prediction itself, closing the chain. Both runs pull `aa` out of `[a]` — and
+in (b) the doomed `a·!a` still hides there, which is §4.3's catch.
 
 ### 4.2 The gap: acceptance-correct is not algebra-correct
 
@@ -894,7 +933,7 @@ to the syntactic object.
 
 *Example (the run, completed, on `Even`).* After §4.3's split the table is
 Table 6, and the next sweep and equivalence query are clean. The whole run,
-Tables 1 → 3(a) → 6: five classes from **two splits — one per mechanism** (the
+Tables 1 → 3(b) → 6: five classes from **two splits — one per mechanism** (the
 stem chain split `aa` from `a`, the saturation escalation split `a·!a` from
 `a`) — on **three columns** (`(ε,ε)_ω` initial, `(ε, !a, aa!a)_lin` harvested,
 `(ε, a!a, aa!a)_lin` saturated). The BFS re-keying returns
@@ -969,15 +1008,29 @@ minimal-counterexample policies make deterministic; also the two runs' query
 ledgers by phase — fill / harvest / saturation / `P` — grounding Proposition
 5.2's bound in the two small instances.⟩
 
-**Proposition 5.2 (query complexity).** Writing `N = |S(L)₊¹|` and `ℓ` for the
-longest counterexample returned: the learner poses at most `N` equivalence
-queries and `O(N²·|Σ| + N·log(N·ℓ))` membership queries — table entries
-`O(N·|Σ|)` words × `O(N)` columns; per split a junction query, a binary
-search `O(log(N·ℓ))` and two saturation probes; and one membership query per
-linked pair of the final table for `P` (at most `N²`, absorbed by the entry
-term). All queried
-words have length polynomial in `N`, `ℓ`, and the column lengths, themselves
-harvested substrings of counterexamples. Output-polynomial in the canonical
+**Proposition 5.2 (query complexity).** Write `N = |S(L)₊¹|` and `ℓ` for the
+longest counterexample returned. The learner poses at most `N` equivalence
+queries and `O(N²·|Σ| + N·log(N·ℓ))` membership queries, itemized by
+mechanism:
+
+- *table entries* — `O(N·|Σ|)` table words (at most `N` rows, each with its
+  `|Σ|`-letter frontier) against `O(N)` columns (one initial; every other
+  column is minted by an event that also splits a class, so at most one per
+  split);
+- *per harvest split* (at most one per equivalence query) — one junction
+  query and one binary search over a chain of length
+  `|w'| + |z'| = O(N·ℓ)` (the normalization power is at most `2N`), so
+  `O(log(N·ℓ))` queries;
+- *per saturation split* — two probe queries and at most one frozen-prefix
+  binary search over the segment `r·u`, of length `O(N)` since
+  representatives and table words are access words of length `O(N)`
+  (Definition 3.2), so `O(log N)` queries;
+- *the `P`-cache* — one membership query per linked pair of the final
+  table, at most `N²`, absorbed by the entry term.
+
+All queried words have length polynomial in `N`, `ℓ`, and the column
+lengths — themselves harvested substrings of counterexamples, or `O(N)`-long
+segments contributed by saturation. Output-polynomial in the canonical
 target `N` is the honest yardstick — `N` can be exponentially larger than a
 smallest acceptor, and §6 measures exactly that.
 
