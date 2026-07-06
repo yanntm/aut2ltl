@@ -443,9 +443,39 @@ tail language at layer `{5}` is `GF(aa)` itself — the walk engine
 terminates, it does not recurse, and the handover is mandatory, not an
 optimization.⟩
 
-The frozen-layer engine, then, must express: *accept iff the recurring
-finite factors of the tail, folded through `M` from the frozen class `c`,
-form loops `e` with `(c, e) ∈ P`*. Its templates are the ladder's:
+The frozen-layer engine has its own automaton-level ancestor in the
+portfolio: the **daisy** production [DA26], which labels a single state
+whose only incoming edges are self-loops — petals and stems — in closed
+form, `STAY∞ ∨ LEAVE` with `STAY∞ = G(σ) ∧ ⋀_i GF(σ_i)`. Two of daisy's
+design commitments, which kanchor lacks, are exactly what the frozen layer
+needs, and both transport *better* to the algebra than to any automaton:
+
+- **Transition-based acceptance.** Daisy insists on the TGBA form because
+  "a single state encodes a rich generalized-Büchi condition — a different
+  petal set per acceptance set — that state-based marking could not express
+  without splitting" [DA26]. That is the automaton shadow of [SωS26]'s §2
+  point that ω-acceptance is a set of *pairs*, not a subset of classes: a
+  frozen class `c` is one "state", and what accepting there depends on is
+  *which loops recur* — the idempotents `e` with `(c, e) ∈ P`, the algebra's
+  native per-petal marks. Daisy's `⋀ GF(σ_i)` is the frozen-layer template
+  with petals of length one; the algebra generalizes the petal to a
+  *window* — a finite word whose fold from `c` contributes to an accepting
+  idempotent — and `GF(σ_i)` to `GF(window)`. `GF(aa)` parked at `[a·a]` is
+  a daisy whose accepting petal is the length-2 window `a ∧ Xa`.
+- **Nondeterminism absorbed by disjunction.** Daisy never determinizes:
+  overlapping stems are a `∨`. On `Cay(L)` the walk is deterministic by
+  construction, so this power is not needed for the walk — but the same
+  absorption reappears one level up, as the union over accepting pairs
+  (§2's read-offs): each `(c, e) ∈ P` is one more way to accept, never a
+  constraint on the others.
+
+What does *not* transport is daisy's reliance on the marks being letter-
+visible: on the algebra the "marks" are class values of *words*, so the
+frozen-layer petals are inherently `k`-windows, and the single-letter case
+is the degenerate rung. The frozen-layer engine, then, must express:
+*accept iff the recurring finite factors of the tail, folded through `M`
+from the frozen class `c`, form loops `e` with `(c, e) ∈ P`*. Its templates
+are the ladder's:
 
 - **recurrence rung** (`Gδ`, deterministic-Büchi): `GF(window)` shapes —
   for `GF(aa)`, accept iff windows folding into `{[a], [a·a]}`-loops recur;
@@ -583,11 +613,21 @@ counterparts (varieties `D`, `LI`, locally testable) are classical, and our
 per-layer equations are their localizations to R-classes. ⟨TBD: nail the
 exact variety statements.⟩
 
-**Internal.** The k-anchor production [KA26] supplied the transcription
-vocabulary and its exactness discipline; this paper's claim is that its
-anchoring, freed of the automaton, is an equational property of the
-syntactic algebra — the third member of a family in which the same rotation
-/two-shape structure was constructed [SωS26] and learned [SωSL26].
+**Internal.** Two productions of the aut2ltl portfolio supplied the
+transcription vocabulary and its exactness discipline, and they bracket the
+two engines: k-anchor [KA26] — state-based, window-graded — is the walk
+engine's ancestor, its anchoring freed here of the automaton into an
+equational property of the syntactic algebra; daisy [DA26] —
+transition-based, petal/stem closed form, nondeterminism absorbed by
+disjunction — is the frozen-layer engine's, its per-petal acceptance the
+letter-visible shadow of `P`'s pair acceptance. Both are shape-dependent by
+their own admission (a form can pass where another fails [KA26, §12]; the
+daisy test is a property of one TGBA's initial state); the algebra is where
+their preconditions become properties of the language. Daisy's restricted-
+guard witness lift (left-quotient soundness for non-LTL residues) is the
+automaton-level cousin of §4's certificates, which, born canonical, need no
+lifting. This paper is the third member of a family in which the same
+two-shape structure was constructed [SωS26] and learned [SωSL26].
 
 ## 10. Conclusion
 
@@ -606,6 +646,8 @@ algebra says exactly when, and exactly why.⟩
 
 ## References
 
+- **[DA26]** aut2ltl, *The daisy algorithm* (construction note,
+  `aut2ltl/daisy/algorithm.md`), 2026.
 - **[DG08]** V. Diekert, P. Gastin. *First-order definable languages.* In
   *Logic and Automata*, 2008.
 - **[DK09]** V. Diekert, M. Kufleitner. *Fragments of first-order logic
