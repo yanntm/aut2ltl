@@ -129,9 +129,9 @@ these two are its minimal witnesses.
 
 <table>
 <tr>
-<td align="center"><img src="sosg_figs/img/gf_aa.png" alt="GF(aa) run-parity automaton" width="280"></td>
-<td align="center"><img src="sosg_figs/img/even.png" alt="Even automaton" width="280"></td>
-<td align="center"><img src="sosg_figs/img/evenblocks.png" alt="EvenBlocks automaton" width="280"></td>
+<td align="center"><img src="sos_figs/img/gf_aa.png" alt="GF(aa) run-parity automaton" width="280"></td>
+<td align="center"><img src="sos_figs/img/even.png" alt="Even automaton" width="280"></td>
+<td align="center"><img src="sos_figs/img/evenblocks.png" alt="EvenBlocks automaton" width="280"></td>
 </tr>
 <tr>
 <td align="center"><b>(a) <code>GF(aa)</code></b><br>2 states, <code>Inf(0)</code> (Büchi).<br>The <code>a</code>-letter transposes the<br>two states — a <code>Z₂</code> in the<br>transition monoid.</td>
@@ -687,7 +687,7 @@ separates them — the reason `P` is part of the invariant.
 
 ---
 
-`𝓘(GF(aa))` serialized (format v1, [`sosg_format.md`](sosg_format.md)):
+`𝓘(GF(aa))` serialized (format v1, [`sos_format.md`](sos_format.md)):
 
 ```
 SOSG v1

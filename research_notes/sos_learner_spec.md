@@ -51,7 +51,7 @@ word already acts neutrally. Consequences, all mandatory:
 
 - The class count is (number of non-empty-word classes) + 1, and it must be
   the same from every automaton presenting the same language
-  (presentation-independence is what makes `.sosg` byte-equality a language
+  (presentation-independence is what makes `.sos` byte-equality a language
   test).
 - `[eps]` is never merged with the class of any non-empty word. This holds
   even for a word `w` that acts neutrally (`w.u ~ u` and `u.w ~ u` for all
@@ -94,7 +94,7 @@ Membership of any lasso `(u, v)` is decided from `I(L)` alone: fold `u`, `v`
 to classes, iterate `v`'s class to an idempotent `e`, set `s = [u].e`, accept
 iff `(s, e) in P`.
 
-**Serialized format (`.sosg`, v1).** Plain text, canonical, byte-comparable:
+**Serialized format (`.sos`, v1).** Plain text, canonical, byte-comparable:
 
 ```
 SOSG v1
@@ -109,7 +109,7 @@ accept:
   <one line per pair: s_id e_id>
 ```
 
-Two languages over the same `AP` are equal iff their `.sosg` files are
+Two languages over the same `AP` are equal iff their `.sos` files are
 byte-equal. A *reference builder* for `I(L)` from an HOA automaton
 *(exists in-repo)* is used by the teacher and the validator; the learner never
 calls it.
@@ -123,7 +123,7 @@ calls it.
 ```
 sos_learn --teacher hoa:<file.hoa>            # white-box teacher (default)
           [--teacher proc:<command>]          # black-box teacher over pipes
-          [--out learned.sosg]                # learned invariant (default stdout)
+          [--out learned.sos]                # learned invariant (default stdout)
           [--stats stats.json]                # metrics (see section 7)
           [--audit audit.log]                 # full query/decision transcript
           [--no-saturation]                   # ablation switch (experiment E2)
@@ -144,7 +144,7 @@ Line-oriented JSON over stdin/stdout of the spawned process:
 ```
   -> {"op":"member", "stem":[<letters>], "loop":[<letters>]}
   <- {"ok":true, "value":true|false}
-  -> {"op":"equiv", "sosg": "<serialized hypothesis, section 2.3>"}
+  -> {"op":"equiv", "sos": "<serialized hypothesis, section 2.3>"}
   <- {"ok":true, "value":"eq"} | {"ok":true, "value":"neq", "stem":[...], "loop":[...]}
 ```
 
@@ -159,7 +159,7 @@ trusted before the end). A hypothesis is shipped as its **Cayley form**:
 ```
 CAYLEY v1
 ap: ...
-classes: <n>          # with keys, as in .sosg
+classes: <n>          # with keys, as in .sos
 step:
   <n x |Sigma| table: step(class, letter) = class>
 accept:
@@ -284,7 +284,7 @@ Procedures (all query counts logged by phase):
    over non-identity classes only (section 1.1 shows `[eps]` cannot occur in
    a linked pair — assert `s != [eps]` and `e != [eps]`) and fill `P` by one
    membership query each (or from cache) on `member(key(s), key(e))` — both
-   keys non-empty by section 1.1; emit `.sosg`.
+   keys non-empty by section 1.1; emit `.sos`.
 
    Export soundness caveat: the exported invariant decides lassos by
    multiplying *classes* (`M` substitutes a representative in the middle of
@@ -312,17 +312,17 @@ Hard invariants (assert, and record in the audit log):
 
 ### 3.3 Validator *(thin wrapper, mostly exists in-repo)*
 
-`sos_validate learned.sosg reference.sosg` — byte comparison after parsing and
+`sos_validate learned.sos reference.sos` — byte comparison after parsing and
 re-canonicalization (defensive: re-sort accept pairs, normalize whitespace).
-Also `sos_validate --acceptor learned.sosg <file.hoa> --bound B`: checks the
+Also `sos_validate --acceptor learned.sos <file.hoa> --bound B`: checks the
 invariant's membership read-off against direct simulation on all lassos up to
 `B` — used to certify *acceptance-correctness* separately from canonicity
 (needed by experiment E2).
 
-Scope rule (normative): `--acceptor` accepts either a `.sosg` invariant or a
+Scope rule (normative): `--acceptor` accepts either a `.sos` invariant or a
 `CAYLEY` hypothesis. For any fixpoint reached **without** saturation (M2
 builds, `--no-saturation` runs), it MUST be pointed at the Cayley form: the
-`.sosg` read-off presumes a two-sided congruence (section 3.2 step 6 caveat)
+`.sos` read-off presumes a two-sided congruence (section 3.2 step 6 caveat)
 and can legitimately fail on such runs while the hypothesis is fully
 correct. That divergence is an expected outcome (section 9, row F2), not a
 learner bug.
@@ -338,7 +338,7 @@ learner bug.
         |                                |
    reference builder (in-repo)      sos_learn  <-- teacher(D) via queries
         |                                |
-   reference.sosg                learned.sosg + stats.json + audit.log
+   reference.sos                learned.sos + stats.json + audit.log
         |                                |
         +---------> sos_validate <-------+
                         |
@@ -370,8 +370,8 @@ Layered; every layer is automated and green before any experiment is reported.
 3. **Split audit replay.** After each run, re-issue the two witness queries of
    every recorded split against the teacher and confirm the bits still differ.
    (Catches transcript/bookkeeping corruption and any nondeterminism.)
-4. **End-to-end gate.** On the full corpus: `learned.sosg` byte-equals
-   `reference.sosg`. This is the soundness criterion. A `MISMATCH` is always
+4. **End-to-end gate.** On the full corpus: `learned.sos` byte-equals
+   `reference.sos`. This is the soundness criterion. A `MISMATCH` is always
    treated as a learner bug until proven otherwise; the audit log localizes
    the first divergent decision.
 5. **Metamorphic checks** (cheap, high-value):
@@ -382,7 +382,7 @@ Layered; every layer is automated and green before any experiment is reported.
 6. **Ablation coherence.** `--no-saturation` runs must pass
    `sos_validate --acceptor` **on their Cayley hypothesis** (the learner's
    own prediction function is acceptance-correct at the fixpoint, to the
-   tested bound). Their *exported* `.sosg` is NOT required to pass — the
+   tested bound). Their *exported* `.sos` is NOT required to pass — the
    export read-off presumes a two-sided congruence and may legitimately
    disagree (sections 3.2/3.3); record the run as `ACCEPTOR_ONLY`. Both
    outcomes are recorded, not hidden.
@@ -486,7 +486,7 @@ check but fail byte-equality.
 ## 8. Milestones and acceptance criteria
 
 - **M1 — Teacher + validator.** White-box teacher (member + `reps`/`bounded`
-  equiv), `.sosg`/Cayley parsers, `sos_validate`. Accept: harness layer 1
+  equiv), `.sos`/Cayley parsers, `sos_validate`. Accept: harness layer 1
   green on the census; teacher self-check clean.
 - **M2 — Learner without saturation.** Table, fill/close/consist, chains,
   export. Accept: harness layers 2–3 green; every census case passes the
@@ -499,7 +499,7 @@ check but fail byte-equality.
   `EvenBlocks` moves 7 -> **8** (the previously published 7 was itself an
   instance of this bug — see section 1.1 and the correction in
   `sosl_report.md`); `GF a` moves 2 -> 3; `F a` stays 3; `a U b` stays 4.
-  Also regenerate `research_notes/sosg_figs/sources/*.md` (the current
+  Also regenerate `research_notes/sos_figs/sources/*.md` (the current
   `evenblocks.md` embeds the buggy 7-class algebra in every table it
   contains). (b) Revert the
   learner's eps-merge (restore the section 3.2 singleton rule) in the same
@@ -543,7 +543,7 @@ recorded outcome, not a defect.
 | P2 | byte-equality vs reference | M3+, default config | green on every census case | bug — but first suspect stale fixtures from before M2.5 |
 | P3 | learned classes <= reference classes | all (post-M2.5) | green | a split happened without an Arnold witness; replay the split audit |
 | F1 | byte-equality vs reference | M2 / `--no-saturation` | MAY be red | the predicted section-4.2 stall (paper); record `ACCEPTOR_ONLY` and move on |
-| F2 | acceptor check on the exported `.sosg` | M2 / `--no-saturation` | MAY be red | export presumes two-sidedness (3.2 step 6 caveat); diagnostic only |
+| F2 | acceptor check on the exported `.sos` | M2 / `--no-saturation` | MAY be red | export presumes two-sidedness (3.2 step 6 caveat); diagnostic only |
 | F3 | equivalence returns a lasso the hypothesis already predicts correctly | any | must NOT happen | teacher bug (equivalence strategy or minimization) |
 | F4 | budget exhausted on a census case | any | should not happen | flag it; census cases are sized to finish |
 

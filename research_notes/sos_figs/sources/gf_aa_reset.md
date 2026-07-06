@@ -1,4 +1,4 @@
-# SOSG algebra summary — GF(aa)
+# SOSG algebra summary — GF(aa) reset
 
 Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` = transition monoid; a group in `TM` may be a presentation artifact, a group in `S(L)₊` is intrinsic (⇔ not LTL-definable).
 
@@ -6,11 +6,11 @@ Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` =
 
 | input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM | grp S(L)₊ | LTL? | evidence |
 |---|---|---|---|---|---|---|---|
-| GF(aa) | 2 | 10 | 6 | yes | no | yes | LTL — DG DAG 19 nodes / flat tree 1,991,717 (0.001s) |
+| GF(aa) reset | 2 | 7 | 6 | no | no | yes | LTL — DG DAG 19 nodes / flat tree 1,991,717 (0.001s) |
 
-## GF(aa)
+## GF(aa) reset
 
-*Input:* `research_notes/sosg_figs/sources/gf_aa_parity.hoa`
+*Input:* `research_notes/sos_figs/sources/gf_aa_reset.hoa`
 
 ### Deterministic form `D`
 
@@ -25,30 +25,27 @@ properties: trans-labels explicit-labels trans-acc complete
 properties: deterministic
 --BODY--
 State: 0
-[!0] 0
-[0] 1
-State: 1
-[!0] 0
 [0] 0 {0}
+[!0] 1
+State: 1
+[0] 0
+[!0] 1
 --END--
 ```
 
 ### Enriched monoid `EM(D)` → `S(L)₊`
 
-`|EM¹| = 10` elements folding onto `|S(L)₊¹| = 6` classes. `rmul` is right-multiplication by each letter (`!a`, `a`), as `EM` element ids. The identity element hosts two classes (`[eps]` and any neutral non-empty class).
+`|EM¹| = 7` elements folding onto `|S(L)₊¹| = 6` classes. `rmul` is right-multiplication by each letter (`!a`, `a`), as `EM` element ids. The identity element hosts two classes (`[eps]` and any neutral non-empty class).
 
 | id | word | st | mk | rmul | → class |
 |---|---|---|---|---|---|
 | 0 | `eps` | [0 1] | [{} {}] | 1 2 | 0 `eps` |
-| 1 | `!a` | [0 0] | [{} {}] | 1 3 | 1 `!a` |
-| 2 | `a` | [1 0] | [{} {0}] | 4 5 | 2 `a` |
-| 3 | `!a;a` | [1 1] | [{} {}] | 1 6 | 3 `!a;a` |
-| 4 | `a;!a` | [0 0] | [{} {0}] | 4 7 | 4 `a;!a` |
-| 5 | `a;a` | [0 1] | [{0} {0}] | 6 8 | 5 `a;a` |
-| 6 | `!a;a;a` | [0 0] | [{0} {0}] | 6 9 | 5 `a;a` |
-| 7 | `a;!a;a` | [1 1] | [{} {0}] | 4 6 | 2 `a` |
-| 8 | `a;a;a` | [1 0] | [{0} {0}] | 6 5 | 5 `a;a` |
-| 9 | `!a;a;a;a` | [1 1] | [{0} {0}] | 6 6 | 5 `a;a` |
+| 1 | `!a` | [1 1] | [{} {}] | 1 3 | 1 `!a` |
+| 2 | `a` | [0 0] | [{0} {}] | 4 5 | 2 `a` |
+| 3 | `!a;a` | [0 0] | [{} {}] | 1 5 | 3 `!a;a` |
+| 4 | `a;!a` | [1 1] | [{0} {}] | 4 2 | 4 `a;!a` |
+| 5 | `a;a` | [0 0] | [{0} {0}] | 6 5 | 5 `a;a` |
+| 6 | `a;a;!a` | [1 1] | [{0} {0}] | 6 5 | 5 `a;a` |
 
 ### Canonical algebra `S(L)₊¹`
 

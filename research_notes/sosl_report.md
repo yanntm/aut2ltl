@@ -3,7 +3,7 @@
 Date: 2026-07-06. Traces where the `sosl/` implementation stands against the plan
 in `research_notes/sos_learner_spec.md` (milestones) and against
 `research_notes/sos_learning.md` (the paper, whose running examples are computed
-by hand). Format spec: `research_notes/sosg_format.md` (the `.sos` normal form).
+by hand). Format spec: `research_notes/sos_format.md` (the `.sos` normal form).
 
 ## Milestones (spec §8)
 
@@ -16,7 +16,7 @@ by hand). Format spec: `research_notes/sosg_format.md` (the `.sos` normal form).
 ## Ground truth: reference builder vs the paper
 
 `sosl.reference.reference_of_hoa` reads the canonical syntactic ω-semigroup
-`S(L)₊¹` from each source automaton in `research_notes/sosg_figs/sources/`. Class
+`S(L)₊¹` from each source automaton in `research_notes/sos_figs/sources/`. Class
 counts match the paper's fingerprint tables **exactly**:
 
 | example | source HOA | paper `\|S(L)₊¹\|` | reference |
@@ -268,7 +268,7 @@ every tested lasso while the export from the *same partition* got
 
 This is the paper's §4.2 gap observed live, now codified in the spec:
 pre-saturation exports are diagnostic only; acceptor checks for M2 and
-`--no-saturation` runs target the **Cayley hypothesis**, not the `.sosg`
+`--no-saturation` runs target the **Cayley hypothesis**, not the `.sos`
 (spec §3.3, §5.6); `ACCEPTOR_ONLY` is a *success* verdict for those configs
 (spec §9, rows F1/F2).
 
@@ -340,7 +340,7 @@ ask the theory thread.
 
 ## Correction (2026-07-06, later the same day): EvenBlocks is 8, not 7
 
-While preparing paper tables from `sosg_figs/sources/evenblocks.md`, the
+While preparing paper tables from `sos_figs/sources/evenblocks.md`, the
 theory thread found the collision bug acting **inside the triptych
 itself**. Evidence, all in that generated file:
 
@@ -365,7 +365,7 @@ spec (§1.1, M2.5):
   "EvenBlocks 7 = 7 byte-equal ✓": that was two bugs agreeing — the
   eps-merge learner matched the eps-colliding reference. Expect 8 = 8
   after M2.5, via one additional split (the class of `aa`);
-- `sosg_figs/sources/evenblocks.md` and the `evenblocks.sosg` fixture must
+- `sos_figs/sources/evenblocks.md` and the `evenblocks.sos` fixture must
   be regenerated after the builder fix; do not build anything on their
   current contents;
 - the papers' published fingerprints said 6 / 5 / 7; the theory thread has

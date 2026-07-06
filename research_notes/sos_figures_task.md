@@ -1,13 +1,13 @@
 # Task — collect & tabulate the figures/tables for "The SOSG, Constructed"
 
 *For a code-focused session. Produce the companion artifact the paper
-[`sosg_constructed.md`](sosg_constructed.md) points at, replacing its `[Figure N]` /
+[`sos_constructed.md`](sos_constructed.md) points at, replacing its `[Figure N]` /
 `[Table N]` placeholders with real, verified content. You edit only the figures file;
 do **not** touch the paper prose.*
 
 ## Deliverable
 
-One markdown file `research_notes/sosg_figures.md` (split into a `sosg_figures/` dir
+One markdown file `research_notes/sos_figures.md` (split into a `sos_figures/` dir
 only if it grows unwieldy), containing Figures 1–2 and Tables 1–3 below, each under a
 stable heading the paper can link to (`## Figure 1`, `## Table 2`, …). Each item is
 **paper-facing** — clean caption, no tool talk in the caption itself — but carries a
@@ -22,8 +22,8 @@ intended language** (Spot equivalence against the source) before tabulating.
 | name | language | PSL/SERE source | build / note |
 |---|---|---|---|
 | `GF(aa)` | `GF(a ∧ Xa)`, infinitely many `aa` | `G F (a & X a)` | **two presentations:** (a) the run-parity form = existing `samples/fixtures/hoa/definability/gf_aa_parity.hoa` (carries the `Z₂`); (b) a minimal reset form via `ltl2tgba -D`. Both needed (Table 3 uses (a); the §5 canonicity check needs both). |
-| `Even` | `(aa)*·b·Σ^ω` — even #`a`, then `b`, then anything | prefix matches SERE `{a[*2]}[*] ; b` | build from the SERE via the PSL front end; if the operator semantics differ, fall back to the hand automaton: states `q0(even)/q1(odd)/acc/rej`, `a: q0↔q1`, `b: q0→acc,q1→rej`, `acc/rej` sinks, accept = reach `acc`. Save under `samples/fixtures/hoa/sosg/even.hoa`. |
-| `EvenBlocks` | ∞ many `b`, eventually every completed `a`-block even | `GF b ∧ FG {a[*2]}·b`-style over blocks | build via the front end; **prefix-independent**, `Fin∧Inf`. Save `samples/fixtures/hoa/sosg/evenblocks.hoa`. If awkward to pin, report back and propose an alternative prefix-independent mod-2 rather than guessing. |
+| `Even` | `(aa)*·b·Σ^ω` — even #`a`, then `b`, then anything | prefix matches SERE `{a[*2]}[*] ; b` | build from the SERE via the PSL front end; if the operator semantics differ, fall back to the hand automaton: states `q0(even)/q1(odd)/acc/rej`, `a: q0↔q1`, `b: q0→acc,q1→rej`, `acc/rej` sinks, accept = reach `acc`. Save under `samples/fixtures/hoa/sos/even.hoa`. |
+| `EvenBlocks` | ∞ many `b`, eventually every completed `a`-block even | `GF b ∧ FG {a[*2]}·b`-style over blocks | build via the front end; **prefix-independent**, `Fin∧Inf`. Save `samples/fixtures/hoa/sos/evenblocks.hoa`. If awkward to pin, report back and propose an alternative prefix-independent mod-2 rather than guessing. |
 
 ## Numbers → which probe produces them
 

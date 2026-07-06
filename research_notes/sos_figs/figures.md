@@ -1,6 +1,6 @@
 # The SOSG, Constructed — Figures & Tables
 
-Companion artifact for [`sosg_constructed.md`](../sosg_constructed.md). Every
+Companion artifact for [`sos_constructed.md`](../sos_constructed.md). Every
 value below is read off a deterministic automaton by the construction of §§3–4
 and verified against Spot; see [`reproduction.md`](reproduction.md) to
 regenerate any item.
@@ -27,7 +27,7 @@ The Emerson–Lei automata of the running examples, drawn as Spot renders them.
 </tr>
 </table>
 
-<!-- from: samples/fixtures/hoa/sosg/{gf_aa_parity,even,evenblocks}.hoa via render_svg.py -->
+<!-- from: samples/fixtures/hoa/sos/{gf_aa_parity,even,evenblocks}.hoa via render_svg.py -->
 
 ---
 
@@ -55,7 +55,7 @@ nodes) and verified Spot-equivalent to `GF(a ∧ Xa)`.
 > is in [`sources/`](sources/): [**`GF(aa)`**](sources/gf_aa.md),
 > [**`Even`**](sources/even.md), [**`EvenBlocks`**](sources/evenblocks.md).
 
-<!-- from: tests/sosg/build_sosg.py on each fixture; DG metrics from dg_probe.py -->
+<!-- from: tests/sos/build_sos.py on each fixture; DG metrics from dg_probe.py -->
 
 ---
 
@@ -84,7 +84,7 @@ absorbing “contains `aa`” behaviour, each in one or two mark-states.
 Four distinct elements collapse into `[a·a]` (“contains `aa`”, absorbing), and
 `a·!a·a` rejoins `[a]`: **10 → 6**.
 
-<!-- from: tests/sosg/build_sosg.py samples/fixtures/hoa/sosg/gf_aa_parity.hoa -->
+<!-- from: tests/sos/build_sos.py samples/fixtures/hoa/sos/gf_aa_parity.hoa -->
 
 ---
 
@@ -130,13 +130,13 @@ Here `[a]·[a] = [a·a]` and `[a·a]·[a] = [a]`: the pair `{[a], [a·a]}` is a
 `([¬a],[¬a])`, `([¬a],[a·¬a])`, `([¬a],[a·a])` — once the accepting sink is
 reached (class `[¬a]`), every loop accepts.
 
-<!-- from: tests/sosg/build_sosg.py on gf_aa_parity.hoa and even.hoa -->
+<!-- from: tests/sos/build_sos.py on gf_aa_parity.hoa and even.hoa -->
 
 ---
 
 ## Figure 2 — the exportable invariant `𝓘(GF(aa))`
 
-The serialized SOSG (format v1, [`sosg_format.md`](../sosg_format.md)): the
+The serialized SOSG (format v1, [`sos_format.md`](../sos_format.md)): the
 keyed classes, the letter map, the multiplication table of `S(L)₊¹`, and the
 saturated set of accepting linked pairs. These core sections are a **complete
 language invariant** — two languages are equal iff their cores are
@@ -180,4 +180,4 @@ iff `(s, e)` is listed under `accept`. For `(a·!a)^ω`: `z = a·!a` folds to cl
 `4`, already idempotent (`4·4 = 4`), `s = 4`; `4 4` is not in `accept`, so it is
 rejected — correctly, no `aa` recurs.
 
-<!-- from: samples/fixtures/hoa/sosg/gf_aa.sosg (== gf_aa_reset.sosg, byte-identical) -->
+<!-- from: samples/fixtures/hoa/sos/gf_aa.sos (== gf_aa_reset.sos, byte-identical) -->

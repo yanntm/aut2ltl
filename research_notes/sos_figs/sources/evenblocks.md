@@ -10,7 +10,7 @@ Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` =
 
 ## EvenBlocks
 
-*Input:* `research_notes/sosg_figs/sources/evenblocks.hoa`
+*Input:* `research_notes/sos_figs/sources/evenblocks.hoa`
 
 ### Deterministic form `D`
 

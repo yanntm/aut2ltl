@@ -2,7 +2,7 @@
 
 A canonical, complete, text serialization of the syntactic ω-semigroup of a regular
 ω-language `L`, together with the acceptance data that recovers `L` from it. The core
-sections are a **complete language invariant** (Theorem 5.1 of `sosg_constructed.md`):
+sections are a **complete language invariant** (Theorem 5.1 of `sos_constructed.md`):
 two languages over the same `AP` are equal iff their cores are byte-identical after the
 canonical keying below. An optional residuals section carries the right-congruence for
 consumers that want an FDFA-shaped object; it does not participate in the equality test.

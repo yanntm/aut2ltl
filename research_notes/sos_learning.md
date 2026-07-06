@@ -225,9 +225,9 @@ reproduced from [SωS26]:
 
 <table>
 <tr>
-<td align="center"><img src="sosg_figs/img/gf_aa.png" alt="GF(aa) run-parity automaton" width="280"></td>
-<td align="center"><img src="sosg_figs/img/even.png" alt="Even automaton" width="280"></td>
-<td align="center"><img src="sosg_figs/img/evenblocks.png" alt="EvenBlocks automaton" width="280"></td>
+<td align="center"><img src="sos_figs/img/gf_aa.png" alt="GF(aa) run-parity automaton" width="280"></td>
+<td align="center"><img src="sos_figs/img/even.png" alt="Even automaton" width="280"></td>
+<td align="center"><img src="sos_figs/img/evenblocks.png" alt="EvenBlocks automaton" width="280"></td>
 </tr>
 <tr>
 <td align="center"><b>(a) <code>GF(aa)</code></b><br>2 states, <code>Inf(0)</code> (Büchi).<br>The <code>a</code>-letter transposes the<br>two states — a <code>Z₂</code> in the<br>transition monoid.</td>
@@ -786,7 +786,7 @@ happened, every loop accepts; this is `P`. (b) Power iteration of every
 class: a single orbit of period two, `[a] → [aa] → [a]` — the genuine `Z₂` —
 so `Even` is **not** LTL-definable, read off the learned object in four
 lines (§2's aperiodicity read-off). Five classes is exactly `|S(Even)₊¹|`,
-and the `.sosg` export is byte-equal to the construction from the
+and the `.sos` export is byte-equal to the construction from the
 automaton — the equivalence oracle's last check, passed by construction.
 
 `EvenBlocks` completes the same way: four further splits beyond the one
