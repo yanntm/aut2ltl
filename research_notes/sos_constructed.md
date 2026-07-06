@@ -349,11 +349,19 @@ collects the `Inf`-mark that reading a single `a` (from a fresh state) does not.
 (Proposition 3.4). Closing `⟦a⟧`, `⟦!a⟧` under composition yields the ten elements of
 `EM(GF(aa))` — the empty word, the four `aa`-free "(first letter, last letter)"
 behaviors, and the absorbing "contains `aa`" behavior, each in one or two mark states —
-tabulated in Table 2 alongside their fold to the six SωS classes of §4.
+tabulated in Table 2(a) alongside their fold to the six SωS classes of §4, with
+the sibling monoids of the other two examples beside it: the enrichment run on
+all three presentations at once (the wide row scrolls).
 
 ---
 
-| `⟦w⟧` | at state `0` | at state `1` | → `S(L)₊` class |
+<table>
+<tr>
+<td valign="top">
+
+**(a) `EM(GF(aa))`**, Fig. 1(a)
+
+| `⟦w⟧` | at `0` | at `1` | → class |
 |---|:--:|:--:|:--:|
 | `ε` | `(0, ∅)` | `(1, ∅)` | `[ε]` |
 | `!a` | `(0, ∅)` | `(0, ∅)` | `[!a]` |
@@ -366,11 +374,63 @@ tabulated in Table 2 alongside their fold to the six SωS classes of §4.
 | `a·a·a` | `(1, {0})` | `(0, {0})` | `[a·a]` |
 | `!a·a·a·a` | `(1, {0})` | `(1, {0})` | `[a·a]` |
 
-**Table 2.** The `10` elements of `EM(GF(aa))` as `(st, mk)` vectors over `Q = {0,1}`,
-folded onto the `6` classes of `S(GF(aa))₊`. Reading a second `a` collects the
-`Inf`-mark `0` — the only difference between `⟦a⟧` and `⟦aa⟧`, invisible to the
-transition monoid. Four distinct elements collapse into the absorbing "contains `aa`"
-class and `a·!a·a` rejoins `[a]`: **10 → 6**.
+</td>
+<td valign="top">
+
+**(b) `EM(Even)`**, Fig. 1(b)
+
+| `⟦w⟧` | at `0` | at `1` | at `2` | at `3` | → class |
+|---|:--:|:--:|:--:|:--:|:--:|
+| `ε` | `(0, ∅)` | `(1, ∅)` | `(2, ∅)` | `(3, ∅)` | `[ε]` |
+| `!a` | `(0, {0})` | `(3, ∅)` | `(0, ∅)` | `(3, ∅)` | `[!a]` |
+| `a` | `(0, {0})` | `(2, ∅)` | `(1, ∅)` | `(3, ∅)` | `[a]` |
+| `!a·!a` | `(0, {0})` | `(3, ∅)` | `(0, {0})` | `(3, ∅)` | `[!a]` |
+| `a·!a` | `(0, {0})` | `(0, ∅)` | `(3, ∅)` | `(3, ∅)` | `[a·!a]` |
+| `a·a` | `(0, {0})` | `(1, ∅)` | `(2, ∅)` | `(3, ∅)` | `[a·a]` |
+| `a·!a·!a` | `(0, {0})` | `(0, {0})` | `(3, ∅)` | `(3, ∅)` | `[a·!a]` |
+
+</td>
+<td valign="top">
+
+**(c) `EM(EvenBlocks)`**, Fig. 1(c)
+
+| `⟦w⟧` | at `0` | at `1` | → class |
+|---|:--:|:--:|:--:|
+| `ε` | `(0, ∅)` | `(1, ∅)` | `[ε]` / `[a·a]` |
+| `!a` | `(0, {1})` | `(0, {0})` | `[!a]` |
+| `a` | `(1, ∅)` | `(0, ∅)` | `[a]` |
+| `!a·!a` | `(0, {1})` | `(0, {0,1})` | `[!a]` |
+| `!a·a` | `(1, {1})` | `(1, {0})` | `[!a·a]` |
+| `a·!a` | `(0, {0})` | `(0, {1})` | `[a·!a]` |
+| `!a·!a·a` | `(1, {1})` | `(1, {0,1})` | `[!a·a]` |
+| `!a·a·!a` | `(0, {0,1})` | `(0, {0})` | `[!a·a·!a]` |
+| `a·!a·!a` | `(0, {0,1})` | `(0, {1})` | `[a·!a]` |
+| `a·!a·a` | `(1, {0})` | `(1, {1})` | `[a·!a·a]` |
+| `!a·!a·a·!a` | `(0, {0,1})` | `(0, {0,1})` | `[!a·a·!a]` |
+| `!a·a·!a·a` | `(1, {0,1})` | `(1, {0})` | `[!a·a·!a]` |
+| `a·!a·!a·a` | `(1, {0,1})` | `(1, {1})` | `[a·!a·a]` |
+| `a·!a·a·!a` | `(0, {0})` | `(0, {0,1})` | `[!a·a·!a]` |
+| `!a·!a·a·!a·a` | `(1, {0,1})` | `(1, {0,1})` | `[!a·a·!a]` |
+| `a·!a·a·!a·a` | `(1, {0})` | `(1, {0,1})` | `[!a·a·!a]` |
+
+</td>
+</tr>
+</table>
+
+**Table 2.** The enriched monoids of the three examples, each element a
+`(st, mk)` vector over its automaton's states, folded onto the SωS classes of
+§4. **(a)** `GF(aa)`: reading a second `a` collects the `Inf`-mark `0` — the
+only difference between `⟦a⟧` and `⟦aa⟧`, invisible to the transition monoid;
+four elements collapse into the absorbing "contains `aa`" class and `a·!a·a`
+rejoins `[a]`: **10 → 6**. **(b)** `Even` (states: `2` initial/even parity,
+`1` odd parity, `0` accepting sink, `3` rejecting sink): `⟦aa⟧`'s *state*
+part is the identity map — only the mark collected at the accepting sink
+keeps it apart from `⟦ε⟧`: **7 → 5**. **(c)** `EvenBlocks`: here nothing
+keeps them apart — `⟦aa⟧` *equals* `⟦ε⟧`, the identity element hosts two
+classes (`[ε]` and the neutral `[a·a]`), which is the collision §2's
+fresh-identity convention is built for; the language lives entirely in the
+marks: **16 → 8**. Across the triptych, the quotient's compression is the
+story: `10→6`, `7→5`, `16→8`.
 
 ---
 
@@ -423,9 +483,10 @@ inherited upward through the enrichment — a one-directional convenience, not p
 the object.) The `GF(aa)` example is exactly this situation, resolved in §4.
 
 *On the examples.* The enriched monoid of `GF(aa)`'s 2-state run-parity presentation
-has 10 elements; that of `Even` has the four sink-and-parity behaviors closed under
-the two letters. Both carry a group in `EM` — the question §4 answers is which one
-survives the quotient.
+has 10 elements (Table 2a); that of `Even` has seven — the sink-and-parity
+behaviors closed under the two letters (Table 2b); that of `EvenBlocks` has
+sixteen (Table 2c). All three carry a group in `EM` — the question §4 answers
+is which survives the quotient.
 
 ---
 
@@ -558,43 +619,83 @@ one Moore-style refinement to fixpoint compute `~lin ∧ ~ω` exactly. ∎
 
 ---
 
-`S(GF(aa))₊`, classes `0=[ε] 1=[!a] 2=[a] 3=[!a·a] 4=[a·!a] 5=[a·a]`, letter map
-`λ(!a) = [!a]`, `λ(a) = [a]`:
+The three multiplication tables, side by side (class ids in cells; in all
+three, `λ(!a) = [!a]` and `λ(a) = [a]`; the wide row scrolls):
+
+<table>
+<tr>
+<td valign="top">
+
+**(a) `S(GF(aa))₊¹`**
 
 ```
- ·    [ε] [!a] [a] [!a·a] [a·!a] [a·a]
-[ε]    0   1    2    3      4      5
-[!a]   1   1    3    3      1      5
-[a]    2   4    5    2      5      5
-[!a·a] 3   1    5    3      5      5
-[a·!a] 4   4    2    2      4      5
-[a·a]  5   5    5    5      5      5
+ ·      [ε] [!a] [a] [!a·a] [a·!a] [a·a]
+[ε]      0   1    2    3      4      5
+[!a]     1   1    3    3      1      5
+[a]      2   4    5    2      5      5
+[!a·a]   3   1    5    3      5      5
+[a·!a]   4   4    2    2      4      5
+[a·a]    5   5    5    5      5      5
 ```
 
-`[a·a]` = "contains `aa`" is two-sided absorbing and every power cycle has period `1`,
-so the transition monoid's `Z₂` is gone; the single accepting linked pair is
-`([a·a], [a·a])`. For `Even` the group survives — `S(Even)₊`, classes
-`0=[ε] 1=[!a] 2=[a] 3=[a·!a] 4=[a·a]`, letter map `λ(!a) = [!a]`, `λ(a) = [a]`:
+</td>
+<td valign="top">
+
+**(b) `S(Even)₊¹`**
 
 ```
- ·    [ε] [!a] [a] [a·!a] [a·a]
-[ε]    0   1    2    3      4
-[!a]   1   1    1    1      1
-[a]    2   3    4    1      2
-[a·!a] 3   3    3    3      3
-[a·a]  4   1    2    3      4
+ ·      [ε] [!a] [a] [a·!a] [a·a]
+[ε]      0   1    2    3      4
+[!a]     1   1    1    1      1
+[a]      2   3    4    1      2
+[a·!a]   3   3    3    3      3
+[a·a]    4   1    2    3      4
 ```
 
-**Table 3.** Multiplication tables of the two SωSs. In `S(Even)₊`, `[a]·[a] = [a·a]`
-and `[a·a]·[a] = [a]`: the pair `{[a], [a·a]}` is a **period-2 cycle**, the `Z₂` that
-makes `Even` non-LTL. Read `[a·a]`'s full row and column against the headers:
-it multiplies as the identity on all four word classes — `S(Even)₊` owns a
-neutral element, the very situation §2's fresh-identity convention is fixed
-for; `[ε]` remains a separate class regardless. Its accepting linked pairs are `([!a],[!a])`, `([!a],[a·!a])`,
-`([!a],[a·a])` — once the accepting sink (class `[!a]`) is reached, every loop accepts.
-In these single-atom examples `λ` is injective — each letter keys its own class — but
-in general it collapses interchangeable letters: over `Σ = 2^{a,b}` a property depending
-only on `a ⊕ b` maps `a!b` and `!ab` (the two `a⊕b`-true letters) to one class.
+</td>
+<td valign="top">
+
+**(c) `S(EvenBlocks)₊¹`**
+
+```
+ ·          [ε] [!a] [a] [!a·a] [a·!a] [a·a] [!a·a·!a] [a·!a·a]
+[ε]          0   1    2    3      4      5       6        7
+[!a]         1   1    3    3      6      1       6        6
+[a]          2   4    5    7      1      2       6        3
+[!a·a]       3   6    1    6      1      3       6        3
+[a·!a]       4   4    7    7      6      4       6        6
+[a·a]        5   1    2    3      4      5       6        7
+[!a·a·!a]    6   6    6    6      6      6       6        6
+[a·!a·a]     7   6    4    6      4      7       6        7
+```
+
+</td>
+</tr>
+</table>
+
+**Table 3.** Multiplication tables of the three SωSs. **(a)** `GF(aa)`:
+`[a·a]` = "contains `aa`" is two-sided absorbing and every power cycle has
+period `1` — the transition monoid's `Z₂` is gone, and `GF(aa)` is LTL; the
+single accepting linked pair is `([a·a], [a·a])`. **(b)** `Even`: the group
+survives — `[a]·[a] = [a·a]` and `[a·a]·[a] = [a]`, so `{[a], [a·a]}` is a
+**period-2 cycle**, the `Z₂` that makes `Even` non-LTL. Read `[a·a]`'s full
+row and column against the headers: it multiplies as the identity on all four
+word classes — `S(Even)₊` owns a neutral element, the very situation §2's
+fresh-identity convention is fixed for; `[ε]` remains a separate class
+regardless. Its accepting linked pairs are `([!a],[!a])`, `([!a],[a·!a])`,
+`([!a],[a·a])` — once the accepting sink (class `[!a]`) is reached, every
+loop accepts. **(c)** `EvenBlocks`: the *same* period-2 cycle `{[a], [a·a]}`
+returns, but prefix-independence makes it invisible to every linear context
+(Proposition 4.6) — only the ω-power shape witnesses it. `[a·a]` is again
+neutral on the word classes (two of the three specimens carry one, §2), and
+`[!a·a·!a]` — a completed odd block inside — is the two-sided zero. Six
+accepting linked pairs: `([!a],[!a])`, `([a·!a],[!a])`, `([!a·a·!a],[!a])`,
+`([!a·a],[a·!a·a])`, `([!a·a·!a],[a·!a·a])`, `([a·!a·a],[a·!a·a])` —
+acceptance reads "the recurring loop completes only even blocks, and
+completes them infinitely often". In these single-atom examples `λ` is
+injective — each letter keys its own class — but in general it collapses
+interchangeable letters: over `Σ = 2^{a,b}` a property depending only on
+`a ⊕ b` maps `a!b` and `!ab` (the two `a⊕b`-true letters) to one class.
 
 ---
 
@@ -675,8 +776,9 @@ subject of §7; that one *has* it is the point of this section.
 
 *Example (canonicity you can see).* Compute `𝓘(GF(aa))` from the run-parity
 presentation of Figure 1(a) — two states, a `Z₂` transition monoid — and again from
-the minimal reset presentation — a different state count, a different, aperiodic
-transition monoid. The two runs return the *identical* `𝓘`: six classes keyed
+the reset presentation of Figure 3 — the *same* two states, but every letter
+acting as a reset: an aperiodic transition monoid and a smaller enriched
+monoid (7 elements against 10). The two runs return the *identical* `𝓘`: six classes keyed
 `[ε], [!a], [a], [!a·a], [a·!a], [a·a]`, one multiplication table, the single accepting
 pair `([a·a],[a·a])` (Table 3). No automaton-level object does this — the two
 presentations are not isomorphic and neither is "the" minimal one — which is the
@@ -693,38 +795,62 @@ separates them — the reason `P` is part of the invariant.
 SOS v1
 ap: a
 classes: 6
-0  eps
-1  !a
-2  a
-3  !a;a
-4  a;!a
-5  a;a
-letters: !a->1  a->2
+0 eps
+1 !a
+2 a
+3 !a;a
+4 a;!a
+5 a;a
+letters: !a->1 a->2
 mult:
-     0 1 2 3 4 5
-  0  0 1 2 3 4 5
-  1  1 1 3 3 1 5
-  2  2 4 5 2 5 5
-  3  3 1 5 3 5 5
-  4  4 4 2 2 4 5
-  5  5 5 5 5 5 5
+0: 0 1 2 3 4 5
+1: 1 1 3 3 1 5
+2: 2 4 5 2 5 5
+3: 3 1 5 3 5 5
+4: 4 4 2 2 4 5
+5: 5 5 5 5 5 5
 accept:
-  5 5
+5 5
 residuals: 1
-0  eps
-res-mult:
-     !a a
-  0  0 0
+0 eps
+res-step:
+0: 0 0
 ```
 
 **Figure 2.** The exportable artifact `𝓘(GF(aa))` — a "semantic HOA" listing the keyed
 classes, letter map, multiplication table, and saturated accepting-pair set (this core
 is the complete language invariant), plus an optional residuals block (here a single
-state, `GF(aa)` being prefix-independent) that does not enter the equality test. To test
+state, `GF(aa)` being prefix-independent) that does not enter the equality test;
+reproduced byte-for-byte from the tool's export. To test
 membership of `u·z^ω`: fold `u, z` to class ids, iterate `z` to an idempotent `e`, set
 `s = u·e`, and accept iff `(s, e)` is listed under `accept`. For `(a·!a)^ω`: `z = a·!a`
 folds to class `4`, already idempotent, `s = 4`; `4 4` is not in `accept`, so it is
 rejected — correctly, no `aa` recurs.
+
+---
+
+<table>
+<tr>
+<td align="center"><img src="sos_figs/img/gf_aa_reset.png" alt="GF(aa) reset automaton" width="280"></td>
+<td valign="middle">
+
+| presentation | `\|Q\|` | `a` acts by | group in TM? | `\|EM¹\|` | `𝓘(GF(aa))` |
+|---|:--:|---|:--:|:--:|---|
+| run-parity (Fig. 1a) | 2 | transposition | yes — `Z₂` | 10 | Figure 2 |
+| reset (left) | 2 | reset | no — aperiodic | 7 | *byte-identical* |
+
+</td>
+</tr>
+</table>
+
+**Figure 3.** Canonicity, exhibited. The reset presentation of `GF(aa)`: the
+same two states as Figure 1(a), but each letter sends *every* state to one
+place (`a` to the "just saw `a`" state, whose `a`-self-loop carries the
+`Inf`-mark; `!a` to the other). The two automata are not isomorphic, their
+transition monoids disagree even on whether a group is present, and their
+enriched monoids have different sizes — yet the construction returns the
+byte-identical six-class `𝓘(GF(aa))` of Figure 2 from both. The `Z₂` of
+Figure 1(a) was pure presentation; Theorem 4.5's quotient is where it dies.
 
 ---
 
