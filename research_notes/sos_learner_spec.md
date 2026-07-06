@@ -75,7 +75,11 @@ word already acts neutrally. Consequences, all mandatory:
   making the class count presentation-dependent. Correct: quotient only the
   images of non-empty words; adjoin the identity as a fresh element; a word
   whose element equals the enriched identity is an ordinary class (key `!a`
-  for `GF a`, giving 3 classes from every presentation).
+  for `GF a`, giving 3 classes from every presentation). The same collision
+  sits inside the census flagship: in the 2-state `EvenBlocks` presentation
+  the element of `aa` equals the enriched identity, and the buggy merge is
+  what produced the previously-published count of 7 — the correct count is
+  **8**, with `aa` its own class, acting neutrally on the word classes.
 
 **The invariant `I(L)`.** The tuple `(C, key, lambda, M, P)`:
 
@@ -480,8 +484,13 @@ check but fail byte-equality.
   rest).
 - **M2.5 — Convention alignment** *(added 2026-07-06; do this before M3).*
   (a) Fix the reference builder to the fresh-identity convention of
-  section 1.1. Regression gate: the triptych stays at 6 / 5 / 7 classes;
-  `GF a` moves 2 -> 3; `F a` stays 3; `a U b` stays 4. (b) Revert the
+  section 1.1. Regression gate: `GF(aa)` stays 6 and `Even` stays 5;
+  `EvenBlocks` moves 7 -> **8** (the previously published 7 was itself an
+  instance of this bug — see section 1.1 and the correction in
+  `sosl_report.md`); `GF a` moves 2 -> 3; `F a` stays 3; `a U b` stays 4.
+  Also regenerate `research_notes/sosg_figs/sources/*.md` (the current
+  `evenblocks.md` embeds the buggy 7-class algebra in every table it
+  contains). (b) Revert the
   learner's eps-merge (restore the section 3.2 singleton rule) in the same
   working session as the fixture regeneration, so reference and learner
   never disagree for a spurious reason in between. (c) Re-baseline the M2

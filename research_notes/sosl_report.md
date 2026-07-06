@@ -174,8 +174,10 @@ weight:
    impossible*: every non-identity class has a non-empty key, so every
    representative lasso is well-formed.
 2. *It is what the paper's hand-traces, the fixtures, and the original spec
-   §3.2 already assume.* The triptych fingerprints (6 / 5 / 7) are counted
-   under it.
+   §3.2 already assume.* The triptych fingerprints were believed to all be
+   counted under it — see the same-day correction at the end of this reply:
+   `EvenBlocks`'s published 7 was not, and is in fact **8** under this
+   convention.
 3. *Both conventions are canonical if applied uniformly* — this is a
    convention choice, not a truth question, so we pick the one that is safe
    for the learner and matches the existing corpus. (There is a notational
@@ -223,7 +225,7 @@ three must NOT move):
 | a U b | 4 | 4 | unchanged |
 | GF(aa) | 6 | 6 | triptych — must not move |
 | Even | 5 | 5 | triptych — must not move |
-| EvenBlocks | 7 | 7 | triptych — must not move |
+| EvenBlocks | **8** | 7 | corrected same day — the published 7 was the collision bug acting *inside* the triptych; see the correction below |
 | F(a ∧ Xa) | 6 | 6 | expected unchanged — verify |
 
 **One subtlety, so nobody "fixes" it later.** A non-empty class CAN behave
@@ -305,7 +307,7 @@ reality differs, that is data, not failure:
 | a U b | likely byte-equal (4) | no left-context trap visible |
 | Even | **byte-equal (5), without saturation** | its stall is transient: an equivalence query returns a counterexample like `(ε, a!a)` and the stem chain splits `a!a` from `a` (paper §4.2–4.3 say exactly this) |
 | GF(aa) | 6, or a coarser transient stall | depends on the EQ bound; either is fine, record it |
-| EvenBlocks | byte-equal (7) | already canonical at M2 today |
+| EvenBlocks | byte-equal (8) | today's 7 ✓ was two bugs agreeing (eps-merge learner vs colliding reference); expect one more class on both sides |
 | F(a ∧ Xa) | unknown — the interesting one | dump partition + audit log for the theory thread |
 
 If cases that used to fail byte-equality start passing at M2, that is
@@ -318,8 +320,8 @@ queries instead of a whole equivalence round).
 ## Work order
 
 1. **Reference builder fix** (fresh identity, spec §1.1). Gate: the expected
-   reference-count table above — triptych unchanged at 6 / 5 / 7,
-   `GF a → 3`.
+   reference-count table above — `GF(aa)` and `Even` unchanged at 6 / 5,
+   `EvenBlocks` 7 → **8**, `GF a → 3`.
 2. **Learner eps-merge revert** (restore spec §3.2). Same working session as
    regenerating fixtures, so reference and learner never disagree for a
    spurious reason in between.
@@ -335,3 +337,45 @@ sound, the `F(a ∧ Xa)` finding is a genuine contribution to the paper's open
 question, and both deviations you shipped were rational under the
 information you had. When in doubt about a red check: spec §9 first, then
 ask the theory thread.
+
+## Correction (2026-07-06, later the same day): EvenBlocks is 8, not 7
+
+While preparing paper tables from `sosg_figs/sources/evenblocks.md`, the
+theory thread found the collision bug acting **inside the triptych
+itself**. Evidence, all in that generated file:
+
+- the EM element table shows `rmul` of id 2 (`a`) by letter `a` is id 0
+  (`eps`) — in the 2-state presentation, `⟦aa⟧` *equals* the enriched
+  identity (identity state map, no marks collected);
+- consequently the multiplication table has `M([a],[a]) = 0`: the builder
+  merged `aa` into the identity class, and no class is keyed `a;a`.
+
+Under the section-1.1 convention, `aa` is its own class — and it is
+genuinely distinct from all six other word classes (e.g. the ω-context
+`x·(aa·!a)^ω` accepts while the same context around each other
+representative rejects), acting neutrally on the word classes just like
+`[aa]` in `Even`. So `|S(EvenBlocks)₊¹| = 8`.
+
+Consequences, already folded into the tables of this reply and into the
+spec (§1.1, M2.5):
+
+- the M2.5 regression gate is `GF(aa)` 6, `Even` 5, `EvenBlocks` **8** —
+  a builder that still outputs 7 for `EvenBlocks` is *not fixed*;
+- the historical M2 tables at the top of this report recorded
+  "EvenBlocks 7 = 7 byte-equal ✓": that was two bugs agreeing — the
+  eps-merge learner matched the eps-colliding reference. Expect 8 = 8
+  after M2.5, via one additional split (the class of `aa`);
+- `sosg_figs/sources/evenblocks.md` and the `evenblocks.sosg` fixture must
+  be regenerated after the builder fix; do not build anything on their
+  current contents;
+- the papers' published fingerprints said 6 / 5 / 7; the theory thread has
+  corrected them to 6 / 5 / 8 (with the learner's `EvenBlocks` endgame now
+  four ω-sort splits after the first, not three).
+
+The published triptych was in fact *internally inconsistent* all along:
+`Even` kept `[aa]` as a separate class (no collision — the sink marks keep
+`⟦aa⟧ ≠ ⟦ε⟧` in its 4-state presentation) while `EvenBlocks` lost it (the
+2-state presentation collides). Same construction, same neutral element,
+two different answers: the presentation-dependence of section 1.1, caught
+red-handed. It is also a live demonstration of why the convention had to be
+made normative.

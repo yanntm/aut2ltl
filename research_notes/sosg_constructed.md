@@ -151,7 +151,7 @@ these three examples.
 |---|---|:--:|:--:|:--:|:--:|:--:|:--:|---|
 | `GF(aa)` | `G F(a & Xa)` | 2 | **10** | **6** | yes (`Z₂`) | **no** | **yes** | defining formula ≡ `GF(a ∧ Xa)` |
 | `Even` | `{ {a[*2]}[*] ; !a }!` | 4 | 7 | 5 | yes | **yes (`Z₂`)** | no | `F₁` (linear): `aⁿ·!a·a^ω ∈ L ⟺ n` even |
-| `EvenBlocks` | `GF!a ∧ FG(!a → X{a[*2][*];!a}!)` | 2 | **16** | 7 | yes | yes (`Z₂`) | no | `F₂` (ω-power): `(aⁿ·!a)^ω`, by parity of `n` |
+| `EvenBlocks` | `GF!a ∧ FG(!a → X{a[*2][*];!a}!)` | 2 | **16** | 8 | yes | yes (`Z₂`) | no | `F₂` (ω-power): `(aⁿ·!a)^ω`, by parity of `n` |
 
 **Table 1.** Algebraic fingerprints of the three examples. `|EM¹|` is the
 acceptance-enriched monoid, `|S(L)₊¹|` the constructed SωS (a fresh identity
@@ -284,7 +284,9 @@ A notational convention is fixed here, deliberately: `S(L)₊¹` denotes
 standard `S¹` of semigroup theory, which adjoins a unit only when none
 exists. The distinction is not idle, because `S(L)₊` can own a neutral
 element of its own: in `S(Even)₊` below, `[a·a]` multiplies as the identity
-on every word class (Table 3). Under the convention it nonetheless remains a
+on every word class (Table 3) — and the same holds of `[a·a]` in
+`S(EvenBlocks)₊`, so two of the three running specimens carry one. Under the
+convention such an element nonetheless remains a
 class of its own, keyed by a non-empty word, and `[ε]` is always a separate
 class keyed by the empty word. Canonicity is unaffected — the fresh
 adjunction is a function of `L` — and every class except `[ε]` carries a

@@ -692,8 +692,8 @@ the intact `Z₂` that makes `Even` non-LTL readable straight off the learned
 object; the linked-pair enumeration finds eight pairs, of which the three with
 stem class `[!a]` are accepting. Five classes is exactly `|S(Even)₊¹|`, and the
 `.sosg` export is byte-equal to the construction from the automaton — Theorem
-5.1 made concrete. `EvenBlocks` completes the same way: three further splits
-beyond the one traced in §4.1, all in the ω-sort, to its seven classes.
+5.1 made concrete. `EvenBlocks` completes the same way: four further splits
+beyond the one traced in §4.1, all in the ω-sort, to its eight classes.
 
 **Proposition 5.2 (query complexity).** Writing `N = |S(L)₊¹|` and `ℓ` for the
 longest counterexample returned: the learner poses at most `N` equivalence
