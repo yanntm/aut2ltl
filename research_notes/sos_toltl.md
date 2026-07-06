@@ -28,11 +28,13 @@ its layer, stuttering is locally-neutral action, and a park is nothing but a
 linked pair of `P`. The preconditions for each layer are equations on the
 multiplication table, decided once on the canonical object — where an
 automaton-level transcription is form-dependent, passing on one presentation
-of `L` and failing on another. Where the walk freezes with acceptance still
-undecided, the transcription hands over to the second engine: the frozen
-layer is exactly the ω-power half of Arnold's congruence, and its templates
-are the `GF`/`FG` shapes of the topological ladder, read off `P`. Arnold's two
-context shapes thus become the extraction's two engines. Nesting appears only
+of `L` and failing on another. The walk carries exactly the *stem*
+coordinate of the accepting pair, and provably not the *loop* coordinate —
+no acceptance condition on recurring states or edges makes the class machine
+a recognizer of `L`, the running example refuting both — so a second engine
+transcribes the loop side from the recurring windows of the tail, with
+`GF`/`FG` templates read off `P`: the stem and loop engines are Arnold's two
+context shapes, met a third time. Nesting appears only
 where the algebra provably demands it — the until-rank read-off certifies the
 depth — and the formula is computed as a class-indexed DAG that scales;
 flattening it is the language's own intrinsic cost, which we measure, bound,
@@ -118,10 +120,13 @@ engines.** The construction is one family: the same split, met a third time.
 1. The frontier, both directions, from one object: the aperiodicity verdict
    with, on failure, a portable non-LTL witness certificate (§4), and, on
    success, a defining formula (§5–§7).
-2. A presentation-independent transcription engine: layers = R-classes of
-   the right Cayley graph of `S(L)₊¹`; per-layer anchoring as equations on
-   `M`; flat-brick emission with exactness by construction; the frozen-layer
-   handover to ω-templates (§5).
+2. A presentation-independent transcription engine targeting the accepting
+   pair `(s, e)`: the walk on the right Cayley graph of `S(L)₊¹` (layers =
+   R-classes) transcribes the stem coordinate under an anchoring condition
+   (A), and — the walk provably cannot carry the loop coordinate (Lemma
+   5.2) — a window engine transcribes `e` under a determinacy condition
+   (B); both conditions are equations on the object, and together they
+   yield exactness by construction (§5).
 3. The deliverable split, stated as a result: extraction is
    output-polynomial as a class-indexed DAG (which our implementation
    computes at scale); the flat formula is the language's intrinsic cost,
@@ -247,14 +252,39 @@ deterministic ω-automaton exists. Its transition structure is counter-free
 exactly when `L` is LTL (aperiodicity of `M` is aperiodicity of its right
 regular representation).
 
-**Lemma 5.2 (the walk decides membership).** If two ω-words admit block
-factorizations with pointwise-equal prefix-class walks, they are
-equi-members of `L`. In particular any acceptance datum consistent with `P`
-on ultimately-periodic words makes `Cay(L)` a recognizer of `L`.
+**Lemma 5.2 (what the walk carries — and what it cannot).** (i) The walk
+computes the full syntactic class of every prefix, `ψ(u) = [u]`; in
+particular, for any Ramsey factorization `α = u·w₁w₂⋯` the *stem
+coordinate* `s = [u·w₁⋯w_k]` of the accepting pair is a walk value. (ii)
+The *loop coordinate* `e` is **not** a function of the walk, nor of any
+inf-set acceptance on `Cay(L)`: no Muller condition on recurring states and
+no Emerson–Lei condition on recurring edges makes `Cay(L)` a recognizer of
+`L` in general.
 
-*Proof sketch.* The syntactic morphism recognizes `L`; equal walks force
-equal images of all block products; conclude by the skeleton argument of
-[SωS26, Lem 3.2] applied to the syntactic morphism. ⟨TBD: write out.⟩ ∎
+*Proof.* (i) is the definition of `Cay(L)`. (ii) is refuted on `GF(aa)`
+itself, at both levels, off the table of [SωS26, Table 3(a)]
+(classes `0..5 = [ε], [!a], [a], [!a·a], [a·!a], [a·a]`; `P = {(5,5)}`).
+*States:* `aa·(!a)^ω` and `aa·a^ω` have the identical prefix-class walk
+`2, 5, 5, 5, …` (class `5` is absorbing), hence the same recurring-state
+set `{5}`; their accepting pairs are `(5, [!a])` and `(5, [a·a])` — one
+rejected, one accepted. *Edges:* the tails `(a·!a)^ω` and `(aa·!a)^ω`,
+both read from class `5`, traverse the same recurring-edge set
+`{(5, a), (5, !a)}`; their loop idempotents are `[a·!a]` and `[a·a]` —
+verdicts again opposite. ∎
+
+Lemma 5.2(ii) deserves a pause, because a first draft of this section
+asserted the opposite ("the walk decides membership") and the running
+example itself refutes it. It is [SωS26, Prop 3.4] reborn: the frozen class
+`5` *is* that proposition's one-state automaton with trivial action, where
+no amount of state bookkeeping recovers acceptance. There the repair was
+enrichment — marks along runs. `Cay(L)` has no marks to enrich with; the
+only letter-visible substitute is the **recurring window structure** of the
+tail (which finite factors recur), and recovering `e` from it is possible
+exactly on a stratum (Definition 5.6). The consequence is architectural,
+and it sharpens rather than weakens the two-engine picture: **the
+transcription target is the accepting pair `(s, e)` — the walk engine
+transcribes `s`, and a window engine must transcribe `e`.** Acceptance is
+*never* the walk's business, in any layer, frozen or moving.
 
 **Lemma 5.3 (monotone descent).** `[u·a] ≤_R [u]` for every letter `a`
 (right multiplication never climbs Green's R-order). Consequently the SCCs
@@ -295,7 +325,8 @@ production on a layer `R` of `Cay(L)` and every ingredient becomes algebra
 | exits `E(s)` | edges leaving `R` — strict R-descent, delegated below |
 | park at `s` on `G L(s)` | a **linked pair** `(c, e)`: `M(c, e) = c`, `e` the stutter class |
 | `F_all` (park accepts) | `(c, e) ∈ P` |
-| `GF(enter-window)` fairness | the pair formed inside the recurring window set ⟨TBD: exact statement⟩ |
+| `GF(enter-window)` fairness | window recovery of the loop coordinate `e` — condition (B), Definition 5.6 |
+| state-based colors `F_i` | **no counterpart** (Lemma 5.2(ii)) — acceptance lives on pairs, not classes |
 | child label `φ_d` at exit `d` | the extraction rooted at class `d` — **memoized per class**: at most `\|𝒞\|` distinct children ever, the DAG is class-indexed |
 
 **Table 2.** The transport dictionary. Every operational notion of the
@@ -324,16 +355,49 @@ products of `k` within-layer actions, stutter positions absorbed by
 `x·s₁⋯s_k = s₁⋯s_k` (k-definiteness) localized to the layer's action
 semigroup modulo its neutral part; monotonicity of the ladder in `k`.⟩
 
+Anchoring is the *stem-side* precondition: it makes the walk transcribable.
+Lemma 5.2(ii) forces a second, independent precondition on the *loop side*:
+
+**Definition 5.6 (window-determined acceptance).** A layer `R` is
+**(B)-determined at width `k`** if for every stem class `s ∈ R` and any two
+ω-tails confined to `R` from `s` whose sets of recurring length-`k` factors
+are equal, the accepting pairs `(s, e)` and `(s, e')` they induce have equal
+`P`-verdicts. (Equivalently: on tails confined to `R`, the loop coordinate's
+verdict is a function of the recurring `k`-window set.)
+
+Call anchoring **condition (A)** and window-determinacy **condition (B)**.
+The two automaton-level productions of the portfolio split precisely along
+this line, which neither could state: kanchor obtains (B) *for free* by
+restricting itself to state-based acceptance — colors sit on states, states
+are phases, so (A) implies acceptance is window-visible; its own document
+records the price ("transition-level marks on self-loops leave no
+letter-visible trace" [KA26, §1]). Daisy, conversely, is (B) at width 1 —
+per-petal transition marks — for a component where (A) is trivial (one
+state). On the algebra the two conditions come apart cleanly, both as
+properties of `(𝒞, λ, M, P)`, and the exactness theorem needs both:
+condition (A) on every layer the walk traverses, condition (B) on every
+layer a run can remain in forever.
+
 **The bricks, transported.** For a 1-anchored layer `R` with anchor targets
 `t(a)` per reset letter and stutter sets `N(c)` per class ⟨TBD: full label,
 following [KA26, §4.3] with: `sojourn(c) = N(c) W (moves out of c)`, the
 anchored law `G(a → X sojourn(t(a)))` per reset letter, parks as linked-pair
 lookups in `P`, exits to memoized class children; then the graded version
-following [KA26, §6–7]⟩. Exactness transports with the phase lemma: the walk
-is deterministic on `Cay(L)` *by construction*, so the uniqueness leg of
-[KA26, §10] is immediate, and the completeness/soundness legs are unchanged
-⟨TBD: restate the three legs on the algebra; the licence for eager triggers
-([KA26, §5.4]) carries verbatim⟩.
+following [KA26, §6–7]⟩. One brick does *not* transport unchanged: kanchor's
+fairness `GF(⋁ anchors into F_i)` presumes state-carried colors, which
+Lemma 5.2(ii) rules out here. Its replacement is the window fairness of
+Definition 5.6: under condition (B) at width `k'`, the `STAY∞` acceptance of
+a final layer is a Boolean combination of `GF(window)` terms over the
+length-`k'` windows, selected by which recurring-window sets induce
+accepting pairs ⟨TBD: the exact selection — per recurring-set stratum, a
+conjunction `⋀ GF(wᵢ) ∧ ⋀ FG(¬wⱼ)` normal form; sizes⟩. Exactness then
+transports leg by leg: the walk is deterministic on `Cay(L)` *by
+construction*, so the uniqueness leg of [KA26, §10] is immediate; the
+completeness/soundness legs are unchanged for the law and leave bricks
+(the licence for eager triggers [KA26, §5.4] carries verbatim), and the
+fairness leg is exactly condition (B) ⟨TBD: the two-condition exactness
+theorem, stated and proved: (A) on traversed layers + (B) on final layers
+⟹ the flat label defines `L`⟩.
 
 ### 5.3 Anchoring is a property of the language
 
@@ -343,27 +407,34 @@ automaton form and fail in another" [KA26, §12]. On `Cay(L)` the tests are
 evaluated on the canonical object, so *our* pass/fail is a function of `L` —
 by fiat. The substantive claims are the two comparisons:
 
-**Claim 5.6 (soundness of the finer phase).** The syntactic class is the
-finest phase: if a layer of `Cay(L)` is k-anchored, the transcription is
-exact for `L` — no reference to any presentation. (This is §5.2's exactness;
-the claim is that nothing more is ever needed.)
+**Claim 5.7 (soundness of the finer phase).** Conditions (A) and (B) are
+evaluated on the canonical object, so their verdicts are functions of `L`;
+when they hold, the transcription is exact for `L` with no reference to any
+presentation (the two-condition exactness theorem of §5.2). The claim is
+that nothing more is ever needed: the syntactic class is the finest phase,
+and `P` the complete acceptance datum.
 
-**Conjecture 5.7 (the automaton tests approximate a language property).**
+**Conjecture 5.8 (the automaton tests approximate a language property).**
 If *some* deterministic presentation of `L` passes the automaton-level
 preconditions at width `k` on a component, then the corresponding layers of
-`Cay(L)` pass at width `⟨TBD: k? f(k)?⟩`. ⟨TBD: this is the delicate
-direction — the class phase is finer than any automaton phase, and finer
-phases are harder to recover from windows; the conjecture may need the
-comparison routed through the *language-level* property ("the class of the
-prefix is eventually a function of the last k letters modulo locally-neutral
-letters") rather than through the Cayley machine test. Settle on the census:
-run both, tabulate agreements and the direction of every disagreement.⟩
+`Cay(L)` pass (A) at width `⟨TBD: k? f(k)?⟩` and, for state-based input,
+(B) at a related width. ⟨TBD: this is the delicate direction, and the
+comparison must *unbundle* the two conditions, because the automaton
+productions bundle them differently — kanchor folds (B) into its state-based
+acceptance restriction, daisy isolates (B) at width 1. Note also that class
+phases and state phases are incomparable in general: two words reaching the
+same state share a residual but not necessarily a class, and conversely
+states may duplicate residuals — so neither direction of the conjecture is
+trivial. §5.4's specimen shows the algebra can be strictly *easier* (width
+1 against 2); whether the reverse occurs is a census question. Settle
+empirically: run both, tabulate agreements and the direction of every
+disagreement.⟩
 
-If Conjecture 5.7 holds in a usable form, the paper's statement is clean:
+If Conjecture 5.8 holds in a usable form, the paper's statement is clean:
 the automaton production was computing an approximation, on one
 presentation, of an equational property of the syntactic algebra — and the
 algebra computes the property itself. If it fails, the failure is itself a
-finding (a genuinely presentation-bound transcription), and Claim 5.6 stands
+finding (a genuinely presentation-bound transcription), and Claim 5.7 stands
 alone as the self-contained engine. Either way the extraction is
 well-defined; only the *comparison* is at stake.
 
@@ -411,37 +482,69 @@ different layers, states the automaton was forced to hold side by side, and
 anchors need only disambiguate within a layer, exits being unconstrained.
 The canonical machine is bigger and *easier*. ⟨TBD: is this a theorem
 ("layer-local anchoring width ≤ any-form anchoring width") or an instance?
-Relates to Conjecture 5.7.⟩
+Relates to Conjecture 5.8.⟩
 
-**The transcription of the walk, alone, is not the language.** The walk
-reaching layer `{5}` says "an `aa` has occurred" — and `GF(aa)` is not
-"eventually `aa`". Acceptance turns on what recurs *after* the walk has
-frozen: the accepting pairs of `GF(aa)` are exactly `{([a·a], [a·a])}`, and
-a tail parked at `5` accepts iff its recurring loop's idempotent power is
-`[a·a]` — i.e. iff `aa`-factors recur. The class walk has carried all it
-can; the rest is the next subsection's business.
+**The walk, alone, is not the language — and the example proves it twice.**
+The walk reaching layer `{5}` says "an `aa` has occurred", and `GF(aa)` is
+not "eventually `aa`": Lemma 5.2(ii)'s two refutation instances live in this
+very layer. Acceptance turns on what recurs after the walk freezes — the
+single accepting pair `([a·a], [a·a])` demands a tail whose recurring loop
+idempotent is `[a·a]` — and condition (B) holds here at width 2: among
+tails confined to `{5}`, the recurring 2-window set determines the verdict
+(the window `aa` recurs iff the loop idempotent is `[a·a]` ⟨TBD: two-line
+check⟩), yielding the frozen-layer brick `GF(a ∧ Xa)`. The moving layers,
+by contrast, are *rejecting* as final layers — no pair off class `5` is in
+`P` — so their `STAY∞` branches are `false` by the same degeneracy that
+[KA26, §8] gets for free, and only their `LEAVE` chains survive.
+*Predicted output*, then, for the whole extraction of `GF(aa)`: `LEAVE`
+chains through `{1,3}` / `{2,4}` into the memoized child at `5`, whose
+label is `GF(a ∧ Xa)` — an `F(…)`-shaped reach wrapper around the child —
+and since the reach wrapper is implied by the child (recurrence implies
+occurrence), the simplified form is `GF(a ∧ Xa)` exactly. A
+prefix-independence read-off (one residual ⟹ the reach wrapper is always
+redundant ⟨TBD: prove as a simplification rule⟩) would emit it directly.
+The experiment suite checks this prediction end to end (E0 in the companion
+spec).
 
-### 5.5 The frozen layer is Arnold's second shape
+### 5.5 The window engine is Arnold's second shape
 
-When the walk stabilizes in its final layer with all letters neutral (or
-more generally when a park's acceptance depends on *which* stutter loop
-recurs, not merely that one does), the transcription faces a tail language
-that the prefix classes cannot see. This is not a corner case; it is a
-theorem-shaped fact:
+Lemma 5.2(ii) assigns every acceptance decision to a second engine; the
+*frozen* layer — all letters neutral, the walk stabilized — is only that
+engine's purest case, where nothing else remains. This is not a corner
+case; it is a theorem-shaped fact:
 
-**Proposition 5.8 (the division of labor, transported).** The class-walk
-transcription expresses exactly the discrimination carried by the linear
-half `~lin` of Arnold's congruence (residual structure: which class the
-prefix has reached). The frozen-layer condition — acceptance as a function
-of the recurring loop structure at a fixed class — is exactly the
-discrimination carried by the ω-power half `~ω`. In particular, for a
-prefix-independent `L` (one residual, `~lin` total [SωS26, Prop 4.6]) the
-walk carries *no* acceptance information beyond reachability, and the
-entire language lives in the frozen-layer engine. ⟨TBD: precise statement
-and proof; the GF(aa) instance: prefix-independent, and indeed the parked
-tail language at layer `{5}` is `GF(aa)` itself — the walk engine
-terminates, it does not recurse, and the handover is mandatory, not an
-optimization.⟩
+**Proposition 5.9 (the division of labor).** The transcription target is
+the accepting pair `(s, e)`. The walk engine computes exactly the stem
+coordinate `s` (Lemma 5.2(i)); every acceptance decision — the `STAY∞`
+fairness of a final layer, every park verdict, every frozen tail — is a
+property of the loop coordinate `e`, which no function of the walk
+determines (Lemma 5.2(ii)) and which the word exposes only through its
+recurring window structure, recoverable under condition (B). ⟨TBD: precise
+statement and proof.⟩
+
+*Remark (the Arnold echo).* This is not literally the `~lin`/`~ω` split of
+[SωS26, §4] — `~lin` compares residuals, and the walk computes classes,
+which are finer — but it is its exact operational echo: Arnold's linear
+shape constrains what stems can do, his ω-power shape what loops can do,
+and the extraction splits its labor the same way, stems to the walk, loops
+to the windows. The construction computed the two shapes as two relations
+[SωS26], the learner harvested them as two column sorts [SωSL26], and here
+they are two engines. For a prefix-independent `L` (one residual, [SωS26,
+Prop 4.6]) the stem side carries no membership information at all — the
+walk still runs (classes move even when residuals do not: `GF(aa)` has one
+residual and four layers), but every `STAY∞` and every reach wrapper it
+emits is either `false` or redundant, and the language lives entirely in
+the window engine.
+
+**The no-recursion trap.** The frozen tail language at a frozen class `c` is
+`T_c = {α : (c, e(α)) ∈ P}` — prefix-independent by construction ⟨TBD:
+well-definedness lemma: all Ramsey idempotents of the same tail give one
+verdict against a fixed `c`⟩. It is tempting to "recurse" on `T_c` — build
+its invariant, extract, wrap. The temptation must be resisted, and `GF(aa)`
+shows why: there `T_5 = GF(aa) = L` itself. Prefix-independent languages
+are fixed points of the walk-then-tail decomposition; the frozen engine is
+not a recursive call, it is the *other base case*, and it needs its own
+method:
 
 The frozen-layer engine has its own automaton-level ancestor in the
 portfolio: the **daisy** production [DA26], which labels a single state
@@ -477,20 +580,28 @@ is the degenerate rung. The frozen-layer engine, then, must express:
 from the frozen class `c`, form loops `e` with `(c, e) ∈ P`*. Its templates
 are the ladder's:
 
-- **recurrence rung** (`Gδ`, deterministic-Büchi): `GF(window)` shapes —
-  for `GF(aa)`, accept iff windows folding into `{[a], [a·a]}`-loops recur;
-  emitted as `GF(a ∧ Xa)` ⟨TBD: the general window read-off — from the
-  accepting idempotents at `c`, derive the finite window set whose
-  recurrence is equivalent; this is "locally testable at infinity" when the
-  frozen local algebra satisfies ⟨TBD: which equations⟩, and the length of
-  the needed windows is bounded by ⟨TBD: the local definiteness degree?⟩⟩;
-- **persistence rung** (`Fσ`, co-Büchi): dually `FG(window)`;
-- **reactivity**: Boolean combinations, following the pair structure of `P`
-  restricted to the frozen class × its idempotents;
-- ⟨TBD: the case where the frozen layer is *not* locally-testable-at-
-  infinity — the genuine nesting case; here and only here a DG-style local
-  division survives, demoted to "the engine inside one frozen layer",
-  bounded by the layer's local algebra rather than the whole monoid.⟩
+- **(B) holds at width `k`** — the verdict is a function of the recurring
+  `k`-window set, and the label is a Boolean combination of `GF(window)`
+  terms (equivalently `FG(¬window)` for the forbidden ones), shaped by the
+  ladder rung of `P` restricted to `c × idempotents`: recurrence rungs give
+  positive `GF` shapes (`GF(aa)`: accept iff the window `aa` recurs —
+  `GF(a ∧ Xa)`), persistence rungs the dual `FG`, reactivity the general
+  Boolean combination. ⟨TBD: the general window read-off — from the
+  accepting idempotents at `c`, derive the window set and the normal form;
+  bound the needed width by ⟨the layer's local definiteness degree?⟩; align
+  the (B)-stratum with the locally-(threshold-)testable ω-varieties
+  (Beauquier–Pin / Wilke, cite-TBD) so the stratum is a known class with
+  our operational reading.⟩
+- **(B) fails at every affordable width** — the genuine nesting case: the
+  recurring windows do not determine the verdict, because acceptance hangs
+  on *order* among recurring factors, the classical separator between
+  `FO[<]` and locally testable (`FO[+1]`, Thérien–Weiss; cite-TBD). Here
+  and only here does a DG-style descent survive, demoted to "the engine
+  inside one frozen layer" and scoped to that layer's tail algebra ⟨TBD:
+  which is not smaller in general — `T_c = L` above — so the honest
+  statement is: this stratum is where extraction still pays DG's price,
+  and the census measures how rare it is; an ω-specific descent that beats
+  DG on this stratum is the paper's main open problem⟩.
 
 The architecture, assembled — the paper's picture:
 
@@ -500,17 +611,129 @@ extract(𝓘):
   1. quotient the alphabet by λ; choose L or L̄ by P-shape (cheaper side)
   2. ladder read-off: safety/co-safety/obligation ⟹ finite-word extraction
      of the class-defined prefix language + fixed template, stop
-  3. walk engine: descend the R-order of Cay(L); per layer:
-       anchored at k ≤ cap  ⟹ flat bricks (laws, GF-windows, parks=P-pairs),
-                               exits to memoized class children
-       else                 ⟹ ⟨TBD: layer-internal decomposition; DG local
-                               division as last resort, scoped to the layer⟩
-  4. frozen layers: ω-engine — GF/FG window templates from P at the frozen
-     class; nesting only where the local algebra demands it
+  2.5 combinators (§5.6): OR-split P by final layer; AND-split by subdirect
+      factorization; re-canonicalize each piece (a divisor — never leaves
+      LTL, Prop 5.10), recurse on pieces whose read-offs improved, combine
+      with ∨ / ∧
+  3. walk engine (stem side): descend the R-order of Cay(L); per layer:
+       (A) at k ≤ cap  ⟹ flat law/leave bricks, exits to memoized class
+                          children
+       (A) fails       ⟹ ⟨TBD: layer-internal decomposition; DG local
+                          division as last resort, scoped to the layer⟩
+  4. window engine (loop side), on every layer a run can end in:
+       (B) at k' ≤ cap ⟹ GF/FG window combination read off P (STAY∞,
+                          parks) — includes every frozen layer
+       (B) fails       ⟹ DG on the tail algebra: the residual stratum,
+                          measured, not hidden
   5. finite-word sub-extractor (shared with step 2): the same rules one
      level down on S(L)₊'s finite part — the LTLf story of [SωS26, §6]
   output: class-indexed formula DAG; render flat or definitional (§6)
 ```
+
+*Step 2, validated.* For co-safety `L` the good-prefix set
+`W = {u : u·Σ^ω ⊆ L}` is a union of `≈_L`-classes — whether *every*
+continuation of `u` is accepted is a property of `[u]` alone, since each
+continuation's pair is `([u]·s', e')` — so `W` is recognized by the finite
+part of the algebra, the finite-word extractor (step 5) applies to it, and
+the wrapper is the standard strong/weak insertion of a finite-word formula
+into LTL over ω-words ("some prefix satisfies `φ_W`": strong next in
+positive positions, weak under negation ⟨TBD: cite the LTLf/RV lineage,
+De Giacomo–Vardi and the weak-next tradition⟩). Safety is the dual through
+`P ↦ P^c`; obligation, Boolean combinations of the two.
+
+### 5.6 Combinators: the portfolio's decompositions, on the invariant
+
+The automaton portfolio's workhorses, beyond its per-component productions,
+are three *decomposition combinators*: split by accepting SCC (mark one SCC
+solo-accepting, drop the rest, translate, OR the results), split by
+strength (Spot's terminal/weak/strong decomposition, OR), and split by
+acceptance (translate each conjunct of the Emerson–Lei condition, AND —
+"good for `GFa ∧ FGb`, necessary almost", at the price of determinization).
+All three transport to the invariant, and each lands on a named algebraic
+operation that is cleaner than its automaton original. The common
+foundation is Theorem 5.1 of [SωS26] read as a *calculus*: on a fixed table
+`(𝒞, λ, M)`, **every pair set is a language**, so union, intersection and
+complement of same-table languages are Boolean operations on `P` — and any
+restriction can then be *re-canonicalized* by re-running the construction's
+quotient with the new pair set, yielding the piece's own, smaller algebra.
+
+**(1) The accepting-SCC OR is restriction of `P` to a final layer.** Every
+word's stem class `s` lies in exactly one final layer, so
+
+```
+    L  =  ⊎_{R final layer}  L_R,      L_R recognized by (𝒞, λ, M, P|_R),
+    P|_R = { (s, e) ∈ P : s ∈ R }
+```
+
+— a *disjoint* union, exact by construction, with none of the automaton
+version's surgery (no re-marking, no dropped-part reachability caveats).
+Two properties the automaton combinator cannot state:
+
+**Proposition 5.10 (decomposition never leaves LTL).** Any language
+recognized by `(𝒞, λ, M)` with *any* pair set — every `L_R`, every
+single-pair piece, every Boolean combination — has a syntactic ω-semigroup
+dividing `M`. In particular if `L` is LTL, so is every piece, and every
+re-canonicalized piece algebra is no larger than `𝓘(L)`'s.
+
+*Proof.* The syntactic morphism of `L` recognizes the piece (membership
+depends only on the pair), and the syntactic algebra of any language
+divides each of its recognizers. Divisors of aperiodic monoids are
+aperiodic. ∎
+
+*The guard.* Pieces can climb the *Wagner* ladder even while staying LTL
+(a single-pair piece asserts "the pair is exactly `(s, e)`", which can sit
+strictly higher than `L` itself — the pair split is the finest granularity
+and should be reserved for the window engine's interior). The combinator
+therefore splits by final layer first, and — the operational gain over the
+portfolio — *checks the read-offs of each re-canonicalized piece before
+extracting anything*: `|𝒞'|`, ladder rung, (A)/(B) widths. Try-and-see
+becomes read-and-decide.
+
+**(2) The strength OR is the (B)-stratification, per layer.** Spot's
+terminal/weak/strong split transports to a classification of final layers
+that the engine of §5.2–5.5 already dispatches on: *terminal* = commitment
+(the stem class `s` satisfies `(s·x, f) ∈ P` for every linked
+continuation — step 2's co-safety template, localized); *weak* = condition
+(B) holds at width 0 (all idempotent verdicts at the layer agree —
+acceptance is "stay here", no window needed); *strong* = the genuine
+window engine. On the algebra this is not a decomposition producing
+automaton copies; it is a per-layer read-off selecting the template — the
+strength combinator was the automaton shadow of the engine's own case
+analysis.
+
+**(3) The acceptance AND is subdirect decomposition.** The automaton
+combinator splits `Acc = Acc₁ ∧ Acc₂` and intersects the two languages —
+sound only on a deterministic form, hence "requiring determinization". On
+the algebra, determinization is free (the object *is* its canonical
+deterministic form), and the operation has its classical name. An
+**ω-congruence** `θ` on the invariant is a monoid congruence on `(𝒞, M)`
+⟨TBD: plus the pair-saturation condition making `P` θ-definable⟩; a
+factorization
+
+```
+    P = P₁ ∩ P₂,   Pᵢ saturated by θᵢ,   θ₁ ∩ θ₂ = Δ
+```
+
+gives `L = L(P₁) ∩ L(P₂)` with each factor recognized by the *proper
+quotient* `M/θᵢ` — a subdirect representation in Birkhoff's sense, each
+factor strictly smaller, each factor's own invariant obtained by
+re-canonicalization. `GFa ∧ FGb` is the type specimen: its table factors
+onto a `GFa`-quotient (forget `b`) and an `FGb`-quotient (forget `a`), and
+the extraction of each factor is a one-layer window brick. ⟨TBD: (i) the
+pair-saturation definition and the proof that the factorization is exactly
+the AND-split; (ii) existence — Birkhoff guarantees subdirect
+representations of the monoid, the `P`-compatible version needs its own
+statement, with the honest fallback "no proper factorization exists" (the
+subdirectly irreducible case); (iii) algorithmics — the congruence lattice
+of a census-sized monoid is enumerable, and the search wants maximal
+proper congruences first; (iv) the worked `GFa ∧ FGb` factorization,
+tables shown.⟩
+
+The combinators compose (OR of ANDs, complement flips via `P^c` choosing
+the cheaper side), they all commute with re-canonicalization, and
+Proposition 5.10 makes the whole combinator layer safe: no move ever
+leaves LTL or grows the algebra. They slot into the architecture as step
+2.5, between the ladder templates and the walk engine.
 
 ## 6. The deliverable: DAG, flat, and definitional forms
 
@@ -549,10 +772,10 @@ induces a second, finer map, and every coordinate is a read-off:
 | stratum | algebraic condition | formula shape | where decided |
 |---|---|---|---|
 | ladder-low (safety/co-safety/obligation) | closure of `P` | fixed template over a finite-word formula | step 2 |
-| anchored, k = 1 | identity-or-reset per layer | flat bricks, depth O(R-depth) | step 3 |
-| anchored, k ≤ K | local k-definiteness mod stutter | graded windows, same depth | step 3 |
-| frozen, testable | ⟨TBD: local testability at infinity⟩ | `GF`/`FG` windows | step 4 |
-| residual | none of the above | genuine nesting; until-rank certifies | steps 3–4 fallback |
+| stem-transcribable, k = 1 | (A): identity-or-reset per layer | flat bricks, depth O(R-depth) | step 3 |
+| stem-transcribable, k ≤ K | (A): local k-definiteness mod stutter | graded windows, same depth | step 3 |
+| loop-transcribable | (B) at width k′ ⟨TBD: align with local ω-testability⟩ | `GF`/`FG` window combinations | step 4 |
+| residual | (A) or (B) fails at every affordable width | genuine nesting; until-rank certifies | steps 3–4 fallback |
 
 **Table 3.** The inner frontier: which fragment of LTL a language actually
 needs, decided on `𝓘(L)` before any formula is built. ⟨TBD: align the
@@ -578,7 +801,7 @@ automaton — the last being the apples-to-apples baseline the canonical
 machine enables; (ii) DAG size vs. |𝒞| — the scaling claim; (iii) per-layer
 anchoring statistics — which k fires, how often frozen layers appear, the
 inner-frontier map; (iv) the until-rank vs. emitted depth ledger —
-optimality gaps; (v) Conjecture 5.7 tested: automaton-form anchoring vs.
+optimality gaps; (v) Conjecture 5.8 tested: automaton-form anchoring vs.
 class anchoring, disagreements tabulated by direction. Verdicts checked by
 the construction of [SωS26]: every emitted formula's 𝓘 must be byte-equal
 to the input's — the equivalence oracle is the object itself.⟩
@@ -626,8 +849,12 @@ daisy test is a property of one TGBA's initial state); the algebra is where
 their preconditions become properties of the language. Daisy's restricted-
 guard witness lift (left-quotient soundness for non-LTL residues) is the
 automaton-level cousin of §4's certificates, which, born canonical, need no
-lifting. This paper is the third member of a family in which the same
-two-shape structure was constructed [SωS26] and learned [SωSL26].
+lifting. The portfolio's decomposition combinators (accepting-SCC,
+strength, and acceptance splits — `aut2ltl/decomp`) are the automaton
+shadows of §5.6's `P`-restriction, (B)-stratification, and subdirect
+factorization respectively. This paper is the third member of a family in
+which the same two-shape structure was constructed [SωS26] and learned
+[SωSL26].
 
 ## 10. Conclusion
 
