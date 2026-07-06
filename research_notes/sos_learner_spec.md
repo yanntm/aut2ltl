@@ -494,10 +494,9 @@ check but fail byte-equality.
   byte-equality passes on all cases where it passes (no claim yet on the
   rest).
 - **M2.5 — Convention alignment** *(added 2026-07-06; **DONE 2026-07-06**).*
-  Landed: (a) fresh-identity builder + regenerated fixtures (commit
-  `56ed4586`); (b) learner eps-merge reverted to the section 3.2 singleton
-  rule (commit `b27d831e`); (c) M2 table re-baselined append-only in
-  `sosl_report.md` (commit `7c4a4ea2`). Outcome exceeded the predictions: all
+  Landed: (a) fresh-identity builder + regenerated fixtures; (b) learner
+  eps-merge reverted to the section 3.2 singleton rule; (c) M2 table
+  re-baselined append-only in `sosl_report.md`. Outcome exceeded the predictions: all
   four of `GF a`/`GF(aa)`/`Even`/`EvenBlocks` are byte-equal to the reference
   at M2 without saturation (every stall was transient). Original text follows.
   (a) Fix the reference builder to the fresh-identity convention of

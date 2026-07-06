@@ -383,8 +383,8 @@ made normative.
 ## M2 re-baseline (2026-07-06, post-M2.5) — append-only
 
 The M2.5 alignment landed: reference builder on the fresh-identity convention
-(spec §1.1, commit `56ed4586`) and the learner eps-merge reverted to the §3.2
-singleton rule (commit `b27d831e`). Measured M2 outcomes (`tests.sosl.paper_examples`
+(spec §1.1) and the learner eps-merge reverted to the §3.2 singleton rule.
+Measured M2 outcomes (`tests.sosl.paper_examples`
 and `reference_vs_learner`), still **no saturation**:
 
 | language | reference | learned | acceptor | vs reference | learner stats |
