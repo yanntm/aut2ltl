@@ -320,10 +320,11 @@ shopping list, not a bibliography.
   edge-shape inspection.
 - **Form dependence itself** — "an input can pass in one form and fail in
   another". On `Cay(L)` the tests are evaluated on the canonical object;
-  pass/fail is a function of `L`. (The comparison of the two regimes is
-  Conjecture 5.8 and the E3 experiment; the automaton-level tests survive
-  only there, as the *comparator*, until the census settles the
-  conjecture.)
+  pass/fail is a function of `L`. (The paper states no comparison with
+  automaton-level transcription at all — that construction does not exist
+  in its world; the E3/E4c experiments keep the comparison alive as
+  internal diagnostics only, and a reverse instance — algebra strictly
+  harder than some form — would be a research finding to bring back.)
 - **The virtual-history surgery** (prepending `k−1` letters to uniformize
   the start): unnecessary — the fresh identity `[ε]` makes the global
   start trivial (§2), and layer entries are certainty-rooted by the parent

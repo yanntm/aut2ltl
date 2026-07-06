@@ -26,7 +26,9 @@ gate that every emitted formula defines the input language exactly.
 - **The triptych** `GF(aa)`, `Even`, `EvenBlocks` and the kanchor/daisy
   fixtures (`samples/fixtures/hoa/anchor/`, `…/kanchor/`) *(exist)*.
 - **The automaton portfolio** (aut2ltl recipes, incl. `kanchor`, `daisy`)
-  *(exists)* — used as baseline and as the Conjecture-5.8 comparator.
+  *(exists)* — internal baseline and cross-test comparator (E3, E4c). Note:
+  the paper no longer speaks of any automaton-level transcription — these
+  runs are diagnostics for us, not paper material.
 - **The DG-style engine with DAG/memoization** *(exists per project notes)* —
   the naive baseline; if its output cannot be flattened on an instance, that
   *is* the measurement (record DAG size + `FLAT_OVERFLOW`), not a failure.
@@ -133,21 +135,24 @@ for failures. **Prediction:** (B) holds at `k' ≤ 2` on all 1-AP census
 specimens; failures require either ≥ 2 AP or larger monoids (order/
 betweenness structure — see E6).
 
-### E3 — Conjecture 5.8 cross-test
+### E3 — presentation cross-test *(internal diagnostics, not paper material)*
 
-For each census LTL specimen: (i) run the kanchor preconditions on the
-repo's standard automaton forms (`sbacc(tgba(L))`, per [KA26, §12] the
-form matters — record which form) and note the passing width per SCC;
-(ii) run C2 on `Cay(L)`. Tabulate `(form width, algebra width)` pairs with
-the SCC↔layer correspondence ⟨TBD: the correspondence is many-to-many;
-record per language: min width over forms vs. min width over layers, plus
-the bundling caveat — kanchor's state-based acceptance folds (B) in, so
-compare (A)+(B) jointly against kanchor, and (B) alone against daisy
-applicability⟩. **Paper deliverable:** the Conjecture 5.8 evidence table;
-every instance where the algebra needs a *larger* width than some form is a
-first-class finding to be quoted. **Prediction:** algebra ≤ form throughout
-the census, with `GF(aa)` (1 vs 2) the exemplar; no reverse instance found
-(low confidence — this is the point of the experiment).
+The paper defines its engine on the algebra alone and states no comparison
+with automaton-level transcription; this experiment survives as *our*
+diagnostics. For each census LTL specimen: (i) run the kanchor
+preconditions on the repo's standard automaton forms (`sbacc(tgba(L))`,
+per [KA26, §12] the form matters — record which form) and note the passing
+width per SCC; (ii) run C2 on `Cay(L)`. Tabulate `(form width, algebra
+width)` pairs, recording per language min width over forms vs. min width
+over layers, with the bundling caveat — kanchor's state-based acceptance
+folds (B) in, so compare (A)+(B) jointly against kanchor, and (B) alone
+against daisy applicability. **Deliverable:** internal evidence table only.
+An instance where the algebra needs a *larger* width than some form is a
+research finding to bring back to the paper (it would revive the dropped
+comparison as a theorem target); absent that, nothing here is cited.
+**Prediction:** algebra ≤ form throughout the census, with `GF(aa)` (1 vs
+2) the exemplar; no reverse instance found (low confidence — that is the
+point of the diagnostic).
 
 ### E4 — size ledgers
 
@@ -159,10 +164,12 @@ wired, run the portfolio on the census's own reference automata instead and
 say so⟩. Record: DAG node count, flat tree size, modal depth, until-nesting
 depth, `FLAT_OVERFLOW` events; Spot-simplified sizes where Spot terminates
 within cap (bounded-or-skipped per repo discipline). **Paper deliverable:**
-the §6/§8 ledgers; DAG-vs-`|𝒞|` scatter for the scaling claim.
-**Prediction:** (a) ≤ (b) on flat size on every instance, with the gap
-growing on multi-layer specimens; (a) competitive with (c) and canonical
-where (c) is form-lucky.
+the §6/§8 ledgers over (a) vs (b) only; DAG-vs-`|𝒞|` scatter for the
+scaling claim. Column (c) is internal diagnostics (the paper does not
+mention automaton-level transcription), kept because a (c)-beats-(a) case
+is a research finding for us. **Prediction:** (a) ≤ (b) on flat size on
+every instance, with the gap growing on multi-layer specimens; (a)
+competitive with (c) and canonical where (c) is form-lucky.
 
 ### E5 — until-rank vs emitted depth *(blocked on C6)*
 
