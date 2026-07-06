@@ -7,9 +7,9 @@ __pycache__/
 .idea/
 .vscode/
 
-# Build artifacts (editable install / sdist / wheel)
+# Build artifacts (editable install / sdist / wheel). No blanket `build/` — it is
+# too wide for repo scope (it swallows the source package `sosl/sos/build/`).
 *.egg-info/
-build/
 dist/
 
 # Scratch survey/test output. Persisted reference runs live in results/ and are
