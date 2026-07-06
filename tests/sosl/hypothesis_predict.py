@@ -2,7 +2,7 @@
 
 Self-contained. Run from the repo root:
 
-    python3 -m tests.sosl.cayley_predict
+    python3 -m tests.sosl.hypothesis_predict
 
 Builds the GF(a) hypothesis (the step table of the "infinitely many a"
 omega-semigroup) and checks that its normative prediction agrees with the
