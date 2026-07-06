@@ -22,17 +22,19 @@ def check_gfa_partition() -> None:
     table.fill()
     p = Partition(table)
 
-    # Canonical GF a from the seed omega column: 2 classes. The no-a letter is
-    # congruent to eps (both give False on p^omega), so it merges into the start
-    # (identity) class; only the has-a letter splits off.
-    assert p.n == 2, p.n
+    # Canonical GF a from the seed omega column: 3 classes. eps is a permanent
+    # singleton (the fresh identity), so even though the no-a letter is congruent
+    # to eps (both give False on p^omega) it does NOT merge in — it forms its own
+    # class alongside the has-a class.
+    assert p.n == 3, p.n
     assert p.is_closed(), p.unclosed()
     assert p.inconsistency() is None, p.inconsistency()
 
     A, NOA = (1,), (0,)
     assert p.class_of[EMPTY] == p.start
-    assert p.class_of[NOA] == p.start          # no-a letter merged with eps
+    assert p.class_of[NOA] != p.start          # no-a letter does NOT merge with eps
     assert p.class_of[A] != p.start
+    assert p.class_of[NOA] != p.class_of[A]     # ...and is distinct from has-a
 
     # fold coherence on the domain: psi(w) == class(w).
     for w in table.domain():

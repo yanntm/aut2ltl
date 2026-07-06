@@ -36,7 +36,7 @@ _SRC = os.path.join(
 CASES: List[Tuple[str, str, int]] = [
     ("GF(aa)", "gf_aa_parity.hoa", 6),
     ("Even", "even.hoa", 5),
-    ("EvenBlocks", "evenblocks.hoa", 7),
+    ("EvenBlocks", "evenblocks.hoa", 8),
 ]
 
 

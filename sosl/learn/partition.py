@@ -3,10 +3,10 @@
 Groups the table's words into classes by their column signature (`Table.bit_row`)
 and exposes the semigroup skeleton the learner reasons over:
 
-  - every word joins the class of words with its exact bit-row; the empty word
-    is classified like any other, so it merges with a letter congruent to it;
-  - ``start`` is the class containing the empty word — the identity and the
-    fold start;
+  - every non-empty word joins the class of words with its exact bit-row; the
+    empty word is a permanent singleton class — the fresh identity — that no
+    other word ever merges into (even one sharing its bit-row);
+  - ``start`` is that empty-word singleton — the identity and the fold start;
   - ``rep[c]`` is the shortlex-least *row* of class ``c`` (``None`` if the class
     holds only frontier words — an *unclosed* class);
   - ``step(c, a)`` is the class of ``rep[c].a`` (defined once closed);
@@ -32,8 +32,16 @@ class Partition:
         self.table = table
         self.members: List[List[Word]] = []
         self.class_of: Dict[Word, int] = {}
+        # eps is a permanent singleton class — the fresh identity of section 1.1.
+        # No non-empty word ever merges into it, even one sharing its bit-row:
+        # otherwise a loop could fold to [eps] and the representative lasso
+        # key(s).eps^omega it asks for does not exist.
+        self.members.append([EMPTY])
+        self.class_of[EMPTY] = 0
         groups: Dict[Tuple[bool, ...], int] = {}
         for w in table.domain():
+            if w == EMPTY:
+                continue
             br = table.bit_row(w)
             idx = groups.get(br)
             if idx is None:
@@ -42,7 +50,7 @@ class Partition:
                 self.members.append([])
             self.members[idx].append(w)
             self.class_of[w] = idx
-        self.start = self.class_of[EMPTY]
+        self.start = 0
         self.rep: List[Optional[Word]] = []
         for idx in range(len(self.members)):
             rows = [w for w in self.members[idx] if w in table.row_set]
