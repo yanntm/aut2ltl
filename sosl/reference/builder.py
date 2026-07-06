@@ -3,9 +3,11 @@
 Adapter over the in-repo definability pipeline (``tests/probes/dg_common`` over
 ``aut2ltl/bls/definability``), which computes the canonical syntactic
 omega-semigroup ``S(L)+1`` of a deterministic automaton's language. This reads
-that algebra's raw tables, maps its letters onto the sosl alphabet, and runs it
-through the shared `sosl.objects.canonical.canonicalize` normal form — so a
-reference invariant is byte-comparable with a learned one.
+that algebra's raw tables, maps its letters onto the sosl alphabet, adjoins the
+identity as a fresh element (see ``algorithm.md`` — the enriched monoid merges a
+neutral word into its identity, which this undoes), and runs the result through
+the shared `sosl.objects.canonical.canonicalize` normal form — so a reference
+invariant is byte-comparable with a learned one.
 
 Spot-backed and heavy: the teacher and the validator use it; the learner never
 does. The underlying builder is precariously placed under ``tests/`` and will
@@ -44,15 +46,57 @@ def reference_of_hoa(path: str) -> Invariant:
     # per-letter valuation (deterministic, same order as alg.letter_cls) and map
     # it onto the sosl mask, so the letter map is in our alphabet's terms.
     _gens, _masks, valuations = extract_generators(aut)
-    letter_class = [0] * alphabet.size
+    letter_alg = [0] * alphabet.size
     for li, val in enumerate(valuations):
         trues = [ap for ap, truth in val.items() if truth]
-        letter_class[alphabet.letter_of(trues)] = alg.letter_cls[li]
+        letter_alg[alphabet.letter_of(trues)] = alg.letter_cls[li]
 
-    mult = [list(row) for row in alg.mult]
-    accept = set(alg.accepting_pairs())
-    identity = alg.word_cls(())
-    return canonicalize(alphabet, identity, letter_class, mult, accept)
+    amult = [list(row) for row in alg.mult]
+
+    # Fresh-identity adjunction (see algorithm.md). The enriched monoid `alg`
+    # quotients over *elements*, so a non-empty word whose enriched element
+    # coincides with the empty word's (e.g. `!a` in one-state `GF a`) is merged
+    # into alg's identity — a presentation-dependent class count that breaks
+    # `.sos` byte-equality. Keep only the elements reachable as images of
+    # *non-empty* words (the subsemigroup the letters generate under `amult`)
+    # and adjoin a fresh identity `fresh` that no word class can collide with.
+    reachable = _generated_subsemigroup(letter_alg, amult)
+    old_ids = sorted(reachable)
+    remap = {c: i for i, c in enumerate(old_ids)}
+    fresh = len(old_ids)
+    n = fresh + 1
+
+    mult = [[0] * n for _ in range(n)]
+    for c in old_ids:
+        i = remap[c]
+        for d in old_ids:
+            mult[i][remap[d]] = remap[amult[c][d]]
+        mult[i][fresh] = i        # fresh is a two-sided unit on every class,
+        mult[fresh][i] = i        # yet stays a distinct class of its own
+    mult[fresh][fresh] = fresh
+
+    letter_class = [remap[c] for c in letter_alg]
+    accept = {
+        (remap[s], remap[e])
+        for (s, e) in alg.accepting_pairs()
+        if s in reachable and e in reachable
+    }
+    return canonicalize(alphabet, fresh, letter_class, mult, accept)
+
+
+def _generated_subsemigroup(generators: list[int], mult: list[list[int]]) -> set[int]:
+    """The set of algebra classes reachable as images of non-empty words: the
+    closure of ``generators`` (the letter classes) under the product ``mult``."""
+    reachable = set(generators)
+    work = list(reachable)
+    while work:
+        c = work.pop()
+        for d in list(reachable):
+            for p in (mult[c][d], mult[d][c]):
+                if p not in reachable:
+                    reachable.add(p)
+                    work.append(p)
+    return reachable
 
 
 def reference_of_ltl(formula: str, scratch_dir: str = _SCRATCH) -> Invariant:

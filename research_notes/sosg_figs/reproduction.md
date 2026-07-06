@@ -1,4 +1,4 @@
-# Reproduction guide — SOSG figures & tables
+# Reproduction guide — SoS figures & tables
 
 Every command is run from the repository root. Diagnostics are single-input and
 self-bound (≤ 15 s). The tools live in [`tests/sosg/`](../../tests/sosg) — see
@@ -52,29 +52,31 @@ autfilt -q --equivalent-to=<(ltl2tgba 'GF(!a) & FG( !a -> X{ {a[*2]}[*] ; !a }! 
 
 `build_sosg.py` reads one input (HOA file **or** LTL/PSL formula) and prints the
 Figure-1 line, the Table-1 fingerprint row, the full `EM(D)` dump with the
-surjection onto `S(L)₊`, the canonical algebra, and the `.sosg` invariant; with
-`--sosg PATH` it also writes the serialization.
+surjection onto `S(L)₊`, the canonical algebra, and the `.sos` invariant. The
+algebra and the serialization come from `sosl` (the sole SoS exporter, fixed to
+the fresh-identity convention); `--sos PATH` writes the serialization, and
+`--residuals` appends the right-congruence trailer (used for these figures).
 
 ```sh
 python3 -m tests.sosg.build_sosg research_notes/sosg_figs/sources/gf_aa_parity.hoa \
-        --sosg samples/fixtures/hoa/sosg/gf_aa.sosg
+        --sos samples/fixtures/hoa/sosg/gf_aa.sos --residuals
 python3 -m tests.sosg.build_sosg research_notes/sosg_figs/sources/gf_aa_reset.hoa \
-        --sosg samples/fixtures/hoa/sosg/gf_aa_reset.sosg
+        --sos samples/fixtures/hoa/sosg/gf_aa_reset.sos --residuals
 python3 -m tests.sosg.build_sosg research_notes/sosg_figs/sources/even.hoa \
-        --sosg samples/fixtures/hoa/sosg/even.sosg
+        --sos samples/fixtures/hoa/sosg/even.sos --residuals
 python3 -m tests.sosg.build_sosg research_notes/sosg_figs/sources/evenblocks.hoa \
-        --sosg samples/fixtures/hoa/sosg/evenblocks.sosg
+        --sos samples/fixtures/hoa/sosg/evenblocks.sos --residuals
 ```
 
 ## 3. Cross-checks (headline results)
 
 ```sh
 # Canonicity: the two GF(aa) presentations yield byte-identical invariants.
-diff samples/fixtures/hoa/sosg/gf_aa.sosg samples/fixtures/hoa/sosg/gf_aa_reset.sosg && echo IDENTICAL
+diff samples/fixtures/hoa/sosg/gf_aa.sos samples/fixtures/hoa/sosg/gf_aa_reset.sos && echo IDENTICAL
 
-# Presentation-independence: building from the FORMULA reproduces the same .sosg.
-python3 -m tests.sosg.build_sosg 'G F (a & X a)' --sosg tests/sosg/logs/gf_from_formula.sosg >/dev/null
-diff samples/fixtures/hoa/sosg/gf_aa.sosg tests/sosg/logs/gf_from_formula.sosg && echo IDENTICAL
+# Presentation-independence: building from the FORMULA reproduces the same .sos.
+python3 -m tests.sosg.build_sosg 'G F (a & X a)' --sos tests/sosg/logs/gf_from_formula.sos --residuals >/dev/null
+diff samples/fixtures/hoa/sosg/gf_aa.sos tests/sosg/logs/gf_from_formula.sos && echo IDENTICAL
 
 # GF(aa) is LTL: the synthesized formula is verified Spot-equivalent.
 python3 -m tests.probes.dg_probe research_notes/sosg_figs/sources/gf_aa_parity.hoa   # VERIFY: equivalent
@@ -91,6 +93,7 @@ aspect preserved).
 
 ```sh
 python3 -m tests.sosg.render_svg research_notes/sosg_figs/sources/gf_aa_parity.hoa research_notes/sosg_figs/img/gf_aa.png
+python3 -m tests.sosg.render_svg research_notes/sosg_figs/sources/gf_aa_reset.hoa  research_notes/sosg_figs/img/gf_aa_reset.png
 python3 -m tests.sosg.render_svg research_notes/sosg_figs/sources/even.hoa        research_notes/sosg_figs/img/even.png
 python3 -m tests.sosg.render_svg research_notes/sosg_figs/sources/evenblocks.hoa  research_notes/sosg_figs/img/evenblocks.png
 ```
@@ -114,4 +117,4 @@ python3 -m tests.sosg.assemble research_notes/sosg_figs/sources/evenblocks.md \
 
 The run-parity `gf_aa.md` is the presentation the paper uses (Figure 1a,
 Tables 1–2); `gf_aa_reset.md` is the second, aperiodic presentation whose
-`.sosg` is byte-identical — the canonicity check made visible.
+`.sos` is byte-identical — the canonicity check made visible.

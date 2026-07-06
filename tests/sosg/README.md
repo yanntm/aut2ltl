@@ -12,7 +12,7 @@ for the import discipline); each is single-input and self-bound.
 
 | script | reads | produces |
 |---|---|---|
-| `build_sosg.py` | one HOA file **or** LTL/PSL formula | plain-text dump of *every* table part for that one language — the Figure-1 line, the Table-1 fingerprint row, the `EM(D)` elements with `(st, mk)` vectors and their surjection onto `S(L)₊`, the canonical algebra `S(L)₊¹`, and (with `--sosg PATH`) the `.sosg` invariant in the v1 serialization of [`research_notes/sosg_format.md`](../../research_notes/sosg_format.md). Also exports the reusable compute helpers the other scripts import. |
+| `build_sosg.py` | one HOA file **or** LTL/PSL formula | plain-text dump of *every* table part for that one language — the Figure-1 line, the Table-1 fingerprint row, the `EM(D)` elements with `(st, mk)` vectors and their surjection onto `S(L)₊¹` (the identity element hosts two classes), the canonical algebra `S(L)₊¹`, and (with `--sos PATH`) the `.sos` invariant, with `--residuals` for its right-congruence trailer. The algebra and serialization come from `sosl` (the sole SoS exporter); this script adds the `EM(D)` dump and fingerprint columns and exports the compute helpers the other scripts import. |
 | `assemble.py` | one or more `label=input` specs | a single renderable **Markdown** algebra report (a leading fingerprint table + one section per input). Reuses `build_sosg.py`; the generic "what algebra does this automaton hold" diagnosis tool, and the raw material `figures.md` is curated from. |
 | `render_svg.py` | one HOA file **or** formula | the automaton drawn as Spot draws it: `.svg` (Spot's own `_repr_svg_`) or `.png` (rasterized by `rsvg-convert` to a fixed, page-safe width, aspect preserved). |
 
@@ -24,7 +24,7 @@ quotient → frozen canonical algebra `Alg`).
 
 - **Fixtures** consumed/produced: `samples/fixtures/hoa/sosg/` — the four HOA
   automata (`gf_aa_parity`, `gf_aa_reset`, `even`, `evenblocks`) and their
-  committed `.sosg` invariants.
+  committed `.sos` invariants.
 - **Deliverable** these feed: `research_notes/sosg_figs/` — `figures.md` (curated,
   with PNGs under `img/`) and `reproduction.md` (the exact command sequence).
 - **`logs/`** — scratch output (gitignored): the generic `assemble.py` report,

@@ -15,11 +15,12 @@ unambiguous over a multi-AP alphabet (``a&!b``, not ``{a}``).
 """
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from sosl.objects.alphabet import EMPTY, Alphabet, Letter, Word
 from sosl.objects.cayley import Hypothesis
 from sosl.objects.invariant import Invariant
+from sosl.objects.residuals import Residuals
 
 SOS_MAGIC = "SOS v1"
 CAYLEY_MAGIC = "CAYLEY v1"
@@ -86,8 +87,13 @@ def _read_keys(ab: Alphabet, lines: List[str], i: int, n: int) -> Tuple[List[Wor
 
 # --- invariant (.sos) ------------------------------------------------------
 
-def dump_invariant(inv: Invariant) -> str:
-    """The canonical `.sos` text for ``inv`` (trailing newline included)."""
+def dump_invariant(inv: Invariant, residuals: Optional[Residuals] = None) -> str:
+    """The canonical `.sos` text for ``inv`` (trailing newline included).
+
+    With ``residuals`` given, append the optional residual-automaton trailer
+    (a diagnostic; not part of the language identity — two `.sos` texts that
+    differ only in their trailer denote the same language). The trailer is
+    ignored on parse."""
     ab = inv.alphabet
     out: List[str] = [SOS_MAGIC, "ap: " + " ".join(ab.aps), f"classes: {inv.n}"]
     for c in range(inv.n):
@@ -103,7 +109,21 @@ def dump_invariant(inv: Invariant) -> str:
     out.append("accept:")
     for s, e in sorted(inv.accept):
         out.append(f"{s} {e}")
+    if residuals is not None:
+        out += _residual_lines(ab, residuals)
     return "\n".join(out) + "\n"
+
+
+def _residual_lines(ab: Alphabet, res: Residuals) -> List[str]:
+    """The residual-automaton trailer: ``residuals:`` count, one keyed class per
+    line, then a ``res-step:`` derivative table (columns in alphabet order)."""
+    lines: List[str] = [f"residuals: {res.n}"]
+    for r in range(res.n):
+        lines.append(f"{r} {render_word(ab, res.keys[r])}")
+    lines.append("res-step:")
+    for r in range(res.n):
+        lines.append(f"{r}: " + " ".join(str(v) for v in res.delta[r]))
+    return lines
 
 
 def load_invariant(text: str) -> Invariant:
@@ -131,8 +151,10 @@ def load_invariant(text: str) -> Invariant:
     i += 1
     accept = set()
     while i < len(lines):
-        s, e = lines[i].split()
-        accept.add((int(s), int(e)))
+        parts = lines[i].split()
+        if len(parts) != 2 or not all(p.lstrip("-").isdigit() for p in parts):
+            break  # end of the accept block (e.g. an optional residuals trailer)
+        accept.add((int(parts[0]), int(parts[1])))
         i += 1
 
     return Invariant(

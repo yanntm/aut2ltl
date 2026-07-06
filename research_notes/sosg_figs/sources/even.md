@@ -39,7 +39,7 @@ State: 3
 
 ### Enriched monoid `EM(D)` → `S(L)₊`
 
-`|EM¹| = 7` elements folding onto `|S(L)₊¹| = 5` classes. `rmul` is right-multiplication by each letter (`!a`, `a`), as `EM` element ids.
+`|EM¹| = 7` elements folding onto `|S(L)₊¹| = 5` classes. `rmul` is right-multiplication by each letter (`!a`, `a`), as `EM` element ids. The identity element hosts two classes (`[eps]` and any neutral non-empty class).
 
 | id | word | st | mk | rmul | → class |
 |---|---|---|---|---|---|
@@ -76,39 +76,37 @@ State: 3
 
 *Accepting linked pairs* (3 of 13): `([!a],[!a])`, `([!a],[a;!a])`, `([!a],[a;a])`.
 
-### Invariant `𝓘(L)` — `.sosg` serialization
+### Invariant `𝓘(L)` — `.sos` serialization
 
 ```
-SOSG v1
+SOS v1
 ap: a
 classes: 5
-0  eps
-1  !a
-2  a
-3  a;!a
-4  a;a
-letters: !a->1  a->2
+0 eps
+1 !a
+2 a
+3 a;!a
+4 a;a
+letters: !a->1 a->2
 mult:
-     0 1 2 3 4
-  0  0 1 2 3 4
-  1  1 1 1 1 1
-  2  2 3 4 1 2
-  3  3 3 3 3 3
-  4  4 1 2 3 4
+0: 0 1 2 3 4
+1: 1 1 1 1 1
+2: 2 3 4 1 2
+3: 3 3 3 3 3
+4: 4 1 2 3 4
 accept:
-  1 1
-  1 3
-  1 4
+1 1
+1 3
+1 4
 residuals: 4
-0  eps
-1  !a
-2  a
-3  a;!a
-res-mult:
-     !a a
-  0  1 2
-  1  1 1
-  2  3 0
-  3  3 3
+0 eps
+1 !a
+2 a
+3 a;!a
+res-step:
+0: 1 2
+1: 1 1
+2: 3 0
+3: 3 3
 ```
 

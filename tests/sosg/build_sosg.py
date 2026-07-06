@@ -12,16 +12,25 @@ the canonical deterministic form and run through the definability pipeline
                             refuting certificate's shape/serialization;
   * the Table-2 block     — every EM element as its (st, mk) vector, the
                             right-multiplication-by-letter table, and the
-                            surjection each element -> its S(L)+ class;
+                            surjection each element -> its S(L)+1 class(es) (the
+                            identity element hosts two under the fresh-identity
+                            convention: [eps] and any neutral non-empty class);
   * the Table-3 block     — the canonical algebra S(L)+1 (keyed classes,
                             letter map, class multiplication table, accepting
                             linked pairs);
-  * the .sosg export      — an HOA-like ASCII serialization of the invariant
-                            I(L) = (keyed classes, letter map, mult table,
-                            accepting-pair set), written to `--sosg PATH`.
+  * the .sos export       — the canonical serialization of the invariant
+                            I(L), produced by the sole SoS exporter
+                            (`sosl.objects.dump_invariant`), written to
+                            `--sos PATH`; with `--residuals` the export carries
+                            the optional right-congruence trailer (on for
+                            figures, off elsewhere).
+
+The algebra (Tables 2-3, the export) is sourced from `sosl.reference`, the
+fixed fresh-identity builder; the EM(D) element dump and the fingerprint's
+`|Q|`/`|EM1|`/group columns come from the definability pipeline.
 
 Usage (module run from repo root):
-  python3 -m tests.sosg.build_sosg <file.hoa | 'LTL/PSL formula'> [--sosg OUT]
+  python3 -m tests.sosg.build_sosg <file.hoa | 'LTL/PSL formula'> [--sos OUT] [--residuals]
 
 Single input, self-bound; a closure that blows the cap is reported and exits 2.
 No verdict logic of its own beyond what the pipeline returns.
@@ -31,7 +40,7 @@ from __future__ import annotations
 import os
 import sys
 import time
-from collections import deque
+from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 
 import spot
@@ -44,6 +53,11 @@ from aut2ltl.bls.definability.oracle.quotient import find_group
 from aut2ltl.bls.definability.oracle.refine import chase
 from aut2ltl.bls.definability.oracle.family import assemble
 from aut2ltl.bls.definability.dg.synth import DgDecline, synthesize
+
+from sosl.objects import Invariant, dump_invariant
+from sosl.objects.alphabet import Alphabet, Letter
+from sosl.objects.serialize import render_letter, render_word
+from sosl.reference import reference_of_hoa, residuals_of_hoa
 
 
 StateMap = Tuple[int, ...]
@@ -120,10 +134,31 @@ def certificate_or_formula(data: DgData) -> str:
     return f"NOT LTL — {shape}, {w.serialize()}"
 
 
-def elem_class(data: DgData, ei: int) -> int:
-    """The canonical S(L)+ class of EM element `ei`: fold its representative
-    word through the frozen algebra's tables."""
-    return data.alg.word_cls(data.mon.rep[ei])
+def li_of_masks(data: DgData, alphabet: Alphabet) -> List[int]:
+    """Map each sosl letter mask to the pipeline's own letter index `li` (the
+    valuations of `extract_generators` are in `li` order)."""
+    _gens, _masks, valuations = extract_generators(data.aut)
+    out: List[int] = [0] * alphabet.size
+    for li, val in enumerate(valuations):
+        trues = [ap for ap, truth in val.items() if truth]
+        out[alphabet.letter_of(trues)] = li
+    return out
+
+
+def em_surjection(data: DgData, inv: Invariant,
+                  li_of_mask: List[int]) -> Dict[int, List[int]]:
+    """Each EM(D) element id -> the final S(L)+1 classes it hosts. A singleton
+    for every element except the identity, which — under the fresh-identity
+    convention — hosts both `[eps]` and any neutral non-empty class whose
+    enriched element coincides with it (e.g. `[eps]` and `[a;a]` in EvenBlocks).
+    Built by grouping the final classes by the *old* algebra class of their key
+    word, a one-to-many relation exactly at the identity element."""
+    finals_of_old: Dict[int, List[int]] = defaultdict(list)
+    for c in range(inv.n):
+        lis = tuple(li_of_mask[m] for m in inv.keys[c])
+        finals_of_old[data.alg.word_cls(lis)].append(c)
+    return {ei: finals_of_old.get(data.alg.word_cls(data.mon.rep[ei]), [])
+            for ei in range(len(data.mon))}
 
 
 def print_figure1(data: DgData) -> None:
@@ -132,20 +167,21 @@ def print_figure1(data: DgData) -> None:
           f"init = {data.init}   acc = {data.aut.get_acceptance()}")
 
 
-def print_table1(data: DgData) -> None:
+def print_table1(data: DgData, inv: Invariant) -> None:
     print("\n# Table 1 — fingerprint row")
     print(f"  |Q|             = {data.aut.num_states()}")
     print(f"  |EM1|           = {len(data.mon)}")
-    print(f"  |S(L)+1|        = {len(data.alg)}")
+    print(f"  |S(L)+1|        = {inv.n}")
     print(f"  group in TM?    = {transition_monoid_has_group(data)}")
     print(f"  group in S(L)+? = {data.group is not None}")
     print(f"  LTL?            = {data.group is None}")
     print(f"  evidence        = {certificate_or_formula(data)}")
 
 
-def print_table2(data: DgData) -> None:
+def print_table2(data: DgData, inv: Invariant, surj: Dict[int, List[int]]) -> None:
     mon = data.mon
     n = data.aut.num_states()
+    ab = inv.alphabet
     print("\n# Table 2 — EM(D): (st, mk) vectors, right-mult, surjection")
     print(f"  {'id':>3}  {'word':<10} {'st-vector':<{3*n+2}} "
           f"{'mk-vector':<{4*n+2}} -> class")
@@ -155,9 +191,9 @@ def print_table2(data: DgData) -> None:
         mk = "[" + " ".join(
             "{" + ",".join(map(str, sorted(m))) + "}" if m else "{}"
             for (_d, m) in mon.elems[ei]) + "]"
-        cid = elem_class(data, ei)
-        print(f"  {ei:>3}  {word:<10} {st:<{3*n+2}} {mk:<{4*n+2}} -> "
-              f"{cid} [{data.alg.key(cid)}]")
+        hosted = " / ".join(
+            f"{c} {render_word(ab, inv.keys[c])}" for c in surj[ei])
+        print(f"  {ei:>3}  {word:<10} {st:<{3*n+2}} {mk:<{4*n+2}} -> {hosted}")
     # right multiplication by each letter, on EM element ids.
     print("  right-mult by letter (rows = element id):")
     print("       " + "   ".join(data.names))
@@ -166,96 +202,28 @@ def print_table2(data: DgData) -> None:
         print(f"    {ei:>3}: {row}")
 
 
-def print_table3(data: DgData) -> None:
-    alg = data.alg
-    k = len(alg)
+def print_table3(inv: Invariant) -> None:
+    ab = inv.alphabet
+    k = inv.n
     print("\n# Table 3 — S(L)+1: canonical algebra")
     print("  classes (id: key [idem]):")
     for i in range(k):
-        tag = "  idempotent" if alg.idem[i] else ""
-        print(f"    {i}: {alg.key(i)}{tag}")
+        tag = "  idempotent" if inv.mult[i][i] == i else ""
+        print(f"    {i}: {render_word(ab, inv.keys[i])}{tag}")
     print("  letters: " + "  ".join(
-        f"{data.names[li]}->{alg.letter_cls[li]}"
-        for li in range(len(data.names))))
+        f"{render_letter(ab, Letter(a))}->{inv.letter_class[a]}"
+        for a in range(ab.size)))
     print("  mult (row i . col j):")
     print("      " + " ".join(f"{j}" for j in range(k)))
     for i in range(k):
-        print(f"    {i} " + " ".join(f"{alg.mult[i][j]}" for j in range(k)))
-    lp = alg.linked_pairs()
-    ap = alg.accepting_pairs()
+        print(f"    {i} " + " ".join(f"{inv.mult[i][j]}" for j in range(k)))
+    lp = sorted(inv.linked_pairs())
+    ap = sorted(inv.accept)
     print(f"  linked pairs ({len(lp)}): "
           + " ".join(f"({s},{e})" for (s, e) in lp))
-    print(f"  accepting pairs ({len(ap)}): "
-          + " ".join(f"([{alg.key(s)}],[{alg.key(e)}])" for (s, e) in ap))
-
-
-def residual_lines(data: DgData) -> List[str]:
-    """The optional `residuals` section: the minimal DFA of the right
-    congruence `u ∼ v ⟺ u⁻¹L = v⁻¹L`, canonically keyed. Residual classes are
-    numbered by shortlex-least reaching word (id 0 = `ε`, the residual `L`),
-    with a derivative table `residual × Σ → residual`."""
-    mon = data.mon
-    names = data.names
-    n_letters = len(names)
-    st_cls = state_classes(data.aut)          # state -> residual partition id
-
-    def delta(state: int, li: int) -> int:
-        # element 0 of the closed monoid is the identity, so its right-mult by
-        # letter `li` is the letter element; its st-part is δ(·, letter).
-        return mon.elems[mon.right[0][li]][state][0]
-
-    canon: Dict[int, int] = {}                 # partition id -> canonical id
-    key: Dict[int, Tuple[int, ...]] = {}       # canonical id -> reaching word
-    rep_state: Dict[int, int] = {}             # canonical id -> a witness state
-    r0 = st_cls[data.init]
-    canon[r0], key[0], rep_state[0] = 0, (), data.init
-    queue: deque = deque([0])
-    nxt = 1
-    while queue:                               # BFS ⇒ shortlex-least keys
-        cid = queue.popleft()
-        for li in range(n_letters):
-            dst = delta(rep_state[cid], li)
-            rp = st_cls[dst]
-            if rp not in canon:
-                canon[rp], key[nxt], rep_state[nxt] = nxt, key[cid] + (li,), dst
-                queue.append(nxt)
-                nxt += 1
-    lines = [f"residuals: {nxt}"]
-    for r in range(nxt):
-        lines.append(f"{r}  " + (";".join(names[li] for li in key[r]) or "eps"))
-    lines.append("res-mult:")
-    lines.append("     " + " ".join(names))
-    for r in range(nxt):
-        row = " ".join(str(canon[st_cls[delta(rep_state[r], li)]])
-                       for li in range(n_letters))
-        lines.append(f"  {r}  {row}")
-    return lines
-
-
-def sosg_text(data: DgData) -> str:
-    """The `.sosg` export: the canonical serialization of `𝓘(L)` per
-    `research_notes/sosg_format.md` — core sections (the complete language
-    invariant) followed by the optional `residuals` derivative automaton."""
-    alg = data.alg
-    k = len(alg)
-    names = data.names
-    out: List[str] = []
-    out.append("SOSG v1")
-    out.append("ap: " + " ".join(str(p) for p in data.aut.ap()))
-    out.append(f"classes: {k}")
-    for i in range(k):
-        out.append(f"{i}  {alg.key(i)}")
-    out.append("letters: " + "  ".join(
-        f"{names[li]}->{alg.letter_cls[li]}" for li in range(len(names))))
-    out.append("mult:")
-    out.append("     " + " ".join(f"{j}" for j in range(k)))
-    for i in range(k):
-        out.append(f"  {i}  " + " ".join(f"{alg.mult[i][j]}" for j in range(k)))
-    out.append("accept:")
-    for (s, e) in alg.accepting_pairs():
-        out.append(f"  {s} {e}")
-    out += residual_lines(data)
-    return "\n".join(out) + "\n"
+    print(f"  accepting pairs ({len(ap)}): " + " ".join(
+        f"([{render_word(ab, inv.keys[s])}],[{render_word(ab, inv.keys[e])}])"
+        for (s, e) in ap))
 
 
 def main(argv: List[str]) -> int:
@@ -263,9 +231,10 @@ def main(argv: List[str]) -> int:
         print(__doc__)
         return 1
     inp = argv[1]
-    sosg_out: Optional[str] = None
-    if "--sosg" in argv:
-        sosg_out = argv[argv.index("--sosg") + 1]
+    sos_out: Optional[str] = None
+    if "--sos" in argv:
+        sos_out = argv[argv.index("--sos") + 1]
+    with_residuals = "--residuals" in argv
 
     scratch = os.path.join(os.path.dirname(__file__), "logs")
     path = to_hoa_path(inp, scratch)
@@ -273,19 +242,22 @@ def main(argv: List[str]) -> int:
     if data is None:
         print("closure : blew the cap")
         return 2
+    inv = reference_of_hoa(path)
+    surj = em_surjection(data, inv, li_of_masks(data, inv.alphabet))
 
     print(f"## input: {inp}")
     print_figure1(data)
-    print_table1(data)
-    print_table2(data)
-    print_table3(data)
-    print("\n# .sosg export")
-    text = sosg_text(data)
+    print_table1(data, inv)
+    print_table2(data, inv, surj)
+    print_table3(inv)
+    print("\n# .sos export")
+    res = residuals_of_hoa(path) if with_residuals else None
+    text = dump_invariant(inv, residuals=res)
     print(text, end="")
-    if sosg_out is not None:
-        with open(sosg_out, "w") as fh:
+    if sos_out is not None:
+        with open(sos_out, "w") as fh:
             fh.write(text)
-        print(f"(written to {sosg_out})")
+        print(f"(written to {sos_out})")
     return 0
 
 
