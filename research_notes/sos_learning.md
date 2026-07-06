@@ -1032,7 +1032,8 @@ All queried words have length polynomial in `N`, `ℓ`, and the column
 lengths — themselves harvested substrings of counterexamples, or `O(N)`-long
 segments contributed by saturation. Output-polynomial in the canonical
 target `N` is the honest yardstick — `N` can be exponentially larger than a
-smallest acceptor, and §6 measures exactly that.
+smallest acceptor (Proposition 5.3 makes both directions of the size
+comparison exact), and §6 measures exactly that.
 
 The converse of the yardstick is the sale: on languages with trivial or
 near-trivial right congruence — `EvenBlocks`, `FG(a ∨ Xa)` [AF21], and
@@ -1041,10 +1042,57 @@ degenerates while nothing here does, because nothing here is seeded by the right
 congruence: the ω-columns query the loop structure directly. The historical arc
 makes the point structural: [MP95] is exactly the fragment where the right
 congruence is the whole story, and every extension since has been a workaround
-for its failure — this one replaces the seed rather than patching it. ⟨TBD: can
-we exhibit a family where some FDFA flavor is exponentially larger than `𝓘`? If
-yes, the comparison cuts both ways and the section gets a theorem; if not, keep
-it empirical.⟩ The unsaturated stall of §4.2, for its part, is no longer a
+for its failure — this one replaces the seed rather than patching it.
+
+The size relationship between the two kinds of target can be settled exactly
+rather than empirically, and it cuts one way:
+
+**Proposition 5.3 (sizes cut one way).** Write `N = |S(L)₊¹|`. (a) Every
+canonical FDFA of `L` — periodic, syntactic, or recurrent [AF16] — has at
+most `N + N²` states. (b) The converse fails exponentially: for every `n`
+there is a co-safety `L_n` over a fixed five-letter alphabet with a
+deterministic acceptor of `n + 2` states, a recurrent FDFA of size `O(n)`
+and a syntactic FDFA of size `O(n²)`, but `N ≥ (n+1)^n`.
+
+*Proof.* (a) `≈_L` refines every congruence an FDFA is built from. Leading:
+`u ≈_L v` gives agreement under every continuation `y·t^ω` (the linear shape
+at `x = ε`), and residual languages are ω-regular, hence determined by their
+lassos [PP04] — so `u ~_L v`, and the leading automaton has at most `N`
+states. Progress, at a leading class `[u]`: if `v ≈_L v'` then `vw ≈_L v'w`
+for every `w`, and the ω-power shape at `x = u`, `y = ε` gives
+`u·(vw)^ω ∈ L ⟺ u·(v'w)^ω ∈ L` — exactly the periodic progress congruence;
+the syntactic and recurrent congruences add only clauses of the forms
+`uv ~_L uv'` and `uvw ~_L u`, which `≈_L`-equal words satisfy equally. So
+each progress automaton has at most `N` states, and there is one per leading
+state. (b) Take four letters acting on `{1, …, n}` and generating the monoid
+`PT_n` of all partial transformations (two generate the permutations, one
+lowers rank, one restricts the domain; undefined images go to a rejecting
+sink `⊥`), plus a letter `c` sending state `1` to an accepting sink `⊤` and
+every other state to `⊥`; let `L_n` be "the run reaches `⊤`". Distinct
+partial maps `f ≠ g` are `≈_{L_n}`-inequivalent: pick `q` with
+`f(q) ≠ g(q)`, reach `q` from `1` by a permutation word `x` (action letters
+never touch `⊤`, so nothing commits en route), and append a permutation `π`
+carrying `f(q)` to `1`, then `c`: the linear context `x·_·π·c·(c)^ω` accepts
+through `f` and rejects through `g`. Hence `N ≥ |PT_n| = (n+1)^n`. For the
+FDFAs, the leading congruence has `n + 2` classes (the current state, or
+committed, or doomed), and for a co-safety language the progress clauses
+*collapse*: if `u` is uncommitted and `uvw ~_L u`, the loop returned to
+`u`'s state without ever committing, so `u·(vw)^ω ∉ L` — the ω-clause is
+constantly false. The recurrent conjunction is therefore constant on every
+leading class (false on uncommitted and doomed, true on committed), giving
+`O(1)` progress states each; the syntactic congruence reduces to its
+`uv ~_L uv'` clause, giving at most `n + 2` each. ∎
+
+Read as economics, Proposition 5.3 closes the size question the honest way:
+an FDFA never pays more than a quadratic premium over the algebra, while the
+algebra can cost exponentially more than any acceptor — on `L_n`, an FDFA
+learner spends queries polynomial in `n` where ours spends queries
+polynomial in `(n+1)^n`. That is not an inefficiency to engineer away; it is
+the price of the deliverable. The algebra `L_n` owns *is* that large, every
+definability read-off consumes it, and any route to it — learned here,
+constructed in [SωS26] — pays `N`. Output-polynomial in `N`
+(Proposition 5.2) is the strongest guarantee compatible with delivering the
+object. The unsaturated stall of §4.2, for its part, is no longer a
 conjecture: Proposition 4.4's `a → Xa` is the smallest exhibit an exhaustive
 census of one-atom automata can produce — found exactly as §6's protocol
 prescribes, by running the ablated learner over the census and treating its
