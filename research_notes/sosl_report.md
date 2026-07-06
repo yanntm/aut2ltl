@@ -379,3 +379,35 @@ The published triptych was in fact *internally inconsistent* all along:
 two different answers: the presentation-dependence of section 1.1, caught
 red-handed. It is also a live demonstration of why the convention had to be
 made normative.
+
+## M2 re-baseline (2026-07-06, post-M2.5) — append-only
+
+The M2.5 alignment landed: reference builder on the fresh-identity convention
+(spec §1.1, commit `56ed4586`) and the learner eps-merge reverted to the §3.2
+singleton rule (commit `b27d831e`). Measured M2 outcomes (`tests.sosl.paper_examples`
+and `reference_vs_learner`), still **no saturation**:
+
+| language | reference | learned | acceptor | vs reference | learner stats |
+|---|---|---|---|---|---|
+| GF a       | 3 | 3 | correct | **byte-equal** | member 6,  equiv 1, cex 0 |
+| GF(aa)     | 6 | 6 | correct | **byte-equal** | member 63, equiv 4, cex 3 |
+| Even       | 5 | 5 | correct | **byte-equal** | member 40, equiv 3, cex 2 |
+| EvenBlocks | 8 | 8 | correct | **byte-equal** | member 80, equiv 4, cex 3 |
+
+Headline: **all four are byte-equal at M2, without saturation.** Every stall
+turned out transient — the equivalence queries broke each one and the stem
+chains split the coarse classes back to canonical. This meets the optimistic
+end of the predictions above (§"What to expect after M2.5"): `Even` and
+`GF a` as predicted byte-equal; `GF(aa)` landed byte-equal rather than the
+hedged "coarser transient stall"; `EvenBlocks` byte-equal (8) via the one
+extra split (the class of `aa`), exactly as the correction section foretold.
+
+Convention checks, all confirmed: `[eps] = {eps}` in every stall dump (the
+fresh identity is a permanent singleton, no non-empty word merges in);
+`EvenBlocks` is 8 on both legs; `GF a` is 3 on both legs (the old `GF a → 2`
+eps-merge bug is gone).
+
+Nothing here needs M3 to be correct at M2 — but it does mean the M3 saturation
+work starts from an already-canonical M2 baseline on the triptych, so M3's job
+narrows to the languages whose stalls are *not* transient (the `F(a ∧ Xa)`
+permanence specimen, spec §8).
