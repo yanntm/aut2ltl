@@ -2,6 +2,7 @@
 then export the canonical invariant.
 
     fill; close; consist   -- to a closed, consistent fixpoint
+    saturate               -- the two-sided-congruence sweep (restart on a split)
     equiv                  -- ask the teacher
       Equivalent    -> export and stop
       Counterexample -> process (chains) and restart
@@ -10,8 +11,10 @@ Consistency is fixed by *minting* the migrated column: a separating column of
 the successors ``p.a`` / ``q.a`` moves the letter ``a`` into the column's prefix
 (``(x, a.y, t)`` linear, ``(x, a.y)`` omega), which splits the offending class.
 
-Saturation (the two-sided-congruence phase) is not part of this loop yet; this
-is the acceptance-correct M2 learner.
+Saturation (`sosl.learn.saturate`) turns the right congruence into the syntactic
+two-sided one; it is skipped under ``saturation=False`` (the M2 ablation), which
+still converges but only to an acceptance-correct — not necessarily canonical —
+fixpoint.
 """
 from __future__ import annotations
 
@@ -22,6 +25,7 @@ from sosl.learn.chains import process_counterexample
 from sosl.learn.columns import LinCol, OmCol
 from sosl.learn.export import export
 from sosl.learn.partition import Partition
+from sosl.learn.saturate import saturate
 from sosl.learn.table import Table
 from sosl.sos.alphabet import Alphabet
 from sosl.sos.hypothesis import Hypothesis
@@ -77,17 +81,32 @@ def _stabilize(table: Table) -> Partition:
 
 
 def learn(
-    teacher: Teacher, alphabet: Alphabet, stats: Optional[Dict[str, int]] = None
+    teacher: Teacher, alphabet: Alphabet, stats: Optional[Dict[str, int]] = None,
+    saturation: bool = True,
 ) -> Invariant:
     """Learn the canonical invariant of the teacher's language over ``alphabet``.
 
+    With ``saturation`` (the default), the two-sided-congruence sweep runs to a
+    fixpoint before every equivalence query, so the exported invariant is sound;
+    with it off (the M2 ablation, experiment E2) the learner still converges to an
+    acceptance-correct fixpoint but not necessarily the canonical one.
+
     If ``stats`` is given it is populated with basic run counters (learned class
-    count, membership queries, equivalence queries, counterexamples)."""
+    count, membership queries, equivalence queries, counterexamples, saturation
+    escalations)."""
     table = Table(alphabet, teacher.member)
     n_equiv = 0
     n_cex = 0
+    n_sat = 0
     while True:
         p = _stabilize(table)
+        if saturation and saturate(table, p):
+            n_sat += 1
+            assert n_sat <= 1000, "saturation not converging (non-splitting mint?)"
+            if TRACE_ON:
+                trace("LEARN", f"saturation escalation {n_sat}: "
+                      f"cols={len(table.columns)} classes(pre-split)={p.n}")
+            continue
         n_equiv += 1
         if TRACE_ON:
             trace("LEARN", f"round {n_equiv}: classes={p.n} "
@@ -103,6 +122,7 @@ def learn(
                     n_member=table.n_member,
                     n_equiv=n_equiv,
                     n_cex=n_cex,
+                    n_saturation=n_sat,
                 )
             return inv
         assert isinstance(result, Counterexample)

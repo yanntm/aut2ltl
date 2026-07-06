@@ -113,15 +113,22 @@ For every table word `p` whose class representative `r0 = rep(class(p))` is not
 `p` itself, and every class `d`, compare `fold(d, p)` against `fold(d, r0)` — no
 queries, pure table folding. On a mismatch `c_a ≠ c_b`:
 
-- let `κ` be a column separating `rep(c_a)` from `rep(c_b)` (one must exist);
-  with `r = rep(d)`, query the two bits of `r·p` and `r·r0` under `κ`'s context;
-- **if the bits differ** — mint the column with `r` absorbed into the prefix
-  (`(x·r, y, t)` or `(x·r, y)`); this splits `class(p)`;
+- let `κ` be a column separating `rep(c_a)` from `rep(c_b)` (one must exist; if
+  several do, the FIRST in creation order); with `r = rep(d)`, query the two bits
+  of `r·p` and `r·r0` under `κ`'s context;
+- **if the bits differ** — mint the column that reproduces "`r·w` under `κ`" as a
+  bit on the bare candidate `w`, which splits `class(p)`. For a **linear** `κ` the
+  candidate sits in the finite prefix, so `r` prepends there: `(x·r, y, t)`. For
+  an **omega** `κ` the candidate rides in the period; peeling one `r` off the
+  block, `x·(r·w·y)^ω = x·r·(w·y·r)^ω`, so `r` seeds BOTH the prefix and the
+  period suffix: `(x·r, y·r)`. (`(x·r, y)` keeps the period `w·y` and fails to
+  split on a prefix-independent language such as `GF(aa)`.)
 - **if the bits agree** — one of the two words disagrees with the representative
-  of its own fold class under `κ`; run the **frozen-prefix chain** (the stem
-  chain with a fixed extra prefix `x0` riding inside the queried context, the
-  flip column minted as `(x0·key(...), …)`) on that word; this splits some
-  class.
+  of its own fold class under `κ`; run the **frozen-prefix chain** (the stem chain
+  with `κ`'s own prefix `x0` frozen inside the queried context) on that word; this
+  splits some class. The minted flip column keeps the prefix `x0` ALONE — the
+  unconsumed segment migrates into the middle component, `(x0, seg·y0, t0)` /
+  `(x0, seg·y0)` — never into the prefix (spec §3.2 step 5, paper Lemma 4.5).
 
 Either branch produces exactly one split; the main loop restarts. Saturation
 reaching a fixpoint with no mismatch is the certificate that the table is a full

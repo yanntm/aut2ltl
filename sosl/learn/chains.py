@@ -56,8 +56,9 @@ def _find_flip(bit: Callable[[int], bool], lo: int, hi: int) -> int:
     return lo
 
 
-def process_counterexample(table: Table, p: Partition, lasso: Lasso) -> None:
-    """Add the one column the counterexample ``lasso`` demands (see module doc)."""
+def process_counterexample(table: Table, p: Partition, lasso: Lasso) -> str:
+    """Add the one column the counterexample ``lasso`` demands (see module doc),
+    and return which chain minted it (``"stem"`` or ``"loop"``)."""
     member = table.query_lasso
 
     def repfold(x: Word) -> Word:
@@ -86,6 +87,7 @@ def process_counterexample(table: Table, p: Partition, lasso: Lasso) -> None:
         if TRACE_ON:
             trace("CHAIN", f"stem flip i={i} -> LinCol(eps, y={wp[i + 1:]}, t=|{len(zp)}|)")
         table.add_column(LinCol(EMPTY, wp[i + 1:], zp))
+        return "stem"
     else:
         length = len(zp)
         sw = repfold(wp)
@@ -100,3 +102,4 @@ def process_counterexample(table: Table, p: Partition, lasso: Lasso) -> None:
         if TRACE_ON:
             trace("CHAIN", f"loop flip i={i} -> OmCol(x=|{len(sw)}|, y={zp[i + 1:]})")
         table.add_column(OmCol(sw, zp[i + 1:]))
+        return "loop"
