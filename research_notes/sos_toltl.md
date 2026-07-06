@@ -286,6 +286,28 @@ linear   (x, y, t) ∈ 𝒞¹ × 𝒞¹ × (𝒞 \ {[ε]}) :   phase h  ↦  Val
 ω-power  (x, y)    ∈ 𝒞¹ × 𝒞¹               :   phase h  ↦  Val(x, h·y)
 ```
 
+These class contexts are complete for separation — the totality engine of
+the scan below:
+
+**Lemma 4.3 (separation descends to classes).** For any two distinct
+classes `c ≠ d` in `𝒞 \ {[ε]}` some class context of one of the two
+shapes separates them: `Val(x·c·y, t) ≠ Val(x·d·y, t)` for some linear
+`(x, y, t)`, or `Val(x, c·y) ≠ Val(x, d·y)` for some ω-power `(x, y)`.
+
+*Proof.* Pick non-empty representatives `w_c, w_d` of the two classes
+(the shortlex keys serve — only the fresh `[ε]` lacks one). `𝒞` is the
+class set of the syntactic congruence [SωS26, Thm 4.5], and Arnold's
+congruence is *defined* by two families of word contexts [Arn85; SωS26,
+§2]: `u ≈_L v` iff `x̂·u·ŷ·t̂^ω ∈ L ⟺ x̂·v·ŷ·t̂^ω ∈ L` for all
+`x̂, ŷ ∈ Σ*`, `t̂ ∈ Σ⁺`, and `x̂·(u·ŷ)^ω ∈ L ⟺ x̂·(v·ŷ)^ω ∈ L` for all
+`x̂, ŷ ∈ Σ*`. So `w_c ≉_L w_d` hands over a separating *word* context of
+one of the two shapes. Word contexts evaluate through classes: by
+[SωS26, Thm 5.1], `x̂·u·ŷ·t̂^ω ∈ L ⟺ Val([x̂]·[u]·[ŷ], [t̂]) = 1` and
+`x̂·(u·ŷ)^ω ∈ L ⟺ Val([x̂], [u]·[ŷ]) = 1` — and the identity being
+fresh, the non-empty `t̂` has `[t̂] ≠ [ε]`. The class context
+`([x̂], [ŷ], [t̂])`, resp. `([x̂], [ŷ])`, lies in the scanned range and
+inherits the separation. ∎
+
 **Step 1 — the group.** Power-iterate each class (shortlex order of keys,
 skipping classes already met in an earlier orbit); the first repeated class
 id closes the orbit, giving index `m ≥ 1` and period `p`. The first class
@@ -299,12 +321,11 @@ of `(key(x), key(y), key(t))`, then ω-power contexts likewise; for each,
 evaluate the **pattern** `π = (verdict at g^{m+i})_{i=0..p−1}`; stop at the
 first non-constant `π`.
 
-The scan cannot exhaust: the cycle classes are *distinct classes of the
-syntactic congruence*, so already `g^m ≉_L g^{m+1}`, and Arnold's
-definition [Arn85] hands over a separating word context of one of the two
-shapes; word contexts act on verdicts only through the classes of their
-components, so the corresponding class context differs at two phases — a
-non-constant pattern.
+The scan cannot exhaust: the cycle classes are pairwise distinct, so
+`g^m ≠ g^{m+1}` (`p > 1` keeps both on the closed cycle), and Lemma 4.3
+supplies a scanned context assigning them different verdicts; its
+pattern differs at phases `i = 0` and `i = 1` — `m` and `m + 1` are
+distinct residues mod `p`, again since `p > 1` — hence is non-constant.
 
 **Step 3 — assembly.** Let `p′` be the minimal cyclic period of `π` (the
 rotation-invariance periods of a length-`p` cycle form a subgroup of `Z_p`,
@@ -320,7 +341,7 @@ Membership of the `n`-th sample is the pattern at phase `n mod p` — for
 every `n ≥ 0`, since `m + n ≥ m` keeps the power on the closed cycle. The
 family is valid, with declared period `p′`.
 
-**Theorem 4.3 (totality and cost).** If `S(L)₊` is not aperiodic the
+**Theorem 4.4 (totality and cost).** If `S(L)₊` is not aperiodic the
 extraction emits a valid family. Every component word is a shortlex key, of
 length `< |𝒞|`; the absorbed index power `vᵐ` costs a further
 `m·|v| < |𝒞|²` letters, and this quadratic term is the only super-linear
@@ -329,7 +350,8 @@ powers, then at most `|𝒞¹|²·|𝒞|` contexts of `p ≤ |𝒞| − 1` verdi
 two products and one `P`-lookup per verdict — `O(|𝒞|⁴)` table operations
 worst case, with no call outside the table.
 
-*Proof.* Totality: steps 1–2 as argued; validity and the declared period as
+*Proof.* Totality: step 1 as argued, step 2 by Lemma 4.3 applied to the
+distinct cycle classes `g^m ≠ g^{m+1}`; validity and the declared period as
 in step 3. Key lengths: a shortest representative of a class has length
 `< |𝒞|` — in a longer word two prefixes share a class and the repeat
 excises, by congruence — and the shortlex-least representative is a
@@ -388,7 +410,7 @@ A family is *material*; the deliverable is the family plus its check:
 
 - **The toggle check** — `2p′ + 1` lasso membership queries (`n = 0 … 2p′`)
   against the verifier's own acceptor of `L`, confirming the pattern is
-  `p′`-periodic and non-constant on the window. Under Theorem 4.3 the
+  `p′`-periodic and non-constant on the window. Under Theorem 4.4 the
   universal claim is structural, so the finite window's role is to certify
   *transport*: that the concrete words, rendered over the verifier's
   alphabet, denote what the extraction meant.
@@ -458,7 +480,7 @@ no amount of state bookkeeping recovers acceptance. There the repair was
 enrichment — marks along runs. `Cay(L)` has no marks to enrich with; the
 only letter-visible substitute is the **recurring window structure** of the
 tail (which finite factors recur), and recovering `e` from it is possible
-exactly on a stratum (Definition 5.6). The consequence is architectural,
+exactly on a stratum (Definition 5.7). The consequence is architectural,
 and it sharpens rather than weakens the two-engine picture: **the
 transcription target is the accepting pair `(s, e)` — the walk engine
 transcribes `s`, and a window engine must transcribe `e`.** Acceptance is
@@ -497,9 +519,10 @@ sets local to the engine; the two-argument `M(·,·)` remains the
 multiplication table, a bare `L` the language.) For a letter `a`, its
 **within-layer action** is the
 partial map `c ↦ c·a` restricted to sources and images in `R`. Under
-condition (A) below the within-layer letters sort further into **anchors** —
-`A(c) = { a : a resets R onto c }` — and `I(c) = L(c) ∪ A(c)` collects the
-letters *consistent with sitting at `c`*. The phase of the walk, the class
+condition (A) below the within-layer letters additionally carry **anchor**
+sets — `A(c) = { a : a resets R onto c }`, overlapping `L(c)` exactly on
+diagonals (below) — and `I(c) = L(c) ∪ A(c)` collects the letters
+*consistent with sitting at `c`*. The phase of the walk, the class
 of the prefix read so far, is what the bricks must recover from letters
 alone; a park — a walk that stutters at `c` forever — is acceptance-wise
 nothing but a linked pair `(c, e)`, `e` the fold of the recurring stutter
@@ -524,35 +547,101 @@ letterwise, `∀c, c' ∈ R` with images in `R`:
 allowance is deliberate and does real work: a letter that stutters at `c`
 and touches no other class of `R` *names its class* — any in-layer reading
 of it lands the walk at `c` — so it is an anchor in everything but edge
-shape, and admitting it into the reset case leaves in `L(c)` only the
-**necessary** stutter letters, those shared with another class of `R`,
-which no stateless observer can attribute. Identity-or-reset is the
+shape, and classifying it as a reset arms the law with its trigger. The
+classification overlaps rather than repartitions: a diagonal anchor
+*remains* in `L(c)` — the sojourn arms need it there, a letter of `A(c)`
+read at `c` and staying in the layer being just a stutter, which
+Lemma 5.8's proof leans on — and the overlap is confined to the diagonal,
+since `a ∈ L(c) ∩ A(c')` makes `c` a source of a partial constant that
+fixes it: `c' = c`. The stutter letters no stateless observer can
+attribute are the *shared* ones, `L(c) \ A(c)`; they are what the graded
+ladder's `I`-weakening tolerates (Definition 5.5). Identity-or-reset is the
 Krohn–Rhodes reset brick — the atomic layer of the aperiodic cascade —
 surfacing as the transcribable case, which is not a coincidence ⟨TBD:
 remark tying to the cascade literature [KR65, Mal10]⟩.
 
-**Definition 5.5 (anchored layer, graded).** ⟨TBD: the k-graded version.
-The window is over `k` *adjacent letters*, never over the last `k` anchors —
+**Definition 5.5 (anchored layer, graded).** For a word
+`w = a₁⋯a_k ∈ Σ_λ^k`, say `w` is *readable in `R`* if some `c ∈ R` has
+`c·a₁⋯a_j ∈ R` for every `j ≤ k`; the *within-layer action* `act_R(w)` is
+the partial map carrying each such `c` to `c·w`. The layer `R` is
+**k-anchored** if the within-layer action of every word readable in `R`
+of length **at least** `k` is a partial identity or a partial constant.
+The length-`k` words with constant action are the layer's **anchor
+windows** — `A_k(c) = { w : act_R(w) is constant onto c }`, with
+`A_1 = A` — and those with identity action are its **neutral windows**,
+the graded shared stutters, attributing nothing.
+
+The prose that motivated the grading survives in it exactly. The window
+is over `k` *adjacent letters*, never over the last `k` anchors —
 unbounded stutter stretches between anchors would demand `U`-nested
-triggers and break the `X`-shaped law; a stretch is instead absorbed by
-weakening a context position's constraint from `A(v)` ("just entered `v`")
-to `I(v)` ("consistent with sitting at `v`") — the stutter abstraction,
-keeping the window rigid. The clean equational form: products of `k`
-within-layer actions with `I`-weakened stutter positions act as constants —
-`x·s₁⋯s_k = s₁⋯s_k` (k-definiteness) localized to the layer's action
-semigroup modulo its neutral part; monotonicity of the ladder in `k`,
-first-fit adoption of the smallest passing width, exactness at every rung
-so no gate anywhere.⟩
+triggers and break the `X`-shaped law. No special clause absorbs a
+stretch: a block interleaving stutters around a reset still acts as a
+constant (a reset absorbs neutral padding on both sides), so the rigid
+window already tolerates what the earlier intuition called `I`-weakened
+positions. And the equational content is Definition 5.4's dichotomy
+verbatim, letters replaced by blocks: a long-enough block either resets
+the layer — the class before it is forgotten, the graded
+`x·s₁⋯s_k = s₁⋯s_k` — or acts neutrally, attributing nothing, like a
+shared stutter letter at width 1.
+
+**Lemma 5.6 (the width ladder).** (i) At `k = 1` Definition 5.5 is
+Definition 5.4. (ii) The ladder is monotone: `k`-anchored implies
+`(k+1)`-anchored. (iii) The quantifier "length **at least** `k`" is
+load-bearing: the exact-length-`k` condition is not monotone. (iv)
+*Suffix pinning:* on any trajectory confined to a `k`-anchored `R` with
+`≥ k` letters read, the last `k` letters `w` decide: `w ∈ A_k(c)` puts
+the walk at `c`, whatever preceded; `w` neutral puts it where it was `k`
+steps earlier. (v) `k`-anchoredness, and the first passing width, are
+decided by one fixpoint computation on the layer's action semigroup.
+
+*Proof.* (i) Restricting to letters gives one direction. Conversely,
+partial identities compose to partial identities, and a partial constant
+absorbs on both sides (`f` then a constant is a constant; a constant onto
+`c` then `f` is a constant onto `c·f`), so every product of
+identity-or-reset letters is an identity or a reset. (ii) Words of length
+`≥ k + 1` are among the words of length `≥ k`. (iii) A scheme on
+`R = {1, 2, 3}`: letters `p` (`1 ↦ 1, 3 ↦ 2`) and `q` (`1 ↦ 1, 2 ↦ 3`),
+all unlisted actions exiting; strong connectivity is restored by `z`
+(`1 ↦ 3`) and `y` (`3 ↦ 1`), whose every 2-word has a singleton domain.
+Every readable 2-word then acts as an identity or a constant — `pq` is
+the identity on `{1, 3}`, `qp` the identity on `{1, 2}` *via the
+excursion* `2 → 3 → 2` — yet the 3-word `pqp` acts as `1 ↦ 1, 3 ↦ 2`,
+mixed; and `pqp·(qp)^n` stays mixed at every length, so the layer is
+`k`-anchored for no `k`, as the semantics demands: its phase is not a
+function of any window. (iv) The last `k` letters are readable by the
+trajectory itself; a constant action lands on its target regardless of
+history, an identity action returns the class held `k` steps earlier.
+(v) Let `𝒜_j` be the set of within-layer actions of readable words of
+length exactly `j`; `𝒜_{j+1}` is a function of `𝒜_j` (extend by one
+letter), so the sequence over a finite space is eventually periodic and
+computable; `R` is `k`-anchored iff every `𝒜_j` with `j ≥ k` holds only
+identities and constants — checked on the cycle — and the first-fit
+width is the first index from which the tail stays clean. ∎
+
+*Remark (excursions — what grading changes).* At `k = 1` a neutral
+letter fixes every class it touches; at `k ≥ 2` a neutral window may
+move and return, as `qp` above. Truthful firing survives ungraded — that
+is (iv), the width-`k` face of Lemma 5.8(i) — but the graded *sojourn*
+must legislate over window positions, not letter positions; the graded
+brick grammar is deferred, with the graded exactness claim ⟨TBD: graded
+bricks and the width-`k` exactness theorem; Theorem 5.10 below is stated
+and proved at width 1⟩.
 
 Anchoring is the *stem-side* precondition: it makes the walk transcribable.
 Lemma 5.2(ii) forces a second, independent precondition on the *loop side*:
 
-**Definition 5.6 (window-determined acceptance).** A layer `R` is
-**(B)-determined at width `k`** if for every stem class `s ∈ R` and any two
-ω-tails confined to `R` from `s` whose sets of recurring length-`k` factors
-are equal, the accepting pairs `(s, e)` and `(s, e')` they induce have equal
-`P`-verdicts. (Equivalently: on tails confined to `R`, the loop coordinate's
-verdict is a function of the recurring `k`-window set.)
+**Definition 5.7 (window-determined acceptance).** For `c ∈ 𝒞¹` and an
+ω-word `β`, write `V(c, β) ∈ {0, 1}` for the invariant's verdict of `β`
+*read from `c`* — the `P`-membership of the pair induced by any Ramsey
+factorization of `β` folded from `c`, one verdict for all factorizations
+(Lemma 5.9 below). A layer `R` is **(B)-determined at width `k`** if for
+every `c ∈ R` and any two ω-tails `β, β′` confined to `R` from `c` whose
+sets of recurring length-`k` factors are equal, `V(c, β) = V(c, β′)`: on
+`R`-confined tails, the verdict from each class of `R` is a function of
+the recurring `k`-window set. (The quantification is over the class the
+tail is read *from*; the induced pair's stem coordinate moves with the
+tail's own prefix and is folded inside `V` — fixing it would understate
+the condition.)
 
 Call anchoring **condition (A)** and window-determinacy **condition (B)**.
 They are the two halves of Lemma 5.2's division of labor, stated as
@@ -574,16 +663,16 @@ sojourn(c)  =  L(c) W M(c)                            -- stutter at c, then move
 step        =  ⋀_{c ∈ R} ( A(c) → X sojourn(c) )      -- the anchored law of the layer
 leave(c)    =  L(c) U ⋁_{a ∈ E(c)} ( a ∧ X φ_{c·a} )  -- stutter, then exit to the child
 LEAVE(r)    =  leave(r)  ∨  ( sojourn(r) ∧ ( step U ⋁_{c ∈ R} ( A(c) ∧ X leave(c) ) ) )
-STAY∞(R,r)  =  sojourn(r) ∧ G step ∧ W(R)             -- confined to R forever, accepting
+STAY∞(R,r)  =  sojourn(r) ∧ G step ∧ W(R, r)          -- confined to R forever, accepting
 Final(r)    =  STAY∞(R,r) ∨ LEAVE(r)
 ```
 
-where `W(R)` is the acceptance term owned by the window engine (§5.5): under
-condition (B) at width `k'`, a Boolean combination of `GF(window)` terms
-over the length-`k'` windows, selected by which recurring-window sets induce
-accepting pairs ⟨TBD: the exact selection — per recurring-set stratum, a
-conjunction `⋀ GF(wᵢ) ∧ ⋀ FG(¬wⱼ)` normal form; sizes⟩; its width-1 fringe
-is the *park*, a pure pair lookup (`(c, e) ∈ P` for the stutter fold `e`).
+where `W(R, r)` is the acceptance term owned by the window engine (§5.5),
+*per entry class*: under condition (B) at width `k'`, the exact-set normal
+form of Proposition 5.15 — one disjunct `⋀ GF(w) ∧ ⋀ FG(¬w)` per
+realizable recurring-window set whose verdict from `r` accepts; its
+width-1 fringe is the *park*, a pure pair lookup (`(c, e) ∈ P` for the
+stutter fold `e`).
 The design carries three deliberate asymmetries:
 
 - **The trigger identifies, the consequence legislates.** An anchor fires
@@ -592,39 +681,183 @@ The design carries three deliberate asymmetries:
   A law cannot be conditioned on "the walk is at `c`": the phase is what
   the formula is *transcribing*, not something it can consult, so every law
   is necessarily **eager**, firing on every letter that looks like an
-  anchor. Condition (A) is exactly the price of that eagerness — it forces
-  every look-alike firing to promise something true — so the eager law is
-  not a tolerable over-approximation: it *is* the transcription, and no
-  tighter law exists to compare it against.
+  anchor. Condition (A) is exactly the price of that eagerness — every
+  look-alike firing promises something true, a lemma below (Lemma 5.8),
+  not a hope — so the eager law is not a tolerable over-approximation:
+  it *is* the transcription, and no tighter law exists to compare it
+  against.
 - **The sojourn's arms exclude exits, on purpose.** Inside `STAY∞` the law
   is precisely what confines the walk to `R`; inside `LEAVE` the
   `U`-witness ends the law's reign strictly before the exit letter, so an
   exit is never constrained by a law it is escaping. On the complete
   canonical machine this yields a structural collapse: `sojourn(c) ≡ ⊤`
   exactly when `E(c) = ∅`, so a **terminal layer sheds its entire law**
-  and `STAY∞` reduces to the window term `W(R)` alone — the reason §5.4's
+  and `STAY∞` reduces to the window term `W(R, r)` alone — the reason §5.4's
   prediction comes out literally `GF(a ∧ Xa)`, with no simplifier.
 - **Legality and acceptance never mix.** The `W`'s weak arm makes parking
-  *legal*; whether a parked tail *accepts* is `P`'s business inside `W(R)`.
+  *legal*; whether a parked tail *accepts* is `P`'s business inside
+  `W(R, r)`.
   The split keeps every `U`-vs-`W` case analysis out of the law, and is the
   walk-side face of Lemma 5.2's division of labor.
 
-Exactness is a three-leg argument per layer ⟨TBD: the two-condition
-exactness theorem, stated and proved: (A) on every traversed layer + (B) on
-every final layer ⟹ the assembled label defines `L`. *Uniqueness* — free:
-`Cay(L)` is deterministic and complete, every word has exactly one walk.
-*Completeness* — an accepting word either stays in some final layer forever,
-its walk satisfying the sojourns and the law (eager firings included, by the
-license above) with its tail's recurring windows (B)-accepted, or descends,
-each descent a `LEAVE` witness handing over to a named child.
-*Soundness* — the formula forces the walk by induction along the word: each
-active sojourn confines the next letter to genuine Cayley edges, each
-trigger hands over to the entered class's law, and `W(R)` certifies the
-accepting pair against `P` under (B). The argument never consults whether a
-layer is accepting, rejecting, or terminal; the degeneracies (all-rejecting
-final layer ⟹ `W(R) = false` ⟹ `STAY∞ = false`; terminal ⟹
-`LEAVE = false`; frozen singleton ⟹ §5.5) fall out with no case
-analysis.⟩
+The first asymmetry's promise is a lemma:
+
+**Lemma 5.8 (the eager-firing license).** Let `R` be a 1-anchored layer,
+`α = α_0 α_1 ⋯` an ω-word, and `(q_j)` its Cayley trajectory from a class
+`q_t ∈ R` at position `t` (`q_{j+1} = q_j·α_j`). Say the class *changes*
+at `j` when `q_{j+1} ≠ q_j`.
+
+(i) *Triggers are disjoint and truthful.* The sets `{A(c)}_{c ∈ R}` are
+pairwise disjoint; if `q_i ∈ R`, `q_i·α_i ∈ R` and `α_i ∈ A(c)`, then
+`q_{i+1} = c` — whatever class the anchor fired from; a within-layer
+letter that is no anchor fixes its source; hence every within-layer
+change reads an anchor onto its destination, `M(c) ⊆ ⋃_{c' ≠ c} A(c')`.
+
+(ii) *Confined suffixes satisfy the law.* If `q_j ∈ R` for all `j ≥ t`,
+then `α, i ⊨ step` for every `i ≥ t`, and `α, t ⊨ sojourn(q_t)`.
+
+(iii) *Exiting prefixes satisfy it up to the last change.* Suppose
+`q_j ∈ R` exactly for `t ≤ j ≤ T`, the exit letter being `α_T ∈ E(q_T)`,
+and let `μ` be the last position in `[t, T)` at which the class changes,
+if any. If there is none, every `α_j` with `j ∈ [t, T)` lies in `L(q_t)`.
+If `μ` exists: `α, i ⊨ step` for every `i ∈ [t, μ)`;
+`α, t ⊨ sojourn(q_t)`; `α_μ ∈ A(q_T)`; and every `α_j` with `j ∈ (μ, T)`
+lies in `L(q_T)`. These are verbatim the witnesses `LEAVE(q_t)` demands —
+its first disjunct in the no-change case, its `U`-witness at `μ`
+otherwise — modulo the child obligation `φ_{q_T·α_T}` from `T + 1` on,
+which belongs to the R-order induction, not to the layer.
+
+*Proof.* Throughout, a letter read while the class does not change fixes
+it, and so lies in `L(·)` by that set's definition — diagonal anchors
+included.
+
+(i) A letter of `A(c) ∩ A(c')` has one within-layer action, a partial
+constant with image `{c}` and `{c'}`: `c = c'`. If `α_i ∈ A(c)` with
+`q_i, q_i·α_i ∈ R`, then `q_i` is a source of that partial constant, so
+`q_{i+1} = c`. A within-layer action that is no partial constant is, by
+Definition 5.4, a partial identity, fixing every source; and a change is
+no identity at its source, hence a reset onto its destination.
+
+(ii) Fix `i ≥ t` and a conjunct `A(c) → X sojourn(c)` of `step`; at most
+one is triggered, by disjointness, and the rest hold vacuously. If
+`α_i ∈ A(c)` then `q_{i+1} = c` by (i) — the trajectory never leaves `R`,
+so the firing is within-layer. For `sojourn(c) = L(c) W M(c)` at `i + 1`:
+let `ν` be the first position `> i` at which the class changes. The
+letters of `[i+1, ν)` fix `c` and land in `L(c)`; if `ν` exists then
+`α_ν`, read at `c` with `q_{ν+1} ∈ R` — no exit ever happens — lies in
+`M(c)` and discharges the `W`; if not, the weak arm holds.
+`α, t ⊨ sojourn(q_t)` is the same argument anchored at `t`.
+
+(iii) *No change:* the class holds `q_t` on `[t, T]`, so every letter of
+`[t, T)` fixes it and lies in `L(q_t)`. *`μ` exists:* the class never
+changes after `μ`, so `q_{μ+1} = q_T`; the change at `μ` reads an anchor
+onto its destination — `α_μ ∈ A(q_T)` by (i); the letters of `(μ, T)` fix
+`q_T` and lie in `L(q_T)`. For `step` at `i ∈ [t, μ)`: if `α_i ∈ A(c)`,
+the firing is within-layer (`i + 1 ≤ μ < T`), so `q_{i+1} = c`; the first
+change `ν` after `i` exists (`ν ≤ μ`), the letters of `[i+1, ν)` lie in
+`L(c)`, and `α_ν` — read at `c`, staying in `R` since `ν + 1 ≤ T` — lies
+in `M(c)` and discharges the `W` strictly inside `R`. `sojourn(q_t)` at
+`t`: likewise, with `ν₀ ≤ μ` the first change at all, letters of
+`[t, ν₀)` in `L(q_t)` and `α_{ν₀} ∈ M(q_t)`. ∎
+
+The license is the completeness half of a layer's exactness: on any word
+whose walk conforms, every brick the label asserts is true — eager
+firings included. The converse, that a word satisfying the label walks
+conformingly, is the soundness leg of the theorem below.
+
+Exactness needs one more preliminary, the ω-word generalization of the
+membership fold:
+
+**Lemma 5.9 (tail verdicts and transport).** For every `c ∈ 𝒞¹` and every
+ω-word `β`: (i) `V(c, β)` is well-defined — all Ramsey factorizations of
+`β`, folded from `c`, yield pairs with one `P`-verdict; (ii) *transport:*
+`V(c, u·β) = V(c·[u], β)` for every finite `u`; (iii)
+`V([ε], β) = [β ∈ L]`. Consequently the **tail language**
+`T_c := { β : V(c, β) = 1 }` satisfies `T_{[u]} = u⁻¹L` for every finite
+word `u`, and `T_{[ε]} = L`.
+
+*Proof.* (i) Two Ramsey factorizations of the same word admit a common
+coarsening, and a coarsening step leaves the verdict fixed: grouping
+inside the tail multiplies factors into the idempotent, which absorbs
+them; grouping across the seam slides a finite factor from tail to stem,
+replacing the pair by a conjugate one; and `P`, the pair set of one
+language, is closed under both moves [SωS26, Thm 5.1; PP04]. (ii) A
+Ramsey factorization of `β` folded from `c·[u]` is a factorization of
+`u·β` folded from `c` with `u` absorbed into the stem coordinate — the
+same pair. (iii) is the invariant's membership evaluation itself. For the
+consequence: `β ∈ T_{[u]} ⟺ V([u], β) = V([ε], u·β) = [u·β ∈ L]`. ∎
+
+Lemma 5.9's identity `T_{[u]} = u⁻¹L` also shows the memoized children
+are exactly the residual tails, keyed by class — the DAG of §6 is a DAG
+of residuals with canonical names. The section's centerpiece can now be
+stated and proved:
+
+**Theorem 5.10 (two-condition exactness, width 1).** Assume:
+
+- **(A)** every layer of `Cay(L)` is 1-anchored;
+- **(B)**, as a contract: for every layer `R` and every `c ∈ R` a formula
+  `W(R, c)` over `Σ_λ` with `β ⊨ W(R, c) ⟺ V(c, β) = 1` for every
+  ω-word `β` confined to `R` from `c` (Proposition 5.15 constructs it
+  when `R` is (B)-determined at some width; a layer no run can stay in
+  forever needs none, and an all-rejecting layer takes
+  `W(R, c) = false`).
+
+Then for every class `c`, `L(Final(c)) = T_c`; in particular
+`L(Final([ε])) = L` — the assembled label defines the language.
+
+*Proof.* Noetherian induction on the R-order of the layer `R` of `c`:
+assume every memoized child `φ_d = Final(d)`, `d` in a strictly lower
+layer, defines `T_d`. Let `(q_j)` be the trajectory of `α` from
+`q_0 = c`.
+
+*Completeness (`α ∈ T_c ⟹ α ⊨ Final(c)`).* If the trajectory stays in
+`R` forever, Lemma 5.8(ii) gives `sojourn(c) ∧ G step`, and
+`V(c, α) = 1` gives `α ⊨ W(R, c)` by the contract: together,
+`STAY∞(R, c)`. If it exits at `T` with `α_T ∈ E(q_T)` toward
+`d = q_T·α_T`, transport gives `V(d, α_{>T}) = V(c, α) = 1`, so the tail
+lies in `T_d` and satisfies `φ_d` by induction; Lemma 5.8(iii) supplies
+every remaining witness of `LEAVE(c)` — the first disjunct when the
+class never changes before `T`, otherwise `sojourn(c)`, `step` up to the
+last change `μ`, the `U`-witness `α_μ ∈ A(q_T)`, and the `leave(q_T)`
+block through the exit.
+
+*Soundness (`α ⊨ Final(c) ⟹ α ∈ T_c`).* The pivot is an **escort
+invariant**: if `sojourn(c)` holds at position `0` and `step` holds at
+every position `< N`, then the trajectory stays in `R` through `N` and
+every position `i ≤ N` sits under an *active sojourn* licensing
+`α_i ∈ L(q_i) ∪ M(q_i)`. Induction on renewals: an active
+`sojourn(q_p)` confines the letters after `p` to `L(q_p)` until a first
+`M(q_p)`-letter — stutters keep the walk sitting, so the formula's class
+and the walk's agree — and at the discharge `ν` the move lands in `R`;
+by Lemma 5.8(i) the moving letter is an anchor onto exactly
+`q_{ν+1}`, so when `ν < N`, `step` at `ν` fires
+`A(q_{ν+1}) → X sojourn(q_{ν+1})` and the escort renews; a sojourn that
+never discharges keeps the walk sitting forever. In particular no letter
+before `N` exits `R` — the law confines. Now the three shapes:
+
+- `α ⊨ STAY∞(R, c)`: the escort with `N = ∞` confines the trajectory
+  forever; the contract turns `α ⊨ W(R, c)` into `V(c, α) = 1`.
+- `α ⊨ leave(c)`: the letters before the `U`-witness lie in `L(c)`, so
+  the walk still sits at `c` there; the witness letter `a ∈ E(c)` steps
+  to `d = c·a` and the tail satisfies `φ_d`, hence lies in `T_d` by
+  induction; transport folds back: `V(c, α) = V(d, tail) = 1`.
+- `α ⊨ sojourn(c) ∧ (step U ⋁_{c′}(A(c′) ∧ X leave(c′)))`: run the
+  escort to the `U`-witness `w`. The active sojourn at `w` licenses
+  `α_w ∈ L(q_w) ∪ M(q_w)` — **not** an exit — so the anchor fires
+  truthfully (Lemma 5.8(i)): `q_{w+1} = c′`, the formula's class and the
+  walk's re-synchronize, and `leave(c′)` from `w + 1` concludes as in
+  the previous shape, transport folding the whole prefix onto `c`. ∎
+
+Three remarks. *Uniqueness* is free throughout: `Cay(L)` is
+deterministic and complete, every word has exactly one trajectory.
+*Degeneracies* fall out with no case analysis: an all-rejecting final
+layer has `W(R, c) = false`, killing `STAY∞`; a terminal layer has
+`E ≡ ∅`, killing `LEAVE` and shedding its law; a frozen singleton
+reduces to `W(R, c)` alone (§5.5). And the escort is where the
+third asymmetry of the bricks earns its keep: the sojourn arms exclude
+exits, so the one letter the formula cannot vouch for — the anchor that
+would exit rather than reset — is exactly the letter the active sojourn
+forbids.
 
 ### 5.3 Anchoring is a property of the language
 
@@ -640,9 +873,9 @@ the phases the discipline tracks (two words reaching the same state of
 some acceptor share a residual but not necessarily a class, and states may
 duplicate residuals — the class is the phase the *language* owns).
 
-**Claim 5.7 (the finest phase suffices).** When (A) and (B) hold, the
-transcription is exact for `L` (the two-condition exactness theorem of
-§5.2), and nothing finer is ever needed: the syntactic class is the finest
+**Claim 5.11 (the finest phase suffices).** When (A) and (B) hold, the
+transcription is exact for `L` (Theorem 5.10), and nothing finer is ever
+needed: the syntactic class is the finest
 phase, and `P` the complete acceptance datum.
 
 A corollary worth stating: with the scan and tie-break orders fixed, the
@@ -712,7 +945,7 @@ merged Ramsey blocks contain `aa` iff the window `aa` recurs in `α`. This
 yields the frozen-layer brick `GF(a ∧ Xa)`. The moving layers,
 by contrast, are *rejecting* as final layers — no pair off class `5` is in
 `P` — so their `STAY∞` branches are `false` by the label's own degeneracy
-(an all-rejecting final layer has `W(R) = false`; no rejecting-layer test
+(an all-rejecting final layer has `W(R, ·) = false`; no rejecting-layer test
 exists anywhere), and only their `LEAVE` chains survive.
 *Predicted output*, then, for the whole extraction of `GF(aa)`: `LEAVE`
 chains through `{1,3}` / `{2,4}` into the memoized child at `5`, whose
@@ -720,7 +953,7 @@ label is `GF(a ∧ Xa)` — an `F(…)`-shaped reach wrapper around the child �
 and since the reach wrapper is implied by the child (recurrence implies
 occurrence), the simplified form is `GF(a ∧ Xa)` exactly. A
 prefix-independence read-off (one residual ⟹ the reach wrapper is always
-redundant — Lemma 5.9 below) would emit it directly.
+redundant — Lemma 5.13 below) would emit it directly.
 The experiment suite checks this prediction end to end (E0 in the companion
 spec).
 
@@ -731,14 +964,33 @@ Lemma 5.2(ii) assigns every acceptance decision to a second engine; the
 engine's purest case, where nothing else remains. This is not a corner
 case; it is a theorem-shaped fact:
 
-**Proposition 5.8 (the division of labor).** The transcription target is
-the accepting pair `(s, e)`. The walk engine computes exactly the stem
-coordinate `s` (Lemma 5.2(i)); every acceptance decision — the `STAY∞`
-fairness of a final layer, every park verdict, every frozen tail — is a
-property of the loop coordinate `e`, which no function of the walk
-determines (Lemma 5.2(ii)) and which the word exposes only through its
-recurring window structure, recoverable under condition (B). ⟨TBD: precise
-statement and proof.⟩
+**Proposition 5.12 (the division of labor).** Let `α ∈ Σ^ω`, `(q_j)` its
+prefix-class walk, `R` the final layer where the walk stabilizes
+(Lemma 5.3), and `(s, e)` its accepting pair (one verdict for all
+factorizations, Lemma 5.9(i)). Then:
+
+(i) *the walk owns the stem*: `s` is a walk value, attained at every
+merge cut of the factorization, and membership folds along the walk —
+`[α ∈ L] = V(q_j, α_{≥j})` for every `j`;
+
+(ii) *no walk function owns the loop*: membership is not a function of
+the walk — no Muller condition on its recurring states and no
+Emerson–Lei condition on its recurring edges decides it;
+
+(iii) *windows own the loop*: if `R` is (B)-determined at width `k`,
+then for every `j` past the walk's entry into `R`, membership is the
+window read-off of the tail — `[α ∈ L] = f_{q_j}(Win_k(α_{≥j}))` —
+realized in LTL by `W(R, q_j)`;
+
+(iv) *jointly they suffice*: under (A) and the window contract, the two
+engines assemble to a defining label.
+
+*Proof.* (i) Lemma 5.2(i) for the walk values; Lemma 5.9(ii) applied to
+each prefix, with 5.9(iii) at `j = 0`, for the fold. (ii) Lemma 5.2(ii).
+(iii) Past entry the tail is confined to `R` from `q_j`, so
+`[α ∈ L] = V(q_j, α_{≥j}) = f_{q_j}(Win_k(α_{≥j}))` by transport and
+Definition 5.7, and Proposition 5.15 realizes `f` as a formula. (iv)
+Theorem 5.10. ∎
 
 *Remark (the Arnold echo).* This is not literally the `~lin`/`~ω` split of
 [SωS26, §4] — `~lin` compares residuals, and the walk computes classes,
@@ -751,27 +1003,36 @@ they are two engines. For a prefix-independent `L` (one residual, [SωS26,
 Prop 4.6]) the stem side carries no membership information at all — the
 walk still runs (classes move even when residuals do not: `GF(aa)` has one
 residual and four layers), but every `STAY∞` and every reach wrapper it
-emits is either `false` or redundant (Lemma 5.9), and the language lives
+emits is either `false` or redundant (Lemma 5.13), and the language lives
 entirely in the window engine.
 
-**Lemma 5.9 (reach absorption).** Let `L` be prefix-independent. Then
-(i) `Σ*·L = L`; (ii) `T_c = L` for *every* frozen class `c` (frozen tails,
-Lemma 5.10 below); (iii) consequently, if the extraction's exact label
-contains a frozen-class disjunct `ψ` — necessarily defining `T_c = L` —
-the whole label is equivalent to `ψ`, and every reach wrapper
-(`L(F ψ) = Σ*·L(ψ)`) is redundant: the extractor may emit `ψ` directly.
+**Lemma 5.13 (reach absorption).** Let `L` be prefix-independent. Then
+(i) `Σ*·L = L`, and `L(F φ) = Σ*·L(φ)` for every formula `φ`; (ii)
+`T_c = L` for *every* frozen class `c` (frozen tails, Lemma 5.14 below);
+(iii) consequently any formula `ψ` defining a frozen tail `T_c` already
+defines `L`: every exact label — in particular one carrying `ψ` as a
+disjunct — is equivalent to `ψ` alone, and the reach wrapper is
+redundant, `L(F ψ) = L`; the extractor may emit `ψ` directly.
 
 *Proof.* (i) `u·α ∈ L ⟺ α ∈ L` gives `Σ*·L ⊆ L`; `u = ε` gives the other
-inclusion. (ii) By Proposition 4.2, `P` is loop-determined:
-`(s, e) ∈ P ⟺ (e, e) ∈ P`. So `α ∈ T_c ⟺ (c, e(α)) ∈ P ⟺
-(e(α), e(α)) ∈ P ⟺ α ∈ L` — the frozen class drops out. (iii) `ψ` and the
-full label both define `L`, so they are equivalent; and
-`L(F ψ) = Σ*·L(ψ) = Σ*·L = L` by (i). ∎
+inclusion. For any `φ`: `α ⊨ F φ` iff some suffix of `α` satisfies `φ`,
+iff `α ∈ Σ*·L(φ)` — LTL being future-only, a suffix's satisfaction never
+consults the prefix spliced before it. (ii) By Proposition 4.2, `P` is
+loop-determined: `(s, e) ∈ P ⟺ (e, e) ∈ P`. So `α ∈ T_c ⟺ (c, e(α)) ∈ P
+⟺ (e(α), e(α)) ∈ P ⟺ α ∈ L` — the frozen class drops out. (iii)
+`L(ψ) = T_c = L` by (ii); an exact label also defines `L`, so the two are
+equivalent; and `L(F ψ) = Σ*·L(ψ) = Σ*·L = L` by (i). ∎
+
+The hypothesis of (iii) — that `ψ` *defines* `T_c` — is a semantic fact
+about the emitted child, and it is exactly what Theorem 5.10 certifies
+for the memoized label at a frozen class. The dependency
+runs one way: exactness first proves the label, absorption then discards
+the wrapper; nothing here feeds back into the exactness proof.
 
 **The no-recursion trap.** The frozen tail language at a frozen class `c` is
 `T_c = {α : (c, e(α)) ∈ P}` — well-defined and prefix-independent:
 
-**Lemma 5.10 (frozen tails).** At a frozen class `c`, `T_c` is exactly the
+**Lemma 5.14 (frozen tails).** At a frozen class `c`, `T_c` is exactly the
 residual `u⁻¹L` of any representative `u` of `c`; in particular it does not
 depend on the choice of Ramsey idempotent `e(α)`, and it is
 prefix-independent.
@@ -826,12 +1087,11 @@ are the ladder's:
   ladder rung of `P` restricted to `c × idempotents`: recurrence rungs give
   positive `GF` shapes (`GF(aa)`: accept iff the window `aa` recurs —
   `GF(a ∧ Xa)`), persistence rungs the dual `FG`, reactivity the general
-  Boolean combination. ⟨TBD: the general window read-off — from the
-  accepting idempotents at `c`, derive the window set and the normal form;
-  bound the needed width by ⟨the layer's local definiteness degree?⟩; align
+  Boolean combination. The general read-off is Proposition 5.15 below.
+  ⟨TBD: bound the needed width by a layer-local definiteness degree; align
   the (B)-stratum with the locally-(threshold-)testable ω-varieties
-  (Beauquier–Pin / Wilke, cite-TBD) so the stratum is a known class with
-  our operational reading.⟩
+  (Beauquier–Pin / Wilke — sources to be added to the library) so the
+  stratum is a known class with our operational reading.⟩
 - **(B) fails at every affordable width** — the genuine nesting case: the
   recurring windows do not determine the verdict, because acceptance hangs
   on *order* among recurring factors, the classical separator between
@@ -839,10 +1099,80 @@ are the ladder's:
   and only here does a DG-style descent survive, demoted to "the engine
   inside one frozen layer" and scoped to that layer's tail algebra — which
   is not smaller in general (`T_c = L` whenever `L` is prefix-independent,
-  Lemma 5.9(ii)), so the honest statement is: this stratum is where
+  Lemma 5.13(ii)), so the honest statement is: this stratum is where
   extraction still pays DG's price, and the census measures how rare it is
   (§8). An ω-specific descent that beats DG on this stratum is the paper's
   main open problem.
+
+The first bullet's read-off, in full:
+
+**Proposition 5.15 (the window normal form).** Let `R` be (B)-determined
+at width `k` and `c ∈ R`. For `S ⊆ Σ_λ^k` say `S` is *realizable from
+`c`* if some ω-tail confined to `R` from `c` has recurring-window set
+exactly `S`; write `Win_k(β)` for that set. Then:
+
+(i) the verdict map `f_c(S) := V(c, β)` — `β` any confined tail with
+`Win_k(β) = S` — is well-defined on realizable sets, and
+
+```
+W(R, c)  =  ⋁_{S realizable from c, f_c(S) = 1}
+              ( ⋀_{w ∈ S} GF ŵ  ∧  ⋀_{w ∈ Σ_λ^k \ S} FG ¬ŵ ),
+ŵ        =  w₁ ∧ X w₂ ∧ ⋯ ∧ X^{k−1} w_k
+```
+
+satisfies the contract of Theorem 5.10: `β ⊨ W(R, c) ⟺ V(c, β) = 1`
+for every `β` confined to `R` from `c`.
+
+(ii) *Computation.* In the memory graph `G(R, c)` — nodes `(q, m)` with
+`q ∈ R` and `m` the last `k` letters read, edges the `R`-confined Cayley
+steps out of the `c`-cone — `S` is realizable from `c` iff some strongly
+connected subgraph `H`, reachable with full memory, has window
+projection exactly `S`; a covering tour of `H` yields an ultimately
+periodic witness `u·v^ω`, and `f_c(S) = Val(c·[u], [v])`.
+
+(iii) *Deciding (B).* Confined tails reduce to lassos: every confined
+`β` admits an ultimately periodic `β̂`, confined with
+`Win_k(β̂) = Win_k(β)` and `V(c, β̂) = V(c, β)`. Hence (B) at width `k`
+holds iff for each `c ∈ R` and each realizable `S`, all covering tours
+of all `S`-projecting subgraphs, from all full-memory entries, yield one
+verdict — a finite check, verdicts factoring through loop classes.
+
+(iv) *Sizes.* Each disjunct has modal depth `k + 1` and at most
+`|Σ_λ|^k` conjuncts; the disjuncts number at most the realizable sets,
+`≤ 2^{|Σ_λ|^k}` — the generic price of the exact-set form, collapsing
+under structure: an upward-closed accepting family keeps only its
+minimal sets, `⋁_S ⋀_{w ∈ S} GF ŵ`, and on `GF(aa)`'s frozen layer the
+single minimal set `{aa}` gives `GF(a ∧ X a)` — no simplifier involved.
+
+*Proof.* (i) Well-definedness is Definition 5.7 verbatim. For confined
+`β`: `β ⊨ GF ŵ` iff the window `w` occurs at infinitely many positions
+iff `w ∈ Win_k(β)`, and `β ⊨ FG ¬ŵ` iff `w ∉ Win_k(β)`; so `β` satisfies
+the `S`-disjunct iff `Win_k(β) = S` exactly — disjuncts are pairwise
+exclusive — and `Win_k(β)` is realizable, `β` being its own witness:
+`β ⊨ W(R, c) ⟺ f_c(Win_k(β)) = 1 ⟺ V(c, β) = 1`.
+
+(ii) A covering tour traverses every edge of `H` infinitely often and
+eventually only `H`: its recurring windows are exactly `H`'s.
+Conversely the infinitely-traversed edges of a confined tail form a
+reachable strongly connected subgraph whose window projection is the
+recurring set. The witness verdict is the invariant's lasso evaluation.
+
+(iii) Cut points of a Ramsey factorization of `β` carry finitely many
+(idempotent, length-`(k−1)` boundary context) colors; passing to an
+infinite monochromatic subsequence of cuts re-factors `β` with one
+color. Wrap a block stretch `w_{i+1}⋯w_{i+m}` chosen to contain every
+recurring window: the loop class is the same idempotent `e` (idempotency
+absorbs the grouping), the stem class is `[w₀⋯w_i] = [w₀]·e`, so the
+pair — hence the verdict — is unchanged; and every seam window of the
+wrap already occurs at each original cut (one boundary context), so it
+recurs in `β`: `Win_k` is preserved. The finiteness of the check: tours
+enter through finitely many classes and their loop classes range over a
+computable subset of `𝒞`.
+
+(iv) Counting is immediate. For an upward-closed family, a confined `β`
+satisfies `⋁_min ⋀ GF` iff `Win_k(β)` contains some minimal accepted set
+iff `f_c(Win_k(β)) = 1`. On `GF(aa)`, acceptance from the frozen class
+is "the window `aa` recurs" (§5.4): upward-closed, minimum `{aa}`. ∎
 
 The architecture, assembled — the paper's picture:
 
@@ -854,7 +1184,7 @@ extract(𝓘):
      of the class-defined prefix language + fixed template, stop
   2.5 combinators (§5.6): OR-split P by final layer; AND-split by subdirect
       factorization; re-canonicalize each piece (a divisor — never leaves
-      LTL, Prop 5.11), recurse on pieces whose read-offs improved, combine
+      LTL, Prop 5.16), recurse on pieces whose read-offs improved, combine
       with ∨ / ∧
   3. walk engine (stem side): descend the R-order of Cay(L); per layer:
        (A) at k ≤ cap  ⟹ flat law/leave bricks, exits to memoized class
@@ -905,7 +1235,7 @@ word's stem class `s` lies in exactly one final layer, so
 — a *disjoint* union, exact by construction, with no surgery of any kind.
 Two properties come with it:
 
-**Proposition 5.11 (decomposition never leaves LTL).** Any language
+**Proposition 5.16 (decomposition never leaves LTL).** Any language
 recognized by `(𝒞, λ, M)` with *any* pair set — every `L_R`, every
 single-pair piece, every Boolean combination — has a syntactic ω-semigroup
 dividing `M`. In particular if `L` is LTL, so is every piece, and every
@@ -964,7 +1294,7 @@ tables shown.⟩
 
 The combinators compose (OR of ANDs, complement flips via `P^c` choosing
 the cheaper side), they all commute with re-canonicalization, and
-Proposition 5.11 makes the whole combinator layer safe: no move ever
+Proposition 5.16 makes the whole combinator layer safe: no move ever
 leaves LTL or grows the algebra. They slot into the architecture as step
 2.5, between the ladder templates and the walk engine.
 
@@ -980,7 +1310,7 @@ exists⟩. Three renderings:
    memoized child per class, each class contributing its letter split and
    exit disjuncts — `O(|𝒞|·|Σ_λ|)` in total — and the window side one term
    per final layer, `O(k′·|Σ_λ|^{k′})` apiece (the exact constant awaits
-   the `W(R)` normal form, §5.2). Not an LTL formula, but every downstream
+   Proposition 5.15's normal form). Not an LTL formula, but every downstream
    *computation* (model checking the formula against the automaton,
    equivalence tests) can consume it directly.
 2. **Flat LTL** — the standard, and the intrinsically large one: no sharing
