@@ -97,7 +97,7 @@ iff `(s, e) in P`.
 **Serialized format (`.sos`, v1).** Plain text, canonical, byte-comparable:
 
 ```
-SOSG v1
+SOS v1
 ap: <ap names, space-separated>
 classes: <n>
 <id>  <key as ;-separated letters, 'eps' for empty>
