@@ -128,6 +128,74 @@ certifies equivalence at a non-canonical fixpoint (the stall is permanent — a
 headline exhibit for the paper's §4.2 open question). Both outcomes are wanted
 results; this run is not to be tuned to "pass".
 
+## Minimal stall specimens
+
+An exhaustive learner census over the smallest 1-AP shapes (`tests/sosl/genaut_census.py`
+over `genaut/corpus/`; nondeterministic inputs are determinized by the sos import
+layer, so every automaton is covered) locates the smallest languages whose M2
+fixpoint is non-canonical — a surviving stall under the default (bounded)
+equivalence mode. Everything at one state is canonical; the stalls begin at two
+states (`2state1ap0acc`). Two specimens, of different character, are reported
+here. In both, the Cayley hypothesis is acceptance-correct (spec §9 P1 holds) and
+the exported `.sos` is a class short of canonical (F2 fails).
+
+### `a_once` — `L = { a·(¬a)^ω }` (LTL `a & X G !a`)
+
+The single ω-word. Canonical form `D`:
+[`sos_figs/sources/a_once.hoa`](sos_figs/sources/a_once.hoa); full algebra in
+[`sos_figs/sources/a_once.md`](sos_figs/sources/a_once.md).
+
+![a_once](sos_figs/img/a_once.png)
+
+The reference invariant has **4 classes** (accepting pair `([a],[!a])`):
+
+```
+classes: 4        0 eps   1 !a   2 a   3 !a;a
+mult   0: 0 1 2 3   1: 1 1 3 3   2: 2 2 3 3   3: 3 3 3 3     accept: 2 1
+```
+
+The learner stalls at 2 classes (`{ε}`, everything else), a single counterexample
+refines it to **3**, and the bounded oracle then certifies. The exported `.sos`
+merges the canonical `[!a;a]` into `[!a]`:
+
+```
+classes: 3        0 eps   1 !a   2 a
+mult   0: 0 1 2   1: 1 1 1   2: 2 2 1                        accept: 2 1
+```
+
+The `a`-idempotent collapses onto `[!a]` (`a·a = [!a;a]` in the reference, `[!a]`
+in the export), so the linked-pair read-off wrongly **accepts `a^ω`** (the
+shortlex-least divergence: exported `True`, teacher `False`). The canonical
+algebra keeps `[!a;a]` distinct; the context that separates `!a` from `!a;a`
+needs a non-empty *left* prefix.
+
+### `a_implies_xa` — `L = { w : w[0]=a ⇒ w[1]=a }` (LTL `a → X a`)
+
+Canonical form `D`:
+[`sos_figs/sources/a_implies_xa.hoa`](sos_figs/sources/a_implies_xa.hoa); full
+algebra in [`sos_figs/sources/a_implies_xa.md`](sos_figs/sources/a_implies_xa.md).
+
+![a_implies_xa](sos_figs/img/a_implies_xa.png)
+
+The reference has **5 classes** (six accepting pairs). The learner stalls at
+**4** and — the sharp point — with **zero counterexamples**: the first
+closed/consistent fixpoint is already what the equivalence oracle certifies. The
+export merges the canonical `[a;a]` into `[!a]` (both accepting idempotents in the
+reference), so it wrongly **rejects `a^ω`** (exported `False`, teacher `True`).
+
+### The shared moral
+
+Both languages are LTL-definable (aperiodic) and minimal. In each, the M2
+right-congruence merges the `a`-idempotent class into `[!a]`, and the class the
+canonical algebra keeps is separated only by a left context — invisible to lasso
+membership from the initial state. So the equivalence oracle (bounded here, and
+structurally exact) has no counterexample to give: the coarser hypothesis is
+acceptance-equivalent to `L`. Saturation's left-context split is what recovers the
+class. `a_implies_xa` is the cleanest candidate for the paper's §4.2 permanent
+stall — a 5-vs-4 gap reached with no counterexample — and smaller than
+`F(a ∧ Xa)`, which is transient. Permanence is definitively settled by
+`--eq-mode exact` (M3); the structure indicates it holds.
+
 ## Probes (under `tests/sosl/`)
 
 - `paper_examples.py` — the three paper examples from their source HOA: reference
@@ -139,3 +207,11 @@ results; this run is not to be tuned to "pass".
   deterministic sample).
 - `diag_export_vs_hyp.py` — isolates export-vs-hypothesis divergence, separating a
   two-sided read-off defect from a learner-core defect.
+- `genaut_census.py` — learns every automaton under a folder to its fixpoint and
+  classifies it (canonical / surviving stall / P1 bug) against the spec's
+  expected-failure table; a prototype of the campaign driver.
+- `study_stall.py` — the full anatomy of one automaton's stall: canonical `D`,
+  reference and learned `.sos`, stall and learned partitions, and the shortlex
+  divergence lasso.
+- `emit_canonical.py` — writes an input's canonical form `D` (the sos import
+  layer's output) as HOA; the form reported for a specimen in `research_notes/`.
