@@ -41,7 +41,7 @@ whether minimality forbids it.
 
 ## 2. Tools (already in the repo — use, don't reread)
 
-- `tests/probes/oracle_dump.py <hoa>` — SOSG definability oracle: exact star-free
+- `tests/probes/oracle_dump.py <hoa>` — SoS definability oracle: exact star-free
   verdict + certificates + `det_generic_minimal` state count. This is your P1 and
   P3 judge (run it on `L(D)` for P1, and on each `Inf(q)` language for P3).
 - `tests/probes/fin_ground.py <hoa>` — grounds every `Fin(C)` of the cascade against

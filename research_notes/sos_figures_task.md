@@ -1,4 +1,4 @@
-# Task — collect & tabulate the figures/tables for "The SOSG, Constructed"
+# Task — collect & tabulate the figures/tables for "The SoS, Constructed"
 
 *For a code-focused session. Produce the companion artifact the paper
 [`sos_constructed.md`](sos_constructed.md) points at, replacing its `[Figure N]` /

@@ -690,7 +690,7 @@ separates them — the reason `P` is part of the invariant.
 `𝓘(GF(aa))` serialized (format v1, [`sos_format.md`](sos_format.md)):
 
 ```
-SOSG v1
+SOS v1
 ap: a
 classes: 6
 0  eps

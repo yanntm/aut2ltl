@@ -1,4 +1,4 @@
-# SOSG algebra summary — Even
+# SoS algebra summary — Even
 
 Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` = transition monoid; a group in `TM` may be a presentation artifact, a group in `S(L)₊` is intrinsic (⇔ not LTL-definable).
 

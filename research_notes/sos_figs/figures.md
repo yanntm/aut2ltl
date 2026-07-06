@@ -1,4 +1,4 @@
-# The SOSG, Constructed — Figures & Tables
+# The SoS, Constructed — Figures & Tables
 
 Companion artifact for [`sos_constructed.md`](../sos_constructed.md). Every
 value below is read off a deterministic automaton by the construction of §§3–4
@@ -34,7 +34,7 @@ The Emerson–Lei automata of the running examples, drawn as Spot renders them.
 ## Table 1 — algebraic fingerprints
 
 One row per language. `|EM¹|` is the acceptance-enriched monoid; `|S(L)₊¹|` the
-constructed SOSG (identity adjoined). A group in the *transition* monoid may be
+constructed SoS (identity adjoined). A group in the *transition* monoid may be
 a presentation artifact; a group in `S(L)₊` is intrinsic and equivalent to
 non-LTL-definability.
 
@@ -136,7 +136,7 @@ reached (class `[¬a]`), every loop accepts.
 
 ## Figure 2 — the exportable invariant `𝓘(GF(aa))`
 
-The serialized SOSG (format v1, [`sos_format.md`](../sos_format.md)): the
+The serialized SoS (format v1, [`sos_format.md`](../sos_format.md)): the
 keyed classes, the letter map, the multiplication table of `S(L)₊¹`, and the
 saturated set of accepting linked pairs. These core sections are a **complete
 language invariant** — two languages are equal iff their cores are
@@ -147,7 +147,7 @@ optional `residuals` block carries the right-congruence automaton (here a single
 state — `GF(aa)` is prefix-independent) and does not enter the equality test.
 
 ```
-SOSG v1
+SOS v1
 ap: a
 classes: 6
 0  eps

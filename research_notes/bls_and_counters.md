@@ -181,7 +181,7 @@ python3 tests/probes/bls_ungated.py     samples/fixtures/hoa/definability/gf_aa_
 Direction set: no counterexample hunt (random-formula experiments and the
 genaut exhaustive census have revealed no error — absence of evidence, but a
 lot of it); solve (A) theoretically, starting from the semantic fact (L is
-LTL, i.e. S(L) aperiodic) and eliminating the contradictors. The SOSG oracle
+LTL, i.e. S(L) aperiodic) and eliminating the contradictors. The SoS oracle
 (`aut2ltl/bls/definability/oracle/algorithm.md`) supplies the vocabulary: the
 acceptance-enriched monoid EM(D), the loop-profile function A(q,c), and the
 collapse of the syntactic congruence into residual equality (~lin) +
@@ -568,7 +568,7 @@ now looks like the missing proof step.
 Antlers b: x<->x1, y<->y1; swap a: x<->y; symmetry broken at y1-a->x
 (equivariant would be y1-a->x1); marks alpha = {x1, y} (shifted so the
 aligned pairing is not mark-preserving). Hand-checked verdict-equality on
-five lasso families. The SOSG oracle (tests/probes/oracle_dump.py) is the
+five lasso families. The SoS oracle (tests/probes/oracle_dump.py) is the
 right judge and answered instantly: det_generic_minimal has ONE state — L
 is UNIVERSAL. Reject-cycles would have to avoid alpha, i.e. live inside
 {x, y1}, which has no cycle. Dead: maximally non-minimal.
@@ -1365,7 +1365,7 @@ old census):
 Design method (proven productive): pick S₊ aperiodic with a target D-cover carrying
 an order-p orbit whose ρ-image is aperiodic; wire ℓ so the p orbit points fall into
 ≥2 ℓ-attractors; place marks to keep all attractors α-equal (dodge the leak). Judge
-with the SOSG oracle (exact, instant, certificates) at every step. A hit → feed to
+with the SoS oracle (exact, instant, certificates) at every step. A hit → feed to
 fin_ground.py and confirm the cascade actually breaks (it may still not — the
 BLS operators might compute Inf correctly even when the language is non-star-free
 at the sub-term, though gfa_pad2 says otherwise). An empty exhaustive-under-a-bound

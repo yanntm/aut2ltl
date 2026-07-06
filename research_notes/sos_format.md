@@ -1,4 +1,4 @@
-# SOSG serialization format — proposition (v1)
+# SoS serialization format — proposition (v1)
 
 A canonical, complete, text serialization of the syntactic ω-semigroup of a regular
 ω-language `L`, together with the acceptance data that recovers `L` from it. The core
@@ -93,7 +93,7 @@ or present residuals block.
 (`|EM¹| = 7`), the automata being non-isomorphic.
 
 ```
-SOSG v1
+SOS v1
 ap: a
 classes: 6
 0  eps

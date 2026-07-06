@@ -1,4 +1,4 @@
-# What the SOSG is for — a use-case catalog
+# What the SoS is for — a use-case catalog
 
 *Untracked scratch. Prospective and liberal on purpose: the moment the ideas
 crystallize, written down before they evaporate. The through-line: once you can
@@ -13,7 +13,7 @@ and synthesizing the formula are two small tenants of a large building.*
 
 ## The headline: a definability / classification hub
 
-The strongest thing here is not "we decide LTL." It is that the SOSG is a **hub
+The strongest thing here is not "we decide LTL." It is that the SoS is a **hub
 from which a whole zoo of definability questions are read off cheaply**. Once the
 syntactic algebra is materialized, membership of `L` in a temporal or logical
 class is, in most cases, checking a finite set of algebraic identities or
@@ -44,7 +44,7 @@ the algebra rather than out of trying constructions and failing.
 
 ## The algebra of languages, done on the object
 
-**Complement is free — and that is the quotable one.** The SOSG of `L` and of its
+**Complement is free — and that is the quotable one.** The SoS of `L` and of its
 complement are the *same algebra*; only the accepting set of linked pairs flips.
 Complement is a set-complement over the linked pairs — `O(#pairs)`. Against a world
 where complementing a Büchi automaton is the notorious `2^{O(n log n)}` operation,
@@ -59,7 +59,7 @@ it does.
 
 **Union and intersection are the honest ones — a product, then re-canonicalize.**
 `L₁ ∪ L₂` and `L₁ ∩ L₂` are recognized by the product ω-semigroup `S₁ × S₂` with
-the combined accepting set; the *canonical* SOSG of the result is that product
+the combined accepting set; the *canonical* SoS of the result is that product
 re-syntactified with the same `~lin ∧ ~ω` collapse. Cost is the automata-product
 size `|S₁|·|S₂|` plus a polynomial quotient — not free, but no exponential blow-up,
 and the boolean algebra of languages closes on the object without ever
@@ -78,7 +78,7 @@ larger pipeline.
 ## A canonical interchange format for ω-languages
 
 HOA serializes automata, and there are many HOA per language — it is a *dump*, not
-an *invariant*. The serialized SOSG (the "semantic HOA") is **the** file for a
+an *invariant*. The serialized SoS (the "semantic HOA") is **the** file for a
 language: canonical, complete, comparable by bytes. That makes it a natural
 interchange and archival format — a language-keyed database, a provenance record,
 a deduplicating key — precisely in the places where "same language, different
@@ -87,9 +87,9 @@ canonical.
 
 ---
 
-## Learning a SOSG — and classifying as you learn
+## Learning a SoS — and classifying as you learn
 
-The SOSG is learnable in the MAT model, and the interesting part is *why*: the
+The SoS is learnable in the MAT model, and the interesting part is *why*: the
 **rotation lemma**, which makes the two-sided congruence right-computable, is
 exactly what makes it right-**learnable**. Two-sided (syntactic) objects resist
 query learning because you can only append on the right; the rotation lemma shows
@@ -128,7 +128,7 @@ minimal deterministic ω-automaton provides. Its role is to feed every downstrea
 construction that *assumes* counter-freeness and quietly relies on it as a rug for
 its own soundness — the Boker–Lehtinen–Sickert cascade first among them, but the
 pattern is general. When such a construction declines a group-bearing presentation,
-the SOSG can hand it a counter-free one built from the algebra. (Its open acceptance
+the SoS can hand it a counter-free one built from the algebra. (Its open acceptance
 lemma is the one thing standing between "canonical transition structure" and
 "drop-in replacement.") This closes the loop back to where this whole investigation
 started.
@@ -154,14 +154,14 @@ is a by-product of holding the algebra, not the reason to hold it.
   from real verification projects and produce the distribution: how many are
   *really* safety, how many *really* star-free, how many secretly count. An
   empirical map of "what specifications people actually write" in algebraic
-  coordinates — a measurement paper waiting to be run, and the SOSG is the
+  coordinates — a measurement paper waiting to be run, and the SoS is the
   instrument.
 - **Explaining spec complexity.** A group in the algebra *is* the reason a monitor
   or a determinization blew up — it is the modular count the language cannot avoid.
-  The SOSG can tell an engineer *why* their property is expensive and point at the
+  The SoS can tell an engineer *why* their property is expensive and point at the
   offending loop, not just that it is.
 - **Differential oracle for temporal tooling.** Two translators, two determinizers,
-  two simplifiers — run each, hash the SOSG, compare. A canonical language identity
+  two simplifiers — run each, hash the SoS, compare. A canonical language identity
   turns a fleet of heuristic tools into things you can regression-test against each
   other on true semantics.
 - **A canonical normal form for LTL/LTLf.** The synthesized formula is a *function
