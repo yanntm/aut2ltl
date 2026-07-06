@@ -248,6 +248,17 @@ Procedures (all query counts logged by phase):
    - if they agree: one of the two words disagrees with the representative of
      its own fold class under `kappa`; run the **frozen-prefix chain** (below)
      on that word inside `kappa`'s context; this splits some class.
+
+   Scan order (normative — transcripts must be byte-reproducible): subjects
+   `p` in shortlex order, classes `d` in class-id order; escalate on the
+   FIRST divergence, split, and restart the main loop. Shortlex letter order
+   is the serialization's (valuation bitvectors ascending: `!a` before `a`).
+   The scan order changes which cell fires first — hence the minted column
+   and the whole trace, though never the fixpoint — so it is pinned here.
+   The paper's section 4.3 worked example assumes exactly this order; note
+   its first firing cell is an *innocently merged* subject whose fold merely
+   walks through the guilty merge — the second escalation branch fires, and
+   that is correct behavior, not a mis-selected subject.
 5. **counterexample processing** — given a lasso `(w, z)` where prediction and
    teacher differ:
    - *normalize*: `k` = the prediction's stabilization power;
