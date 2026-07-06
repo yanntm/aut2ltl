@@ -1,5 +1,5 @@
 """
-This file has a byte-identical peer in the bls/ and sosg/ folders; keep them in sync.
+This file has a byte-identical peer in the bls/ and sos/ folders; keep them in sync.
 
 Extract transformation generators from a Spot automaton for SgpDec.
 

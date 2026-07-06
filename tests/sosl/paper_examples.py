@@ -3,7 +3,7 @@
     python3 -m tests.sosl.paper_examples
 
 For each of `GF(aa)`, `Even`, `EvenBlocks` (HOA under
-``research_notes/sosg_figs/sources/``) this builds the reference invariant from
+``research_notes/sos_figs/sources/``) this builds the reference invariant from
 the automaton, runs the M2 learner against the same automaton as teacher, and
 reports: the canonical class count ``|S(L)+1|`` (against the paper's fingerprint
 table), whether the learned invariant is acceptance-correct, and whether it is
@@ -29,7 +29,7 @@ from sosl.teacher import HoaTeacher
 
 _SRC = os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir,
-    "research_notes", "sosg_figs", "sources",
+    "research_notes", "sos_figs", "sources",
 )
 
 # (name, hoa file, canonical |S(L)+1| from the paper's fingerprint tables)

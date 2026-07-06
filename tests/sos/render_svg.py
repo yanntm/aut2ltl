@@ -14,7 +14,7 @@ width is a reasonable on-screen automaton size, well under a page; pass a
 smaller/larger width to taste.
 
 Usage (module run from repo root):
-  python3 -m tests.sosg.render_svg <file.hoa | 'LTL/PSL formula'> OUT[.svg|.png] [width_px]
+  python3 -m tests.sos.render_svg <file.hoa | 'LTL/PSL formula'> OUT[.svg|.png] [width_px]
 """
 from __future__ import annotations
 

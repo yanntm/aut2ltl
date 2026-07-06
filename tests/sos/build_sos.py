@@ -1,5 +1,5 @@
 """Build every figure/table part for ONE input language — the collection
-driver behind `research_notes/sosg_figures.md`.
+driver behind `research_notes/sos_figures.md`.
 
 Input is either an HOA file or an LTL/PSL formula string; both are reduced to
 the canonical deterministic form and run through the definability pipeline
@@ -30,7 +30,7 @@ fixed fresh-identity builder; the EM(D) element dump and the fingerprint's
 `|Q|`/`|EM1|`/group columns come from the definability pipeline.
 
 Usage (module run from repo root):
-  python3 -m tests.sosg.build_sosg <file.hoa | 'LTL/PSL formula'> [--sos OUT] [--residuals]
+  python3 -m tests.sos.build_sos <file.hoa | 'LTL/PSL formula'> [--sos OUT] [--residuals]
 
 Single input, self-bound; a closure that blows the cap is reported and exits 2.
 No verdict logic of its own beyond what the pipeline returns.

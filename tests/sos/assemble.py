@@ -1,5 +1,5 @@
 """Render a Markdown algebra report for one or more inputs — the generic
-diagnosis tool behind the paper's SOSG figures.
+diagnosis tool behind the paper's SoS figures.
 
 For each input (an HOA file or an LTL/PSL formula) it reads off the canonical
 syntactic ω-semigroup `S(L)₊` and emits a renderable Markdown section: the
@@ -11,7 +11,7 @@ leading fingerprint table compares all inputs at a glance. Nothing here is
 example-specific — it summarizes whatever algebra the input automaton holds.
 
 Usage (module run from repo root):
-  python3 -m tests.sosg.assemble OUT.md  <spec> [<spec> ...]
+  python3 -m tests.sos.assemble OUT.md  <spec> [<spec> ...]
     where each <spec> is  `label=input`  or just  `input`
     and input is an HOA path or an LTL/PSL formula string.
 
@@ -25,7 +25,7 @@ import sys
 from typing import List, Optional, Tuple
 
 from tests.probes.dg_common import DgData, quotient_of_hoa
-from tests.sosg.build_sosg import (
+from tests.sos.build_sos import (
     to_hoa_path,
     transition_monoid_has_group,
     certificate_or_formula,
@@ -169,7 +169,7 @@ def main(argv: List[str]) -> int:
         built.append((label, inp, data, inv, res))
 
     names = ", ".join(label for label, *_ in built)
-    doc: List[str] = [f"# SOSG algebra summary — {names}", ""]
+    doc: List[str] = [f"# SoS algebra summary — {names}", ""]
     doc.append("Canonical syntactic ω-semigroup `S(L)₊` read off each input "
                "automaton. `TM` = transition monoid; a group in `TM` may be a "
                "presentation artifact, a group in `S(L)₊` is intrinsic "
