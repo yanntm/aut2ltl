@@ -22,8 +22,8 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
-from sosl.objects.alphabet import EMPTY, Alphabet, Word
-from sosl.objects.lasso import Lasso
+from .alphabet import EMPTY, Alphabet, Word
+from .lasso import Lasso
 
 
 @dataclass(frozen=True)

@@ -1,4 +1,4 @@
-# sosl.objects — the shared vocabulary
+# sosl.sos — the shared vocabulary
 
 Pure data types every other component speaks: no automata, no spot, no queries.
 This is the floor of the tool. If two components exchange something, it is

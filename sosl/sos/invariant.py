@@ -13,7 +13,7 @@ The finite algebraic normal form of an omega-regular language:
 
 Membership of any lasso is decided from this tuple alone (see `member`), with no
 automaton. The construction of a valid instance is the job of the builders
-(`sosl.reference`, or the learner's export); this module only holds one and
+(`sos.build`, or the learner's export); this module only holds one and
 reads it.
 """
 from __future__ import annotations
@@ -21,8 +21,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import FrozenSet, List, Tuple
 
-from sosl.objects.alphabet import EMPTY, Alphabet, Word
-from sosl.objects.lasso import Lasso
+from .alphabet import EMPTY, Alphabet, Word
+from .lasso import Lasso
 
 
 @dataclass(frozen=True)

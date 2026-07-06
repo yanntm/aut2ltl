@@ -15,7 +15,7 @@ from __future__ import annotations
 import random
 
 from sosl.learn import learn
-from sosl.objects import EMPTY, Alphabet, Invariant, Lasso, dump_invariant
+from sosl.sos import EMPTY, Alphabet, Invariant, Lasso, dump_invariant
 from sosl.teacher import HoaTeacher
 
 

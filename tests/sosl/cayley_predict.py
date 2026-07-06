@@ -1,4 +1,4 @@
-"""Checks for the Cayley-form prediction (sosl.objects.cayley).
+"""Checks for the Cayley-form prediction (sosl.sos.hypothesis).
 
 Self-contained. Run from the repo root:
 
@@ -11,7 +11,7 @@ pair predicts None. Prints OK lines, or raises on the first failure.
 """
 from __future__ import annotations
 
-from sosl.objects import EMPTY, Alphabet, Hypothesis, Lasso
+from sosl.sos import EMPTY, Alphabet, Hypothesis, Lasso
 
 
 def gfa_hypothesis() -> Hypothesis:

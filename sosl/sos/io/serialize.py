@@ -17,10 +17,10 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, Tuple
 
-from sosl.objects.alphabet import EMPTY, Alphabet, Letter, Word
-from sosl.objects.cayley import Hypothesis
-from sosl.objects.invariant import Invariant
-from sosl.objects.residuals import Residuals
+from ..alphabet import EMPTY, Alphabet, Letter, Word
+from ..hypothesis import Hypothesis
+from ..invariant import Invariant
+from ..residuals import Residuals
 
 SOS_MAGIC = "SOS v1"
 CAYLEY_MAGIC = "CAYLEY v1"

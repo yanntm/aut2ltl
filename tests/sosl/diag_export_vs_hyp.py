@@ -16,8 +16,8 @@ import sys
 from sosl.learn.export import export
 from sosl.learn.learner import _build_hypothesis, _stabilize
 from sosl.learn.table import Table
-from sosl.objects import Lasso
-from sosl.objects.cayley import loop_reps
+from sosl.sos import Lasso
+from sosl.sos.hypothesis import loop_reps
 from sosl.teacher import HoaTeacher
 from sosl.teacher.equiv import resolve_prediction
 

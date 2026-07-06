@@ -26,8 +26,8 @@ canonical equality (the soundness criterion) and a weaker acceptance check
   there while the hypothesis passes it. That divergence is an expected outcome
   (spec §9, row F2), not a bug.
 
-Thin wrapper: the invariant read-off is `sosl.objects`, the reference and the
-simulator are `sosl.reference` / `sosl.teacher`. No `algorithm.md` — the
+Thin wrapper: the invariant read-off is `sosl.sos`, the reference and the
+simulator are `sosl.sos.build` / `sosl.teacher`. No `algorithm.md` — the
 subtlety is in what is being checked (see `objects/algorithm.md` for the
 read-off and canonical form), not in the checking.
 

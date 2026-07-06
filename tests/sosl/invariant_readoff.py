@@ -1,4 +1,4 @@
-"""Checks for the invariant membership read-off (sosl.objects.invariant).
+"""Checks for the invariant membership read-off (sosl.sos.invariant).
 
 Self-contained. Run from the repo root:
 
@@ -10,7 +10,7 @@ higher-power idempotent path. Prints OK lines, or raises on the first failure.
 """
 from __future__ import annotations
 
-from sosl.objects import EMPTY, Alphabet, Invariant, Lasso
+from sosl.sos import EMPTY, Alphabet, Invariant, Lasso
 
 
 def gfa_invariant() -> Invariant:

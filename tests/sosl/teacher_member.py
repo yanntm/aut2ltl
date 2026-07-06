@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import random
 
-from sosl.objects import EMPTY, Alphabet, Invariant, Lasso
+from sosl.sos import EMPTY, Alphabet, Invariant, Lasso
 from sosl.teacher import HoaTeacher
 
 

@@ -16,9 +16,9 @@ from __future__ import annotations
 from itertools import product
 from typing import Callable, List, Optional, Sequence, Tuple
 
-from sosl.objects.alphabet import Alphabet, Word
-from sosl.objects.cayley import Hypothesis, loop_reps
-from sosl.objects.lasso import Lasso
+from sosl.sos.alphabet import Alphabet, Word
+from sosl.sos.hypothesis import Hypothesis, loop_reps
+from sosl.sos.lasso import Lasso
 
 Member = Callable[[Lasso], bool]
 
@@ -38,7 +38,7 @@ def resolve_prediction(
     """The hypothesis's normative answer for ``lasso``: the cached verdict for
     the reduced pair, or — on a cache miss — the membership of the pair's
     representative lasso ``key(s).loop(e)^omega`` (queried through ``member``),
-    where ``loops`` is `sosl.objects.cayley.loop_reps` (a non-empty loop
+    where ``loops`` is `sosl.sos.hypothesis.loop_reps` (a non-empty loop
     representative per class)."""
     pair = h.stabilized_pair(lasso)
     cached = h.accept.get(pair)

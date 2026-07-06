@@ -22,7 +22,7 @@ from __future__ import annotations
 from typing import Dict, List, Optional, Tuple
 
 from sosl.learn.table import Table
-from sosl.objects.alphabet import EMPTY, Letter, Word, shortlex_key
+from sosl.sos.alphabet import EMPTY, Letter, Word, shortlex_key
 
 
 class Partition:

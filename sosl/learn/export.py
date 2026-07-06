@@ -5,7 +5,7 @@ off the partition's own class numbering — the letter map ``lambda(a) =
 step(start, a)``, the multiplication ``M[c][d] = fold(c, rep(d))``, and the
 accepting linked pairs P (one membership query on ``rep(s).rep(e)^omega`` per
 linked pair, the identity excluded as it is never a loop) — and hands it to the
-shared `canonicalize` normal form (`sosl.objects.canonical`), which re-keys and
+shared `canonicalize` normal form (`sosl.sos.build.canonical`), which re-keys and
 renumbers. Using that shared normal form is what makes an exported invariant
 byte-comparable with a reference-built one.
 """
@@ -15,10 +15,10 @@ from typing import List, Optional
 
 from sosl.learn.columns import Member
 from sosl.learn.partition import Partition
-from sosl.objects.alphabet import Word, shortlex_key
-from sosl.objects.canonical import canonicalize
-from sosl.objects.invariant import Invariant
-from sosl.objects.lasso import Lasso
+from sosl.sos.alphabet import Word, shortlex_key
+from sosl.sos.build.canonical import canonicalize
+from sosl.sos.invariant import Invariant
+from sosl.sos.lasso import Lasso
 
 
 def _loop_rep(p: Partition, c: int) -> Optional[Word]:

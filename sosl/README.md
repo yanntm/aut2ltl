@@ -79,7 +79,7 @@ through the teacher interface. Everything else may lean on `aut2ltl` and spot.
 The objects, teacher, validator, and the query learner (without saturation) are
 in place: the learner reconstructs the invariant end to end and, on many census
 cases, byte-matches the reference. The reference builder wraps the in-repo
-definability pipeline behind the `sosl.objects` vocabulary. Current work is
+definability pipeline behind the `sosl.sos` vocabulary. Current work is
 milestone M2.5 — aligning both sides on the fresh-identity convention
 (`objects/algorithm.md`, `reference/algorithm.md`) — ahead of M3 (saturation +
 exact equivalence). The serialization is `.sos`; milestones and acceptance

@@ -16,7 +16,7 @@ import random
 import sys
 
 from sosl.learn import learn
-from sosl.objects import Lasso
+from sosl.sos import Lasso
 from sosl.teacher import HoaTeacher
 
 

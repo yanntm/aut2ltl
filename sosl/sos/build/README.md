@@ -1,4 +1,4 @@
-# sosl.reference — the reference invariant from a known automaton
+# sos.build — the reference invariant from a known automaton
 
 Build the canonical invariant `I(L)` directly from an HOA automaton, as an
 independent oracle to check the *learned* invariant against. This is the
@@ -8,13 +8,13 @@ ground truth of the soundness harness.
 
 - **`reference(hoa) → Invariant`.** Compute the canonical
   `(C, key, λ, M, P)` for the language of a deterministic Emerson-Lei automaton
-  and hand it back as a `sosl.objects` invariant, serializable to the same
+  and hand it back as a `sos` invariant, serializable to the same
   canonical form the learner emits.
 
 This is mostly an **adapter**: the acceptance-enriched monoid it starts from is
 computed by the in-repo definability pipeline (`tests/probes/dg_common` over
 `aut2ltl/bls/definability`), which is spot-backed and heavy. This module wraps
-that behind the `sosl.objects` vocabulary so the teacher and the validator can
+that behind the `sos` vocabulary so the teacher and the validator can
 use one reference without knowing where it comes from.
 
 It is not *only* plumbing, though. The pipeline quotients over monoid

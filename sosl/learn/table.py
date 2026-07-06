@@ -23,7 +23,7 @@ from __future__ import annotations
 from typing import Dict, List, Tuple
 
 from sosl.learn.columns import Column, Member, OmCol, is_omega, query
-from sosl.objects.alphabet import EMPTY, Alphabet, Word
+from sosl.sos.alphabet import EMPTY, Alphabet, Word
 
 
 class Table:

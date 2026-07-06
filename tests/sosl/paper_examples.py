@@ -22,9 +22,9 @@ from typing import List, Tuple
 from sosl.learn import learn
 from sosl.learn.learner import _stabilize
 from sosl.learn.table import Table
-from sosl.objects import Lasso, dump_invariant
-from sosl.objects.serialize import render_word
-from sosl.reference import reference_of_hoa
+from sosl.sos import Lasso, dump_invariant
+from sosl.sos.io.serialize import render_word
+from sosl.sos.build import reference_of_hoa
 from sosl.teacher import HoaTeacher
 
 _SRC = os.path.join(

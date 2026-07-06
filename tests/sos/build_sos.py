@@ -20,12 +20,12 @@ the canonical deterministic form and run through the definability pipeline
                             linked pairs);
   * the .sos export       — the canonical serialization of the invariant
                             I(L), produced by the sole SoS exporter
-                            (`sosl.objects.dump_invariant`), written to
+                            (`sosl.sos.dump_invariant`), written to
                             `--sos PATH`; with `--residuals` the export carries
                             the optional right-congruence trailer (on for
                             figures, off elsewhere).
 
-The algebra (Tables 2-3, the export) is sourced from `sosl.reference`, the
+The algebra (Tables 2-3, the export) is sourced from `sosl.sos.build`, the
 fixed fresh-identity builder; the EM(D) element dump and the fingerprint's
 `|Q|`/`|EM1|`/group columns come from the definability pipeline.
 
@@ -54,10 +54,10 @@ from aut2ltl.bls.definability.oracle.refine import chase
 from aut2ltl.bls.definability.oracle.family import assemble
 from aut2ltl.bls.definability.dg.synth import DgDecline, synthesize
 
-from sosl.objects import Invariant, dump_invariant
-from sosl.objects.alphabet import Alphabet, Letter
-from sosl.objects.serialize import render_letter, render_word
-from sosl.reference import reference_of_hoa, residuals_of_hoa
+from sosl.sos import Invariant, dump_invariant
+from sosl.sos.alphabet import Alphabet, Letter
+from sosl.sos.io.serialize import render_letter, render_word
+from sosl.sos.build import reference_of_hoa, residuals_of_hoa
 
 
 StateMap = Tuple[int, ...]

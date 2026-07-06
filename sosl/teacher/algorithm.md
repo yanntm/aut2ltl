@@ -46,7 +46,7 @@ The teacher records which strategy certified each `eq`; a run certified only by
 ## Self-check (harness layer 1)
 
 Two independent membership implementations — the simulator above and the
-invariant read-off through the reference builder (`sosl.reference`) — are
+invariant read-off through the reference builder (`sosl.sos.build`) — are
 compared on many seeded random lassos per corpus automaton. Any disagreement is
 a build-stopping bug: it means either the simulator or the reference invariant
 is wrong, and nothing downstream can be trusted until it is resolved.

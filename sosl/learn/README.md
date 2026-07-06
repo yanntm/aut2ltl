@@ -21,7 +21,7 @@ deliverable behind `sos_learn`.
 
 ## The one hard constraint
 
-This module depends on **`sosl.contract` and `sosl.objects` only** — never
+This module depends on **`sosl.contract` and `sosl.sos` only** — never
 `reference`, never `teacher` internals, never spot or `aut2ltl`. Its only
 knowledge of `L` is what the teacher answers. Any import that widens this is a
 layering bug: it would let automaton structure leak into a "learned" result.

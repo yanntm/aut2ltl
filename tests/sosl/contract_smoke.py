@@ -12,7 +12,7 @@ contract.
 from __future__ import annotations
 
 from sosl.contract import Counterexample, Equivalent, EquivResult, Teacher
-from sosl.objects import EMPTY, Alphabet, Hypothesis, Invariant, Lasso
+from sosl.sos import EMPTY, Alphabet, Hypothesis, Invariant, Lasso
 
 
 class InvariantTeacher:

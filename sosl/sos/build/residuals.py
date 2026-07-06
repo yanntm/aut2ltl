@@ -8,7 +8,7 @@ invariant's), ``id 0`` = ``eps``.
 
 Automaton-side and aut2ltl-backed, like `builder`; the learner never calls it.
 Its output is the optional trailer of a `.sos` figure export (see
-`sosl.objects.serialize.dump_invariant`'s ``residuals`` parameter).
+`sos.io.serialize.dump_invariant`'s ``residuals`` parameter).
 """
 from __future__ import annotations
 
@@ -19,9 +19,9 @@ from aut2ltl.bls.definability.generators import extract_generators
 from aut2ltl.bls.definability.oracle.residuals import state_classes
 from tests.probes.dg_common import quotient_of_hoa
 
-from sosl.objects.alphabet import EMPTY, Alphabet, Word
-from sosl.objects.residuals import Residuals
-from sosl.reference.builder import ReferenceError
+from ..alphabet import EMPTY, Alphabet, Word
+from ..residuals import Residuals
+from .builder import ReferenceError
 
 
 def residuals_of_hoa(path: str) -> Residuals:

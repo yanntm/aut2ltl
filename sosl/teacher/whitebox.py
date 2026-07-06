@@ -18,9 +18,9 @@ import buddy
 import spot
 
 from sosl.contract import Counterexample, Equivalent, EquivResult
-from sosl.objects.alphabet import Alphabet, Letter
-from sosl.objects.cayley import Hypothesis
-from sosl.objects.lasso import Lasso
+from sosl.sos.alphabet import Alphabet, Letter
+from sosl.sos.hypothesis import Hypothesis
+from sosl.sos.lasso import Lasso
 from sosl.teacher.equiv import bounded_counterexample
 
 

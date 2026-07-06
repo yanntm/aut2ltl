@@ -22,8 +22,8 @@ from __future__ import annotations
 
 from typing import Dict, Iterable, List, Sequence, Tuple
 
-from sosl.objects.alphabet import EMPTY, Alphabet, Word
-from sosl.objects.invariant import Invariant
+from ..alphabet import EMPTY, Alphabet, Word
+from ..invariant import Invariant
 
 
 def canonicalize(

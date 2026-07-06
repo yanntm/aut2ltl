@@ -1,15 +1,15 @@
-"""Property checks for the sosl.objects primitives (alphabet + lasso).
+"""Property checks for the sosl.sos primitives (alphabet + lasso).
 
 Self-contained, no external input. Run from the repo root:
 
-    python3 -m tests.sosl.objects_primitives
+    python3 -m tests.sosl.sos_primitives
 
 Prints one OK line per checked property, or raises AssertionError on the first
 violation.
 """
 from __future__ import annotations
 
-from sosl.objects import EMPTY, Alphabet, Lasso, shortlex_key
+from sosl.sos import EMPTY, Alphabet, Lasso, shortlex_key
 
 
 def check_canonical_order() -> None:

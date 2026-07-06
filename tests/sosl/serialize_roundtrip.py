@@ -1,4 +1,4 @@
-"""Round-trip and byte-stability checks for sosl.objects.serialize.
+"""Round-trip and byte-stability checks for sosl.sos.io.serialize.
 
 Self-contained. Run from the repo root:
 
@@ -11,7 +11,7 @@ invariant still decides membership the same way. Prints OK lines / the dumped
 """
 from __future__ import annotations
 
-from sosl.objects import (
+from sosl.sos import (
     EMPTY,
     Alphabet,
     Hypothesis,

@@ -32,10 +32,10 @@ from tests.sos.build_sos import (
     li_of_masks,
     em_surjection,
 )
-from sosl.objects import Invariant, Residuals, dump_invariant
-from sosl.objects.alphabet import Letter
-from sosl.objects.serialize import render_letter, render_word
-from sosl.reference import reference_of_hoa, residuals_of_hoa
+from sosl.sos import Invariant, Residuals, dump_invariant
+from sosl.sos.alphabet import Letter
+from sosl.sos.io.serialize import render_letter, render_word
+from sosl.sos.build import reference_of_hoa, residuals_of_hoa
 
 
 def md_table(header: List[str], rows: List[List[str]]) -> List[str]:

@@ -19,8 +19,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, Union
 
-from sosl.objects.alphabet import Word
-from sosl.objects.lasso import Lasso
+from sosl.sos.alphabet import Word
+from sosl.sos.lasso import Lasso
 
 # The learner's one query primitive: decide a lasso.
 Member = Callable[[Lasso], bool]

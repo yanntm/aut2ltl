@@ -23,9 +23,9 @@ from sosl.learn.columns import LinCol, OmCol
 from sosl.learn.export import export
 from sosl.learn.partition import Partition
 from sosl.learn.table import Table
-from sosl.objects.alphabet import Alphabet
-from sosl.objects.cayley import Hypothesis
-from sosl.objects.invariant import Invariant
+from sosl.sos.alphabet import Alphabet
+from sosl.sos.hypothesis import Hypothesis
+from sosl.sos.invariant import Invariant
 from sosl.trace import TRACE_ON, trace
 
 

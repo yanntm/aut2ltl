@@ -25,8 +25,8 @@ from typing import Callable, Dict
 from sosl.learn.columns import LinCol, OmCol
 from sosl.learn.partition import Partition
 from sosl.learn.table import Table
-from sosl.objects.alphabet import EMPTY, Word
-from sosl.objects.lasso import Lasso
+from sosl.sos.alphabet import EMPTY, Word
+from sosl.sos.lasso import Lasso
 from sosl.trace import TRACE_ON, trace
 
 

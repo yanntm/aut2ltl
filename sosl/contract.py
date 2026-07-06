@@ -11,15 +11,15 @@ omega-regular language:
 The learner in `sosl.learn` is written against this Protocol and nothing else —
 no automaton, no spot, no reference builder. Concrete teachers live in
 `sosl.teacher`. This is a contract-floor module: it names only vocabulary from
-`sosl.objects` and defines behavioural types; it depends on no implementation.
+`sosl.sos` and defines behavioural types; it depends on no implementation.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Protocol, Union
 
-from sosl.objects.cayley import Hypothesis
-from sosl.objects.lasso import Lasso
+from sosl.sos.hypothesis import Hypothesis
+from sosl.sos.lasso import Lasso
 
 
 @dataclass(frozen=True)

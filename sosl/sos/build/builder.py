@@ -6,7 +6,7 @@ omega-semigroup ``S(L)+1`` of a deterministic automaton's language. This reads
 that algebra's raw tables, maps its letters onto the sosl alphabet, adjoins the
 identity as a fresh element (see ``algorithm.md`` — the enriched monoid merges a
 neutral word into its identity, which this undoes), and runs the result through
-the shared `sosl.objects.canonical.canonicalize` normal form — so a reference
+the shared `sos.build.canonical.canonicalize` normal form — so a reference
 invariant is byte-comparable with a learned one.
 
 Spot-backed and heavy: the teacher and the validator use it; the learner never
@@ -22,9 +22,9 @@ import spot
 from aut2ltl.bls.definability.generators import extract_generators
 from tests.probes.dg_common import quotient_of_hoa
 
-from sosl.objects.alphabet import Alphabet
-from sosl.objects.canonical import canonicalize
-from sosl.objects.invariant import Invariant
+from ..alphabet import Alphabet
+from .canonical import canonicalize
+from ..invariant import Invariant
 
 _SCRATCH = os.path.join(os.path.dirname(__file__), os.pardir, "logs")
 

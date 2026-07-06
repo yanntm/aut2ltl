@@ -11,7 +11,7 @@ lines, or raises on the first failure.
 from __future__ import annotations
 
 from sosl.learn.columns import LinCol, OmCol, is_omega, query
-from sosl.objects import EMPTY, Alphabet, Invariant, Lasso
+from sosl.sos import EMPTY, Alphabet, Invariant, Lasso
 
 
 def gfa_member():

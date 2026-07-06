@@ -10,7 +10,7 @@ This is strictly weaker than the invariant `I(L)` — a right congruence, not th
 two-sided syntactic one — so it is never part of an invariant's identity. It
 rides along a `.sos` serialization only as an optional diagnostic trailer (see
 `serialize.dump_invariant`'s ``residuals`` parameter), useful for figures; it is
-computed on the automaton side (`sosl.reference.residuals_of_hoa`) and is absent
+computed on the automaton side (`sos.build.residuals_of_hoa`) and is absent
 from a learner's export.
 """
 from __future__ import annotations
@@ -18,7 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Tuple
 
-from sosl.objects.alphabet import Word
+from .alphabet import Word
 
 
 @dataclass(frozen=True)

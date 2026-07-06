@@ -1,9 +1,9 @@
-"""Reference vs learner: byte-equality of the canonical .sos (sosl.reference).
+"""Reference vs learner: byte-equality of the canonical .sos (sosl.sos.build).
 
 Single formula per run. From the repo root:
 
-    python3 -m tests.sosl.reference_vs_learner "GF a"
-    python3 -m tests.sosl.reference_vs_learner "F(a & X a)"
+    python3 -m tests.sosl.sos.build_vs_learner "GF a"
+    python3 -m tests.sosl.sos.build_vs_learner "F(a & X a)"
 
 Builds the reference invariant (definability pipeline) and the learned invariant
 (query learner) for the same language and compares their canonical `.sos`. Prints
@@ -18,9 +18,9 @@ import sys
 from typing import Iterator
 
 from sosl.learn import learn
-from sosl.objects import Invariant, Lasso, dump_invariant
+from sosl.sos import Invariant, Lasso, dump_invariant
 from sosl.teacher import HoaTeacher
-from sosl.reference import reference_of_ltl
+from sosl.sos.build import reference_of_ltl
 
 # Cap on lassos checked, so the acceptor check never becomes a 10^8 loop on a
 # large alphabet (the count is ~2^(AP*(stem_max+loop_max)) if enumerated whole).

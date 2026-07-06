@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from sosl.objects.alphabet import Word
+from .alphabet import Word
 
 
 @dataclass(frozen=True)

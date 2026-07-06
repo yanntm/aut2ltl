@@ -19,7 +19,7 @@ exposed to the learner only through queries.
   still be driven identically. The white-box teacher implements the same
   interface internally.
 
-The equivalence strategies and the reference-key audit lean on `sosl.reference`
+The equivalence strategies and the reference-key audit lean on `sosl.sos.build`
 (hence on `aut2ltl`/spot); membership does not. The learner sees none of this —
 only `member` and `equiv`.
 

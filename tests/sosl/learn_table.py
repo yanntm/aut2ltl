@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from sosl.learn.partition import Partition
 from sosl.learn.table import Table
-from sosl.objects.alphabet import EMPTY
+from sosl.sos.alphabet import EMPTY
 from sosl.teacher import HoaTeacher
 
 

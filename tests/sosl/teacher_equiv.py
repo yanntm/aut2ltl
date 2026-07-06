@@ -13,9 +13,9 @@ raises on the first failure.
 from __future__ import annotations
 
 from sosl.contract import Counterexample, Equivalent
-from sosl.objects import EMPTY, Alphabet, Hypothesis
+from sosl.sos import EMPTY, Alphabet, Hypothesis
 from sosl.teacher import HoaTeacher
-from sosl.objects.cayley import loop_reps
+from sosl.sos.hypothesis import loop_reps
 from sosl.teacher.equiv import resolve_prediction
 
 
