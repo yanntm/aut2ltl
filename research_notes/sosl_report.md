@@ -13,8 +13,12 @@ the questions the spec raises; it describes the implementation as it is.
   export). Done.
 - **M2.5 — Convention alignment** (fresh-identity reference builder; the
   learner's `[ε]` singleton rule; the `.sos` fixtures). Done.
-- **M3 — Saturation + exact equivalence.** Next; not started.
-- **M4 — Campaign.** Not started.
+- **M3 — Saturation + exact equivalence.** Done. The two-sided sweep
+  (`sosl/learn/saturate.py`) and the exact equivalence oracle
+  (`sosl/teacher/exact.py`) are landed; every census language reaches its
+  canonical invariant, the Even run reproduces the paper's §4.3 trace, and the
+  two permanent-stall specimens behave as Proposition 4.4 predicts.
+- **M4 — Campaign.** Next; not started.
 
 ## Ground truth: reference builder vs the paper
 
@@ -82,51 +86,75 @@ class but is distinct from `[ε]` (keyed `a;a`). Both `M(c, [ε]) = c` and
 `M([ε], c) = c` hold for every `c`, including such a `c`; there is no reason to
 merge or special-case it.
 
-## Why saturation is mandatory (the M3 step)
+## Saturation
 
 `Invariant.member` reduces a lasso through the class multiplication table
 `mult[c][d] = fold(c, rep[d])`, substituting a class representative in the middle
 of a product. That substitution is sound only when the partition is a **two-sided
-congruence** (`u ~ v` implies both `u·x ~ v·x` and `x·u ~ x·v`). Without
-saturation the table guarantees only the right half, so a pre-saturation export
-can be acceptance-wrong even where the hypothesis is correct — the hypothesis
-folds the literal letters of the queried lasso and never substitutes a
+congruence** (`u ~ v` implies both `u·x ~ v·x` and `x·u ~ x·v`). A table closed
+under fill / close / consist guarantees only the right half, so a pre-saturation
+export can be acceptance-wrong even where the hypothesis is correct — the
+hypothesis folds the literal letters of the queried lasso and never substitutes a
 representative, which is why the two read-offs of one partition can disagree.
 
-Saturation (spec §4.3) is the left-context split that turns the right congruence
-into the two-sided syntactic one, after which the exported invariant is
-well-defined. The plan is as specced:
+Saturation (`sosl/learn/saturate.py`) is the left-context sweep that turns the
+right congruence into the two-sided syntactic one, after which the export is
+well-defined. It runs after fill / close / consist reach a fixpoint and before
+each equivalence query; an escalation restarts the loop, and an equivalence query
+is posed only once a sweep comes back clean.
 
-- The frozen-prefix chain is the stem chain with one extra parameter — a fixed
-  prefix riding inside every queried context. Reuse the stem-chain code.
-- Loop order (spec §3.2): fill / close / consist to fixpoint, then the saturation
-  sweep, restart on any split, and pose an equivalence query only after a sweep
-  comes back clean.
-- Sweep checks are pure table computations (zero queries). Each escalation costs
-  two membership queries plus at most one binary search and splits a class, so
-  the total is bounded by the final class count — no termination risk.
+- For every non-representative table word `p`, its class rep `r0`, and every left
+  class `d` (rep `r`), it compares `fold(d, p)` against `fold(d, r0)` — pure table
+  folding, zero queries. On a mismatch it takes the first column `κ` separating
+  the two fold-class reps and escalates.
+- **Branch 1** — the bits of `r·p` and `r·r0` under `κ` differ: mint the column
+  that reproduces "`r·w` under `κ`" as a bit on the bare candidate `w`.
+- **Branch 2** — those bits agree: exactly one of `r·p` / `r·r0` disagrees with
+  its own fold-class rep under `κ`; the **frozen-prefix chain** binary-searches the
+  flip and mints one column, `κ`'s own prefix frozen in place and the unconsumed
+  segment migrating into the middle component (spec §3.2 step 5, Lemma 4.5).
 
-Saturation is required by the correctness theorem even though the current census
-shows no surviving stall: nothing guarantees every stall is transient, and when
-saturation fires it is cheaper than an equivalence round (two membership queries
-versus a full counterexample harvest).
+Each escalation splits at least one class, so the sweep terminates in at most the
+final class count; a clean sweep is the certificate that the export is sound.
 
-## `F(a ∧ Xa)` and the permanence question
+**One spec correction (branch-1 omega columns).** Reproducing "`r·w` under `κ`"
+as a bit on the bare candidate `w` depends on where `w` sits. For a *linear*
+`κ = (x, y, t)` the candidate is in the finite prefix, so `r` prepends there:
+`(x·r, y, t)`. For an *omega* `κ = (x, y)` the candidate rides in the period, and
+peeling one `r` off the repeating block gives `x·(r·w·y)^ω = x·r·(w·y·r)^ω` — so
+`r` must seed **both** the prefix and the period suffix: `(x·r, y·r)`. The
+bare-prefix form `(x·r, y)` keeps the period `w·y` and does not separate the
+candidate on a prefix-independent language: on `GF(aa)` it maps both `a` and `aa`
+to accepting and the sweep never converges. This is the omega analog of the Lemma
+4.5 correction already made for the frozen-prefix chain (the segment migrates into
+the middle, never the prefix); the same one-line fix applies to spec §3.2 step 4.
 
-`F(a ∧ Xa)` reaches the canonical 6-class object at M2 under the default
-equivalence mode (`[ε] [!a] [a] [!a;a] [a;!a] [a;a]`, byte-equal, export sound).
-It is the language where the pre-saturation right-congruence-only stall is most
-visible: the merge `a·!a → [ε]` is separated only by a context with a non-empty
-*left* prefix (`a·(a!a)·(!a)^ω ∈ L` but `a·(!a)^ω ∉ L`) — precisely the witness a
-right-congruence harvest cannot mint, and precisely what saturation adds.
+## Permanence and exact mode
 
-Whether *any* language admits a **permanent** stall — a non-canonical fixpoint no
-counterexample breaks — is decided per language by `--no-saturation --eq-mode
-exact` (an M3 item; exact mode is not yet built). Exact mode is a decision
-procedure: it either returns a counterexample (the stall is transient) or
-certifies equivalence at a non-canonical fixpoint (the stall is permanent — a
-headline exhibit for the paper's §4.2 open question). Both outcomes are wanted
-results; this run is not to be tuned to "pass".
+Whether a language admits a **permanent** stall — a non-canonical fixpoint no
+counterexample breaks — was the paper's §4.2 open question. It is now settled for
+the two census specimens below: Proposition 4.4 proves both `a_implies_xa` and
+`a_once` permanent (their stalls survive *any* equivalence oracle, exact
+included). `F(a ∧ Xa)`, an earlier candidate, is retired — the census resolves it
+**transient**: it reaches the canonical 6-class object already at M2 (`[ε] [!a]
+[a] [!a;a] [a;!a] [a;a]`, byte-equal), a later counterexample breaking its
+pre-equivalence stall.
+
+Exact mode (`sosl/teacher/exact.py`) is the complete equivalence oracle. It
+decides a hypothesis against `D` through the product of `D`'s reachable
+stem-configs `(state, class)` with the *transformation closure* of the
+hypothesis: each loop word acts on the classes as a function and on `D` as a
+transition/mark profile, so one representative lasso per `(stem-config,
+loop-element)` cell fixes both verdicts, and the shortlex-least cell on which they
+disagree is the minimal counterexample. It returns that lasso or a certificate of
+equality (`sosl/teacher/exact.py`).
+
+Because Proposition 4.4 proves the two specimens permanent, their
+`--no-saturation --eq-mode exact` runs are no longer decision procedures but
+**fixtures for exact mode itself** (spec §9 P4): exact *must* certify their 4- and
+3-class stalls, and a counterexample there would be an exact-mode bug. With
+saturation on, exact drives both to the canonical 5 and 4. Both hold
+(`tests/sosl/exact_fixtures.py`).
 
 ## Minimal stall specimens
 
@@ -188,13 +216,64 @@ reference), so it wrongly **rejects `a^ω`** (exported `False`, teacher `True`).
 Both languages are LTL-definable (aperiodic) and minimal. In each, the M2
 right-congruence merges the `a`-idempotent class into `[!a]`, and the class the
 canonical algebra keeps is separated only by a left context — invisible to lasso
-membership from the initial state. So the equivalence oracle (bounded here, and
-structurally exact) has no counterexample to give: the coarser hypothesis is
-acceptance-equivalent to `L`. Saturation's left-context split is what recovers the
-class. `a_implies_xa` is the cleanest candidate for the paper's §4.2 permanent
-stall — a 5-vs-4 gap reached with no counterexample — and smaller than
-`F(a ∧ Xa)`, which is transient. Permanence is definitively settled by
-`--eq-mode exact` (M3); the structure indicates it holds.
+membership from the initial state. So the equivalence oracle has no counterexample
+to give: the coarser hypothesis is acceptance-equivalent to `L`, and saturation's
+left-context split is what recovers the class. Both stalls are **permanent** —
+Proposition 4.4 proves no oracle breaks them, and exact mode confirms it by
+certifying each stalled fixpoint (4 and 3 classes) with no counterexample; with
+saturation on, each reaches its canonical algebra (5 and 4, byte-equal).
+`a_implies_xa` is the sharpest exhibit: its 5-vs-4 gap is reached with **zero**
+counterexamples, and it is smaller than `F(a ∧ Xa)`, which is transient.
+
+## Saturated runs: conformance and ledgers
+
+With saturation on, every census language reaches its canonical invariant
+byte-equal to the reference builder — the two specimens included
+(`tests/sosl/saturation_gate.py`): `GF(aa)` → 6, `Even` → 5, `EvenBlocks` → 8,
+`a_implies_xa` → 5, `a_once` → 4.
+
+**Even reproduces the paper's §4.3 trace exactly** (`tests/sosl/even_conformance.py`).
+The day-one sweep on the initial 3-class table is clean; one equivalence
+counterexample `(ε, a;a;!a)` splits `a;a`; the four-class sweep then fires first at
+cell `(!a;a, [a])`, branch 2 (the two probe bits agree), and the frozen-prefix
+chain flips at `j = 1 → 2`, minting the **linear** column `(ε, a;!a, a;a;!a)` — not
+the omega column `(a, ε)` a different scan order would produce.
+
+The saturated runs of the two Büchi census cases produce the split and query
+ledgers below (`tests/sosl/m3_ledgers.py`; routine close/consist splits are folded
+into the initial stabilized class count, and one mint can split more than one
+class on re-stabilization).
+
+**Even** — `(aa)*·!a·Σ^ω`, reference 5 (initial stabilized 3):
+
+```
+ #  trigger           chain   n      split          column
+ 1  cex (ε, a;a;!a)   stem    3->4   a -> a, a;a    ε·[]·!a , (a;a;!a)^ω
+ 2  saturation        frozen  4->5   a -> a, a;!a   ε·[]·a;!a , (a;a;!a)^ω
+
+member: fill 32 / harvest 4 / saturation 7 / P-cache 8 / total 51
+equiv 2 · cex 1 · sat 1 · columns lin/om 2/1
+```
+
+**EvenBlocks** — 2-state prefix-independent, `Fin(0) & Inf(1)`, reference 8
+(initial stabilized 3):
+
+```
+ #  trigger           chain   n      split                              column
+ 1  cex (ε, !a;a;a)   loop    3->4   a -> a, !a;a                       a·([]·a)^ω
+ 2  saturation        frozen  4->6   a -> a, a;a ; !a;a -> !a;a, a;!a   a·([]·!a;a)^ω
+ 3  saturation        frozen  6->8   !a -> !a, a;!a;a ; a;a -> a;a,     ε·([]·!a)^ω
+                                     !a;a;!a
+
+member: fill 67 / harvest 4 / saturation 14 / P-cache 14 / total 99
+equiv 2 · cex 1 · sat 2 · columns lin/om 0/4
+```
+
+Both complete with a **single** counterexample — the feedback's expectation, the
+`a;!a` split having moved from an equivalence harvest to the sweep. `EvenBlocks`,
+being prefix-independent, is carried entirely by omega columns (all frozen-chain
+mints); the branch-1 omega correction above is the analogous fix that lets the
+sweep converge on `GF(aa)`.
 
 ## Probes (under `tests/sosl/`)
 
@@ -215,56 +294,11 @@ stall — a 5-vs-4 gap reached with no counterexample — and smaller than
   divergence lasso.
 - `emit_canonical.py` — writes an input's canonical form `D` (the sos import
   layer's output) as HOA; the form reported for a specimen in `research_notes/`.
-
----
-
-# Theory thread feedback — 2026-07-06, on the report above
-
-This is the strongest report of the project so far, and the "Minimal stall
-specimens" section is its best part — not because the specimens exist, but
-because of *how* they were found and presented: the census run as the spec's
-E2 prescribes, surviving stalls treated as first-class output, and each
-specimen delivered with exactly what the theory side needs (canonical `D`,
-both `.sos` objects, both partitions, the shortlex divergence lasso, links to
-the generated sources). Keep that anatomy as the template for every future
-exhibit. The identity-convention and saturation sections restate the theory
-correctly in your own words — that is how we can tell it landed. The
-phantom-pair fix is verified on all six generated files: totals are now the
-true ones (1 of 10, 1 of 10, 3 of 8, 6 of 14, and the specimens' 6 of 9 and
-1 of 4, each of which the theory thread re-derived by hand-enumeration and
-confirmed).
-
-One upgrade to your findings: where the report says permanence "is decided
-per language by `--eq-mode exact`" and "the structure indicates it holds" —
-it no longer merely indicates. The paper now *proves* both specimens
-permanent (Proposition 4.4 in `sos_learning.md` §4.2, which quotes your
-census as its source). For `a_implies_xa`: the predicting stem class
-`s = ψ(w·z^k)` is always a commitment class, because the only uncommitted
-non-empty word is the single letter `a` and normalization can never leave it
-as a stem (`z = a` forces `k = 2`); commitment classes have faithful
-representatives, so every prediction equals the teacher's verdict and no
-counterexample exists — against *any* oracle. For `a_once`: the alive class
-squares to dead, so the loop idempotent is always dead, and an alive stem
-class forces a pure-`!a` loop, on which the representative lasso answers
-correctly. Consequence for M3: the `--no-saturation --eq-mode exact` runs on
-these two are no longer decision procedures — they are **fixtures for exact
-mode itself** (spec §9, new row P4): if exact returns a counterexample there,
-exact mode has the bug. And `F(a ∧ Xa)` is retired as a candidate — your own
-census resolved it transient (byte-equal at M2).
-
-Before starting M3, re-read spec §3.2 steps 4–5, §8 (M3 bullet), and §9 —
-all revised today. The one that matters most: **step 5's frozen-prefix-chain
-line was wrong in the spec** (it minted `(x0 . key(...), ...)`, absorbing a
-representative into the prefix; correct is the frozen prefix `x0` alone, the
-unconsumed segment migrating into the middle component — paper Lemma 4.5).
-Implementing the old line would have failed the Even paper-trace conformance
-gate in confusing ways. Also pinned: `kappa` selection (first separating
-column in creation order) and the branch-2 side selection (exactly one side
-disagrees — assert it, no tie-break exists). Two expectations so nothing
-looks like a regression: with saturation on, Even completes with ONE
-counterexample (the `a·!a` split moves from a harvest to the sweep — the
-paper's §4.3 trace, now a conformance gate), and census query ledgers will
-drift from this report's M2 table — record the new ones, don't chase the old.
-When the EvenBlocks run lands, send the theory thread its split ledger and
-the two query ledgers: the paper's Table 8 and Proposition 5.2's grounding
-are waiting on exactly those.
+- `saturation_gate.py` — learns every census source with saturation on and
+  asserts byte-equality to the reference (the M3 end-to-end gate).
+- `even_conformance.py` — asserts the Even run reproduces the paper's §4.3 trace
+  (clean day-one sweep, one cex, the exact sweep-minted linear column).
+- `exact_fixtures.py` — exact mode: certification on the proven-permanent stalls
+  under `--no-saturation` (spec P4), and canonical byte-equality with saturation.
+- `m3_ledgers.py` — the split and per-phase query ledgers of a saturated run; a
+  prototype of the campaign audit renderer.
