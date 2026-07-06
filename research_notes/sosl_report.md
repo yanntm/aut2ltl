@@ -215,3 +215,56 @@ stall — a 5-vs-4 gap reached with no counterexample — and smaller than
   divergence lasso.
 - `emit_canonical.py` — writes an input's canonical form `D` (the sos import
   layer's output) as HOA; the form reported for a specimen in `research_notes/`.
+
+---
+
+# Theory thread feedback — 2026-07-06, on the report above
+
+This is the strongest report of the project so far, and the "Minimal stall
+specimens" section is its best part — not because the specimens exist, but
+because of *how* they were found and presented: the census run as the spec's
+E2 prescribes, surviving stalls treated as first-class output, and each
+specimen delivered with exactly what the theory side needs (canonical `D`,
+both `.sos` objects, both partitions, the shortlex divergence lasso, links to
+the generated sources). Keep that anatomy as the template for every future
+exhibit. The identity-convention and saturation sections restate the theory
+correctly in your own words — that is how we can tell it landed. The
+phantom-pair fix is verified on all six generated files: totals are now the
+true ones (1 of 10, 1 of 10, 3 of 8, 6 of 14, and the specimens' 6 of 9 and
+1 of 4, each of which the theory thread re-derived by hand-enumeration and
+confirmed).
+
+One upgrade to your findings: where the report says permanence "is decided
+per language by `--eq-mode exact`" and "the structure indicates it holds" —
+it no longer merely indicates. The paper now *proves* both specimens
+permanent (Proposition 4.4 in `sos_learning.md` §4.2, which quotes your
+census as its source). For `a_implies_xa`: the predicting stem class
+`s = ψ(w·z^k)` is always a commitment class, because the only uncommitted
+non-empty word is the single letter `a` and normalization can never leave it
+as a stem (`z = a` forces `k = 2`); commitment classes have faithful
+representatives, so every prediction equals the teacher's verdict and no
+counterexample exists — against *any* oracle. For `a_once`: the alive class
+squares to dead, so the loop idempotent is always dead, and an alive stem
+class forces a pure-`!a` loop, on which the representative lasso answers
+correctly. Consequence for M3: the `--no-saturation --eq-mode exact` runs on
+these two are no longer decision procedures — they are **fixtures for exact
+mode itself** (spec §9, new row P4): if exact returns a counterexample there,
+exact mode has the bug. And `F(a ∧ Xa)` is retired as a candidate — your own
+census resolved it transient (byte-equal at M2).
+
+Before starting M3, re-read spec §3.2 steps 4–5, §8 (M3 bullet), and §9 —
+all revised today. The one that matters most: **step 5's frozen-prefix-chain
+line was wrong in the spec** (it minted `(x0 . key(...), ...)`, absorbing a
+representative into the prefix; correct is the frozen prefix `x0` alone, the
+unconsumed segment migrating into the middle component — paper Lemma 4.5).
+Implementing the old line would have failed the Even paper-trace conformance
+gate in confusing ways. Also pinned: `kappa` selection (first separating
+column in creation order) and the branch-2 side selection (exactly one side
+disagrees — assert it, no tie-break exists). Two expectations so nothing
+looks like a regression: with saturation on, Even completes with ONE
+counterexample (the `a·!a` split moves from a harvest to the sweep — the
+paper's §4.3 trace, now a conformance gate), and census query ledgers will
+drift from this report's M2 table — record the new ones, don't chase the old.
+When the EvenBlocks run lands, send the theory thread its split ledger and
+the two query ledgers: the paper's Table 8 and Proposition 5.2's grounding
+are waiting on exactly those.

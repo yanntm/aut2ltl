@@ -240,14 +240,19 @@ Procedures (all query counts logged by phase):
    every class `d`: compare `fold(d, p)` vs `fold(d, r0)` (zero queries; a
    `fold(d, w)` starts the letterwise fold at `d`). On a mismatch
    `c_a != c_b`, *escalate*:
-   - let `kappa` be a column separating `rep(c_a)` from `rep(c_b)` (one must
-     exist); query the two bits of `r.p` and `r.r0` under `kappa`'s context,
-     where `r = rep(d)`;
+   - let `kappa` be a column separating `rep(c_a)` from `rep(c_b)` — one must
+     exist; if several do, take the FIRST in creation order (the initial
+     omega column, then minted columns in mint order — pinned for
+     reproducibility); query the two bits of `r.p` and `r.r0` under `kappa`'s
+     context, where `r = rep(d)`;
    - if the bits differ: mint the column with `r` absorbed into the prefix
      (`(x.r, y, t)` or `(x.r, y)`); this splits `class(p)`;
    - if they agree: one of the two words disagrees with the representative of
-     its own fold class under `kappa`; run the **frozen-prefix chain** (below)
-     on that word inside `kappa`'s context; this splits some class.
+     its own fold class under `kappa` — EXACTLY one: the two representative
+     bits differ and the two queried bits are equal, so the shared bit
+     matches one side and mismatches the other; no tie-break exists, assert
+     it. Run the **frozen-prefix chain** (below) on that word inside
+     `kappa`'s context; this splits some class.
 
    Scan order (normative — transcripts must be byte-reproducible): subjects
    `p` in shortlex order, classes `d` in class-id order; escalate on the
@@ -273,9 +278,19 @@ Procedures (all query counts logged by phase):
      `d_i = member( key(psi(w')), key(psi(z'[1..i])) . z'[i+1..] )`,
      `i = 0..|z'|`; binary-search a flip; mint omega column
      `(key(psi(w')), z'[i+2..])`;
-   - *frozen-prefix chain* (used by saturation): same as the stem chain but
-     with a fixed extra prefix `x0` riding along inside the queried context
-     and the flip column minted as `(x0 . key(...), ..., ...)`.
+   - *frozen-prefix chain* (used by saturation): the stem chain's replacement
+     scheme, run on the segment `g = r.p` INSIDE the separating column
+     `kappa`'s context, with `kappa`'s own prefix `x0` frozen in place. For a
+     linear `kappa = (x0, y0, t0)`: bits
+     `member(x0 . rep(psi(g[1..j])) . g[j+1..] . y0, t0)`, flip column
+     `(x0, g[j+2..] . y0, t0)`. For an omega `kappa = (x0, y0)`: bits
+     `member(x0, rep(psi(g[1..j])) . g[j+1..] . y0)`, flip column
+     `(x0, g[j+2..] . y0)`. In both sorts the minted column's prefix is `x0`
+     ALONE — the unconsumed segment migrates into the middle component, never
+     into the prefix. (An earlier revision of this line wrote the mint as
+     `(x0 . key(...), ...)`; that was WRONG — only the first branch of step 4
+     absorbs a representative into the prefix. Reference: paper Lemma 4.5 and
+     the §4.3 worked chain.)
    - Every flip splits exactly one class: the frontier word
      `key(c_i).letter` leaves the class of `key(c_{i+1})`.
 6. **export** — at fixpoint: `M(c, c') = fold(c, key(c'))`; re-key every class
@@ -517,10 +532,27 @@ check but fail byte-equality.
   committed.
 - **M3 — Saturation + exact equivalence.** Accept: end-to-end gate (layer 4)
   green on the full census; metamorphic checks green; E0 report produced.
-  Additionally: run `--no-saturation --eq-mode exact` on `F(a & Xa)` and
-  record whether the stall is permanent — this either mints the paper's
-  open exhibit or closes the candidate; **both outcomes are wanted
-  results**, do not tune anything to make this run "pass".
+  Plus three M3-specific gates *(revised 2026-07-06: the permanence question
+  is now settled by theory — paper Proposition 4.4 proves the `a_implies_xa`
+  and `a_once` stalls permanent; `F(a & Xa)` was resolved transient by the
+  census — so the exact-mode runs change role from decision to fixture)*:
+  - *Paper-trace conformance (Even).* With saturation on, the Even run must
+    reproduce the paper's §4.3 trace exactly: day-one sweep clean; one
+    equivalence counterexample `(eps, a;a;!a)` splits `a;a`; the four-class
+    sweep then fires FIRST at cell `(!a;a, [a])`, second branch (probes
+    equal), frozen chain flips at `j = 1 -> 2`, mints the linear column
+    `(eps, a;!a, a;a;!a)`. If the run mints the omega column `(a, eps)`
+    instead, the sweep scan order is not per spec (step 4) — fix the order,
+    not the paper.
+  - *Exact-mode fixtures.* `--no-saturation --eq-mode exact` on
+    `a_implies_xa` and `a_once` MUST certify their stalled fixpoints (4 and
+    3 classes): Proposition 4.4 proves no counterexample exists, so a
+    returned counterexample here is an exact-mode bug, full stop. With
+    saturation AND exact, both must reach canonical (5 and 4) byte-equal.
+  - *Deliverables to the theory thread.* The EvenBlocks split ledger (the
+    paper's Table 8 rows 2–5: trigger, chain, minted column, split, per
+    split) and the per-phase query ledgers of the Even and EvenBlocks runs —
+    both waiting as `TBD-M3` slots in `sos_learning.md` §5.
 - **M4 — Campaign.** Driver, ROLL wrapper, E1–E5 executed, results CSV and
   figures generated by script (no hand-edited numbers anywhere).
 
@@ -551,6 +583,8 @@ recorded outcome, not a defect.
 | F2 | acceptor check on the exported `.sos` | M2 / `--no-saturation` | MAY be red | export presumes two-sidedness (3.2 step 6 caveat); diagnostic only |
 | F3 | equivalence returns a lasso the hypothesis already predicts correctly | any | must NOT happen | teacher bug (equivalence strategy or minimization) |
 | F4 | budget exhausted on a census case | any | should not happen | flag it; census cases are sized to finish |
+| P4 | exact mode certifies the proven-permanent stalls (`a_implies_xa`, `a_once` under `--no-saturation`) | M3+ | always green | a counterexample here = exact-mode bug — paper Prop. 4.4 proves none exists |
+| F5 | byte-equality on `a_implies_xa` / `a_once` under `--no-saturation` | any | red, FOREVER | that is the theorem, not a flake; record `ACCEPTOR_ONLY` |
 
 Two "surprising green" notes, so nobody distrusts a passing run:
 
@@ -568,3 +602,9 @@ Two "surprising green" notes, so nobody distrusts a passing run:
 Convention changes (like M2.5) invalidate fixtures wholesale: if many checks
 go red at once right after one, regenerate the reference fixtures first and
 re-run before reading any individual failure.
+
+Ledger drift at M3 is expected, not a regression: turning saturation on
+changes the census query counts recorded at M2 — some equivalence rounds
+become two-probe sweep escalations. Concretely, Even should complete with ONE
+counterexample instead of two (the `a;!a` split moves from a harvest to the
+sweep). Record the new ledgers; do not chase the old numbers.
