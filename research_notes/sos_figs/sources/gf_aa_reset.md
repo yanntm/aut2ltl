@@ -72,7 +72,7 @@ State: 1
 5  5  5  5  5  5  5
 ```
 
-*Accepting linked pairs* (1 of 16): `([a;a],[a;a])`.
+*Accepting linked pairs* (1 of 10): `([a;a],[a;a])`.
 
 ### Invariant `𝓘(L)` — `.sos` serialization
 

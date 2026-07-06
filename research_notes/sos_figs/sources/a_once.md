@@ -67,7 +67,7 @@ State: 2
 3  3  3  3  3
 ```
 
-*Accepting linked pairs* (1 of 8): `([a],[!a])`.
+*Accepting linked pairs* (1 of 4): `([a],[!a])`.
 
 ### Invariant `𝓘(L)` — `.sos` serialization
 

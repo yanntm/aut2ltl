@@ -74,7 +74,7 @@ State: 3
 4  4  1  2  3  4
 ```
 
-*Accepting linked pairs* (3 of 13): `([!a],[!a])`, `([!a],[a;!a])`, `([!a],[a;a])`.
+*Accepting linked pairs* (3 of 8): `([!a],[!a])`, `([!a],[a;!a])`, `([!a],[a;a])`.
 
 ### Invariant `𝓘(L)` — `.sos` serialization
 

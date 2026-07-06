@@ -76,14 +76,20 @@ class Invariant:
         return (s, e) in self.accept
 
     def linked_pairs(self) -> FrozenSet[Tuple[int, int]]:
-        """All linked pairs ``(s, e)``: ``e`` idempotent and ``mult[s][e] == s``.
-        The accepting set ``accept`` is a subset of these."""
+        """All linked pairs ``(s, e)``: ``e`` idempotent and ``mult[s][e] == s``,
+        with the identity class excluded as a loop — an empty loop is not a lasso
+        (spec §1.1), so ``e`` is never ``[eps]``. ``s`` is never ``[eps]`` either:
+        ``mult[identity][e] == e``, so ``mult[s][e] == s`` with ``e != identity``
+        cannot hold for ``s == identity`` (the assert below never fires). Without
+        this exclusion every class would form a phantom pair ``(s, [eps])``. The
+        accepting set ``accept`` is a subset of these."""
         pairs = []
         for e in range(self.n):
-            if self.mult[e][e] != e:
+            if e == self.identity or self.mult[e][e] != e:
                 continue
             for s in range(self.n):
                 if self.mult[s][e] == s:
+                    assert s != self.identity, s
                     pairs.append((s, e))
         return frozenset(pairs)
 
