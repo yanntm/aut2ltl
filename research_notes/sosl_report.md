@@ -116,3 +116,222 @@ one, after which the exported invariant is well-defined and canonical.
   deterministic sample — never a 10⁸ loop on a large alphabet).
 - `diag_export_vs_hyp.py` — isolates export-vs-hypothesis divergence; the tool
   that proved the `F(a ∧ Xa)` bug is in the two-sided read-off, not the core.
+
+---
+
+# Theory thread reply — 2026-07-06
+
+*Appended by the theory thread in response to the report above. Read this
+fully before the next coding session. The specification
+(`research_notes/sos_learner_spec.md`) was revised in the same pass — new
+§1.1 (identity convention), new §9 (expected failures), new milestone M2.5,
+corrected §3.3 and §5.6. The spec is the normative document; this reply
+explains the why. If they ever seem to disagree, the spec wins — and tell us.*
+
+## Verdict up front
+
+M2 is in better shape than the status table suggests. Every anomaly in the
+report traces back to exactly two causes, both now identified, both small:
+
+1. a latent **convention bug in the reference builder** — the ground-truth
+   side, not the learner (the evidence is in your own table: `GF a → 2` but
+   `F a → 3` is inconsistent under *any* single convention; details in Q1);
+2. the learner's **eps-merge deviation** — which was a locally rational
+   response to (1): you made the learner match the reference, and the
+   reference was the side that was wrong.
+
+The learner core — table, chains, folds — shows no sign of any defect. In
+fact the Even fixpoint you found (`{ε, aa}, {!a}, {a}, {a!a}`) is *exactly*
+the canonical algebra under the alternative identity convention: the
+machinery did precisely the right thing under the convention it was
+accidentally handed. Nothing in M2's design changes. M3 proceeds as
+specified, after a small alignment milestone (M2.5, spec §8).
+
+And to reset one expectation: the `F(a ∧ Xa)` acceptance-wrong export is
+**predicted by the theory**, not a defect (Q3 below). The spec now has a
+table (§9) saying which red checks are *expected* at which milestone.
+Consult it before treating any red as a bug.
+
+## Q1 — eps convention: always adjoin a FRESH identity. Fix the reference, revert the learner.
+
+**Decision (now normative, spec §1.1).** The class set is: the classes of
+non-empty words, **plus a fresh identity class `[ε]`, always** — even when
+some non-empty word behaves neutrally. So the class count is always
+(number of non-empty-word classes) + 1, and it must come out the same from
+every automaton presenting the same language.
+
+**Why this convention and not the merging one** — three reasons, in order of
+weight:
+
+1. *Safety of the prediction machinery.* Predictions and the P-cache answer
+   through the representative lasso `key(s)·key(e)^ω`. If a non-empty word is
+   ever merged into `[ε]`, a loop can fold to `e = [ε]`, and the
+   representative lasso has an **empty loop** — no such lasso exists, so the
+   P-cache has nothing well-defined to query. Concrete instance from your own
+   run: on Even you had `aa ∈ [ε]`; predicting the lasso `(ε, aa)` folds
+   `e = [ε]` and asks the teacher about `ε·(ε)^ω`, which is not a word.
+   Keeping `[ε]` a permanent singleton makes this failure *structurally
+   impossible*: every non-identity class has a non-empty key, so every
+   representative lasso is well-formed.
+2. *It is what the paper's hand-traces, the fixtures, and the original spec
+   §3.2 already assume.* The triptych fingerprints (6 / 5 / 7) are counted
+   under it.
+3. *Both conventions are canonical if applied uniformly* — this is a
+   convention choice, not a truth question, so we pick the one that is safe
+   for the learner and matches the existing corpus. (There is a notational
+   subtlety versus textbook semigroup usage; the theory thread owns that on
+   the paper side. Not your problem.)
+
+**The bug is in the reference builder, and your own numbers prove it.**
+`GF a → 2` classes but `F a → 3`. For *both* languages the non-empty words
+fall into exactly two classes — the words containing an `a` and the `a`-free
+words (check by hand: for both languages, inserting or deleting `!a`'s never
+changes any membership, and any two non-empty words with the same
+"contains an `a`" bit are interchangeable in every context). So a uniform
+convention must give the same count for both: 2-and-2 (merging) or 3-and-3
+(fresh identity). The observed 2-and-3 means the builder merges only
+*sometimes*. Likely mechanism: in a 1-state automaton for `GF a`, the
+enriched element of `!a` literally *equals* the enriched identity `⟦ε⟧`
+(same state map, no marks), so a quotient over elements cannot see that
+`[!a]` and `[ε]` are different classes of *words* — they sit on the same
+element. In the `F a` automaton the accepting sink's marks keep
+`⟦!a⟧ ≠ ⟦ε⟧`, no collision, count one higher. Consequence: the class count
+depends on the presentation — exactly what Theorem 5.1 (byte-equality =
+language equality) cannot tolerate. This is a genuine canonicity bug, worth
+fixing regardless of everything else here.
+
+**The fix, on each side:**
+
+- *Reference builder:* quotient only the elements reachable as images of
+  **non-empty** words; adjoin the identity as a **fresh element** no word
+  class can collide with; key every non-identity class by its shortlex-least
+  **non-empty** word. A word whose enriched element happens to equal `⟦ε⟧`
+  (like `!a` in 1-state `GF a`) is then an ordinary class with key `!a`.
+- *Learner:* revert the eps-merge; restore spec §3.2 exactly as written
+  (`[ε]` permanent singleton, never compared, nothing ever merges into it).
+  The `GF a` disagreement that motivated the merge disappears once the
+  reference is fixed: both sides will then say 3.
+
+**Expected reference counts after the builder fix** (these become the new
+fixture values; the triptych rows double as the regression guard — those
+three must NOT move):
+
+| language | fixed reference | was | note |
+|---|:--:|:--:|---|
+| GF a | **3** | 2 | the bug case; `[ε], [a], [!a]` |
+| F a | 3 | 3 | unchanged |
+| a U b | 4 | 4 | unchanged |
+| GF(aa) | 6 | 6 | triptych — must not move |
+| Even | 5 | 5 | triptych — must not move |
+| EvenBlocks | 7 | 7 | triptych — must not move |
+| F(a ∧ Xa) | 6 | 6 | expected unchanged — verify |
+
+**One subtlety, so nobody "fixes" it later.** A non-empty class CAN behave
+like an identity on all the *other* non-empty classes. `[aa]` in Even does:
+in the paper's multiplication table, the `[aa]` row and column act as the
+identity on every class except `[ε]`. That is correct, and it stays its own
+class (keyed `a;a`), distinct from `[ε]`. Do not merge it, do not
+special-case it. There is no contradiction: `M(c,[ε]) = c` and
+`M([ε],c) = c` hold for every `c`, including such a `c` — both facts sit in
+the table together.
+
+## Q2 — saturation (M3): proceed exactly as specced
+
+Nothing in the M2 findings changes the M3 design. Practical notes:
+
+- The frozen-prefix chain is the stem chain with one extra parameter (a
+  fixed prefix riding along inside every queried context) — reuse the
+  stem-chain code, do not write new machinery.
+- Loop order is normative (spec §3.2, "Main loop"): fill / close / consist
+  to fixpoint, then the saturation sweep, restart on any split, and only
+  pose an equivalence query once a sweep comes back clean.
+- Sweep checks are pure table computations (zero queries). Escalations cost
+  two membership queries plus at most one binary search, and each escalation
+  splits a class, so the total is bounded by the final class count — no
+  termination risk.
+
+## Q3 — `F(a ∧ Xa)`: an expected failure, and how to settle it for good
+
+**Why the export was wrong, in plain terms.** The exported invariant decides
+a lasso by multiplying *classes*: `mult[c][d] = fold(c, rep(d))` replaces a
+word by its class representative *in the middle of a product*. That
+substitution is only valid when the partition is a congruence on **both**
+sides (`u ~ v` must imply both `u·x ~ v·x` and `x·u ~ x·v`). Before
+saturation the table only guarantees the right-hand half. The hypothesis, by
+contrast, never substitutes a representative inside a product — it folds the
+literal letters of the queried lasso — which is why it stayed correct on
+every tested lasso while the export from the *same partition* got
+`a·(a!a!a)^ω` wrong. Same partition, two read-offs, only one of them sound.
+`diag_export_vs_hyp.py` localized this exactly right.
+
+This is the paper's §4.2 gap observed live, now codified in the spec:
+pre-saturation exports are diagnostic only; acceptor checks for M2 and
+`--no-saturation` runs target the **Cayley hypothesis**, not the `.sosg`
+(spec §3.3, §5.6); `ACCEPTOR_ONLY` is a *success* verdict for those configs
+(spec §9, rows F1/F2).
+
+**Also worth recording:** the merge `a!a → [ε]` on `F(a ∧ Xa)` is genuinely
+wrong — the linear context with left prefix `x = a` and tail `t = !a`
+separates them (`a·a!a·(!a)^ω ∈ L` but `a·(!a)^ω ∉ L`) — yet the separating
+context needs a non-empty *left* prefix, precisely the kind of witness the
+M2 harvest cannot mint. This is the cleanest live specimen of the paper's
+"one-sided error signal" so far. Keep its audit log.
+
+**Permanence — the open question — is decidable, so we will not argue; we
+will run it.** Two steps:
+
+1. The current evidence is confounded by the eps-merge (it changed *which*
+   merges happened). After M2.5, re-run `F(a ∧ Xa)` and dump the new M2
+   fixpoint partition for the theory thread.
+2. At M3, once `--eq-mode exact` exists, run `--no-saturation --eq-mode
+   exact` on `F(a ∧ Xa)`. Exact mode is a decision procedure: either it
+   returns a counterexample (the stall was transient — the candidate dies),
+   or it certifies equivalence at a non-canonical fixpoint (the stall is
+   permanent — that run, its audit log, and the two fixpoint objects become
+   a headline exhibit in the paper). **Both outcomes are wanted results.**
+   Do not try to make this test "pass"; its job is to tell us which world we
+   are in.
+
+## What to expect after M2.5 (predictions — check them, report divergence calmly)
+
+With the builder fixed and the eps-merge reverted, the theory predicts these
+M2 (still no saturation) outcomes. Predictions, not requirements — where
+reality differs, that is data, not failure:
+
+| language | predicted M2 outcome | why |
+|---|---|---|
+| GF a | byte-equal (3) | trivial after the convention fix |
+| F a | byte-equal (3) | all classes split on day-one columns |
+| a U b | likely byte-equal (4) | no left-context trap visible |
+| Even | **byte-equal (5), without saturation** | its stall is transient: an equivalence query returns a counterexample like `(ε, a!a)` and the stem chain splits `a!a` from `a` (paper §4.2–4.3 say exactly this) |
+| GF(aa) | 6, or a coarser transient stall | depends on the EQ bound; either is fine, record it |
+| EvenBlocks | byte-equal (7) | already canonical at M2 today |
+| F(a ∧ Xa) | unknown — the interesting one | dump partition + audit log for the theory thread |
+
+If cases that used to fail byte-equality start passing at M2, that is
+predicted behavior (equivalence queries break transient stalls), not a
+weakened test. Saturation remains mandatory: the correctness theorem needs
+it (nothing guarantees every stall is transient — that is exactly the
+`F(a ∧ Xa)` question), and it is cheaper when it fires (two membership
+queries instead of a whole equivalence round).
+
+## Work order
+
+1. **Reference builder fix** (fresh identity, spec §1.1). Gate: the expected
+   reference-count table above — triptych unchanged at 6 / 5 / 7,
+   `GF a → 3`.
+2. **Learner eps-merge revert** (restore spec §3.2). Same working session as
+   regenerating fixtures, so reference and learner never disagree for a
+   spurious reason in between.
+3. **Re-baseline the M2 status table** — append the new table to this report
+   (do not overwrite the one above; the history is useful).
+4. **M3 saturation** (spec §3.2 step 4), then the M3 acceptance gates.
+5. **Exact equivalence mode**, then the `F(a ∧ Xa)` permanence run (spec §8,
+   M3 bullet).
+
+Nothing in your report was wasted work. The ground-truth leg is solid (it
+reproduces the paper's hand-computed objects exactly), the learner core is
+sound, the `F(a ∧ Xa)` finding is a genuine contribution to the paper's open
+question, and both deviations you shipped were rational under the
+information you had. When in doubt about a red check: spec §9 first, then
+ask the theory thread.

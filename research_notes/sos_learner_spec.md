@@ -4,6 +4,13 @@
 implemented; nothing below exists yet except where explicitly marked
 *(exists in-repo)*.
 
+**Revision 2026-07-06 (theory thread).** Triggered by the M2 findings in
+`sosl_report.md` (the reply appended there explains the *why* of each
+change). New: section 1.1 (identity convention, normative), milestone M2.5
+(section 8), section 9 (expected failures — read it before filing any bug).
+Corrected: sections 3.3 and 5 item 6 (pre-saturation exports are diagnostic
+only; acceptor checks target the Cayley hypothesis until saturation exists).
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -35,6 +42,40 @@ are interchangeable in both context shapes:
 ```
 
 The quotient is a finite monoid (with the empty word as adjoined identity).
+
+### 1.1 Identity convention (normative)
+
+The class set is: the congruence classes of the **non-empty** words, plus a
+**fresh** adjoined identity class `[eps]` — always, even when some non-empty
+word already acts neutrally. Consequences, all mandatory:
+
+- The class count is (number of non-empty-word classes) + 1, and it must be
+  the same from every automaton presenting the same language
+  (presentation-independence is what makes `.sosg` byte-equality a language
+  test).
+- `[eps]` is never merged with the class of any non-empty word. This holds
+  even for a word `w` that acts neutrally (`w.u ~ u` and `u.w ~ u` for all
+  non-empty `u`): such classes exist — `[aa]` in `Even` acts as the identity
+  on every non-identity class — and they remain ordinary classes of their
+  own, keyed by their shortlex-least non-empty word. There is no
+  contradiction with `[eps]`: `M(c,[eps]) = c` and `M([eps],c) = c` hold for
+  every `c`, including a neutral one.
+- `[eps]` can never occur in a linked pair. (Why, for the assert: a linked
+  pair needs `M(s,e) = s`; if `s = [eps]` then `M([eps],e) = e`, forcing
+  `e = [eps]`, and an empty loop is not a lasso. So enumerate pairs over
+  non-identity classes only, and assert `s != [eps]` and `e != [eps]`.)
+- Every non-identity class therefore has a non-empty key, so every
+  representative lasso `key(s).key(e)^omega` is well-formed. The whole
+  prediction / P-cache design relies on this property.
+- The **reference builder** must realize the identity as a fresh element,
+  not as the enriched monoid's identity element: in some presentations a
+  letter's enriched element literally equals the enriched identity (e.g.
+  `!a` in a 1-state automaton for `GF a` — same state map, no marks), and a
+  quotient over elements alone then silently merges `[!a]` into `[eps]`,
+  making the class count presentation-dependent. Correct: quotient only the
+  images of non-empty words; adjoin the identity as a fresh element; a word
+  whose element equals the enriched identity is an ordinary class (key `!a`
+  for `GF a`, giving 3 classes from every presentation).
 
 **The invariant `I(L)`.** The tuple `(C, key, lambda, M, P)`:
 
@@ -167,8 +208,12 @@ contracts):
   `entry[word][column]` where the entry of word `p` is
   `member(x.p.y, t)` for a linear column and `member(x, p.y)`-style
   `member(x.(p.y)^omega)` — i.e. `member(x, p.y)` as a lasso — for an omega
-  column. (`eps` never enters omega-column comparisons; it is a permanent
-  singleton class, the identity.)
+  column. (`eps` never enters any class comparison; it is a permanent
+  singleton class, the fresh identity of section 1.1. No non-empty word may
+  ever be merged into `[eps]` — otherwise a loop can fold to `[eps]` and the
+  P-cache is asked for the representative lasso `key(s).eps^omega`, which
+  does not exist. Any "eps-merge" shortcut is wrong even when the merged
+  word acts neutrally; see section 9 note on convention changes.)
 - **Partition.** Classes over rows+frontier from the bit rows; per class a
   representative `rep(c)` = shortlex-least row; `step(c, a)` = class of
   `rep(c).a`.
@@ -220,8 +265,20 @@ Procedures (all query counts logged by phase):
      `key(c_i).letter` leaves the class of `key(c_{i+1})`.
 6. **export** — at fixpoint: `M(c, c') = fold(c, key(c'))`; re-key every class
    by BFS over `step` from `[eps]` in shortlex letter order (the first word
-   reaching a class is its canonical key); enumerate linked pairs of `M` and
-   fill `P` by one membership query each (or from cache); emit `.sosg`.
+   reaching a class is its canonical key); enumerate linked pairs of `M`
+   over non-identity classes only (section 1.1 shows `[eps]` cannot occur in
+   a linked pair — assert `s != [eps]` and `e != [eps]`) and fill `P` by one
+   membership query each (or from cache) on `member(key(s), key(e))` — both
+   keys non-empty by section 1.1; emit `.sosg`.
+
+   Export soundness caveat: the exported invariant decides lassos by
+   multiplying *classes* (`M` substitutes a representative in the middle of
+   a product), which is meaningful only for a **two-sided** (saturated)
+   congruence. An export taken from a fixpoint reached without saturation
+   may be acceptance-wrong even though the hypothesis's own predictions are
+   all correct (observed on `F(a & Xa)` — see `sosl_report.md`). Such
+   exports are diagnostic artifacts, not deliverables; see sections 3.3
+   and 9.
 
 Main loop: `fill; close; consist;` to fixpoint, then `saturate` (restart on
 split), then `equiv`; on counterexample process and restart; on `eq` run
@@ -232,7 +289,10 @@ Hard invariants (assert, and record in the audit log):
 - every class split stores its *witness*: the column and the two differing
   membership bits (with the exact queried lassos) — replayable;
 - the class count never decreases and never exceeds the reference class count
-  in white-box runs (checked post hoc by the harness, not by the learner);
+  in white-box runs (checked post hoc by the harness, not by the learner;
+  both counts under the section 1.1 identity convention — if this check
+  trips right after a convention-affecting change, regenerate the reference
+  fixtures before suspecting the learner);
 - all runs are deterministic given the teacher's answers.
 
 ### 3.3 Validator *(thin wrapper, mostly exists in-repo)*
@@ -243,6 +303,14 @@ Also `sos_validate --acceptor learned.sosg <file.hoa> --bound B`: checks the
 invariant's membership read-off against direct simulation on all lassos up to
 `B` — used to certify *acceptance-correctness* separately from canonicity
 (needed by experiment E2).
+
+Scope rule (normative): `--acceptor` accepts either a `.sosg` invariant or a
+`CAYLEY` hypothesis. For any fixpoint reached **without** saturation (M2
+builds, `--no-saturation` runs), it MUST be pointed at the Cayley form: the
+`.sosg` read-off presumes a two-sided congruence (section 3.2 step 6 caveat)
+and can legitimately fail on such runs while the hypothesis is fully
+correct. That divergence is an expected outcome (section 9, row F2), not a
+learner bug.
 
 ---
 
@@ -296,9 +364,13 @@ Layered; every layer is automated and green before any experiment is reported.
      identical except for `P` complemented (against linked pairs);
    - permuting `AP` names / letter encodings must commute with learning;
    - re-running with the same seed must reproduce the transcript bit-for-bit.
-6. **Ablation coherence.** `--no-saturation` runs must still pass
-   `sos_validate --acceptor` (acceptance-correct at their fixpoint) even when
-   they fail byte-equality. Both outcomes are recorded, not hidden.
+6. **Ablation coherence.** `--no-saturation` runs must pass
+   `sos_validate --acceptor` **on their Cayley hypothesis** (the learner's
+   own prediction function is acceptance-correct at the fixpoint, to the
+   tested bound). Their *exported* `.sosg` is NOT required to pass — the
+   export read-off presumes a two-sided congruence and may legitimately
+   disagree (sections 3.2/3.3); record the run as `ACCEPTOR_ONLY`. Both
+   outcomes are recorded, not hidden.
 
 ---
 
@@ -403,10 +475,27 @@ check but fail byte-equality.
   green on the census; teacher self-check clean.
 - **M2 — Learner without saturation.** Table, fill/close/consist, chains,
   export. Accept: harness layers 2–3 green; every census case passes the
-  *acceptor* check; byte-equality passes on all cases where it passes (no
-  claim yet on the rest).
+  *acceptor* check (on the Cayley hypothesis — section 3.3 scope rule);
+  byte-equality passes on all cases where it passes (no claim yet on the
+  rest).
+- **M2.5 — Convention alignment** *(added 2026-07-06; do this before M3).*
+  (a) Fix the reference builder to the fresh-identity convention of
+  section 1.1. Regression gate: the triptych stays at 6 / 5 / 7 classes;
+  `GF a` moves 2 -> 3; `F a` stays 3; `a U b` stays 4. (b) Revert the
+  learner's eps-merge (restore the section 3.2 singleton rule) in the same
+  working session as the fixture regeneration, so reference and learner
+  never disagree for a spurious reason in between. (c) Re-baseline the M2
+  status table by *appending* to `sosl_report.md` (never overwrite the old
+  table); the theory reply there ("What to expect after M2.5") lists the
+  predicted per-case outcomes. Accept: reference and learner agree on
+  `GF a`; no assertion fires on the census; the re-baselined table is
+  committed.
 - **M3 — Saturation + exact equivalence.** Accept: end-to-end gate (layer 4)
   green on the full census; metamorphic checks green; E0 report produced.
+  Additionally: run `--no-saturation --eq-mode exact` on `F(a & Xa)` and
+  record whether the stall is permanent — this either mints the paper's
+  open exhibit or closes the candidate; **both outcomes are wanted
+  results**, do not tune anything to make this run "pass".
 - **M4 — Campaign.** Driver, ROLL wrapper, E1–E5 executed, results CSV and
   figures generated by script (no hand-edited numbers anywhere).
 
@@ -414,3 +503,43 @@ Non-goals for this iteration: performance tuning beyond the budgets above,
 black-box teachers other than the wire protocol, alphabets beyond `2^AP`,
 any use of external solvers in the learner path. The learner must remain a
 pure query algorithm: its only source of truth is the teacher interface.
+
+---
+
+## 9. Expected failures — read this before filing a bug
+
+A red check is only a bug if this table says so. "A" rows must always be
+green; "P" rows must be green in the stated config; "F" rows are *allowed*
+(sometimes *expected*) to be red in the stated config, and a red there is a
+recorded outcome, not a defect.
+
+| # | check | config | expectation | on failure |
+|---|---|---|---|---|
+| A1 | teacher self-check (5.1) | all | always green | build-stopping bug; fix before anything else |
+| A2 | definitional property asserts (5.2) | all | always green | learner-core bug |
+| A3 | split-audit replay (5.3) | all | always green | bookkeeping or nondeterminism bug |
+| A4 | same-seed transcript reproduction | all | always green | hidden state; find it |
+| P1 | acceptor check on the CAYLEY hypothesis | any fixpoint, any config | green to the tested bound | real bug: the learner's own predictions disagree with the teacher after equivalence assented |
+| P2 | byte-equality vs reference | M3+, default config | green on every census case | bug — but first suspect stale fixtures from before M2.5 |
+| P3 | learned classes <= reference classes | all (post-M2.5) | green | a split happened without an Arnold witness; replay the split audit |
+| F1 | byte-equality vs reference | M2 / `--no-saturation` | MAY be red | the predicted section-4.2 stall (paper); record `ACCEPTOR_ONLY` and move on |
+| F2 | acceptor check on the exported `.sosg` | M2 / `--no-saturation` | MAY be red | export presumes two-sidedness (3.2 step 6 caveat); diagnostic only |
+| F3 | equivalence returns a lasso the hypothesis already predicts correctly | any | must NOT happen | teacher bug (equivalence strategy or minimization) |
+| F4 | budget exhausted on a census case | any | should not happen | flag it; census cases are sized to finish |
+
+Two "surprising green" notes, so nobody distrusts a passing run:
+
+- After M2.5, cases previously reported as coarser stalls may become
+  byte-equal at M2, *without* saturation. Stalls of the Even / GF(aa) kind
+  are transient: a later equivalence query returns a counterexample that
+  breaks them (paper sections 4.2–4.3). This is correct behavior, not an
+  accidentally weakened test.
+- Saturation (M3) is still required even if many M2 cases pass: the
+  correctness theorem needs it (transience of every stall is not
+  guaranteed — that is exactly the `F(a & Xa)` question), and where a stall
+  is transient, saturation resolves it for two membership queries instead of
+  a whole equivalence round.
+
+Convention changes (like M2.5) invalidate fixtures wholesale: if many checks
+go red at once right after one, regenerate the reference fixtures first and
+re-run before reading any individual failure.
