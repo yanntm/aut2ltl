@@ -24,7 +24,7 @@ of a loop is nothing but a rotation of it — with a binary search in each phase
 a finding of independent interest: an observation table with two-sided columns is
 *still not enough*, because membership's error signal is one-sided — the table can
 stabilize on a correct acceptor coarser than the algebra, an FDFA in algebraic
-clothing. What restores two-sidedness is a *left-saturation* sweep over class
+clothing, and does so *permanently* on a language as plain as `a → Xa`. What restores two-sidedness is a *left-saturation* sweep over class
 representatives whose checks cost no queries at all — the rotation lemma's slot
 collapse reborn on the learner's
 side; with it, the fixpoint is exactly `S(L)₊`, after at most `|𝒞|` class splits
@@ -92,7 +92,9 @@ multiplication table, accepting linked pairs.
 3. The finding: two-sided columns are not enough. Membership's error signal is
    one-sided, and the table can stabilize on a correct acceptor strictly coarser
    than the algebra — the right-congruence obstruction [AF21] reborn one level up.
-   A query-free left-saturation sweep over class representatives — the rotation
+   The stall is real and minimal: `a → Xa` stalls permanently, four classes
+   against five, with zero counterexamples (Proposition 4.4). A query-free
+   left-saturation sweep over class representatives — the rotation
    lemma's slot collapse — restores two-sidedness (§4.2–4.3).
 4. The saturated-fixpoint theorem: termination after at most `|𝒞|` splits, and
    canonicity — the fixpoint *is* `S(L)₊`, exported as `𝓘(L)`; equivalence between
@@ -526,10 +528,61 @@ flavored acceptor: an FDFA in algebraic clothing. This is the obstruction of
 signal* is not — and it is, we believe, the honest reason no observation-table
 route to the syntactic algebra existed: the missing ingredient is not a cleverer
 column format. Neither running specimen realizes the stall *permanently* — in
-both, the wrong merge eventually poisons some prediction, so an equivalence
-query would catch it later (a transient stall). But nothing in the correctness
-argument excludes a permanent one, canonicity is unprovable without the repair
-below, and §5 flags the hunt for a concrete permanent stall as an open exhibit.
+both, the wrong merge eventually poisons some prediction, and a later
+equivalence query catches it (a transient stall). But the permanent stall is
+not a hypothetical, and it does not take an exotic language: an exhaustive
+census of the smallest automata (one atomic proposition; at one state every
+fixpoint is canonical, so these are the smallest possible) finds it already at
+`a → Xa`.
+
+**Proposition 4.4 (the stall, realized).** Let `L = L(a → Xa)` — if the first
+letter is `a`, so is the second — over `Σ = {a, !a}`. The saturation-free
+learner reaches, before its first equivalence query, a closed and consistent
+four-class table — `[ε]`, the singleton `[a]`, a committed-in class
+`C₁ = !a·Σ* ∪ aa·Σ*`, a committed-out class `C₀ = a!a·Σ*` — whose hypothesis
+language is exactly `L`. Every equivalence oracle therefore assents, bounded
+or exact; the fixpoint is strictly coarser than `S(L)₊¹` — four classes
+against five: the two accepting idempotents `[!a]` and `[aa]`,
+right-indistinguishable but separated by the left context `x = a`, stay merged
+inside `C₁` — and the exported multiplication table is acceptance-wrong: it
+rejects `a^ω`.
+
+*Proof.* Membership of an ω-word depends only on its first two letters, so on
+lassos it is a function of the *commitment* of the literal prefix: every word
+of `C₁` begins a member, every word of `C₀` begins a non-member, and the only
+uncommitted non-empty word is the single letter `a` — the class `[a]` is a
+singleton. The four-class partition is closed and consistent (`C₁` and `C₀`
+absorb both letters; `a` steps into one or the other), so the learner reaches
+it and stays. Now take any lasso `w·z^ω` with predicting pair
+`s = ψ(w·z^k)`, `e = ψ(z^k)`. The stem `w·z^k` can never be the word `a`:
+either it is longer than one letter, or `w = ε` and `z = a` — and there
+`k = 1` fails the stabilization test (`ψ(a) = [a]` but `ψ(aa) = C₁`), so
+normalization takes `k = 2` and the stem is `aa`. Hence `s ∈ {C₁, C₀}`
+always, and the prediction — the teacher's bit on `w_s·(w_e)^ω`, with
+`w_{C₁} = !a` and `w_{C₀} = a!a` — equals the commitment of `s`, which equals
+the truth of the queried lasso. No counterexample exists. ∎
+
+The census's second specimen, `a ∧ XG¬a` — the language of the single ω-word
+`a·(!a)^ω` — stalls the same way one step deeper: the canonical `[!a·a]` stays
+merged into `[!a]`, again separated only by `x = a`. There the alive class
+`{a·!a^m}` squares to the dead class, so the loop idempotent `e` is always
+dead, and the stem class `s` stays alive only when the literal `w·z^k` is of
+the form `a·!a^m` — which forces a pure-`!a` loop, on which the representative
+lasso `a·(!a)^ω` answers correctly; any stray `a` in the loop drags `s` to
+dead through the literal fold before the faulty merge can matter. Two
+exhibits, one mechanism, and both minimal:
+
+| specimen | `\|S(L)₊¹\|` | stalled fixpoint | merged pair | separated by | export error |
+|---|:--:|---|---|:--:|---|
+| `a → Xa` | 5 | **4 — zero counterexamples** | `[!a] = [aa]`, both accepting idempotents | `x = a` only | rejects `a^ω` |
+| `a ∧ XG¬a` | 4 | 3 — one counterexample | `[!a] = [!a·a]` | `x = a` only | accepts `a^ω` |
+
+Both languages are LTL-definable and utterly plain: the flagship stall is a
+two-letter implication, on which the saturation-free learner converges, is
+certified by a *complete* equivalence oracle, and exports an algebra that
+mispredicts `a^ω`. Canonicity therefore cannot be recovered from membership
+and equivalence queries alone — the repair below is not an optimization but
+the difference between the algebra and an acceptor.
 
 ### 4.3 The repair: left-saturation over class representatives
 
@@ -543,7 +596,7 @@ class `d` with representative `r = rep(d)`,
     check   fold(d, u) = fold(d, v)          (a pure table computation — zero queries)
 ```
 
-**Lemma 4.4 (saturation progress).** If `fold(d, u) =: c_a ≠ c_b := fold(d, v)`,
+**Lemma 4.5 (saturation progress).** If `fold(d, u) =: c_a ≠ c_b := fold(d, v)`,
 then two membership queries and at most one frozen-prefix binary search yield a
 new separating column and a class split.
 
@@ -592,7 +645,7 @@ means they agree. Twenty checks, zero queries, two hits — both at `d = [a]`,
 both symptoms of the one wrong merge. In scan order the first to fire is
 `(!a·a, [a])`.
 
-Escalate the fired cell (Lemma 4.4): `u = !a·a`, `v = !a`, `d = [a]`,
+Escalate the fired cell (Lemma 4.5): `u = !a·a`, `v = !a`, `d = [a]`,
 `r = a`, diverging folds `c_a = fold([a], !a·a) = [aa]` and
 `c_b = fold([a], !a) = [a]`. Pause on what fired: `!a·a` is *correctly*
 merged with `!a` — the divergence arises because its fold from `[a]` walks
@@ -635,7 +688,7 @@ through the **first** branch — there `c_a = [!a]`, `c_b = [aa]`, the
 separating column is the original ω-column `κ = (ε, ε)`, and the probes
 `A = [(a·a!a)^ω] = 1 ≠ 0 = [(a·a)^ω] = B` differ, minting the ω-column
 `(a, ε)` directly, the left factor absorbed into the column prefix. Same
-split, other arm: one four-class table exercises both branches of Lemma 4.4,
+split, other arm: one four-class table exercises both branches of Lemma 4.5,
 and the fixpoint is the same five classes either way — only the *trace*
 needs the pinned order. Table 6 shows the resulting table, which is final.
 
@@ -665,7 +718,7 @@ table words — and it was a right congruence by Lemma 3.3.
     repeat:
         fill entries (membership queries)
         repair closedness (promote) and consistency (mint) to fixpoint
-        left-saturation sweep; on escalation (Lemma 4.4): split, restart loop
+        left-saturation sweep; on escalation (Lemma 4.5): split, restart loop
         pose EQ(𝓗 = (𝒞_T, λ, step, P))
         if yes: export 𝓘 (§5) and stop
         else: normalize the counterexample; junction query; binary-search the
@@ -692,7 +745,7 @@ of it [SωS26, Thm 5.1].
 a promotion introduces a frontier word differing from every row on some column,
 a consistency minting separates the violating pair on the minted column, a
 saturation escalation and a counterexample harvest each split a class
-(Theorem 4.3, Lemma 4.4). Every such witness is an Arnold context separating
+(Theorem 4.3, Lemma 4.5). Every such witness is an Arnold context separating
 two concrete words, so distinct classes are `≈_L`-distinct at all times, and
 `|𝒞_T| ≤ |S(L)₊¹|` bounds the total.
 
@@ -837,10 +890,11 @@ congruence is the whole story, and every extension since has been a workaround
 for its failure — this one replaces the seed rather than patching it. ⟨TBD: can
 we exhibit a family where some FDFA flavor is exponentially larger than `𝓘`? If
 yes, the comparison cuts both ways and the section gets a theorem; if not, keep
-it empirical.⟩ ⟨TBD: exhibit a concrete `L` where the *unsaturated* stall of §4.2
-is strictly coarser than `S(L)₊` — we believe one exists, by analogy with
-finite-word languages whose syntactic monoid is exponentially larger than their
-residual structure; compute it with the tool once the learner runs.⟩
+it empirical.⟩ The unsaturated stall of §4.2, for its part, is no longer a
+conjecture: Proposition 4.4's `a → Xa` is the smallest exhibit an exhaustive
+census of one-atom automata can produce — found exactly as §6's protocol
+prescribes, by running the ablated learner over the census and treating its
+surviving stalls as first-class output.
 
 ## 6. Evaluation
 
@@ -902,7 +956,8 @@ procedure and a saturation rule — rows, columns, and representative slots of
 lasso queries. On the way we met a finding worth the trip: two-sided columns are
 *not enough*, because membership's error signal is one-sided, and without the
 saturation sweep the table stalls on a correct acceptor that is an FDFA in
-algebraic clothing — the right-congruence obstruction reborn one level up, and
+algebraic clothing — permanently, already on `a → Xa` (Proposition 4.4) — the
+right-congruence obstruction reborn one level up, and
 dissolved by the same slot collapse. The learner's limit is not an acceptor
 chosen from a family but the canonical invariant of the language — the object
 definability questions are read from — so learning and classification cease to
