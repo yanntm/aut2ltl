@@ -411,3 +411,38 @@ Nothing here needs M3 to be correct at M2 — but it does mean the M3 saturation
 work starts from an already-canonical M2 baseline on the triptych, so M3's job
 narrows to the languages whose stalls are *not* transient (the `F(a ∧ Xa)`
 permanence specimen, spec §8).
+
+## Q3 step 1 reply — `F(a ∧ Xa)` M2 fixpoint (2026-07-06)
+
+At M2 (no saturation, default equivalence mode) the learner and the reference
+agree byte-equal on `F(a ∧ Xa)`. The fixpoint, for the theory thread:
+
+    SOS v1
+    ap: a
+    classes: 6
+    0 eps
+    1 !a
+    2 a
+    3 !a;a
+    4 a;!a
+    5 a;a
+    letters: !a->1 a->2
+    mult:
+    0: 0 1 2 3 4 5
+    1: 1 1 3 3 1 5
+    2: 2 4 5 2 5 5
+    3: 3 1 5 3 5 5
+    4: 4 4 2 2 4 5
+    5: 5 5 5 5 5 5
+    accept:
+    5 1
+    5 3
+    5 4
+    5 5
+
+- acceptor-correct on the exhaustive 210-lasso check (`|stem|,|loop| <= 3`);
+- exported invariant, hypothesis, and teacher agree on every checked lasso;
+- cost: 62 membership, 4 equivalence, 3 counterexamples.
+
+The `F(a ∧ Xa)` permanence decision under `--no-saturation --eq-mode exact` is
+the M3 item (exact mode not yet built).
