@@ -90,7 +90,7 @@ cannot be phrased as surgery on an aligned table — §3.4 locates those.
 ### 3.2 The free fragment: the surgery catalog
 
 All of the following act on a fixed table `(𝒞, λ, M)`; each returns a
-pair set on the same table, to be reduced at will. Proposition 5.16 of
+pair set on the same table, to be reduced at will. Proposition 5.11 of
 [SωSX26] (decomposition never leaves LTL) is the safety net for the whole
 fragment: every result's syntactic algebra divides `M`.
 
@@ -108,7 +108,8 @@ fragment: every result's syntactic algebra divides `M`.
   compose as they must (`(uv)⁻¹L = v⁻¹(u⁻¹L)`), and the number of
   distinct rootings *is* the residual count read-off [SωS26, Prop 4.6]:
   the residual automaton of `L`, internalized. These rootings are
-  exactly the memoized children of the extraction [SωSX26, Lemma 5.9].
+  exactly the memoized class children of the extraction [SωSX26, §5.2],
+  and Lemma 5.9 there (reach absorption) is a rooting identity.
 - **Pair languages and prolongations.** Any union of pair classes is a
   language: `P' = {(s, e)}` gives "the words realizing exactly this
   pair" — the user-facing reading is *prolonging the language from one
