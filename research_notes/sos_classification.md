@@ -593,12 +593,23 @@ classifies both sides of every case, is what keeps the other side honest.
 input and every budget slot is empty; the practical ceiling met throughout
 was the construction of `𝓘(L)`, never the read-off.
 
-Two per-shape quantities are queued for the next iteration's manifest
-(engineering spec §5), both read off the same run. *How many languages does a
-shape carry?* Distinct-`𝓘` counts per shape family — Theorem 5.1's hash join
-makes counting languages, rather than automata, a one-pass operation, and a
-shape's automaton-to-language compression ratio is a datum no other tool
-computes. *How big are the algebras, and does size track depth?* The
+One correction is owed and queued: the counts above are per enumerated
+*automaton*, i.e. they weight each language by its enumeration abundance —
+and the abundance is heavily skewed (in a first probe of the
+`2state1ap1acc_buchi` shape, 759 LTL-answering automata collapse to at most
+73 distinct languages by formula hash, with `true` alone absorbing 43.6% of
+the answers; the formula hash is only an upper bound on the collapse, being
+presentation-dependent). The next iteration restates the profile over
+**distinct languages** — dedup by `𝓘`-hash, Theorem 5.1's one-pass
+operation — with abundance kept as a column: the per-language table is the
+Wagner profile of the enumerated *class*, the abundance-weighted one the
+profile of a random small *automaton*, and both are data.
+
+Two further per-shape quantities are queued for the next iteration's manifest
+(engineering spec §5), read off the same run. *How many languages does a
+shape carry?* Distinct-`𝓘` counts per shape family — counting languages,
+rather than automata, is exactly the dedup above, and a shape's
+automaton-to-language compression ratio is a datum no other tool computes. *How big are the algebras, and does size track depth?* The
 distribution of `N = |𝒞|` per shape, cross-tabulated against the degree. The
 dependence is one-directional: a chain of length `m` needs `m + 1` strictly
 `H`-descending idempotents and a superchain of length `n` needs `n + 1`

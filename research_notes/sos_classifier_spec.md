@@ -211,7 +211,18 @@ degree table ordered by Wagner degree, weakest first, with the trivial pair
 class, not two rows among the proper ones; (iii) readings named by the
 C§7–8 dictionary — in particular `(1, δ)` is the nontrivial **clopen**
 class, properly `Δ₁` (rev. 1's report misnames it "properly Δ₂"; properly
-`Δ₂` is `(2, δ)`, coordinates `(0,0,1,1)`).
+`Δ₂` is `(2, δ)`, coordinates `(0,0,1,1)`); (iv) **every distribution over
+distinct languages, not enumerated automata**: dedup by `𝓘`-hash first,
+count each language once, and carry its **abundance** — the number of
+enumerated automata realizing it — as a column. The abundance-weighted
+(per-automaton) view may appear alongside, but the headline profile is
+per-language: a probe of `2state1ap1acc_buchi` shows 759 LTL-answering
+automata collapsing to at most 73 languages (by formula hash — an upper
+bound, the translator being presentation-dependent), with `true` alone
+absorbing 43.6% of the answers. Free cross-path gate while dedupling: within
+one `𝓘`-bucket, every formula produced by the aut2ltl translation path
+names the same language; a bucket holding non-equivalent formulas convicts
+one of the two paths.
 
 **X2 — The paper table, exercised.** One row per band of [SωS26 §7]'s
 summary table: demonstrate each classification answered on the same one

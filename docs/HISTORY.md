@@ -2922,3 +2922,4 @@ corrected to the canonical 3-class form. `saturate()` and
 renderer). Report rewritten present-tense (prior feedback round digested and
 folded in, transcript removed).
 2026-07-07 — theory: sos_classification.md gains §8 self-dual/clopen dictionary, §9 Fork specimen (ϕ=(ω+1,δ), the K4 derivative fixture), §11 gen-Büchi spectrum (Prop 11.1), §12 measured census profile; sos_classifier_spec.md rev.2 binds iteration 2 (bench manifest, per-shape ventilation, spectrum law, Fork gate, (1,δ)=clopen naming fix).
+2026-07-08 — theory: census must count distinct languages, not automata — spec X1 rev.2 gains (iv) 𝓘-hash dedup + abundance column + cross-path formula gate; sos_classification.md §12 owns the per-automaton correction (probe: 2state1ap1acc_buchi, 759 LTL answers ≤ 73 languages, true = 43.6%).
