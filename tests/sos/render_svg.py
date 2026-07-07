@@ -31,12 +31,14 @@ spot.setup()
 
 
 def load(arg: str) -> "spot.twa_graph":
-    """The automaton for `arg`: the file if it exists, else the deterministic
-    translation of the formula it denotes."""
+    """The automaton for `arg`: the canonical form D of the file if it exists,
+    else of the formula it denotes — through the sos import layer, so the
+    picture is the transition-based D the construction actually consumes
+    (never a state-based re-reading of the source file)."""
+    from sosl.sos.build import import_hoa, import_ltl
     if os.path.isfile(arg):
-        return spot.automaton(arg)
-    return spot.translate(spot.formula(arg),
-                         "deterministic", "generic", "complete")
+        return import_hoa(arg)
+    return import_ltl(arg)
 
 
 def main(argv: list) -> int:
