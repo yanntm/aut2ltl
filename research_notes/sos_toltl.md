@@ -449,9 +449,7 @@ anchoring stated as a property of the language rather than of any
 presentation (§5.3); the worked example (§5.4); the frozen-layer
 handover that completes the architecture (§5.5); the decomposition
 combinators (§5.6); and the graded engine and the scoped fallback,
-discharging the walk side's two remaining debts (§5.7). The five
-longest proofs are deferred to Appendix A, each leaving its sketch in
-place.
+discharging the walk side's two remaining debts (§5.7).
 
 ### 5.1 The Cayley walk
 
@@ -766,13 +764,38 @@ its first disjunct in the no-change case, its `U`-witness at `μ`
 otherwise — modulo the child obligation `φ_{q_T·α_T}` from `T + 1` on,
 which belongs to the R-order induction, not to the layer.
 
-*Proof sketch.* Disjointness and truthfulness are Definition 5.4's
-dichotomy read letterwise: a within-layer action that is no partial
-constant is a partial identity, so a change reads a reset onto its
-destination. (ii) and (iii) chase the trajectory between changes —
-letters read while the class holds fix it and lie in `L(·)`, the first
-change after each firing discharges the `W` strictly inside `R`. Full
-proof in Appendix A. ∎
+*Proof.* Throughout, a letter read while the class does not change fixes
+it, and so lies in `L(·)` by that set's definition — diagonal anchors
+included.
+
+(i) A letter of `A(c) ∩ A(c')` has one within-layer action, a partial
+constant with image `{c}` and `{c'}`: `c = c'`. If `α_i ∈ A(c)` with
+`q_i, q_i·α_i ∈ R`, then `q_i` is a source of that partial constant, so
+`q_{i+1} = c`. A within-layer action that is no partial constant is, by
+Definition 5.4, a partial identity, fixing every source; and a change is
+no identity at its source, hence a reset onto its destination.
+
+(ii) Fix `i ≥ t` and a conjunct `A(c) → X sojourn(c)` of `step`; at most
+one is triggered, by disjointness, and the rest hold vacuously. If
+`α_i ∈ A(c)` then `q_{i+1} = c` by (i) — the trajectory never leaves `R`,
+so the firing is within-layer. For `sojourn(c) = L(c) W M(c)` at `i + 1`:
+let `ν` be the first position `> i` at which the class changes. The
+letters of `[i+1, ν)` fix `c` and land in `L(c)`; if `ν` exists then
+`α_ν`, read at `c` with `q_{ν+1} ∈ R` — no exit ever happens — lies in
+`M(c)` and discharges the `W`; if not, the weak arm holds.
+`α, t ⊨ sojourn(q_t)` is the same argument anchored at `t`.
+
+(iii) *No change:* the class holds `q_t` on `[t, T]`, so every letter of
+`[t, T)` fixes it and lies in `L(q_t)`. *`μ` exists:* the class never
+changes after `μ`, so `q_{μ+1} = q_T`; the change at `μ` reads an anchor
+onto its destination — `α_μ ∈ A(q_T)` by (i); the letters of `(μ, T)` fix
+`q_T` and lie in `L(q_T)`. For `step` at `i ∈ [t, μ)`: if `α_i ∈ A(c)`,
+the firing is within-layer (`i + 1 ≤ μ < T`), so `q_{i+1} = c`; the first
+change `ν` after `i` exists (`ν ≤ μ`), the letters of `[i+1, ν)` lie in
+`L(c)`, and `α_ν` — read at `c`, staying in `R` since `ν + 1 ≤ T` — lies
+in `M(c)` and discharges the `W` strictly inside `R`. `sojourn(q_t)` at
+`t`: likewise, with `ν₀ ≤ μ` the first change at all, letters of
+`[t, ν₀)` in `L(q_t)` and `α_{ν₀} ∈ M(q_t)`. ∎
 
 The license is the completeness half of a layer's exactness: on any word
 whose walk conforms, every brick the label asserts is true — eager
@@ -790,16 +813,23 @@ membership fold:
 `T_c := { β : V(c, β) = 1 }` satisfies `T_{[u]} = u⁻¹L` for every finite
 word `u`, and `T_{[ε]} = L`.
 
-*Proof sketch.* (i) A factorization folded from `c` is a factorization
-of `w·β` for any representative `w` of `c`, and the invariant
-recognizes `L` — one semantic referent for every factorization. (ii)
-Absorb `u` into the stem coordinate. (iii) is the membership rule
-itself. Full proof in Appendix A. ∎
+*Proof.* (i) Pick a representative `w` of `c` (a shortlex key; `w = ε`
+for `c = [ε]`). A Ramsey factorization of `β` folded from `c` induces
+the same linked pair as the corresponding factorization of the ω-word
+`w·β` with `w` merged into the stem block. The invariant *recognizes*
+`L`: the `P`-verdict of a linked pair equals the membership of every
+ω-word it is computed from [SωS26, Lemma 3.2, Thm 5.1] — one semantic
+referent, `[w·β ∈ L]`, for every factorization, so all of them agree.
+(ii) A Ramsey factorization of `β` folded from `c·[u]` is a
+factorization of `u·β` folded from `c` with `u` absorbed into the stem
+coordinate — the same pair. (iii) is the invariant's membership
+evaluation itself. For the consequence:
+`β ∈ T_{[u]} ⟺ V([u], β) = V([ε], u·β) = [u·β ∈ L]`. ∎
 
 Lemma 5.9's identity `T_{[u]} = u⁻¹L` also shows the memoized children
 are exactly the residual tails, keyed by class — the DAG of §6 is a DAG
 of residuals with canonical names. The section's centerpiece can now be
-stated:
+stated and proved:
 
 **Theorem 5.10 (two-condition exactness, width 1).** Assume:
 
@@ -814,18 +844,48 @@ stated:
 Then for every class `c`, `L(Final(c)) = T_c`; in particular
 `L(Final([ε])) = L` — the assembled label defines the language.
 
-*Proof sketch.* Noetherian induction on the R-order, children memoized
-per class. *Completeness* is Lemma 5.8: on a conforming word every
-asserted brick is true — (ii) for the confined shape, (iii) for the
-exiting one — with the exit tail handled by the child and transport.
-*Soundness* pivots on an **escort invariant**: an active sojourn
-licenses only `L(q_i) ∪ M(q_i)` — never an exit — and stutters keep
-the formula's class equal to the walk's; at each discharge the moving
-letter is, by Lemma 5.8(i), an anchor onto exactly the walk's new
-class, so `step` re-fires the next sojourn and the escort renews. The
-law thus confines; the contract, or the `U`-witness plus the child,
-closes each of the three shapes of `Final(c)`. Full proof in
-Appendix A. ∎
+*Proof.* Noetherian induction on the R-order of the layer `R` of `c`:
+assume every memoized child `φ_d = Final(d)`, `d` in a strictly lower
+layer, defines `T_d`. Let `(q_j)` be the trajectory of `α` from
+`q_0 = c`.
+
+*Completeness (`α ∈ T_c ⟹ α ⊨ Final(c)`).* If the trajectory stays in
+`R` forever, Lemma 5.8(ii) gives `sojourn(c) ∧ G step`, and
+`V(c, α) = 1` gives `α ⊨ W(R, c)` by the contract: together,
+`STAY∞(R, c)`. If it exits at `T` with `α_T ∈ E(q_T)` toward
+`d = q_T·α_T`, transport gives `V(d, α_{>T}) = V(c, α) = 1`, so the tail
+lies in `T_d` and satisfies `φ_d` by induction; Lemma 5.8(iii) supplies
+every remaining witness of `LEAVE(c)` — the first disjunct when the
+class never changes before `T`, otherwise `sojourn(c)`, `step` up to the
+last change `μ`, the `U`-witness `α_μ ∈ A(q_T)`, and the `leave(q_T)`
+block through the exit.
+
+*Soundness (`α ⊨ Final(c) ⟹ α ∈ T_c`).* The pivot is an **escort
+invariant**: if `sojourn(c)` holds at position `0` and `step` holds at
+every position `< N`, then the trajectory stays in `R` through `N` and
+every position `i ≤ N` sits under an *active sojourn* licensing
+`α_i ∈ L(q_i) ∪ M(q_i)`. Induction on renewals: an active
+`sojourn(q_p)` confines the letters after `p` to `L(q_p)` until a first
+`M(q_p)`-letter — stutters keep the walk sitting, so the formula's class
+and the walk's agree — and at the discharge `ν` the move lands in `R`;
+by Lemma 5.8(i) the moving letter is an anchor onto exactly
+`q_{ν+1}`, so when `ν < N`, `step` at `ν` fires
+`A(q_{ν+1}) → X sojourn(q_{ν+1})` and the escort renews; a sojourn that
+never discharges keeps the walk sitting forever. In particular no letter
+before `N` exits `R` — the law confines. Now the three shapes:
+
+- `α ⊨ STAY∞(R, c)`: the escort with `N = ∞` confines the trajectory
+  forever; the contract turns `α ⊨ W(R, c)` into `V(c, α) = 1`.
+- `α ⊨ leave(c)`: the letters before the `U`-witness lie in `L(c)`, so
+  the walk still sits at `c` there; the witness letter `a ∈ E(c)` steps
+  to `d = c·a` and the tail satisfies `φ_d`, hence lies in `T_d` by
+  induction; transport folds back: `V(c, α) = V(d, tail) = 1`.
+- `α ⊨ sojourn(c) ∧ (step U ⋁_{c′}(A(c′) ∧ X leave(c′)))`: run the
+  escort to the `U`-witness `w`. The active sojourn at `w` licenses
+  `α_w ∈ L(q_w) ∪ M(q_w)` — **not** an exit — so the anchor fires
+  truthfully (Lemma 5.8(i)): `q_{w+1} = c′`, the formula's class and the
+  walk's re-synchronize, and `leave(c′)` from `w + 1` concludes as in
+  the previous shape, transport folding the whole prefix onto `c`. ∎
 
 Three remarks. *Uniqueness* is free throughout: `Cay(L)` is
 deterministic and complete, every word has exactly one trajectory.
@@ -1120,14 +1180,37 @@ under structure: an upward-closed accepting family keeps only its
 minimal sets, `⋁_S ⋀_{w ∈ S} GF ŵ`, and on `GF(aa)`'s frozen layer the
 single minimal set `{aa}` gives `GF(a ∧ X a)` — no simplifier involved.
 
-*Proof sketch.* (i) The disjuncts are pairwise exclusive and `β`
-witnesses its own recurring set, so the normal form evaluates
-`f_c(Win_k(β))`. (ii) The infinitely-traversed edges of a confined tail
-form a reachable strongly connected subgraph of the memory graph, and
-covering tours realize exactly the window projections. (iii) A Ramsey
-wrap with one cut color turns any confined tail into a lasso with the
-same pair and the same recurring-window set. (iv) is counting, plus the
-upward-closed collapse. Full proof in Appendix A. ∎
+*Proof.* (i) Well-definedness is Definition 5.7 verbatim. For confined
+`β`: `β ⊨ GF ŵ` iff the window `w` occurs at infinitely many positions
+iff `w ∈ Win_k(β)`, and `β ⊨ FG ¬ŵ` iff `w ∉ Win_k(β)`; so `β` satisfies
+the `S`-disjunct iff `Win_k(β) = S` exactly — disjuncts are pairwise
+exclusive — and `Win_k(β)` is realizable, `β` being its own witness:
+`β ⊨ W(R, c) ⟺ f_c(Win_k(β)) = 1 ⟺ V(c, β) = 1`.
+
+(ii) A covering tour traverses every edge of `H` infinitely often and
+eventually only `H`: its recurring windows are exactly `H`'s.
+Conversely the infinitely-traversed edges of a confined tail form a
+reachable strongly connected subgraph whose window projection is the
+recurring set. The witness verdict is the invariant's lasso evaluation.
+
+(iii) Cut points of a Ramsey factorization of `β` carry finitely many
+(idempotent, length-`(k−1)` boundary context) colors; passing to an
+infinite monochromatic subsequence of cuts re-factors `β` with one
+color. Wrap a block stretch `w_{i+1}⋯w_{i+m}` starting beyond the last
+occurrence of every non-recurring window and long enough to contain
+every recurring one — its interior windows are then *exactly* the
+recurring set: the loop class is the same idempotent `e` (idempotency
+absorbs the grouping), the stem class is `[w₀⋯w_i] = [w₀]·e`, so the
+pair — hence the verdict — is unchanged; and every seam window of the
+wrap already occurs at each original cut (one boundary context), so it
+recurs in `β`: `Win_k` is preserved. The finiteness of the check: tours
+enter through finitely many classes and their loop classes range over a
+computable subset of `𝒞`.
+
+(iv) Counting is immediate. For an upward-closed family, a confined `β`
+satisfies `⋁_min ⋀ GF` iff `Win_k(β)` contains some minimal accepted set
+iff `f_c(Win_k(β)) = 1`. On `GF(aa)`, acceptance from the frozen class
+is "the window `aa` recurs" (§5.4): upward-closed, minimum `{aa}`. ∎
 
 The architecture, assembled — the paper's picture:
 
@@ -1481,14 +1564,54 @@ anchored at some width `k_R`, each transcribed at width 1 where
 (B)'s contract as in Theorem 5.10. Then `L(Final(c)) = T_c` for every
 class `c`; the assembled label defines `L`.
 
-*Proof sketch.* The transient trees thread the true fold, so formula
-and walk agree through the first `k` in-layer steps with nothing
-guessed; past them, Theorem 5.10's escort runs verbatim with
-Lemma 5.22 in the role of Lemma 5.8(i) — every phase move completes an
-in-layer anchor window whose truthful pin re-fires the next sojourn —
-and `step_κ`'s `κ`-lag makes its coverage end exactly at `TL_0`'s
-`U`-witness, whose own last step is the final move `leave(c′)` then
-unwinds. Full proof in Appendix A. ∎
+*Proof.* Noetherian induction on the R-order as in Theorem 5.10; fix a
+layer `R` with `k = k_R ≥ 2`, entry `r` at position `t`, trajectory
+`(q_j)` with `q_t = r`, and write `c_j` for the threaded classes,
+`c_0 = r`, `c_{j+1} = c_j·α_{t+j}`; while the walk is in `R`,
+`c_j = q_{t+j}` — the trees thread the true fold — and `Cay(L)` being
+complete, each letter lies in exactly one of `L, M, E` at its class.
+
+*Completeness (`α ∈ T_r ⟹ α ⊨ Final(r)`).* If the walk exits at
+`T < t + k`, the `TL`-branches follow the true letters to the exit
+disjunct, whose child obligation holds by induction and transport
+(Lemma 5.9(ii)). If it exits at `T ≥ t + k`, `TL_k(r)` reaches
+`TL_0(c_k)` along true branches, and `sojourn(c_k)` holds as at
+width 1. If the class never changes on `[t+k, T)`, `leave(c_k)`
+concludes. Otherwise let `μ` be the last change in `[t+k, T)`: the
+window covering `[μ−k, μ]` sits inside the layer and moves the phase
+at its last step, so it is an anchor onto `q_{μ+1}` (Lemma 5.22(ii),
+contraposed) — the `U`-witness at `μ−k`, with `X^κ leave(q_{μ+1})`
+supplied by the stutters of `(μ, T)` and the exit. For the left arm, a
+trigger at `p ∈ [t+k, μ−k)` has its window inside the layer and its
+pin truthful (Lemma 5.22(i)), say onto `c`; the next change after it
+exists (`μ` at the latest, and `p + κ ≤ μ`), lands within `R` strictly
+before `T`, and discharges `sojourn(c)` — so `step_κ` holds throughout
+`[t+k, μ−k)`. If the walk never exits, the same trigger argument gives
+`G step_κ` (a triggered sojourn discharges at the next change or holds
+by its weak arm), `TR_k(r)` follows the true branches into
+`sojourn(c_k)`, and `V(r, α) = 1` yields `W(R, r)` by the contract:
+`STAY∞_κ`.
+
+*Soundness (`α ⊨ Final(r) ⟹ α ∈ T_r`).* The transient trees pin the
+walk: branch letters lie in the threaded class's own `L ∪ M` (or `E`,
+in `TL`'s exit disjuncts), so formula and walk agree through the
+transient and no unlicensed exit occurs; an exit branch hands a tail
+in `T_{c_j·a}` (induction) and transport folds the verdict onto `r`.
+Past the transient, Theorem 5.10's escort runs verbatim with
+Lemma 5.22 in the role of Lemma 5.8(i): an active `sojourn(c)`
+licenses only `L(c) ∪ M(c)` — never an exit — and holds the phase
+through stutters; at a discharge `ν` the window covering `[ν−k, ν]` is
+in-layer (its letters are sojourn-licensed) and is an anchor onto
+exactly `q_{ν+1}` (the dichotomy, contraposed), so `step_κ` at `ν−k` —
+asserted, since `ν−k` precedes the `U`-witness position inside the `U`
+and is unrestricted under `G step_κ` — renews the escort at `ν+1` on
+the walk's true class. In `STAY∞_κ` the escort confines forever and
+the contract turns `W(R, r)` into `V(r, α) = 1`. In `TL_0`, run the
+escort to the `U`-witness `i`: coverage on `[t+k, i)` governs every
+move through `i+k−1`, the witness window's letters are licensed (hence
+in-layer), its pin is truthful — the walk sits at `c′` at `i+κ` — and
+`leave(c′)`, stutters then an exit with its child obligation,
+concludes by induction and transport. ∎
 
 Whether a layer anchors, at which width, and hence at which width each
 layer's engine runs are equations on `𝓘(L)` (Lemma 5.6(v)): §5.3's
@@ -1677,178 +1800,6 @@ algebra says exactly when, and exactly why.⟩
 
 ---
 
-## Appendix A. Deferred proofs
-
-*Proof of Lemma 5.8 (the eager-firing license).* Throughout, a letter
-read while the class does not change fixes it, and so lies in `L(·)` by
-that set's definition — diagonal anchors included.
-
-(i) A letter of `A(c) ∩ A(c')` has one within-layer action, a partial
-constant with image `{c}` and `{c'}`: `c = c'`. If `α_i ∈ A(c)` with
-`q_i, q_i·α_i ∈ R`, then `q_i` is a source of that partial constant, so
-`q_{i+1} = c`. A within-layer action that is no partial constant is, by
-Definition 5.4, a partial identity, fixing every source; and a change is
-no identity at its source, hence a reset onto its destination.
-
-(ii) Fix `i ≥ t` and a conjunct `A(c) → X sojourn(c)` of `step`; at most
-one is triggered, by disjointness, and the rest hold vacuously. If
-`α_i ∈ A(c)` then `q_{i+1} = c` by (i) — the trajectory never leaves `R`,
-so the firing is within-layer. For `sojourn(c) = L(c) W M(c)` at `i + 1`:
-let `ν` be the first position `> i` at which the class changes. The
-letters of `[i+1, ν)` fix `c` and land in `L(c)`; if `ν` exists then
-`α_ν`, read at `c` with `q_{ν+1} ∈ R` — no exit ever happens — lies in
-`M(c)` and discharges the `W`; if not, the weak arm holds.
-`α, t ⊨ sojourn(q_t)` is the same argument anchored at `t`.
-
-(iii) *No change:* the class holds `q_t` on `[t, T]`, so every letter of
-`[t, T)` fixes it and lies in `L(q_t)`. *`μ` exists:* the class never
-changes after `μ`, so `q_{μ+1} = q_T`; the change at `μ` reads an anchor
-onto its destination — `α_μ ∈ A(q_T)` by (i); the letters of `(μ, T)` fix
-`q_T` and lie in `L(q_T)`. For `step` at `i ∈ [t, μ)`: if `α_i ∈ A(c)`,
-the firing is within-layer (`i + 1 ≤ μ < T`), so `q_{i+1} = c`; the first
-change `ν` after `i` exists (`ν ≤ μ`), the letters of `[i+1, ν)` lie in
-`L(c)`, and `α_ν` — read at `c`, staying in `R` since `ν + 1 ≤ T` — lies
-in `M(c)` and discharges the `W` strictly inside `R`. `sojourn(q_t)` at
-`t`: likewise, with `ν₀ ≤ μ` the first change at all, letters of
-`[t, ν₀)` in `L(q_t)` and `α_{ν₀} ∈ M(q_t)`. ∎
-
-*Proof of Lemma 5.9 (tail verdicts and transport).* (i) Pick a
-representative `w` of `c` (a shortlex key; `w = ε` for `c = [ε]`). A
-Ramsey factorization of `β` folded from `c` induces the same linked pair
-as the corresponding factorization of the ω-word `w·β` with `w` merged
-into the stem block. The invariant *recognizes* `L`: the `P`-verdict of
-a linked pair equals the membership of every ω-word it is computed from
-[SωS26, Lemma 3.2, Thm 5.1] — one semantic referent, `[w·β ∈ L]`, for
-every factorization, so all of them agree. (ii) A Ramsey factorization
-of `β` folded from `c·[u]` is a factorization of `u·β` folded from `c`
-with `u` absorbed into the stem coordinate — the same pair. (iii) is the
-invariant's membership evaluation itself. For the consequence:
-`β ∈ T_{[u]} ⟺ V([u], β) = V([ε], u·β) = [u·β ∈ L]`. ∎
-
-*Proof of Theorem 5.10 (two-condition exactness, width 1).* Noetherian
-induction on the R-order of the layer `R` of `c`: assume every memoized
-child `φ_d = Final(d)`, `d` in a strictly lower layer, defines `T_d`.
-Let `(q_j)` be the trajectory of `α` from `q_0 = c`.
-
-*Completeness (`α ∈ T_c ⟹ α ⊨ Final(c)`).* If the trajectory stays in
-`R` forever, Lemma 5.8(ii) gives `sojourn(c) ∧ G step`, and
-`V(c, α) = 1` gives `α ⊨ W(R, c)` by the contract: together,
-`STAY∞(R, c)`. If it exits at `T` with `α_T ∈ E(q_T)` toward
-`d = q_T·α_T`, transport gives `V(d, α_{>T}) = V(c, α) = 1`, so the tail
-lies in `T_d` and satisfies `φ_d` by induction; Lemma 5.8(iii) supplies
-every remaining witness of `LEAVE(c)` — the first disjunct when the
-class never changes before `T`, otherwise `sojourn(c)`, `step` up to the
-last change `μ`, the `U`-witness `α_μ ∈ A(q_T)`, and the `leave(q_T)`
-block through the exit.
-
-*Soundness (`α ⊨ Final(c) ⟹ α ∈ T_c`).* The pivot is an **escort
-invariant**: if `sojourn(c)` holds at position `0` and `step` holds at
-every position `< N`, then the trajectory stays in `R` through `N` and
-every position `i ≤ N` sits under an *active sojourn* licensing
-`α_i ∈ L(q_i) ∪ M(q_i)`. Induction on renewals: an active
-`sojourn(q_p)` confines the letters after `p` to `L(q_p)` until a first
-`M(q_p)`-letter — stutters keep the walk sitting, so the formula's class
-and the walk's agree — and at the discharge `ν` the move lands in `R`;
-by Lemma 5.8(i) the moving letter is an anchor onto exactly
-`q_{ν+1}`, so when `ν < N`, `step` at `ν` fires
-`A(q_{ν+1}) → X sojourn(q_{ν+1})` and the escort renews; a sojourn that
-never discharges keeps the walk sitting forever. In particular no letter
-before `N` exits `R` — the law confines. Now the three shapes:
-
-- `α ⊨ STAY∞(R, c)`: the escort with `N = ∞` confines the trajectory
-  forever; the contract turns `α ⊨ W(R, c)` into `V(c, α) = 1`.
-- `α ⊨ leave(c)`: the letters before the `U`-witness lie in `L(c)`, so
-  the walk still sits at `c` there; the witness letter `a ∈ E(c)` steps
-  to `d = c·a` and the tail satisfies `φ_d`, hence lies in `T_d` by
-  induction; transport folds back: `V(c, α) = V(d, tail) = 1`.
-- `α ⊨ sojourn(c) ∧ (step U ⋁_{c′}(A(c′) ∧ X leave(c′)))`: run the
-  escort to the `U`-witness `w`. The active sojourn at `w` licenses
-  `α_w ∈ L(q_w) ∪ M(q_w)` — **not** an exit — so the anchor fires
-  truthfully (Lemma 5.8(i)): `q_{w+1} = c′`, the formula's class and the
-  walk's re-synchronize, and `leave(c′)` from `w + 1` concludes as in
-  the previous shape, transport folding the whole prefix onto `c`. ∎
-
-*Proof of Proposition 5.15 (the window normal form).* (i)
-Well-definedness is Definition 5.7 verbatim. For confined
-`β`: `β ⊨ GF ŵ` iff the window `w` occurs at infinitely many positions
-iff `w ∈ Win_k(β)`, and `β ⊨ FG ¬ŵ` iff `w ∉ Win_k(β)`; so `β` satisfies
-the `S`-disjunct iff `Win_k(β) = S` exactly — disjuncts are pairwise
-exclusive — and `Win_k(β)` is realizable, `β` being its own witness:
-`β ⊨ W(R, c) ⟺ f_c(Win_k(β)) = 1 ⟺ V(c, β) = 1`.
-
-(ii) A covering tour traverses every edge of `H` infinitely often and
-eventually only `H`: its recurring windows are exactly `H`'s.
-Conversely the infinitely-traversed edges of a confined tail form a
-reachable strongly connected subgraph whose window projection is the
-recurring set. The witness verdict is the invariant's lasso evaluation.
-
-(iii) Cut points of a Ramsey factorization of `β` carry finitely many
-(idempotent, length-`(k−1)` boundary context) colors; passing to an
-infinite monochromatic subsequence of cuts re-factors `β` with one
-color. Wrap a block stretch `w_{i+1}⋯w_{i+m}` starting beyond the last
-occurrence of every non-recurring window and long enough to contain
-every recurring one — its interior windows are then *exactly* the
-recurring set: the loop class is the same idempotent `e` (idempotency
-absorbs the grouping), the stem class is `[w₀⋯w_i] = [w₀]·e`, so the
-pair — hence the verdict — is unchanged; and every seam window of the
-wrap already occurs at each original cut (one boundary context), so it
-recurs in `β`: `Win_k` is preserved. The finiteness of the check: tours
-enter through finitely many classes and their loop classes range over a
-computable subset of `𝒞`.
-
-(iv) Counting is immediate. For an upward-closed family, a confined `β`
-satisfies `⋁_min ⋀ GF` iff `Win_k(β)` contains some minimal accepted set
-iff `f_c(Win_k(β)) = 1`. On `GF(aa)`, acceptance from the frozen class
-is "the window `aa` recurs" (§5.4): upward-closed, minimum `{aa}`. ∎
-
-*Proof of Theorem 5.23 (graded exactness).* Noetherian induction on the
-R-order as in Theorem 5.10; fix a
-layer `R` with `k = k_R ≥ 2`, entry `r` at position `t`, trajectory
-`(q_j)` with `q_t = r`, and write `c_j` for the threaded classes,
-`c_0 = r`, `c_{j+1} = c_j·α_{t+j}`; while the walk is in `R`,
-`c_j = q_{t+j}` — the trees thread the true fold — and `Cay(L)` being
-complete, each letter lies in exactly one of `L, M, E` at its class.
-
-*Completeness (`α ∈ T_r ⟹ α ⊨ Final(r)`).* If the walk exits at
-`T < t + k`, the `TL`-branches follow the true letters to the exit
-disjunct, whose child obligation holds by induction and transport
-(Lemma 5.9(ii)). If it exits at `T ≥ t + k`, `TL_k(r)` reaches
-`TL_0(c_k)` along true branches, and `sojourn(c_k)` holds as at
-width 1. If the class never changes on `[t+k, T)`, `leave(c_k)`
-concludes. Otherwise let `μ` be the last change in `[t+k, T)`: the
-window covering `[μ−k, μ]` sits inside the layer and moves the phase
-at its last step, so it is an anchor onto `q_{μ+1}` (Lemma 5.22(ii),
-contraposed) — the `U`-witness at `μ−k`, with `X^κ leave(q_{μ+1})`
-supplied by the stutters of `(μ, T)` and the exit. For the left arm, a
-trigger at `p ∈ [t+k, μ−k)` has its window inside the layer and its
-pin truthful (Lemma 5.22(i)), say onto `c`; the next change after it
-exists (`μ` at the latest, and `p + κ ≤ μ`), lands within `R` strictly
-before `T`, and discharges `sojourn(c)` — so `step_κ` holds throughout
-`[t+k, μ−k)`. If the walk never exits, the same trigger argument gives
-`G step_κ` (a triggered sojourn discharges at the next change or holds
-by its weak arm), `TR_k(r)` follows the true branches into
-`sojourn(c_k)`, and `V(r, α) = 1` yields `W(R, r)` by the contract:
-`STAY∞_κ`.
-
-*Soundness (`α ⊨ Final(r) ⟹ α ∈ T_r`).* The transient trees pin the
-walk: branch letters lie in the threaded class's own `L ∪ M` (or `E`,
-in `TL`'s exit disjuncts), so formula and walk agree through the
-transient and no unlicensed exit occurs; an exit branch hands a tail
-in `T_{c_j·a}` (induction) and transport folds the verdict onto `r`.
-Past the transient, Theorem 5.10's escort runs verbatim with
-Lemma 5.22 in the role of Lemma 5.8(i): an active `sojourn(c)`
-licenses only `L(c) ∪ M(c)` — never an exit — and holds the phase
-through stutters; at a discharge `ν` the window covering `[ν−k, ν]` is
-in-layer (its letters are sojourn-licensed) and is an anchor onto
-exactly `q_{ν+1}` (the dichotomy, contraposed), so `step_κ` at `ν−k` —
-asserted, since `ν−k` precedes the `U`-witness position inside the `U`
-and is unrestricted under `G step_κ` — renews the escort at `ν+1` on
-the walk's true class. In `STAY∞_κ` the escort confines forever and
-the contract turns `W(R, r)` into `V(r, α) = 1`. In `TL_0`, run the
-escort to the `U`-witness `i`: coverage on `[t+k, i)` governs every
-move through `i+k−1`, the witness window's letters are licensed (hence
-in-layer), its pin is truthful — the walk sits at `c′` at `i+κ` — and
-`leave(c′)`, stutters then an exit with its child obligation,
 concludes by induction and transport. ∎
 
 ---
