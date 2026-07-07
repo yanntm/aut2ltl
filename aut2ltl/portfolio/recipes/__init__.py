@@ -34,6 +34,7 @@ from .deep_nobls_sort_decomp import deep_nobls_sort_decomp
 from .roundtrip import roundtrip
 from .roundtrip_best import roundtrip_best_recipe
 from .roundtrip_decomp import roundtrip_decomp_recipe
+from .sos2ltl import sos2ltl_recipe
 
 # Public recipe names → builders. `build_portfolio` resolves `--use <name>` here.
 RECIPES: Dict[str, Callable[[Optional[Options]], Translator]] = {
@@ -55,6 +56,7 @@ RECIPES: Dict[str, Callable[[Optional[Options]], Translator]] = {
     "roundtrip": roundtrip,
     "roundtrip_best": roundtrip_best_recipe,
     "roundtrip_decomp": roundtrip_decomp_recipe,
+    "sos2ltl": sos2ltl_recipe,
 }
 
 # The shipped default — the assembly used when no `--use` is given (the CLI/build
@@ -68,4 +70,5 @@ __all__ = ["RECIPES", "best", "best_daisy2", "best_inv", "best_inv_loop",
            "best_inv_all", "cake", "cakeds", "cakedsdet", "kanchor", "nobls",
            "deep_memo", "deep_nobls", "deep_nobls_memo",
            "deep_nobls_sort", "deep_nobls_sort_decomp", "roundtrip",
-           "roundtrip_best_recipe", "roundtrip_decomp_recipe"]
+           "roundtrip_best_recipe", "roundtrip_decomp_recipe",
+           "sos2ltl_recipe"]
