@@ -321,16 +321,17 @@ citing its [SωS26] anchor.⟩
 ### 3.1 A specimen, symbolically
 
 `EvenBlocks` [SωS26, Table 2(c)]: `|Q| = 2`, `C = {0, 1}`, slot domain
-`V = Q × 2^C` of 8 values; `EM¹` has 17 elements — 17 points in `V²`.
-Small enough to see the sharing that the diagram exploits: the slot-0
-and slot-1 values of the 16 non-identity elements are highly correlated
+`V = Q × 2^C` of 8 values; `EM¹` has 16 elements (identity included —
+`⟦aa⟧ = ⟦ε⟧` merges into it) — 16 points in `V²`. Small enough to see
+the sharing that the diagram exploits: the slot-0 and slot-1 values of
+the 15 non-identity elements are highly correlated
 (state components complementary or equal, mark components differing in
 one bit along the four `{0,1}`-subsets), and the two-level diagram has
 one node per distinct slot-0 value with shared slot-1 suffixes ⟨TBD:
-draw it; count nodes vs the 34 explicit cells; then the same picture for
+draw it; count nodes vs the 32 explicit cells; then the same picture for
 a 3-fold asynchronous product of `EvenBlocks`, where the explicit table
-is `17³ ≈ 5000` rows and the factored diagram is three copies of the
-same 17-point component diagram — the §4.2 proposition made visible⟩.
+is `16³ = 4096` rows and the factored diagram is three copies of the
+same 16-point component diagram — the §4.2 proposition made visible⟩.
 
 ## 4. Why this works: locality, shape, and the honest wall
 

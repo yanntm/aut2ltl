@@ -121,13 +121,13 @@ Long outputs to `tests/**/logs/`, one file per experiment id.
 ### E0 — sanity on the worked examples (gates M1)
 
 C2+C3 on the triptych, full pipeline once M2 lands. **Predictions to
-confirm:** `|EM¹|` = 10 / 7 / 17 for `GF(aa)` / `Even` / `EvenBlocks`
-(the identity included; [SωS26, Table 2] counts 16 non-identity
-elements for `EvenBlocks`); closure depths match the longest shortlex
-key per [SωS26]; emitted `𝓘` byte-equal to the reference on all three;
-for `EvenBlocks`, the diagram node count of the closed `EM¹` is
-strictly below the 34 explicit cells — the §3.1 figure's numbers, to be
-drawn from this run.
+confirm:** `|EM¹|` = 10 / 7 / 16 for `GF(aa)` / `Even` / `EvenBlocks`,
+identity included, per [SωS26, Tables 1–2] (for `EvenBlocks`,
+`⟦aa⟧ = ⟦ε⟧` merges into the identity — 15 non-identity elements);
+closure depths match the longest shortlex key per [SωS26]; emitted `𝓘`
+byte-equal to the reference on all three; for `EvenBlocks`, the diagram
+node count of the closed `EM¹` is strictly below the 32 explicit slot
+cells — the §3.1 figure's numbers, to be drawn from this run.
 
 ### E1 — the compression scatter (census corpus)
 
