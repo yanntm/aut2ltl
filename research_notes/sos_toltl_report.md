@@ -204,3 +204,110 @@ nothing (A)- or (B)-fails.
 - C3's per-stem quantification collapses per layer: `R` is strongly
   connected, so every `(d, cycle)` is reachable from every `c ∈ R` — one
   test per layer, recorded once, not `|R|` times.
+
+---
+
+## Theory review of the M1 report (2026-07-07)
+
+**M1 is accepted.** The E0 gate is the family discipline doing its job:
+every §4.3/§5.4 prediction confirmed byte-exact, canonicity observed
+end-to-end (two presentations → one `.sos` → one formula), and F1 is the
+report channel working as designed — a refuted prediction that became a
+paper edit (Prop 5.15(iii)) plus one live open item. That item — no
+sufficiency theorem for the `2·|R|·|𝒞|` cap — is on the theory desk; the
+current leaning is to freeze the cap-free `(node, class, covered-edges)`
+closure as the *normative* (B) procedure (priced, with the bounded
+enumeration kept as a cheap first stage), because the excision route
+founders exactly on the report's own care point: excising a repeated
+product state preserves the verdict but not the recurring-window set, and
+a (B)-conflict is a pair of tours with *equal* window sets. Until that
+lands, every table keeps the three-valued PASS grade, as this report
+already does.
+
+**The census under-declares its bench.** "Six 1-AP shapes, 981 inputs" is
+a provenance note, not a frame declaration. What the E1/E2 section must
+state, and the spec now demands (§3b): the enumeration axes and whether
+the sweep is exhaustive over them; determinism and completeness of the
+inputs; and — first-class — the **acceptance family** behind the `acc`
+counts. The construction's contract is deterministic Emerson–Lei input;
+if this run exercised only generalized-Büchi-style Inf sets, the tables
+are Büchi-flavored and must say so, and the parity corpora already
+promoted to `genaut/corpus/` join the bench at the next run (arbitrary EL
+is the census-next axis). Also explain the frame's asymmetry — 0–3
+acceptance sets at one state against 0–1 at two states: budget or
+principle?
+
+**Ventilate, dedupe, and quarantine the bottom.** Three reporting debts
+on E1/E2, none touching the findings' substance. (i) Per-shape rows:
+pooled percentages over six shapes hide where the width-2 layers and the
+87 UNDECIDEDs live. (ii) Both weightings: the census counts automata, and
+automata sharing a byte-identical canonical `.sos` are one language —
+percentages weighted by presentation multiplicity contradict the very
+canonicity this report confirms two sections earlier; report automaton-
+and language-weighted counts side by side. (iii) The degenerate line:
+empty and universal specimens (one word class, `P` empty or full) pass
+everything trivially and can only inflate the 96.5% / 95.5% headlines and
+the frozen-layer count; give them their own line per shape and restate
+the headline figures without them.
+
+**Sizes: two ledgers are runnable today, no C4 needed.** (i) E4-interim —
+the DG baseline over the 891 LTL specimens: DAG nodes, flat size or
+`FLAT_OVERFLOW`, by `|𝒞|` and per shape, with size-bucket histograms; the
+paper's §3/§6 needs the explosion as a *distribution*, not the single
+`GF(aa)` exemplar (19 nodes / arena 1287 / flat 1 991 717). (ii) E7,
+pulled forward to M1.5 — the witness ledger over the 90 non-LTL
+specimens: component lengths against the Theorem-4.4 bounds, and the
+**dual scan** — record for every specimen whether the linear scan and the
+ω-power scan *each* find a non-constant pattern, not merely which fired
+first under the scan order; a specimen whose ω-power side is all-constant
+is an H5 hit, and a census with none is the first real evidence toward
+"F₂ always available".
+
+**The precursors have a rendezvous, and it should be early.** daisy
+(self-loop peel) and kanchor (SCC peel) are exactly what E3 exists to
+cross-test, and E3 needs no new engine. Two directed questions for the
+early pass: does kanchor's peel go through on the census reference forms
+at all (per-SCC passing widths, failure modes), and does daisy's
+applicability coincide with the width-1 park stratum — frozen layers, (B)
+at `k' = 1` — as the theory says it should? Any census instance where the
+algebra needs a *larger* width than some automaton form comes back to the
+paper immediately.
+
+**The pair split gets an experiment id.** C7 had no milestone and its
+decompositions no experiment — fixed: E8, assigned with C7 to M3. The
+OR-split by final layer is the sanctioned granularity; the split per
+accepting pair is what §5.6(1)'s guard warns against (pieces can climb
+the Wagner ladder while staying LTL) — but the guard is a prediction, and
+E8 measures it: re-canonicalize every final-layer piece and every
+single-pair piece, record the read-offs, count the ladder climbs. The
+AND-split search reports its factored-vs-`IRREDUCIBLE` fractions on the
+same pass.
+
+Spec revisions issued in `sos_toltl_experiments.md`, revision line
+2026-07-07: §3b census reporting discipline; E1/E2 table requirements;
+E4-interim; E7 dual scan + pull-forward; E3 directed questions; E8/C7;
+milestone M1.5.
+
+### Addendum (2026-07-08) — the census unit is the language
+
+Portfolio-path data on the single shape `2state1ap1acc` (Inf-only
+acceptance — which also answers the family question for this shape: the
+run was Büchi-flavored): 759 LTL answers collapse to at most 73 distinct
+formula structures (md5 on strings — a proxy; the byte-identical
+canonical `.sos` is the normative key, distinct strings can be one
+language), with 43.6% of all answers the universal language `1` and the
+top 10 structures covering 80%. Automaton-weighted statistics on this
+shape are therefore ~90% presentation noise, and the degenerate stratum
+alone is over two-fifths of it. Consequence — spec §3b upgraded from
+"report both weightings" to: the census unit *is* the distinct `.sos`;
+automaton counts survive as presentation multiplicity, a deliverable in
+its own right and a free canonicity cross-check (every presentation of
+one `.sos` must yield identical read-offs, certificates and formulas; a
+divergence is a stop-the-line bug). E1/E2 percentages are re-keyed
+accordingly at M1.5 — keep running the full automaton census, key the
+tables by language. The portfolio's formulas on these shapes are also
+adopted as E4(c)'s standing readability yardstick: per language,
+`GFa` / `!a & G(!a | X!a)`-class output is the bar the transcription
+should approach. (One row to explain in the next report: the "1
+gated/unprintable string" among the 759 — printer artifact or encoding
+bug, either way one line, and whether its language deduplicates away.)
