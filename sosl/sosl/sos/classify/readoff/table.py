@@ -58,6 +58,24 @@ class ReadOff:
     needs_derivative: bool
 
 
+def in_gen_buchi_spectrum(m_plus: int, m_minus: int,
+                          n_plus: int, n_minus: int) -> bool:
+    """The generalized-Büchi degree spectrum of C section 11 (Prop. 11.1): a
+    language recognized by a deterministic complete ``⋀ Inf`` automaton has
+    ``m_plus <= 0`` and Wagner degree in
+    ``{(0,σ),(0,π)} ∪ {(n,s):1<=n<ω} ∪ {(ω,σ)}`` — never the derivative regime.
+    In the four integers that is ``m_plus <= 0`` together with either a weak
+    body (``m_minus <= 0``, the trivial and boolean levels) or the single
+    properly-``Gδ`` shape ``m_minus = 1, (n_plus, n_minus) = (-1, 0)``. A
+    generalized-Büchi input classified outside this set is a bug in the
+    classifier or in the corpus's acceptance labeling (spec harness 4.6)."""
+    if m_plus > 0:
+        return False
+    if m_minus <= 0:
+        return True
+    return m_minus == 1 and n_plus == -1 and n_minus == 0
+
+
 def read_off(m_plus: int, m_minus: int, n_plus: int, n_minus: int) -> ReadOff:
     """Assemble the C section 7-8 read-off from the four chain/superchain
     integers (each ``>= -1``, ``-1`` meaning 'none')."""
