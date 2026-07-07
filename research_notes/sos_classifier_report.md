@@ -159,14 +159,23 @@ multiplicities up to which side the census enumerates (`(2,σ)`↔`(2,π)`,
 sits alone — exactly the duality gate's prediction, now visible across the
 whole corpus rather than case by case.
 
-Two observations feed the theory side. First, the census is **shallow**: no
+Two observations feed the theory side. First, this census is **shallow**: no
 case exceeds boolean level 2 on the finite side or `ω²` on the infinite side,
-and none reaches the derivative regime `m≥1 ∧ n⁺=n⁻` — small deterministic
-automata simply do not realise the deep degrees, so exercising K4 and the higher
-Wagner classes needs hand-built or larger specimens, not enumeration. Second,
-the ceiling met in this range is the **construction**, never the classifier:
-classification never exceeded 0.039 s on any of the 18 239 inputs and every
-BUDGET slot is empty, direct evidence for the C§10 claim that once `𝓘(L)` is in
-hand the whole tower is a cheap read-off. Per-input records (coordinates, rungs,
-`ϕ`, verdict, wall) are the `stats.json`-shaped `records.jsonl` under
-`sosl/tests/sosl/logs/classify_census/`.
+and none reaches the derivative regime `m≥1 ∧ n⁺=n⁻`. The shallowness is a
+property of the *corpus*, not the classifier — and, it turns out, specifically of
+the corpus's **generalized-Büchi acceptance** `Inf(0) ∧ … ∧ Inf(c−1)`, a single
+`Gδ` that no amount of colours takes past the DBA rung. Extending the genaut
+generator with a **parity** acceptance family (`Fin`/`Inf` alternation; the same
+combos, a different acceptance formula) changes the picture immediately: a single
+tiny `1state2ap2acc_parity` shape (98 survivors) realises `(ω²,σ)` — one Rabin
+pair — **18 times**, against once (EvenBlocks) in the whole 18 239-case
+generalized-Büchi census, and the persistence rung `(ω,π)` 30 times against 2.
+So the deep degrees *are* reachable by enumeration once the acceptance family is
+right; the still-missing pieces — non-LTL cases and the derivative regime — need
+several states, where the exhaustive `N = guards^(n²·2^c)` wall forces sampling
+rather than full enumeration. Second, the ceiling met throughout is the
+**construction**, never the classifier: classification never exceeded 0.039 s on
+any of the 18 239 inputs and every BUDGET slot is empty, direct evidence for the
+C§10 claim that once `𝓘(L)` is in hand the whole tower is a cheap read-off.
+Per-input records (coordinates, rungs, `ϕ`, verdict, wall) are the
+`stats.json`-shaped `records.jsonl` under `sosl/tests/sosl/logs/classify_census/`.
