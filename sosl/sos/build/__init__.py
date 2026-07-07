@@ -1,7 +1,7 @@
 """build — constructors for the sos invariant from a known automaton or formula.
 
-Re-exports; see README.md. Spot-backed adapter over the in-repo definability
-pipeline, normalized to the shared canonical form.
+Re-exports; see README.md. Spot-backed adapter over the canonical construction
+(``sos.core``): input normalization plus resource policy, no algorithm.
 """
 from .builder import ReferenceError, reference_of_hoa, reference_of_ltl
 from .importer import canonical, import_hoa
