@@ -24,3 +24,10 @@ def import_hoa(path: str) -> "spot.twa_graph":
     """The canonical form D of the automaton in HOA file ``path``, determinizing
     and completing a nondeterministic or partial input as needed."""
     return canonical(spot.automaton(path))
+
+
+def import_ltl(formula: str) -> "spot.twa_graph":
+    """The canonical form D of an LTL/PSL formula's language, via a
+    deterministic Spot translation."""
+    return canonical(
+        spot.translate(spot.formula(formula), "deterministic", "generic", "complete"))
