@@ -24,18 +24,17 @@ import os
 import sys
 from typing import List, Optional, Tuple
 
-from tests.probes.dg_common import DgData, quotient_of_hoa
 from tests.sos.build_sos import (
     to_hoa_path,
     transition_monoid_has_group,
-    certificate_or_formula,
-    li_of_masks,
+    letter_names,
     em_surjection,
 )
 from sosl.sos import Invariant, Residuals, dump_invariant
 from sosl.sos.alphabet import Letter
 from sosl.sos.io.serialize import render_letter, render_word
-from sosl.sos.build import reference_of_hoa, residuals_of_hoa
+from sosl.sos.build import import_hoa, residuals_of_hoa
+from sosl.sos.core import SosData, pipeline, freeze
 
 
 def md_table(header: List[str], rows: List[List[str]]) -> List[str]:
@@ -57,29 +56,29 @@ def matrix_block(header: List[str], rows: List[List[str]]) -> List[str]:
     return out
 
 
-def em_rows(data: DgData, inv: Invariant, surj: dict) -> List[List[str]]:
+def em_rows(data: SosData, inv: Invariant, surj: dict) -> List[List[str]]:
     mon = data.mon
     ab = inv.alphabet
     rows: List[List[str]] = []
     for ei in range(len(mon)):
-        word = ";".join(data.names[li] for li in mon.rep[ei]) or "eps"
+        word = render_word(ab, mon.rep[ei])
         st = "[" + " ".join(str(dst) for (dst, _m) in mon.elems[ei]) + "]"
         mk = "[" + " ".join(
             "{" + ",".join(map(str, sorted(m))) + "}" if m else "{}"
             for (_d, m) in mon.elems[ei]) + "]"
-        rmul = " ".join(f"{mon.right[ei][li]}" for li in range(len(data.names)))
+        rmul = " ".join(f"{mon.right[ei][a]}" for a in range(ab.size))
         hosted = " / ".join(
             f"{c} `{render_word(ab, inv.keys[c])}`" for c in surj[ei])
         rows.append([str(ei), f"`{word}`", st, mk, rmul, hosted])
     return rows
 
 
-def section(label: str, inp: str, data: DgData, inv: Invariant,
+def section(label: str, inp: str, data: SosData, inv: Invariant,
             res: Residuals) -> List[str]:
     """The full Markdown section for one input."""
     ab = inv.alphabet
     k = inv.n
-    surj = em_surjection(data, inv, li_of_masks(data, ab))
+    surj = em_surjection(data, inv)
     out: List[str] = [f"## {label}", ""]
     out.append(f"*Input:* `{inp}`")
     out.append("")
@@ -99,7 +98,7 @@ def section(label: str, inp: str, data: DgData, inv: Invariant,
     out.append("")
     out.append(f"`|EM¹| = {len(data.mon)}` elements folding onto "
                f"`|S(L)₊¹| = {k}` classes. `rmul` is right-multiplication by "
-               f"each letter ({', '.join('`'+n+'`' for n in data.names)}), as "
+               f"each letter ({', '.join('`'+n+'`' for n in letter_names(ab))}), as "
                "`EM` element ids. The identity element hosts two classes "
                "(`[eps]` and any neutral non-empty class).")
     out.append("")
@@ -157,14 +156,14 @@ def main(argv: List[str]) -> int:
     specs = [parse_spec(s) for s in argv[2:]]
 
     scratch = os.path.join(os.path.dirname(__file__), "logs")
-    built: List[Tuple[str, str, Optional[DgData], Optional[Invariant],
+    built: List[Tuple[str, str, Optional[SosData], Optional[Invariant],
                       Optional[Residuals]]] = []
     for i, (label, inp) in enumerate(specs):
         # a distinct scratch file per formula input so they do not clobber.
         sub = os.path.join(scratch, f"_in{i}")
         path = to_hoa_path(inp, sub) if not os.path.isfile(inp) else inp
-        data = quotient_of_hoa(path)
-        inv = reference_of_hoa(path) if data is not None else None
+        data = pipeline(import_hoa(path))
+        inv = freeze(data) if data is not None else None
         res = residuals_of_hoa(path) if data is not None else None
         built.append((label, inp, data, inv, res))
 
@@ -172,15 +171,16 @@ def main(argv: List[str]) -> int:
     doc: List[str] = [f"# SoS algebra summary — {names}", ""]
     doc.append("Canonical syntactic ω-semigroup `S(L)₊` read off each input "
                "automaton. `TM` = transition monoid; a group in `TM` may be a "
-               "presentation artifact, a group in `S(L)₊` is intrinsic "
-               "(⇔ not LTL-definable).")
+               "presentation artifact (the LTL-definability verdict, which turns "
+               "on a group in `S(L)₊` itself, belongs to the definability engine, "
+               "not this algebra summary).")
     doc.append("")
     doc.append("## Fingerprints")
     doc.append("")
     fp_rows: List[List[str]] = []
     for label, _inp, data, inv, _res in built:
         if data is None:
-            fp_rows.append([label, "—", "cap", "—", "—", "—", "—", "closure blew the cap"])
+            fp_rows.append([label, "—", "cap", "—", "closure blew the cap"])
             continue
         fp_rows.append([
             label,
@@ -188,13 +188,9 @@ def main(argv: List[str]) -> int:
             str(len(data.mon)),
             str(inv.n),
             "yes" if transition_monoid_has_group(data) else "no",
-            "yes" if data.group is not None else "no",
-            "yes" if data.group is None else "no",
-            certificate_or_formula(data),
         ])
     doc += md_table(
-        ["input", "\\|Q\\|", "\\|EM¹\\|", "\\|S(L)₊¹\\|",
-         "grp TM", "grp S(L)₊", "LTL?", "evidence"],
+        ["input", "\\|Q\\|", "\\|EM¹\\|", "\\|S(L)₊¹\\|", "grp TM"],
         fp_rows)
     doc.append("")
 
