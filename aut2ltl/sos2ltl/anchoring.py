@@ -19,12 +19,16 @@ monoid `𝒜_R` — every within-layer action of a readable word.
 """
 from __future__ import annotations
 
+import itertools
 from dataclasses import dataclass
 from typing import Dict, FrozenSet, List, Optional, Set, Tuple
 
 from sosl.sos import Invariant, Letter
 
 from .cayley import Cayley
+
+Window = Tuple[Letter, ...]
+"""A length-`k` word over `Σ_λ`, the graded engine's window (Def 5.5)."""
 
 Action = Tuple[Optional[int], ...]
 """A within-layer action: for each position in the layer's sorted class
@@ -161,3 +165,34 @@ def analyze_layer(cay: Cayley, layer_id: int) -> LayerAnchoring:
 def analyze(cay: Cayley) -> Tuple[LayerAnchoring, ...]:
     """The condition-(A) analysis of every layer, indexed by layer id."""
     return tuple(analyze_layer(cay, i) for i in range(len(cay.layers)))
+
+
+def anchor_windows(cay: Cayley, layer_id: int,
+                   kappa: int) -> Dict[int, Tuple[Window, ...]]:
+    """`A_κ(c)` per target class: the length-`kappa` words over `Σ_λ` whose
+    within-layer action is a partial constant onto `c` (Def 5.5, Thm 5.23).
+
+    A word is readable from `c ∈ R` iff folding it from `c` never leaves the
+    layer (right multiplication descends the R-order, so an escaped walk never
+    returns — Prop 5.21(i)); its action is constant onto its single image
+    class, the diagonal case (identity on a singleton domain) included. Words
+    with two or more image classes are neutral windows, attributing nothing,
+    and belong to no `A_κ(c)`."""
+    inv = cay.inv
+    layer = cay.layers[layer_id]
+    member = frozenset(layer)
+    out: Dict[int, List[Window]] = {c: [] for c in layer}
+    for combo in itertools.product(inv.alphabet.letters(), repeat=kappa):
+        classes = [inv.letter_class[a] for a in combo]
+        images: Set[int] = set()
+        for c in layer:
+            cur = c
+            for d in classes:
+                cur = inv.mult[cur][d]
+                if cur not in member:
+                    break
+            else:
+                images.add(cur)
+        if len(images) == 1:
+            out[next(iter(images))].append(combo)
+    return {c: tuple(v) for c, v in out.items()}
