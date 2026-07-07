@@ -23,7 +23,8 @@ computed, exactly as the spec's exit-code-2 anticipates.
 | **K1** primitives + identity + LTL cut | layer 3.1, C§3–4 | **done** — `primitives/`, `aperiodic/`; group witness emitted |
 | **K2** chains | engine 3.2, `m`-rungs, parity lengths | **done** — `chains/`; triptych `(m⁺,m⁻)` exact |
 | **K3** superchains + degree (non-derived) | engine 3.3, `µ`/`s`, `γ` on `m=0 ∨ n⁺≠n⁻` | **done** — `superchains/`, `readoff/`, `record/`; full triptych `ϕ` reproduced |
-| **K4** derivation + campaign | component 3.4, X1–X3 | **open** — PARTIAL emitted correctly; `∂𝒜` + census campaign not wired |
+| **X0/X1** validation + profile | census driver | **done** — 18 239 census inputs classified, harness green, degree profile in §6 |
+| **K4** derivation | component 3.4 | **open** — PARTIAL emitted correctly; `∂𝒜` not wired, and no census case reaches the derivative regime yet |
 
 Every band above is a pure table search on `𝓘(L)` (C§10): power orbits `O(N²)`,
 the Green preorders as one-shot principal ideals, chains a longest-alternating-path
@@ -67,8 +68,9 @@ both at the zero class, are recovered as the maximal negative witness.
 | **4.2** duality gate | classify `L` and `L̄` (flip `P`): `m⁺↔m⁻`, `n⁺↔n⁻`, `σ↔π`, `δ↔δ`, `γ` equal, open↔closed, dba↔dca | **green** — `classify_record`, and per band |
 | **4.3** triptych fixtures | records byte-equal to C§9 | **green** — `classify_record`, `classify_readoff` |
 | **4.5** witness replay (self) | each chain lasso, folded by `Invariant.member`, matches its bit | **green** — asserted inside `classify()` |
+| **X0** census validation | classify + duality over 18 239 corpus inputs | **green** — zero MISMATCH, zero BUDGET (`classify_census`) |
 | **4.5** witness replay (vs `--hoa`) | replay against a presentation's teacher | **not wired** — `--certificates` reserved |
-| **4.4** Spot cross-checks | safety / weak / DBA / parity-index vs Spot over the census | **not run** — needs the census campaign |
+| **4.4** Spot cross-checks | safety / weak / DBA / parity-index vs Spot over the census | **not run** — orthogonal, deferred |
 
 The always-on laws mean a run that violates a Carton–Perrin invariant fails loudly
 (`AssertionError` → the tool's exit code 4), rather than emitting a wrong record.
@@ -85,15 +87,15 @@ Honest accounting against the spec, so the gaps are not mistaken for bugs:
   spec's F2, by design. Resolving it requires building `∂𝒜` from a **deterministic
   presentation** (collapse the maximal-superchain basins, [CP99 §3]) and rebuilding
   `𝓘(∂X)` through the in-repo construction, then recursing (`m` strictly decreases).
-  No triptych case exercises this; a deliberate `m≥1, n⁺=n⁻` specimen is needed to
-  test it once wired.
+  Neither the triptych nor any of the 6 697 census cases in §6 reaches this regime,
+  so it is untested by real data; a deliberate `m≥1, n⁺=n⁻` specimen is needed to
+  exercise it once wired.
 
-- **The census campaign (X1, X3).** The engines are ready to run over the
-  genaut-enumerated census (`sos_census.md`); what remains is the driver that builds
-  each census language's `.sos`, classifies it, and tabulates the distribution of
-  rungs, parity lengths, `(m,n)` pairs, and degrees — the first measured Wagner-degree
-  profile of a systematically enumerated class — plus the cost curves of X3. This is
-  the highest-signal next step and is read-only over the invariants.
+- **X3 cost curves.** The per-input wall time is logged (`records.jsonl`) and the
+  headline is already clear — the classifier never approached its budget (max 0.039 s
+  over 18 239 inputs, §6) — but the scatter of cost vs `N` with the C§10 polynomial
+  bounds overlaid, and the split of construction vs classification time, are not yet
+  drawn.
 
 - **Spot cross-checks (X0/X1, F1).** The Wagner-vs-Borel dictionary of C§7 is the
   normative reconciliation; comparing our rung/index verdicts to Spot's on the census
@@ -122,3 +124,49 @@ Honest accounting against the spec, so the gaps are not mistaken for bugs:
 
 The record's flat shape and the CLI's exit codes follow spec §1–2. The `stats.json`
 metrics file (spec §6) is produced by the campaign driver, not yet written.
+
+---
+
+## 6. X1 — the measured Wagner-degree profile
+
+The classifier run over the genaut census (`classify_census`): every corpus
+automaton of every enumerated shape family plus the triptych and the two stall
+specimens — **18 239 languages**. Reference invariant built per input,
+classified, duality gate run. Result: **18 239 SOUND, 0 MISMATCH, 0 BUDGET,
+0 PARTIAL** — the harness green corpus-wide, and every language's degree resolved
+without the derivative. The maximum per-input classification time was **0.039 s**.
+
+The first measured Wagner-degree distribution of a systematically enumerated
+ω-language class (no existing tool computes this):
+
+| `ϕ = (γ, s)` | reading (rung / index) | count | `(m⁺,m⁻,n⁺,n⁻)` |
+|---|---|--:|---|
+| `(1, π)` | properly closed — safety, weak | 15 432 | `(0,0,1,0)` |
+| `(ω, σ)` | properly `Gδ` — DBA / recurrence | 1 887 | `(0,1,−1,0)` |
+| `(1, δ)` | properly Δ₂ — weak, self-dual | 470 | `(0,0,0,0)` |
+| `(0, π)` | universal (trivial closed) | 352 | `(0,−1,0,−1)` |
+| `(1, σ)` | properly open — guarantee, weak | 68 | `(0,0,0,1)` |
+| `(0, σ)` | empty (trivial open) | 16 | `(−1,0,−1,0)` |
+| `(2, π)` | boolean level 2, `π` side | 6 | `(0,0,2,1)` |
+| `(2, σ)` | boolean level 2, `σ` side | 5 | `(0,0,1,2)` |
+| `(ω, π)` | properly `Fσ` — DCA / persistence | 2 | `(1,0,0,−1)` |
+| `(ω², σ)` | one Rabin pair (EvenBlocks) | 1 | `(1,2,−1,0)` |
+
+LTL-definable: 12 205; non-LTL: 6 034. The distribution is a self-consistency
+check as well as data — the complement pairs appear together with matching
+multiplicities up to which side the census enumerates (`(2,σ)`↔`(2,π)`,
+`(ω,σ)`↔`(ω,π)`, `(1,σ)`↔`(1,π)`, `(0,σ)`↔`(0,π)`), and the self-dual `δ` row
+sits alone — exactly the duality gate's prediction, now visible across the
+whole corpus rather than case by case.
+
+Two observations feed the theory side. First, the census is **shallow**: no
+case exceeds boolean level 2 on the finite side or `ω²` on the infinite side,
+and none reaches the derivative regime `m≥1 ∧ n⁺=n⁻` — small deterministic
+automata simply do not realise the deep degrees, so exercising K4 and the higher
+Wagner classes needs hand-built or larger specimens, not enumeration. Second,
+the ceiling met in this range is the **construction**, never the classifier:
+classification never exceeded 0.039 s on any of the 18 239 inputs and every
+BUDGET slot is empty, direct evidence for the C§10 claim that once `𝓘(L)` is in
+hand the whole tower is a cheap read-off. Per-input records (coordinates, rungs,
+`ϕ`, verdict, wall) are the `stats.json`-shaped `records.jsonl` under
+`sosl/tests/sosl/logs/classify_census/`.
