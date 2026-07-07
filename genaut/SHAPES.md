@@ -31,7 +31,9 @@ and run separately. A `—` in `langs` means the canonical tier is not built yet
 | `1state1ap1acc` | 1 | 1 | 1 | 2 | 16 | 7 | **5** | **4** | 1.25x |  |
 | `1state2ap0acc` | 1 | 2 | 0 | 1 | 16 | 16 | **6** | **6** | 1.00x |  |
 | `1state1ap2acc` | 1 | 1 | 2 | 4 | 256 | 10 | **7** | **5** | 1.40x |  |
+| `1state1ap2acc_parity` | 1 | 1 | 2 | 4 | 256 | 19 | **12** | **5** | 2.40x |  |
 | `1state2ap1acc` | 1 | 2 | 1 | 2 | 256 | 77 | **25** | **22** | 1.14x |  |
+| `1state2ap1acc_parity` | 1 | 2 | 1 | 2 | 256 | 77 | **25** | **22** | 1.14x |  |
 | `1state3ap0acc` | 1 | 3 | 0 | 1 | 256 | 256 | **52** | **52** | 1.00x |  |
 | `2state1ap0acc` | 2 | 1 | 0 | 4 | 256 | 53 | **30** | **25** | 1.20x |  |
 | `1state1ap3acc` | 1 | 1 | 3 | 8 | 65536 | 10 | **7** | **5** | 1.40x |  |
@@ -40,6 +42,7 @@ and run separately. A `—` in `langs` means the canonical tier is not built yet
 | `1state2ap2acc_parity` | 1 | 2 | 2 | 4 | 65536 | 317 | **98** | **58** | 1.69x |  |
 | `1state3ap1acc` | 1 | 3 | 1 | 2 | 65536 | 6553 | **1512** | **1480** | 1.02x | deferred |
 | `2state1ap1acc` | 2 | 1 | 1 | 8 | 65536 | 1845 | **929** | **129** | 7.20x |  |
+| `2state1ap1acc_parity` | 2 | 1 | 1 | 8 | 65536 | 1845 | **929** | **129** | 7.20x |  |
 | `2state2ap0acc` | 2 | 2 | 0 | 4 | 65536 | 30613 | **11542** | **11312** | 1.02x | deferred |
 | `3state1ap0acc` | 3 | 1 | 0 | 9 | 262144 | 7908 | **4033** | **1645** | 2.45x | deferred |
 
