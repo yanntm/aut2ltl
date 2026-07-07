@@ -2921,3 +2921,4 @@ corrected to the canonical 3-class form. `saturate()` and
 `process_counterexample()` now return a provenance label (used by the ledger
 renderer). Report rewritten present-tense (prior feedback round digested and
 folded in, transcript removed).
+2026-07-07 — theory: sos_classification.md gains §8 self-dual/clopen dictionary, §9 Fork specimen (ϕ=(ω+1,δ), the K4 derivative fixture), §11 gen-Büchi spectrum (Prop 11.1), §12 measured census profile; sos_classifier_spec.md rev.2 binds iteration 2 (bench manifest, per-shape ventilation, spectrum law, Fork gate, (1,δ)=clopen naming fix).

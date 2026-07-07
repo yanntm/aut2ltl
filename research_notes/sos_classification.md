@@ -16,6 +16,9 @@ sources. It is standalone in the sense that every definition it uses is
 restated; it relies on the core paper for the object itself (its
 construction, canonicity, and the serialized `.sos` form). The engineering
 companion is `sos_learner_spec.md`'s sibling, `sos_classifier_spec.md`.
+Two closing sections leave the single language: §11 bounds what an entire
+acceptance *family* of inputs can reach, and §12 reports the measured
+Wagner-degree profile of the first systematically enumerated corpus.
 
 The mathematical spine is Carton and Perrin's pair of papers on chains and
 superchains [CP97, CP99]. Their theorems are stated on arbitrary recognizing
@@ -305,6 +308,19 @@ preorder on ω-rational sets**: `ϕ(X) ≤ ϕ(Y) ⟺ X` reduces continuously to
 `Y` ([CP99, Thm. 4] — Wagner's theorem). The sum defining `γ` is the Cantor
 normal form of an ordinal `< ω^ω`.
 
+**The self-dual degrees, named.** The sign `δ` arises in two ways. Directly,
+when `m = 0` and `n⁺ = n⁻ = n`: then `µ = ω⁰·(n+1) = n+1`, so the degree is
+`(n+1, δ)` with coordinates `(0, 0, n, n)` — by the §7 table these languages
+lie in `Σ_{n+1} ∩ Π_{n+1}` and in neither `Σ_n` nor `Π_n`, i.e. they are
+exactly the **properly `Δ_{n+1}`** level of the boolean hierarchy. In
+particular `(1, δ)`, coordinates `(0, 0, 0, 0)`, is the **nontrivial clopen**
+class — both the open and the closed test of §7 pass — properly `Δ₁`, one
+notch *below* the properly open/closed pair, not above it; the first properly
+`Δ₂` degree is `(2, δ)`, coordinates `(0, 0, 1, 1)`. Indirectly, `δ`
+propagates through the derivative (`s(X) = s(∂X)` below), producing self-dual
+degrees with infinite `γ` — §9's fourth specimen is one. Profile tables
+should name these levels by this dictionary.
+
 **When the recursion is needed.** Only in the case `m ≥ 1 ∧ n⁺ = n⁻` does
 `γ` involve the **derivative** `∂X` — Wagner's derivation, realized by
 Carton–Perrin as an automaton transformation `∂𝒜` (collapse the states
@@ -369,6 +385,82 @@ Every row satisfies the internal laws `|m⁺ − m⁻| ≤ 1`, `|n⁺ − n⁻| 
 `n ≥ 1 ⟹ m⁺ = m⁻` ([CP97, Props. 6, 10]) — the consistency web the
 implementation inherits as free assertions.
 
+**A fourth specimen: `Fork`, into the derivative.** Nothing in the triptych —
+and, by Proposition 11.1, nothing in any generalized-Büchi corpus — reaches
+the derivative regime `m ≥ 1 ∧ n⁺ = n⁻` of §8. The regime needs maximal
+chains of both signs (`m⁺ = m⁻ ≥ 1`) whose stems no superchain connects, and
+the minimal recipe is to route between a properly-`Gδ` and a properly-`Fσ`
+behavior on the first letter:
+
+```
+    Fork  =  (a ∧ GF a) ∨ (¬a ∧ FG ¬a)
+```
+
+over the single atom `a`: a word starting with `a` must carry infinitely many
+`a`, a word starting with `!a` finitely many. `Fork` is LTL-definable — the
+derivative regime is orthogonal to the aperiodic cut of §4.
+
+*The invariant.* A nonempty word acts only through its first letter and
+whether it contains an `a`, so `S(Fork)₊¹` has four classes
+`[ε], [!a], [a], [!a·a]` — first letter `a` (hence containing one), first
+letter `!a` without / with a later `a`. Products keep the left factor's first
+letter and accumulate the contains-`a` bit: `[a]` and `[!a·a]` are
+left-absorbing, `[!a]·[a] = [!a]·[!a·a] = [!a·a]`, `[!a]·[!a] = [!a]`. All
+three word classes are idempotent, so the algebra is aperiodic. The accepting
+pairs, each checked on its lasso:
+
+```
+    P = { ([a],[a]),  ([a],[!a·a]),  ([!a],[!a]),  ([!a·a],[!a]) }
+```
+
+(`a·a^ω` and `a·(!a·a)^ω` recur `a` after an `a`-start; `!a·(!a)^ω` and
+`!a·a·(!a)^ω` see finitely many `a` after a `!a`-start).
+
+*Chains.* On `E = {[!a], [a], [!a·a]}` the `H`-order has the single strict
+descent `[!a] >_H [!a·a]` (each product of the two is `[!a·a]`); `[a]` is
+`H`-isolated (`[!a]·[a] = [!a·a] ≠ [a]`). The descent admits the stems `[a]`
+and `[!a·a]`. At stem `[a]` it scores (reject, accept) — `([a],[!a]) ∉ P`,
+`([a],[!a·a]) ∈ P` — a **negative chain of length 1**; at stem `[!a·a]` it
+scores (accept, reject) — a **positive chain of length 1**. The Hasse diagram
+has depth two, so `m⁺ = m⁻ = 1`.
+
+*Superchains.* The two maximal chains sit at stems `[a]` (negative) and
+`[!a·a]` (positive), and both stems are `R`-minimal singletons
+(`[a]·S₊ = {[a]}`, `[!a·a]·S₊ = {[!a·a]}`), mutually unreachable: no
+superchain of length 1 exists in either sign, `n⁺ = n⁻ = 0`.
+
+*The degree, through the derivative.* `m = 1` and `n⁺ = n⁻`:
+`µ = ω¹·(0+1) = ω` and, for the first time, §8's recursion is genuinely
+needed. On the three-state presentation below, the derivation `∂` of
+[CP99 §3] collapses the two maximal-chain basins — the `a`-successor
+component (negative) onto a rejecting sink, the `!a`-successor (positive)
+onto an accepting sink — leaving `∂Fork = !a·Σ^ω`: nontrivial clopen,
+`ϕ(∂Fork) = (1, δ)` by §8's dictionary. Hence
+
+```
+    γ(Fork) = µ + γ(∂Fork) = ω + 1,      s(Fork) = s(∂Fork) = δ .
+```
+
+| | `m⁺` | `m⁻` | `n⁺` | `n⁻` | `µ` | `γ` | `s` | `ϕ` | reading |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|---|
+| `Fork` | 1 | 1 | 0 | 0 | ω | ω+1 | δ | `(ω+1, δ)` | self-dual, off every rung — the derivative regime, one derivation |
+
+The first composite ordinal and the first recursive sign: `Fork` is
+self-dual (its complement is the same construction with the branches
+swapped), fails all five rung tests of §7, has parity and co-parity length
+both 2, and needs exactly one derivation. The duality laws hold on the nose:
+`m⁺ ↔ m⁻` and `n⁺ ↔ n⁻` are fixed points, `δ ↔ δ`, `γ` equal.
+
+*The presentation.* `Fork` has a three-state deterministic EL automaton:
+initial `q_ι` with `δ(q_ι, a) = q_a`, `δ(q_ι, !a) = q_b`; `q_a` and `q_b`
+each a sink of self-loops; marks `{0,1}` on `q_a`'s `a`-loop, `{1}` on
+`q_a`'s `!a`-loop, `{1}` on `q_b`'s `a`-loop, none on `q_b`'s `!a`-loop;
+acceptance `Inf(0) ∨ Fin(1)`. A run through `q_a` sees mark `1` forever, so
+acceptance reduces to `Inf(0)` — infinitely many `a`; a run through `q_b`
+never sees `0`, so it reduces to `Fin(1)` — finitely many `a`. This is the
+K4 fixture of the engineering companion: exit 2 with `PARTIAL(ω)` from the
+`.sos` alone, `ϕ = (ω+1, δ)` with the presentation supplied.
+
 ---
 
 ## 10. Complexity, and the point
@@ -389,6 +481,134 @@ classification tower, Wagner degree included, is a cheap read-off. That is
 every verdict out, each with a witness — a group cycle, an alternating
 chain, a superchain descent — that is itself a set of lassos replayable
 against any presentation of `L`.
+
+---
+
+## 11. What an acceptance family can reach
+
+The classifications above are per-language. One step up, the same machinery
+bounds an entire *input family*: the acceptance condition a corpus of
+deterministic automata is allowed to carry fixes, a priori, which Wagner
+degrees the corpus can contain at all — no matter how many states, colours,
+or letters are enumerated.
+
+**Proposition 11.1 (generalized-Büchi spectrum).** Let `L` be recognized by a
+deterministic, complete automaton whose acceptance is
+`Inf(c₀) ∧ ⋯ ∧ Inf(c_{k−1})` (generalized Büchi, any `k ≥ 1`). Then
+`m⁺(L) ≤ 0`, and the Wagner degree of `L` is one of
+
+```
+    (0, σ), (0, π)                        —  the trivial pair (empty / universal),
+    (n, s),  1 ≤ n < ω,  s ∈ {σ, π, δ}    —  the weak (boolean-hierarchy) levels,
+    (ω, σ)                                —  properly Gδ ,
+```
+
+and every degree in the list is attained already by a deterministic Büchi
+automaton (`k = 1`). In particular the derivative regime `m ≥ 1 ∧ n⁺ = n⁻`
+of §8 — which forces `m⁺ = m⁻ ≥ 1` — is unreachable: on such a corpus
+`γ = µ` always, and a classifier without the derivation is complete.
+
+*Proof.* For deterministic complete `D` the run over `α` is a letter-by-letter
+function of `α`, so `{α : the run visits mark c infinitely often}`
+`= ⋂_n {α : the run visits c after step n}` is a `Gδ` set; a finite
+conjunction of `Inf` is a finite intersection of `Gδ` sets, hence `Gδ`, i.e.
+`m⁺(L) ≤ 0` by the §7 table. Case `m⁺ = −1`: no positive chain means no
+accepting pair, `L = ∅`, degree `(0, σ)`. Case `m⁺ = 0, m⁻ = −1`: dually `L`
+is universal, `(0, π)`. Case `m⁺ = m⁻ = 0`: `L` is weak; both signs carry
+maximal (length-0) chains, so `n⁺, n⁻ ≥ 0` and §8 gives `γ = µ` finite `≥ 1`
+with any of the three signs. Case `m⁺ = 0, m⁻ = 1` (`|m⁺ − m⁻| ≤ 1` allows no
+more): every maximal chain is negative, and a superchain of length `≥ 1`
+needs maximal chains of both signs, so `(n⁺, n⁻) = (−1, 0)`:
+`µ = ω¹·(0+1) = ω`, `s = σ`, `γ = µ`. Attainment with `k = 1`: weak and
+properly-`Gδ` languages are DBA-realizable (`m⁺ ≤ 0`, §7), and every listed
+degree is inhabited [Wag79]. Finally `n⁺ = n⁻ ≥ 0` requires maximal chains of
+both signs, i.e. `m⁺ = m⁻`, contradicting `m⁺ ≤ 0` once `m ≥ 1`. ∎
+
+The contrast, off the same §7 rows: a deterministic **parity** condition with
+priorities `{0, …, k}` recognizes exactly the languages with `m⁺ ≤ k − 1`
+([CP99, Thm. 11]) — the full `ω^k` band of the hierarchy, superchain
+dimension unbounded — and a general Emerson–Lei (equivalently Muller)
+condition reaches every ω-regular degree. Three consequences for corpus
+design. First, a census's degree ceiling is set by its acceptance family
+*before* its state count: generalized-Büchi enumeration, however exhaustive,
+stays inside Proposition 11.1's list. Second, the `Fin`/`Inf`-alternating
+(parity) family is the cheapest door to the deep degrees. Third, the
+derivative regime needs maximal chains of both signs in `R`-incomparable
+basins — a `Fork`-shaped budget (§9): at least a routing state plus two
+components, and an acceptance able to accept in one component and co-accept
+in the other. Conversely the proposition is a free corpus-level oracle: a
+generalized-Büchi input classified outside the list is a bug, in the
+classifier or in the corpus's acceptance labeling.
+
+---
+
+## 12. The profile, measured
+
+The engineering companion's classifier, run over the genaut census
+(iteration 1, 2026-07-07): **18 239** deterministic, complete,
+transition-based automata with **generalized-Büchi** acceptance
+`Inf(0) ∧ ⋯ ∧ Inf(c−1)`, exhaustively enumerated over small shape families
+(states × atomic propositions × colours × guard alphabet), plus the triptych
+and two stall specimens as the only non-generalized-Büchi inputs. For every
+input the reference invariant `𝓘(L)` was built by the construction of
+[SωS26 §8] and classified; the duality gate and the internal laws of §5–6 ran
+on every case. Result: 18 239 SOUND, zero law violations, zero over budget,
+zero PARTIAL — and the first measured Wagner-degree profile of a
+systematically enumerated ω-language class:
+
+| `ϕ = (γ, s)` | `(m⁺, m⁻, n⁺, n⁻)` | class (§7–8 dictionary) | count |
+|---|---|---|--:|
+| `(0, σ)` | `(−1, 0, −1, 0)` | empty | 16 |
+| `(0, π)` | `(0, −1, 0, −1)` | universal | 352 |
+| *— the trivial pair, set apart: the weakest class —* | | | *368* |
+| `(1, δ)` | `(0, 0, 0, 0)` | clopen (properly `Δ₁`) | 470 |
+| `(1, σ)` | `(0, 0, 0, 1)` | properly open — guarantee | 68 |
+| `(1, π)` | `(0, 0, 1, 0)` | properly closed — safety | 15 432 |
+| `(2, σ)` | `(0, 0, 1, 2)` | properly `Σ₂` | 5 |
+| `(2, π)` | `(0, 0, 2, 1)` | properly `Π₂` | 6 |
+| `(ω, σ)` | `(0, 1, −1, 0)` | properly `Gδ` — DBA-proper | 1 887 |
+| `(ω, π)` | `(1, 0, 0, −1)` | properly `Fσ` — DCA-proper | 2 |
+| `(ω², σ)` | `(1, 2, −1, 0)` | parity-`{0,1,2}`-proper | 1 |
+
+The table is ordered by Wagner degree, weakest first. 12 205 of the languages
+are LTL-definable, 6 034 are not: the aperiodic axis cuts across the degree
+rows, as §7.1 of the core paper promised.
+
+Three readings. **The profile is Proposition 11.1, verified.** Every row lies
+in the generalized-Büchi list except the three outliers — `(ω, π)` twice and
+`(ω², σ)` once — and those are exactly the non-generalized-Büchi inputs: the
+two stall specimens and `EvenBlocks` (`Even` and `GF(aa)` fold into the
+`(1, σ)` and `(ω, σ)` rows). The zero-PARTIAL column is likewise the
+proposition's prediction, not luck: no generalized-Büchi input *can* need the
+derivative. And the pilot extension of the generator with a parity acceptance
+family confirms the converse immediately: a single one-state parity shape
+(98 surviving languages) realizes `(ω², σ)` eighteen times and `(ω, π)`
+thirty times — degrees the 18 239-case generalized-Büchi census reaches once
+and twice respectively, and only through hand-made specimens. **The census
+is heavily one-sided.** Properly-closed languages dominate (15 432 against
+68 properly open): the enumeration meets each dual pair on one side, chosen
+by how `Inf`-acceptance interacts with small shapes — the duality gate, which
+classifies both sides of every case, is what keeps the other side honest.
+**The cost claim of §10 holds.** Classification never exceeded 0.039 s on any
+input and every budget slot is empty; the practical ceiling met throughout
+was the construction of `𝓘(L)`, never the read-off.
+
+Two per-shape quantities are queued for the next iteration's manifest
+(engineering spec §5), both read off the same run. *How many languages does a
+shape carry?* Distinct-`𝓘` counts per shape family — Theorem 5.1's hash join
+makes counting languages, rather than automata, a one-pass operation, and a
+shape's automaton-to-language compression ratio is a datum no other tool
+computes. *How big are the algebras, and does size track depth?* The
+distribution of `N = |𝒞|` per shape, cross-tabulated against the degree. The
+dependence is one-directional: a chain of length `m` needs `m + 1` strictly
+`H`-descending idempotents and a superchain of length `n` needs `n + 1`
+strictly `R`-descending stems, so a deep degree forces `N` up — but not
+conversely, since a large algebra can be topologically shallow (a safety
+language with an intricate finite-word core keeps `N` high at degree
+`(1, π)`, while `EvenBlocks` reaches `ω²` with `N = 8`). The expected picture
+is triangular — deep degrees only above a size floor, shallow degrees at
+every size — and where the census sits inside that triangle measures what
+small shapes actually exercise.
 
 ---
 

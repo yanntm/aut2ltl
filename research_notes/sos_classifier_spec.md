@@ -1,8 +1,11 @@
 # SoS Classifier — Implementation and Experimentation Specification
 
-**Status:** specification / declaration of intent. Everything below is to be
-implemented; nothing exists yet except the inputs it consumes (the `.sos`
-invariant of the construction and learner threads).
+**Status:** rev. 2, 2026-07-07. Rev. 1 was the declaration of intent; the
+iteration-1 report (`sos_classifier_report.md`) lands K1–K3 and X0/X1. This
+revision binds the next iteration: K4 with its designed fixture (`Fork`,
+C§9), the acceptance-family spectrum law (C§11), and the reporting
+requirements on the census — bench manifest, per-shape ventilation, degree
+ordering, dictionary naming.
 
 **Normative math.** `research_notes/sos_classification.md` (the companion
 theory note, extending [SωS26] §7). Every procedure named below is defined
@@ -54,7 +57,9 @@ teacher replays them as-is):
 - a chain: `(key(s); key(e_0), …, key(e_m))` plus the `m+1` lassos
   `key(s)·key(e_i)^ω` with their expected alternating bits;
 - a superchain: the chains plus the connecting words `u_i` (shortlex
-  witnesses of `s_i ∈ s_{i−1}·S₊`, found by BFS in the right Cayley graph).
+  witnesses of `s_i ∈ s_{i−1}·S₊`, found by BFS in the right Cayley graph);
+- a derivation (K4): the collapsed presentation `∂𝒜`, the derivative's own
+  record, and the recursion trace `µ₀, µ₁, …` whose Cantor sum is `γ`.
 
 ---
 
@@ -110,7 +115,12 @@ the recursion needs the derivative language: with `--hoa`, build the
 derived automaton (collapse of the maximal-superchain basins, [CP99 §3] as
 restated in C§8), rebuild its `.sos` through the in-repo construction, and
 recurse (termination: `m` strictly decreases). Without `--hoa`, emit
-`gamma = PARTIAL(mu)` and exit 2. Reading the derivative's chain numbers
+`gamma = PARTIAL(mu)` and exit 2. The designed specimen for this path is
+`Fork` (C§9): `ϕ = (ω+1, δ)`, exactly one derivation, `∂Fork` clopen; its
+3-state EL presentation is given in C§9 and its ground-truth `.sos` comes
+from the in-repo construction. No census case reaches this regime — C§11
+proves none can under generalized-Büchi acceptance — so `Fork` is the
+acceptance test. Reading the derivative's chain numbers
 directly off `𝓘(X)` is flagged in C§8 as open — do NOT attempt it in this
 iteration.
 
@@ -139,7 +149,9 @@ Layered, all automated, all green before any experiment is reported.
 3. **Fixtures.** The triptych records of C§9 (`Even (0,0,0,1)/(1,σ)`,
    `GF(aa) (0,1,−1,0)/(ω,σ)`, `EvenBlocks (1,2,−1,0)/(ω²,σ)`) are
    hand-verified in the companion; assert byte-equality of the emitted
-   records against them via `--expect`.
+   records against them via `--expect`. Rev. 2 adds the fourth fixture
+   `Fork (1,1,0,0)/(ω+1,δ)` (C§9) — byte-equality including
+   `n_derivations = 1` and the derivative's clopen record `(1, δ)`.
 4. **Cross-checks against Spot (bounded-or-skipped, per repo discipline).**
    Where Spot exposes a matching test — safety / co-safety, weak
    (obligation), DBA-realizability, parity-index style information —
@@ -150,6 +162,11 @@ Layered, all automated, all green before any experiment is reported.
    with a source HOA: replay all witnesses. This is the deepest check — a
    chain witness ties the algebraic verdict back to concrete lassos of the
    language.
+6. **Spectrum law (corpus-level, C§11).** Every input whose acceptance is
+   generalized-Büchi must classify inside Proposition 11.1's list —
+   `m_plus <= 0` and `ϕ ∈ {(0,σ), (0,π)} ∪ {(n,s) : 1 ≤ n < ω} ∪ {(ω,σ)}` —
+   and never into the derivative regime. A violation is exit 4: either the
+   classifier or the corpus's acceptance labeling is wrong.
 
 ---
 
@@ -157,7 +174,27 @@ Layered, all automated, all green before any experiment is reported.
 
 Corpus: the census + triptych + the two stall specimens, as in
 `sos_learner_spec.md` §6 (same manifest; ground-truth `.sos` from the
-construction).
+construction). Rev. 2 adds the `Fork` specimen with its HOA (C§9).
+
+**The bench is itself a deliverable (rev. 2).** The report must state
+precisely what was tested: deterministic complete transition-based EL
+automata, enumerated exhaustively over *which* shape parameters (states,
+atomic propositions, colours, guard alphabet) — "exhaustive census" with no
+manifest is not a result. Concretely, a **manifest table**, one row per
+shape family × acceptance family (generalized-Büchi `⋀ Inf` / parity
+`Fin`/`Inf` alternation / general EL if emitted), with columns:
+
+- raw enumerated automata, and what "survivor" means (which filters);
+- **distinct languages**, deduplicated by `𝓘`-hash ([SωS26 Thm. 5.1]'s hash
+  join) — the shape's automaton-to-language compression ratio is a datum no
+  other tool computes;
+- the distribution of `N = |𝒞|` over the shape's distinct languages (min /
+  median / max suffices), feeding the size-vs-degree cross-tabulation of
+  C§12 — deep degrees force `N` up, large `N` does not force depth, and
+  where the census sits in that triangle is the measurement.
+
+The parity corpora are census members, not a sidebar: same manifest, same
+tables, same gates.
 
 **X0 — Validation.** Harness green over the corpus. Gate for the rest.
 
@@ -166,7 +203,15 @@ language: the full record. Deliverables: distribution tables — rungs,
 parity lengths, `(m, n)` pairs, degrees — over the census; the first
 measured Wagner-degree profile of a systematically enumerated language
 class (no existing tool computes this — report it as data, not just
-validation).
+validation). Rev. 2 reporting requirements: (i) every distribution
+**ventilated per shape family and per acceptance family**, aggregate last,
+so the acceptance-family effect (C§11) is visible in the data; (ii) the
+degree table ordered by Wagner degree, weakest first, with the trivial pair
+`(0,σ)`/`(0,π)` (empty / universal) in a separated block — it is the weakest
+class, not two rows among the proper ones; (iii) readings named by the
+C§7–8 dictionary — in particular `(1, δ)` is the nontrivial **clopen**
+class, properly `Δ₁` (rev. 1's report misnames it "properly Δ₂"; properly
+`Δ₂` is `(2, δ)`, coordinates `(0,0,1,1)`).
 
 **X2 — The paper table, exercised.** One row per band of [SωS26 §7]'s
 summary table: demonstrate each classification answered on the same one
@@ -185,7 +230,7 @@ it).
 ## 6. Metrics file (`stats.json`)
 
 ```
-case_id, classes, n_idempotents, n_linked_pairs,
+case_id, shape_family, acceptance_family, classes, n_idempotents, n_linked_pairs,
 aperiodic, m_plus, m_minus, n_plus, n_minus,
 mu, sign, gamma, gamma_partial (bool), parity_length, co_parity_length,
 rung_open, rung_closed, rung_weak, rung_dba, rung_dca,
@@ -213,7 +258,11 @@ wall_seconds, verdict (SOUND|MISMATCH|PARTIAL|BUDGET)
   CSV and figures by script. Accept: every census case SOUND or PARTIAL
   with PARTIAL only where derivation is genuinely required and no HOA was
   supplied; `n_derivations` and termination logged; X-deliverables
-  produced.
+  produced. Rev. 2 sharpens the gate: `Fork` classified end-to-end — exit 2
+  with `PARTIAL(ω)` from the `.sos` alone, `ϕ = (ω+1, δ)` with `--hoa`,
+  `n_derivations = 1` — the spectrum law (harness 6) green corpus-wide, and
+  the X1 deliverables regenerated to rev.-2 reporting (bench manifest,
+  per-shape ventilation, degree ordering, dictionary naming).
 
 Non-goals for this iteration: reading the derivative off the invariant
 without a presentation (open, C§8); the sub-LTL fragments (FO², Σ₂,
@@ -229,6 +278,7 @@ beyond this tool); any classification of non-ω-regular inputs.
 | A1 | internal laws (4.1) | all | always green | classifier-core bug |
 | A2 | duality gate (4.2) | all | always green | asymmetric bug in chain/superchain search |
 | A3 | witness replay (4.5) | HOA available | always green | the verdict is wrong or the witness extraction is; the replay transcript localizes it |
+| A4 | spectrum law (4.6) | gen-Büchi inputs | always green | classifier bug, or the corpus's acceptance labeling is wrong |
 | P1 | triptych fixtures (4.3) | K2+ | green | bug — the values are hand-verified in C§9; recheck against the companion before touching them |
 | F1 | Spot cross-check disagrees | X0/X1 | MAY be red | naming/dictionary mismatch first (C§7 box); only a failed witness replay downgrades it to a bug |
 | F2 | `gamma` PARTIAL without `--hoa` | any | expected | by design (exit 2); supply the HOA to resolve |
