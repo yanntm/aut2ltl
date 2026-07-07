@@ -33,6 +33,7 @@ from .witness import Family, extract_family, toggles
 if TYPE_CHECKING:
     from aut2ltl.language import Language
     from sosl.sos import Invariant, Lasso
+    from .dg.formulas import Ast
 
 TAG = "sos2ltl"
 TAG_ENGINE = "sos2ltl.engine"
@@ -44,6 +45,33 @@ def _cubes(inv: "Invariant") -> List[str]:
     ab = inv.alphabet
     return ["&".join(p if p in ab.true_aps(a) else "!" + p for p in ab.aps)
             for a in ab.letters()]
+
+
+def _to_formula(ast: "Ast", root: int, letters: List[str]) -> "spot.formula":
+    """A `spot.formula` built bottom-up over the dg arena — one Spot node per
+    arena node (Spot hash-conses internally), so shared subterms stay shared.
+    Never the O(unfolded-tree) flat string that `Ast.to_spot` renders."""
+    atoms = [spot.formula(s) for s in letters]
+    memo: dict = {}
+
+    def go(i: int) -> "spot.formula":
+        f = memo.get(i)
+        if f is None:
+            n = ast.node(i)
+            if n[0] == "top":
+                f = spot.formula.tt()
+            elif n[0] == "atom":
+                f = atoms[n[1]]
+            elif n[0] == "not":
+                f = spot.formula.Not(go(n[1]))
+            elif n[0] == "or":
+                f = spot.formula.Or([go(n[1]), go(n[2])])
+            else:
+                f = spot.formula.X(spot.formula.U(go(n[1]), go(n[2])))
+            memo[i] = f
+        return f
+
+    return go(root)
 
 
 def _floor_witness(inv: "Invariant", fam: Family) -> Witness:
@@ -108,4 +136,4 @@ def sos2ltl(lang: "Language") -> LTLResult:
     except DgDecline as e:
         return LTLResult.decline(f"sos2ltl: {e}", TAG, TAG_DG)
     return LTLResult.success(
-        spot.formula(ast.to_spot(phi, _cubes(inv))), TAG, TAG_DG)
+        _to_formula(ast, phi, _cubes(inv)), TAG, TAG_DG)
