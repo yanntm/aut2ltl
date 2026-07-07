@@ -5,7 +5,8 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Shadow draft — 2026-07-05 — placeholders marked `⟨TBD: …⟩`*
+*Shadow draft — 2026-07-05, rev. 2026-07-07 (M3 results integrated from
+`sosl_report.md`; remaining `⟨TBD: …⟩` placeholders await the M4 campaign)*
 
 ## Abstract
 
@@ -146,9 +147,11 @@ throughout (descriptions and automata in §2.3, Figure 1). Two of them are trace
 the stem) and `EvenBlocks`
 (prefix-independent, trivial right congruence — outside [MP95]'s class,
 degenerate for any FDFA's leading automaton, and precisely the case the ω-sort
-of our columns is built for). The trace has a punchline worth spoiling: both
-languages hand the learner the *same* first counterexample, and the algorithm
-routes it through opposite Arnold shapes. `GF(aa)`, whose transition-monoid
+of our columns is built for). The trace has a punchline worth spoiling: the two
+languages hand the learner first counterexamples that break the *same wrong
+name* — in both, the pair `([a],[a])` and its representative lasso `a·a^ω` have
+absorbed everything that ever read an `a` — and the algorithm routes the two
+repairs through opposite Arnold shapes. `GF(aa)`, whose transition-monoid
 group is a presentation artifact the algebra destroys, remains the evaluation's
 third specimen (§6).
 
@@ -347,9 +350,12 @@ nothing — lassos determine `L` (§2.2) — and every query the algorithm ever
 poses is one.
 
 In our experiments the teacher is built on the construction of [SωS26]:
-membership is one deterministic run, and an equivalence query builds `𝓘` of the hypothesis's
-language and compares invariants byte-for-byte — canonicity making the teacher
-cheap is itself a small advertisement for the object. Our teacher returns
+membership is one deterministic run, and an equivalence query is decided
+*exactly*, by the product of the teacher automaton's reachable configurations
+with the transformation closure of the hypothesis — each loop word acts on the
+hypothesis's classes as a function, so one representative lasso per
+(configuration, loop-action) cell fixes both verdicts, and the shortlex-least
+disagreeing cell is the counterexample. Our teacher returns
 *minimal* counterexamples (shortest stem, then shortest loop, then shortlex),
 which makes runs deterministic and the worked examples reproducible; §6 measures
 what non-minimal policies cost. Nothing in the learner's correctness depends on
@@ -380,8 +386,8 @@ row-function (prefix-independence: a stem mutation is swallowed), and the entire
 language lives in the ω-sort: the column `(ε, !a)` separates rows `a` and `aa`,
 since `(a·!a)^ω ∉ L` and `(aa·!a)^ω ∈ L`. A learner without the ω-sort cannot even
 represent what distinguishes them — this is [AF21]'s obstruction, met head-on.
-(§4.1 shows the learner *finding* `(a, !a)`, that column's prefixed cousin,
-unaided.)
+(§4.1 shows the learner *finding* a rotated cousin, `(a, a)`, unaided — and the
+final sweep mints `(ε, !a)` itself, Table 8.)
 
 *Example (day one, on `Even`).* `Even = (aa)*·!a·Σ^ω` over `Σ = {a, !a}` — an
 even block of `a`, then `!a`, then anything; membership of any word is fixed by
@@ -507,34 +513,35 @@ moves to `[a]`; from `[a]`, no letter ever leaves.
 difference — `!a·a` folds to `[a]`, so `[a]` is absorbing and the fold sees
 only "have I read an `a` yet".
 
-Now predict the lasso `(ε, aa!a)`, following the definition step by step.
-*Fold the loop:* `ψ(aa!a)` walks `[ε] →_a [a] →_a [a] →_{!a} [a]`, so
-`c_1 = [a]`. *Find the idempotent power:* `c_2 = ψ((aa!a)²)` continues the
-walk from `[a]` — absorbed, so `c_2 = [a]` — and the least `k` with
-`c_{2k} = c_k` is `k = 1`: the hypothesis believes `[a]` is already
-idempotent. *Form the pair:* `s = ψ(ε·aa!a) = [a]`, `e = [a]`. This step is
-the whole point of a prediction: the hypothesis has just **named** the queried
-lasso by the pair `([a], [a])` — the same name it gives `a·a^ω`, `(a·!a)^ω`,
-`(!a·a)^ω`, and every other lasso whose folds collapse into `[a]` — and one
-name gets one verdict. *Look up the name:* the cache has no entry for
-`([a],[a])`, so it costs one membership query on the shortlex keys,
+Now predict the lasso `(ε, !a·aa)`, following the definition step by step.
+*Fold the loop:* `ψ(!a·aa)` walks `[ε] →_{!a} [!a] →_a [a] →_a [a]` — the
+middle step crossing the telling entry above — so `c_1 = [a]`. *Find the
+idempotent power:* `c_2 = ψ((!a·aa)²)` continues the walk from `[a]` —
+absorbed, so `c_2 = [a]` — and the least `k` with `c_{2k} = c_k` is `k = 1`:
+the hypothesis believes `[a]` is already idempotent. *Form the pair:*
+`s = ψ(ε·!a·aa) = [a]`, `e = [a]`. This step is the whole point of a
+prediction: the hypothesis has just **named** the queried lasso by the pair
+`([a], [a])` — the same name it gives `a·a^ω`, `(a·!a)^ω`, `(!a·a)^ω`, and
+every other lasso whose folds collapse into `[a]` — and one name gets one
+verdict. *Look up the name:* the cache has no entry for `([a],[a])`, so it
+costs one membership query on the shortlex keys,
 `w_{[a]}·(w_{[a]})^ω = a·a^ω` — rejected, no `!a` at all. Cached; prediction
 `0`.
 
-The miss: `(aa!a)^ω ∈ L` — infinitely many `!a`, and every recurring completed
-block is `aa`, length two. The hypothesis gave one name to two lassos that the
-language distinguishes, and that is all a counterexample ever is in this
-design: the queried lasso and its representative collapse, two concrete
+The miss: `(!a·aa)^ω ∈ L` — infinitely many `!a`, and every completed block it
+ever closes is `aa`, length two. The hypothesis gave one name to two lassos
+that the language distinguishes, and that is all a counterexample ever is in
+this design: the queried lasso and its representative collapse, two concrete
 lassos, teacher bits `1` and `0`.
 
 The minimization policy of §2.3 explains why this exact lasso is the one
-returned. Enumerating stems shortest-first and loops shortest-then-shortlex:
-`(ε, a)`, `(ε, !a)`, `(ε, aa)`, `(ε, a!a)`, `(ε, !a·a)`, `(ε, !a!a)` and
-`(ε, aaa)` are all predicted correctly — each folds to a name whose
-representative lasso the language happens to treat the same way — and
-`(ε, aa!a)` is the first place the name `([a],[a])` cracks. A misprediction is
-an equality the table wrongly believes; the harvest of §4.1 turns this one
-into the column that refutes it.
+returned. Enumerating stems shortest-first and loops shortest-then-shortlex
+(`!a < a`): `(ε, !a)`, `(ε, a)`, the four two-letter loops, and then
+`(ε, !a!a!a)`, `(ε, !a!a·a)`, `(ε, !a·a!a)` are all predicted correctly — each
+folds to a name whose representative lasso the language happens to treat the
+same way — and `(ε, !a·aa)` is the first place the name `([a],[a])` cracks. A
+misprediction is an equality the table wrongly believes; the harvest of §4.1
+turns this one into the column that refutes it.
 
 ## 4. The learner
 
@@ -581,24 +588,28 @@ one per equivalence query, at a cost of `O(log(|w| + |𝒞_T|·|z|))` membership
 queries: the normalized lengths are `n ≤ |w| + 2|𝒞_T|·|z|` and
 `m ≤ 2|𝒞_T|·|z|`, since the stabilization power satisfies `k ≤ 2|𝒞_T|`.
 
-*Example (one counterexample, two shapes).* Both running specimens return the
-*same* minimal counterexample from their first equivalence query: `(ε, aa!a)`,
-predicted `0` through the pair `([a],[a])`, truly in both languages.
-Normalization is trivial in both (`k = 1`, so `w' = z' = aa!a`), and the
-junction query `[a·(aa!a)^ω ∈ L]` routes them oppositely. On `Even` it
-answers `0` — the prepended `a` flips the parity — against
-`γ_0 = [(aa!a)^ω] = 1`: the flip is in the **stem chain**, Table 3(a). On
-`EvenBlocks` it answers `1` — a prefix cannot harm a prefix-independent
-language — equal to `γ_0`, so the stem chain is flat and the flip is in the
-**loop chain**, Table 3(c). The two flips sit at the same position and hand
-over the same pair — frontier word `u = rep(ψ(a))·a = aa`, row
-`v = rep(ψ(aa)) = a` — but mint columns of different sorts: from (a) the
-linear column `(ε, !a, aa!a)`, entries `1` for `aa` and `0` for `a` — the
-parity merge of day one, split; from (c) the ω-column `(a, !a)` — the
-prefixed cousin of the `(ε, !a)` we exhibited in §3, found by the machinery
-rather than by inspection. Tables 3(b) and 3(d) show the tables after the
-split. One word, two languages, Arnold's two shapes: the counterexample
-analysis is the two-shape split of the congruence, run backwards.
+*Example (two counterexamples, one wrong name, two shapes).* The two running
+specimens' first equivalence queries return different lassos — `Even`'s
+teacher hands back `(ε, aa!a)`, `EvenBlocks`'s the shortlex-earlier
+`(ε, !a·aa)` — but the same failure: each is predicted `0` through the pair
+`([a],[a])`, i.e. through the representative lasso `a·a^ω`, and each is truly
+in its language. Normalization is trivial in both (`k = 1`, so `w' = z'` is
+the loop itself), the stem representative is `w_s = a` in both, and the
+junction query routes them oppositely. On `Even`, `[a·(aa!a)^ω] = 0` — the
+prepended `a` flips the parity — against `γ_0 = [(aa!a)^ω] = 1`: the flip is
+in the **stem chain**, Table 3(a). On `EvenBlocks`, `[a·(!a·aa)^ω] = 1` — a
+prefix cannot harm a prefix-independent language — equal to `γ_0`, so the
+stem chain is flat and the flip is in the **loop chain**, Table 3(c). Both
+flips sit at position `1 → 2` of their chains, but they convict different
+words: from (a), the frontier word `u = rep(ψ(a))·a = aa` against the row
+`v = rep(ψ(aa)) = a`, minting the linear column `(ε, !a, aa!a)`, entries `1`
+for `aa` and `0` for `a` — the parity merge of day one, split; from (c), the
+frontier word `u = rep(ψ(!a))·a = !a·a` against the row
+`v = rep(ψ(!a·a)) = a`, minting the ω-column `(a, a)` — a rotated cousin of
+the `(ε, !a)` we exhibited in §3, found by the machinery rather than by
+inspection. Tables 3(b) and 3(d) show the tables after the split. Two lassos,
+one wrong name, Arnold's two shapes: the counterexample analysis is the
+two-shape split of the congruence, run backwards.
 
 *(a) `Even`, the stem chain `γ` — replace a growing stem prefix by its rep:*
 
@@ -625,29 +636,29 @@ growing loop prefix by its rep:*
 
 | `i` | prefix | its rep | queried lasso | `δ_i` |
 |:--:|---|:--:|---|:--:|
-| 0 | — | — | `a·(aa!a)^ω` | `1` |
-| 1 | `a` | `a` | `a·(a·a!a)^ω` | `1` |
-| 2 | `aa` | `a` | `a·(a·!a)^ω` | **`0`** |
-| 3 | `aa!a` | `a` | `a·(a)^ω` | `0` |
+| 0 | — | — | `a·(!a·aa)^ω` | `1` |
+| 1 | `!a` | `!a` | `a·(!a·aa)^ω` | `1` |
+| 2 | `!a·a` | `a` | `a·(a·a)^ω` | **`0`** |
+| 3 | `!a·aa` | `a` | `a·(a)^ω` | `0` |
 
 *(d) `EvenBlocks`, after the loop harvest:*
 
-| word | `(ε,ε)_ω` | **`(a, !a)_ω`** | class |
+| word | `(ε,ε)_ω` | **`(a, a)_ω`** | class |
 |---|:--:|:--:|---|
 | `a` | `0` | **`0`** | `[a]` |
-| `!a` | `1` | **`1`** | `[!a]` |
-| **`aa`** | `0` | **`1`** | **`[aa]`** |
+| `!a` | `1` | **`0`** | `[!a]` |
+| **`!a·a`** | `0` | **`1`** | **`[!a·a]`** |
 
-**Table 3.** The same counterexample `(ε, aa!a)` processed in the two
-languages (minted column and promoted row in bold; `ε`-row and unchanged
-frontier omitted). In the chains, row `i = 1` replaces the prefix `a` by its
-own representative — a no-op, bit unchanged — and the flips sit at
-`1 → 2` in both. In (a), row 3 is the junction `γ_3 = δ_0`, already `0`: the
-stem chain flipped, minting a *linear* column. In (c) the junction is `1`
-and the loop chain flips instead, minting an *ω-column*; note row 3's lasso
-is `a·a^ω` — the representative lasso of the predicting pair, i.e. the
-prediction itself, closing the chain. Both runs pull `aa` out of `[a]` — and
-in (b) the doomed `a·!a` still hides there, which is §4.3's catch.
+**Table 3.** The two first counterexamples, processed (minted column and
+promoted row in bold; `ε`-row and unchanged frontier omitted). In both
+chains, row `i = 1` replaces a one-letter prefix by its own representative —
+a no-op, bit unchanged — and the flips sit at `1 → 2`. In (a), row 3 is the
+junction `γ_3 = δ_0`, already `0`: the stem chain flipped, minting a *linear*
+column. In (c) the junction is `1` and the loop chain flips instead, minting
+an *ω-column*; note row 3's lasso is `a·a^ω` — the representative lasso of
+the predicting pair, i.e. the prediction itself, closing the chain. (a) pulls
+`aa` out of `[a]`; (c) pulls `!a·a` out — and in (b) the doomed `a·!a` still
+hides in `[a]`, which is §4.3's catch.
 
 ### 4.2 The gap: acceptance-correct is not algebra-correct
 
@@ -716,7 +727,11 @@ exhibits, one mechanism, and both minimal:
 Both languages are LTL-definable and utterly plain: the flagship stall is a
 two-letter implication, on which the saturation-free learner converges, is
 certified by a *complete* equivalence oracle, and exports an algebra that
-mispredicts `a^ω`. Canonicity therefore cannot be recovered from membership
+mispredicts `a^ω`. (Mechanically confirmed: the exact oracle of §2.3
+certifies both stalled fixpoints — the proposition turns those two runs into
+fixtures for the oracle itself, a counterexample there being an oracle bug —
+and with saturation on, both reach their canonical algebras, byte-equal to
+the reference.) Canonicity therefore cannot be recovered from membership
 and equivalence queries alone — the repair below is not an optimization but
 the difference between the algebra and an acceptor.
 
@@ -738,11 +753,23 @@ new separating column and a class split.
 
 *Proof.* Since `c_a ≠ c_b`, some existing column `κ` separates their
 representatives — distinct classes differ on some column, by definition of
-`≡_T`; say `κ = (x°, y°, t°)` (the ω-sort is symmetric), so the table
-already holds `[x°·w_{c_a}·y°·t°^ω] ≠ [x°·w_{c_b}·y°·t°^ω]`. Query the two words
-under the same context: `A = [x°·r·u·y°·t°^ω]`, `B = [x°·r·v·y°·t°^ω]`.
-- If `A ≠ B`: mint the column `(x°·r, y°, t°)`. It separates `u` from `v`
-  directly — a genuine Arnold context — splitting their shared class.
+`≡_T`; say `κ = (x°, y°, t°)` linear, so the table already holds
+`[x°·w_{c_a}·y°·t°^ω] ≠ [x°·w_{c_b}·y°·t°^ω]` (for the ω-sort `κ = (x°, y°)`,
+read `[x°·(w_{c}·y°)^ω]` throughout). Query the two words under the same
+context: `A = [x°·r·u·y°·t°^ω]`, `B = [x°·r·v·y°·t°^ω]` (ω-sort:
+`A = [x°·(r·u·y°)^ω]`, `B = [x°·(r·v·y°)^ω]`).
+- If `A ≠ B`: mint the column that reproduces "`r·w` under `κ`" as a bit on
+  the bare candidate `w` — and the two sorts here differ. For a *linear* `κ`
+  the candidate sits in the finite prefix, so `r` prepends there:
+  `(x°·r, y°, t°)`. For an *ω* `κ` the candidate rides in the period, and
+  peeling one `r` off the repeating block gives
+  `x°·(r·w·y°)^ω = x°·r·(w·y°·r)^ω`: `r` must seed *both* the prefix and the
+  period's tail — `(x°·r, y°·r)`. (The bare-prefix form `(x°·r, y°)` keeps
+  the period `w·y°` and need not separate at all: a prefix-independent
+  language swallows the prefix — on `GF(aa)` it maps both `a` and `aa` to
+  accepting, and the sweep never converges.) Either way the minted column
+  separates `u` from `v` directly — a genuine Arnold context — splitting
+  their shared class.
 - If `A = B`: the bits `A, B` cannot both agree with the two differing
   representative bits; say `A ≠ [x°·w_{c_a}·y°·t°^ω]`, where
   `c_a = fold(d, u) = fold(ψ(r), u) = ψ(r·u)` — folds composing over the
@@ -823,7 +850,8 @@ remark completes the picture: the *other* hit, `(a·!a, [a])`, escalates
 through the **first** branch — there `c_a = [!a]`, `c_b = [aa]`, the
 separating column is the original ω-column `κ = (ε, ε)`, and the probes
 `A = [(a·a!a)^ω] = 1 ≠ 0 = [(a·a)^ω] = B` differ, minting the ω-column
-`(a, ε)` directly, the left factor absorbed into the column prefix. Same
+`(a, a)` directly — the left factor absorbed into the prefix *and* reseeded
+at the period's tail, branch 1's ω-form in action. Same
 split, other arm: one four-class table exercises both branches of Lemma 4.5,
 and the fixpoint is the same five classes either way — only the *trace*
 needs the pinned order. Table 6 shows the resulting table, which is final.
@@ -982,31 +1010,56 @@ lines (§2's aperiodicity read-off). Five classes is exactly `|S(Even)₊¹|`,
 and the `.sos` export is byte-equal to the construction from the
 automaton — the equivalence oracle's last check, passed by construction.
 
-`EvenBlocks` completes the same way: four further splits beyond the one
-traced in §4.1, all in the ω-sort, to its eight classes — keys
+`EvenBlocks` completes the same way, and entirely in the ω-sort: beyond the
+counterexample traced in §4.1, two saturation escalations carry the table
+from four to its eight classes — keys
 `ε, !a, a, !a·a, a·!a, a·a, !a·a·!a, a·!a·a`, the count and keys fixed by the
-reference algebra. Table 8 sets up the run as a ledger, one row per split;
-the theory fills the first row and *predicts* the shape of the rest, the
-implementation's transcript (§6) supplies them — the discipline being that
-the paper's traces are predictions the tool must reproduce, not
-transcriptions of what it did.
+reference algebra. Table 8 is the run as a split ledger, one row per event,
+from the implementation's transcript — deterministic under the pinned scan
+and minimal-counterexample policies, and reproducing §4.1's row exactly. One
+reading note: a single sweep mint can split more than one class once the
+table re-stabilizes — rows 2 and 3 each split two.
 
-| # | trigger | chain | minted column | split | `\|𝒞_T\|` after |
+| # | trigger | chain | minted column | splits | `\|𝒞_T\|` after |
 |:--:|---|---|---|---|:--:|
-| 1 | EQ: `(ε, aa!a)` | loop | `(a, !a)_ω` | `aa` out of `[a]` | 4 |
-| 2 | ⟨TBD-M3 transcript⟩ | | | | 5 |
-| 3 | ⟨TBD-M3 transcript⟩ | | | | 6 |
-| 4 | ⟨TBD-M3 transcript⟩ | | | | 7 |
-| 5 | ⟨TBD-M3 transcript⟩ | | | | 8 |
+| 1 | EQ: `(ε, !a·aa)` | loop | `(a, a)_ω` | `!a·a` out of `[a]` | 4 |
+| 2 | sweep escalation | frozen | `(a, !a·a)_ω` | `aa` out of `[a]`; `a·!a` out of `[!a·a]` | 6 |
+| 3 | sweep escalation | frozen | `(ε, !a)_ω` | `a·!a·a` out of `[!a]`; `!a·a·!a` out of `[aa]` | 8 |
 
 **Table 8.** The `EvenBlocks` run as a split ledger: trigger (equivalence
 counterexample or sweep escalation), the chain that processed it, the minted
-column, the word separated. Row 1 is §4.1's split. ⟨TBD-M3: rows 2–5 and the
-final signature table (the Table 6 analogue, seven word rows against the
-discovered ω-columns) from the machine transcript, which the pinned scan and
-minimal-counterexample policies make deterministic; also the two runs' query
-ledgers by phase — fill / harvest / saturation / `P` — grounding Proposition
-5.2's bound in the two small instances.⟩
+column, the words separated. Row 1 is §4.1's split; rows 2–3 are the sweep
+enforcing two-sidedness — no second counterexample is ever needed, and the
+run's second equivalence query certifies. Every one of the four columns is
+of the ω-sort: prefix-independence in action (`~lin` is blind, so every
+separation lives in the loop). The final sweep mints `(ε, !a)` — the very
+column §3 exhibited by inspection. The resulting bit-signatures are the
+fixpoint (the Table 6 analogue), pairwise distinct — with `[ε]`, the eight
+classes of `S(EvenBlocks)₊¹`:
+
+| word | `(ε,ε)_ω` | `(a,a)_ω` | `(a,!a·a)_ω` | `(ε,!a)_ω` |
+|---|:--:|:--:|:--:|:--:|
+| `!a` | `1` | `0` | `0` | `1` |
+| `a` | `0` | `0` | `1` | `0` |
+| `!a·a` | `0` | `1` | `0` | `0` |
+| `a·!a` | `0` | `1` | `1` | `0` |
+| `a·a` | `0` | `0` | `0` | `1` |
+| `!a·a·!a` | `0` | `0` | `0` | `0` |
+| `a·!a·a` | `1` | `0` | `0` | `0` |
+
+The per-phase membership ledgers of the two runs ground Proposition 5.2's
+itemization in the two small instances (`fill` — table entries; `harvest` —
+junction and chain probes; `saturation` — escalation probes and frozen
+chains; `P` — the pair cache):
+
+| run | fill | harvest | saturation | `P`-cache | total | EQ | sweep escalations | columns lin/ω |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| `Even` | 32 | 4 | 7 | 8 | **51** | 2 | 1 | 2 / 1 |
+| `EvenBlocks` | 67 | 4 | 14 | 14 | **99** | 2 | 2 | 0 / 4 |
+
+Both runs finish on a *single* counterexample — every other split is the
+sweep's, two-probe escalations in place of whole equivalence rounds — and
+both exported invariants are byte-equal to the reference construction.
 
 **Proposition 5.2 (query complexity).** Write `N = |S(L)₊¹|` and `ℓ` for the
 longest counterexample returned. The learner poses at most `N` equivalence
@@ -1108,7 +1161,11 @@ is already computed; metrics = membership/equivalence query counts, table
 dimensions, wall time, against `|𝒞|`; baseline = an FDFA learner (ROLL family) on
 identical teachers, with the equalized metric being cost-to-answer a definability
 question (an FDFA cannot answer it without further construction — that asymmetry
-is reported as a result, not a footnote); worked in-text examples = the triptych.⟩
+is reported as a result, not a footnote); worked in-text examples = the triptych.
+Status: the M3 groundwork is in (`sosl_report.md`) — teacher with the exact
+oracle, saturation, the census stall hunt that produced Proposition 4.4's
+specimens, and the conformance/ledger probes behind §4–5's traces; what remains
+is the M4 campaign (driver, ROLL wrapper, E1–E5).⟩
 
 ## 7. Related work
 

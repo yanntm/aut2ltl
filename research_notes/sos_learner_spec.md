@@ -11,6 +11,13 @@ change). New: section 1.1 (identity convention, normative), milestone M2.5
 Corrected: sections 3.3 and 5 item 6 (pre-saturation exports are diagnostic
 only; acceptor checks target the Cayley hypothesis until saturation exists).
 
+**Revision 2026-07-07 (M3 integration).** M3 is done (`sosl_report.md`). One
+normative correction fed back from the implementation: section 3.2 step 4,
+first escalation branch, omega sort — the mint is `(x.r, y.r)`, NOT the bare
+`(x.r, y)` (rationale at the step; without it the `GF(aa)` sweep never
+converges). The section 8 M3 gate's counterfactual column is updated to
+match.
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -245,8 +252,18 @@ Procedures (all query counts logged by phase):
      omega column, then minted columns in mint order — pinned for
      reproducibility); query the two bits of `r.p` and `r.r0` under `kappa`'s
      context, where `r = rep(d)`;
-   - if the bits differ: mint the column with `r` absorbed into the prefix
-     (`(x.r, y, t)` or `(x.r, y)`); this splits `class(p)`;
+   - if the bits differ: mint the column that reproduces "`r.w` under
+     `kappa`" as a bit on the bare candidate `w` — and the two sorts differ
+     here. Linear `kappa`: the candidate sits in the finite prefix, so `r`
+     prepends there — `(x.r, y, t)`. Omega `kappa`: the candidate rides in
+     the period, and peeling one `r` off the repeating block
+     (`x.(r.w.y)^omega = x.r.(w.y.r)^omega`) means `r` must seed BOTH the
+     prefix and the period suffix — `(x.r, y.r)`. NEVER the bare `(x.r, y)`:
+     that keeps the period `w.y` and need not separate at all — a
+     prefix-independent language swallows the prefix, and with the bare form
+     the `GF(aa)` sweep never converges (M3 finding, `sosl_report.md`; the
+     omega analog of step 5's frozen-prefix correction). This splits
+     `class(p)`;
    - if they agree: one of the two words disagrees with the representative of
      its own fold class under `kappa` — EXACTLY one: the two representative
      bits differ and the two queried bits are equal, so the shared bit
@@ -530,7 +547,11 @@ check but fail byte-equality.
   predicted per-case outcomes. Accept: reference and learner agree on
   `GF a`; no assertion fires on the census; the re-baselined table is
   committed.
-- **M3 — Saturation + exact equivalence.** Accept: end-to-end gate (layer 4)
+- **M3 — Saturation + exact equivalence** *(**DONE 2026-07-07** —
+  `sosl_report.md`: end-to-end gate green on the census, Even conformance
+  exact, exact-mode fixtures green, EvenBlocks ledger delivered to
+  `sos_learning.md` §5; one normative correction fed back into section 3.2
+  step 4, branch 1, omega sort)*. Accept: end-to-end gate (layer 4)
   green on the full census; metamorphic checks green; E0 report produced.
   Plus three M3-specific gates *(revised 2026-07-06: the permanence question
   is now settled by theory — paper Proposition 4.4 proves the `a_implies_xa`
@@ -541,9 +562,9 @@ check but fail byte-equality.
     equivalence counterexample `(eps, a;a;!a)` splits `a;a`; the four-class
     sweep then fires FIRST at cell `(!a;a, [a])`, second branch (probes
     equal), frozen chain flips at `j = 1 -> 2`, mints the linear column
-    `(eps, a;!a, a;a;!a)`. If the run mints the omega column `(a, eps)`
-    instead, the sweep scan order is not per spec (step 4) — fix the order,
-    not the paper.
+    `(eps, a;!a, a;a;!a)`. If the run mints an omega column instead —
+    `(a, a)` under the corrected step-4 omega mint — the sweep scan order is
+    not per spec (step 4): fix the order, not the paper.
   - *Exact-mode fixtures.* `--no-saturation --eq-mode exact` on
     `a_implies_xa` and `a_once` MUST certify their stalled fixpoints (4 and
     3 classes): Proposition 4.4 proves no counterexample exists, so a
