@@ -18,9 +18,12 @@ the questions the spec raises; it describes the implementation as it is.
   (`sosl/sosl/teacher/exact.py`) are landed; every census language reaches its
   canonical invariant, the Even run reproduces the paper's §4.3 trace, and the
   two permanent-stall specimens behave as Proposition 4.4 predicts.
-- **M4 — Campaign.** In progress. **M4.a (driver + E0) done** — the
-  `sosl.experiment` package (driver, manifest, per-run stats, E0/E4 reports) is
-  landed and the E0 gate is green (below). M4.b–M4.d next.
+- **M4 — Campaign.** In progress. **M4.a (driver + E0) and M4.b (E1 scaling +
+  E2 ablation) done** over the named cases — the `sosl.experiment` package
+  (driver, manifest, per-run stats, E0/E1/E2/E4 reports) is landed, the E0 gate
+  is green, and the E2 stall classes match theory (below). Remaining
+  census-free: E5 (counterexample sensitivity). E3 (ROLL) and the census-backed
+  E1 scatter / E2 specimen hunt fold in via `manifest.census_cases`.
 
 ## Ground truth: reference builder vs the paper
 
@@ -414,3 +417,55 @@ The census tier is intentionally not wired: `genaut/corpus/` is being curated
 separately, so E0 runs the named cases alone. E1's scaling scatter and E2's
 broad permanent-stall hunt (M4.b) fold the census back in through
 `manifest.census_cases` once it is ready.
+
+---
+
+## M4.b — E1 scaling + E2 ablation (2026-07-08)
+
+Both experiments run over the named cases through the driver
+(`tests/sosl/campaign_m4b.py`); the census tier stays deferred, so E1's scatter
+plots and E2's broad specimen hunt fold in later via `manifest.census_cases`.
+
+**E1 — scaling.** The default-config run metrics against the reference class
+count `N`, with the designed bounds overlaid (`splits ≤ N`; table/fill membership
+`~ O(N²·|Σ|)`). `splits ≤ N` holds on every case, and the fill count stays inside
+the `N²·|Σ|` envelope; harvest and saturation add the counterexample-analysis
+term on top.
+
+| case | N | \|Σ\| | init | splits | fill | N²·\|Σ\| | member | eq |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|
+| a_once | 4 | 2 | 2 | 2 | 26 | 32 | 35 | 2 |
+| a_implies_xa | 5 | 2 | 4 | 1 | 32 | 50 | 43 | 1 |
+| even | 5 | 2 | 3 | 2 | 32 | 50 | 51 | 2 |
+| gf_aa_parity | 6 | 2 | 3 | 3 | 51 | 72 | 74 | 2 |
+| gf_aa_reset | 6 | 2 | 3 | 3 | 51 | 72 | 74 | 2 |
+| evenblocks | 8 | 2 | 3 | 5 | 67 | 128 | 99 | 2 |
+
+The named cases give only `N ∈ {4,5,6,8}`; the scatter plots wait on the census
+N-spread (the generator already emits the per-metric columns they consume).
+
+**E2 — saturation ablation.** Every named case under both `default` (saturation
+on) and the ablation leg `--no-saturation --eq-mode exact` (with exact
+equivalence every *surviving* stall is provably permanent). The ablation-leg
+stall class matches theory on all six cases:
+
+| case | prefix-indep | ref | no-sat learned | stall class | expected |
+|---|:--:|--:|--:|---|---|
+| a_implies_xa | no | 5 | 4 | permanent | permanent |
+| a_once | no | 4 | 3 | permanent | permanent |
+| even | no | 5 | 5 | transient | transient |
+| evenblocks | yes | 8 | 8 | transient | transient |
+| gf_aa_parity | no | 6 | 6 | transient | transient |
+| gf_aa_reset | no | 6 | 6 | transient | transient |
+
+Stall-class frequency: permanent 2 · transient 4. No new permanent specimen
+among the named cases — as expected; the census tier is where new ones surface.
+
+The report renders each permanent specimen as a first-class exhibit
+(`e2_report`): the coarse (certified non-canonical) `.sos`, the canonical `.sos`,
+and the **separating left context** — the saturation escalation invisible to
+lasso membership from the start. `a_once` merges `[!a;a]` into `[!a]`, split by
+the left prefix `a` (`a·[]·!a`); `a_implies_xa` merges `[a;a]` into `[!a]`,
+reaching its 5-vs-4 gap with zero counterexamples and one escalation
+(`a·([]·a)^ω`). Artifacts under `tests/sosl/logs/m4b/`
+(`results.csv`, `e1_report.md`, `e2_report.md`).
