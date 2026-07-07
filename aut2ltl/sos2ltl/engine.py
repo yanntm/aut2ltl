@@ -18,13 +18,31 @@ realizable sets, the general exact-set form otherwise (with the `FG`
 conjuncts restricted to realizable windows, equivalent on confined tails).
 A transient layer, and an all-rejecting one, take `W = ⊥`.
 
+A layer anchored only at a width `k ≥ 2` is transcribed by the graded
+grammar (Theorem 5.23, §5.7) at operating window width `κ = k + 1`: the
+law's trigger moves from anchor letters to anchor windows `A_κ(c)`, and a
+transient fold of depth `k` (`TR`/`TL`) threads the phase over the entry,
+where a trailing window would still straddle it:
+
+    step_κ  =  ⋀_{c ∈ R} ⋀_{w ∈ A_κ(c)} ( ŵ → X^κ sojourn(c) )
+    TR_0(c) =  sojourn(c)
+    TR_j(c) =  ⋁_{a ∈ L(c) ∪ M(c)} ( a ∧ X TR_{j−1}(c·a) )
+    TL_0(c) =  leave(c) ∨ ( sojourn(c) ∧
+                 ( step_κ U ⋁_{c',w ∈ A_κ(c')} ( ŵ ∧ X^κ leave(c') ) ) )
+    TL_j(c) =  ⋁_{a ∈ E(c)} ( a ∧ X φ_{c·a} )
+                 ∨ ⋁_{a ∈ L(c) ∪ M(c)} ( a ∧ X TL_{j−1}(c·a) )
+    STAY∞_κ =  TR_k(r) ∧ G step_κ ∧ W(R)         Final(r) = STAY∞_κ ∨ TL_k(r)
+
+with `sojourn`, `leave`, and the letter sets unchanged from width 1.
+
 Operating stratum (outside it `transcribe` returns None and the caller
-falls back): every layer 1-anchored — condition (A) at `k = 1`; every
-final-candidate layer with a PASS-graded (B) width and a complete,
-conflict-free verdict table. The graded engine (widths above 1) is not
-built here. Constructors collapse `⊤`/`⊥` structurally — deterministic
-identities, not a simplifier — which is what lets a terminal layer shed
-its law and reduce `STAY∞` to `W(R)` alone.
+falls back): every layer anchored at some finite width — condition (A)
+holds; every final-candidate layer with a PASS-graded (B) width and a
+complete, conflict-free verdict table. A layer anchored at no width (the
+scoped DG fallback of Prop 5.24) is not built here. Constructors collapse
+`⊤`/`⊥` structurally — deterministic identities, not a simplifier — which
+is what lets a terminal layer shed its law and reduce `STAY∞` to `W(R)`
+alone.
 
 Output is a Spot-syntax formula string over the concrete letters (cubes
 over `AP`); the class-indexed sharing is the memo — rendering is one
@@ -63,6 +81,12 @@ def _and(parts: Sequence[str]) -> str:
 
 def _x(p: str) -> str:
     return p if p in ("0", "1") else f"X({p})"
+
+
+def _xn(p: str, n: int) -> str:
+    for _ in range(n):
+        p = _x(p)
+    return p
 
 
 def _g(p: str) -> str:
@@ -166,16 +190,108 @@ def _window_term(cay: Cayley, layer_id: int, rep: windows.WindowReport,
 
 
 # ------------------------------------------------------------------ #
+# Per-layer letter groupings.
+# ------------------------------------------------------------------ #
+def _by_dest(cay: Cayley, c: int, letters: Sequence[Letter]
+             ) -> Dict[int, List[Letter]]:
+    """`letters` grouped by the class each sends `c` to."""
+    out: Dict[int, List[Letter]] = {}
+    for a in letters:
+        out.setdefault(cay.step(c, a), []).append(a)
+    return out
+
+
+# ------------------------------------------------------------------ #
+# The two per-layer builders. Each writes `Final(c)` for every `c` of the
+# layer into `final`; children (strictly lower layers) are already there.
+# ------------------------------------------------------------------ #
+def _sojourn(la: anchoring.LayerAnchoring, lets: _Letters, c: int) -> str:
+    return ("1" if not la.exits[c]
+            else _w(lets.set_(la.stutter[c]), lets.set_(la.move[c])))
+
+
+def _leave(cay: Cayley, la: anchoring.LayerAnchoring, lets: _Letters,
+           final: Dict[int, str], c: int) -> str:
+    exit_arm = _or([
+        _and([lets.set_(vs), _x(final[d])])
+        for d, vs in sorted(_by_dest(cay, c, la.exits[c]).items())])
+    return _u(lets.set_(la.stutter[c]), exit_arm)
+
+
+def _layer_flat(cay: Cayley, la: anchoring.LayerAnchoring, lets: _Letters,
+                final: Dict[int, str], wterm: str) -> None:
+    """The width-1 bricks of Theorem 5.10 (§5.2)."""
+    layer = la.layer
+    sojourn = {c: _sojourn(la, lets, c) for c in layer}
+    step = _and([
+        _implies(lets.set_(la.anchors[c]), _x(sojourn[c]))
+        for c in layer if la.anchors[c]])
+    leave = {c: _leave(cay, la, lets, final, c) for c in layer}
+    for c in layer:
+        relay = _or([
+            _and([lets.set_(la.anchors[c2]), _x(leave[c2])])
+            for c2 in layer if la.anchors[c2]])
+        big_leave = _or([leave[c], _and([sojourn[c], _u(step, relay)])])
+        stay = _and([sojourn[c], _g(step), wterm])
+        final[c] = _or([stay, big_leave])
+
+
+def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
+                  k: int, lets: _Letters, final: Dict[int, str],
+                  wterm: str) -> None:
+    """The graded bricks of Theorem 5.23 (§5.7) for a `k`-anchored layer,
+    operating at window width `κ = k + 1`."""
+    layer = la.layer
+    kappa = k + 1
+    sojourn = {c: _sojourn(la, lets, c) for c in layer}
+    leave = {c: _leave(cay, la, lets, final, c) for c in layer}
+    aw = anchoring.anchor_windows(cay, layer_id, kappa)
+
+    step = _and([
+        _implies(lets.window(w), _xn(sojourn[c], kappa))
+        for c in layer for w in aw[c]])
+
+    def within(c: int) -> Dict[int, List[Letter]]:
+        return _by_dest(cay, c, la.stutter[c] + la.move[c])
+
+    # Transient fold trees TR_j, TL_j for j = 0..k, class-indexed, bottom-up.
+    tr: Dict[int, str] = dict(sojourn)                        # TR_0(c) = sojourn(c)
+    for _ in range(k):
+        tr = {c: _or([_and([lets.set_(vs), _x(tr[d])])
+                      for d, vs in sorted(within(c).items())])
+              for c in layer}
+
+    relay = _or([                                             # ⋁_{c',w∈A_κ(c')} ŵ ∧ X^κ leave(c')
+        _and([lets.window(w), _xn(leave[cp], kappa)])
+        for cp in layer for w in aw[cp]])
+    tl: Dict[int, str] = {                                    # TL_0(c)
+        c: _or([leave[c], _and([sojourn[c], _u(step, relay)])])
+        for c in layer}
+    for _ in range(k):
+        tl = {c: _or([
+            _or([_and([lets.set_(vs), _x(final[d])])
+                 for d, vs in sorted(_by_dest(cay, c, la.exits[c]).items())]),
+            _or([_and([lets.set_(vs), _x(tl[d])])
+                 for d, vs in sorted(within(c).items())])])
+              for c in layer}
+
+    for c in layer:
+        stay = _and([tr[c], _g(step), wterm])                # STAY∞_κ(R, c)
+        final[c] = _or([stay, tl[c]])                        # Final(c)
+
+
+# ------------------------------------------------------------------ #
 # The transcription.
 # ------------------------------------------------------------------ #
 def transcribe(inv: Invariant, k_b_max: int = 3) -> Optional[str]:
-    """The defining formula of an aperiodic invariant on the flat-brick
-    stratum, or None when a precondition fails: some layer is not
-    1-anchored, or some final-candidate layer has no computable window
-    term within width `k_b_max`."""
+    """The defining formula of an aperiodic invariant on the anchored
+    stratum, or None when a precondition fails: some layer anchors at no
+    width (condition (A) fails — the scoped fallback is not built here), or
+    some final-candidate layer has no computable window term within width
+    `k_b_max`."""
     cay: Cayley = build(inv)
     anch = anchoring.analyze(cay)
-    if any(la.width != 1 for la in anch):
+    if any(la.width is None for la in anch):
         return None
     lets = _Letters(inv)
 
@@ -190,34 +306,12 @@ def transcribe(inv: Invariant, k_b_max: int = 3) -> Optional[str]:
     # Deepest layers first: exits only ever point strictly down the R-order.
     for layer_id in reversed(range(len(cay.layers))):
         la = anch[layer_id]
-        layer = la.layer
-
-        sojourn: Dict[int, str] = {
-            c: ("1" if not la.exits[c]
-                else _w(lets.set_(la.stutter[c]), lets.set_(la.move[c])))
-            for c in layer}
-        step = _and([
-            _implies(lets.set_(la.anchors[c]), _x(sojourn[c]))
-            for c in layer if la.anchors[c]])
-
-        leave: Dict[int, str] = {}
-        for c in layer:
-            by_dest: Dict[int, List[Letter]] = {}
-            for a in la.exits[c]:
-                by_dest.setdefault(cay.step(c, a), []).append(a)
-            exit_arm = _or([
-                _and([lets.set_(vs), _x(final[d])])
-                for d, vs in sorted(by_dest.items())])
-            leave[c] = _u(lets.set_(la.stutter[c]), exit_arm)
-
-        for c in layer:
-            relay = _or([
-                _and([lets.set_(la.anchors[c2]), _x(leave[c2])])
-                for c2 in layer if la.anchors[c2]])
-            big_leave = _or([
-                leave[c],
-                _and([sojourn[c], _u(step, relay)])])
-            stay = _and([sojourn[c], _g(step), wterm[layer_id]])
-            final[c] = _or([stay, big_leave])
+        assert la.width is not None  # guarded above
+        term = wterm[layer_id]
+        assert term is not None
+        if la.width == 1:
+            _layer_flat(cay, la, lets, final, term)
+        else:
+            _layer_graded(cay, la, layer_id, la.width, lets, final, term)
 
     return final[inv.identity]
