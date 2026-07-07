@@ -4,7 +4,7 @@ Re-exports; see README.md. Spot-backed adapter over the canonical construction
 (``sos.core``): input normalization plus resource policy, no algorithm.
 """
 from .builder import ReferenceError, reference_of_hoa, reference_of_ltl
-from .importer import canonical, import_hoa
+from .importer import canonical, import_hoa, import_ltl
 from .residuals import residuals_of_hoa
 
 __all__ = [
@@ -14,4 +14,5 @@ __all__ = [
     "residuals_of_hoa",
     "canonical",
     "import_hoa",
+    "import_ltl",
 ]
