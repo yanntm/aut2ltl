@@ -9,13 +9,13 @@ this document is its computational shadow, mapped onto the modules here. The
 numbered claims below are the paper's (§ references); none is re-proved here.
 
 **Input.** A deterministic, **complete**, transition-based Emerson–Lei
-automaton `D = (Q, ι, δ, C, Acc)` over `Σ = 2^AP` — the form
-`sos.build.importer.canonical` produces. No minimality is assumed anywhere:
-the output is a function of the language alone, which is the point (§5).
+automaton `D = (Q, ι, δ, C, Acc)` over `Σ = 2^AP`. No minimality is assumed
+anywhere: the output is a function of the language alone, which is the
+point (§5).
 
 **Output.** The canonical `Invariant`, or `None` when the monoid closure
 blows its size cap — the cap is a parameter and blowing it is the caller's
-policy (`sos.build` turns it into `ReferenceError`).
+policy.
 
 ## The two obstructions, and the two keys
 
@@ -150,10 +150,10 @@ canonicalizes it. Its one normative obligation is the **identity convention**
 `canonical.py` then removes the last freedom — the class numbering: BFS over
 `step(c, a) = M(c, λ(a))` from `[ε]`, letters in mask order, keys every class
 by the first word reaching it (its shortlex-least word) and renumbers in
-discovery order. This normal form is shared with the learner's export
-(`sosl.learn.export`), which is what makes a reference and a learned
-invariant byte-comparable. The membership read-off from `I(L)` — fold,
-idempotent power, pair lookup — is specified in `sos/algorithm.md`.
+discovery order. This normal form is what makes byte-equality of two
+serialized invariants over the same alphabet a sound language-equality test.
+The membership read-off from `I(L)` — fold, idempotent power, pair lookup —
+is specified in `sos/algorithm.md`.
 
 ## Cost
 
@@ -204,10 +204,6 @@ and an aperiodic transition monoid, one identical invariant).
 ```
 
 Layering: `core` consumes spot and the `sos` root data structures
-(`Alphabet`, `Invariant`), nothing else; it never normalizes its input
-(`sos.build.importer` owns that) and never owns resource policy (the cap is
-a parameter). Consumers: `sos.build` (the reference builder and the
-residual-automaton reader) and probes under `tests/sos/`. Ancestry: adapted
-from the `aut2ltl/bls/definability` oracle pipeline, stripped of the
-LTL-definability decision and certificate machinery — this package builds
-the object; what one reads off it lives with its consumers.
+(`Alphabet`, `Invariant`), nothing else. It neither normalizes its input
+(D arrives in the required form) nor owns resource policy (the cap is a
+parameter): every function here is pure in what it is handed.
