@@ -3,10 +3,10 @@
 The right congruence ``u ~ v  <=>  u^{-1}L = v^{-1}L`` collapses the states of a
 deterministic automaton onto its residual classes; this reads that quotient and
 keys it canonically — residuals numbered by shortlex-least reaching word in the
-sosl alphabet's mask order (so the numbering is presentation-independent, like an
+alphabet's mask order (so the numbering is presentation-independent, like an
 invariant's), ``id 0`` = ``eps``.
 
-Automaton-side and aut2ltl-backed, like `builder`; the learner never calls it.
+Automaton-side and core-backed, like `builder`; the learner never calls it.
 Its output is the optional trailer of a `.sos` figure export (see
 `sos.io.serialize.dump_invariant`'s ``residuals`` parameter).
 """
@@ -15,44 +15,28 @@ from __future__ import annotations
 from collections import deque
 from typing import Dict, List, Tuple
 
-from aut2ltl.bls.definability.generators import extract_generators
-from aut2ltl.bls.definability.oracle.residuals import state_classes
-from tests.probes.dg_common import quotient_of_hoa
-
 from ..alphabet import EMPTY, Alphabet, Word
+from ..core.congruence import residual_classes
+from ..core.enriched import Elem, letter_elems
 from ..residuals import Residuals
-from .builder import ReferenceError
+from .importer import import_hoa
 
 
 def residuals_of_hoa(path: str) -> Residuals:
     """The canonical `Residuals` of the language of HOA file ``path``."""
-    data = quotient_of_hoa(path)
-    if data is None:
-        raise ReferenceError(f"algebra closure exceeded cap for {path}")
-    aut, mon = data.aut, data.mon
-
+    aut = import_hoa(path)
     alphabet = Alphabet.of(ap.ap_name() for ap in aut.ap())
-    # sosl letter mask -> the monoid's own letter index li (same recovery as the
-    # builder: valuations are in li order).
-    _gens, _masks, valuations = extract_generators(aut)
-    li_of_mask: List[int] = [0] * alphabet.size
-    for li, val in enumerate(valuations):
-        trues = [ap for ap, truth in val.items() if truth]
-        li_of_mask[alphabet.letter_of(trues)] = li
-
-    st_cls = state_classes(aut)               # automaton state -> residual id
+    letters: List[Elem] = letter_elems(aut, alphabet)
+    st_cls: List[int] = residual_classes(aut)     # state -> residual id
+    init: int = aut.get_init_state_number()
 
     def step_state(state: int, mask: int) -> int:
-        # element 0 of the closed monoid is the identity, so right-multiplying
-        # it by letter li yields the letter element; its st-part at `state` is
-        # the automaton successor delta(state, letter).
-        li = li_of_mask[mask]
-        return mon.elems[mon.right[0][li]][state][0]
+        return letters[mask][state][0]            # delta(state, letter)
 
     # BFS from the initial residual, letters in mask order => shortlex-least keys.
-    canon: Dict[int, int] = {st_cls[data.init]: 0}
+    canon: Dict[int, int] = {st_cls[init]: 0}
     keys: Dict[int, Word] = {0: EMPTY}
-    rep_state: Dict[int, int] = {0: data.init}
+    rep_state: Dict[int, int] = {0: init}
     queue: deque = deque([0])
     nxt = 1
     while queue:
