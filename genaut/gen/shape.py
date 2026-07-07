@@ -6,7 +6,9 @@ marksets, and the id<->combo bijection behind each survivor's name <tag>_<id>.ho
 Pure (stdlib only) — the Spot realisation of a combo lives in build.py.
 
 See algorithm.md for the model; the short of it:
-  Shape(n, k, c)                 n states, k APs, c acceptance sets
+  Shape(n, k, c[, acc])          n states, k APs, c acceptance sets; acc names
+                                 the acceptance family over the c colours
+                                 ("gba" generalized-Büchi = default, "parity")
   Markset = subsets of range(c)            (c=0 -> {()}, so acceptance is `t`)
   Slot    = (src, dst, markset)            |Slots| = n^2 * 2^c
   Guards_k = truth-table bitmasks over the 2^k minterms, guard 0 = absent
@@ -50,10 +52,16 @@ class Shape:
     nstates: int
     naps: int
     nacc: int
+    acc: str = "gba"          # acceptance family over the nacc colours; see build.py
 
     @property
     def tag(self) -> str:
-        return f"{self.nstates}state{self.naps}ap{self.nacc}acc"
+        """`<n>state<k>ap<c>acc` for the default generalized-Büchi family, with a
+        `_<acc>` suffix for any other (`..._parity`). The default is byte-stable:
+        existing folders/ids/census are untouched, since the acceptance condition
+        is orthogonal to the combo enumeration (same slots, guards, marksets, N)."""
+        base = f"{self.nstates}state{self.naps}ap{self.nacc}acc"
+        return base if self.acc == "gba" else f"{base}_{self.acc}"
 
     @property
     def guards(self) -> Tuple[int, ...]:

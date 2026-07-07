@@ -49,13 +49,36 @@ def _guard_bdd(code: int, letters: List["buddy.bdd"]) -> "buddy.bdd":
     return acc
 
 
+def _set_acceptance(aut: "spot.twa_graph", shape: Shape) -> None:
+    """Realise the shape's acceptance condition over its `nacc` colours. The family
+    is orthogonal to the slot/markset enumeration — only the acceptance *formula*
+    changes, so the combo ids are the same across families.
+
+      "gba"    — generalized Büchi Inf(0) & ... & Inf(nacc-1) (the default; nacc=0
+                 is the `t` condition, every run accepting);
+      "parity" — parity max even over nacc colours, e.g. nacc=3 gives
+                 Inf(2) | (Fin(1) & Inf(0)); the Fin/Inf alternation the
+                 generalized-Büchi family cannot express (nacc>=1 required).
+    """
+    if shape.acc == "gba":
+        aut.set_generalized_buchi(shape.nacc)
+    elif shape.acc == "parity":
+        if shape.nacc < 1:
+            raise ValueError("parity acceptance needs nacc >= 1")
+        aut.set_acceptance(shape.nacc,
+                           spot.acc_code(f"parity max even {shape.nacc}"))
+    else:
+        raise ValueError(f"unknown acceptance family {shape.acc!r}")
+
+
 def build_aut(shape: Shape, combo: Tuple[int, ...],
               bdict: "spot.bdd_dict") -> "spot.twa_graph":
-    """Build one raw TGBA from a guard-code tuple (one code per slot of `shape`)."""
+    """Build one raw automaton from a guard-code tuple (one code per slot of
+    `shape`), under the shape's acceptance family (`_set_acceptance`)."""
     aut = spot.make_twa_graph(bdict)
     aps = [aut.register_ap(name) for name in _ap_names(shape.naps)]
     letters = _minterm_bdds(aps)            # the 2^k letters, built once
-    aut.set_generalized_buchi(shape.nacc)
+    _set_acceptance(aut, shape)
     aut.new_states(shape.nstates)
     aut.set_init_state(0)
 

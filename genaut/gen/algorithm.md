@@ -84,9 +84,29 @@ other.
 
 ## Build and reduce
 
-`combo_at(id)` is realised as a `twa_graph`: `n` states, generalized-Büchi
-acceptance with `c` sets (so `c = 0` is the `t` condition — every run accepts), and
-one edge per non-absent slot carrying its guard BDD and its markset as colours.
+`combo_at(id)` is realised as a `twa_graph`: `n` states, the shape's acceptance
+condition over its `c` sets (below), and one edge per non-absent slot carrying its
+guard BDD and its markset as colours.
+
+### The acceptance family
+
+The three axes above fix the *combos*; a fourth, optional axis fixes how the `c`
+colours are read as an **acceptance condition**. It is orthogonal to the
+enumeration — same slots, marksets, guards, ids and `N` — so it moves no existing
+index; only the acceptance *formula* changes. `Shape.acc` selects it, defaulting to
+`"gba"`:
+
+- **`gba`** (default) — generalized Büchi `Inf(0) & … & Inf(c-1)` (so `c = 0` is
+  the `t` condition, every run accepting). This is the historical census; its tag
+  is the bare `<n>state<k>ap<c>acc` and its output is byte-identical to before.
+- **`parity`** — parity max even over the `c` colours (`c = 3` gives
+  `Inf(2) | (Fin(1) & Inf(0))`), tag `<n>state<k>ap<c>acc_parity`. Requires
+  `c >= 1`. Its **Fin/Inf alternation is what generalized Büchi cannot express** —
+  the persistence rung and the deeper parity/Wagner degrees only appear here.
+
+An edge's markset may carry several colours under either family; the acceptance is
+just the formula evaluated on the colour-sets seen infinitely often, so the
+enumeration stays fully general. Realised in `build._set_acceptance`.
 
 Each raw automaton is passed through **one** structural reduction:
 
