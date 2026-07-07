@@ -23,6 +23,9 @@ Language ──bridge──► Invariant 𝓘(L) ──classify.aperiodic──�
                         cayley → anchoring/windows — (A)/(B) read-offs
                                           │
                                           ▼
+                              engine.py — walk+window transcription
+                                          │ outside the flat-brick stratum
+                                          ▼
                                         dg/    — Diekert–Gastin synthesis
 ```
 
@@ -46,10 +49,20 @@ Language ──bridge──► Invariant 𝓘(L) ──classify.aperiodic──�
 - **`witness/`** (§4) — the non-LTL certificate: three scans of the table →
   counting family `F₁(u, v, x, p′)` or `F₂(u, v, y, p′)`, plus the
   `2p′ + 1`-query toggle replay. See `witness/algorithm.md`.
+- **`engine.py`** (C4) — the walk+window transcription: the §5.2 bricks
+  (`sojourn`/`step`/`leave`/`STAY∞`), class-memoized `Final(c)`, window
+  terms from the Prop 5.15 normal form (minimal-set `GF` collapse on
+  upward-closed families). Operates on the flat-brick stratum — every
+  layer 1-anchored, every final-candidate layer window-determined —
+  and returns None outside it.
 - **`dg/`** — the Diekert–Gastin local-divisor synthesis, consuming the
-  invariant natively. See `dg/algorithm.md`.
+  invariant natively; the baseline and the fallback below the engine.
+  See `dg/algorithm.md`.
 - **`translator.py`** — the `Translator`: bridge, step-0 witness scan on
-  `𝓘(L)` itself, then synthesis. Faithful-or-NOK, like every translator.
+  `𝓘(L)` itself, then the engine behind its conformance gate (the
+  emitted formula's reference invariant must be byte-equal to the
+  input), dg where the stratum's preconditions fail. Faithful-or-NOK,
+  like every translator. Registered as the portfolio recipe `sos2ltl`.
 
 ## Layering
 

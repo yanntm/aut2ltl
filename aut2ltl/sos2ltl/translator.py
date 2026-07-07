@@ -3,13 +3,17 @@
 Flow: bridge the `Language` to its canonical invariant `𝓘(L)`; scan for a
 group (step 0) — on a group, extract the counting family and replay it
 against the input automaton, absorbing `NOT_LTL` only on a certified
-replay; on an aperiodic invariant, synthesize the formula (dg local-divisor
-induction). Faithful-or-NOK: every cap and every inconsistency is a
-decline, never a wrong formula and never an uncertified verdict.
+replay. On an aperiodic invariant, the transcription engine runs first —
+its formula ships only behind the conformance gate (the reference
+invariant of the emitted formula, byte-equal to the input; a mismatch is
+a stop-the-line decline, never a fallback) — and the dg local-divisor
+induction is the fallback where the flat-brick stratum's preconditions
+fail. Faithful-or-NOK: every cap and every inconsistency is a decline,
+never a wrong formula and never an uncertified verdict.
 """
 from __future__ import annotations
 
-from typing import List, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 import spot
 
@@ -17,8 +21,13 @@ from aut2ltl.result import LTLResult
 from aut2ltl.verifier import member
 from aut2ltl.witness import Witness
 
+from sosl.sos import dump_invariant
+from sosl.sos.build.importer import import_ltl
+from sosl.sos.core.quotient import invariant_of
+
 from .bridge import BridgeDecline, invariant_of_language
 from .dg import DgDecline, synthesize
+from .engine import transcribe
 from .witness import Family, extract_family, toggles
 
 if TYPE_CHECKING:
@@ -26,6 +35,7 @@ if TYPE_CHECKING:
     from sosl.sos import Invariant, Lasso
 
 TAG = "sos2ltl"
+TAG_ENGINE = "sos2ltl.engine"
 TAG_DG = "sos2ltl.dg"
 
 
@@ -79,6 +89,19 @@ def sos2ltl(lang: "Language") -> LTLResult:
         return LTLResult.decline(
             "sos2ltl: counting family failed replay against the input "
             "(internal inconsistency)", TAG)
+
+    flat: Optional[str] = transcribe(inv)
+    if flat is not None:
+        conf = invariant_of(import_ltl(flat))
+        if conf is not None and dump_invariant(conf) == dump_invariant(inv):
+            return LTLResult.success(spot.formula(flat), TAG, TAG_ENGINE)
+        if conf is not None:
+            return LTLResult.decline(
+                "sos2ltl: CONFORMANCE FAILURE — engine formula denotes a "
+                "different language (stop-the-line bug, not falling back)",
+                TAG, TAG_ENGINE)
+        # The conformance rebuild blew its cap: the formula is unverified,
+        # not wrong — fall through to the dg baseline.
 
     try:
         ast, phi, _ = synthesize(inv)

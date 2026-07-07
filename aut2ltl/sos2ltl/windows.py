@@ -51,7 +51,8 @@ class WindowReport:
     verdict at `width` — PASS (exact or trivial), UNDECIDED (conflict-free
     but the enumeration guard tripped), FAIL (every tested width conflicts),
     TRANSIENT (no within-layer cycle, no window term needed). `trivial`
-    means stage 2 proved the verdict function constant. `fail_witness` maps
+    means stage 2 proved the verdict function constant, with `verdict` the
+    constant (None otherwise). `fail_witness` maps
     each conflicting width to a pair of lassos with equal recurring window
     sets and different verdicts (replayable against any acceptor)."""
 
@@ -59,6 +60,7 @@ class WindowReport:
     status: str
     width: Optional[int]
     trivial: bool
+    verdict: Optional[bool]
     fail_witness: Dict[int, Tuple[Lasso, Lasso]]
 
 
@@ -149,15 +151,15 @@ def analyze_layer(cay: Cayley, layer_id: int, k_max: int = 3,
         d: _cycle_classes(inv, member, reps, d) for d in layer}
     if not any(per_class_cycles.values()):
         return WindowReport(layer=layer, status=TRANSIENT, width=None,
-                            trivial=False, fail_witness={})
+                            trivial=False, verdict=None, fail_witness={})
 
     # Stage 2 — the trivial pass: one verdict across all reachable cycles.
     verdicts: Set[bool] = {
         _verdict(inv, d, m)
         for d, ms in per_class_cycles.items() for m in ms}
     if len(verdicts) == 1:
-        return WindowReport(layer=layer, status=PASS, width=1,
-                            trivial=True, fail_witness={})
+        return WindowReport(layer=layer, status=PASS, width=1, trivial=True,
+                            verdict=next(iter(verdicts)), fail_witness={})
 
     # Stage 3 — bounded test on enumerated cycle words.
     cap = 2 * len(layer) * inv.n
@@ -195,7 +197,35 @@ def analyze_layer(cay: Cayley, layer_id: int, k_max: int = 3,
     else:
         status = FAIL if not incomplete else UNDECIDED
     return WindowReport(layer=layer, status=status, width=width,
-                        trivial=False, fail_witness=fail_witness)
+                        trivial=False, verdict=None,
+                        fail_witness=fail_witness)
+
+
+def realizable_verdicts(cay: Cayley, layer_id: int, k: int,
+                        node_budget: int = 200_000,
+                        ) -> Optional[Dict[FrozenSet[Word], bool]]:
+    """The verdict per realizable recurring `k`-window set of layer
+    `layer_id`, over the cap-bounded cycle enumeration — the table
+    Proposition 5.15's window normal form reads. None when the enumeration
+    guard trips or two same-set cycles disagree (the caller must not build
+    a window term from an incomplete or conflicted table)."""
+    inv = cay.inv
+    layer = cay.layers[layer_id]
+    member = frozenset(layer)
+    reps = _rep_letters(inv)
+    cap = 2 * len(layer) * inv.n
+    budget = [node_budget]
+    table: Dict[FrozenSet[Word], bool] = {}
+    for d in layer:
+        words, tripped = _cycles(inv, member, reps, d, cap, budget)
+        if tripped:
+            return None
+        for z in words:
+            v = _verdict(inv, d, inv.fold(z))
+            wset = _recurring_windows(z, k)
+            if table.setdefault(wset, v) != v:
+                return None
+    return table
 
 
 def analyze(cay: Cayley, k_max: int = 3,
