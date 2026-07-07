@@ -14,7 +14,8 @@ it triggered.
   `readoffs.py` (C5 minus the ladder rung — deferred to the classifier
   subproject, whose position `sosl/sosl/sos/classify/` now exists with
   Band 1 implemented), `witness/` (§4 certificate + toggle replay).
-  Pending for M1 close-out: the E1/E2 census tables.
+  **M1 closed:** the E1/E2 census tables landed (see the E1/E2 section) via
+  the `SOS2LTL_CENSUS` recipe side channel over the 1-AP `genaut` shapes.
 - **The DG baseline (E4b's engine).** Ported to consume the invariant
   natively (`aut2ltl/sos2ltl/dg/`, from the running `bls/definability/dg`
   implementation; `morphism.py`'s `Alg` dropped — the `.sos` value is
@@ -142,6 +143,56 @@ identity-first (`neutral`), while `A(c)` membership is constant-action
 (diagonal included). The paper states the overlap (`A(c) ∩ L(c)` =
 diagonals) but not the reporting convention; harmless today, worth one
 sentence in §5.2 if the letter tables become paper material.
+
+## E1 / E2 — the 1-AP census
+
+**Provenance.** The six 1-AP `genaut` shapes (`1state1ap{0,1,2,3}acc`,
+`2state1ap{0,1}acc`), 981 inputs, driven through `--use sos2ltl` under
+`survey` (per-input isolation + 15 s cap). The recipe carries an env-gated
+side channel (`SOS2LTL_CENSUS` → `aut2ltl/sos2ltl/census.py`): one JSON
+record per input, printed *early* (right after the group scan, before
+synthesis) so the (A)/(B) statistics persist even when a later emit blows
+the cap. Reproduce:
+
+    SOS2LTL_CENSUS=…/census_1ap.jsonl python3 -m survey \
+        --folder genaut/corpus/1state1ap0acc … --folder genaut/corpus/2state1ap1acc \
+        --use sos2ltl --no-verify --logs …
+    python3 -m tests.sos2ltl.census_report …/census_1ap.jsonl
+
+Run: 981 inputs, **891 LTL / 90 not-LTL**, 0 declined / 0 timeout / 0 crash;
+all 981 records captured (E1/E2 restrict to the 891 aperiodic specimens).
+
+### E1 — condition (A), 891 LTL specimens, 2898 layers
+
+| metric | census | spec E1 prediction | verdict |
+|---|---|---|:--:|
+| layers anchoring at `k = 1` | 2796/2898 (96.5%) | "large majority pass (A) at `k=1`" | ✓ |
+| (A)-width histogram | `{1: 2796, 2: 102}` — no `k=3`, no FAIL | — | ✓ (stronger: `k ≤ 2` everywhere) |
+| languages fully stem-transcribable at `k ≤ 3` | 891/891 (100%) | (deliverable) | ✓ |
+| frozen layers | 1478/2898 (51.0%) | "frozen layers are common" | ✓ |
+| prefix-independent languages | 535/891 (60.0%) | — | — |
+
+The 102 width-2 layers are the graded-engine stratum (Thm 5.23 fires); no
+1-AP layer reaches width 3 and none (A)-fails.
+
+### E2 — condition (B), 1921 final-candidate layers
+
+| metric | census | spec E2 prediction | verdict |
+|---|---|---|:--:|
+| status split | `{PASS: 1834, UNDECIDED: 87}` — **zero FAIL** | "(B) holds at `k' ≤ 2` on all 1-AP census; failures need ≥ 2 AP" | ✓ |
+| PASS width histogram | `{1: 1793, 2: 41}` (trivial 1554) | — | ✓ (no `k'=3`) |
+| determined at `k' ≤ 2` | 1834/1921 (95.5%) | — | all PASSes ≤ 2 |
+
+No (B)-failure anywhere on the 1-AP census — the "failures need ≥ 2 AP"
+clause is unfalsified here (its positive witness awaits the 2-AP shapes,
+E6/H3). The 41 `k'=2` PASSes are the `GF(aa)`-style frozen final layers
+(`{5}`, F1). The **87 UNDECIDED** are enumeration-guard gaps (F1's node
+budget), not conflicts — a stratum-statistics hole, immaterial to the
+no-failure claim; each carries a conflict-free width but no PASS theorem.
+
+**Both E1 and E2 predictions confirmed, and stronger than stated:** on the
+1-AP census `k ≤ 2` / `k' ≤ 2` covers everything that is decided, and
+nothing (A)- or (B)-fails.
 
 ## Deviations from the spec (implementation placement)
 
