@@ -42,7 +42,7 @@ def reference_of_ltl(formula: str, scratch_dir: str = _SCRATCH) -> Invariant:
     os.makedirs(scratch_dir, exist_ok=True)
     path = os.path.join(scratch_dir, "_reference_input.hoa")
     with open(path, "w") as fh:
-        fh.write(aut.to_str("hoa"))
+        fh.write(aut.to_str("hoa", "t"))  # "t": never re-declare state-acc
     inv = invariant_of(aut)
     if inv is None:
         raise ReferenceError(f"algebra closure exceeded cap for {formula}")
