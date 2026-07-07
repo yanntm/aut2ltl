@@ -57,16 +57,34 @@ Output per language: list of layers with `|R|`, smallest passing `k` or
 
 **C3 — condition (B) tester (bounded).** Per *final-candidate* layer `R`
 (any layer some run can remain in forever — every layer with an internal
-cycle), per stem class `s ∈ R`, per width `k' = 1, 2, 3`: decide whether
-two lassos confined to `R` from `s` with equal recurring `k'`-window sets
-can have different `P`-verdicts. Procedure (exact, census-sized): enumerate
-the simple-cycle decompositions of `R`'s within-layer graph up to length
-cap `⟨2·|R|·|Σ_λ|⟩`; for each pair of cycle sets with equal `k'`-window
-sets, compare the idempotent-power verdicts of their loop classes against
-`s`. A cheaper sound over-approximation may be used to *pass* (all
-idempotents reachable in `R` from `s` share one verdict ⟹ (B) holds
-trivially at every width); the exact test is required only to *fail*.
-Output: smallest passing `k'` or `FAIL(witness pair of lassos)`.
+cycle), per width `k' = 1, 2, 3`: decide whether two lassos confined to
+`R` with equal recurring `k'`-window sets can have different `P`-verdicts.
+(The per-stem quantification of Definition 5.7 collapses per layer: `R` is
+strongly connected, so every cycle is reachable from every class of `R`.)
+Three stages, verdicts computed as `(d·e, e) ∈ P` with `d` the cycle's
+anchor class and `e` the idempotent power of the loop class:
+- *trivial pass (exact, polynomial)*: the cycle classes per anchor class
+  are the closure `{ m : (d, m) reachable from (d, [ε]) }` in the
+  `(position in R, accumulated word class)` product; one verdict across
+  all of them ⟹ (B) holds trivially at every width.
+- *bounded test*: enumerate cycle words up to length cap `2·|R|·|𝒞|`
+  under a node budget; group by recurring `k'`-window set; a verdict
+  conflict is an exact `FAIL(witness pair of lassos)`; conflict-free with
+  the enumeration complete is a cap-bounded `PASS`; a tripped budget is
+  `UNDECIDED(k')`. The cap must scale with `|𝒞|`, not with `|Σ_λ|`: the
+  loop class folds through the whole algebra even where the walk is
+  frozen (paper Prop 5.15(iii); the cap `2·|R|·|Σ_λ|` is refuted by
+  `EvenBlocks`' layer `{6}` — conflicting loops `(a⁴·!a)^ω`/`(a⁵·!a)^ω`
+  of length 5 against a cap of 4, yielding a false PASS at `k' = 3`).
+- *exact procedure (normative once priced)*: per strongly connected
+  subgraph `H` of the memory graph, the loop-class closure of covering
+  tours via `(node, class, covered-edges)` states, grouped across
+  subgraphs sharing a window projection (paper Prop 5.15(iii)). A
+  cap-bounded `PASS` is not a theorem until either this replaces the
+  enumeration or a sufficiency proof for the cap is frozen
+  (`sos_toltl_report.md` F1).
+Output: smallest passing `k'` with its PASS/UNDECIDED grade, or
+`FAIL(witness pair of lassos)`.
 
 **C4 — engine bricks (walk + window).** The transcription per the paper's
 §5 skeleton, emitting the class-indexed DAG; flattening and definitional

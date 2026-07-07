@@ -1171,7 +1171,22 @@ periodic witness `u·v^ω`, and `f_c(S) = Val(c·[u], [v])`.
 `Win_k(β̂) = Win_k(β)` and `V(c, β̂) = V(c, β)`. Hence (B) at width `k`
 holds iff for each `c ∈ R` and each realizable `S`, all covering tours
 of all `S`-projecting subgraphs, from all full-memory entries, yield one
-verdict — a finite check, verdicts factoring through loop classes.
+verdict. Two cautions make the check precise, both load-bearing. First,
+the verdict factors through the tour's *loop class*, **not** through the
+subgraph: one subgraph carries tours of several loop classes, and two
+covering tours of the same `H` can disagree — on `EvenBlocks`' frozen
+layer at `k = 3`, `(a⁴·!a)^ω` and `(a⁵·!a)^ω` traverse the same
+recurring edge set with opposite verdicts, their loop classes on
+opposite phases of the group. The object to compute per subgraph `H` is
+its **loop-class closure** `{ [w] : w labels a closed covering walk of
+H }` — a subset of `𝒞`, computable by a `(node, class, covered-edges)`
+closure — and (B) holds iff, grouping across subgraphs sharing one
+window projection `S`, all induced pair verdicts agree. Second, the
+finiteness of the check lives in `𝒞`, never in the layer: the loop
+class is folded through the whole algebra even where the walk is
+frozen, so no length cap in `|R|` and `|Σ_λ|` alone bounds the tours
+that must be compared (the same specimen refutes the cap `2·|R|·|Σ_λ|`:
+the conflicting loops have length 5, the cap value 4).
 
 (iv) *Sizes.* Each disjunct has modal depth `k + 1` and at most
 `|Σ_λ|^k` conjuncts; the disjuncts number at most the realizable sets,
@@ -1204,8 +1219,12 @@ absorbs the grouping), the stem class is `[w₀⋯w_i] = [w₀]·e`, so the
 pair — hence the verdict — is unchanged; and every seam window of the
 wrap already occurs at each original cut (one boundary context), so it
 recurs in `β`: `Win_k` is preserved. The finiteness of the check: tours
-enter through finitely many classes and their loop classes range over a
-computable subset of `𝒞`.
+enter through finitely many classes, and per subgraph the loop classes
+of covering tours form the loop-class closure — computed, not sampled:
+extend `(node, accumulated class, edge subset covered)` states to
+closure and collect the classes closing at the base node with all of
+`H` covered; the state space is finite, the class coordinate ranging
+over `𝒞`.
 
 (iv) Counting is immediate. For an upward-closed family, a confined `β`
 satisfies `⋁_min ⋀ GF` iff `Win_k(β)` contains some minimal accepted set
