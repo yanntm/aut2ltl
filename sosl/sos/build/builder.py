@@ -12,11 +12,9 @@ from __future__ import annotations
 
 import os
 
-import spot
-
 from ..core.quotient import invariant_of
 from ..invariant import Invariant
-from .importer import canonical, import_hoa
+from .importer import import_hoa, import_ltl
 
 _SCRATCH = os.path.join(os.path.dirname(__file__), os.pardir, "logs")
 
@@ -35,11 +33,17 @@ def reference_of_hoa(path: str) -> Invariant:
 
 
 def reference_of_ltl(formula: str, scratch_dir: str = _SCRATCH) -> Invariant:
-    """The canonical reference `Invariant` of an LTL/PSL formula's language,
-    via a deterministic translation materialized under ``scratch_dir``."""
-    aut = spot.translate(spot.formula(formula), "deterministic", "generic", "complete")
+    """The canonical reference `Invariant` of an LTL/PSL formula's language.
+
+    The deterministic form D the construction runs on (`importer.import_ltl`)
+    is materialized under ``scratch_dir`` — the scratch file is exactly the
+    automaton the pipeline consumed, for inspection after the fact."""
+    aut = import_ltl(formula)
     os.makedirs(scratch_dir, exist_ok=True)
     path = os.path.join(scratch_dir, "_reference_input.hoa")
     with open(path, "w") as fh:
         fh.write(aut.to_str("hoa"))
-    return reference_of_hoa(path)
+    inv = invariant_of(aut)
+    if inv is None:
+        raise ReferenceError(f"algebra closure exceeded cap for {formula}")
+    return inv
