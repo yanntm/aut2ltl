@@ -92,10 +92,14 @@ the Wilke-condition statement; E5 is blocked on this and on nothing else.⟩
   proper (`Val^{θᵢ} ≠ Val_P`) — this search is complete (Thm 5.19); the
   `θ₁ ∩ θ₂ = Δ` condition is a theorem (Prop 5.20), assert it, don't test
   for it. Report the factor invariants (re-canonicalized), or
-  `IRREDUCIBLE`. **Test vectors:** `GFa` must come back `IRREDUCIBLE`;
-  `GFa ∧ FGb` must factor as `FGb ∧ GF(a ∨ !b)` — *not* as
-  `GFa ∧ FGb`, `GFa` not being recognized on its table (paper §5.6(3),
-  the corrected specimen).
+  `IRREDUCIBLE`. **Test vectors:** `GFa` must *factor* — as
+  `Fa ∧ (GFa ∨ G¬a)`, both congruences the neutral-unit merge (the
+  paper's properness caveat in Thm 5.19; an earlier version of this spec
+  wrongly predicted `IRREDUCIBLE`); `GFa ∧ FGb` must factor as
+  `FGb ∧ GF(a ∨ !b)` — *not* as `GFa ∧ FGb`, `GFa` not being recognized
+  on its table (paper §5.6(3), the corrected specimen). Whether a found
+  split is *adopted* is the §5.6(1) guard's read-off decision — report
+  factorizations and adoption separately.
 
 ## 3. The conformance gate (mandatory, every experiment)
 
@@ -211,7 +215,7 @@ notch at a time, smallest-first):
 For every non-LTL census specimen: extract the certificate (group orbit,
 witness words, context shape, period `p`); verify by `2p` lasso membership
 tests against the reference automaton *only* (no algebra on the verifier
-side); record word lengths against the paper's Theorem-4.3 bounds (each
+side); record word lengths against the paper's Theorem-4.4 bounds (each
 component `< |𝒞|`, the absorbed index power quadratic). **Prediction:** all
 verify; `Even` emits `F₁(u=a, v=a, x=(!a)^ω, p′=2)` (samples
 `a^{n+1}·(!a)^ω`, accept iff `n` odd) and `EvenBlocks` emits

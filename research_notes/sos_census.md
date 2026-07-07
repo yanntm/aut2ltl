@@ -29,10 +29,14 @@ canonical size 5 over one letter pair"), *density laws* (the partition
 function of ω-regular languages by canonical size, per class — each
 ventilation an integer sequence that has never been computed, because the
 object was never built), the *cost of canonicity* (canonical size against
-best presentation size, joined through the derived census), and a *basis*
+best presentation size, joined through the derived census), a *basis*
 (the languages irreducible under the calculus of [SωSC26], from which the
-rest of the small world is assembled). The census is also the family's
-proving ground: every construction run, every learner run, every
+rest of the small world is assembled), and an **atlas** — the census with
+a formula column, per-row *optimal* by enumerating formulas and stamping
+rows, keyed by the language itself, and consumed by the extraction of
+[SωSX26] as a library of certified base cases that amputates its
+Diekert–Gastin fallback below the horizon. The census is also the
+family's proving ground: every construction run, every learner run, every
 extraction conformance check lands, or fails to land, on a census row.
 ⟨TBD: headline numbers once the intrinsic census runs.⟩
 
@@ -236,7 +240,50 @@ even with the exponential constructors admitted. ⟨TBD: the closure
 computation is itself calculus-powered — generate, reduce, look up; a
 nice fixpoint over the census as a database.⟩
 
-### 4.6 The census as the family's proving ground
+### 4.6 The formula atlas: the census as an optimal base-case library
+
+The census's most operational product is not a statistic but a *table
+with one more column*: per LTL row, a defining formula; per non-LTL row,
+the counting-family certificate of [SωSX26, §4]. Call it the **atlas**.
+Its enabling fact is canonicity: the key is the language itself
+(byte-equal invariants), so a lookup is exact — no automaton-keyed cache
+could be sound, one language owning many machine keys.
+
+**Optimal entries, by enumeration.** Fill the formula column from the
+*formula side*: enumerate LTL formulas over `m` letters by size, compute
+each one's invariant (the construction, run on the formula's automaton),
+and stamp each census row with the first formula that hits it. First hit
+is *provably minimal* for that language — the atlas stores per-row
+**optimal** formulas below the horizon, something no extraction
+procedure certifies on its own. The stopping criterion is the census
+itself (all LTL rows at size `≤ N` filled), and the byproduct is a new
+ventilation: the joint distribution of canonical size `|𝒞|` against
+minimal LTL size — the language class's own succinctness map, never
+computed. Each entry is conformance-checked once, offline (the formula's
+invariant must be byte-equal to its row); consumers inherit the check
+for free.
+
+**Consumption: amputating the fallback.** Every sub-problem the
+extraction of [SωSX26] generates *is a language with its own canonical
+invariant* — the memoized children are rootings `T_c = u⁻¹L`
+[SωSX26, Lemma 5.9], the OR/AND-split pieces re-canonicalize to their own
+tables [SωSX26, Thm 5.19], frozen tails are residuals. So extraction
+gains a lookup step: whenever a sub-language's re-canonicalized invariant
+falls below the atlas horizon, emit the stored optimal formula. The
+biggest beneficiary is the Diekert–Gastin fallback: its recursive
+sub-calls, re-canonicalized and looked up before recursing, bottom out in
+atlas hits — DG runs only on pieces *beyond the horizon*, its explosive
+base cases amputated. The bet this rests on — that real specifications
+are combinations of small recurring idioms, so sub-invariant hit rates
+are high — is falsifiable, measured as a hit-rate column in the
+extraction paper's size ledgers (E4 there), with the atlas's optimal
+entries also calibrating its optimality-gap ledger (E5). ⟨TBD: the
+enumeration's own feasibility wall (formulas by size × construction per
+formula); incremental maintenance as the census grows; whether the atlas
+should store the DAG-definitional form for rows whose flat optimum is
+large.⟩
+
+### 4.7 The census as the family's proving ground
 
 Every tool in the family is tested against the census as an oracle:
 construction runs must land on rows (derived ⊆ intrinsic); learner runs

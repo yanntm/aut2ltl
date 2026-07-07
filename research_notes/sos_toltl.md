@@ -154,12 +154,20 @@ iff their invariants are byte-equal [SωS26, Thm 5.1].
   distinguishes; extraction works over `λ(Σ)` and restores atomic
   propositions last.
 - *the ladder position* — safety / co-safety / obligation / recurrence /
-  persistence / reactivity as closure conditions on `P` [SωS26, §7.1].
+  persistence / reactivity [MP92] as closure conditions on `P`
+  [SωS26, §7.1].
 - *residual count* — one residual ⟺ prefix-independent ⟺ the linear half
   is blind [SωS26, Prop 4.6].
 - *absorbing classes* — two-sided zeros; runs that reach them have committed.
-- *until-rank* — Wilke's grading of until-nesting as a semigroup power
-  condition [Wil99]; a lower bound on the depth of any defining formula.
+- *until-rank* — the minimal until-nesting depth, computable from the
+  syntactic semigroup: level `k` of the until hierarchy is characterized
+  by a `k`-fold semidirect power of the level-1 variety
+  (Thérien–Wilke's effective characterization, surveyed in [Wil99,
+  Thm 8]); a lower bound on the depth of any defining formula. ⟨TBD:
+  freeze the exact semigroup condition from the source paper (library
+  request: Thérien–Wilke, FOCS'96) — and note the characterization is
+  stated on finite words; the ω-word transfer is this paper's own
+  obligation.⟩
 - *complementation* — `P ↦ P^c` for free; extraction may choose the cheaper
   of `L`, `L̄` and negate.
 
@@ -455,7 +463,7 @@ regular representation).
 **Lemma 5.2 (what the walk carries — and what it cannot).** (i) The walk
 computes the full syntactic class of every prefix, `ψ(u) = [u]`; in
 particular, for any Ramsey factorization `α = u·w₁w₂⋯` the *stem
-coordinate* `s = [u·w₁⋯w_k]` of the accepting pair is a walk value. (ii)
+coordinate* `s = [u·w₁⋯w_j]` of the accepting pair is a walk value. (ii)
 The *loop coordinate* `e` is **not** a function of the walk, nor of any
 inf-set acceptance on `Cay(L)`: no Muller condition on recurring states and
 no Emerson–Lei condition on recurring edges makes `Cay(L)` a recognizer of
@@ -625,7 +633,34 @@ is (iv), the width-`k` face of Lemma 5.8(i) — but the graded *sojourn*
 must legislate over window positions, not letter positions; the graded
 brick grammar is deferred, with the graded exactness claim ⟨TBD: graded
 bricks and the width-`k` exactness theorem; Theorem 5.10 below is stated
-and proved at width 1⟩.
+and proved at width 1. The identified obstruction, recorded so it is not
+rediscovered: after an anchor window lands, suffix pinning (iv) makes the
+phase sequence `k`-periodic along any anchor-free stretch — the phase at
+position `j` is the phase at `j − k` — so the constraint a graded law
+must impose cycles with the *mod-`k` slot*, which no window sees (neutral
+windows carry, by definition, no class information). On a 2-class layer
+the issue vanishes (the remark below: such layers are 1-anchored
+outright); whether an aperiodic `k`-anchored layer can sustain an
+*eternal* all-neutral stretch with a non-constant phase cycle — the case
+that would force genuinely mod-`k` bricks — is the crux. Note the partial
+exclusion already available: a width-1 partial-constant letter inside the
+stretch completes an anchor window at its position, so an eternal neutral
+stretch uses only width-1-mixed or width-1-identity letters, and patterns
+like `(ab)^m a` alternating two classes while fixing a third are
+length-unbounded *mixed* words, excluded by `k`-anchoredness itself at
+every width.⟩
+
+*Remark (small layers always anchor).* Every layer with `|R| ≤ 2` of an
+aperiodic invariant is 1-anchored. For `|R| = 1` there is nothing to
+show. For `R = {c, c′}`: a within-layer action on two classes is a
+partial identity, a partial constant, or contains the swap
+`c ↦ c′, c′ ↦ c`; a letter `x` acting as the swap has
+`act(x^{2m}) = id ≠ swap = act(x^{2m+1})` on `R` for every `m`, so no
+power stabilizes — `[x^N] = [x^{N+1}]` fails for all `N`, contradicting
+aperiodicity (equal classes act equally). Mixed actions therefore need
+`|R| ≥ 3`, exactly the size at which Lemma 5.6(iii)'s scheme lives; on
+census-scale invariants, whose layers are tiny, condition (A) at width 1
+is the generic case — E1's prediction, now half a theorem.
 
 Anchoring is the *stem-side* precondition: it makes the walk transcribable.
 Lemma 5.2(ii) forces a second, independent precondition on the *loop side*:
@@ -776,12 +811,14 @@ membership fold:
 `T_c := { β : V(c, β) = 1 }` satisfies `T_{[u]} = u⁻¹L` for every finite
 word `u`, and `T_{[ε]} = L`.
 
-*Proof.* (i) Two Ramsey factorizations of the same word admit a common
-coarsening, and a coarsening step leaves the verdict fixed: grouping
-inside the tail multiplies factors into the idempotent, which absorbs
-them; grouping across the seam slides a finite factor from tail to stem,
-replacing the pair by a conjugate one; and `P`, the pair set of one
-language, is closed under both moves [SωS26, Thm 5.1; PP04]. (ii) A
+*Proof.* (i) Pick a representative `w` of `c` (a shortlex key; `w = ε`
+for `c = [ε]`). A Ramsey factorization of `β` folded from `c` induces
+the same linked pair as the corresponding factorization of the ω-word
+`w·β` with `w` merged into the stem block. The invariant *recognizes*
+`L`: the `P`-verdict of a linked pair equals the membership of every
+ω-word it is computed from [SωS26, Lemma 3.2, Thm 5.1] — one semantic
+referent, `[w·β ∈ L]`, for every factorization, so all of them agree.
+(ii) A
 Ramsey factorization of `β` folded from `c·[u]` is a factorization of
 `u·β` folded from `c` with `u` absorbed into the stem coordinate — the
 same pair. (iii) is the invariant's membership evaluation itself. For the
@@ -1038,13 +1075,10 @@ depend on the choice of Ramsey idempotent `e(α)`, and it is
 prefix-independent.
 
 *Proof.* `c` frozen means every letter is neutral at `c`, so `c·[w] = c`
-for every finite `w`; hence `(c, e)` is linked for every idempotent `e`
-arising from a tail. For `[u] = c`, membership of `u·α` is evaluated by
-the invariant through *any* Ramsey factorization of `α`, with one verdict
-[SωS26, Thm 5.1], and that verdict is `(c, e(α)) ∈ P` for each choice of
-factorization — so all choices agree and `T_c = u⁻¹L`. Prefix-independence:
-membership of `u·w·α` is the lookup `(c·[w], e(α)) = (c, e(α))` — the same
-lookup, so `w·α ∈ T_c ⟺ α ∈ T_c`. ∎
+for every finite `w`; in particular `(c, e)` is linked for every
+idempotent `e` arising from a tail. Well-definedness and `T_c = u⁻¹L`
+are Lemma 5.9(i) and its consequence; prefix-independence is transport,
+`V(c, w·α) = V(c·[w], α) = V(c, α)` (Lemma 5.9(ii)). ∎
 
 It is tempting to "recurse" on `T_c` — build
 its invariant, extract, wrap. The temptation must be resisted, and `GF(aa)`
@@ -1160,8 +1194,10 @@ recurring set. The witness verdict is the invariant's lasso evaluation.
 (iii) Cut points of a Ramsey factorization of `β` carry finitely many
 (idempotent, length-`(k−1)` boundary context) colors; passing to an
 infinite monochromatic subsequence of cuts re-factors `β` with one
-color. Wrap a block stretch `w_{i+1}⋯w_{i+m}` chosen to contain every
-recurring window: the loop class is the same idempotent `e` (idempotency
+color. Wrap a block stretch `w_{i+1}⋯w_{i+m}` starting beyond the last
+occurrence of every non-recurring window and long enough to contain
+every recurring one — its interior windows are then *exactly* the
+recurring set: the loop class is the same idempotent `e` (idempotency
 absorbs the grouping), the stem class is `[w₀⋯w_i] = [w₀]·e`, so the
 pair — hence the verdict — is unchanged; and every seam window of the
 wrap already occurs at each original cut (one boundary context), so it
@@ -1189,8 +1225,19 @@ extract(𝓘):
   3. walk engine (stem side): descend the R-order of Cay(L); per layer:
        (A) at k ≤ cap  ⟹ flat law/leave bricks, exits to memoized class
                           children
-       (A) fails       ⟹ ⟨TBD: layer-internal decomposition; DG local
-                          division as last resort, scoped to the layer⟩
+       (A) fails       ⟹ ⟨TBD, candidate order: (a) retry after the step-2.5
+                          combinators — an OR/AND piece re-canonicalizes to
+                          its own smaller table whose layers may anchor
+                          (Thm 5.19); (b) else DG's local division, scoped:
+                          run it on the layer's action monoid, choosing the
+                          separator c as a width-1 partial-constant letter
+                          if one exists (the least blind choice — it is an
+                          anchor of the failed test, repairing §3's
+                          blindness (3)), the emitted subformula rooted at
+                          the layer entry and memoized as usual; (c) the
+                          scoping theorem to state: the fallback's monoid
+                          divides the layer's action monoid, never all of
+                          M — DG's price paid locally, not globally⟩
   4. window engine (loop side), on every layer a run can end in:
        (B) at k' ≤ cap ⟹ GF/FG window combination read off P (STAY∞,
                           parks) — includes every frozen layer
@@ -1291,10 +1338,9 @@ standard membership rule, evaluated in the quotient, returns `Val_{P′}`
 on every lasso. Consequently the syntactic ω-semigroup of `L(P′)`
 divides `M/θ`, of size `< |𝒞|` for proper `θ`.
 
-*Proof.* Two ingredients. *Idempotent-power stability:*
-`Val_{P′}(c, d) = Val_{P′}(c, d^j)` for every `j ≥ 1` — both evaluate the
-same ω-word (`w·z^ω = w·z^j·(z^j)^ω` up to the stem transport of
-Lemma 5.9(ii)), and `⟨d⟩` has one idempotent, shared with every `⟨d^j⟩`.
+*Proof.* Two ingredients. *Idempotent-power stability:* `⟨d^j⟩ ⊆ ⟨d⟩`
+share their unique idempotent, so `(d^j)^π = d^π` and
+`Val_{P′}(c, d^j) = Val_{P′}(c, d)` — literally the same lookup.
 *Descent:* the quotient rule folds a lasso `(u, v)` to
 `([u]_θ, [v]_θ)`, iterates the loop to an idempotent of the quotient —
 `[v^j]_θ` for some `j`, `v^j` not necessarily idempotent in `𝒞` — and
@@ -1316,10 +1362,13 @@ by re-canonicalization. Moreover the search is complete on
 `Val^{θ₁} ∧ Val^{θ₂} = Val_P`. Hence enumerating congruence pairs with
 their canonical saturations — coarsest first, the census-sized lattice
 being enumerable — finds a factorization iff one exists, and otherwise
-certifies `P` **irreducible**, the honest fallback. (`GFa` is already
-irreducible: on its three classes the only verdict maps above `Val_P`
-are `Val_P` itself and the constant 1, so no both-proper factorization
-exists.)
+certifies `P` **irreducible**, the honest fallback. (Properness has
+teeth, but fewer than one might hope: even `GFa` factors, as
+`Fa ∧ (GFa ∨ G¬a)`, both congruences the neutral-unit merge of
+Proposition 5.20 — the stem coordinate of `Val` sees distinctions that
+pure loop verdicts blur, and the slack class carries them. Whether a
+found split is *adopted* is the guard's business, read-offs in hand;
+exhibiting a language irreducible outright is a census query ⟨TBD⟩.)
 
 *Proof.* Languages agree on lassos, and on lassos the displayed verdicts
 conjoin. Completeness: `Val_P ≤ Val^{θᵢ} ≤ Val_{Pᵢ}` — the middle map is
@@ -1411,8 +1460,11 @@ exists⟩. Three renderings:
    The lower bound is the language's: the until-rank read-off
    *lower-bounds* the depth any extraction whatsoever can achieve — so on
    census specimens we certify "the flat explosion is the language's, not
-   ours". ⟨TBD: the until-rank lower bound, blocked on the §2 read-off
-   (C6); the size ledger DG vs. ours on the triptych + census.⟩
+   ours". ⟨TBD: the until-rank lower bound — gated on §2's until-rank
+   read-off, itself gated on the Thérien–Wilke source (library request)
+   and on the ω-transfer; component C6 of the companion experiment spec
+   implements whatever is frozen there; plus the size ledger DG vs. ours
+   on the triptych + census.⟩
 3. **LTL with definitions** — one fresh proposition `p_n` per DAG node `n`,
    a conjunction of `G(p_n ↔ brick_n(…))` definitions plus a root: linear
    in the DAG, printable, and defining `L` exactly, in the following
