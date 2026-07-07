@@ -3,7 +3,7 @@
 Where the `sosl/` implementation stands against the plan in
 `research_notes/sos_learner_spec.md` (the normative document), the paper
 `research_notes/sos_learning.md` (whose running examples are computed by hand),
-and the `.sos` normal form of `sosl/sos/io/sos_format.md`. This report answers
+and the `.sos` normal form of `sosl/sosl/sos/io/sos_format.md`. This report answers
 the questions the spec raises; it describes the implementation as it is.
 
 ## Milestones (spec §8)
@@ -14,8 +14,8 @@ the questions the spec raises; it describes the implementation as it is.
 - **M2.5 — Convention alignment** (fresh-identity reference builder; the
   learner's `[ε]` singleton rule; the `.sos` fixtures). Done.
 - **M3 — Saturation + exact equivalence.** Done. The two-sided sweep
-  (`sosl/learn/saturate.py`) and the exact equivalence oracle
-  (`sosl/teacher/exact.py`) are landed; every census language reaches its
+  (`sosl/sosl/learn/saturate.py`) and the exact equivalence oracle
+  (`sosl/sosl/teacher/exact.py`) are landed; every census language reaches its
   canonical invariant, the Even run reproduces the paper's §4.3 trace, and the
   two permanent-stall specimens behave as Proposition 4.4 predicts.
 - **M4 — Campaign.** Next; not started.
@@ -78,7 +78,7 @@ rule makes that failure structurally impossible.
   word. A word whose enriched element equals `⟦ε⟧` (e.g. `!a` in a one-state
   `GF a` automaton) is an ordinary class keyed `!a`.
 - *Learner:* `[ε]` is seeded as its own class before the bit-row grouping, and
-  the grouping skips it (`sosl/learn/partition.py`).
+  the grouping skips it (`sosl/sosl/learn/partition.py`).
 
 A non-empty class **may** act as an identity on all the *other* non-empty
 classes and still be its own class. `[aa]` in Even does: it is neutral on every
@@ -97,7 +97,7 @@ export can be acceptance-wrong even where the hypothesis is correct — the
 hypothesis folds the literal letters of the queried lasso and never substitutes a
 representative, which is why the two read-offs of one partition can disagree.
 
-Saturation (`sosl/learn/saturate.py`) is the left-context sweep that turns the
+Saturation (`sosl/sosl/learn/saturate.py`) is the left-context sweep that turns the
 right congruence into the two-sided syntactic one, after which the export is
 well-defined. It runs after fill / close / consist reach a fixpoint and before
 each equivalence query; an escalation restarts the loop, and an equivalence query
@@ -140,25 +140,25 @@ included). `F(a ∧ Xa)`, an earlier candidate, is retired — the census resolv
 [a] [!a;a] [a;!a] [a;a]`, byte-equal), a later counterexample breaking its
 pre-equivalence stall.
 
-Exact mode (`sosl/teacher/exact.py`) is the complete equivalence oracle. It
+Exact mode (`sosl/sosl/teacher/exact.py`) is the complete equivalence oracle. It
 decides a hypothesis against `D` through the product of `D`'s reachable
 stem-configs `(state, class)` with the *transformation closure* of the
 hypothesis: each loop word acts on the classes as a function and on `D` as a
 transition/mark profile, so one representative lasso per `(stem-config,
 loop-element)` cell fixes both verdicts, and the shortlex-least cell on which they
 disagree is the minimal counterexample. It returns that lasso or a certificate of
-equality (`sosl/teacher/exact.py`).
+equality (`sosl/sosl/teacher/exact.py`).
 
 Because Proposition 4.4 proves the two specimens permanent, their
 `--no-saturation --eq-mode exact` runs are no longer decision procedures but
 **fixtures for exact mode itself** (spec §9 P4): exact *must* certify their 4- and
 3-class stalls, and a counterexample there would be an exact-mode bug. With
 saturation on, exact drives both to the canonical 5 and 4. Both hold
-(`tests/sosl/exact_fixtures.py`).
+(`sosl/tests/sosl/exact_fixtures.py`).
 
 ## Minimal stall specimens
 
-An exhaustive learner census over the smallest 1-AP shapes (`tests/sosl/genaut_census.py`
+An exhaustive learner census over the smallest 1-AP shapes (`sosl/tests/sosl/genaut_census.py`
 over `genaut/corpus/`; nondeterministic inputs are determinized by the sos import
 layer, so every automaton is covered) locates the smallest languages whose M2
 fixpoint is non-canonical — a surviving stall under the default (bounded)
@@ -229,10 +229,10 @@ counterexamples, and it is smaller than `F(a ∧ Xa)`, which is transient.
 
 With saturation on, every census language reaches its canonical invariant
 byte-equal to the reference builder — the two specimens included
-(`tests/sosl/saturation_gate.py`): `GF(aa)` → 6, `Even` → 5, `EvenBlocks` → 8,
+(`sosl/tests/sosl/saturation_gate.py`): `GF(aa)` → 6, `Even` → 5, `EvenBlocks` → 8,
 `a_implies_xa` → 5, `a_once` → 4.
 
-**Even reproduces the paper's §4.3 trace exactly** (`tests/sosl/even_conformance.py`).
+**Even reproduces the paper's §4.3 trace exactly** (`sosl/tests/sosl/even_conformance.py`).
 The day-one sweep on the initial 3-class table is clean; one equivalence
 counterexample `(ε, a;a;!a)` splits `a;a`; the four-class sweep then fires first at
 cell `(!a;a, [a])`, branch 2 (the two probe bits agree), and the frozen-prefix
@@ -240,7 +240,7 @@ chain flips at `j = 1 → 2`, minting the **linear** column `(ε, a;!a, a;a;!a)`
 the omega column `(a, ε)` a different scan order would produce.
 
 The saturated runs of the two Büchi census cases produce the split and query
-ledgers below (`tests/sosl/m3_ledgers.py`; routine close/consist splits are folded
+ledgers below (`sosl/tests/sosl/m3_ledgers.py`; routine close/consist splits are folded
 into the initial stabilized class count, and one mint can split more than one
 class on re-stabilization).
 
@@ -275,7 +275,7 @@ being prefix-independent, is carried entirely by omega columns (all frozen-chain
 mints); the branch-1 omega correction above is the analogous fix that lets the
 sweep converge on `GF(aa)`.
 
-## Probes (under `tests/sosl/`)
+## Probes (under `sosl/tests/sosl/`)
 
 - `paper_examples.py` — the three paper examples from their source HOA: reference
   size against the fingerprint tables, learned status, byte-equality, and a dump
@@ -319,7 +319,7 @@ counterexample is `(ε, !a;a;a)`, shortlex-earlier than the hand-predicted
 (loop chain, ω-column `(a, a)`, `!a;a` pulled out of `[a]`). Consequence for
 you: the EvenBlocks run is now paper-anchored exactly as Even's is. A draft
 probe for it sits uncommitted in the working tree,
-`tests/sosl/evenblocks_conformance.py` (mirror of `even_conformance.py`,
+`sosl/tests/sosl/evenblocks_conformance.py` (mirror of `even_conformance.py`,
 built on `m3_ledgers.py`'s instrumentation): it asserts first cex
 `(ε, !a;a;a)`, columns `(a, a)` / `(a, !a;a)` / `(ε, !a)` in that order,
 splits 3→4→6→8, the 67/4/14/14 ledger, and byte-equality — and it ran green

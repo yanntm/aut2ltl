@@ -789,7 +789,7 @@ separates them — the reason `P` is part of the invariant.
 
 ---
 
-`𝓘(GF(aa))` serialized (format v1, [`sos_format.md`](../sosl/sos/io/sos_format.md)):
+`𝓘(GF(aa))` serialized (format v1, [`sos_format.md`](../sosl/sosl/sos/io/sos_format.md)):
 
 ```
 SOS v1

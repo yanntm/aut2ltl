@@ -55,7 +55,7 @@ nodes) and verified Spot-equivalent to `GF(a ∧ Xa)`.
 > is in [`sources/`](sources/): [**`GF(aa)`**](sources/gf_aa.md),
 > [**`Even`**](sources/even.md), [**`EvenBlocks`**](sources/evenblocks.md).
 
-<!-- from: tests/sos/build_sos.py on each fixture; DG metrics from dg_probe.py -->
+<!-- from: sosl/tests/sos/build_sos.py on each fixture; DG metrics from dg_probe.py -->
 
 ---
 
@@ -84,7 +84,7 @@ absorbing “contains `aa`” behaviour, each in one or two mark-states.
 Four distinct elements collapse into `[a·a]` (“contains `aa`”, absorbing), and
 `a·!a·a` rejoins `[a]`: **10 → 6**.
 
-<!-- from: tests/sos/build_sos.py samples/fixtures/hoa/sos/gf_aa_parity.hoa -->
+<!-- from: sosl/tests/sos/build_sos.py samples/fixtures/hoa/sos/gf_aa_parity.hoa -->
 
 ---
 
@@ -130,13 +130,13 @@ Here `[a]·[a] = [a·a]` and `[a·a]·[a] = [a]`: the pair `{[a], [a·a]}` is a
 `([¬a],[¬a])`, `([¬a],[a·¬a])`, `([¬a],[a·a])` — once the accepting sink is
 reached (class `[¬a]`), every loop accepts.
 
-<!-- from: tests/sos/build_sos.py on gf_aa_parity.hoa and even.hoa -->
+<!-- from: sosl/tests/sos/build_sos.py on gf_aa_parity.hoa and even.hoa -->
 
 ---
 
 ## Figure 2 — the exportable invariant `𝓘(GF(aa))`
 
-The serialized SoS (format v1, [`sos_format.md`](../../sosl/sos/io/sos_format.md)): the
+The serialized SoS (format v1, [`sos_format.md`](../../sosl/sosl/sos/io/sos_format.md)): the
 keyed classes, the letter map, the multiplication table of `S(L)₊¹`, and the
 saturated set of accepting linked pairs. These core sections are a **complete
 language invariant** — two languages are equal iff their cores are

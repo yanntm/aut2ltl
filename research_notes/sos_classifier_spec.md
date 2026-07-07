@@ -20,7 +20,7 @@ parity/Rabin index, the chain and superchain numbers, and the Wagner degree
 
 ## 1. Objects
 
-**Input.** A `.sos` file (format of `sosl/sos/io/sos_format.md`): classes
+**Input.** A `.sos` file (format of `sosl/sosl/sos/io/sos_format.md`): classes
 with shortlex keys, letter map, multiplication table `M`, accepting pairs
 `P`. The residuals block, if present, is ignored. Optionally, a
 deterministic EL automaton (HOA) presenting the same language — needed only

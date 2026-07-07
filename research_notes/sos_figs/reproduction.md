@@ -1,7 +1,7 @@
 # Reproduction guide — SoS figures & tables
 
 Every command is run from the repository root. Diagnostics are single-input and
-self-bound (≤ 15 s). The tools live in [`tests/sos/`](../../tests/sos) — see
+self-bound (≤ 15 s). The tools live in [`sosl/tests/sos/`](../../tests/sos) — see
 that folder's `README.md` for a source map.
 
 ## 0. Prerequisites
@@ -75,8 +75,8 @@ python3 -m tests.sos.build_sos research_notes/sos_figs/sources/evenblocks.hoa \
 diff samples/fixtures/hoa/sos/gf_aa.sos samples/fixtures/hoa/sos/gf_aa_reset.sos && echo IDENTICAL
 
 # Presentation-independence: building from the FORMULA reproduces the same .sos.
-python3 -m tests.sos.build_sos 'G F (a & X a)' --sos tests/sos/logs/gf_from_formula.sos --residuals >/dev/null
-diff samples/fixtures/hoa/sos/gf_aa.sos tests/sos/logs/gf_from_formula.sos && echo IDENTICAL
+python3 -m tests.sos.build_sos 'G F (a & X a)' --sos sosl/tests/sos/logs/gf_from_formula.sos --residuals >/dev/null
+diff samples/fixtures/hoa/sos/gf_aa.sos sosl/tests/sos/logs/gf_from_formula.sos && echo IDENTICAL
 
 # GF(aa) is LTL: the synthesized formula is verified Spot-equivalent.
 python3 -m tests.probes.dg_probe research_notes/sos_figs/sources/gf_aa_parity.hoa   # VERIFY: equivalent
