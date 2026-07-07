@@ -16,7 +16,7 @@ import spot
 
 from sosl.sos.build import import_hoa, import_ltl
 
-A_ONCE = "research_notes/sos_figs/sources/a_once.hoa"
+A_ONCE = "samples/a_once.hoa"
 
 
 def check(aut: "spot.twa_graph", name: str) -> None:

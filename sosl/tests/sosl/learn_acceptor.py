@@ -1,6 +1,6 @@
 """Acceptance-correctness probe for the M2 learner (sosl.learn).
 
-Single formula per run (respects the per-example cap). Run from the repo root:
+Single formula per run (respects the per-example cap). Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.learn_acceptor "GF a & GF b"
     python3 -m tests.sosl.learn_acceptor "F a"        [n_random]

@@ -1,6 +1,6 @@
 """Checks for the invariant membership read-off (sosl.sos.invariant).
 
-Self-contained. Run from the repo root:
+Self-contained. Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.invariant_readoff
 

@@ -148,8 +148,8 @@ def build_ledger(path: str) -> None:
 
 
 def main(argv: List[str]) -> int:
-    cases = argv or ["research_notes/sos_figs/sources/even.hoa",
-                     "research_notes/sos_figs/sources/evenblocks.hoa"]
+    cases = argv or ["samples/even.hoa",
+                     "samples/evenblocks.hoa"]
     for path in cases:
         build_ledger(path)
     return 0

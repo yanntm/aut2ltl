@@ -5,7 +5,7 @@ deterministic automaton and present it — the collection campaign behind the
 paper [`research_notes/sos_constructed.md`](../../research_notes/sos_constructed.md)
 and its figures folder [`research_notes/sos_figs/`](../../research_notes/sos_figs).
 
-Everything runs as a module from the repo root (see [`../README.md`](../README.md)
+Everything runs as a module from the `sosl/` subtree root (see [`../README.md`](../README.md)
 for the import discipline); each is single-input and self-bound.
 
 ## Source map

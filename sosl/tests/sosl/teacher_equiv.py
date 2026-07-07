@@ -1,6 +1,6 @@
 """Checks for the white-box teacher equivalence query (bounded strategy).
 
-Self-contained (uses spot for the target). Run from the repo root:
+Self-contained (uses spot for the target). Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.teacher_equiv
 

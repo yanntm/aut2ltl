@@ -1,6 +1,6 @@
 """Property checks for the sosl.sos primitives (alphabet + lasso).
 
-Self-contained, no external input. Run from the repo root:
+Self-contained, no external input. Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.sos_primitives
 

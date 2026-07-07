@@ -1,6 +1,6 @@
 """Checks for observation-table column semantics (sosl.learn.columns).
 
-Self-contained. Run from the repo root:
+Self-contained. Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.learn_columns
 

@@ -1,6 +1,6 @@
 """Reference vs learner: byte-equality of the canonical .sos (sosl.sos.build).
 
-Single formula per run. From the repo root:
+Single formula per run. From the `sosl/` subtree root:
 
     python3 -m tests.sosl.sos.build_vs_learner "GF a"
     python3 -m tests.sosl.sos.build_vs_learner "F(a & X a)"

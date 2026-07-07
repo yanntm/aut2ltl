@@ -21,7 +21,7 @@ from sosl.sos import dump_invariant
 from sosl.sos.build import reference_of_hoa
 from sosl.teacher import HoaTeacher
 
-SOURCES = "research_notes/sos_figs/sources"
+SOURCES = "samples"
 
 
 def check_gfa_exact() -> None:

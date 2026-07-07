@@ -1,86 +1,39 @@
-# sosl — learning the syntactic ω-semigroup of an ω-regular language
+# sosl — the SoS learner
 
-`sosl` reconstructs the **canonical algebraic invariant** of an unknown
-ω-regular language `L` from queries alone — lasso membership queries and
-equivalence queries, Angluin-style. The invariant it learns is
+Active learning of the *syntactic ω-semigroup invariant* `I(L)` of an unknown
+ω-regular language from lasso membership and equivalence queries, plus the
+soundness harness and experiment suite that prove and measure it. Specification:
+`../research_notes/sos_learner_spec.md`; report: `../research_notes/sosl_report.md`.
 
-    I(L) = (C, key, λ, M, P)
+This directory is a **self-contained subtree** — its own package, tests, samples
+and `pyproject.toml` — and depends on nothing in the enclosing `aut2ltl` repo. It
+is intended to graduate to its own repository.
 
-the finite congruence classes `C`, their canonical shortlex keys `key`, the
-letter map `λ`, the class multiplication table `M`, and the accepting
-**linked pairs** `P`. From `I(L)` alone the membership of *any* lasso is
-decidable, and structural questions about `L` (e.g. "is it LTL-definable?")
-are read off the algebra directly.
+## Layout
 
-This is a distinct tool from `aut2ltl`. It reuses some of `aut2ltl`'s
-primitives (HOA loading, the definability pipeline that already computes a
-reference invariant) but its intent is orthogonal: `aut2ltl` *translates* a
-known automaton to a formula; `sosl` *learns* an unknown language's algebra
-through a query interface.
+```
+sosl/            <- this project root (make it your working directory)
+  sosl/          <- the importable package  (import sosl, sosl.sos, ...)
+  tests/         <- probes and gates
+    sos/         <- sos-core tests
+    sosl/        <- learner tests
+  samples/       <- HOA fixtures the tests read
+  pyproject.toml
+```
 
-## Services this package offers
+## Running
 
-- **`sos_learn`** — given a *teacher* for an unknown `L` (a white-box HOA
-  automaton, or a black-box process over a JSON wire protocol), emit the
-  learned invariant as a canonical serialized file, plus run statistics and a
-  full query/decision audit transcript. This is the deliverable.
-- **`sos_validate`** — check a learned invariant against a reference: exact
-  byte-equality of the canonical serialization (the soundness criterion), or a
-  weaker *acceptor* check (does its membership read-off agree with direct
-  automaton simulation on all lassos up to a bound).
-- **A teacher over any HOA automaton** — a correct membership + equivalence
-  oracle for a deterministic Emerson-Lei automaton, usable on its own.
-- **An experiment driver** — batch a corpus of automata through learn +
-  validate under per-case budgets, aggregate the run statistics into one CSV,
-  and run the layered soundness harness.
+Work with this folder as the current directory; then it mirrors the enclosing
+repo's "`python3 -m` from the root" convention, rooted here:
 
-## Orientation map (layering, acyclic, floor → top)
+```
+cd sosl
+python3 -m tests.sosl.saturation_gate      # an end-to-end gate
+python3 -m tests.sos.core_fingerprints     # a sos-core check
+```
 
-    objects/     the vocabulary: letters, lassos, the invariant I(L), the
-                 mid-learning Cayley hypothesis, and their canonical text
-                 serializations. Pure data; no automata, no spot.
-       ↑
-    contract.py  the Teacher interface (member / equiv). The learner's ONLY
-                 source of truth about L.
-       ↑
-    reference/   build the reference I(L) from an HOA automaton (adapter over
-                 aut2ltl's definability pipeline). Used by the teacher and the
-                 validator; the learner NEVER imports it.
-       ↑
-    teacher/     Teacher implementations of `contract` over a known automaton
-                 (white-box) or a spawned process (black-box).
-       ↑
-    learn/       the learner. Depends on `contract` + `objects` ONLY — never
-                 reference, never spot, never aut2ltl. A pure query algorithm.
-       ↑
-    validate/    the invariant checkers (byte-equality + acceptor).
-       ↑
-    experiment/  the campaign: driver, statistics, harness, baselines.
-       ↑
-    __main__     the CLI front end (sos_learn / sos_validate dispatch).
-
-**The one inviolable edge:** `learn/` sees only `contract` + `objects`. That is
-what makes the learner a pure query algorithm — its only knowledge of `L` comes
-through the teacher interface. Everything else may lean on `aut2ltl` and spot.
-
-## Doc conventions in this tree
-
-- **`README.md`** (this kind of file) is **client-facing**: what services a
-  module offers and a small orientation map. Read it to *use* the module.
-- **`algorithm.md`** is **dev-facing**: it gives the hard ideas a place to be
-  described one level above the code. Read it to *change* the module. Most
-  modules here are non-trivial and carry one.
-- **Dunder files (`__init__.py`, `__main__.py`) are pointers only** — a
-  docstring and re-exports / a one-line delegation. No logic lives in them; a
-  named file always owns the logic.
-
-## Status
-
-The objects, teacher, validator, and the query learner (without saturation) are
-in place: the learner reconstructs the invariant end to end and, on many census
-cases, byte-matches the reference. The reference builder wraps the in-repo
-definability pipeline behind the `sosl.sos` vocabulary. Current work is
-milestone M2.5 — aligning both sides on the fresh-identity convention
-(`objects/algorithm.md`, `reference/algorithm.md`) — ahead of M3 (saturation +
-exact equivalence). The serialization is `.sos`; milestones and acceptance
-gates are in `research_notes/sos_learner_spec.md` (the specification of record).
+From this directory `import sosl` resolves to the package with no setup. An
+editable install (`pip install -e .`) is **optional** — only needed to import
+`sosl` from a different working directory; ordinary development does not require
+it. (The one in-repo consumer outside this subtree, `aut2ltl/sos2ltl`, puts this
+directory on `sys.path` itself, so it needs no install either.)

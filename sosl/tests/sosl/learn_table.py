@@ -1,6 +1,6 @@
 """Checks for the observation table + partition (sosl.learn.table/partition).
 
-Self-contained (uses the white-box teacher). Run from the repo root:
+Self-contained (uses the white-box teacher). Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.learn_table
 

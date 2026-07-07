@@ -10,7 +10,7 @@ serialization of the invariant `𝓘(L)` (with its optional residual trailer). A
 leading fingerprint table compares all inputs at a glance. Nothing here is
 example-specific — it summarizes whatever algebra the input automaton holds.
 
-Usage (module run from repo root):
+Usage (module run from `sosl/` subtree root):
   python3 -m tests.sos.assemble OUT.md  <spec> [<spec> ...]
     where each <spec> is  `label=input`  or just  `input`
     and input is an HOA path or an LTL/PSL formula string.

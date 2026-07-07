@@ -30,7 +30,7 @@ freeze). The LTL-definability verdict and its defining-formula / refuting
 certificate are NOT computed here: that decision belongs to the definability
 engine (`aut2ltl`), and the paper's fingerprint table curates it by hand.
 
-Usage (module run from repo root):
+Usage (module run from `sosl/` subtree root):
   python3 -m tests.sos.build_sos <file.hoa | 'LTL/PSL formula'> [--sos OUT] [--residuals]
 
 Single input, self-bound; a closure that blows the cap is reported and exits 2.

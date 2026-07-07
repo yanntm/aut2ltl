@@ -1,0 +1,26 @@
+# sosl — package metadata for the SoS learner, a self-contained subtree.
+# Kept separate from the repo-root aut2ltl project: sosl depends on nothing
+# in aut2ltl and is intended to graduate to its own repository. The nested
+# layout (this dir is the project root; the `sosl/` package sits one level
+# down) makes `python3 -m tests.<probe>` from here mirror the repo-root
+# convention with the working directory rooted at this folder.
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sosl"
+version = "0.1.0"
+description = "SoS learner: active learning of the syntactic omega-semigroup invariant of an omega-regular language from lasso membership and equivalence queries."
+requires-python = ">=3.9"
+authors = [{ name = "Yann Thierry-Mieg", email = "yann.thierry-mieg@lip6.fr" }]
+keywords = ["omega-automata", "syntactic-semigroup", "active-learning", "LTL", "Buchi"]
+
+# The learner is a pure query algorithm; the reference builder / teacher use
+# Spot (the `spot`/`buddy` bindings), which is a system-level install, not
+# pip-installable, so it is intentionally omitted here.
+dependencies = []
+
+[tool.setuptools.packages.find]
+include = ["sosl*"]

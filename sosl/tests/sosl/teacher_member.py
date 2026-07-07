@@ -1,6 +1,6 @@
 """Checks for the white-box teacher membership (sosl.teacher.whitebox).
 
-Self-contained (uses spot to build the target automata). Run from the repo root:
+Self-contained (uses spot to build the target automata). Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.teacher_member
 

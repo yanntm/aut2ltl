@@ -28,7 +28,7 @@ from sosl.learn.table import Table
 from sosl.sos.lasso import Lasso
 from sosl.teacher import HoaTeacher
 
-EVEN = "research_notes/sos_figs/sources/even.hoa"
+EVEN = "samples/even.hoa"
 
 # expected trace artifacts (masks: !a=0, a=1)
 CEX = Lasso((), (1, 1, 0))                      # (eps, a;a;!a)

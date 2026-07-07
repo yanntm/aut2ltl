@@ -1,6 +1,6 @@
 """End-to-end learn of GF a (sosl.learn, M2 path: no counterexample needed).
 
-Self-contained (white-box teacher). Run from the repo root:
+Self-contained (white-box teacher). Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.learn_gfa_e2e
 

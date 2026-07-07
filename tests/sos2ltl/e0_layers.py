@@ -13,8 +13,10 @@ from __future__ import annotations
 import sys
 from typing import List
 
-from sosl.sos import load_invariant
+# aut2ltl.sos2ltl first: its package init puts the sibling `sosl` subtree on
+# sys.path (no editable install needed), so the `sosl` import below resolves.
 from aut2ltl.sos2ltl.cayley import build
+from sosl.sos import load_invariant
 from aut2ltl.sos2ltl.readoffs import (
     absorbing_classes,
     is_prefix_independent,

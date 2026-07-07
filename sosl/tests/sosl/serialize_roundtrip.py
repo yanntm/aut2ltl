@@ -1,6 +1,6 @@
 """Round-trip and byte-stability checks for sosl.sos.io.serialize.
 
-Self-contained. Run from the repo root:
+Self-contained. Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.serialize_roundtrip
 

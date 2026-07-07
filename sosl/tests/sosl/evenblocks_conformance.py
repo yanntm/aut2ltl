@@ -43,7 +43,7 @@ from sosl.teacher import HoaTeacher
 
 from tests.sosl.m3_ledgers import _describe_split
 
-EVENBLOCKS = "research_notes/sos_figs/sources/evenblocks.hoa"
+EVENBLOCKS = "samples/evenblocks.hoa"
 
 # expected trace artifacts (masks: !a=0, a=1)
 CEX = Lasso((), (0, 1, 1))                       # (eps, !a;a;a)

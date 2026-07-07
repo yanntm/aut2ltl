@@ -1,6 +1,6 @@
 """Smoke check that the Teacher contract is usable (sosl.contract).
 
-Self-contained. Run from the repo root:
+Self-contained. Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.contract_smoke
 

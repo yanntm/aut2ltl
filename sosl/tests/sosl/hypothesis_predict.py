@@ -1,6 +1,6 @@
 """Checks for the Cayley-form prediction (sosl.sos.hypothesis).
 
-Self-contained. Run from the repo root:
+Self-contained. Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.hypothesis_predict
 
