@@ -84,10 +84,18 @@ the Wilke-condition statement; E5 is blocked on this and on nothing else.⟩
   wrap, don't rewrite)*;
 - *OR-split*: restrict `P` per final layer, re-canonicalize each piece,
   report per-piece read-offs (`|𝒞'|`, rung, (A)/(B) widths);
-- *AND-split*: enumerate ω-congruences of `(𝒞, M)` (census-sized monoids —
-  brute force over principal congruences and joins is acceptable), search
-  for `P = P₁ ∩ P₂` with `Pᵢ` `θᵢ`-saturated and `θ₁ ∩ θ₂ = Δ`; report the
-  factor invariants, or `IRREDUCIBLE`.
+- *AND-split* (per paper Thm 5.19 / Prop 5.20): enumerate *pairs* of
+  congruences of `(𝒞, M)` (census-sized — brute force over principal
+  congruences and joins is acceptable), coarsest first; for each `θ`
+  compute the canonical saturation `Val^θ` (pointwise `∨` of `Val_P` over
+  `θ`-blocks) and test `Val^{θ₁} ∧ Val^{θ₂} = Val_P` with both factors
+  proper (`Val^{θᵢ} ≠ Val_P`) — this search is complete (Thm 5.19); the
+  `θ₁ ∩ θ₂ = Δ` condition is a theorem (Prop 5.20), assert it, don't test
+  for it. Report the factor invariants (re-canonicalized), or
+  `IRREDUCIBLE`. **Test vectors:** `GFa` must come back `IRREDUCIBLE`;
+  `GFa ∧ FGb` must factor as `FGb ∧ GF(a ∨ !b)` — *not* as
+  `GFa ∧ FGb`, `GFa` not being recognized on its table (paper §5.6(3),
+  the corrected specimen).
 
 ## 3. The conformance gate (mandatory, every experiment)
 

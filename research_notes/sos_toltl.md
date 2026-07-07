@@ -1268,29 +1268,116 @@ template — the engine's own case analysis, given its classical names.
 **(3) The AND-split is subdirect decomposition.** Intersections are where
 a decomposition usually pays a determinization price; on the invariant
 there is nothing to pay — the object *is* its own canonical deterministic
-form — and the operation has its classical name. An
-**ω-congruence** `θ` on the invariant is a monoid congruence on `(𝒞, M)`
-⟨TBD: plus the pair-saturation condition making `P` θ-definable⟩; a
-factorization
+form — and the operation has its classical name, with one twist the
+worked specimen below makes vivid. Throughout, `Val` is the lasso-verdict
+map of §4.2, a pair set is identified with its verdict map, and a
+factorization is
 
 ```
-    P = P₁ ∩ P₂,   Pᵢ saturated by θᵢ,   θ₁ ∩ θ₂ = Δ
+    Val_P = Val_{P₁} ∧ Val_{P₂}  (pointwise),   Val_{Pᵢ} factoring through a
+    proper congruence θᵢ,   both factors proper: Val_{Pᵢ} ≠ Val_P.
 ```
 
-gives `L = L(P₁) ∩ L(P₂)` with each factor recognized by the *proper
-quotient* `M/θᵢ` — a subdirect representation in Birkhoff's sense, each
-factor strictly smaller, each factor's own invariant obtained by
-re-canonicalization. `GFa ∧ FGb` is the type specimen: its table factors
-onto a `GFa`-quotient (forget `b`) and an `FGb`-quotient (forget `a`), and
-the extraction of each factor is a one-layer window brick. ⟨TBD: (i) the
-pair-saturation definition and the proof that the factorization is exactly
-the AND-split; (ii) existence — Birkhoff guarantees subdirect
-representations of the monoid, the `P`-compatible version needs its own
-statement, with the honest fallback "no proper factorization exists" (the
-subdirectly irreducible case); (iii) algorithmics — the congruence lattice
-of a census-sized monoid is enumerable, and the search wants maximal
-proper congruences first; (iv) the worked `GFa ∧ FGb` factorization,
-tables shown.⟩
+**Definition 5.17 (ω-congruence for a pair set).** A monoid congruence
+`θ` on `(𝒞, M)` is an **ω-congruence for** a pair set `P′` if `Val_{P′}`
+factors through `θ` in both coordinates: `c θ c′` and `d θ d′` imply
+`Val_{P′}(c, d) = Val_{P′}(c′, d′)`. (Checkable in `O(|𝒞|²)` lookups once
+`Val_{P′}` is tabled.)
+
+**Proposition 5.18 (quotients recognize).** If `θ` is an ω-congruence for
+`P′`, the quotient invariant `𝓘/θ = (𝒞/θ, λ/θ, M/θ, P′/θ)` — pair
+verdicts inherited through the factoring — recognizes `L(P′)`: the
+standard membership rule, evaluated in the quotient, returns `Val_{P′}`
+on every lasso. Consequently the syntactic ω-semigroup of `L(P′)`
+divides `M/θ`, of size `< |𝒞|` for proper `θ`.
+
+*Proof.* Two ingredients. *Idempotent-power stability:*
+`Val_{P′}(c, d) = Val_{P′}(c, d^j)` for every `j ≥ 1` — both evaluate the
+same ω-word (`w·z^ω = w·z^j·(z^j)^ω` up to the stem transport of
+Lemma 5.9(ii)), and `⟨d⟩` has one idempotent, shared with every `⟨d^j⟩`.
+*Descent:* the quotient rule folds a lasso `(u, v)` to
+`([u]_θ, [v]_θ)`, iterates the loop to an idempotent of the quotient —
+`[v^j]_θ` for some `j`, `v^j` not necessarily idempotent in `𝒞` — and
+looks up the induced pair; by the factoring that lookup equals
+`Val_{P′}([u·v^j], [v^j])`, the verdict of `u·v^j·(v^j)^ω = u·v^ω`,
+which by stability is `Val_{P′}([u], [v])`. (One convention wrinkle: `θ`
+may merge the fresh identity with a neutral word class — Proposition 5.20
+shows that is the *only* extra collapse possible — and the quotient then
+carries its unit inside a word class; re-canonicalization restores the
+freshness convention.) ∎
+
+**Theorem 5.19 (the AND-split).** Given a factorization as displayed,
+`L = L(P₁) ∩ L(P₂)`, each factor recognized by the strictly smaller
+quotient `𝓘/θᵢ` (Proposition 5.18), each factor's own invariant obtained
+by re-canonicalization. Moreover the search is complete on
+*saturations*: for a congruence `θ`, let `Val^θ` be the least
+`θ`-factoring verdict map `≥ Val_P` (pointwise `∨` over `θ`-blocks); if
+*any* factorization with congruences `(θ₁, θ₂)` exists, then already
+`Val^{θ₁} ∧ Val^{θ₂} = Val_P`. Hence enumerating congruence pairs with
+their canonical saturations — coarsest first, the census-sized lattice
+being enumerable — finds a factorization iff one exists, and otherwise
+certifies `P` **irreducible**, the honest fallback. (`GFa` is already
+irreducible: on its three classes the only verdict maps above `Val_P`
+are `Val_P` itself and the constant 1, so no both-proper factorization
+exists.)
+
+*Proof.* Languages agree on lassos, and on lassos the displayed verdicts
+conjoin. Completeness: `Val_P ≤ Val^{θᵢ} ≤ Val_{Pᵢ}` — the middle map is
+the least `θᵢ`-factoring map above `Val_P`, and `Val_{Pᵢ}` is such a
+map — so `Val_P ≤ Val^{θ₁} ∧ Val^{θ₂} ≤ Val_{P₁} ∧ Val_{P₂} = Val_P`. ∎
+
+**Proposition 5.20 (subdirectness is automatic).** On the reduced
+invariant, an ω-congruence for `P` itself can identify two *word*
+classes never, and the fresh identity `[ε]` only with a neutral word
+class (which is then unique). Consequently, in any factorization,
+`θ₁ ∩ θ₂` restricted to the word classes is the equality: the two
+quotients form a subdirect representation of `S(L)₊` in Birkhoff's
+sense, with no side condition imposed — the Δ-condition is a theorem,
+not a hypothesis, the only slack being the conventional freshness of
+`[ε]`.
+
+*Proof.* Let `θ` be an ω-congruence for `P` and `c θ c′`, both word
+classes. For every linear context, `x·c·y θ x·c′·y` (congruence), so
+`Val_P(x·c·y, t) = Val_P(x·c′·y, t)`; for every ω-power context,
+`c·y θ c′·y`, so `Val_P(x, c·y) = Val_P(x, c′·y)`: `c` and `c′` are
+identified by the two-shape syntactic congruence, which is equality on
+word classes of the reduced object [SωS26, Thm 4.5]. If `[ε] θ n` for a
+word class `n`, then `x θ x·n` for every `x`; the freshness convention
+keeps `x·n` a word class, so `x = x·n` for every word class `x`: `n` is
+neutral (and unique, two neutrals absorbing each other). For the
+consequence: `θ₁ ∩ θ₂` is an ω-congruence for `P` — both `Val_{Pᵢ}`
+factor through it, hence so does their conjunction `Val_P` — and the
+first part pins it to equality on word classes. ∎
+
+**The type specimen, corrected by its own algebra.** `GFa ∧ FGb` —
+infinitely many `a`, eventually always `b` — looks like it should factor
+"forget `b` / forget `a`". Its syntactic invariant refuses the naive
+reading, instructively. The classes are `[ε]` and three word classes:
+`⊥` = "contains a `!b`-letter" (two-sided absorbing), `β₀` = "all-`b`,
+no `a`", `β₁` = "all-`b`, with `a`"; every word class is idempotent, and
+`P` accepts exactly the pairs with loop coordinate `β₁`. `GFa` is *not
+recognized on this table at all*: `⊥` has swallowed the `a`-bit — an `a`
+inside a spoiled block is syntactically invisible, `a!b ≈_L !a!b`. The
+split exists nonetheless. Take `θ_A` merging `{β₀, β₁}` and `θ_B`
+merging `{⊥, β₁}` (both are congruences; check the four products each);
+their saturations are `Val^{θ_A} = [loop ≠ ⊥]` and
+`Val^{θ_B} = [loop ≠ β₀]`, both factoring, conjoining to
+`[loop = β₁] = Val_P`, and the quotients are the 3-class algebras of
+`FGb` and of `GF(a ∨ !b)` respectively:
+
+```
+    GFa ∧ FGb   =   FGb  ∧  GF(a ∨ !b)
+```
+
+— the conjunction the table itself chooses. The second factor is `GFa`
+*relativized* by the first: infinitely many good events, a good event
+being an `a` or a (transient) `!b`. The AND-split does not recover the
+conjunction the user wrote; it recovers one whose factors are languages
+of the object's own quotients — self-relativizing, and exact. Each
+factor extracts as a one-layer window brick. ⟨TBD: display the two
+quotient tables; conformance-check the factorization in the tool
+(E-series); the irreducible-vs-split census fractions live in
+[SωSN26].⟩
 
 The combinators compose (OR of ANDs, complement flips via `P^c` choosing
 the cheaper side), they all commute with re-canonicalization, and
