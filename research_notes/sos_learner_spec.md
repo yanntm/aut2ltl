@@ -18,6 +18,14 @@ first escalation branch, omega sort — the mint is `(x.r, y.r)`, NOT the bare
 converges). The section 8 M3 gate's counterfactual column is updated to
 match.
 
+**Revision 2026-07-07b (M4 preparation).** Section 6 sharpened against the
+M3 state (corpus manifest; per-experiment design notes, including how ROLL
+equivalence queries are answered); section 7 gains three fields
+(`n_classes_initial`, `stall_class`, `cex_policy`); section 8 splits M4 into
+ordered sub-gates M4.a–M4.d; section 9 gains rows P5 / F6 / F7. The M3
+probes named in `sosl_report.md` are the campaign's starting points, not
+throwaways.
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -436,9 +444,22 @@ worked cases in every experiment ("the triptych"):
   even length" — 2 states, `Fin(0) & Inf(1)` (prefix-independent; the
   hard case for right-congruence-based methods).
 
+Two further named cases are mandatory wherever the ablation is involved
+(E0, E2): `a_implies_xa` and `a_once`, the proven-permanent stall specimens
+(paper Prop. 4.4; sources in `research_notes/sos_figs/sources/`). The census
+manifest is the `genaut/corpus/` sweep already exercised by
+`tests/sosl/genaut_census.py` — nondeterministic inputs are covered through
+the sos import layer's determinization — plus the named cases above. The
+manifest file is itself a deliverable: cases are named and versioned, never
+selected ad hoc.
+
 **E0 — Validation campaign.** Run the full harness (section 5) over the
-corpus. Deliverable: a one-page report — cases, per-case verdict, query
-budgets used, zero mismatches. Gate for everything below.
+corpus. E0 subsumes the M3 gates, now run under the driver: the saturation
+gate, the Even AND EvenBlocks paper-trace conformances, and the exact-mode
+fixtures; the Even / EvenBlocks split-and-query ledgers must reproduce the
+M3 baselines in `sosl_report.md` (section 9 row P5). Deliverable: a one-page
+report — cases, per-case verdict, query budgets used, zero mismatches. Gate
+for everything below.
 
 **E1 — Scaling against the target.** Question: do measured costs track the
 designed bounds (splits <= number of classes `N`; membership queries
@@ -450,13 +471,20 @@ table dimensions, wall time. Deliverable: scatter plots of each metric vs
 
 **E2 — Saturation ablation.** Question: how often, and on which languages,
 does the learner without saturation stall on a non-canonical fixpoint?
-Procedure: run everything twice (`--no-saturation` vs default); classify each
-case: (a) identical invariant, (b) acceptance-correct but byte-different or
-class-deficient (stall), (c) budget. Deliverable: stall frequency overall and
-by structural features (prefix-independence, acceptance type); the *minimal
-stall exhibits* — the smallest automata in class (b) — reported individually
-with both fixpoints. These exhibits feed the theory side; treat them as a
-first-class output, not a statistic.
+Procedure: run everything twice (`--no-saturation` vs default), the ablation
+leg under `--eq-mode exact`; classify each case's `stall_class` (section 7):
+`none` — the first closed/consistent fixpoint is already canonical;
+`transient` — some pre-equivalence fixpoint was non-canonical but a
+counterexample broke it; `permanent` — the exact oracle certifies a
+non-canonical fixpoint (with exact equivalence, every *surviving* stall is
+permanent by definition; a bounded oracle can only under-report, which is
+why the ablation leg runs exact). Cross-check against theory:
+`a_implies_xa` and `a_once` MUST land in `permanent` (rows P4/F5);
+`F(a & Xa)`, `Even`, `GF(aa)` in `transient`. Deliverable: stall frequency
+by class and by structural features (prefix-independence, acceptance type);
+every `permanent` case beyond the two known specimens reported individually
+with both fixpoints and the separating left context. These exhibits feed
+the theory side; treat them as a first-class output, not a statistic.
 
 **E3 — Baseline: FDFA learning (ROLL).** Question: cost and capability
 comparison against the established FDFA learner on identical teachers.
@@ -470,11 +498,27 @@ language LTL-definable" directly (FDFA: no — mark N/A; ours: read off the
 learned invariant by the group test). Deliverable: paired table per case,
 summary medians, and the capability column reported as a result in itself.
 
+Design note, settled here so the wrapper does not improvise: ROLL's
+equivalence queries carry an *automaton* hypothesis (FDFA/NBA), not a Cayley
+form, so the exact oracle of 3.1 does NOT apply to them. Answer them with
+the bounded product enumeration (doubling `B` under the case budget) and
+record every such `eq` as `bounded:<B>` — the certification asymmetry (our
+runs exact, ROLL's bounded) is itself a reported result (section 9 row F6).
+If a bounded-certified ROLL run is later found wrong, record it as such;
+never silently re-run. Pin the ROLL version and JVM in the manifest.
+
 **E4 — Worked transcripts (paper figures).** For the triptych: full audit-log
 renderings — table snapshots at each split, every minted column with its
 provenance (consistency / stem chain / loop chain / saturation escalation),
 every saturation escalation with its witness. Deliverable: three
 machine-generated, human-readable traces (markdown), stable across reruns.
+`tests/sosl/m3_ledgers.py` is the prototype; the normative rendering is the
+paper's ledger format (trigger / chain / minted column / splits / class
+count, plus per-phase query totals) AND the final *signature matrix* —
+class keys against discovered columns, the companion of the paper's
+Tables 6 and 8. The EvenBlocks signature matrix currently in
+`sos_learning.md` section 5 is hand-derived from the M3 ledger; E4 makes it
+machine-generated like everything else.
 
 **E5 — Counterexample sensitivity.** Question: how much does teacher
 counterexample policy affect cost (the `log` term and constants)?
@@ -484,7 +528,9 @@ enumeration, (iii) deliberately padded counterexamples (stem and loop
 inflated by pumping a factor 2..32). Metrics: total membership queries,
 harvest queries specifically, wall time. Deliverable: sensitivity table;
 confirmation (or refutation) that cost grows logarithmically with
-counterexample length.
+counterexample length. Implementation hook: the teacher grows a
+`--cex-policy minimal|first|padded:<k>` flag; `minimal` is the existing
+shortlex-least cell of the exact oracle, the other two are new.
 
 **E6 — Stretch: beyond the census.** Random deterministic Emerson-Lei
 automata (parameters: `|Q| in 3..8`, `|AP| in 1..3`, acceptance sets `1..3`,
@@ -505,10 +551,17 @@ ap_count, ref_classes, learned_classes,
 n_member_total, n_member_fill, n_member_harvest, n_member_saturation, n_member_pcache,
 n_equiv, n_splits, n_columns_lin, n_columns_om,
 n_saturation_checks, n_saturation_escalations,
+n_classes_initial, stall_class (none|transient|permanent),
+cex_policy (minimal|first|padded:<k>),
 max_cex_stem, max_cex_loop, max_query_word_len,
 eq_certification (reps|bounded:<B>|exact),
 wall_seconds, verdict (SOUND|MISMATCH|BUDGET|ACCEPTOR_ONLY)
 ```
+
+`n_classes_initial` is the class count of the first stabilized table (the
+ledgers' starting point); `stall_class` is the E2 classification (section 6),
+`none` outside E2's ablation leg unless a pre-equivalence non-canonical
+fixpoint was observed; `cex_policy` is `minimal` everywhere except E5.
 
 `ACCEPTOR_ONLY` is reserved for `--no-saturation` runs that pass the acceptor
 check but fail byte-equality.
@@ -574,8 +627,36 @@ check but fail byte-equality.
     paper's Table 8 rows 2–5: trigger, chain, minted column, split, per
     split) and the per-phase query ledgers of the Even and EvenBlocks runs —
     both waiting as `TBD-M3` slots in `sos_learning.md` §5.
-- **M4 — Campaign.** Driver, ROLL wrapper, E1–E5 executed, results CSV and
-  figures generated by script (no hand-edited numbers anywhere).
+- **M4 — Campaign** *(refined 2026-07-07; attack in this order — the ROLL
+  leg is the schedule risk and must not block the rest)*:
+  - **M4.a — Driver + E0.** Promote `tests/sosl/genaut_census.py` (case
+    iteration, classification) and `tests/sosl/m3_ledgers.py` (audit
+    rendering, extended with the signature matrix — E4 note) into the batch
+    driver of section 4: manifest in, one `stats.json` per (case, config),
+    concatenated CSV out, per-case budgets, a crash or budget never kills
+    the campaign; long output under `tests/sosl/logs/`, never `/tmp`.
+    Accept: E0 report generated by the driver; the M3 gates green under it;
+    Even / EvenBlocks ledgers byte-stable vs the M3 baselines (row P5).
+    Add the EvenBlocks conformance probe (mirror of `even_conformance.py`,
+    asserting the paper's Table 8: initial stabilized 3 classes, day-one
+    sweep clean, first cex `(eps, !a;a;a)` via the loop chain, columns
+    `(a, a)` / `(a, !a;a)` / `(eps, !a)` in order, splits 3->4->6->8, the
+    67/4/14/14 query ledger, byte-equal export) — the paper now anchors
+    that run too. A candidate implementation already exists in the working
+    tree, `tests/sosl/evenblocks_conformance.py`, green on first run
+    (2026-07-07): check it out — it meets this requirement as written;
+    review and adopt it rather than rewriting from scratch.
+  - **M4.b — E1 + E2.** Accept: scatter data and the stall table generated
+    by script; the two proven-permanent specimens land in `permanent`
+    (rows P4/F5); any NEW permanent stall reported individually
+    (first-class output).
+  - **M4.c — E3 (ROLL).** Accept: paired table on the census with the
+    certification asymmetry recorded, and the protocol-mismatch list. If
+    ROLL cannot be brought to acceptance within budget, deliver the wrapper
+    plus the blocking record and move on — M4.d does not wait for it.
+  - **M4.d — E5 + figures.** Accept: sensitivity table; every figure and
+    table regenerated from `results.csv` by one script (no hand-edited
+    numbers anywhere). E6 remains stretch, after M4.d.
 
 Non-goals for this iteration: performance tuning beyond the budgets above,
 black-box teachers other than the wire protocol, alphabets beyond `2^AP`,
@@ -606,6 +687,9 @@ recorded outcome, not a defect.
 | F4 | budget exhausted on a census case | any | should not happen | flag it; census cases are sized to finish |
 | P4 | exact mode certifies the proven-permanent stalls (`a_implies_xa`, `a_once` under `--no-saturation`) | M3+ | always green | a counterexample here = exact-mode bug — paper Prop. 4.4 proves none exists |
 | F5 | byte-equality on `a_implies_xa` / `a_once` under `--no-saturation` | any | red, FOREVER | that is the theorem, not a flake; record `ACCEPTOR_ONLY` |
+| P5 | Even / EvenBlocks ledgers match the M3 baselines (trigger sequence, minted columns, per-phase counts — `sosl_report.md`) | M4 driver, default config | always green | behavior drift: diff the audit logs and reconcile before touching paper or baselines |
+| F6 | a ROLL `eq` answer certified only `bounded:<B>` | E3 | expected | record it; the certification asymmetry is a reported result, not a defect |
+| F7 | budget exhausted on an E6 random case | E6 | allowed | record `BUDGET`; census sizing (F4) does not apply to E6 |
 
 Two "surprising green" notes, so nobody distrusts a passing run:
 

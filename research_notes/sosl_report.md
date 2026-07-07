@@ -317,11 +317,18 @@ overturned a paper prediction. The minimal teacher's first EvenBlocks
 counterexample is `(ε, !a;a;a)`, shortlex-earlier than the hand-predicted
 `(ε, a;a;!a)`, and the paper's §1/§3/§4.1 traces were rewritten to match
 (loop chain, ω-column `(a, a)`, `!a;a` pulled out of `[a]`). Consequence for
-you: the EvenBlocks run is now paper-anchored exactly as Even's is. Please add
-an `evenblocks_conformance` probe mirroring `even_conformance.py` — first cex
+you: the EvenBlocks run is now paper-anchored exactly as Even's is. A draft
+probe for it sits uncommitted in the working tree,
+`tests/sosl/evenblocks_conformance.py` (mirror of `even_conformance.py`,
+built on `m3_ledgers.py`'s instrumentation): it asserts first cex
 `(ε, !a;a;a)`, columns `(a, a)` / `(a, !a;a)` / `(ε, !a)` in that order,
-splits 3→4→6→8, ledger 67/4/14/14 — spec §8 M4.a lists it. Any drift there is
-henceforth a paper regression, not a free choice.
+splits 3→4→6→8, the 67/4/14/14 ledger, and byte-equality — and it ran green
+once (2026-07-07). It is yours: review, adapt, and commit it as the M4.a
+conformance lock (spec §8), or rewrite it if it does not fit your idioms.
+One trace fact it established that this report's ledger did not state: the
+EvenBlocks *day-one sweep is clean*, as on Even — the counterexample is
+genuinely the run's first event. Any drift on this run is henceforth a paper
+regression, not a free choice.
 
 Two notes for the record. First, one slip in this report: the
 even-conformance paragraph says a different scan order "would produce the

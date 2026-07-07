@@ -1028,7 +1028,9 @@ table re-stabilizes — rows 2 and 3 each split two.
 
 **Table 8.** The `EvenBlocks` run as a split ledger: trigger (equivalence
 counterexample or sweep escalation), the chain that processed it, the minted
-column, the words separated. Row 1 is §4.1's split; rows 2–3 are the sweep
+column, the words separated. The day-one sweep is clean — every fold check
+on Table 2's three-class table agrees, the computation Table 4 spells out
+for `Even` — so row 1, §4.1's split, is the run's first event; rows 2–3 are the sweep
 enforcing two-sidedness — no second counterexample is ever needed, and the
 run's second equivalence query certifies. Every one of the four columns is
 of the ω-sort: prefix-independence in action (`~lin` is blind, so every
@@ -1153,19 +1155,111 @@ surviving stalls as first-class output.
 
 ## 6. Evaluation
 
-⟨TBD: entire section — after implementation. Fixed decisions, so the section can
-be written into: teacher = the reference construction engine (membership = one run;
-equivalence = invariant comparison); benchmark = the census of small automata
-(2 states, 1 AP, 1 acceptance set, …), for which ground truth — `𝓘`, LTL status —
-is already computed; metrics = membership/equivalence query counts, table
-dimensions, wall time, against `|𝒞|`; baseline = an FDFA learner (ROLL family) on
-identical teachers, with the equalized metric being cost-to-answer a definability
-question (an FDFA cannot answer it without further construction — that asymmetry
-is reported as a result, not a footnote); worked in-text examples = the triptych.
-Status: the M3 groundwork is in (`sosl_report.md`) — teacher with the exact
-oracle, saturation, the census stall hunt that produced Proposition 4.4's
-specimens, and the conformance/ledger probes behind §4–5's traces; what remains
-is the M4 campaign (driver, ROLL wrapper, E1–E5).⟩
+*⟨Structure in place; every value marked ⟨TBD-M4: …⟩ awaits the campaign's
+data — nothing below is predicted.⟩*
+
+The algorithm of §3–5 is implemented as a pure query learner: its only source
+of truth is the teacher interface, and no automaton is ever visible to it. The
+evaluation answers three questions, each measured against the canonical target
+`N = |S(L)₊¹|`. **Q1 — cost:** do measured queries track the
+output-polynomial bounds of Proposition 5.2? **Q2 — the ablation:** how often
+does the learner without saturation stall, and are the stalls §4.2's — is
+saturation load-bearing across a corpus, not only on Proposition 4.4's two
+specimens? **Q3 — the baseline:** against an established FDFA learner on
+identical teachers, what does the algebra cost, and what does it buy? A
+fourth, smaller question calibrates a constant: how sensitive is the cost to
+the teacher's counterexample policy — the `log(N·ℓ)` term of Proposition 5.2.
+⟨TBD-M4: one-sentence headline of the campaign's outcome, echoed in the
+abstract and conclusion.⟩
+
+### 6.1 Protocol
+
+**Teacher.** As fixed in §2.3: membership is one deterministic run,
+`O(|u| + |Q|·|v|)`; equivalence is exact, by the product with the
+transformation closure of the hypothesis; counterexamples are minimal
+(shortest stem, then shortest loop, then shortlex). One lasso membership is
+one query; equivalence queries are counted separately (§2.1).
+
+**Corpus.** The exhaustive census of the smallest deterministic Emerson–Lei
+automata over one atomic proposition — ⟨TBD-M4: the shape families and their
+counts⟩ — with ground truth computed by the construction of [SωS26]: the
+reference `𝓘(L)`, its class count `N`, its LTL verdict; nondeterministic
+inputs are determinized on import. The triptych is mandatory in every
+experiment, as are the two permanent-stall specimens of §4.2.
+⟨TBD-M4: corpus size after deduplication by language — … automata presenting
+… distinct languages, `N` ranging …–…⟩ ⟨TBD-M4: if the stretch set of random
+automata (larger `|Q|`, `|AP|`, acceptance) survives its budgets, one
+paragraph and the largest solved instance; else cut.⟩
+
+**Reproducibility and validation.** Runs are deterministic — the sweep's scan
+order is pinned (§4.3) and counterexamples are minimal — so every transcript
+is byte-reproducible, and the traces of §3–5 are not illustrations but the
+transcripts of the corresponding runs, which the implementation is gated to
+reproduce. Validation is Theorem 5.1 exercised end-to-end: on every corpus
+case the learned invariant must be byte-equal to the constructed reference
+⟨TBD-M4: n/n cases, zero mismatches⟩.
+
+### 6.2 Cost against the canonical target (Q1)
+
+For every case we record membership queries by phase — table fill,
+counterexample harvest, saturation, the `P`-cache — plus equivalence queries,
+splits, and columns by sort, against `N`. Two rows are already fixed by §5's
+ledgers (`Even`: 51 queries as 32/4/7/8 over `N = 5`; `EvenBlocks`: 99 as
+67/4/14/14 over `N = 8`); the campaign extends them corpus-wide.
+⟨TBD-M4: scatter of total membership queries vs `N`, the `O(N²·|Σ|)`
+envelope overlaid.⟩ ⟨TBD-M4: the triptych's full metric rows as a table.⟩
+The reading the design predicts and the figure must confirm or refute: the
+fill term dominates, harvest stays logarithmic, saturation costs a small
+constant per split. ⟨TBD-M4: verdict sentence; a wall-time note — census
+cases complete in … at most.⟩
+
+### 6.3 The saturation ablation (Q2)
+
+Everything runs twice — with and without the sweep, the ablated leg under the
+exact oracle, so that every *surviving* stall is permanent by definition —
+and each case is classified: **none** (the first fixpoint is already
+canonical), **transient** (a non-canonical fixpoint later broken by a
+counterexample), **permanent** (the exact oracle certifies a non-canonical
+fixpoint). §4.2 fixes the anchors: `a → Xa` and `a ∧ XG¬a` must land
+permanent, the triptych and `F(a ∧ Xa)` transient. ⟨TBD-M4: the frequency
+table — stall class against structural features: prefix-independence,
+acceptance type, `N`.⟩ More valuable than any frequency, every *new*
+permanent specimen is reported individually — each is a further language
+whose canonical algebra is unreachable from membership and equivalence
+queries alone, i.e. fresh evidence for §4.2's finding. ⟨TBD-M4: the list
+with each stalled and canonical fixpoint, or the statement that none exists
+beyond the two known at census sizes.⟩
+
+### 6.4 The FDFA baseline (Q3)
+
+The baseline is ROLL, the classification-tree FDFA learner [LCZL21,
+LSTCX19], in its periodic / syntactic / recurrent modes, on the same teacher
+under the same counting rules (one lasso = one membership query; protocol
+mismatches are documented, never adjusted away). One asymmetry is disclosed
+as part of the design rather than discovered later: our equivalence queries
+are answered exactly, while ROLL's hypotheses are automata, which the
+teacher can only check by bounded enumeration — the certification level is
+reported with the results ⟨TBD-M4: the bound reached per case⟩. Measured:
+queries to convergence and output size — the summed DFA states of each FDFA
+against `N` — read against Proposition 5.3's envelope: the FDFA never pays
+more than a quadratic premium over the algebra, and the algebra can pay
+exponentially over an acceptor. ⟨TBD-M4: the paired per-case table and
+medians; where inside the envelope the census actually sits.⟩ Last, the
+capability column that is the point of the comparison: from the learned
+invariant, LTL-definability is a read-off (§2.2), answered on every census
+case and checked against ground truth ⟨TBD-M4: n cases, agreement — must be
+total⟩; from an FDFA the same question is not answerable without further
+construction. That asymmetry is a result of the evaluation, not a footnote
+to it.
+
+### 6.5 Counterexample sensitivity
+
+Proposition 5.2 depends on the teacher only through the `log(N·ℓ)` harvest
+term. The corpus is re-run under three counterexample policies — minimal
+(the default), first-found, and adversarially padded, stem and loop pumped
+by factors 2 to 32 — comparing total and harvest-only membership queries.
+⟨TBD-M4: the sensitivity table; whether cost degrades logarithmically in
+`ℓ` as designed — confirmed or refuted, with the measured trend.⟩
 
 ## 7. Related work
 
