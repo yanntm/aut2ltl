@@ -14,27 +14,34 @@ enumeration only reaches small shapes. Each row below is a one-off census writte
 `corpus/<tag>/` with a `census.md`; **this table is generated from those census.md
 files** (`python3 genaut/shapes_table.py`), not hand-kept.
 
-## Feasible shapes (from corpus/*/census.md)
+## Feasible shapes (the dedup funnel, from corpus/*/census.md)
 
-`kept` = distinct automata after both dedup gates (md5, then polarity o names);
-`polarity` = relabel twins folded by the second gate. `survey`: most are surveyed
-into `logs/<tag>/`; the high-`kept` ones (**deferred**) are heavy and run separately.
+The columns trace one shape's collapse across the pipeline's dedup levels:
+`combos` (generator-id space `N`) -> `byte-distinct` (md5 after Spot reduction) ->
+`kept` (AP-canonical, the `tgba/` tier: distinct up to `a<->!a` polarity and AP
+rename) -> **`langs`** (the `det/` and `sos/` tiers: distinct languages by the
+syntactic `𝓘` dedup). `collapse` is `kept / langs` — how many relabel-distinct
+TGBA share one language. `survey`: the high-`kept` shapes (**deferred**) are heavy
+and run separately. A `—` in `langs` means the canonical tier is not built yet
+(`python3 genaut/gen/rebuild.py`).
 
-| shape | n | k | c | slots | N (combos) | byte-distinct | polarity | **kept** | survey |
-|---|---|---|---|---|---|---|---|---|---|
-| `1state1ap0acc` | 1 | 1 | 0 | 1 | 4 | 4 | 1 | **3** |  |
-| `1state1ap1acc` | 1 | 1 | 1 | 2 | 16 | 7 | 2 | **5** |  |
-| `1state2ap0acc` | 1 | 2 | 0 | 1 | 16 | 16 | 10 | **6** |  |
-| `1state1ap2acc` | 1 | 1 | 2 | 4 | 256 | 10 | 3 | **7** |  |
-| `1state2ap1acc` | 1 | 2 | 1 | 2 | 256 | 77 | 52 | **25** |  |
-| `1state3ap0acc` | 1 | 3 | 0 | 1 | 256 | 256 | 204 | **52** |  |
-| `2state1ap0acc` | 2 | 1 | 0 | 4 | 256 | 53 | 23 | **30** |  |
-| `1state1ap3acc` | 1 | 1 | 3 | 8 | 65536 | 10 | 3 | **7** |  |
-| `1state2ap2acc` | 1 | 2 | 2 | 4 | 65536 | 272 | 189 | **83** |  |
-| `1state3ap1acc` | 1 | 3 | 1 | 2 | 65536 | 6553 | 5041 | **1512** | deferred |
-| `2state1ap1acc` | 2 | 1 | 1 | 8 | 65536 | 1845 | 916 | **929** |  |
-| `2state2ap0acc` | 2 | 2 | 0 | 4 | 65536 | 30613 | 19071 | **11542** | deferred |
-| `3state1ap0acc` | 3 | 1 | 0 | 9 | 262144 | 7908 | 3875 | **4033** | deferred |
+| shape | n | k | c | slots | N (combos) | byte-distinct | **kept** | **langs** | collapse | survey |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `1state1ap0acc` | 1 | 1 | 0 | 1 | 4 | 4 | **3** | **3** | 1.00x |  |
+| `1state1ap1acc` | 1 | 1 | 1 | 2 | 16 | 7 | **5** | **4** | 1.25x |  |
+| `1state2ap0acc` | 1 | 2 | 0 | 1 | 16 | 16 | **6** | **6** | 1.00x |  |
+| `1state1ap2acc` | 1 | 1 | 2 | 4 | 256 | 10 | **7** | **5** | 1.40x |  |
+| `1state2ap1acc` | 1 | 2 | 1 | 2 | 256 | 77 | **25** | **22** | 1.14x |  |
+| `1state3ap0acc` | 1 | 3 | 0 | 1 | 256 | 256 | **52** | **52** | 1.00x |  |
+| `2state1ap0acc` | 2 | 1 | 0 | 4 | 256 | 53 | **30** | **25** | 1.20x |  |
+| `1state1ap3acc` | 1 | 1 | 3 | 8 | 65536 | 10 | **7** | **5** | 1.40x |  |
+| `1state1ap3acc_parity` | 1 | 1 | 3 | 8 | 65536 | 39 | **23** | **6** | 3.83x |  |
+| `1state2ap2acc` | 1 | 2 | 2 | 4 | 65536 | 272 | **83** | **66** | 1.26x |  |
+| `1state2ap2acc_parity` | 1 | 2 | 2 | 4 | 65536 | 317 | **98** | **58** | 1.69x |  |
+| `1state3ap1acc` | 1 | 3 | 1 | 2 | 65536 | 6553 | **1512** | **1480** | 1.02x | deferred |
+| `2state1ap1acc` | 2 | 1 | 1 | 8 | 65536 | 1845 | **929** | **129** | 7.20x |  |
+| `2state2ap0acc` | 2 | 2 | 0 | 4 | 65536 | 30613 | **11542** | **11312** | 1.02x | deferred |
+| `3state1ap0acc` | 3 | 1 | 0 | 9 | 262144 | 7908 | **4033** | **1645** | 2.45x | deferred |
 
 ## Beyond the wall (first intractable)
 

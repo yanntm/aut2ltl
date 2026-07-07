@@ -1,9 +1,16 @@
 """genaut/shapes_table.py — regenerate SHAPES.md from the corpus census.md files.
 
-The per-shape census.md (written by gen/enumerate.py next to the samples) is the
-source of truth for combos / byte-distinct / polarity-fold / kept. This scans every
-corpus/<tag>/census.md, parses those numbers (no arithmetic here — just read what
-generation recorded), and writes the SHAPES.md feasible-shapes table sorted by N.
+Composes the full dedup **funnel** of every censused shape, one row per shape,
+from the two census.md sources generation writes:
+
+  corpus/tgba/<tag>/census.md   combos -> byte-distinct (md5) -> AP-canonical
+                                `kept` (gen/enumerate.py);
+  corpus/det/<tag>/census.md    AP-canonical kept -> **language-distinct** (the
+                                syntactic `𝓘` dedup of gen/canonize.py).
+
+No arithmetic here beyond the collapse ratio — just read what each stage
+recorded — and write the SHAPES.md feasible-shapes table sorted by N. A shape
+whose `det/` tier is not built yet shows `—` in the language column.
 
   python3 genaut/shapes_table.py        # -> rewrites genaut/SHAPES.md
 """
@@ -12,7 +19,7 @@ from __future__ import annotations
 import glob
 import os
 import re
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 HERE = os.path.dirname(__file__)
 CORPUS = os.path.join(HERE, "corpus")
@@ -40,6 +47,16 @@ def parse_census(path: str) -> Dict[str, int]:
     return row
 
 
+def parse_languages(tag: str) -> Optional[int]:
+    """The language-distinct count from `corpus/det/<tag>/census.md`, or `None`
+    if the canonical tier is not built yet."""
+    path = os.path.join(CORPUS, "det", tag, "census.md")
+    if not os.path.isfile(path):
+        return None
+    m = re.search(r"distinct languages \(syntactic[^)]*\):\s*(\d+)", open(path).read())
+    return int(m.group(1)) if m else None
+
+
 PROSE_HEAD = """# genaut shapes — the bestiary map
 
 The shapes the census enumerates, and the tractability wall. A **shape** is
@@ -56,11 +73,16 @@ enumeration only reaches small shapes. Each row below is a one-off census writte
 `corpus/<tag>/` with a `census.md`; **this table is generated from those census.md
 files** (`python3 genaut/shapes_table.py`), not hand-kept.
 
-## Feasible shapes (from corpus/*/census.md)
+## Feasible shapes (the dedup funnel, from corpus/*/census.md)
 
-`kept` = distinct automata after both dedup gates (md5, then polarity o names);
-`polarity` = relabel twins folded by the second gate. `survey`: most are surveyed
-into `logs/<tag>/`; the high-`kept` ones (**deferred**) are heavy and run separately.
+The columns trace one shape's collapse across the pipeline's dedup levels:
+`combos` (generator-id space `N`) -> `byte-distinct` (md5 after Spot reduction) ->
+`kept` (AP-canonical, the `tgba/` tier: distinct up to `a<->!a` polarity and AP
+rename) -> **`langs`** (the `det/` and `sos/` tiers: distinct languages by the
+syntactic `𝓘` dedup). `collapse` is `kept / langs` — how many relabel-distinct
+TGBA share one language. `survey`: the high-`kept` shapes (**deferred**) are heavy
+and run separately. A `—` in `langs` means the canonical tier is not built yet
+(`python3 genaut/gen/rebuild.py`).
 """
 
 PROSE_TAIL = """
@@ -90,16 +112,21 @@ PROSE_TAIL = """
 
 def main() -> None:
     rows: List[Dict[str, int]] = [
-        parse_census(p) for p in glob.glob(os.path.join(CORPUS, "*", "census.md"))]
+        parse_census(p)
+        for p in glob.glob(os.path.join(CORPUS, "tgba", "*", "census.md"))]
     rows.sort(key=lambda r: (r["combos"], r["tag"]))
-    lines = ["| shape | n | k | c | slots | N (combos) | byte-distinct | polarity "
-             "| **kept** | survey |", "|---|---|---|---|---|---|---|---|---|---|"]
+    lines = ["| shape | n | k | c | slots | N (combos) | byte-distinct "
+             "| **kept** | **langs** | collapse | survey |",
+             "|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
         survey = "deferred" if r["kept"] > DEFERRED_KEPT else ""
+        langs = parse_languages(r["tag"])
+        lang_cell = "—" if langs is None else f"**{langs}**"
+        collapse = "—" if not langs else f"{r['kept'] / langs:.2f}x"
         lines.append(
             f"| `{r['tag']}` | {r['nstates']} | {r['naps']} | {r['nacc']} "
-            f"| {r['slots']} | {r['combos']} | {r['byte']} | {r['polarity']} "
-            f"| **{r['kept']}** | {survey} |")
+            f"| {r['slots']} | {r['combos']} | {r['byte']} "
+            f"| **{r['kept']}** | {lang_cell} | {collapse} | {survey} |")
     with open(OUT, "w") as out:
         out.write(PROSE_HEAD + "\n" + "\n".join(lines) + "\n" + PROSE_TAIL)
     print(f"wrote {OUT} from {len(rows)} census.md files")
