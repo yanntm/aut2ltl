@@ -369,3 +369,65 @@ no tension. **No paper edit made:** §4.3's duality remark is flagged for
 theory to decide whether it is a confined or global statement. If global, it
 needs `Even`'s two-shape availability folded in (only `EvenBlocks` is
 single-shape).
+
+### Theory adjudication of F4 (2026-07-08)
+
+**Confined — and the global refutation is correct and welcome.** F2's
+main claim stands untouched: the layer-confined (B) statistics see
+nothing of `Even`'s group. The parenthetical, read globally, is refuted
+for a clean reason: an ω-power family `u·(vⁿ·y)^ω` with `u = ε` pumps
+the very start of the word, so a prefix-counting group is exposed to
+ω-power contexts — nothing in §4 ever promised the dual of
+Proposition 4.2. The finding is an *asymmetry*, not a duality:
+prefix-independent ⟹ linear-blind is a theorem; the dual blindness has
+no theorem, and `Even` refutes the naive symmetry — speaking in both
+shapes, via the very family that certifies `EvenBlocks`. The paper's
+§4.3 remark, which the M1 fold-in edit had written in its global
+reading (importing F2's parenthetical), is corrected to the confined
+claim plus the asymmetry; §4.1's H5 paragraph now records that the
+triptych offers no witness; spec E7 gains the triptych dual-scan
+vectors. Net effect on H5: sharpened — one more data point toward "F₂
+always available", with the census the judge.
+
+### Interim (2026-07-08) — E7 verifier tier landed; the regenerated census is open
+
+**Landed (commit, census-independent):** the E7 dual scan and the
+presentation-agnostic certificate verifier — the two parts of M1.5 that
+needed only the triptych and fixtures. `witness/extract.py` now splits into
+`_scan_linear`/`_scan_omega` with `dual_scan` running both shape scans to
+completion (`DualScan.h5_hit` = ω-power all-constant); `extract_family` is
+first-of-two, behavior byte-identical. `witness/spot_oracle.py` renders a
+`sosl.sos.Lasso` into a Spot lasso-string and replays a family through
+`verifier.check.member` — membership only, no algebra on the verifier side,
+against *any* acceptor the client holds; the SoS read-off (`witness.val`)
+survives only as a labelled self-check. E0 gate green at 27 cases (the three
+`e7_dualscan` triptych cases wired in); the oracle is proven
+presentation-faithful (a family toggles against its own language's automaton,
+is constant against the wrong one). This is the E7 verifier tier, ready to run
+the moment the census is available — which it now is.
+
+**The regenerated census (`genaut/corpus/`, three tiers, per its README).**
+`tgba/<tag>/` is the raw presentation census (many encodings per language);
+`det/<tag>/` is the canonical automaton `D` (deterministic, complete,
+transition-based, generic acceptance, HOA) — one per language; `sos/<tag>/`
+is the syntactic invariant `𝓘(L)` (`.sos`) — one per language. `det/` and
+`sos/` are **1:1 and deduplicated by the syntactic key**, so §3b's "the unit
+is the language" is now *structural*, not something we impose: `corpus/sos/`
+**is** the language census (~15k distinct languages across the bench), and
+`corpus/det/` supplies the matching input automaton for the membership-only
+verifier. Each tier folder's `census.md` carries the presentation
+multiplicity (the `tgba → det` collapse) that §3b wants reported alongside —
+it is measured for us, not re-derived. The frame is declared by the tag:
+state/AP/acceptance-set count plus the acceptance **family** (bare tag =
+`gba` generalized-Büchi default; `_parity` suffix = parity), so the parity
+corpora the spec asked to add to the bench are present (`*_parity` shapes).
+
+**Consumption plan (now unblocked).** The algebra-side experiments read
+`corpus/sos/` (the language unit, no dedup on our side): E1/E2 re-key, the E7
+dual-scan ledger over the non-LTL languages, the algebra half of E3.
+`corpus/det/` is the acceptor for E7's membership replay and the automaton
+side of E4/E3. `census.md` supplies each table's presentation-multiplicity
+column. First run: the E7 dual-scan ledger — `dual_scan` partitions each
+`corpus/sos/*.sos` (None ⟹ aperiodic/LTL, `DualScan` ⟹ non-LTL certificate),
+and the non-LTL rows carry the two-column dual scan, `h5_hit`, component
+lengths against the Theorem-4.4 bounds, and the `corpus/det/` replay.
