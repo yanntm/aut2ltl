@@ -45,9 +45,13 @@ every input, not a one-off.
 - `k = 1`: each letter's within-layer action is a partial identity or a
   partial constant (paper Def 5.4). Report per letter: `neutral | reset(t) |
   mixed`.
-- `k = 2, 3`: the graded test ⟨theory TBD in the paper, Def 5.5 — implement
-  after the definition is frozen; until then report `k=1` results only and
-  mark layers `k1-fail` as `UNGRADED`⟩.
+- `k = 2, 3`: Definition 5.5 via Lemma 5.6(v)'s fixpoint — the sets `𝒜_j`
+  of within-layer actions of readable length-`j` words, extended letter by
+  letter to the closing cycle; smallest `k` with every tail action
+  identity-or-constant, else `FAIL`. (Theory frozen 2026-07-07: the engine
+  consumes a passing `k` at window width `k+1`, paper §5.7 / Thm 5.23.
+  Build the layer action monoid `𝒜_R` as a by-product — the (A)-fail
+  fallback runs on it, Prop 5.21/5.24.)
 Output per language: list of layers with `|R|`, smallest passing `k` or
 `FAIL`, letter classification table.
 
@@ -206,6 +210,11 @@ notch at a time, smallest-first):
   (certificate exists in linear shape only) — the dual of the paper's
   Proposition 4.2 blindness; a hit settles the open question of §4.1, an
   exhausted census is evidence toward "F₂ always available".
+- **H6**: smallest specimen with a `k`-anchored layer (`k ≥ 2`) whose
+  walk moves phase under a *neutral* `k`-window (an excursion completed
+  at the window's last step) — the witness that the engine's operating
+  width `k+1` is tight, not merely sufficient (paper §5.7, the remark
+  after Lemma 5.22).
 **Prediction:** H2/H3 do not exist at 2 states / 1 AP; first hits appear
 ⟨TBD: record where⟩. Each hit's `.sos`, layers, and witness go into
 `tests/**/logs/` and the paper's §7 empirical map.
@@ -213,9 +222,9 @@ notch at a time, smallest-first):
 ### E7 — certificate validation (non-LTL side)
 
 For every non-LTL census specimen: extract the certificate (group orbit,
-witness words, context shape, period `p`); verify by `2p` lasso membership
-tests against the reference automaton *only* (no algebra on the verifier
-side); record word lengths against the paper's Theorem-4.4 bounds (each
+witness words, context shape, period `p′`); verify by the paper §4.4
+toggle check — `2p′ + 1` lasso membership tests (`n = 0 … 2p′`) — against
+the reference automaton *only* (no algebra on the verifier side); record word lengths against the paper's Theorem-4.4 bounds (each
 component `< |𝒞|`, the absorbed index power quadratic). **Prediction:** all
 verify; `Even` emits `F₁(u=a, v=a, x=(!a)^ω, p′=2)` (samples
 `a^{n+1}·(!a)^ω`, accept iff `n` odd) and `EvenBlocks` emits
@@ -244,8 +253,10 @@ linear-only.
 - **M2** — C4 walk+window engine on the (A,k=1)/(B,k'≤2) strata, E0
   formula prediction green, E4(a) vs (b) ledger on the census subset the
   engine covers; conformance gate wired.
-- **M3** — graded (A) per frozen Def 5.5, DG-fallback integration
-  (full-coverage engine), full E4, E3.
+- **M3** — graded engine at window width `k+1` (paper §5.7, Thm 5.23:
+  transient fold trees `TR`/`TL`, `step_κ`), scoped DG fallback on the
+  layer action monoid `𝒜_R` (Prop 5.24) — full-coverage engine; full E4,
+  E3.
 - **M4** — C6 + E5; E6 sweeps; E7.
 
 Every milestone ends with a report appended to `sos_toltl_report.md`
