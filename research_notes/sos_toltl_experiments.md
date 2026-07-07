@@ -8,6 +8,12 @@ cite the experiment ids below, and every trace printed in the paper is a
 *prediction* the tool must reproduce, per the family discipline
 (`sosl_report.md` ledger style).
 
+**Revision 2026-07-07** (theory review of the M1 report, appended to
+`sos_toltl_report.md`): added §3b census reporting discipline; E1/E2 table
+requirements; E4-interim (DG ledger, runnable at M1); E7 dual scan and
+pull-forward to M1.5; E3 directed questions; E8 (C7's experiment) and C7's
+milestone assignment; milestone M1.5.
+
 **One-line goal.** Provide the data for `sos_toltl.md`: per-layer anchoring
 and window-determinacy statistics over the census, the size ledgers against
 Diekert–Gastin and the automaton portfolio, the frontier hunts (smallest
@@ -132,6 +138,45 @@ Timeouts: per-instance cap 15s; a blown cap is recorded as `TIMEOUT` and
 reported — it is a finding, not an error. Long outputs go to
 `tests/**/logs/`, one file per experiment id.
 
+## 3b. Census reporting discipline (mandatory, every census table)
+
+A census experiment is a claim about *languages measured over an
+exhaustive frame*; a table that does not declare its frame is not a census
+result. Every census table (E1, E2, E4, E7, E8, the E6 sweeps) carries:
+
+- **The frame declaration.** The enumeration axes and their values: state
+  count, AP count, acceptance-set count, and — first-class, never implied —
+  the **acceptance family** behind the set count (generalized-Büchi
+  Inf-conjunction / parity / arbitrary Emerson–Lei), plus determinism and
+  completeness of the inputs, and whether the enumeration is exhaustive
+  over the declared axes or sampled (and how). The reference construction's
+  contract is deterministic Emerson–Lei input; a census exercising only one
+  family must say so in the table caption. The parity corpora
+  (`genaut/corpus/`) join the bench at the next census run; arbitrary-EL
+  shapes are a census-next axis.
+- **Ventilation per shape.** Every statistic is reported per shape (one
+  row per shape); pooled totals appear only alongside the per-shape rows,
+  never instead of them.
+- **The unit is the language, not the automaton.** The census enumerates
+  automata, but the claims are about languages: the primary key of every
+  census statistic is the distinct canonical `.sos` (byte-identical after
+  canonical keying) — formula-string dedup is a proxy only, the invariant
+  decides (distinct strings can be one language). Automaton counts
+  survive as *presentation multiplicity*: itself a deliverable (the
+  multiplicity distribution per language, expected top-heavy) and a free
+  canonicity cross-check — every presentation of one `.sos` must yield
+  identical read-offs, certificates and formulas, and a divergence is a
+  stop-the-line bug, never a statistic. Measured skew motivating the
+  upgrade (2state1ap1acc, Inf-only, portfolio path): 759 LTL answers
+  collapse to at most 73 distinct structures, 43.6% of answers the
+  universal language — automaton-weighted percentages on that shape are
+  ~90% presentation noise.
+- **The degenerate line.** Empty and universal specimens — the weakest
+  stratum: one word class, `P` empty or full — pass (A) and (B) trivially
+  and only inflate headline fractions. They get their own line per shape,
+  with headline figures restated without them; report also the
+  single-word-class count among the non-degenerate.
+
 ## 4. Experiments
 
 ### E0 — sanity on the worked examples (gates M1)
@@ -159,7 +204,9 @@ prefix-independence. **Paper deliverable:** the §7 inner-frontier table's
 empirical column — fraction of layers per stratum, fraction of languages
 fully stem-transcribable at `k ≤ 3`. **Prediction (falsifiable guess):** at
 census sizes a large majority of layers pass (A) at `k = 1`; frozen layers
-are common (every absorbing class is one).
+are common (every absorbing class is one). Tables per §3b: frame declared,
+per-shape rows, keyed by distinct `.sos` with presentation multiplicity
+alongside, degenerate line separated.
 
 ### E2 — window-determinacy statistics (census)
 
@@ -167,7 +214,9 @@ C3 over all final-candidate layers of census LTL specimens. **Paper
 deliverable:** fraction (B)-determined at `k' ∈ {1,2,3}`; the witness pairs
 for failures. **Prediction:** (B) holds at `k' ≤ 2` on all 1-AP census
 specimens; failures require either ≥ 2 AP or larger monoids (order/
-betweenness structure — see E6).
+betweenness structure — see E6). Tables per §3b. Grades are three-valued
+and never pooled: exact PASS (trivial-stage closure), cap-bounded PASS (no
+sufficiency theorem until report-F1's open item is frozen), UNDECIDED.
 
 ### E3 — presentation cross-test *(internal diagnostics, not paper material)*
 
@@ -186,7 +235,13 @@ research finding to bring back to the paper (it would revive the dropped
 comparison as a theorem target); absent that, nothing here is cited.
 **Prediction:** algebra ≤ form throughout the census, with `GF(aa)` (1 vs
 2) the exemplar; no reverse instance found (low confidence — that is the
-point of the diagnostic).
+point of the diagnostic). Two directed questions ride along: (i) does
+kanchor's SCC peel go through on the census reference forms at all —
+per-SCC passing widths and failure modes, not only the min width; (ii)
+daisy's applicability should coincide with the width-1 park stratum
+(frozen layers, (B) at `k' = 1`) — check the correspondence, report
+exceptions. E3 needs no new engine: an early pass on the 1-AP census runs
+at M1.5.
 
 ### E4 — size ledgers
 
@@ -201,9 +256,20 @@ within cap (bounded-or-skipped per repo discipline). **Paper deliverable:**
 the §6/§8 ledgers over (a) vs (b) only; DAG-vs-`|𝒞|` scatter for the
 scaling claim. Column (c) is internal diagnostics (the paper does not
 mention automaton-level transcription), kept because a (c)-beats-(a) case
-is a research finding for us. **Prediction:** (a) ≤ (b) on flat size on
+is a research finding for us. Column (c) is also the standing
+*readability yardstick*: per distinct language the portfolio's simplified
+formula (`GFa`, `!a & G(!a | X!a)`, …) sets the size/readability bar the
+transcription should approach on the census — record the per-language
+(a)-vs-(c) size ratio once (a) exists. **Prediction:** (a) ≤ (b) on flat size on
 every instance, with the gap growing on multi-layer specimens; (a)
 competitive with (c) and canonical where (c) is form-lucky.
+
+**E4-interim (runnable at M1 — no C4 needed).** Column (b) alone over the
+census: per instance the DAG node count and flat tree size (or
+`FLAT_OVERFLOW`), ventilated by `|𝒞|` and per shape (§3b), with
+size-bucket histograms (flat and DAG) and the DAG-vs-`|𝒞|` scatter. This
+is §3/§6's explosion measured as a *distribution* instead of the single
+`GF(aa)` exemplar, and it freezes the (b) column before (a) exists.
 
 ### E5 — until-rank vs emitted depth *(blocked on C6)*
 
@@ -247,9 +313,35 @@ component `< |𝒞|`, the absorbed index power quadratic). **Prediction:** all
 verify; `Even` emits `F₁(u=a, v=a, x=(!a)^ω, p′=2)` (samples
 `a^{n+1}·(!a)^ω`, accept iff `n` odd) and `EvenBlocks` emits
 `F₂(u=ε, v=a, y=a·!a, p′=2)` (samples `(a^{n+1}·!a)^ω`, accept iff `n`
-odd) — the paper's §4.3 canonical derivations, byte-exact; also record each
-specimen's shape so E6/H5 can read off whether any non-LTL specimen is
-linear-only.
+odd) — the paper's §4.3 canonical derivations, byte-exact.
+
+**Dual scan (the H5 read-off).** The emitted certificate records which
+shape fired *first* under the scan order, which is not the H5 datum. For
+every non-LTL specimen run both scans to completion and record two
+columns: first separating linear context (or `all-constant`), first
+separating ω-power context (or `all-constant`). A specimen with ω-power
+all-constant is an H5 hit (linear-only certificate); a census with none
+is evidence toward "F₂ always available". **Sizes.** Tabulate component
+lengths (`|u|`, `|v|`, `|x|`/`|y|`, `p′`) against the Theorem-4.4 bounds,
+per shape and per `|𝒞|` (§3b). **Scheduling.** E7 consumes only M1
+components (`witness/` + the reference automata): it runs at M1.5 on the
+1-AP census and re-runs at M4 on census-next.
+
+### E8 — decomposition census (C7)
+
+For every census LTL specimen: (i) **OR-split by final layer** —
+re-canonicalize each piece, record per-piece read-offs (`|𝒞'|`, ladder
+rung, (A)/(B) widths); (ii) the **pair split** — restrict `P` to each
+single accepting pair, re-canonicalize, same read-offs, plus the piece's
+rung against `L`'s: the incidence of Wagner-ladder climb is the paper's
+§5.6(1) guard turned into a measurement (rung read-off via the classifier
+subproject — a dependency, note it in the run log); (iii) the **AND-split
+search** of C7, reporting factored-vs-`IRREDUCIBLE` fractions and the
+factor read-offs (the Thm 5.19 census query). Tables per §3b.
+**Prediction:** final-layer pieces never climb the ladder and usually
+shrink; pair pieces climb on a measurable fraction (the guard's raison
+d'être) — if no pair piece climbs anywhere on the census, the guard is
+over-cautious at these sizes and §5.6(1) earns a remark.
 
 ## 5. Expected failures (read before filing bugs)
 
@@ -267,15 +359,20 @@ linear-only.
 
 ## 6. Milestones
 
-- **M1** — C1+C2+C3+C5, E0 gate green, E1+E2 tables produced.
+- **M1** — C1+C2+C3+C5, E0 gate green, E1+E2 tables produced. *(Done —
+  `sos_toltl_report.md`.)*
+- **M1.5** — census hygiene and the no-engine ledgers: E1/E2 re-issued
+  per §3b (frame declared, per-shape rows, both weightings, degenerate
+  line; parity corpora added to the bench); E4-interim; E7 on the 1-AP
+  census (dual scan); early E3 pass.
 - **M2** — C4 walk+window engine on the (A,k=1)/(B,k'≤2) strata, E0
   formula prediction green, E4(a) vs (b) ledger on the census subset the
   engine covers; conformance gate wired.
 - **M3** — graded engine at window width `k+1` (paper §5.7, Thm 5.23:
   transient fold trees `TR`/`TL`, `step_κ`), scoped DG fallback on the
   layer action monoid `𝒜_R` (Prop 5.24) — full-coverage engine; full E4,
-  E3.
-- **M4** — C6 + E5; E6 sweeps; E7.
+  E3; C7 + E8.
+- **M4** — C6 + E5; E6 sweeps; E7 re-run on census-next.
 
 Every milestone ends with a report appended to `sos_toltl_report.md`
 (ledger style, one row per finding, predictions checked off or refuted —
