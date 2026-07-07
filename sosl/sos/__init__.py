@@ -4,7 +4,7 @@ Self-contained package: data structures at the root, (de)serialization under
 io/, constructors under build/. No dependency outside this package tree.
 """
 from .alphabet import EMPTY, Alphabet, Letter, Word, shortlex_key
-from .build.canonical import canonicalize
+from .core.canonical import canonicalize
 from .hypothesis import Hypothesis
 from .invariant import Invariant
 from .io.serialize import (

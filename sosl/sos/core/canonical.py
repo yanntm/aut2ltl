@@ -13,10 +13,10 @@ from the identity, letters in mask order (the first word reaching a class is its
 canonical shortlex key), renumbers classes in that discovery order, remaps the
 tables and accepting set, and returns a validated `Invariant`.
 
-This is the single normal form shared by both producers of an invariant — the
-learner's export and the reference builder — so that two invariants over the
-same alphabet are byte-equal iff they denote the same language. It is the format
-definition, not an algorithm of either producer.
+This is the single normal form shared by every producer of an invariant — the
+learner's export and the reference construction (`quotient`) — so that two
+invariants over the same alphabet are byte-equal iff they denote the same
+language. It is the format definition, not an algorithm of either producer.
 """
 from __future__ import annotations
 
