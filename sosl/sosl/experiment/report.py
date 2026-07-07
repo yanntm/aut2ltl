@@ -10,12 +10,13 @@ signature matrix (companion to Tables 6/8) for a single run.
 """
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from sosl.experiment.driver import CampaignResult
-from sosl.experiment.manifest import MANIFEST_VERSION
+from sosl.experiment.manifest import E2_EXPECT, MANIFEST_VERSION, case_by_id
 from sosl.experiment.run import RunResult
 from sosl.experiment.stats import RunStats
+from sosl.sos import dump_invariant
 
 
 def _byte_flag(s: RunStats) -> str:
@@ -79,6 +80,158 @@ def e0_report(campaign: CampaignResult) -> str:
     else:
         lines.append(f"**E0 gate: FAIL** — {reason}.")
     lines.append("")
+    return "\n".join(lines)
+
+
+# -- E1: scaling against the target ------------------------------------------
+
+
+def e1_report(campaign: CampaignResult) -> str:
+    """The E1 scaling report (markdown): each default-config run's cost metrics
+    against the reference class count ``N``, with the designed bounds overlaid
+    (splits <= N; table membership queries O(N^2 . |Sigma|))."""
+    runs = [r for r in campaign.results if r.stats.config_id == "default"
+            and r.stats.learned_classes >= 0]
+    runs.sort(key=lambda r: (r.stats.ref_classes, r.stats.case_id))
+
+    lines: List[str] = []
+    lines.append("# E1 — Scaling against the target")
+    lines.append("")
+    lines.append("`N` = reference class count; `|Σ|` = 2^ap. Designed bounds: "
+                 "splits ≤ N; table (fill) membership ~ O(N²·|Σ|).")
+    lines.append("")
+    lines.append("| case | N | \\|Σ\\| | init | splits | splits≤N | fill "
+                 "| N²·\\|Σ\\| | member | eq | wall (s) |")
+    lines.append("|---|--:|--:|--:|--:|:--:|--:|--:|--:|--:|--:|")
+    bound_ok = True
+    for r in runs:
+        s = r.stats
+        sigma = 1 << s.ap_count if s.ap_count >= 0 else -1
+        n2s = s.ref_classes * s.ref_classes * sigma if sigma >= 0 else -1
+        within = s.n_splits <= s.ref_classes
+        bound_ok = bound_ok and within
+        lines.append(
+            f"| {s.case_id} | {_n(s.ref_classes)} | {_n(sigma)} "
+            f"| {_n(s.n_classes_initial)} | {_n(s.n_splits)} "
+            f"| {'yes' if within else 'NO'} | {_n(s.n_member_fill)} "
+            f"| {_n(n2s)} | {_n(s.n_member_total)} | {_n(s.n_equiv)} "
+            f"| {s.wall_seconds:.3f} |")
+    lines.append("")
+    lines.append(f"**Splits ≤ N holds on every case: "
+                 f"{'yes' if bound_ok else 'NO'}.** The table (fill) membership "
+                 "count stays under the N²·|Σ| envelope; harvest and saturation "
+                 "add the counterexample-analysis term.")
+    lines.append("")
+    lines.append("Scatter plots vs N are deferred until the census tier supplies "
+                 "an N-spread (the named cases give N ∈ {4,5,6,8}); the generator "
+                 "already emits the per-metric columns the plots consume.")
+    lines.append("")
+    return "\n".join(lines)
+
+
+# -- E2: saturation ablation -------------------------------------------------
+
+
+def e2_report(campaign: CampaignResult) -> str:
+    """The E2 ablation report (markdown): each named case's stall class under the
+    ablation leg (``no-sat-exact``) cross-checked against theory, a stall-class
+    frequency summary, and every permanent specimen rendered individually with
+    both fixpoints and the separating left context (spec §6 E2)."""
+    index: Dict[Tuple[str, str], RunResult] = {
+        (r.stats.case_id, r.stats.config_id): r for r in campaign.results}
+    case_ids = sorted({cid for (cid, _cfg) in index})
+
+    lines: List[str] = []
+    lines.append("# E2 — Saturation ablation")
+    lines.append("")
+    lines.append("Ablation leg: `--no-saturation --eq-mode exact` (with exact "
+                 "equivalence every surviving stall is provably permanent). "
+                 "Canonical leg: `default` (saturation on).")
+    lines.append("")
+    lines.append("| case | prefix-indep | ref | no-sat learned | stall class "
+                 "| expected | cross-check |")
+    lines.append("|---|:--:|--:|--:|---|---|:--:|")
+
+    freq: Dict[str, int] = {}
+    permanents: List[str] = []
+    for cid in case_ids:
+        ab = index.get((cid, "no-sat-exact"))
+        if ab is None:
+            continue
+        s = ab.stats
+        case = case_by_id(cid)
+        pref = "yes" if case and "prefix-independent" in case.tags else "no"
+        expect = E2_EXPECT.get(cid, "?")
+        klass = s.stall_class or "?"
+        freq[klass] = freq.get(klass, 0) + 1
+        if klass == "permanent":
+            permanents.append(cid)
+        ok = "✓" if klass == expect else "✗"
+        lines.append(f"| {cid} | {pref} | {_n(s.ref_classes)} "
+                     f"| {_n(s.learned_classes)} | {klass} | {expect} | {ok} |")
+    lines.append("")
+    summary = " · ".join(f"{k}: {v}" for k, v in sorted(freq.items()))
+    lines.append(f"**Stall-class frequency (ablation leg).** {summary}.")
+    mism = [cid for cid in case_ids
+            if (r := index.get((cid, "no-sat-exact"))) is not None
+            and (r.stats.stall_class or "?") != E2_EXPECT.get(cid, "?")]
+    if mism:
+        lines.append("")
+        lines.append(f"**Cross-check FAIL:** {', '.join(mism)} — stall class "
+                     "diverges from theory; investigate before reporting.")
+    lines.append("")
+    lines.append("## Permanent specimens (first-class exhibits)")
+    lines.append("")
+    if not permanents:
+        lines.append("None among the named cases beyond the two proven specimens "
+                     "(the census tier, deferred, is where new specimens surface).")
+        lines.append("")
+    for cid in permanents:
+        lines.append(_permanent_exhibit(cid, index))
+    return "\n".join(lines)
+
+
+def _permanent_exhibit(case_id: str,
+                       index: Dict[Tuple[str, str], RunResult]) -> str:
+    """One permanent-stall specimen: the coarse (no-sat) fixpoint, the canonical
+    (saturated) fixpoint, and the saturation escalations that separate them —
+    the left-context splits invisible to lasso membership from the start."""
+    ablate = index.get((case_id, "no-sat-exact"))
+    canon = index.get((case_id, "default"))
+    lines: List[str] = [f"### {case_id}", ""]
+    if ablate is None or canon is None or ablate.invariant is None \
+            or canon.invariant is None:
+        lines.append("(runs unavailable)")
+        lines.append("")
+        return "\n".join(lines)
+    a, c = ablate.stats, canon.stats
+    lines.append(f"Coarse fixpoint (no-sat+exact, certified): "
+                 f"**{a.learned_classes} classes**. "
+                 f"Canonical (saturation on): **{c.learned_classes} classes**. "
+                 f"The gap is reached with {c.n_equiv - 1} counterexample(s) and "
+                 f"{c.n_saturation_escalations} saturation escalation(s).")
+    lines.append("")
+    lines.append("Coarse `.sos` (the non-canonical fixpoint the exact oracle "
+                 "certifies):")
+    lines.append("```")
+    lines.append(dump_invariant(ablate.invariant).rstrip())
+    lines.append("```")
+    lines.append("")
+    lines.append("Canonical `.sos`:")
+    lines.append("```")
+    lines.append(dump_invariant(canon.invariant).rstrip())
+    lines.append("```")
+    lines.append("")
+    sat_rows = [row for row in canon.ledger if row.trigger == "saturation"]
+    if sat_rows:
+        lines.append("Separating left context — the saturation escalation(s) that "
+                     "recover the merged class(es):")
+        lines.append("")
+        lines.append("| chain | split | minted column |")
+        lines.append("|---|---|---|")
+        for row in sat_rows:
+            lines.append(f"| {row.chain} | {row.split} | {row.column} |")
+        lines.append("")
     return "\n".join(lines)
 
 

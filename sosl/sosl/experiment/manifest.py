@@ -86,6 +86,42 @@ def e0_runs() -> List[Tuple[Case, Config]]:
     return runs
 
 
+# Expected stall class of each named case under the E2 ablation leg
+# (`--no-saturation --eq-mode exact`, spec §6 E2). The two specimens are proven
+# permanent (Prop. 4.4); every other named case resolves its pre-equivalence
+# stall and reaches canonical (transient) or was never coarse (none).
+E2_EXPECT: dict = {
+    "gf_aa_parity": "transient",
+    "gf_aa_reset": "transient",
+    "even": "transient",
+    "evenblocks": "transient",
+    "a_implies_xa": "permanent",
+    "a_once": "permanent",
+}
+
+
+def e1_runs() -> List[Tuple[Case, Config]]:
+    """The E1 scaling matrix: every named case under ``default`` — E1 is a view
+    of the default-config run metrics against the reference class count."""
+    return [(c, DEFAULT) for c in NAMED_CASES]
+
+
+def e2_runs() -> List[Tuple[Case, Config]]:
+    """The E2 ablation matrix: every named case under both the canonical
+    ``default`` (saturation on) and the ablation ``no-sat-exact`` leg (spec §6:
+    with exact equivalence, every surviving stall is provably permanent)."""
+    return ([(c, DEFAULT) for c in NAMED_CASES]
+            + [(c, NOSAT_EXACT) for c in NAMED_CASES])
+
+
+def case_by_id(case_id: str) -> Optional[Case]:
+    """The named `Case` with this id, or ``None``."""
+    for c in NAMED_CASES:
+        if c.case_id == case_id:
+            return c
+    return None
+
+
 def census_cases(folder: Optional[str] = None) -> List[Case]:
     """The census tier — guarded. Returns nothing until a folder is passed and
     the tier is deliberately enabled; the `genaut/corpus/` sweep is curated
