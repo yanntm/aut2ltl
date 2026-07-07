@@ -26,6 +26,7 @@ from sosl.sos.build.importer import import_ltl
 from sosl.sos.core.quotient import invariant_of
 
 from .bridge import BridgeDecline, invariant_of_language
+from .census import CENSUS, CENSUS_FH, census_line
 from .dg import DgDecline, synthesize
 from .engine import transcribe
 from .witness import Family, extract_family, toggles
@@ -104,6 +105,8 @@ def sos2ltl(lang: "Language") -> LTLResult:
         return LTLResult.decline(f"sos2ltl: {e}", TAG)
 
     fam = extract_family(inv)
+    if CENSUS:
+        print(census_line(inv, fam is None), file=CENSUS_FH)
     if fam is not None:
         aut = lang.det_generic_minimal()
         certified: bool = toggles(
