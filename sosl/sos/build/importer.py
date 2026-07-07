@@ -17,7 +17,15 @@ import spot
 def canonical(aut: "spot.twa_graph") -> "spot.twa_graph":
     """``aut`` normalized to the deterministic, complete, generic,
     transition-based form D (idempotent when ``aut`` is already in that form)."""
-    return spot.postprocess(aut, "deterministic", "generic", "complete")
+    a = spot.postprocess(aut, "deterministic", "generic", "complete")
+    # Spot keeps (or infers) the state-based reading when one exists — a
+    # state-based HOA input survives postprocessing with its `state-acc`
+    # property set, and renderers then draw accepting *states*. D is
+    # transition-based by definition: the marks already sit on the edges
+    # (Spot stores them there in every case), so dropping the property is
+    # a pure re-reading, not a transformation.
+    a.prop_state_acc(spot.trival_maybe())
+    return a
 
 
 def import_hoa(path: str) -> "spot.twa_graph":
