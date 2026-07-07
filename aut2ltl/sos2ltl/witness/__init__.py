@@ -1,5 +1,5 @@
-from .extract import extract_family, val
+from .extract import DualScan, dual_scan, extract_family, val
 from .family import Family
 from .replay import toggles
 
-__all__ = ["Family", "extract_family", "val", "toggles"]
+__all__ = ["Family", "DualScan", "extract_family", "dual_scan", "val", "toggles"]
