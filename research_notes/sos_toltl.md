@@ -41,7 +41,12 @@ flattening it is the language's own intrinsic cost, which we measure, bound,
 and, in a definitional output format, avoid. An exhaustive census of small
 automata shapes the frontier empirically: below ⟨TBD: census thresholds⟩ no
 non-LTL language exists, and the inner frontier — which rungs of the flat-brick
-ladder suffice — is mapped on the same corpus. ⟨TBD: experimental headline.⟩
+ladder suffice — is mapped on the same corpus. On its first census —
+exhaustive at one atomic proposition and two states — nothing fails either
+precondition: every layer anchors at width ≤ 2, every decided final layer
+is window-determined at width ≤ 2, the fallback stratum is unwitnessed,
+and all 90 non-LTL specimens were refused with a replayed counting family
+each.
 
 ---
 
@@ -206,7 +211,14 @@ Four sources of explosion, each a blindness:
 Our implementation experience sharpens the diagnosis: with class-indexed
 memoization the DG-style recursion *computes* at scale — the formula-DAG is
 tractable — and what explodes is exclusively the *flat* rendering, LTL syntax
-having no sharing. The bottleneck is not computation but the deliverable
+having no sharing. The measurement, on the running example itself: on the
+six-class algebra of `GF(aa)` the memoized recursion takes 19 recursion
+nodes and a shared arena of 1 287 nodes, while the flat tree unfolds to
+1 991 717 nodes — 4.4 MB of rendered formula, Spot-equivalent to
+`GF(a ∧ Xa)` — and the output is canonical: two presentations of the
+language (a parity and a reset automaton) bridge to the byte-identical
+invariant and the character-identical formula. The bottleneck is not
+computation but the deliverable
 format; §6 makes that split a stated result rather than an engineering
 apology. The extraction of §5 attacks what remains: the flat size, by making
 the formula's shape follow the language's.
@@ -411,7 +423,13 @@ early: `Even`'s toggle is caught by a *stem* manipulation against a fixed
 tail (the linear shape — the walk side), `EvenBlocks`' only by a *loop*
 manipulation (the ω-power shape — the window side). The certificate
 machinery is the extraction machinery, run on the other side of the
-verdict.
+verdict. The duality is in fact visible *before* any certificate is
+extracted, in §5's own statistics run on these invariants: every layer of
+`Even` passes window-determinacy (Definition 5.7) trivially — each
+within-layer cycle of its group layer folds to one rejecting class — so
+the ω-power side has nothing to say on `Even`, exactly as the linear side
+has nothing to say on `EvenBlocks` (Proposition 4.2). One specimen is
+blind in each eye, and each blindness is a read-off.
 
 ### 4.4 The verification contract
 
@@ -566,7 +584,13 @@ Lemma 5.8's proof leans on — and the overlap is confined to the diagonal,
 since `a ∈ L(c) ∩ A(c')` makes `c` a source of a partial constant that
 fixes it: `c' = c`. The stutter letters no stateless observer can
 attribute are the *shared* ones, `L(c) \ A(c)`; they are what the graded
-ladder's `I`-weakening tolerates (Definition 5.5). Identity-or-reset is the
+ladder's `I`-weakening tolerates (Definition 5.5). (One reporting
+convention, fixed here because letter tables appear below: a letter's
+*kind* is reported identity-first — a letter neutral wherever it acts is
+reported as a stutter, even where the diagonal makes it the anchor of its
+sole class — while `A(c)` membership stays constant-action, diagonals
+included; §5.4's frozen layer reads "both letters neutral" under this
+convention.) Identity-or-reset is the
 Krohn–Rhodes reset brick — the atomic layer of the aperiodic cascade —
 surfacing as the transcribable case, which is not a coincidence ⟨TBD:
 remark tying to the cascade literature [KR65, Mal10]⟩.
@@ -662,7 +686,15 @@ power stabilizes — `[x^N] = [x^{N+1}]` fails for all `N`, contradicting
 aperiodicity (equal classes act equally). Mixed actions therefore need
 `|R| ≥ 3`, exactly the size at which Lemma 5.6(iii)'s scheme lives; on
 census-scale invariants, whose layers are tiny, condition (A) at width 1
-is the generic case — E1's prediction, now half a theorem.
+is the generic case — predicted as E1 in the companion spec, and now
+measured: on the exhaustive 1-AP census (≤ 2 states; 2 898 layers over
+891 aperiodic languages) no layer anchors at no width, none needs width
+3, and the large majority anchor at width 1 (§8). The data also sharpen
+an open question: Lemma 5.6(iii)'s non-anchoring scheme spends four
+letters, and whether a layer over a *two-letter* alphabet can anchor at
+no width — or even demand width 3 — is open; a negative proof would turn
+the census column into a theorem and start the (A)-failure hunt (H2)
+honestly at two propositions.
 
 Anchoring is the *stem-side* precondition: it makes the walk transcribable.
 Lemma 5.2(ii) forces a second, independent precondition on the *loop side*:
@@ -994,7 +1026,8 @@ occurrence), the simplified form is `GF(a ∧ Xa)` exactly. A
 prefix-independence read-off (one residual ⟹ the reach wrapper is always
 redundant — Lemma 5.13 below) would emit it directly.
 The experiment suite checks this prediction end to end (E0 in the companion
-spec).
+spec); the M1 run confirms the layer tables, the widths, and the Lemma-5.2
+witness pair above exactly — the emitted-formula check awaits the engine.
 
 ### 5.5 The window engine is Arnold's second shape
 
@@ -1186,7 +1219,15 @@ finiteness of the check lives in `𝒞`, never in the layer: the loop
 class is folded through the whole algebra even where the walk is
 frozen, so no length cap in `|R|` and `|Σ_λ|` alone bounds the tours
 that must be compared (the same specimen refutes the cap `2·|R|·|Σ_λ|`:
-the conflicting loops have length 5, the cap value 4).
+the conflicting loops have length 5, the cap value 4). The closure is
+accordingly the *normative* decision procedure for (B): per subgraph `H`
+its state space is `O(|H|·|𝒞|·2^{|E(H)|})` — exponential only in the
+layer-local edge count of `H`, with the class coordinate contributing the
+factor `|𝒞|` linearly — and bounded enumeration under any cap remains
+admissible as a pre-filter, its conflicts exact, its conflict-free
+outcomes evidence rather than proof until the closure has run (no
+sufficiency theorem is known for any cap, the excision route foundering
+on window-set preservation).
 
 (iv) *Sizes.* Each disjunct has modal depth `k + 1` and at most
 `|Σ_λ|^k` conjuncts; the disjuncts number at most the realizable sets,
@@ -1747,8 +1788,10 @@ needs, decided on `𝓘(L)` before any formula is built. ⟨TBD: align the
 strata with the known sub-LTL hierarchies — definite / locally testable /
 TL[F] of Cohen–Perrin–Pin / until hierarchy [Wil99, PW13] — so each row is
 a known variety with our operational reading; the census then *maps* the
-strata empirically: at 2 states / 1 AP everything is expected in the first
-three rows; find the smallest specimen in each lower row.⟩
+strata empirically — first data in §8: at 1 AP / ≤ 2 states the residual
+row is unwitnessed, and width 2 covers both (A) and (B) everywhere the
+tests decide; find the smallest specimen in each lower row (H2/H3/H4 of
+the companion spec).⟩
 
 The inner frontier is also the size story of §6 made structural: flat cost
 concentrates exactly in the residual stratum, and the strata above it are
@@ -1757,7 +1800,7 @@ language as residual, cannot see.
 
 ## 8. Evaluation
 
-⟨TBD: entire section — after implementation. Fixed decisions, so the
+⟨TBD: full section — after implementation. Fixed decisions, so the
 section can be written into: corpus = the census of small automata (ground
 truth 𝓘 and LTL status already computed) plus the triptych and the paper's
 worked specimens; comparisons = (i) flat size and depth: this extraction
@@ -1767,6 +1810,29 @@ appear, the inner-frontier map; (iv) the until-rank vs. emitted depth
 ledger — optimality gaps. Verdicts checked by
 the construction of [SωS26]: every emitted formula's 𝓘 must be byte-equal
 to the input's — the equivalence oracle is the object itself.⟩
+
+**First data** (the M1 run of the companion spec; the tables are to be
+re-issued under its census reporting discipline — frame declared with its
+acceptance family, per-shape rows, counts keyed by distinct canonical
+invariant with automata as presentation multiplicity, degenerate stratum
+separated — before any figure here is final; first multiplicity soundings
+put the distinct languages an order of magnitude below the automaton
+counts, with the universal language alone claiming two-fifths of one
+shape's answers). The six 1-AP shapes
+(one state with zero to three acceptance sets, two states with zero or
+one; 981 automata) split 891 aperiodic / 90 not, with no decline, timeout
+or crash; every refusal carried a certificate replayed against the input
+automaton, `Even`'s and `EvenBlocks`' byte-equal to §4.3's derivations.
+On the aperiodic side, 2 898 layers: none anchors at no width, none needs
+width 3, the large majority anchor at width 1, and roughly half are
+frozen; of 1 921 final-candidate layers none fails (B), and every decided
+layer is window-determined at width ≤ 2 (a small UNDECIDED residue awaits
+the normative closure of Proposition 5.15(iii)). The residual stratum of
+§7 is so far unwitnessed: at one atomic proposition and two states, the
+flat-brick ladder covers everything the tests decide. ⟨TBD: final
+per-shape tables; the acceptance-family axis (parity corpora); the E4
+size ledgers and DAG-vs-|𝒞| scatter once the engine emits; the E7
+witness-length ledger and dual-scan (H5) column.⟩
 
 ## 9. Related work
 
@@ -1816,10 +1882,6 @@ walk freezes — Arnold's two shapes, met for the third time, now as the two
 engines of extraction — and nesting only where the until-rank proves it
 unavoidable. The formula was always going to be large sometimes; the
 algebra says exactly when, and exactly why.⟩
-
----
-
-concludes by induction and transport. ∎
 
 ---
 
