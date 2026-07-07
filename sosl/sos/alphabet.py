@@ -8,7 +8,7 @@ canonical letter *rank* — letters ordered by their characteristic tuple
 ``(chi(a_1), ..., chi(a_k))`` lexicographically with absent (0) < present (1),
 ``a_1`` most significant (for a single ``a``: ``!a`` < ``a``). Integer order on
 masks is therefore the canonical letter order used for shortlex, matching the
-serialization format in research_notes/sos_format.md.
+serialization format in sosl/sos/io/sos_format.md.
 
 A word is a tuple of letters; the empty word is the empty tuple. Word
 concatenation and repetition are ordinary tuple ``+`` and ``*``.

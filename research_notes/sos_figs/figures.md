@@ -136,7 +136,7 @@ reached (class `[¬a]`), every loop accepts.
 
 ## Figure 2 — the exportable invariant `𝓘(GF(aa))`
 
-The serialized SoS (format v1, [`sos_format.md`](../sos_format.md)): the
+The serialized SoS (format v1, [`sos_format.md`](../../sosl/sos/io/sos_format.md)): the
 keyed classes, the letter map, the multiplication table of `S(L)₊¹`, and the
 saturated set of accepting linked pairs. These core sections are a **complete
 language invariant** — two languages are equal iff their cores are

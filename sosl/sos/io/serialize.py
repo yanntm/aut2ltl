@@ -10,7 +10,7 @@ A letter is written as a Boolean cube over *all* the propositions in canonical
 order — each proposition, or its negation, joined by ``&`` (``a&!b``); the
 0-proposition alphabet's one letter is ``t``. A word is its letters joined by
 ``;`` (``eps`` for the empty word). This is the cube form of
-research_notes/sos_format.md; a letter names every proposition, so it is
+sos_format.md; a letter names every proposition, so it is
 unambiguous over a multi-AP alphabet (``a&!b``, not ``{a}``).
 """
 from __future__ import annotations

@@ -35,7 +35,7 @@ def check_letter_roundtrip() -> None:
 
 def check_canonical_letter_order() -> None:
     # Two APs: canonical order is by characteristic tuple, a most significant,
-    # absent<present: {} < {b} < {a} < {a,b} (research_notes/sos_format.md).
+    # absent<present: {} < {b} < {a} < {a,b} (sosl/sos/io/sos_format.md).
     ab = Alphabet.of(["a", "b"])
     order = [ab.true_aps(a) for a in ab.letters()]
     assert order == [[], ["b"], ["a"], ["a", "b"]], order

@@ -3,7 +3,7 @@
 Where the `sosl/` implementation stands against the plan in
 `research_notes/sos_learner_spec.md` (the normative document), the paper
 `research_notes/sos_learning.md` (whose running examples are computed by hand),
-and the `.sos` normal form of `research_notes/sos_format.md`. This report answers
+and the `.sos` normal form of `sosl/sos/io/sos_format.md`. This report answers
 the questions the spec raises; it describes the implementation as it is.
 
 ## Milestones (spec §8)
@@ -302,3 +302,50 @@ sweep converge on `GF(aa)`.
   under `--no-saturation` (spec P4), and canonical byte-equality with saturation.
 - `m3_ledgers.py` — the split and per-phase query ledgers of a saturated run; a
   prototype of the campaign audit renderer.
+
+---
+
+## Theory-thread feedback — M3 accepted, notes before M4 (2026-07-07)
+
+M3 is accepted as delivered, and everything above is now integrated: the
+EvenBlocks ledger is the paper's Table 8, the per-phase query ledgers ground
+Proposition 5.2 in `sos_learning.md` §5, and the branch-1 omega correction is
+adopted as *normative* — spec §3.2 step 4 now states the `(x.r, y.r)` mint with
+your `GF(aa)` non-convergence as the rationale, and the paper's Lemma 4.5
+carries the same fix. The transcript did more than fill placeholders: it
+overturned a paper prediction. The minimal teacher's first EvenBlocks
+counterexample is `(ε, !a;a;a)`, shortlex-earlier than the hand-predicted
+`(ε, a;a;!a)`, and the paper's §1/§3/§4.1 traces were rewritten to match
+(loop chain, ω-column `(a, a)`, `!a;a` pulled out of `[a]`). Consequence for
+you: the EvenBlocks run is now paper-anchored exactly as Even's is. Please add
+an `evenblocks_conformance` probe mirroring `even_conformance.py` — first cex
+`(ε, !a;a;a)`, columns `(a, a)` / `(a, !a;a)` / `(ε, !a)` in that order,
+splits 3→4→6→8, ledger 67/4/14/14 — spec §8 M4.a lists it. Any drift there is
+henceforth a paper regression, not a free choice.
+
+Two notes for the record. First, one slip in this report: the
+even-conformance paragraph says a different scan order "would produce the
+omega column `(a, ε)`" — under your own branch-1 omega correction it would be
+`(a, a)`; the spec's gate text now says `(a, a)`, nothing to fix beyond
+awareness. Second, the EvenBlocks signature matrix now in the paper (7 keys ×
+4 ω-columns) was derived *by hand* from your ledger and cross-checked against
+the split sequence; have the E4 renderer emit the final signature matrix so
+that table becomes machine-generated like everything else — it is a natural
+extension of `m3_ledgers.py`.
+
+For M4, work from the revised spec (revision 2026-07-07b): §6 has the corpus
+manifest and per-experiment design notes, §7 three new stats fields
+(`n_classes_initial`, `stall_class`, `cex_policy`), §8 the ordered sub-gates
+M4.a–M4.d, §9 the new rows P5/F6/F7. Two scheduling points worth
+internalizing before you start. Build the driver by promoting
+`genaut_census.py` and `m3_ledgers.py`, not from scratch — M4.a is mostly
+plumbing you already have. And treat the ROLL leg as the schedule risk it is:
+its equivalence queries carry automata, not Cayley forms, so the exact oracle
+does not apply — answer them bounded, record the certification asymmetry as a
+result (row F6), and if the integration fights back, deliver the wrapper plus
+a blocking record and keep moving; M4.d does not wait for it. The place new
+science can fall out is E2: with saturation off and `--eq-mode exact`, every
+*surviving* stall is a proven-permanent specimen — the census found the two
+smallest, and anything new at larger shapes is a first-class exhibit for the
+paper. Report those individually, with both fixpoints and the separating left
+context, before aggregating anything.
