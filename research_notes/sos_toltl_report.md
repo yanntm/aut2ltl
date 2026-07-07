@@ -22,12 +22,26 @@ it triggered.
   **flat tree 1 991 717** — the §3 explosion measured on a six-class
   algebra — Spot-equivalent to `GF(a ∧ Xa)`; group-bearing inputs are
   refused upstream by the aperiodicity read-off.
-- **M2 — C4 walk+window engine.** Not started. The bridge and the
-  Translator are the next construction steps.
+- **The Translator.** `aut2ltl/sos2ltl/translator.py` — bridge
+  (`Language → 𝓘(L)` via the reference construction, capped into a
+  decline), step-0 group scan, certificate replayed against the *input
+  automaton* before the absorbing `NOT_LTL` (a failed replay declines,
+  never verdicts), dg synthesis on the aperiodic side. End-to-end on the
+  triptych HOAs: `gf_aa_parity` → OK, Spot-equivalent to `GF(a ∧ Xa)`;
+  `even` → NOT_LTL, witness `p=2 u=[a] v=[a] x=[cycle{!a}]`; `evenblocks`
+  → NOT_LTL, witness `p=2 u=[] v=[a] y=[a; !a]`.
+- **Canonicity (dg algorithm.md layer 8), confirmed.** Two different
+  presentations of `GF(aa)` — the parity and the reset automata — bridge
+  to the byte-identical `.sos` and synthesize the character-identical
+  formula (4 357 185 chars flat; 19 nodes, arena 1287 as a DAG).
+- **M2 — C4 walk+window engine.** Not started; next construction step.
 
-Probes: `tests/sosl/classify_aperiodic.py`, `tests/sos2ltl/e0_layers.py`,
-`e0_anchoring.py`, `e0_windows.py`, `e0_witness.py` — one input per
-invocation, each asserting its E0 predictions.
+The gate: `python3 -m tests.sos2ltl.e0_gate` — 21 cases, one subprocess
+per case under a 15 s cap (the classifier cases run from the `sosl`
+subproject root), currently SUCCESS. Individual probes: `e0_layers`,
+`e0_anchoring`, `e0_windows`, `e0_witness`, `e0_dg`, `e0_translator`,
+`e0_canon` under `tests/sos2ltl/`, and `tests/sosl/classify_aperiodic`
+in the sosl subproject.
 
 ## E0 — the triptych, predictions vs runs
 
