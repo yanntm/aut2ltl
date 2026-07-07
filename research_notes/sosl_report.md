@@ -18,7 +18,9 @@ the questions the spec raises; it describes the implementation as it is.
   (`sosl/sosl/teacher/exact.py`) are landed; every census language reaches its
   canonical invariant, the Even run reproduces the paper's §4.3 trace, and the
   two permanent-stall specimens behave as Proposition 4.4 predicts.
-- **M4 — Campaign.** Next; not started.
+- **M4 — Campaign.** In progress. **M4.a (driver + E0) done** — the
+  `sosl.experiment` package (driver, manifest, per-run stats, E0/E4 reports) is
+  landed and the E0 gate is green (below). M4.b–M4.d next.
 
 ## Ground truth: reference builder vs the paper
 
@@ -356,3 +358,59 @@ science can fall out is E2: with saturation off and `--eq-mode exact`, every
 smallest, and anything new at larger shapes is a first-class exhibit for the
 paper. Report those individually, with both fixpoints and the separating left
 context, before aggregating anything.
+
+---
+
+## M4.a — Driver + E0 (2026-07-08)
+
+The `sosl.experiment` package (previously a README stub) is built by promoting
+the two M3 prototypes into the campaign layer, as spec §8 M4.a directed:
+
+    stats.py     RunStats (spec §7 verbatim, incl. n_classes_initial /
+                 stall_class / cex_policy) -> stats.json + CSV
+    run.py       Config + run_case: one instrumented run -> stats + split
+                 ledger + signature matrix; per-case wall-clock budget;
+                 crash-isolated (a fault becomes a recorded verdict)
+    manifest.py  versioned corpus (m4a-2026-07-08): the triptych + the two
+                 permanent specimens + a T1 alternate presentation; the census
+                 tier (genaut/corpus/) is guarded/deferred (curated elsewhere)
+    driver.py    manifest x config matrix -> one stats.json per run +
+                 results.csv; one case never kills the campaign
+    report.py    the E0 one-pager (with a PASS/FAIL gate) and the E4
+                 ledger / signature-matrix renderers
+
+`run_case` reuses the learner procedures unchanged behind a phase-tagged,
+counting `member` wrapper, so its per-run metrics are the same numbers the M3
+ledgers reported — the row-P5 stability lock (`tests/sosl/campaign_e0.py`)
+asserts the Even (`32/4/7/8`) and EvenBlocks (`67/4/14/14`) ledgers byte-stable
+against the M3 baselines above.
+
+**E0 gate: PASS.** Ten runs over the named cases; zero MISMATCH, zero BUDGET.
+The default config is SOUND on every case; the permanent specimens certify
+`ACCEPTOR_ONLY` under `--no-saturation --eq-mode exact` (spec §9 P4/F5) and
+reach canonical under saturation+exact.
+
+| case | config | ref | init | learned | member (f/h/s/p) | eq | cex | sat | cert | stall | verdict |
+|---|---|--:|--:|--:|--:|--:|--:|--:|---|---|---|
+| gf_aa_parity | default | 6 | 3 | 6 | 74 (51/4/9/10) | 2 | 1 | 2 | bounded:8 | transient | SOUND |
+| gf_aa_reset | default | 6 | 3 | 6 | 74 (51/4/9/10) | 2 | 1 | 2 | bounded:8 | transient | SOUND |
+| even | default | 5 | 3 | 5 | 51 (32/4/7/8) | 2 | 1 | 1 | bounded:8 | transient | SOUND |
+| evenblocks | default | 8 | 3 | 8 | 99 (67/4/14/14) | 2 | 1 | 2 | bounded:8 | transient | SOUND |
+| a_implies_xa | default | 5 | 4 | 5 | 43 (32/0/2/9) | 1 | 0 | 1 | bounded:8 | transient | SOUND |
+| a_once | default | 4 | 2 | 4 | 35 (26/3/2/4) | 2 | 1 | 1 | bounded:8 | transient | SOUND |
+| a_implies_xa | no-sat-exact | 5 | 4 | 4 | 21 (17/0/0/4) | 1 | 0 | 0 | exact | permanent | ACCEPTOR_ONLY |
+| a_implies_xa | exact | 5 | 4 | 5 | 43 (32/0/2/9) | 1 | 0 | 1 | exact | transient | SOUND |
+| a_once | no-sat-exact | 4 | 2 | 3 | 18 (13/3/0/2) | 2 | 1 | 0 | exact | permanent | ACCEPTOR_ONLY |
+| a_once | exact | 4 | 2 | 4 | 35 (26/3/2/4) | 2 | 1 | 1 | exact | transient | SOUND |
+
+The two T1 presentations (`gf_aa_parity`, `gf_aa_reset`) produce identical
+ledgers and signature matrices — a presentation-independence witness the driver
+gets for free. The E4 renderer now machine-generates the signature matrix (class
+keys x discovered columns), the companion to the paper's Tables 6/8 that was
+previously hand-derived; artifacts land under `tests/sosl/logs/e0/`
+(`results.csv`, `e0_report.md`, `e4_transcripts.md`).
+
+The census tier is intentionally not wired: `genaut/corpus/` is being curated
+separately, so E0 runs the named cases alone. E1's scaling scatter and E2's
+broad permanent-stall hunt (M4.b) fold the census back in through
+`manifest.census_cases` once it is ready.
