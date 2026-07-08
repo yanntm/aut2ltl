@@ -369,6 +369,10 @@ context, before aggregating anything.
 
 ## M4.a — Driver + E0 (2026-07-08)
 
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.campaign_e0` →
+`tests/sosl/logs/e0/{results.csv, e0_report.md, e4_transcripts.md}`. The tables
+below are analysis read off `results.csv`.
+
 The `sosl.experiment` package (previously a README stub) is built by promoting
 the two M3 prototypes into the campaign layer, as spec §8 M4.a directed:
 
@@ -489,6 +493,10 @@ separating left context before it enters any aggregate.
 
 ## M4.b — E1 scaling + E2 ablation (2026-07-08)
 
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.campaign_m4b` →
+`tests/sosl/logs/m4b/{results.csv, e1_report.md, e2_report.md}`. The two tables
+below are read off `results.csv`.
+
 Both experiments run over the named cases through the driver
 (`tests/sosl/campaign_m4b.py`); the census tier stays deferred, so E1's scatter
 plots and E2's broad specimen hunt fold in later via `manifest.census_cases`.
@@ -547,6 +555,12 @@ parity twin `2state1ap1acc_parity` — the smallest shapes where non-LTL languag
 appear (SHAPES.md: "not-LTL first appears at `2state1ap0acc`; the LTL frontier is
 n ≥ 2 ∧ k ≥ 1"). 258 languages, two configs, `tests/sosl/census_campaign.py`.
 
+_Reproduce (from `sosl/`):_ the harvest —
+`python3 -m tests.sosl.census_campaign 2state1ap1acc 2state1ap1acc_parity`; the
+exhibits + structural buckets — `python3 -m tests.sosl.census_e2_exhibits
+2state1ap1acc` → `tests/sosl/logs/census_e2/{2state1ap1acc_runs/results.csv,
+2state1ap1acc.md}`. The figures below are read off those runs.
+
 **Soundness across the frontier.** Default config (saturation on) is **SOUND on
 all 258** — byte-equal to the precomputed reference, zero MISMATCH. The learner
 is correct on the entire exhaustive shape (spec §9 P2/P3 at scale).
@@ -601,6 +615,10 @@ prefix-independent; `Even`, `a_once`, `a_implies_xa` not).
 ---
 
 ## M4 — E5 counterexample sensitivity (2026-07-08)
+
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.campaign_e5` →
+`tests/sosl/logs/e5/{results.csv, e5_report.md}`. The table below is read off
+`results.csv`.
 
 The teacher grows a `--cex-policy minimal|first|padded:<k>` hook
 (`sosl/sosl/teacher/whitebox.py`). `minimal` is the oracle's shortlex-least
@@ -684,8 +702,10 @@ Büchi automaton, so the baseline (`sosl/sosl/experiment/baseline.py`) feeds it 
 **state-based** Büchi presentation of each census language (Spot, `SBAcc` — a
 transition-based Büchi is misread by ROLL as a trivial language) and runs its
 three canonical FDFA learners, harvesting `#MQ`/`#EQ` and the FDFA size (leading
-+ progress DFA states) from ROLL's own `Statistics`. Named-case paired table
-(`tests/sosl/campaign_e3.py`):
++ progress DFA states) from ROLL's own `Statistics`.
+
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.campaign_e3` →
+`tests/sosl/logs/e3/e3_report.md`. Named-case paired table (read off that run):
 
 | case | ours N (MQ/EQ) | ROLL periodic | ROLL syntactic | ROLL recurrent |
 |---|---|--:|--:|--:|
