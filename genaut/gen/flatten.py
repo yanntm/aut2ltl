@@ -143,6 +143,13 @@ def discover(corpus: str, exclude: Tuple[str, ...]) -> List[Source]:
                 continue
             if tag in exclude:
                 continue
+            # Sampled tiers exist only for beyond-the-wall shapes. A sample of an
+            # already-exhaustive shape (e.g. the sampler-validation `2state1ap1acc`
+            # draw) is redundant — every one of its languages is in the exhaustive
+            # tier — and mixing acceptance families on a shared id space (`_parity`
+            # is load-bearing) only injects mislabeled provenance. Skip it.
+            if os.path.isdir(os.path.join(det_root, tag)):
+                continue
             n, k, c, family = parsed
             out.append(Source(name, n, k, c, family, False,
                               os.path.join(base, "det"),
