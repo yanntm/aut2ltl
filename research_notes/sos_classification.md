@@ -381,6 +381,26 @@ locates the exact parity/Rabin index — Büchi at `(m⁺ ≤ 0)`, co-Büchi at
 
 ## 8. The Wagner degree
 
+§7 read every rung of the ladder and the acceptance index off the four
+integers `(m⁺, m⁻, n⁺, n⁻)`. Above all the rungs sits the complete
+invariant: the **Wagner degree**, which classifies ω-rational languages
+exactly up to continuous reducibility and refines everything computed so
+far. Carton and Perrin give the degree in ordinal form, as a formula in the
+same quantities [CP99 §3] — a direct read-off of `𝓘(L)`, except in one
+tied case, where the formula recurses through a *derivative* `∂X` of the
+language. That recursion is the one step of the classification that resists
+the transport to the algebra, and it structures the section: §8.1 restates
+the formula and the derivative from [CP99], in enough detail to be read
+without returning to that paper; §8.2 proves the two results this note
+adds — the derivative is *not* an algebraic operation (no re-marking of the
+accepting pairs of `𝓘(X)` recognizes `∂X`, Proposition 8.1), yet it *is* a
+computation on the multiplication table once the table is read as a machine
+(the marking never changes, only the admissible stems shrink,
+Theorem 8.5); §8.3 places both results against Cabessa and Duparc's
+earlier, derivative-free route to the same degree.
+
+### 8.1 The ordinal formula and Wagner's derivative
+
 The complete invariant is Wagner's, in Carton–Perrin's ordinal form
 [CP99 §3]. From `(m, n⁺, n⁻)` define
 
@@ -419,14 +439,21 @@ propagates through the derivative (`s(X) = s(∂X)` below), producing self-dual
 degrees with infinite `γ` — §9's fourth specimen is one. The profile table
 of §12 names these levels by this dictionary.
 
-**When the recursion is needed.** Only in the case `m ≥ 1 ∧ n⁺ = n⁻` does
-`γ` involve the **derivative** `∂X` — Wagner's derivation, realized by
-Carton–Perrin as an automaton transformation [CP99 §3]. On all other inputs
-— including every language whose maximal superchains are of a single sign —
-`γ = µ` and the degree is a direct read-off of `𝓘(L)`. The rest of this
-section shows the derivative case is a read-off too: not of the marking `P`
-(that is provably impossible), but of the same multiplication table through
-its right regular representation.
+**Reading the formula.** Only one branch is not a direct read-off of the
+§5–6 numbers. When `m = 0`, or when one sign dominates the maximal
+superchains (`n⁺ ≠ n⁻`), `γ = µ` is a single term and the degree is
+immediate from `𝓘(L)`. The remaining case `m ≥ 1 ∧ n⁺ = n⁻` is a *tie*:
+the maximal nests chain equally far under either leading sign, a symmetry
+the four integers cannot resolve, and there — and only there — the formula
+recurses through the **derivative** `∂X`, Wagner's derivation, realized by
+Carton–Perrin as an automaton transformation [CP99 §3] and restated below.
+Since `m(∂X) < m(X)`, the recursion terminates within `m(X)` steps, and its
+successive terms `µ₀, µ₁, …` have strictly decreasing exponents: the sum
+they form is the Cantor normal form of `γ`. The analogy with polynomials is
+exact — each derivative lowers the leading exponent and exposes the next
+coefficient of the degree. §8.2 shows how to run this recursion without
+leaving the table: not by re-marking `P` (that is provably impossible), but
+through the right regular representation.
 
 **Chains on an automaton** ([CP99 §2]). On a deterministic Muller automaton
 the same quantities take a loop form: a chain of length `m` at a state `q`
@@ -437,13 +464,60 @@ nests, each reachable from the last, alternately signed. These automaton
 quantities coincide with the language quantities `m^±`, `n^±`
 ([CP99, Thms. 1–2]).
 
+**The derivative, informally.** In the tied case, sort the states of a
+deterministic automaton for `X` into three zones by what remains reachable:
+a state is *committed positive* if the full positive superchain structure
+is still accessible from it but the negative one no longer is, *committed
+negative* dually, and *undecided* if both are still accessible. The
+derivation truncates every run at the moment of commitment — entering the
+committed-positive zone accepts immediately, entering the committed-negative
+zone rejects immediately — and retains only the undecided core. `∂X` is
+thus the part of `X` decided before either commitment, a strictly simpler
+language: every maximal nest dies in the collapse.
+
+**A running example.** Over `Σ = {a, b, c, d}` take the *escape language*
+
+```
+    X = c*·a·K⁻ ∪ c*·b·K⁺ ,     K⁺ = {α ∈ {a,b}^ω : infinitely many a} ,
+                                K⁻ = {α ∈ {a,b}^ω : finitely many a} ,
+```
+
+so any occurrence of `d`, or of `c` past the leading `c`-block, is fatal.
+Its evident deterministic presentation has six states:
+
+```
+          COMMITTED +           UNDECIDED            COMMITTED −
+   ┌───────────────────┐    c ⟲ ┌───────┐       ┌───────────────────┐
+   │ K⁻ : finitely     │        │ hub h │       │ K⁺ : infinitely   │
+   │      many a       │◀── a ──┤       ├─ b ──▶│      many a       │
+   │   all-b loop  ✓   │        └───┬───┘       │   all-b loop  ✗   │
+   │   full loop   ✗   │          d │           │   full loop   ✓   │
+   │   = positive nest │     ┌──────▼─────┐     │   = negative nest │
+   └───────────────────┘     │  ⊥  (dead) │     └───────────────────┘
+                             └────────────┘
+                            no nest reachable
+        (transitions not drawn are fatal: they lead to ⊥)
+
+     one maximal nest of each sign, mutually unreachable:
+     m⁺ = m⁻ = 1 ,  n⁺ = n⁻ = 0  —  the tied case
+```
+
+The `K⁻`-component carries a positive chain of length 1 (its all-`b` loop
+is accepting inside its rejecting full loop), the `K⁺`-component the dual
+negative chain; the two components are mutually unreachable, and no loop
+combines the hub with a component (the hub is left forever on its first
+`a` or `b`), so no nest reaches depth 3: `m⁺ = m⁻ = 1`, `n⁺ = n⁻ = 0` —
+the derivative regime, in its smallest instance.
+
 **The derivation, precisely** ([CP99 §3]). Let `𝒜 = (Q, i, T)` — states,
 initial state, accepting family `T ⊆ 2^Q` of infinity sets — be a
 deterministic complete Muller automaton recognizing `X`, with `m(X) ≥ 1` and
 `n⁺ = n⁻ = n`. Call a state *positive* (resp. *negative*) if a maximal —
 length `n`, sign `+` (resp. `−`) — superchain is accessible from it, and
-write `Q⁺`, `Q⁻`. The derived automaton `∂𝒜` keeps `Q⁺ ∩ Q⁻`, adds an
-accepting sink `q₊` and a rejecting sink `q₋`, redirects every transition
+write `Q⁺`, `Q⁻`; the zones of the informal picture are `Q⁺ − Q⁻` and
+`Q⁻ − Q⁺` (committed) and `Q⁺ ∩ Q⁻` (undecided). The derived automaton
+`∂𝒜` keeps `Q⁺ ∩ Q⁻`, adds an accepting sink `q₊` and a rejecting sink
+`q₋`, redirects every transition
 entering `Q⁺ − Q⁻` to `q₊` and every other transition leaving `Q⁺ ∩ Q⁻` to
 `q₋`, and accepts by `{S ⊆ Q⁺∩Q⁻ : S ∈ T} ∪ {{q₊}}`. The definition is
 deliberately asymmetric: states from which *no* maximal superchain is
@@ -455,53 +529,78 @@ negative superchain structure, and `V_X` those whose future has lost `m` or
 `n⁺`), and `m(∂X) < m(X)`, so the recursion of `γ` terminates within `m(X)`
 steps.
 
-**The derivative leaves the algebra…** One could hope `∂X` is recognized by
-`𝓘(X)` itself under a re-marked accepting set. It is not:
+On the running example the collapse is immediate — the hub keeps only its
+(rejecting) `c`-loop, `a` commits positive, `b` and `d` negative, the dead
+sink merging into `q₋`:
+
+```
+                      c ⟲ ┌───────┐
+                          │ hub h │        kept: Q⁺ ∩ Q⁻ = {h}
+                          └┬─────┬┘
+                       a   │     │  b, d
+                   ┌───────▼─┐ ┌─▼────────┐
+                   │  q₊  ✓  │ │  q₋  ✗   │
+                   └─────────┘ └──────────┘
+        K⁻ collapsed into q₊ ;  K⁺ and ⊥ both merged into q₋
+
+        ∂X = c*·a·Σ^ω  —  properly open,  ϕ(∂X) = (1, σ)
+
+  recursion trace:  level 0   (m, n⁺, n⁻) = (1, 0, 0)     →  µ₀ = ω
+                    level 1   ∂X: (0, 0, 1), tie broken   →  µ₁ = 1 , s = σ
+                    γ(X) = ω + 1  —  the trace is the Cantor normal form
+```
+
+### 8.2 The derivative leaves the algebra — but not the table
+
+One could hope the derivation is an algebraic operation: that `∂X` is
+recognized by `𝓘(X)` itself under a re-marked accepting set `P′`, so that
+the recursion of `γ` never leaves the invariant. The running example
+refutes this. Trace two ω-words through its six-state presentation:
+
+```
+              in X ?     trajectory                          in ∂X ?
+   a·d^ω        ✗        h ──a──▶ K⁻ ──d──▶ ⊥                   ✓
+   d^ω          ✗        h ──d──▶ ⊥                             ✗
+```
+
+No left context rescues either word — every `u·a·d^ω` and every `u·d^ω`
+lies outside `X` — so the syntactic congruence of `X` identifies them. Yet
+the first entered the committed-positive zone before reaching the sink and
+the second did not, and `∂X` separates them. In general:
 
 **Proposition 8.1.** There is an ω-rational `X` with `m = 1`, `n⁺ = n⁻ = 0`
 whose derivative is not saturated by the syntactic congruence of `X`: no
 marking `P′` of the linked pairs of `𝓘(X)` recognizes `∂X`.
 
-*Proof.* Over `Σ = {a, b, c, d}` take the escape language
+*Proof.* The escape language of §8.1, with `∂X = c*·a·Σ^ω` as computed
+there. Then `a·d^ω ∈ ∂X` and `d^ω ∉ ∂X`, yet for every `u ∈ Σ^*` neither
+`u·a·d^ω` nor `u·d^ω` is in `X` — no left context separates them, so the
+two ω-words have the same image in the ω-component of the syntactic
+ω-semigroup, and any language recognized by `𝓘(X)`, under any marking of
+its linked pairs, is a union of such image classes: it contains both or
+neither. ∎
 
-```
-    X = c*·a·K⁻ ∪ c*·b·K⁺ ,     K⁺ = {α ∈ {a,b}^ω : infinitely many a} ,
-                                K⁻ = {α ∈ {a,b}^ω : finitely many a} ,
-```
+The failure is structural, not an artifact of the example: membership in
+`∂X` records whether the prefix trajectory *visited* the committed region
+`Q⁺ − Q⁻`, an event the ω-image — which only remembers where the
+trajectory *ends up* — cannot see. This is also why the recursion of
+[CP99], as published, runs on automaton presentations rather than on a
+recognizing algebra.
 
-so any occurrence of `d`, or of `c` past the leading `c`-block, is fatal.
-On the evident six-state deterministic presentation (a hub with a `c`-loop,
-a two-state `K⁻`-component, a two-state `K⁺`-component, a dead sink): the
-`K⁻`-component carries a positive chain of length 1 (its all-`b` loop is
-accepting inside its rejecting full loop), the `K⁺`-component the dual
-negative chain (all-`b` loop rejecting inside the accepting full loop); the
-two components are mutually unreachable, and no loop combines the hub with
-a component (the hub is left forever on its first `a` or `b`), so no nest
-reaches depth 3 — `m⁺ = m⁻ = 1`, `n⁺ = n⁻ = 0`, the derivative regime. The collapse gives `∂X = c*·a·Σ^ω`
-(the hub keeps only its `c`-loop, which is rejecting; `a` commits positive,
-`b` and `d` negative). Now `a·d^ω ∈ ∂X` and `d^ω ∉ ∂X`, yet for every
-`u ∈ Σ^*` neither `u·a·d^ω` nor `u·d^ω` is in `X` — no left context
-separates them, so the two ω-words have the same image in the ω-component
-of the syntactic ω-semigroup, and any language recognized by `𝓘(X)`, under
-any marking of its linked pairs, is a union of such image classes: it
-contains both or neither. ∎
-
-The failure is structural, not an artifact: membership in `∂X` records
-whether the prefix trajectory *visited* the committed region `Q⁺ − Q⁻`, an
-event the ω-image — which only remembers where the trajectory *ends up* —
-cannot see.
-
-**…but not the table.** The object that does carry the derivation is the
-**right regular representation** of `𝓘(X)`: the *Cayley automaton* `A_X`
-with states `𝒞`, initial `[ε]`, transitions `t · a := t·λ(a)`, and accepting
-family `T_X = {S : S admissible, pair(S) ∈ P}`. Here `S ⊆ 𝒞` is
+**The bypass: the table as a machine.** The object that does carry the
+derivation is the **right regular representation** of `𝓘(X)`: the *Cayley
+automaton* `A_X` with states `𝒞`, initial `[ε]`, transitions
+`t · a := t·λ(a)`, and accepting family
+`T_X = {S : S admissible, pair(S) ∈ P}`. Here `S ⊆ 𝒞` is
 **admissible** iff it is the infinity set of some run of `A_X`; such an `S`
 is contained in one `R`-class and folds to a linked pair
 `pair(S) = (s, φ(w)^π)` — base `s ∈ S`, loop word `w` covering `S` — and
 conjugacy invariance of `P` (a linked pair and its conjugates carry the same
 verdict [PP04, Ch. II]) makes the choices immaterial, so `A_X`
-recognizes `X`. `A_X` *is* the table read as a machine; applying the
-derivation to it stays a table search, by the following three steps.
+recognizes `X`. `A_X` *is* the table read as a machine — its runs are
+trajectories over `𝒞`, and a trajectory retains exactly the visit
+information the ω-image discards. Applying the derivation to it stays a
+table search, by the following three steps.
 
 **Lemma 8.2 (transport at a location).** For every `t ∈ 𝒞`: the
 `A_X`-chains (resp. superchains) accessible from state `t` correspond,
@@ -595,31 +694,36 @@ is its own `R`-ideal, so `[a] ∈ T⁻−T⁺`; `[!a]` and `[!a·a]` lie in
 positive chain, and no negative top does). Hence `B ∩ 𝒞₊ = ∅`: the kept part
 is the hub `[ε]` alone, the restricted engines see only the two sinks,
 `(m′, n′⁺, n′⁻) = (0, 0, 0)`, `ϕ(∂Fork) = (1, δ)`, `γ(Fork) = ω + 1` — the
-§9 record, no presentation touched. On Proposition 8.1's escape language:
-the single `B`-pair `([c], [c])` is rejecting; descending from it to `q₊`
-gives `n′⁻ = 1 > n′⁺ = 0`, so `ϕ(∂X) = (1, σ)` — indeed `∂X = c*·a·Σ^ω`,
-properly open — and `γ(X) = ω + 1`, `s = σ`. [CP99]'s own Example 4 (their
-Figs. 4–5) has the same shape, and their published `γ(X₃) = ω + 1` agrees.
+§9 record, no presentation touched. On the running example of §8.1: the
+single `B`-pair `([c], [c])` is rejecting; descending from it to `q₊` gives
+`n′⁻ = 1 > n′⁺ = 0`, so `ϕ(∂X) = (1, σ)` and `γ(X) = ω + 1`, `s = σ` — the
+trace of §8.1's collapse figure, recovered without ever building the
+six-state presentation. [CP99]'s own Example 4 (their Figs. 4–5) has the
+same shape, and their published `γ(X₃) = ω + 1` agrees.
 
-**Related work: Cabessa–Duparc.** The gap this section closes was first
-crossed, by a different route, by Cabessa and Duparc [CD09a, CD09b]: they
-prove the Wagner degree is a syntactic invariant, define a Wadge-like
-reduction game directly on finite pointed ω-semigroups, and give an
-algorithm ([CD09b, Alg. 4.1]) computing the degree — sign and self-duality
-included — by a single backward induction over the DAG of `R`-classes of
-stems, each node labeled by the sign and length of a *main vein* (a maximal
-sign-alternating idempotent chain in the node's flower, refining
-[CP97, Thm. 6]); the ordinal composition rule along the DAG absorbs both the
-superchain count and the derivative recursion, which their procedure never
-forms. Priority for computing the degree on the syntactic ω-semigroup is
-therefore theirs. What the present section adds is complementary.
-Proposition 8.1: the derivative *itself* is not an algebraic operation —
-which is why [CP99]'s own recursion stalls at presentations, and why a
-bypass like [CD09b]'s, or a change of object like Theorem 8.5's, is
-necessary rather than convenient. Theorem 8.5: the derivative-faithful
-form — [CP99]'s actual recursion running on the invariant through its right
-regular representation, reusing the §5–6 engines unchanged, with a lasso
-witness at every level and the recursion trace as the Cantor normal form.
+### 8.3 Discussion: two routes to the degree
+
+The gap this section closes was first crossed, by a different route, by
+Cabessa and Duparc [CD09a, CD09b]: they prove the Wagner degree is a
+syntactic invariant, define a Wadge-like reduction game directly on finite
+pointed ω-semigroups, and give an algorithm ([CD09b, Alg. 4.1]) computing
+the degree — sign and self-duality included — by a single backward
+induction over the DAG of `R`-classes of stems, each node labeled by the
+sign and length of a *main vein* (a maximal sign-alternating idempotent
+chain in the node's flower, refining [CP97, Thm. 6]); the ordinal
+composition rule along the DAG absorbs both the superchain count and the
+derivative recursion, which their procedure never forms. Priority for
+computing the degree on the syntactic ω-semigroup is therefore theirs.
+
+What the present section adds is complementary. Proposition 8.1: the
+derivative *itself* is not an algebraic operation — which is why [CP99]'s
+own recursion stalls at presentations, and why a bypass like [CD09b]'s, or
+a change of object like Theorem 8.5's, is necessary rather than convenient.
+Theorem 8.5: the derivative-faithful form — [CP99]'s actual recursion
+running on the invariant through its right regular representation, reusing
+the §5–6 engines unchanged, with a lasso witness at every level and the
+recursion trace as the Cantor normal form.
+
 The two procedures compute the same value by disjoint routes — a one-pass
 DAG labeling against a re-zoned recursion — and their agreement over a
 corpus is the natural cross-oracle for an implementation of either
