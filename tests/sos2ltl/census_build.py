@@ -1,19 +1,24 @@
-"""E1/E2 language-keyed census records over a genaut `corpus/sos` shape.
+"""E1/E2 language-keyed census records over a genaut `corpus/sos` folder.
 
-    python3 -m tests.sos2ltl.census_build <corpus/sos/TAG> [--out <file.jsonl>]
+    python3 -m tests.sos2ltl.census_build <corpus/sos/DIR> [--out <file.jsonl>]
 
-Iterates the shape's `.sos` files — one per distinct language, so §3b's "the
-unit is the language" is structural here — and writes, per language, the
-normative per-layer condition-(A)/(B) census record built by
-`census.census_line` (the same builder the survey side channel uses). No
-survey and no construction: a `corpus/sos` file already *is* the invariant.
-Feed the output to `tests.sos2ltl.census_report` for the E1/E2 tables.
+Iterates the folder's `.sos` files — one per distinct language, so "the unit
+is the language" is structural here — and writes, per language, the normative
+per-layer condition-(A)/(B) census record built by `census.census_line` (the
+same builder the survey side channel uses), tagged with the language `id`
+(the `.sos` basename) so the report can join to its `.cat` category sidecar
+for the Wagner-degree ventilation. No survey and no construction: a
+`corpus/sos` file already *is* the invariant. The reference folder is the
+irredundant `genaut/corpus/flat_canon/sos` (one file per language, up to
+renaming, complement-closed). Feed the output to
+`tests.sos2ltl.census_report` for the E1/E2 tables.
 
 Aperiodicity (the LTL/non-LTL split E1/E2 restrict on) is the group scan —
 `first_group(inv) is None`, the same predicate the certificate extractor uses.
 """
 from __future__ import annotations
 
+import json
 import os
 import sys
 from typing import List
@@ -38,7 +43,9 @@ def main(argv: List[str]) -> int:
                 inv = load_invariant(f.read())
             aperiodic = first_group(inv) is None
             n_ltl += aperiodic
-            fh.write(census_line(inv, aperiodic) + "\n")
+            rec = json.loads(census_line(inv, aperiodic))
+            rec["id"] = fn[:-4]  # the .sos basename — joins to the .cat sidecar
+            fh.write(json.dumps(rec, separators=(",", ":")) + "\n")
 
     print(f"census_build [{tag}]: {len(files)} languages "
           f"({n_ltl} LTL, {len(files) - n_ltl} non-LTL) -> {out}")
