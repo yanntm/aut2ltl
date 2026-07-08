@@ -193,9 +193,10 @@ languages emitted, 0 timeout, 0 crash**, total flat-tree-carrying **DAG
 a *distribution* rather than the single `GF(aa)` exemplar (19 nodes / arena
 1287 / flat 1 991 717). Group-bearing (non-LTL) inputs are declined upstream by
 the aperiodicity read-off (1701 declines). The engine column (a) is provisional
-pending F8: its total DAG (1 232 011 over 1798 emitted) is ~3× below the
-baseline — the compression the paper's §6 predicts — but 842 of those answers
-are non-equivalent, so the (a)-vs-(b) ledger is not yet trustworthy.
+pending F8: its total DAG (~1 232 000 over 1798 emitted) is ~3× below the
+baseline — the compression the paper's §6 predicts — but 394 of those answers
+are still non-equivalent (F8 defect 2), so the (a)-vs-(b) ledger is not yet
+trustworthy.
 
 ## E7 — certificate validation: the dual scan and ω-blindness tiers
 
@@ -378,92 +379,120 @@ directly. The removal **surfaced** what §3's gate had been converting silently
 into declines.
 
 **The measurement.** `--use sos2ltl` over the catalogue, verified by the Spot
-oracle: **842 answers are verified non-equivalent (FAIL)**, and **every one is
-`sos2ltl.engine`** — the walk+window transcription (C4), never the certificate
-side and never the DG fallback. Of the 1798 languages the engine answers, 842
-are wrong; the DG baseline `sos2ltl_dg` has **0 FAIL** (only SIZE-unverified
-explosions). Per §3 these are stop-the-line bugs, not statistics.
+oracle. Removing the gate exposed **842 verified non-equivalent (FAIL)** answers,
+**every one `sos2ltl.engine`** — the walk+window transcription (C4), never the
+certificate side and never the DG fallback (`sos2ltl_dg` has **0 FAIL**, only
+SIZE-unverified explosions). This split into **two distinct defects**; the first
+is fixed, leaving **394**. Per §3 these are stop-the-line bugs, not statistics.
 
-**Smallest exhibit — `1state2ap1acc_030`: `|𝒞| = 3`, 1 state, 2 AP, degree (ω,σ)
-(properly Gδ / DBA-proper).** The language is `L = GF(a | !b)` — "infinitely
-often (`a` or `¬b`)".
+**Defect 1 — the window term rendered one representative, not the class (fixed,
+−448).** A window word is built from λ-class representatives, and `Ω(R,c)`'s
+`⋁_S ⋀_{w∈S} GF ŵ` rendered each window position as the representative's single
+cube rather than the whole class it names. On `L = GF(a|!b)` (`1state2ap1acc_030`,
+`|𝒞|=3`, degree (ω,σ)) the frozen absorbing accepting layer's window family is
+upward-closed with three minimal singletons `{a&!b}, {!a&!b}, {a&b}` — the three
+concrete letters of the quotient letter `(a|!b)` — so `Ω = GF(a&!b) ∨ GF(!a&!b) ∨
+GF(a&b) = GF(a|!b)`; the engine emitted only `GF(!a&!b)` (the class's shortlex
+key), under-approximating. The construction is sound (no paper edit): every window
+position now renders as the full λ-class letter-set (`engine.py::_Letters`), and
+`Ω` reduces to `L` exactly. This fault needed **≥ 2 AP** (at 1 AP a quotient
+letter is a single literal or `⊤`, so representative and class coincide and the
+truncation is invisible — the 2-AP switch-on of F6) and floored at `|𝒞|=3`; the
+fix clears all 448 such cases.
 
-Canonical `D` (a single state; its one non-accepting edge is `!a&b`):
+**Defect 2 — the multi-layer bricks under-approximate (open).** The remaining
+394 FAILs are uniformly **`|𝒞| ≥ 12`, ≥ 4 states, degree (1,σ)/(1,π)** — the
+guarantee/safety multi-layer stratum (F6's (A)-fallback tier), over **1 AP**, so
+*not* a rendering fault. The window term is now correct; the defect is in the
+multi-layer brick assembly (`_leave` / `_sojourn` / `Final`, the Theorem-5.10
+skeleton across nested layers).
+
+Smallest exhibit — **`2state1ap0acc_086_c`: `|𝒞| = 12`, 4 states, 1 AP, degree
+(1,σ) (properly open — guarantee).** A reach-the-accepting-sink language.
+Canonical `D` (weak Büchi):
 
     HOA: v1
-    States: 1
-    Start: 0
-    AP: 2 "a" "b"
+    States: 4
+    Start: 1
+    AP: 1 "a"
     Acceptance: 1 Inf(0)
     --BODY--
-    State: 0
-    [!0&1] 0
-    [0 | !1] 0 {0}
+    State: 0 {0}
+    [t] 0
+    State: 1
+    [0] 0
+    [!0] 2
+    State: 2
+    [!0] 2
+    [0] 3
+    State: 3
+    [!0] 1
+    [0] 3
     --END--
 
-Syntactic invariant `𝓘(L)` (sole accepting linked pair `(1,1)`; class 1 =
-`{!a&!b, a&!b, a&b} = (a|!b)`, the absorbing accepting idempotent):
+Syntactic invariant `𝓘(L)` (12 classes, 15 accepting linked pairs — the
+multi-layer structure the bricks assemble across):
 
     SOS v1
-    ap: a b
-    classes: 3
+    ap: a
+    classes: 12
     0 eps
-    1 !a&!b
-    2 !a&b
-    letters: !a&!b->1 !a&b->2 a&!b->1 a&b->1
+    1 !a
+    2 a
+    3 !a;!a
+    4 !a;a
+    5 a;!a
+    6 !a;!a;a
+    7 !a;a;!a
+    8 a;!a;!a
+    9 a;!a;a
+    10 !a;!a;a;!a
+    11 !a;a;!a;!a
+    letters: !a->1 a->2
     mult:
-    0: 0 1 2
-    1: 1 1 1
-    2: 2 1 2
+    0: 0 1 2 3 4 5 6 7 8 9 10 11
+    1: 1 3 4 3 6 7 6 10 11 9 10 3
+    2: 2 5 2 8 9 5 2 9 8 9 5 9
+    3: 3 3 6 3 6 10 6 10 3 9 10 3
+    4: 4 7 4 11 9 7 4 9 11 9 7 9
+    5: 5 8 9 8 2 9 2 5 9 9 5 8
+    6: 6 10 6 3 9 10 6 9 3 9 10 9
+    7: 7 11 9 11 4 9 4 7 9 9 7 11
+    8: 8 8 2 8 2 5 2 5 8 9 5 8
+    9: 9 9 9 9 9 9 9 9 9 9 9 9
+    10: 10 3 9 3 6 9 6 10 9 9 10 3
+    11: 11 11 4 11 4 7 4 7 11 9 7 11
     accept:
-    1 1
+    2 2
+    2 6
+    5 7
+    5 10
+    8 3
+    8 8
+    8 11
+    9 2
+    9 3
+    9 6
+    9 7
+    9 8
+    9 9
+    9 10
+    9 11
 
-The engine emits `((a | !b) & GF(!a & !b)) | (!a & b & F((a | !b) & GF(!a & !b)))`,
-which demands `GF(!a & !b)` and so **strictly under-approximates** `L`. Witness
-`a^ω`: every position satisfies `a | !b`, so `a^ω ∈ L`, yet the formula rejects
-it (there is never a `!a & !b`). The window engine chose the wrong
-recurring-window family — the single window `!a & !b` in place of the
-upward-closed set `{a | !b}` that the accepting idempotent names.
+The engine emits a 453-character nested multi-layer formula (its shape:
+`(!a & X(… F(a & X(!a & Xa)) …)) | (a & X(…))`) that **strictly
+under-approximates** `L`: the witness `a·a·a·!a·a·(!a)^ω` reaches the sink and is
+in `L`, but the formula rejects it. `tests.sos2ltl.engine_fails` ranks the 394
+smallest-first (all `sos2ltl.engine`).
 
-**The frontier.** The FAIL floor is `|𝒞| = 3` at 1 state, and it needs **≥ 2
-AP** — no 1-AP language fails, the same 2-AP switch-on as F6's (A)-fallback
-stratum. `tests.sos2ltl.engine_fails` ranks the 842 smallest-first.
-
-**The ask.** This is a genuine C4 correctness defect, not a downstream-tool
-artifact (the formula is small and fully verified). The faithful-or-NOK contract
-requires `transcribe` to be corrected, or to **decline** (return `None`, so the
-caller falls through to the DG baseline) wherever its window read-off is not
-provably exact — §3's gate was masking the defect, not curing it, and the right
-cure is soundness at the source. Flagged for theory feedback; no paper edit.
-
-**Theory feedback (F8, resolved as an implementation defect).** Confirmed: the
-construction is sound as written, and "no paper edit" is right — the bug is in
-C4's rendering of `Ω`, not in Prop 6.4 or Theorem 5.10. Worked by hand on
-`1state2ap1acc_030`, `L = GF(a|!b)`: the frozen absorbing layer `{1}` is precisely
-the Lemma 5.2(ii) case — the walk freezes at `P = (a|!b)` while the loop
-idempotent wanders, so `V(1, β) = 1 ⟺ p` recurs. That accepting window family is
-**upward-closed with three minimal singletons** — `{a&!b}`, `{!a&!b}`, `{a&b}`,
-the three concrete letters of the quotient letter `p = (a|!b)` — and Prop 6.4(iv)'s
-collapse gives `Ω({1},1) = GF(a&!b) ∨ GF(!a&!b) ∨ GF(a&b) = GF(a|!b)`, whence the
-assembled label reduces to `GF(a|!b) = L`, exact. The engine instead emitted the
-single disjunct `GF(!a&!b)` — the **shortlex key** of class 1 (`1 !a&!b` in the
-`.sos`) — dropping the other two minimal sets and under-approximating. Root cause:
-`Ω` names the accepting idempotent by its class key (one concrete letter) rather
-than by the λ-quotient letter restored as the **disjunction over all concrete
-letters folding into it** — exactly the "restored last" convention §5.2 already
-mandates and Prop 6.4's `⋁`-over-minimal-sets form already prescribes. The census
-signature corroborates a truncated-disjunction fault rather than a mis-selected
-family: the failure needs `≥ 2 AP` (at 1 AP every quotient letter is a single
-literal or `⊤`, so "one representative" and "full disjunction" coincide and the
-truncation is invisible — the same 2-AP switch-on as F6), floors at `|𝒞| = 3`,
-and is engine-only (DG renders class preimages honestly). **Fix contract:** render
-`Ω(R, c)` as the full `⋁_S ⋀_{w∈S} GF ŵ` over the (minimal) accepting window sets
-with every quotient letter expanded to its concrete disjunction, or `decline`; no
-change to the construction. One residual check we leave to eng before closing all
-842: spot-verify a few high-degree exhibits at `(ω,·)`/`(ω²,·)` (where frozen loop
-classes wander the whole algebra) to confirm the fault is uniformly
-truncated-disjunction and not, on some, a genuinely mis-selected window set — the
-fingerprints differ and the fix for the latter would be non-trivial.
+**The ask.** Both defects are genuine C4 correctness bugs, not downstream-tool
+artifacts (small, fully verified). Defect 1 confirmed the theory reading — a
+rendering fault, construction sound — and is closed. Defect 2 is a *second,
+distinct* implementation fault in the multi-layer transcription, confined to the
+guarantee/safety degree-1 stratum; the faithful-or-NOK contract requires
+`transcribe` to be corrected there, or to **decline** (return `None` so the caller
+falls through to the DG baseline) wherever a layer's label is not provably exact.
+No change to the construction; no paper edit. Flagged for theory feedback.
 
 ## Reproduction
 
