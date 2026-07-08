@@ -235,6 +235,63 @@ def _permanent_exhibit(case_id: str,
     return "\n".join(lines)
 
 
+# -- E5: counterexample sensitivity ------------------------------------------
+
+
+def e5_report(campaign: CampaignResult) -> str:
+    """The E5 sensitivity report (markdown): per (case, cex-policy) the maximum
+    counterexample length, the harvest and total membership counts, and wall
+    time — to see how cost grows with counterexample length (spec §6 E5). The
+    harvest term is the one the analysis predicts logarithmic in |cex|."""
+    rows = [r for r in campaign.results if r.stats.learned_classes >= 0]
+    by_case: Dict[str, List[RunStats]] = {}
+    for r in rows:
+        by_case.setdefault(r.stats.case_id, []).append(r.stats)
+
+    lines: List[str] = []
+    lines.append("# E5 — Counterexample sensitivity")
+    lines.append("")
+    lines.append("Per case, the same run under increasing counterexample padding "
+                 "(`padded:<k>` pumps the minimal counterexample by k, same ω-word). "
+                 "`|cex|` is the max stem+loop length the teacher returned.")
+    lines.append("")
+    lines.append("| case | policy | \\|cex\\| (stem/loop) | harvest | member "
+                 "| wall (s) | classes | verdict |")
+    lines.append("|---|---|---|--:|--:|--:|--:|---|")
+    for case_id in sorted(by_case):
+        for s in sorted(by_case[case_id], key=_policy_order):
+            clen = f"{s.max_cex_stem}/{s.max_cex_loop}"
+            lines.append(
+                f"| {case_id} | {s.cex_policy} | {clen} | {_n(s.n_member_harvest)} "
+                f"| {_n(s.n_member_total)} | {s.wall_seconds:.3f} "
+                f"| {_n(s.learned_classes)} | {s.verdict} |")
+    lines.append("")
+    unsound = [r.stats for r in rows
+               if r.stats.verdict not in ("SOUND", "ACCEPTOR_ONLY")]
+    if unsound:
+        lines.append(f"**Unsound under padding: {len(unsound)} run(s)** — "
+                     + ", ".join(f"{s.case_id}/{s.cex_policy}" for s in unsound) + ".")
+    else:
+        lines.append("Every padded run stays correct (same learned invariant as "
+                     "minimal); padding changes only the query cost, never the "
+                     "outcome. The harvest term grows far slower than |cex| — "
+                     "consistent with the logarithmic counterexample analysis.")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _policy_order(s: RunStats):
+    """Sort key ordering cex policies: minimal, first, then padded by factor."""
+    p = s.cex_policy
+    if p == "minimal":
+        return (0, 0)
+    if p == "first":
+        return (1, 0)
+    if p.startswith("padded:"):
+        return (2, int(p.split(":", 1)[1]))
+    return (3, 0)
+
+
 # -- E4: worked-transcript renderers -----------------------------------------
 
 

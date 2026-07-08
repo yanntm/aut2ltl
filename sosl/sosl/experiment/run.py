@@ -225,6 +225,7 @@ def run_case(case_id: str, hoa_path: str, config: Config,
             return RunResult(stats)
         teacher = HoaTeacher.of_hoa(hoa_path, eq_mode=config.eq_mode)
         teacher.eq_bound = config.eq_bound
+        teacher.cex_policy = config.cex_policy
         stats.ap_count = len(teacher.alphabet.aps)
         stats.ref_classes = ref_n
 

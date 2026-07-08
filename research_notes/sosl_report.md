@@ -18,12 +18,13 @@ the questions the spec raises; it describes the implementation as it is.
   (`sosl/sosl/teacher/exact.py`) are landed; every census language reaches its
   canonical invariant, the Even run reproduces the paper's §4.3 trace, and the
   two permanent-stall specimens behave as Proposition 4.4 predicts.
-- **M4 — Campaign.** In progress. **M4.a (driver + E0) and M4.b (E1 scaling +
-  E2 ablation) done** over the named cases — the `sosl.experiment` package
-  (driver, manifest, per-run stats, E0/E1/E2/E4 reports) is landed, the E0 gate
-  is green, and the E2 stall classes match theory (below). Remaining
-  census-free: E5 (counterexample sensitivity). E3 (ROLL) and the census-backed
-  E1 scatter / E2 specimen hunt fold in via `manifest.census_cases`.
+- **M4 — Campaign.** In progress. **M4.a (driver + E0), M4.b (E1 scaling +
+  E2 ablation), the census-backed E2 harvest, and E5 (counterexample
+  sensitivity) done** — the `sosl.experiment` package (driver, manifest,
+  per-run stats, E0/E1/E2/E4/E5 reports) is landed, the E0 gate is green, the
+  E2 stall classes match theory, and E5 confirms the harvest term is empirically
+  `log(|cex|)` (below). Remaining: **E3 (ROLL)** baseline — the schedule risk;
+  the census-backed E1 scatter folds in via `manifest.census_shapes`.
 
 ## Ground truth: reference builder vs the paper
 
@@ -584,3 +585,32 @@ The two gap-5 specimens are the headline: `2state1ap1acc_06496`
 escalations — three branch-1, two frozen-chain) and `2state1ap1acc_19552`
 (`ref 15 → stall 10`). The beyond-wall shapes are reached by reproducible
 sampling (`genaut/gen/sample.py`), not exhaustive enumeration.
+
+---
+
+## M4 — E5 counterexample sensitivity (2026-07-08)
+
+The teacher grows a `--cex-policy minimal|first|padded:<k>` hook
+(`sosl/sosl/teacher/whitebox.py`). `minimal` is the oracle's shortlex-least
+counterexample (both the bounded and exact oracles enumerate in minimal order,
+so no separate minimization pass exists). `first` is a recorded **coincidence**:
+first-found *is* minimal for these oracles, so it reproduces `minimal` exactly.
+`padded:<k>` pumps the minimal counterexample by k — `(u, v) -> (u·v^(k-1), v^k)`,
+the same ω-word — and is used only if the pumped lasso is still a genuine
+hypothesis/teacher disagreement (never violate spec §9 F3).
+
+Over the counterexample-bearing named cases (`tests/sosl/campaign_e5.py`), with
+the loop length driven from 3 up to 96 by `padded:2..32`, the **harvest** term
+(the counterexample-analysis membership queries) grows by exactly **+1 per
+doubling** of the counterexample length — i.e. `harvest ≈ log₂|cex|`, the binary
+search over the stem/loop chain — while the learned invariant is unchanged (every
+run SOUND, same class count):
+
+| padded k | 1 (min) | 2 | 4 | 8 | 16 | 32 |
+|---|--:|--:|--:|--:|--:|--:|
+| loop length | 3 | 6 | 12 | 24 | 48 | 96 |
+| harvest (gf_aa / even / evenblocks) | 4 | 5 | 6 | 7 | 8 | 9 |
+
+This is the design's logarithmic counterexample term, confirmed empirically:
+padding changes only the query cost, never the outcome. Artifacts under
+`tests/sosl/logs/e5/` (`results.csv`, `e5_report.md`).

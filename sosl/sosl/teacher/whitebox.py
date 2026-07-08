@@ -20,10 +20,19 @@ import spot
 from sosl.contract import Counterexample, Equivalent, EquivResult
 from sosl.sos.alphabet import Alphabet, Letter
 from sosl.sos.build import canonical
-from sosl.sos.hypothesis import Hypothesis
+from sosl.sos.hypothesis import Hypothesis, loop_reps
 from sosl.sos.lasso import Lasso
-from sosl.teacher.equiv import bounded_counterexample
+from sosl.teacher.equiv import bounded_counterexample, resolve_prediction
 from sosl.teacher.exact import exact_counterexample
+
+
+def _pump(lasso: Lasso, k: int) -> Lasso:
+    """Inflate a lasso by factor ``k`` while denoting the same ω-word:
+    ``(u, v) -> (u.v^(k-1), v^k)`` (both stem and loop grow, and
+    ``u.v^(k-1).(v^k)^ω = u.v^ω``). ``k <= 1`` is the identity."""
+    if k <= 1:
+        return lasso
+    return Lasso(lasso.stem + lasso.loop * (k - 1), lasso.loop * k)
 
 
 def _prepare(aut: "spot.twa_graph") -> "spot.twa_graph":
@@ -41,13 +50,15 @@ class HoaTeacher:
     """
 
     def __init__(
-        self, aut: "spot.twa_graph", eq_bound: int = 8, eq_mode: str = "bounded"
+        self, aut: "spot.twa_graph", eq_bound: int = 8, eq_mode: str = "bounded",
+        cex_policy: str = "minimal",
     ) -> None:
         self.aut = _prepare(aut)
         self.acc = self.aut.acc()
         self.init = self.aut.get_init_state_number()
         self.eq_bound = eq_bound
         self.eq_mode = eq_mode
+        self.cex_policy = cex_policy
         # AP name -> buddy variable, registered once before any BDD op.
         self._var: Dict[str, int] = {
             ap.ap_name(): self.aut.register_ap(ap) for ap in self.aut.ap()
@@ -135,9 +146,33 @@ class HoaTeacher:
                 self.member, self.alphabet, hypothesis,
                 self._dst, self._mark, self.init, self.aut.num_states(),
             )
-            return Counterexample(lasso=cx) if cx else Equivalent(strategy="exact")
+            if cx is None:
+                return Equivalent(strategy="exact")
+            return Counterexample(lasso=self._policy_cex(cx, hypothesis))
         b = self.eq_bound if bound is None else bound
         cx, complete = bounded_counterexample(self.member, self.alphabet, hypothesis, b)
         if cx is None:
             return Equivalent(strategy=f"bounded:{b}" if complete else f"bounded:{b}:capped")
-        return Counterexample(lasso=cx)
+        return Counterexample(lasso=self._policy_cex(cx, hypothesis))
+
+    def _policy_cex(self, cx: Lasso, hypothesis: Hypothesis) -> Lasso:
+        """Apply ``cex_policy`` to the oracle's (minimal) counterexample.
+
+        ``minimal`` / ``first`` return it unchanged — both our oracles enumerate
+        in minimal (shortlex-least) order, so first-found already *is* minimal.
+        ``padded:<k>`` pumps it by ``k`` (spec §6 E5), but only if the pumped
+        lasso is still a genuine hypothesis/teacher disagreement — otherwise the
+        minimal one is kept (never hand the learner a lasso it predicts correctly,
+        spec §9 F3)."""
+        policy = self.cex_policy
+        if not policy or policy in ("minimal", "first"):
+            return cx
+        if policy.startswith("padded:"):
+            k = int(policy.split(":", 1)[1])
+            padded = _pump(cx, k)
+            loops = loop_reps(hypothesis)
+            if resolve_prediction(self.member, hypothesis, padded, loops) \
+                    != self.member(padded):
+                return padded
+            return cx
+        raise ValueError(f"unknown cex_policy {policy!r}")
