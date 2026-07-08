@@ -134,6 +134,15 @@ class _Letters:
         self.cube: List[str] = [
             "&".join(p if p in ab.true_aps(a) else "!" + p for p in ab.aps)
             for a in ab.letters()]
+        # A window position is a λ-class, carried by a representative letter;
+        # every concrete letter of that class has the same monoid action, so
+        # the position renders as the whole class's letter-set, not the one
+        # representative's cube. `class_cube[a]` is that set for `a`'s class.
+        by_class: Dict[int, List[Letter]] = {}
+        for a in ab.letters():
+            by_class.setdefault(inv.letter_class[a], []).append(a)
+        self.class_cube: List[str] = [
+            self.set_(by_class[inv.letter_class[a]]) for a in ab.letters()]
 
     def set_(self, letters: Sequence[Letter]) -> str:
         if not letters:
@@ -143,10 +152,11 @@ class _Letters:
         return _or([self.cube[a] for a in letters])
 
     def window(self, w: Word) -> str:
-        """`ŵ = w₁ ∧ X w₂ ∧ … ∧ X^{k−1} w_k` for a window word."""
-        out = self.cube[w[-1]]
+        """`ŵ = w₁ ∧ X w₂ ∧ … ∧ X^{k−1} w_k` for a window word — each position
+        the full λ-class it names (the class-set, not one representative)."""
+        out = self.class_cube[w[-1]]
         for a in reversed(w[:-1]):
-            out = _and([self.cube[a], _x(out)])
+            out = _and([self.class_cube[a], _x(out)])
         return out
 
 
