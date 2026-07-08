@@ -66,12 +66,14 @@ def main(argv: list) -> int:
         else:
             missing += 1
     n = len(stored)
-    print(f"[closure] catalogue={n}  complement present={present}  "
-          f"missing={missing}  self-dual={self_dual}")
-    print(f"          closed size would be {n + missing} "
-          f"({'even' if (n + missing) % 2 == 0 else 'ODD -> ' + str(self_dual) + ' self-dual'})")
-    print("OK" if fail == 0 else "FAIL")
-    return 0 if fail == 0 else 1
+    print(f"[closure] catalogue={n}  complement present={present}  missing={missing}")
+    # No language equals its own complement (w in L <=> w not in L is absurd), so
+    # self_dual is a hard 0 and the closed catalogue is necessarily even.
+    print(f"          self-dual={self_dual} (must be 0)  closed size={n + missing} "
+          f"({'even' if (n + missing) % 2 == 0 else 'ODD'})")
+    ok = fail == 0 and self_dual == 0 and (n + missing) % 2 == 0
+    print("OK" if ok else "FAIL")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":
