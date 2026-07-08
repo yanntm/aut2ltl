@@ -28,6 +28,11 @@ defined here.
   form (`.sos`) and the Cayley form. Two languages over the same `AP` are equal
   iff their serialized invariants are byte-equal — this equality *is* the
   soundness criterion of the whole tool.
+- **A calculus over invariants** (`calculus/`). Operate on languages directly in
+  the algebra: complement and the Boolean operations are set operations on the
+  accepting pair set; emptiness, universality, inclusion, equivalence and
+  intersection-word are scans returning the shortest lasso that settles them;
+  `reduce` returns to canonical form. No automaton, no re-determinization.
 
 ## Orientation map
 
@@ -36,6 +41,7 @@ defined here.
     invariant   Invariant(C, key, λ, M, P) + membership read-off
     cayley      the Hypothesis (step table + pair-cache) and its prediction
     serialize   .sos (invariant) and Cayley (hypothesis) canonical text I/O
+    calculus/   align / operate / reduce over invariants, witness-carrying
 
 ## See also
 
