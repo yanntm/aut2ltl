@@ -222,8 +222,18 @@ def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
     import spot                                            # noqa: E402
     from sosl.sos.build.importer import canonical          # noqa: E402
     from sosl.sos.core.quotient import invariant_of        # noqa: E402
-    from sosl.sos.io.serialize import dump_invariant       # noqa: E402
-    from sosl.sos.relabel import canonical_relabeling, canonical_sos  # noqa: E402
+    from sosl.sos.invariant import Invariant               # noqa: E402
+    from sosl.sos.io.serialize import dump_invariant, load_invariant  # noqa: E402
+    from sosl.sos.relabel import canonical_relabeling      # noqa: E402
+
+    def _complement(inv: "Invariant") -> "Invariant":
+        """The SoS complement: flip P against the linked pairs ([SωS26 §5]). The
+        result is already `B_k`-canonical when `inv` is, since σ* is chosen on the
+        (complement-invariant) semigroup core."""
+        return Invariant(alphabet=inv.alphabet, keys=inv.keys,
+                         letter_class=inv.letter_class, mult=inv.mult,
+                         accept=frozenset(inv.linked_pairs() - inv.accept),
+                         identity=inv.identity)
 
     det_dir = os.path.join(corpus, "flat_canon", "det")
     sos_dir = os.path.join(corpus, "flat_canon", "sos")
@@ -233,6 +243,7 @@ def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
 
     sources = discover(corpus, exclude)
     seen: Dict[str, str] = {}                 # canonical .sos bytes -> owning tag
+    primal_idents: List[str] = []             # the shape-realized languages, in order
     rows: List[Dict] = []
     total = 0
     for src in sources:
@@ -262,6 +273,7 @@ def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
             if dump_invariant(invariant_of(D)) != canon_sos:
                 raise AssertionError(f"relabel_hoa disagrees with algebra on {ident}")
             seen[canon_sos] = src.tag
+            primal_idents.append(ident)
             with open(os.path.join(det_dir, ident + ".hoa"), "w") as fh:
                 fh.write(D.to_str("hoa"))
             with open(os.path.join(sos_dir, ident + ".sos"), "w") as fh:
@@ -274,9 +286,32 @@ def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
             "scanned": len(sos_files), "new_langs": new, "cumulative": total,
         })
 
+    # Complement closure. No language equals its own complement, so the closed
+    # catalogue is even. For each primal whose complement is not itself a primal,
+    # materialize the dual under `<ident>_c` (same shape provenance): the `.sos` by
+    # flipping P (already canonical), the det by dualizing (De Morgan on the
+    # acceptance) — the two agree, an asserted cross-check.
+    dual = 0
+    for ident in primal_idents:
+        inv = load_invariant(open(os.path.join(sos_dir, ident + ".sos")).read())
+        comp_sos = dump_invariant(_complement(inv))
+        if comp_sos in seen:
+            continue                          # the dual is itself a catalogued primal
+        Dc = canonical(spot.dualize(spot.automaton(
+            open(os.path.join(det_dir, ident + ".hoa")).read())))
+        if dump_invariant(invariant_of(Dc)) != comp_sos:
+            raise AssertionError(f"dualize disagrees with flip-P on {ident}")
+        seen[comp_sos] = "complement"
+        with open(os.path.join(det_dir, ident + "_c.hoa"), "w") as fh:
+            fh.write(Dc.to_str("hoa"))
+        with open(os.path.join(sos_dir, ident + "_c.sos"), "w") as fh:
+            fh.write(comp_sos)
+        dual += 1
+
     record = {
         "corpus": "flat_canon", "excluded": list(exclude), "sources": len(sources),
-        "total_langs": total, "rows": rows,
+        "primal_langs": total, "dual_langs": dual, "total_langs": total + dual,
+        "rows": rows,
         "by_family": dict(_tally(rows, "family")),
         "by_exhaustive": {"exhaustive": sum(r["new_langs"] for r in rows if r["exhaustive"]),
                           "sampled": sum(r["new_langs"] for r in rows if not r["exhaustive"])},
@@ -342,20 +377,23 @@ def _write_census(flat_dir: str, r: Dict) -> None:
 def _write_canon_census(canon_dir: str, r: Dict) -> None:
     """Census + composition for the AP-relabeling-folded pool."""
     lines: List[str] = []
-    lines.append("# flat_canon — distinct languages up to AP relabeling\n")
+    lines.append("# flat_canon — distinct languages up to AP relabeling, complement-closed\n")
     lines.append(
-        f"One representative per language **up to AP relabeling** "
-        f"({r['total_langs']} in all): the `B_k` orbit-min of `flat/`, folding the "
-        f"signed permutations of the atomic propositions (`GF(a) ≡ GF(!a)`, "
-        f"`a↔b` twins). Both the det HOA and the `.sos` are relabeled into the "
-        f"orbit's canonical labeling (σ* applied to both — a self-consistent pair), "
-        f"and the smallest-shape `<tag>_<id>` name is preserved. The relabeling σ* "
-        f"is chosen on the semigroup core alone, so a language and its complement "
-        f"pick the same σ* (`𝓘(L̄)` = `𝓘(L)` with `accept` flipped, byte-exact).\n")
+        f"**{r['total_langs']}** languages: **{r['primal_langs']}** distinct up to "
+        f"AP relabeling (the `B_k` orbit-min of `flat/`, folding the signed "
+        f"permutations of the atomic propositions — `GF(a) ≡ GF(!a)`, `a↔b` twins) "
+        f"plus **{r['dual_langs']}** complements added to close the catalogue under "
+        f"complement. Both the det HOA and the `.sos` are relabeled into the orbit's "
+        f"canonical labeling (σ* applied to both — a self-consistent pair); primals "
+        f"keep the smallest-shape `<tag>_<id>` name, each added dual is `<primal>_c`. "
+        f"σ* is chosen on the semigroup core alone, so `L` and `L̄` pick the same "
+        f"labeling (`𝓘(L̄)` = `𝓘(L)` with `accept` flipped, byte-exact) — the "
+        f"complement is the trivial P-flip, cross-checked against `dualize(det)`. No "
+        f"language is its own complement, so the closed count is even.\n")
     if r["excluded"]:
         lines.append(f"Excluded: {', '.join('`' + e + '`' for e in r['excluded'])}.\n")
 
-    lines.append("\n## Composition\n")
+    lines.append("\n## Composition (primals — the shape-realized languages)\n")
     lines.append("| axis | bucket | languages |")
     lines.append("|---|---|--:|")
     for fam, v in sorted(r["by_family"].items()):
@@ -364,7 +402,9 @@ def _write_canon_census(canon_dir: str, r: Dict) -> None:
         lines.append(f"| provenance | {kind} | {v} |")
     for c, v in sorted(r["by_colours"].items(), key=lambda kv: int(kv[0])):
         lines.append(f"| acceptance colours | c={c} | {v} |")
-    lines.append(f"| **total** | | **{r['total_langs']}** |")
+    lines.append(f"| **primals** | | **{r['primal_langs']}** |")
+    lines.append(f"| complements added | | {r['dual_langs']} |")
+    lines.append(f"| **total (closed)** | | **{r['total_langs']}** |")
 
     lines.append("\n## Contribution by source (traversal order)\n")
     lines.append("| # | source | n | k | c | family | tier | scanned | new | cumulative |")
@@ -396,8 +436,9 @@ def main(argv: Optional[List[str]] = None) -> int:
           f"excluded {rec['excluded']}")
     if args.canon:
         crec = build_canon(args.corpus, tuple(args.exclude))
-        print(f"[flat_canon] {crec['total_langs']} languages up to AP relabeling "
-              f"(from {rec['total_langs']} fixed-labeling)")
+        print(f"[flat_canon] {crec['primal_langs']} languages up to AP relabeling "
+              f"(from {rec['total_langs']} fixed-labeling) + {crec['dual_langs']} "
+              f"complements = {crec['total_langs']} complement-closed")
     return 0
 
 
