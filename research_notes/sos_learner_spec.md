@@ -46,6 +46,18 @@ close: E3 (ROLL, M4.c) and the full-census N-spread for E1's scatter; and a
 per-structural-feature breakdown of the 44 permanent languages would close the
 last §6.3 frequency-table TBD in the paper.
 
+**Revision 2026-07-08c (M4.c / E3 delivered, RABIT accepted).** The E3 baseline
+landed on the named cases, and it deviated from this spec's original plan: ROLL
+is certified by its **native RABIT** equivalence against a state-based Büchi
+presentation, not by our teacher's bounded oracle. The deviation is *accepted*
+as the fairer design — both learners now certify exactly, by different
+mechanisms — and this spec is brought into line: the §6 E3 design note and the
+row-F6 text are rewritten accordingly, and the paper's §6.4 states the size
+comparison as competitive-within-`N + N²` (never "smaller", which 5.3(b)
+forbids) with the LTL-definability read-off as the sole capability
+differentiator. Open toward M4 close: census-wide ROLL medians and the
+full-census N-spread for E1's scatter.
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -523,14 +535,21 @@ language LTL-definable" directly (FDFA: no — mark N/A; ours: read off the
 learned invariant by the group test). Deliverable: paired table per case,
 summary medians, and the capability column reported as a result in itself.
 
-Design note, settled here so the wrapper does not improvise: ROLL's
-equivalence queries carry an *automaton* hypothesis (FDFA/NBA), not a Cayley
-form, so the exact oracle of 3.1 does NOT apply to them. Answer them with
-the bounded product enumeration (doubling `B` under the case budget) and
-record every such `eq` as `bounded:<B>` — the certification asymmetry (our
-runs exact, ROLL's bounded) is itself a reported result (section 9 row F6).
-If a bounded-certified ROLL run is later found wrong, record it as such;
-never silently re-run. Pin the ROLL version and JVM in the manifest.
+Design note (revised 2026-07-08c to the delivered E3): ROLL's equivalence
+queries carry an *automaton* hypothesis (FDFA/NBA), not a Cayley form, so our
+exact oracle of 3.1 does not apply to them. Two options were live — answer them
+with our bounded product enumeration (recording `bounded:<B>`), or let ROLL use
+its **native** automaton equivalence. The delivered baseline takes the latter:
+ROLL runs its own RABIT equivalence against a **state-based Büchi** presentation
+of the target (Spot `SBAcc`; a transition-based Büchi ROLL misreads as a trivial
+language). Both learners are then certified **exactly**, by *different* oracles —
+ours the Cayley transformation-closure product, ROLL's RABIT — so the reported
+asymmetry (row F6) is *mechanism*, not certification level. Because the target is
+presented to ROLL as its own automaton, absolute membership counts are
+presentation-sensitive; the comparison's robust axes are output size (summed FDFA
+states vs `N`, against Proposition 5.3's `N + N²` envelope) and capability
+(LTL-definability read-off — ours only). Pin the ROLL version and JVM in the
+manifest.
 
 **E4 — Worked transcripts (paper figures).** For the triptych: full audit-log
 renderings — table snapshots at each split, every minted column with its
@@ -749,7 +768,7 @@ recorded outcome, not a defect.
 | P4 | exact mode certifies the proven-permanent stalls (`a_implies_xa`, `a_once` under `--no-saturation`) | M3+ | always green | a counterexample here = exact-mode bug — paper Prop. 4.4 proves none exists |
 | F5 | byte-equality on `a_implies_xa` / `a_once` under `--no-saturation` | any | red, FOREVER | that is the theorem, not a flake; record `ACCEPTOR_ONLY` |
 | P5 | Even / EvenBlocks ledgers match the M3 baselines (trigger sequence, minted columns, per-phase counts — `sosl_report.md`) | M4 driver, default config | always green | behavior drift: diff the audit logs and reconcile before touching paper or baselines |
-| F6 | a ROLL `eq` answer certified only `bounded:<B>` | E3 | expected | record it; the certification asymmetry is a reported result, not a defect |
+| F6 | ROLL certified by its native RABIT equivalence, not our teacher's oracle | E3 | expected | record it; both learners certify exactly by different mechanisms — the asymmetry is a reported result, not a defect (design note revised 2026-07-08c) |
 | F7 | budget exhausted on an E6 random case | E6 | allowed | record `BUDGET`; census sizing (F4) does not apply to E6 |
 | P6 | `stall_class` on any saturation-on run | M4.b+ (E2) | must be `n/a` | driver bug: a saturated run must never carry `transient`/`permanent` (section 7) — the M4.a E0 table had this wrong; E2's frequency counts read the ablation leg only |
 

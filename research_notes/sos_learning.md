@@ -131,8 +131,9 @@ Myhill–Nerode's failure at ω seemed to forbid is what this paper is for.
    census (258 languages, zero mismatches), the query bounds of Proposition 5.2
    confirmed (harvest logarithmic in counterexample length), and saturation
    shown load-bearing on an enumerated family of 44 permanent stalls whose
-   canonical algebra is provably unreachable from queries without it (§6);
-   the FDFA-baseline comparison ⟨TBD-M4: ROLL⟩ completes the picture.
+   canonical algebra is provably unreachable from queries without it, and a
+   comparison to the FDFA baseline (ROLL) on which only the algebra answers
+   LTL-definability, the FDFA answering it not at all (§6).
 
 **Relation to the algebraic approach.** The closest work is Urbat and Schröder's
 algebraic automata learning [US20], and the relationship is precise. Generically,
@@ -1166,10 +1167,11 @@ surviving stalls as first-class output.
 
 ## 6. Evaluation
 
-*⟨Structure in place; E0/E1/E2 — including the census-backed ablation — and
-E5 have landed and their values are filled below; the values still marked
-⟨TBD-M4: …⟩ await the full-census N-spread (E1's scatter) and the ROLL
-baseline (E3) — nothing below is predicted.⟩*
+*⟨Structure in place; E0/E1/E2 — including the census-backed ablation — E5,
+and the named-case E3/ROLL baseline have landed and their values are filled
+below; the values still marked ⟨TBD-M4: …⟩ await the full-census N-spread
+(E1's scatter and the census-wide ROLL medians) — nothing below is
+predicted.⟩*
 
 The algorithm of §3–5 is implemented as a pure query learner: its only source
 of truth is the teacher interface, and no automaton is ever visible to it. The
@@ -1294,24 +1296,50 @@ type) over the 44, closing the table above's remaining axis.⟩
 ### 6.4 The FDFA baseline (Q3)
 
 The baseline is ROLL, the classification-tree FDFA learner [LCZL21,
-LSTCX19], in its periodic / syntactic / recurrent modes, on the same teacher
-under the same counting rules (one lasso = one membership query; protocol
-mismatches are documented, never adjusted away). One asymmetry is disclosed
-as part of the design rather than discovered later: our equivalence queries
-are answered exactly, while ROLL's hypotheses are automata, which the
-teacher can only check by bounded enumeration — the certification level is
-reported with the results ⟨TBD-M4: the bound reached per case⟩. Measured:
-queries to convergence and output size — the summed DFA states of each FDFA
-against `N` — read against Proposition 5.3's envelope: the FDFA never pays
-more than a quadratic premium over the algebra, and the algebra can pay
-exponentially over an acceptor. ⟨TBD-M4: the paired per-case table and
-medians; where inside the envelope the census actually sits.⟩ Last, the
-capability column that is the point of the comparison: from the learned
-invariant, LTL-definability is a read-off (§2.2), answered on every census
-case and checked against ground truth ⟨TBD-M4: n cases, agreement — must be
-total⟩; from an FDFA the same question is not answerable without further
-construction. That asymmetry is a result of the evaluation, not a footnote
-to it.
+LSTCX19], in its periodic / syntactic / recurrent modes, on the same census
+languages under the same counting rule (one lasso = one membership query;
+protocol adaptations documented, never adjusted away). Two adaptations are
+disclosed as design, not discovered after the fact. First, ROLL learns the
+language of a *Büchi automaton*, so it is fed a state-based Büchi presentation
+of each language (Spot's `SBAcc`; a transition-based Büchi ROLL misreads as
+trivial) — the target language is the same, but the presentation is ROLL's, so
+absolute membership counts are presentation-sensitive and the robust axes of
+comparison are output size and capability, not raw queries. Second, the two
+learners answer their equivalence queries by *different but both exact*
+mechanisms: ours by the transformation-closure product on the Cayley
+hypothesis (§2.3), ROLL's by its native automaton equivalence (RABIT). The
+comparison is therefore not exact-versus-bounded — both certifications are
+complete — but the oracles are not identical, and that is stated with the
+numbers rather than hidden.
+
+The named-case paired table (census-wide medians ⟨TBD-M4⟩); ROLL's size is the
+summed states of its FDFA, leading plus progress DFAs:
+
+| case | ours `N` (MQ/EQ) | ROLL periodic | syntactic | recurrent |
+|---|---|:--:|:--:|:--:|
+| `GF(aa)` | 6 (74/2) | 4 | 4 | 4 |
+| `Even` | 5 (51/2) | 12 | 15 | 9 |
+| `EvenBlocks` | 8 (99/2) | 8 | 8 | 8 |
+| `a → Xa` | 5 (43/1) | 12 | 14 | 9 |
+| `a ∧ XG¬a` | 4 (35/2) | 8 | 10 | 7 |
+
+Every entry sits inside Proposition 5.3(a)'s `N + N²` envelope, as it must;
+within it the two objects trade places — the algebra is *smaller* on `Even`,
+`a → Xa`, `a ∧ XG¬a` (5 vs 9–15, 5 vs 9–14, 4 vs 7–10), *larger* on `GF(aa)`
+(6 vs 4), tied on `EvenBlocks`. This is exactly the picture Proposition 5.3
+predicts and no more: the census is far too small to reach the exponential
+separation of 5.3(b), where the algebra is unboundedly larger than a smallest
+acceptor, so the honest reading is *competitive within the quadratic envelope*,
+not *smaller* — the size comparison is a wash, and the deliverable is not size.
+
+The deliverable is the capability column, the point of the comparison: from
+the learned invariant, LTL-definability is a read-off (the aperiodicity/group
+test of §2.2), answered on every case and checked against ground truth
+⟨TBD-M4: n cases, agreement — must be total⟩; from any of ROLL's three FDFAs
+the same question is not answerable without a further construction. One learner
+returns the language's algebra, from which definability is read; the other
+returns an acceptor, from which it is not. That asymmetry — not a query
+count — is the result of the comparison.
 
 ### 6.5 Counterexample sensitivity
 

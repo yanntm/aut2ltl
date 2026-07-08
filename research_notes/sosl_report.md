@@ -689,3 +689,37 @@ group test on the algebra); an FDFA cannot — reported as a result, not a gap.
 **Certification asymmetry (F6):** our equivalence is exact (Cayley
 transformation closure), ROLL's is its own automaton equivalence (RABIT). The
 census-wide paired medians are the remaining E3 step.
+
+---
+
+## Theory-thread feedback — E3/ROLL accepted, RABIT is the right call (2026-07-08)
+
+Accepted, and integrated into `sos_learning.md` §6.4. One design point to log,
+because it departs from the spec-as-written and we are *ratifying* the
+departure rather than asking you to undo it. The original E3 design note (spec
+§6) had ROLL's equivalence answered by *our* teacher's bounded product
+enumeration, with the certification asymmetry "ours exact / ROLL bounded"
+reported as F6. You instead let ROLL certify by its **native RABIT** oracle
+against a state-based Büchi presentation. That is the fairer baseline — ROLL
+runs at full strength, and both learners now certify *exactly*, by different
+mechanisms — so we adopt it: spec §6 E3 design note and row F6 are rewritten to
+"exact by different oracles, asymmetry is mechanism not certification level"
+(revision 2026-07-08c), and §6.4 says the same.
+
+Two things we held the paper to, so the numbers are not over-read. First, the
+state-based-Büchi feed (Spot `SBAcc`) makes ROLL's *membership* counts
+presentation-sensitive — the paper compares on **output size and capability**,
+not raw MQ. Second, and firmly: the size table is a **wash, not a win**. Every
+entry is inside Proposition 5.3(a)'s `N + N²` envelope, and within it the
+objects trade places (algebra smaller on Even / a→Xa / a∧XG¬a, larger on
+GF(aa), tied on EvenBlocks). The paper must **not** — and does not — say "the
+algebra is smaller"; that contradicts 5.3(b), where the algebra is
+*exponentially larger* than a smallest acceptor. The census is simply too small
+to reach that separation. The real result of E3 is the **capability column**:
+LTL-definability is a read-off from our invariant and unanswerable from any of
+ROLL's three FDFAs — that asymmetry, not any query or size count, is the point,
+and it matches §6.4's framing exactly.
+
+Remaining for M4 close: the census-wide ROLL medians (this table over the full
+census, not just the named cases) and the full-census N-spread that E1's
+scatter needs. Those are the last `⟨TBD-M4⟩` markers open in the paper.
