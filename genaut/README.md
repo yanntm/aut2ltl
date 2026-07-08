@@ -86,10 +86,23 @@ exhaustive sweep — is `research_notes/genaut_corpus.md`.
 
     python3 genaut/gen/flatten.py --canon    # also (re)build corpus/flat_canon/
 
+Every language also carries a **`.cat` sidecar** next to its `.sos`
+(`sos/<name>.cat`) — its *category*: the LTL / non-LTL cut and the Wagner degree
+`ϕ = (γ, s)` with `(m⁺, m⁻, n⁺, n⁻)` coordinates and class name, read off the
+invariant `𝓘(L)` (`sosl.sos.classify`, a pure table search — no automaton, no
+Spot). One `.cat` per language covers both the `.sos` and the `det/` HOA of that
+basename (a category is a language property). Written by `gen/categorize.py`
+(also invoked at the end of `flatten.py --canon`, so a rebuild keeps them in
+sync); re-runnable standalone over any `sos/` tier:
+
+    python3 genaut/gen/categorize.py         # -> corpus/flat_canon/sos/*.cat
+
 `flat_study.py` renders the language-level benchmark study
-(`corpus/flat_canon/STUDY.md`): headline census, composition, and per-origin-shape
-states / algebra size — the language view, complementary to `SHAPES.md`'s
-presentation funnel (which shape-reading consumers still use).
+(`corpus/flat_canon/STUDY.md`): headline census, **the LTL cut**, the
+**Wagner-degree profile** (aggregated from the `.cat` sidecars — duality-symmetric
+over the complement-closed catalogue), composition, and per-origin-shape states /
+algebra size — the language view, complementary to `SHAPES.md`'s presentation
+funnel (which shape-reading consumers still use).
 
     python3 genaut/flat_study.py             # -> corpus/flat_canon/STUDY.md
 
@@ -185,6 +198,9 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
                        rebuild.py    loop canonize over shapes (skip built; --force).
                        flatten.py    cross-shape union -> corpus/flat/ (det + sos +
                                      census.md + flat.json), deduped by language.
+                       categorize.py per-language .cat sidecar (LTL cut + Wagner
+                                     degree) read off each .sos; owns the class
+                                     vocabulary the study aggregates.
     analyze_frontier.py
                      one frontier report from a survey CSV (digest + PDF).
     probes/          diagnostics from the original 2state1ap1acc study.
@@ -196,7 +212,10 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
     corpus/flat/         cross-shape union: one det+sos per distinct language,
                      smallest-shape naming + census.md + flat.json.
     corpus/flat_canon/   the irredundant catalogue: one det+sos per language up to
-                     AP relabeling + unused-AP dropping (B_k orbit-min of flat/).
+                     AP relabeling + unused-AP dropping (B_k orbit-min of flat/),
+                     complement-closed; each language also carries a sos/*.cat
+                     category sidecar (LTL cut + Wagner degree). STUDY.md is the
+                     language-level study (flat_study.py).
     logs/<tag>/      the committed reference survey run per shape.
 
 ## Sampling beyond the wall — `gen/sample.py`
