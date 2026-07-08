@@ -28,7 +28,7 @@ engines are Arnold's two context shapes, met a third time after
 construction and learning. Extraction is output-polynomial as a
 class-indexed DAG; flattening it is the language's own intrinsic cost,
 which we measure, bound, and, in a definitional output format, avoid. An
-exhaustive census of some 15 000 small canonical languages maps both
+exhaustive census of 3 938 small canonical languages maps both
 frontiers empirically, and shows neither certificate shape is universal:
 ω-blind languages exist — groups only linear contexts can see — so the
 certificate's two-shape scan is forced by the languages themselves.
@@ -137,7 +137,7 @@ engines.** The construction is one family: the same split, met a third time.
    per-language lower-bound certificate on formula depth (§8; the
    lower-bound leg is conditional on an ω-word transfer of the
    Thérien–Wilke characterization, an obligation §2 states explicitly).
-5. An exhaustive census of small ω-regular languages — some 15 000
+5. An exhaustive census of small ω-regular languages — 3 938
    canonical invariants, language-keyed — mapping both frontiers
    empirically: where each precondition holds and at which width, where
    the fallback strata first switch on, which certificate shapes are
@@ -540,11 +540,11 @@ family's pattern is `p′`-periodic for all `n ≥ 0` and non-constant with
 
 On `L₄`, `e_C = [a·a]` and the constant verdict is
 `(x·[a·a], [a·a]) ∈ P` — the "infinitely many `a`" acceptance, true for
-every `x`. The condition is sufficient; whether it is *necessary* —
-whether every ω-blind language hides a right-ideal group — is open, and
-the census measures it (§9): a specimen ω-blind
-without the read-off would exhibit a second mechanism. Neither context
-shape, then, is universally available — the ω-power-only stratum is
+every `x`. The condition is sufficient but not necessary: of the 100
+ω-blind census languages only 8 are right-ideal, the other 92 falling into
+a phase-collapse tier and an acceptance-level `P`-tier (§9); the exact
+ω-blindness condition is acceptance-level, so no condition on `(𝒞, ·)`
+alone is necessary. Neither context shape, then, is universally available — the ω-power-only stratum is
 Proposition 4.2's, the linear-only stratum Proposition 4.5's, and the
 census counts both (§9): the extractor's two-shape scan is load-bearing
 in both directions, no longer resting on Proposition 4.2 alone.
@@ -812,10 +812,8 @@ power stabilizes — `[x^N] = [x^{N+1}]` fails for all `N`, contradicting
 aperiodicity (equal classes act equally). Mixed actions therefore need
 `|R| ≥ 3`, exactly the size at which Lemma 5.6(iii)'s scheme lives; on
 census-scale invariants, whose layers are tiny, condition (A) at width 1
-is the generic case — predicted, and now measured: on the exhaustive
-1-AP census (≤ 2 states; 2 898 layers over 891 aperiodic languages) no
-layer anchors at no width, none needs width 3, and the large majority
-anchor at width 1 (§9). Two open questions calibrate the scheme itself.
+is the generic case: the large majority of layers anchor at width 1 (§9).
+Two open questions calibrate the scheme itself.
 Its status: the four letters generate an aperiodic action monoid — every
 composite action defined on two classes fixes the class `1`, so no power
 alternates, and smaller-domain actions stabilize at once — so
@@ -1966,83 +1964,81 @@ language as residual, cannot see.
 
 ## 9. Evaluation
 
-⟨TBD: full section — after implementation. Fixed decisions, so the
-section can be written into: corpus = the census of small automata (ground
-truth 𝓘 and LTL status already computed) plus the triptych and the paper's
-worked specimens; comparisons = (i) flat size and depth: this extraction
-vs. the DG baseline; (ii) DAG size vs. |𝒞| — the scaling claim; (iii)
-per-layer anchoring statistics — which k fires, how often frozen layers
-appear, the inner-frontier map; (iv) the until-rank vs. emitted depth
-ledger — optimality gaps. Verdicts checked by
-the construction of [SωS26]: every emitted formula's 𝓘 must be byte-equal
-to the input's — the equivalence oracle is the object itself.⟩
+The census maps both frontiers empirically and measures §7's size claims,
+verdicts checked against the object itself — every emitted formula's `𝓘`
+must be byte-equal to the input's [SωS26, Thm 5.1]. ⟨TBD: the flat-size
+and depth ledger against the DG baseline, the DAG-size-vs-`|𝒞|` scaling
+scatter, and the until-rank-vs-depth optimality gaps, once the engine's
+end-to-end output lands.⟩
 
-**The corpus.** The census is language-keyed: its unit is the distinct
-canonical invariant, not the automaton — the group-bearing Büchi shape
-presents one language up to 331 ways, median 2, which is why the
-automaton cannot be the unit. Nineteen exhaustive shapes, with states,
-atomic propositions and acceptance sets grown one notch at a time,
-generalized-Büchi and parity families: some 15 000 languages in all.
-The degenerate stratum is exactly `{∅, Σ^ω}` per shape and is excluded
-throughout. Non-LTL languages appear only from two states up — a single
-state cannot carry a counting group. Prefix-independence, 60% of the
-smallest frame, is 1.5% of the bench.
+**The corpus.** The unit is the language. Each entry is a distinct
+ω-language carried as a canonical deterministic automaton and its
+syntactic invariant `𝓘(L)`; the construction is presentation-insensitive
+[SωS26, Thm 5.1], so every automaton realizing a language yields the
+byte-identical invariant and the seeding automaton drops out — the
+catalogue is deduplicated by the invariant and closed under complement.
+It holds **3 938 languages, 2 240 LTL / 1 698 non-LTL**, exhaustive below
+a tractability wall and sampled beyond it (present languages real, absence
+there uninformative). Algebras run to 121 classes; the degenerate
+`{∅, Σ^ω}` are excluded; non-LTL languages require at least two states of
+any acceptor. Prefix-independence is 5.0% of the LTL languages, rising
+with Wagner degree (0% at depth 1 to 31.6% at ω²) and nowhere the
+majority.
 
-**First data: the two conditions on the LTL side** (9 761 languages
-carrying 58 185 layers).
+**The two conditions on the LTL side.** Over the 2 238 non-degenerate LTL
+languages (19 082 layers):
 
 | read-off | value |
 |---|---|
-| condition (A) at width 1 | 77.6% of layers |
-| condition (A) within the ladder (`k ≤ 3`) | 88.2% of layers |
-| frozen layers | 36.1% |
-| languages fully stem-transcribable at `k ≤ 3` | 78.9% |
-| layers beyond the ladder, 3 states / 1 AP | 846 |
-| layers beyond the ladder, 2 states / 2 AP | 5 418 |
-| condition (B) failures, over 43 710 final-candidate layers | 0 |
-| (B) width needed, where decided | `k′ ≤ 2`; `k′ = 2` in 18 cases (the `GF(aa)` family) |
-| (B) undecided (enumeration-budget gaps, not conflicts) | 90 |
+| condition (A) at width 1 | 70.6% of layers |
+| condition (A) within the ladder (`k ≤ 3`) | 86.7% of layers |
+| frozen layers | 29.5% |
+| languages fully stem-transcribable at `k ≤ 3` | 80.4% |
+| layers anchoring at no `k ≤ 3` (the (A)-fallback stratum) | 1 432 |
+| condition (B) failures, over 12 516 final-candidate layers | 0 |
+| (B) width needed, where decided | `k′ ≤ 2`; `k′ = 2` in 36 cases, all at ω / ω² degree |
+| (B) undecided (enumeration-budget gaps, not conflicts) | 372 |
 
 **Table 2.** Census read-offs for conditions (A) and (B).
 
-The fallback stratum is empty on every one-state shape and every
-two-state 1-AP shape, and switches on abruptly one notch out, where a
-quarter (two propositions) to three-tenths (three states) of languages
-carry an (A)-failing layer: §8's stem-side residual row, witnessed and
-located. Two caveats keep the table honest. The tester caps at `k = 3`,
-so "beyond the ladder" does not yet decide "anchors at no width" — the
-uncapped fixpoint of Lemma 5.6(v) settles that split and is the
-census's next read-off. And the 90 (B)-undecided layers retire when
-Proposition 6.4(iii)'s normative closure lands. The headline is the
-asymmetry: the stem side breaks first, and the loop side has not broken
-at all — the walk's flat ladder is the binding constraint, acceptance
-staying window-determined everywhere measured (the 2-AP shape's 32 425
-final layers all pass). ⟨TBD: per-shape tables; the arbitrary-EL
-acceptance axis; the E4 size ledgers and DAG-vs-|𝒞| scatter once the
-engine emits.⟩
+The (A)-fallback stratum is 1 432 layers, all at Wagner degree `(1,σ)` /
+`(1,π)` (guarantee / safety, 716 apiece by duality) and all at two or more
+atomic propositions; the clopen, `(2,·)`, `(ω,·)` and `(ω²,·)` degrees
+have none. The stem-side residual row of §8 is a Wagner-depth-1
+phenomenon, not a shape one. Two figures are conservative: the tester caps
+at `k = 3`, so a layer "beyond the ladder" may still anchor at a larger
+width (the uncapped fixpoint of Lemma 5.6(v) decides), and the 372
+(B)-undecided layers are enumeration-budget gaps — frozen-final-layer, at
+`(ω,·)` / `(ω²,·)`, with no verdict conflict — decided by
+Proposition 6.4(iii)'s closure. The asymmetry is intrinsic: the stem side
+carries the whole fallback while condition (B) fails nowhere, all 12 516
+final-candidate layers passing. The walk's flat ladder is the binding
+constraint.
 
-**Second data: the certificate scan** (same census, non-LTL side).
-Every emitted family replays against the canonical deterministic
-acceptor by membership queries alone, with no failures, and every
-component length sits inside Theorem 4.4's bounds with margin. The scan
-settles §4.1's availability question negatively: 26 languages are
-ω-blind — certifiable in the linear shape only — none below four
-classes, §4.3's `L₄` the smallest. On the one cohort where the two
-blindnesses cohabit (two states, one atomic proposition, one Inf set:
-129 languages, 47 of them non-LTL):
+**The certificate scan on the non-LTL side.** Every emitted family
+replays against the canonical deterministic acceptor by membership queries
+alone, with no failure across the catalogue, and every component length
+sits inside Theorem 4.4's bound with margin (≤ 6 against `|𝒞|` ≤ 121). Of
+the 1 698 non-LTL languages, 100 are ω-blind — certifiable in the linear
+shape only, none below four classes (`L₄`, §4.3, the smallest):
 
 | certificate shapes available | languages |
 |---|---|
-| both shapes | 34 |
-| linear only (ω-blind) | 9 |
-| ω-power only (= exactly the prefix-independent stratum, Proposition 4.2 as data) | 4 |
+| both shapes | 1 490 |
+| linear only (ω-blind) | 100 |
+| ω-power only (the prefix-independent stratum, Proposition 4.2) | 108 |
 
-**Table 3.** Shape availability on the 47 non-LTL languages of the
-2-state / 1-AP / 1-Inf cohort.
+**Table 3.** Certificate-shape availability over the 1 698 non-LTL
+languages.
 
-Both blindnesses are rare, and both live at the smallest non-trivial
-shapes; whether Proposition 4.5's right-ideal condition accounts for
-every ω-blind specimen is the next measurement.
+The two blindnesses are asymmetric. Prefix-independence forces
+linear-blindness (Proposition 4.2), accounting for all 108
+ω-power-only languages; the dual has no multiplicative characterization —
+the right-ideal condition (Proposition 4.5) is sufficient but not
+necessary, holding for 8 of the 100 ω-blind languages, the other 92
+splitting into a phase-collapse tier (10) and an acceptance-level
+`P`-tier (82). Neither context shape is universal, and the two-shape scan
+is load-bearing in both directions.
 
 ## 10. Related work
 
