@@ -11,8 +11,8 @@ With significant inputs from
 
 LTL-definability of an ω-regular language `L` is one read-off of its
 syntactic ω-semigroup — aperiodicity — and that object is now constructible
-from any deterministic automaton [SωS26] and learnable from lasso queries
-alone [SωSL26]. This paper builds what lies on either side of the verdict,
+from any deterministic automaton [SωS26]. This paper builds what lies on
+either side of the verdict,
 from the invariant `𝓘(L) = (𝒞, λ, M, P)` alone. On the non-LTL side: a
 portable certificate — a family of lassos whose membership toggles mod
 `p > 1` — extracted by three scans of the multiplication table, provably
@@ -24,8 +24,7 @@ induction of Diekert and Gastin [DG08]. Two decidable equations on the
 table — *anchoring* and *window-determinacy*, governing the stem and loop
 coordinates of the accepting pair — yield an exactness theorem: under them
 the flat transcription defines `L`, with no equivalence oracle. The two
-engines are Arnold's two context shapes, met a third time after
-construction and learning. Extraction is output-polynomial as a
+engines are Arnold's two context shapes. Extraction is output-polynomial as a
 class-indexed DAG; flattening it is the language's own intrinsic cost,
 which we measure, bound, and, in a definitional output format, avoid. An
 exhaustive census of 3 938 small canonical languages maps both
@@ -41,9 +40,8 @@ The classical chain `LTL = FO[<] = star-free = aperiodic` [Kam68, Sch65,
 Tho79, Per84, DG08] makes LTL-definability of an ω-regular language `L` a property
 of one canonical object: the syntactic ω-semigroup `S(L)`, aperiodic exactly
 when `L` is LTL. For four decades the chain was a classification without a
-workflow — the object was never built. It now is [SωS26], and is even
-learnable from membership queries on lassos [SωSL26]. The verdict is a table
-lookup: power-iterate every class of the multiplication table; a cycle of
+workflow — the object was never built. It now is [SωS26]. The verdict is a
+table lookup: power-iterate every class of the multiplication table; a cycle of
 period `> 1` is a group, and the language is not LTL; no cycle, and it is.
 
 This paper is about the day after the verdict. A verdict, alone, satisfies
@@ -112,9 +110,8 @@ transcribes exactly the
 acceptance still open — which for a prefix-independent language is
 essentially everywhere — the remaining content is exactly the *ω-power* half,
 requiring its own engine with `GF`/`FG`-shaped templates read off `P`.
-**Arnold's two context shapes, which [SωS26] computed as two relations and
-[SωSL26] harvested as two column sorts, resurface in extraction as two
-engines.** The construction is one family: the same split, met a third time.
+**Arnold's two context shapes, which [SωS26] computed as two relations,
+resurface in extraction as two engines.**
 
 **Contributions.**
 1. The frontier, both directions, from one object: the aperiodicity verdict
@@ -1370,8 +1367,7 @@ which are finer — but it is its exact operational echo: Arnold's linear
 shape constrains what stems can do, his ω-power shape what loops can do,
 and the extraction splits its labor the same way, stems to the walk, loops
 to the windows. The construction computed the two shapes as two relations
-[SωS26], the learner harvested them as two column sorts [SωSL26], and here
-they are two engines. For a prefix-independent `L` (one residual, [SωS26,
+[SωS26], and here they are two engines. For a prefix-independent `L` (one residual, [SωS26,
 Prop 4.6]) the stem side carries no membership information at all — the
 walk still runs (classes move even when residuals do not: `GF(aa)` has one
 residual and four layers), but every `STAY∞` and every reach wrapper it
@@ -2066,11 +2062,9 @@ relaxation — not the global stutter-invariance of LTL−X [PW97], though
 the kinship deserves a remark. ⟨TBD: nail the exact variety
 statements.⟩
 
-**Companions.** This paper is the third member of a family in which the
-same two-shape structure was constructed [SωS26] and learned [SωSL26]: the
-construction paper supplies the object and its read-offs, the learner its
-acquisition from lasso queries alone, and this paper the rebuild on either
-side of the aperiodicity verdict.
+**Companion.** This paper builds on the construction [SωS26], which
+supplies the object and its read-offs; the present paper rebuilds the
+LTL / non-LTL certificate on either side of the aperiodicity verdict.
 
 ## 11. Conclusion
 
@@ -2156,8 +2150,6 @@ algebra now says exactly when, and exactly why.
 - **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing the
   syntactic ω-semigroup from a deterministic Emerson–Lei automaton.*
   Working draft, 2026.
-- **[SωSL26]** Y. Thierry-Mieg, with Claude (Anthropic). *Learning the
-  syntactic ω-semigroup.* Working draft, 2026.
 - **[SωSN26]** Y. Thierry-Mieg, with Claude (Anthropic). ⟨TBD: title of
   the census companion.⟩ Working draft, 2026.
 - **[Tho79]** W. Thomas. *Star-free regular sets of ω-sequences.*
