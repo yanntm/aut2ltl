@@ -163,7 +163,8 @@ def main(argv: List[str]) -> int:
     ap.add_argument("--sample", type=int, default=None,
                     help="alternatively, stop after this many draws")
     ap.add_argument("--max-draws", type=int, default=None,
-                    help="safety cap on draws (default 200x target-langs)")
+                    help="optional cap on draws; default is to exhaust the id space "
+                         "(so the only stops are --target-langs or exhaustion)")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--corpus", default=_CORPUS)
     args = ap.parse_args(argv)
@@ -171,8 +172,9 @@ def main(argv: List[str]) -> int:
     shape = parse_shape(args.token)
     if shape.naps < 1:
         raise SystemExit(f"{shape.tag}: 0-AP shapes are linguistically empty.")
-    max_draws = args.max_draws if args.max_draws is not None \
-        else 200 * (args.target_langs or 1)
+    # Default: run to the target language count OR exhaust the id space. There is
+    # no arbitrary draw cap unless the user sets one explicitly.
+    max_draws = args.max_draws if args.max_draws is not None else shape.num_combos
     max_draws = min(max_draws, shape.num_combos)
 
     print(f"=== sample {shape.tag} (N={shape.num_combos}) seed={args.seed} "
