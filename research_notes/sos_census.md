@@ -5,7 +5,11 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Skeleton draft — 2026-07-07 — placeholders marked `⟨TBD: …⟩`*
+*Skeleton draft — 2026-07-08 — placeholders marked `⟨TBD: …⟩`. The
+**derived census** of §3.1 is now realized in-repo as the genaut
+`flat_canon/` catalogue (headline numbers below and in
+`genaut/corpus/flat_canon/STUDY.md`); the **intrinsic census** of §3.2 (the
+direct invariant enumerator, C5) is still pending, so its ⟨TBD⟩s stand.*
 
 ## Abstract
 
@@ -38,7 +42,18 @@ rows, keyed by the language itself, and consumed by the extraction of
 Diekert–Gastin fallback below the horizon. The census is also the
 family's proving ground: every construction run, every learner run, every
 extraction conformance check lands, or fails to land, on a census row.
-⟨TBD: headline numbers once the intrinsic census runs.⟩
+**First numbers (derived census, realized).** Pushing the exhaustive genaut
+machine corpus (every tiny complete deterministic automaton up to the
+tractability wall) through the construction and deduplicating by canonical
+bytes yields **3790** distinct languages at a fixed AP labeling, **2007** up
+to renaming their propositions (1764 from exhaustive shapes + 243 sampled
+beyond the wall), and **3938** once closed under complement — a byte-distinct
+catalogue of the small ω-languages, canonical algebra sizes `|𝒞|` ranging
+2 / 15 / 121 (min / median / max) over deterministic presentations of 1 – 9
+states (`genaut/corpus/flat_canon/STUDY.md`). ⟨TBD: the intrinsic census's own
+count `#{L : |𝒞(L)| = N}` per size, once C5 runs — the derived catalogue is
+complete only in the machine metric (§3.1), not yet in the canonical-size
+metric.⟩
 
 ---
 
@@ -79,12 +94,26 @@ by byte equality. The result is *the language content of that machine
 class*, and two measurements come with it:
 
 - **The deduplication ratio** — machines per language, the exact measure
-  of presentation redundancy the machine census carries. ⟨TBD: number.⟩
+  of presentation redundancy the machine census carries. *Measured
+  (genaut `flat_canon`):* the collapse is heavy and shape-dependent — the
+  relabel-distinct machine tier folds ≈7.2× onto languages where
+  nondeterminism proliferates presentations (`2state1ap1acc`: 929 → 129)
+  and ≈2.5× on a state-rich shape (`3state1ap0acc`: 4033 → 1645), down to
+  1× where the shape is already language-sparse (`genaut/SHAPES.md`). And a
+  second fold sits *above* the machine tier: of the 3790 languages distinct
+  at a fixed AP labeling, **47%** are relabel/polarity twins or carry a
+  redundant AP — collapsing to 2007 up to renaming (`STUDY.md`).
 - **The reach map** — which canonical sizes `|𝒞|` occur for languages
   presentable with `n` states: the first empirical view of the
   size relation between presentations and the canonical object, in both
   directions (small machines with large algebras; large machines wasted
-  on small languages).
+  on small languages). *Measured:* both directions are populated. A
+  2-state parity machine already realizes languages of canonical size 9
+  and `|𝒞|` up to 31 (`2state1ap2acc_parity`, sampled); a 3-state 0-AP
+  machine reaches `|𝒞| = 121` (`3state1ap0acc`) — small machines, large
+  algebras. Conversely many shapes carry languages whose canonical `𝒞` is
+  a fraction of the machine (the 1-state families sit at `|𝒞| ≤ 4`). The
+  per-origin-shape states/algebra ranges are tabulated in `STUDY.md`.
 
 The derived census is cheap, bounded by the machine corpus, and — its
 main defect — *not intrinsically complete*: it enumerates the languages
@@ -181,7 +210,12 @@ over `m` letters is LTL" — that a machine census can only approximate
 the language. The known small examples calibrate: `GF(aa)` sits at
 `N = 6`, `Even` at `5`, `EvenBlocks` at `8` [SωS26, Table 1] ⟨TBD:
 confirm these are minimal at their properties, or exhibit smaller census
-rows — either answer is a finding⟩.
+rows — either answer is a finding⟩. The derived catalogue (`flat_canon`,
+2007 rows up to renaming, `|𝒞|` up to 121) is now the substrate to scan for
+these: the least-`|𝒞|` non-aperiodic / non-LTL row is a query over the
+classifier ventilation of the pool (`sos_classification.md` §12), no longer a
+hand-checked triptych. ⟨TBD: run that scan; a minimal specimen strictly below
+the triptych's sizes, or its absence, is E4's finding.⟩
 
 ### 4.2 Density: the partition function of ω-regular languages
 
@@ -195,6 +229,17 @@ the non-LTL fraction grow; is the residual stratum of [SωSX26] (genuine
 nesting) measure-zero at small sizes, as predicted; do prefix-independent
 languages dominate (every absorbing class forces one frozen layer)?
 
+*Realized so far (derived catalogue).* The partition *by canonical size `N`*
+awaits C5 — the derived census is bucketed by machine shape, not by `|𝒞|`.
+But the derived catalogue already carries the class read-off columns, so the
+coarse ventilations are computed: of the 2007 up-to-renaming languages,
+**1744 are `gba`-realized and 263 need `parity`**; by acceptance-colour
+count, **1393 at `c=0`, 329 at `c=1`, 285 at `c=2`, none at `c=3`**; **1764**
+come from exhaustive shapes and **243** from beyond-the-wall sampling
+(`STUDY.md`). These are the first ventilated counts of the family; the by-`N`
+integer sequences (the true partition function, OEIS candidate) come with the
+intrinsic enumerator.
+
 ### 4.3 The cost of canonicity
 
 Join the two censuses: per language, canonical size `|𝒞|` against the
@@ -206,7 +251,17 @@ size as a good presentation, how heavy the tail is, and whether the heavy
 cases correlate with a class (the conjecture worth testing: the blowup
 concentrates where the ω-rational constructors concentrate it —
 concatenation-shaped languages). ⟨TBD: state the conjecture properly;
-measure.⟩
+measure per-language.⟩
+
+*Realized so far (derived catalogue).* The join is available at the shape
+grain (per-language grain awaits the C6 driver storing each row's witnessing
+machine). The per-origin-shape table of `STUDY.md` already exhibits both signs
+of the ratio: `3state1ap0acc` reaches canonical automaton state counts of
+4 / 6 / 8 and `|𝒞|` up to 121 from a 3-state 0-AP machine (algebra *above*
+presentation), while the 1-state families sit at `|𝒞| ≤ 4` regardless of AP
+count (algebra *below* the machine's letter budget). So the ratio's tail is
+real and already visible; pinning it per-language, and testing the
+concatenation-blowup conjecture against the class columns, is the C6 join.
 
 ### 4.4 Hunts
 
