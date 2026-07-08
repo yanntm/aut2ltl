@@ -14,6 +14,12 @@ requirements; E4-interim (DG ledger, runnable at M1); E7 dual scan and
 pull-forward to M1.5; E3 directed questions; E8 (C7's experiment) and C7's
 milestone assignment; milestone M1.5.
 
+**Revision 2026-07-08** (theory adjudication of F5, appended to
+`sos_toltl_report.md`): H5 settled negatively — ω-blind languages exist
+(26 across the bench, min `|𝒞| = 4`, exhibit `L₄`, paper §4.3 /
+Proposition 4.5); H5 re-scoped from hunt to mechanism map; E7 gains the
+Proposition 4.5 right-ideal column.
+
 **One-line goal.** Provide the data for `sos_toltl.md`: per-layer anchoring
 and window-determinacy statistics over the census, the size ledgers against
 Diekert–Gastin and the automaton portfolio, the frontier hunts (smallest
@@ -290,10 +296,16 @@ notch at a time, smallest-first):
   (§5.5); the witness lasso pair is a paper figure.
 - **H4**: smallest LTL specimen whose extraction must invoke the DG
   fallback at all (= H2 ∪ H3 minimum).
-- **H5**: a non-LTL specimen whose ω-power patterns are *all constant*
-  (certificate exists in linear shape only) — the dual of the paper's
-  Proposition 4.2 blindness; a hit settles the open question of §4.1, an
-  exhausted census is evidence toward "F₂ always available".
+- **H5** *(settled 2026-07-08, report F5 — hits exist; re-scoped from
+  hunt to mechanism map)*: a non-LTL specimen whose ω-power patterns are
+  *all constant* (certificate exists in linear shape only) — the dual of
+  the paper's Proposition 4.2 blindness. The census found 26 (min
+  `|𝒞| = 4`, exhibit `L₄`, paper §4.3): "F₂ always available" is refuted
+  and the two-shape scan is necessary. The surviving hunt is the
+  *mechanism map*: per hit, the Proposition 4.5 read-off — is every
+  period-`>1` cycle a right ideal (`C·λ(Σ) ⊆ C` suffices)? An ω-blind
+  specimen *failing* the read-off exhibits a second blindness mechanism
+  and is a paper figure; re-run on census-next.
 - **H6**: smallest specimen with a `k`-anchored layer (`k ≥ 2`) whose
   walk moves phase under a *neutral* `k`-window (an excursion completed
   at the window's last step) — the witness that the engine's operating
@@ -320,16 +332,24 @@ shape fired *first* under the scan order, which is not the H5 datum. For
 every non-LTL specimen run both scans to completion and record two
 columns: first separating linear context (or `all-constant`), first
 separating ω-power context (or `all-constant`). A specimen with ω-power
-all-constant is an H5 hit (linear-only certificate); a census with none
-is evidence toward "F₂ always available". Triptych vectors (run
-2026-07-08, report F4): `Even` — linear ✓ *and* ω-power ✓, the ω-power
-family being `F₂(u=ε, v=a, y=a·!a, p′=2)`, the same family that
-certifies `EvenBlocks`; `EvenBlocks` — linear `all-constant`, ω-power ✓.
-Neither is an H5 hit; H5 is genuinely a census hunt. **Sizes.** Tabulate component
-lengths (`|u|`, `|v|`, `|x|`/`|y|`, `p′`) against the Theorem-4.4 bounds,
-per shape and per `|𝒞|` (§3b). **Scheduling.** E7 consumes only M1
-components (`witness/` + the reference automata): it runs at M1.5 on the
-1-AP census and re-runs at M4 on census-next.
+all-constant is an H5 hit (linear-only certificate); the census found 26
+(report F5) — H5 is settled, its surviving map lives in E6/H5. Triptych
+vectors (run 2026-07-08, report F4): `Even` — linear ✓ *and* ω-power ✓,
+the ω-power family being `F₂(u=ε, v=a, y=a·!a, p′=2)`, the same family
+that certifies `EvenBlocks`; `EvenBlocks` — linear `all-constant`,
+ω-power ✓. Neither is an H5 hit. **Sizes.** Tabulate component lengths
+(`|u|`, `|v|`, `|x|`/`|y|`, `p′`) against the Theorem-4.4 bounds, per
+shape and per `|𝒞|` (§3b). **Mechanism column (Prop 4.5).** Per non-LTL
+language: does every period-`>1` cycle absorb right multiplication
+(right ideal; checking `C·λ(Σ) ⊆ C` suffices)? The read-off *implies*
+ω-blindness (paper Prop 4.5(ii)), so column-true must be a subset of the
+H5 hits — a column-true non-H5 language is a stop-the-line bug in one of
+the two computations, never a statistic; an H5 hit that is column-false
+is the real finding (a second blindness mechanism, paper figure).
+**Scheduling.** E7 consumes only M1 components (`witness/` + the
+reference automata): the dual-scan ledger ran 2026-07-08 over the full
+regenerated bench (report F5); the mechanism column is the outstanding
+ask, runnable now; the full ledger re-runs at M4 on census-next.
 
 ### E8 — decomposition census (C7)
 

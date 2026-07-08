@@ -538,3 +538,44 @@ live at the smallest non-trivial shapes.
 **Paper edit flagged, not made** (per F4's handling): §4.1's H5 paragraph
 should record the negative settlement and cite the `|𝒞| = 4` exhibit above;
 the extractor's two-shape scan earns a "necessary" note. Awaiting theory.
+
+### Theory adjudication of F5 (2026-07-08)
+
+**Accepted — the refutation stands, and the mechanism is now a theorem
+(sufficient direction).** Verified by hand on the printed `𝓘(L₄)` before
+adoption: rows 2 and 3 of `mult` land entirely in `{2, 3}`, and both
+cycle elements fold to the idempotent `3` (`2² = 3`, `3² = 3`). The
+mechanism is that the group cycle `C = {[a], [a·a]}` is a **right
+ideal** (`C·𝒞¹ ⊆ C` — once an `a` has occurred, no continuation leaves
+the counting stratum): a cycle is closed under products, hence a finite
+group with a single idempotent `e_C`, so every pumped loop class
+`g^{m+i}·y` lies in `C` and folds to `e_C = [a·a]`, and every ω-power
+verdict is the constant `(x·e_C, e_C) ∈ P` — the "infinitely many `a`"
+acceptance, unconditional. Language-level: if *every* period-`>1` cycle
+is a right ideal, no valid F₂ family exists at all.
+
+**Paper edits made.** The cut-off session's §4.1 paragraph (already in
+the working tree, citing a Proposition 4.5 and a §4.3 exhibit that did
+not yet exist) is now backed: §4.3 gains the worked `L₄` exhibit and
+**Proposition 4.5 (ω-blind groups)** — (i) a right-ideal cycle has all
+ω-power patterns through it constant; (ii) all period-`>1` cycles right
+ideals ⟹ ω-blind, every certificate linear — with proof; §4.3's closing
+duality paragraph now records both blindnesses as real (one by theorem,
+one by census witness with a sufficient-condition theorem); §8 gains the
+dual-scan second-data paragraph (26 ω-blind, none below four classes,
+34/9/4 split on the settling shape, zero replay failures, Theorem-4.4
+bounds with margin); the abstract gains the settlement sentence. F5's
+observation that `L₄`'s linear family is `Even`'s own canonical family
+is kept in the exhibit ("differs in where its group hides, not in how it
+is caught").
+
+**Sufficiency is proved; necessity is not — one new engineering ask.**
+E7 gains the **mechanism column** (spec revision 2026-07-08): per
+non-LTL language, whether every period-`>1` cycle is a right ideal
+(`C·λ(Σ) ⊆ C` suffices — letter classes generate). Semantics of the
+column: column-true ⟹ H5 hit is a theorem, so a column-true non-H5
+language is a stop-the-line bug in one of the two computations; an H5
+hit that is column-false is the real finding — a second ω-blindness
+mechanism, paper figure, bring it back immediately. Prediction (theory,
+falsifiable): all 26 hits are column-true. Runnable now on
+`corpus/sos/`; H5 in E6 re-scoped from hunt to mechanism map.

@@ -46,7 +46,10 @@ exhaustive at one atomic proposition and two states — nothing fails either
 precondition: every layer anchors at width ≤ 2, every decided final layer
 is window-determined at width ≤ 2, the fallback stratum is unwitnessed,
 and all 90 non-LTL specimens were refused with a replayed counting family
-each.
+each. Neither witness shape is universal: the census exhibits ω-blind
+languages — groups only linear contexts can see, the smallest at four
+classes, its cycle absorbing right multiplication — so the certificate's
+two-shape scan is forced by the languages themselves.
 
 ---
 
@@ -283,11 +286,14 @@ equation: a linked pair `(s, e)` names the lassos `w·z^ω` with `[w] ∈ s`
 and `e` the idempotent power of `[z]`; prefix-independence gives
 `w·z^ω ∈ L ⟺ z^ω ∈ L`, and the pair of `z^ω` is `(e, e)`. ∎
 
-The converse blindness — a non-LTL language whose group is visible to
-linear contexts only, every ω-power pattern constant — has, to our
-knowledge, neither a witness nor an impossibility proof, and the triptych
-offers no witness (both its group specimens toggle in the ω-power shape,
-§4.3); the census hunts it (§8, H5).
+The converse blindness is real as well: the census exhibits non-LTL
+languages whose every ω-power pattern is constant, the smallest at four
+classes — worked in §4.3 beside the triptych, with the general mechanism,
+itself a table read-off (Proposition 4.5: a group whose cycle absorbs
+right multiplication is ω-blind). Neither shape is universally available,
+and the extractor's two-shape scan is a necessity, not a defense; the
+triptych contains no ω-blind specimen (both its group specimens toggle in
+the ω-power shape, §4.3).
 
 ### 4.2 Extraction: three scans of the table
 
@@ -437,10 +443,81 @@ that certifies `EvenBlocks`, toggles on `Even` as well (samples
 `(a^{n+1}·!a)^ω`, accepted iff `n` odd) — because the pumped block of
 `u·(vⁿ·y)^ω` with `u = ε` sits at the very start of the word, exposing
 the prefix the group counts. Only `EvenBlocks`' blindness is a theorem
-(Proposition 4.2, prefix-independence); the dual blindness has no
-theorem, `Even` refutes the naive symmetry, and neither specimen is
-ω-blind: whether any non-LTL language is — every ω-power pattern
-constant — is exactly §4.1's open question, the census hunt H5.
+on sight (Proposition 4.2, prefix-independence); the dual blindness is
+no *symmetry* — `Even`, speaking in both shapes, refutes that — but it
+is a *fact*: neither triptych specimen is ω-blind, and ω-blind
+languages exist. That settlement of §4.1's question is the census's,
+and its smallest witness is worked next, with its mechanism.
+
+**The fourth specimen: the smallest ω-blind language.** The dual scan
+over the language-keyed census (E7 in the companion spec) returns, at
+four classes, the exhibit
+
+```
+L₄  =  { α : |α|_a = ∞ }  ∪  { α : |α|_a < ∞ and |α|_a even }
+```
+
+— "if only finitely many `a` occur, their number is even". Its
+invariant has word classes `[!a], [a], [a·a]`, the first and last
+idempotent, and the group is the orbit of `[a]`: carrier `g = [a]`,
+`v = a`, index `m = 1`, period `p = 2`, cycle `C = {[a], [a·a]}`. `P`
+accepts `([!a],[!a])` and `([a·a],[!a])` — an `a`-free loop against an
+even stem — and `([a],[a·a])`, `([a·a],[a·a])` — a loop carrying an
+`a`, accepted against *both* stem phases: the count is infinite, the
+parity moot. That last clause is the blindness. The ω-power shape pumps
+the group into the loop of its own sample — `u·(vⁿ·y)^ω` reads `vⁿ`
+infinitely often — so every context whose loop carries an `a` has
+infinitely many, accepted unconditionally, and every context whose loop
+is `a`-free never consults the group: all patterns constant.
+Proposition 4.2 is silent here — `L₄` is not prefix-independent (two
+residuals, the parity toggle itself) — and the linear scan does
+succeed: step 2 emits `F₁(u = a, v = a, x = (!a)^ω, p′ = 2)` — samples
+`a^{n+1}·(!a)^ω`, accepted iff `n` odd — parking the word in the
+absorbing `a`-free tail, where the parity is exposed rather than
+flooded. (It is `Even`'s own canonical family: the census exhibit
+differs in where its group hides, not in how it is caught.)
+
+On the table the blindness is one read-off: the rows `[a]` and `[a·a]`
+of `M` land entirely in `C` — once an `a` has occurred, no continuation
+leaves the counting stratum — so the cycle *absorbs right
+multiplication*. That is the general mechanism:
+
+**Proposition 4.5 (ω-blind groups).** Let `g` have index `m` and period
+`p > 1`, with cycle `C = {g^m, …, g^{m+p−1}}`. Call `C` a **right
+ideal** if `C·d ⊆ C` for every `d ∈ 𝒞` — a table read-off, and the
+letter classes suffice: `C·λ(Σ) ⊆ C` propagates to all products. Then:
+
+(i) if `C` is a right ideal, every ω-power pattern through `g` is
+constant: `C` is closed under products (`g^{m+i}·g^{m+j} = g^{2m+i+j}`,
+exponent `≥ m`), hence a finite group with a single idempotent `e_C`;
+every `d ∈ C` keeps its powers in `C`, so `d^π = e_C`, and each phase
+verdict is `Val(x, g^{m+i}·y) = [(x·e_C, e_C) ∈ P]`, independent of
+`i`;
+
+(ii) if every class of period `> 1` has its cycle a right ideal, no
+valid F₂ family exists at all: `L` is **ω-blind**, and every
+certificate of `L` is linear.
+
+*Proof.* (i) is displayed: `g^{m+i}·y ∈ C` by the right-ideal
+hypothesis, and its idempotent power is `e_C`. (ii) The `n`-th verdict
+of a candidate `F₂(u, v, y, p′)` is `Val([u], [v]ⁿ·[y])`. If `[v]` has
+eventual period 1 the verdicts are eventually constant. Otherwise, past
+`[v]`'s index its powers lie in its cycle — a right ideal by
+hypothesis — so `[v]ⁿ·[y]` lies in that cycle and folds to its single
+idempotent: eventually constant again, by (i)'s computation. A valid
+family's pattern is `p′`-periodic for all `n ≥ 0` and non-constant with
+`p′ > 1` — non-constant on every window — contradiction. ∎
+
+On `L₄`, `e_C = [a·a]` and the constant verdict is
+`(x·[a·a], [a·a]) ∈ P` — the "infinitely many `a`" acceptance, true for
+every `x`. The condition is sufficient; whether it is *necessary* —
+whether every ω-blind language hides a right-ideal group — is open, and
+the census measures it (E7 in the companion spec): a specimen ω-blind
+without the read-off would exhibit a second mechanism. Neither context
+shape, then, is universally available — the ω-power-only stratum is
+Proposition 4.2's, the linear-only stratum Proposition 4.5's, and the
+census counts both (§8): the extractor's two-shape scan is load-bearing
+in both directions, no longer resting on Proposition 4.2 alone.
 
 ### 4.4 The verification contract
 
@@ -1841,9 +1918,25 @@ layer is window-determined at width ≤ 2 (a small UNDECIDED residue awaits
 the normative closure of Proposition 5.15(iii)). The residual stratum of
 §7 is so far unwitnessed: at one atomic proposition and two states, the
 flat-brick ladder covers everything the tests decide. ⟨TBD: final
-per-shape tables; the acceptance-family axis (parity corpora); the E4
-size ledgers and DAG-vs-|𝒞| scatter once the engine emits; the E7
-witness-length ledger and dual-scan (H5) column.⟩
+per-shape tables; the arbitrary-EL acceptance axis; the E4 size ledgers
+and DAG-vs-|𝒞| scatter once the engine emits.⟩
+
+**Second data** (the dual scan of the companion spec, on the
+language-keyed census: one canonical invariant per language, some
+15 000 languages over generalized-Büchi and parity acceptance). On the
+non-LTL side every emitted family replays against the canonical
+deterministic acceptor by membership queries alone, with no failures,
+and every component length sits inside Theorem 4.4's bounds with
+margin. The scan settles §4.1's availability question negatively: 26
+languages are ω-blind — certifiable in the linear shape only — none
+below four classes, §4.3's `L₄` the smallest. Where the two blindnesses
+cohabit (two states, one atomic proposition, one Inf set: 129
+languages, 47 of them non-LTL), 34 languages speak both shapes, 9 are
+linear-only, 4 ω-power-only — and the ω-power-only stratum is exactly
+the prefix-independent one, Proposition 4.2 observed as data. Both
+blindnesses are rare, and both live at the smallest non-trivial shapes;
+whether Proposition 4.5's right-ideal condition accounts for every
+ω-blind specimen is the next measurement.
 
 ## 9. Related work
 
