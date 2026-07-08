@@ -291,6 +291,30 @@ def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
 
 
 # ------------------------------------------------------------------ #
+# Committed-accepting classes (§6.3 strength stratification).
+# ------------------------------------------------------------------ #
+def _committed(cay: Cayley, c: int) -> bool:
+    """Whether every ω-word from class `c` is accepted — the tail language
+    `T_c = Σ^ω`. Exactly when every linked pair whose stem is reachable from
+    `c` in `Cay(L)` lies in `P`: from `c` no continuation can reach a
+    rejecting recurrence. Then `Final(c)` collapses to `true` (the co-safety
+    template), short-circuiting the walk bricks — an `O(|𝒞|²)` read-off."""
+    inv = cay.inv
+    reach: set = set()
+    stack = [c]
+    while stack:
+        x = stack.pop()
+        if x in reach:
+            continue
+        reach.add(x)
+        for a in range(inv.alphabet.size):
+            stack.append(cay.step(x, a))
+    accept = inv.accept
+    return all(pair in accept
+               for pair in inv.linked_pairs() if pair[0] in reach)
+
+
+# ------------------------------------------------------------------ #
 # The transcription.
 # ------------------------------------------------------------------ #
 def transcribe(inv: Invariant, k_b_max: int = 3) -> Optional[str]:
@@ -319,9 +343,19 @@ def transcribe(inv: Invariant, k_b_max: int = 3) -> Optional[str]:
         assert la.width is not None  # guarded above
         term = wterm[layer_id]
         assert term is not None
+        committed = [c for c in la.layer if _committed(cay, c)]
         if la.width == 1:
             _layer_flat(cay, la, lets, final, term)
-        else:
-            _layer_graded(cay, la, layer_id, la.width, lets, final, term)
+        elif len(committed) < len(la.layer):
+            # A k≥2 (graded) layer with a non-committed class: the graded
+            # exit-chain collapse (Theorem 5.23) is not proven exact, so
+            # decline to the DG baseline rather than risk an
+            # under-approximation. A fully committed graded layer needs no
+            # brick — every class takes Final = true below.
+            return None
+        # §6.3: a committed-accepting class takes Final = true directly, its
+        # reachable region being entirely in P (co-safety template).
+        for c in committed:
+            final[c] = "1"
 
     return final[inv.identity]
