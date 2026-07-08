@@ -18,15 +18,18 @@ the questions the spec raises; it describes the implementation as it is.
   (`sosl/sosl/teacher/exact.py`) are landed; every census language reaches its
   canonical invariant, the Even run reproduces the paper's §4.3 trace, and the
   two permanent-stall specimens behave as Proposition 4.4 predicts.
-- **M4 — Campaign.** Essentially complete. **E0, E1 (named + census N-spread),
-  E2 (named + census harvest with the 44-language permanent family and its
-  structural buckets), E5, and E3 (ROLL, named + census medians) all delivered**
-  — the `sosl.experiment` package (driver, manifest, per-run stats,
-  E0/E1/E2/E3/E4/E5 reports, ROLL baseline) is landed, the E0 gate is green, the
-  E2 stall classes match theory, E5 confirms the harvest term is `log(|cex|)`,
-  E3 is a size wash inside `N+N²` with the capability column the real result, and
-  the learner is SOUND on all 541 tractable census languages with `splits ≤ N`
-  throughout. Each result carries its reproduce command below. Only **E6**
+- **M4 — Campaign.** Essentially complete, and **re-run over the new `flat_canon`
+  benchmark** (the flat, complement-closed catalogue, 3938 languages up to AP
+  relabeling — supersedes the old per-shape census). **E0, E1, E2, E5, and E3
+  (ROLL) all delivered**; the `sosl.experiment` package (driver, manifest,
+  per-run stats, E0/E1/E2/E3/E4/E5 reports, ROLL baseline) is landed, the E0 gate
+  is green, E5 confirms the harvest term is `log(|cex|)`, E3 is a size wash inside
+  `N+N²` with the capability column the real result. On `flat_canon` the learner
+  is **SOUND on every language** with `splits ≤ N` throughout (N up to 121), and
+  the permanent-stall family — 44 at the old single shape — is now in the
+  **thousands**, with a candidate **prefix-independent** permanent stall that
+  would settle the paper's last open question. See "Flat-canon census rerun"
+  below (figures preliminary until the sweep completes). Only **E6**
   (beyond-census random instances) remains, a stretch goal.
 
 ## Ground truth: reference builder vs the paper
@@ -889,3 +892,153 @@ already have.
 at deeper shapes — whether prefix-dependence stays 100% of permanent stalls past
 `2state1ap1acc`, or a prefix-independent permanent stall appears and refutes the
 necessity. That is the one open question the paper flags rather than answers.
+
+---
+
+## Flat-canon census rerun (2026-07-08) — PRELIMINARY
+
+> **Status: preliminary.** The whole campaign is re-run over the new benchmark,
+> the flat, complement-closed catalogue `genaut/corpus/flat_canon` (**3938**
+> languages up to AP relabeling — one representative per language, dual included;
+> `corpus/flat_canon/STUDY.md`), which supersedes the old per-shape census (541
+> languages, the `2state1ap1acc` frontier). This replaces the census-backed E1 /
+> E2 / E3 sections above; the named-case sections (E0, M4a/b named tables, E5)
+> are `samples/`-driven and unchanged. **Figures below are read off a partial
+> sweep of `2492 / 3938` languages** — every shape complete *except*
+> `3state1ap0acc` (≈46% done), which supplies the large-`N`, high-gap tail — so
+> the counts grow and the extreme tail lengthens, but the structure and the
+> qualitative results are settled. Final values land when the sweep completes.
+
+The census procedures are refactored to the genaut pattern — a **streaming
+sweep** that produces raw per-run data, and **a-posteriori analyzers** that
+compute the study from it. Everything is ventilated by the **SoS category** (the
+`.cat` sidecar: the LTL-definability cut and the Wagner degree `ϕ = (γ, s)`, read
+off the syntactic invariant 𝓘(L)).
+
+_Reproduce (from `sosl/`):_
+
+```
+python3 -m tests.sosl.census_campaign --budget 30   # stream results.csv (both legs)
+python3 -m tests.sosl.census_e1                     # E1 soundness + cost + SoS cut
+python3 -m tests.sosl.census_e2_exhibits            # E2 permanent-stall family
+python3 -m tests.sosl.census_e3                     # E3 ROLL baseline (+ --summary-only)
+```
+
+### E1 — soundness and cost across the whole catalogue
+
+Default config (saturation on) is **SOUND on all 2492** languages swept so far —
+byte-equal to the precomputed reference, zero MISMATCH — across `N ∈ [2, 121]`
+(the old census reached `N = 21`). The designed **`splits ≤ N` holds on every
+one**; the sharpest so far is `N = 121` with 118 splits. Per-`N` cost medians (a
+representative ladder; full table in `logs/census_e1/summary.md`):
+
+| N | languages | median splits | max splits | median fill | median member | median equiv |
+|--:|--:|--:|--:|--:|--:|--:|
+| 2 | 2 | 0 | 0 | 2 | 3 | 1 |
+| 4 | 500 | 0 | 2 | 145 | 151 | 1 |
+| 8 | 105 | 5 | 6 | 84 | 104 | 2 |
+| 13 | 104 | 10 | 11 | 188 | 248 | 2 |
+| 21 | 56 | 18 | 18 | 429 | 514 | 2 |
+| 32 | 42 | 28 | 29 | 714 | 883 | 2 |
+| 50 | 44 | 47 | 47 | 1716 | 2028 | 2 |
+| 72 | 9 | 69 | 69 | 2609 | 3028 | 2 |
+| 97 | 14 | 93 | 94 | 4094 | 4665 | 1 |
+| 121 | 6 | 118 | 118 | 4859 | 5696 | 2 |
+
+Fill tracks the `O(N²·|Σ|)` envelope; equivalence queries stay in the single
+digits (1–4) across the entire range, including `N = 121`.
+
+**Ventilation by the LTL cut.** Soundness is uniform, but cost is not — the
+non-LTL (genuinely ω-counting) languages are the expensive half:
+
+| definability | languages | SOUND | median N | median splits | median member |
+|---|--:|--:|--:|--:|--:|
+| LTL (aperiodic) | 1486 | 1486 | 7 | 4 | 151 |
+| non-LTL | 1006 | 1006 | 17 | 13 | 349 |
+
+**Ventilation by Wagner degree** (duality-symmetric, as the catalogue is
+complement-closed — every `σ` row matches its `π` dual):
+
+| ϕ = (γ, s) | class | languages | SOUND | median N | median splits |
+|---|---|--:|--:|--:|--:|
+| (0, σ) / (0, π) | empty / universal — trivial | 1 / 1 | ✓ | 2 | 0 |
+| (1, δ) | clopen — properly Δ₁ | 27 | ✓ | 8 | 4 |
+| (1, σ) / (1, π) | guarantee / safety | 650 / 651 | ✓ | 19 | 16 |
+| (2, σ) / (2, π) | properly Σ₂ / Π₂ | 4 / 4 | ✓ | 5 | 2 |
+| (ω, σ) / (ω, π) | Gδ / Fσ — DBA/DCA-proper | 466 / 466 | ✓ | 4 | 0 |
+| (ω·2, σ) / (ω·2, π) | one Rabin pair | 12 / 12 | ✓ | 15 | 10 |
+| (ω², σ) / (ω², π) | parity / co-parity {0,1,2} | 99 / 99 | ✓ | 13 | 10 |
+
+### E2 — the permanent-stall family, exploded
+
+Under the ablation leg (`--no-saturation --eq-mode exact`, every surviving stall
+provably permanent), the partial sweep already surfaces **1180 distinct
+permanent-stall languages** — the old single-shape census found **44**. The
+right-vs-syntactic **gap reaches 53** (`ref 68 → stall 15`,
+`3state1ap0acc_015752`, recovered by 3 counterexamples and 12 saturation
+escalations), an order of magnitude past the old maximum of 5. Gap distribution
+(head; a long single-language tail runs out to 53):
+
+| gap | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | … | 53 |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| languages | 274 | 205 | 183 | 126 | 82 | 50 | 58 | 44 | 24 | 10 | … | 2 |
+
+Permanence **cuts across the LTL boundary**: **582 / 1180** of the permanent
+stalls are LTL-definable, the rest non-LTL — the permanent stall is a property of
+the right-vs-two-sided congruence gap, not of countability. By Wagner degree:
+
+| ϕ = (γ, s) | class | languages | prefix-indep | LTL | max gap |
+|---|---|--:|--:|--:|--:|
+| (1, δ) | clopen — Δ₁ | 23 | 0 | 23 | 5 |
+| (1, σ) / (1, π) | guarantee / safety | 440 / 441 | 0 | 220 / 221 | 53 |
+| (ω, σ) / (ω, π) | Gδ / Fσ | 91 / 91 | 0 | 44 | 13 |
+| (ω·2, σ) / (ω·2, π) | one Rabin pair | 10 / 10 | 0 | 0 | 4 |
+| (ω², σ) / (ω², π) | parity / co-parity {0,1,2} | 37 / 37 | **2** | 15 | 13 |
+
+**⚠ Candidate result — a prefix-independent permanent stall (to verify).** The
+old census found permanence **100% prefix-dependent** (0/44), and the paper left
+open whether a prefix-independent language can stall permanently — a single one
+"refutes the necessity outright." The partial sweep finds **4 (2 languages ×
+their complements)**, all in the parity-`{0,1,2}` degree:
+
+- `2state1ap2acc_parity_0088836118` — `ref 10 → stall 8`, gap 2 (parity {0,1,2})
+- `2state1ap2acc_parity_1178851077` — `ref 16 → stall 14`, gap 2 (parity {0,1,2})
+
+Both are small (well inside exact mode) and exact-certified permanent, and the
+prefix-independence predicate (`_prefix_independent`, validated on
+`GF(aa)`/`EvenBlocks` independent, `Even`/`a_once`/`a_implies_xa` not) calls them
+independent — consistent with the paper's own rotation lemma (a prefix-
+independent language still faces a left factor *inside the loop*, as a rotation).
+**This is flagged, not yet claimed:** it must be verified before it becomes the
+headline that closes the standing science ask above. If it holds, the
+`2state1ap2acc_parity` provenance (the *sampled* tier) means we should also hunt
+one at an exhaustive shape.
+
+### E3 — ROLL FDFA baseline (still a wash)
+
+Over the 2491 languages swept, median class count `N = 12` against ROLL's FDFA-
+size medians 14 / 18 / 11 (periodic / syntactic / recurrent). Against ROLL's
+*smallest* FDFA per language the algebra is smaller on **1102**, larger on
+**1239**, tied on **150** — the size wash confirmed at scale, the objects trading
+places inside the `N + N²` envelope (Prop. 5.3(a)), not a win. The **capability
+column** (LTL-definability, a read-off from our invariant, unanswerable from any
+FDFA) remains the result. The size trade **correlates with the LTL cut**:
+
+| definability | algebra smaller | larger | tied |
+|---|--:|--:|--:|
+| LTL (aperiodic) | 862 | 534 | 89 |
+| non-LTL | 240 | 705 | 61 |
+
+On LTL languages the algebra is more often the smaller object; on non-LTL
+languages ROLL's FDFA usually is — a finer reading than the aggregate wash.
+
+### Reporting note — the `OVERSIZE` verdict
+
+At the very top of the shape range (`ref 57 / 93`, `3state1ap0acc`) the **exact
+oracle** cannot build its transformation closure within its 200 000-element work
+cap and raises `ExactTooLarge` — an honest "too big to decide exactly", now
+recorded as a distinct **`OVERSIZE`** verdict (not `MISMATCH`). It affects **only
+the E2 ablation leg** of the few largest languages; the learner is **SOUND** on
+every one under the default leg, so their E1/soundness result stands and only
+their exact permanent-vs-transient classification is deferred. `MISMATCH` stays
+reserved for a genuine byte mismatch (of which there are none).
