@@ -948,6 +948,15 @@ representative ladder; full table in `logs/census_e1/summary.md`):
 Fill tracks the `O(N²·|Σ|)` envelope; equivalence queries stay in the single
 digits (1–4) across the entire range, including `N = 121`.
 
+Two reading notes on this table. **The per-`N` fill mixes alphabet sizes**, so a
+row must be read against `N²·|Σ|` with *that bucket's* `|Σ|`, not `|Σ| = 2`. The
+low-`N` buckets are dominated by `k = 3` languages (the `1state3ap1acc` shape):
+the `N = 4` bucket, 500 languages, is 396× `k = 3` (`|Σ| = 8`) with median fill
+145 ≈ `N²·|Σ| = 128`, only 42× `k = 1` (median fill 17 vs 32) — the aggregate 145
+is envelope-consistent once split by `|Σ|`, not an anomaly. **Convention:** the
+class count is `N = |S(L)₊¹|` (the syntactic ω-semigroup with adjoined identity);
+the two `N = 2` languages are exactly `∅` and `Σ^ω`, as that identity demands.
+
 **Ventilation by the LTL cut.** Soundness is uniform, but cost is not — the
 non-LTL (genuinely ω-counting) languages are the expensive half:
 
@@ -985,34 +994,64 @@ escalations), an order of magnitude past the old maximum of 5. Gap distribution
 
 Permanence **cuts across the LTL boundary**: **582 / 1180** of the permanent
 stalls are LTL-definable, the rest non-LTL — the permanent stall is a property of
-the right-vs-two-sided congruence gap, not of countability. By Wagner degree:
+the right-vs-two-sided congruence gap, not of countability. By Wagner degree
+(one row per side — every cell a per-side count, no σ/π folding):
 
 | ϕ = (γ, s) | class | languages | prefix-indep | LTL | max gap |
 |---|---|--:|--:|--:|--:|
-| (1, δ) | clopen — Δ₁ | 23 | 0 | 23 | 5 |
-| (1, σ) / (1, π) | guarantee / safety | 440 / 441 | 0 | 220 / 221 | 53 |
-| (ω, σ) / (ω, π) | Gδ / Fσ | 91 / 91 | 0 | 44 | 13 |
-| (ω·2, σ) / (ω·2, π) | one Rabin pair | 10 / 10 | 0 | 0 | 4 |
-| (ω², σ) / (ω², π) | parity / co-parity {0,1,2} | 37 / 37 | **2** | 15 | 13 |
+| (1, δ) | clopen — properly Δ₁ | 23 | 0 | 23 | 5 |
+| (1, σ) | properly open — guarantee | 440 | 0 | 220 | 53 |
+| (1, π) | properly closed — safety | 441 | 0 | 221 | 53 |
+| (ω, σ) | Gδ — DBA-proper | 91 | 0 | 44 | 13 |
+| (ω, π) | Fσ — DCA-proper | 91 | 0 | 44 | 13 |
+| (ω·2, σ) | one Rabin pair — σ | 10 | 0 | 0 | 4 |
+| (ω·2, π) | one Rabin pair — π | 10 | 0 | 0 | 4 |
+| (ω², σ) | parity {0,1,2} | 37 | **2** | 15 | 13 |
+| (ω², π) | co-parity {0,1,2} | 37 | **2** | 15 | 13 |
 
-**⚠ Candidate result — a prefix-independent permanent stall (to verify).** The
-old census found permanence **100% prefix-dependent** (0/44), and the paper left
-open whether a prefix-independent language can stall permanently — a single one
-"refutes the necessity outright." The partial sweep finds **4 (2 languages ×
-their complements)**, all in the parity-`{0,1,2}` degree:
+(The `440/441` and `220/221` σ/π counts are partial-sweep artifacts — at
+completion the dual-symmetry assertion requires each `σ` row to equal its `π`
+row exactly.)
+
+**Result — the prefix-dependence necessity conjecture is refuted (witness lock
+passes).** The old census found permanence **100% prefix-dependent** (0/44), and
+the paper left open whether a prefix-independent language can stall permanently —
+a single one "refutes the necessity outright." The sweep finds **4 (2 languages
+× their complements)**, both in the parity-`{0,1,2}` degree:
 
 - `2state1ap2acc_parity_0088836118` — `ref 10 → stall 8`, gap 2 (parity {0,1,2})
 - `2state1ap2acc_parity_1178851077` — `ref 16 → stall 14`, gap 2 (parity {0,1,2})
 
-Both are small (well inside exact mode) and exact-certified permanent, and the
-prefix-independence predicate (`_prefix_independent`, validated on
-`GF(aa)`/`EvenBlocks` independent, `Even`/`a_once`/`a_implies_xa` not) calls them
-independent — consistent with the paper's own rotation lemma (a prefix-
-independent language still faces a left factor *inside the loop*, as a rotation).
-**This is flagged, not yet claimed:** it must be verified before it becomes the
-headline that closes the standing science ask above. If it holds, the
-`2state1ap2acc_parity` provenance (the *sampled* tier) means we should also hunt
-one at an exhaustive shape.
+The **witness lock** (`tests/sosl/witness_lock.py`, spec item 7 / row P8) is a
+build-stopping gate that (a) asserts prefix-independence on each witness's
+**canonical** invariant (`(s,e) ∈ P ⟺ (c·s,e) ∈ P`, all `c`), and (b) asserts the
+**ω-sort column signature** of Corollary 4.7(b): every column minted in the
+saturated run is of the ω-sort — a single linear mint would convict the predicate
+or the sweep, no third option. **It passes on all four**, and retroactively on
+`GF(aa)` and `EvenBlocks`. This is consistent with the rotation lemma: a
+prefix-independent language still faces a left factor *inside the loop*, as a
+rotation — which is exactly why the separating columns are ω-power, not linear.
+
+The saturation escalations that recover the merged classes — every minted column
+`…^ω`, i.e. ω-sort, the visible P8 signature (full exhibits, both `.sos` +
+complete ledger, in `sosl/tests/sosl/reference/witness_lock_exhibits.md`):
+
+`_0088836118` — coarse 8 → canonical 10 (1 cex, 5 escalations):
+
+| chain | split | minted column |
+|---|---|---|
+| branch1 | a → a, !a;a | !a·([]·!a)^ω |
+| frozen | a → a, a;a | !a·([]·!a;!a)^ω |
+| branch1 | !a → !a, !a;!a;a ; !a;a → !a;a, a;!a | a;!a;!a·([]·a;!a;!a)^ω |
+| frozen | !a → !a, a;!a;!a | a·([]·!a;a)^ω |
+| frozen | !a;a → !a;a, a;!a;!a;a | a·([]·!a;!a;a)^ω |
+
+`_1178851077` — coarse 14 → canonical 16 (2 cex, 10 escalations); every minted
+column likewise ω-sort (ledger in the exhibit file).
+
+The two witnesses are *sampled*-tier (`2state1ap2acc_parity`); an
+exhaustive-shape witness is the remaining ask (spec item 7d) so §6.3 can claim a
+shape, not a sample.
 
 ### E3 — ROLL FDFA baseline (still a wash)
 
@@ -1030,7 +1069,10 @@ FDFA) remains the result. The size trade **correlates with the LTL cut**:
 | non-LTL | 240 | 705 | 61 |
 
 On LTL languages the algebra is more often the smaller object; on non-LTL
-languages ROLL's FDFA usually is — a finer reading than the aggregate wash.
+languages ROLL's FDFA usually is — a finer reading than the aggregate wash. (E3
+is a separate sweep and trails E1 by the in-flight language, so any transient
+one-language shortfall in these totals is sweep desync, not a dropped language;
+both cover the full catalogue at completion.)
 
 ### Reporting note — the `OVERSIZE` verdict
 
