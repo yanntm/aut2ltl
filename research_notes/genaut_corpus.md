@@ -39,6 +39,15 @@ bytes). Axes 2 and 3 are what `corpus/flat_canon/` adds: the **canonical** pool,
 one representative per language *up to renaming and unused symbols* — the
 irredundant count.
 
+**A note on acceptance families.** `gba` (`⋀ Inf`) and `parity` share the slot
+id space but carry a *different* acceptance formula, so a given id denotes
+*different* languages under the two — the `_parity` tag suffix is **load-bearing**,
+never interchangeable with its bare twin. Consequently a **sampled** tier is only
+meaningful for a **beyond-the-wall** shape: sampling a shape that is already
+exhaustively enumerated adds no language (every draw is in the exhaustive tier)
+and only risks family-mislabeled provenance, so such samples are excluded from the
+pools.
+
 ## 2. The canonical procedure (`flat_canon`)
 
 For each enumerated language, keyed off its **det HOA as ground truth** (the
