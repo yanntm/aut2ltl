@@ -481,13 +481,29 @@ gives `n′⁻ = 1 > n′⁺ = 0`, so `ϕ(∂X) = (1, σ)` — indeed `∂X = c*
 properly open — and `γ(X) = ω + 1`, `s = σ`. [CP99]'s own Example 4 (their
 Figs. 4–5) has the same shape, and their published `γ(X₃) = ω + 1` agrees.
 
-**Related work, to be pinned.** Cabessa and Duparc [CD09a, CD09b] develop
-the algebraic counterpart of the Wagner hierarchy on finite pointed
-ω-semigroups by game-theoretic means; the precise relation of their decision
-procedure to the present one — same §5–6 engines, shrinking stem set, plus
-Proposition 8.1 explaining why the marking alone cannot carry the derivative
-— is to be assessed once their construction is on the table (reading
-queued).
+**Related work: Cabessa–Duparc.** The gap this section closes was first
+crossed, by a different route, by Cabessa and Duparc [CD09a, CD09b]: they
+prove the Wagner degree is a syntactic invariant, define a Wadge-like
+reduction game directly on finite pointed ω-semigroups, and give an
+algorithm ([CD09b, Alg. 4.1]) computing the degree — sign and self-duality
+included — by a single backward induction over the DAG of `R`-classes of
+stems, each node labeled by the sign and length of a *main vein* (a maximal
+sign-alternating idempotent chain in the node's flower, refining
+[CP97, Thm. 6]); the ordinal composition rule along the DAG absorbs both the
+superchain count and the derivative recursion, which their procedure never
+forms. Priority for computing the degree on the syntactic ω-semigroup is
+therefore theirs. What the present section adds is complementary.
+Proposition 8.1: the derivative *itself* is not an algebraic operation —
+which is why [CP99]'s own recursion stalls at presentations, and why a
+bypass like [CD09b]'s, or a change of object like Theorem 8.5's, is
+necessary rather than convenient. Theorem 8.5: the derivative-faithful
+form — [CP99]'s actual recursion running on the invariant through its right
+regular representation, reusing the §5–6 engines unchanged, with a lasso
+witness at every level and the recursion trace as the Cantor normal form.
+The two procedures compute the same value by disjoint routes — a one-pass
+DAG labeling against a re-zoned recursion — and their agreement over a
+corpus is the natural cross-oracle for an implementation of either
+([CD09b] states no complexity bound; both routes are polynomial in `N`).
 
 ---
 

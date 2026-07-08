@@ -754,3 +754,62 @@ idempotents rescues ω-blindness. The three tiers survive as a *sufficient-
 condition hierarchy* (cheap certificates: right ideal ⊊ phase-collapse), the
 exact test being the scan. Flagged for theory; no paper edit. Both mechanism
 columns kept in the ledger (`right_ideal`, `phase_collapse`), guards live.
+
+## Reproduction (M1.5)
+
+Every number in the M1.5 findings above (F4–F7 + addendum, and the §3b E1/E2
+tables) regenerates from these commands. Run from the repo root unless noted;
+the `sosl` classifier / `build_sos` steps run from `sosl/`. The corpus tiers
+`genaut/corpus/{sos,det,tgba}/<tag>/` are the inputs (one `.sos`/`.hoa` per
+distinct language in `sos/`/`det/`; produced per `genaut/README.md`). Per-run
+JSON/text logs land in `tests/sos2ltl/logs/` (regenerable, git-ignored). The
+non-LTL shapes referenced below are the only ones carrying certificates:
+`2state1ap0acc`, `2state1ap1acc` (+`_parity` twin), `3state1ap0acc`,
+`2state2ap0acc`; every 1-state shape is entirely LTL.
+
+**E0 / triptych (F4 — dual scan + presentation-agnostic replay).**
+
+    python3 -m tests.sos2ltl.e0_gate                         # 27 cases, green
+    # single specimen, both oracles (read-off + input HOA):
+    python3 -m tests.sos2ltl.e7_dualscan \
+        samples/fixtures/hoa/sos/even.sos \
+        --hoa samples/fixtures/hoa/sos/even.hoa --expect even
+    # …evenblocks.sos/.hoa --expect evenblocks ; gf_aa.sos --expect gfaa
+
+**E7 certificate ledger (F5, F7 — dual scan, det/ replay, mechanism columns).**
+One JSONL per shape (`tests/sos2ltl/logs/e7_<tag>.jsonl`); the run prints the
+dual-scan split, `det/` membership replay (0 failures expected), the Thm-4.4
+component bound, and both cross-tabs (`right-ideal × H5`, `phase-collapse × H5`):
+
+    for t in 2state1ap0acc 2state1ap1acc 2state1ap1acc_parity \
+             3state1ap0acc 2state2ap0acc; do
+        python3 -m tests.sos2ltl.e7_ledger genaut/corpus/sos/$t
+    done
+    # tier hierarchy right-ideal ⊊ phase-collapse ⊊ ω-blind, with guards:
+    python3 -m tests.sos2ltl.e7_tiers $(ls tests/sos2ltl/logs/e7_*.jsonl) --distinct
+
+**The three tier exhibits (per-language mechanism + P-level witness).** `--hoa`
+adds the all-groups soundness check (that `h5_hit` did not overclaim):
+
+    python3 -m tests.sos2ltl.e7_mechanism_probe \
+        genaut/corpus/sos/2state1ap1acc/2state1ap1acc_04644.sos   # right-ideal, |𝒞|=4
+    python3 -m tests.sos2ltl.e7_mechanism_probe \
+        genaut/corpus/sos/3state1ap0acc/3state1ap0acc_004376.sos  # phase-collapse, |𝒞|=6
+    python3 -m tests.sos2ltl.e7_mechanism_probe \
+        genaut/corpus/sos/2state1ap1acc/2state1ap1acc_01681.sos   # P-level, |𝒞|=13
+
+**Exhibit canonical forms (HOA + `.sos` with residual trailer).**
+
+    cat genaut/corpus/det/2state1ap1acc/2state1ap1acc_04644.hoa
+    cd sosl && python3 -m tests.sos.build_sos \
+        ../genaut/corpus/det/2state1ap1acc/2state1ap1acc_04644.hoa --residuals
+
+**E1 / E2 §3b tables (F6 — anchoring / window determinacy, language-keyed).**
+One JSONL per shape, then the pooled report (frame, degenerate line,
+presentation multiplicity, per-shape + pooled E1/E2). Full table saved to
+`tests/sos2ltl/logs/e12_report.txt`:
+
+    for t in $(cd genaut/corpus/sos && ls -d *); do
+        python3 -m tests.sos2ltl.census_build genaut/corpus/sos/$t
+    done
+    python3 -m tests.sos2ltl.census_report $(ls tests/sos2ltl/logs/e12_*.jsonl)

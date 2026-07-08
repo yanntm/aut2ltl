@@ -1899,31 +1899,42 @@ ledger — optimality gaps. Verdicts checked by
 the construction of [SωS26]: every emitted formula's 𝓘 must be byte-equal
 to the input's — the equivalence oracle is the object itself.⟩
 
-**First data** (the M1 run of the companion spec; the tables are to be
-re-issued under its census reporting discipline — frame declared with its
-acceptance family, per-shape rows, counts keyed by distinct canonical
-invariant with automata as presentation multiplicity, degenerate stratum
-separated — before any figure here is final; first multiplicity soundings
-put the distinct languages an order of magnitude below the automaton
-counts, with the universal language alone claiming two-fifths of one
-shape's answers). The six 1-AP shapes
-(one state with zero to three acceptance sets, two states with zero or
-one; 981 automata) split 891 aperiodic / 90 not, with no decline, timeout
-or crash; every refusal carried a certificate replayed against the input
-automaton, `Even`'s and `EvenBlocks`' byte-equal to §4.3's derivations.
-On the aperiodic side, 2 898 layers: none anchors at no width, none needs
-width 3, the large majority anchor at width 1, and roughly half are
-frozen; of 1 921 final-candidate layers none fails (B), and every decided
-layer is window-determined at width ≤ 2 (a small UNDECIDED residue awaits
-the normative closure of Proposition 5.15(iii)). The residual stratum of
-§7 is so far unwitnessed: at one atomic proposition and two states, the
-flat-brick ladder covers everything the tests decide. ⟨TBD: final
-per-shape tables; the arbitrary-EL acceptance axis; the E4 size ledgers
-and DAG-vs-|𝒞| scatter once the engine emits.⟩
+**First data** (the census of the companion spec, language-keyed: the
+unit is the distinct canonical invariant — the group-bearing Büchi
+shape presents one language up to 331 ways, median 2, which is why the
+automaton cannot be the unit — over nineteen exhaustive shapes, states,
+atomic propositions and acceptance sets grown one notch at a time,
+generalized-Büchi and parity families, some 15 000 languages in all;
+the degenerate stratum is exactly `{∅, Σ^ω}` per shape and is excluded
+throughout). Non-LTL languages appear only from two states up — a
+single state cannot carry a counting group. On the LTL side, 9 761
+languages carrying 58 185 layers: condition (A) holds at width 1 on
+77.6% of layers and within the ladder (`k ≤ 3`) on 88.2%; 36.1% of
+layers are frozen; 78.9% of languages are fully stem-transcribable at
+`k ≤ 3`. The fallback stratum is empty on every one-state shape and
+every two-state 1-AP shape, and switches on abruptly one notch out —
+846 layers beyond the ladder at the third state over one proposition,
+5 418 at the second proposition over two states — where a quarter (two
+propositions) to three-tenths (three states) of languages carry an
+(A)-failing layer: §7's stem-side residual row, witnessed and located.
+The tester caps at `k = 3`, so "beyond the ladder" does not yet decide
+"anchors at no width"; the uncapped fixpoint of Lemma 5.6(v) settles
+that split and is the census's next read-off. Condition (B) is the
+counterpoint: of 43 710 final-candidate layers not one fails — the
+2-AP shape's 32 425 final layers all pass — every decided layer is
+window-determined at `k′ ≤ 2`, width 2 is needed 18 times in all (the
+`GF(aa)` family), and the 90 UNDECIDED are enumeration-budget gaps,
+not conflicts, retiring when Proposition 5.15(iii)'s normative closure
+lands. The two conditions are not symmetric at these sizes: the stem
+side breaks first, and the loop side has not broken at all — the
+walk's flat ladder is the binding constraint, acceptance staying
+window-determined everywhere measured. Prefix-independence, 60% of the
+smallest frame, is 1.5% of the bench. ⟨TBD: per-shape tables; the
+arbitrary-EL acceptance axis; the E4 size ledgers and DAG-vs-|𝒞|
+scatter once the engine emits.⟩
 
-**Second data** (the dual scan of the companion spec, on the
-language-keyed census: one canonical invariant per language, some
-15 000 languages over generalized-Büchi and parity acceptance). On the
+**Second data** (the dual scan of the companion spec, on the same
+census). On the
 non-LTL side every emitted family replays against the canonical
 deterministic acceptor by membership queries alone, with no failures,
 and every component length sits inside Theorem 4.4's bounds with
