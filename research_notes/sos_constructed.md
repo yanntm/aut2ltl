@@ -180,8 +180,8 @@ below is machinery for naming and sorting them.
 are classified by a finite **monoid**: an associative product with a unit,
 concatenation collapsed onto finitely many values (`φ(uv) = φ(u)φ(v)`). Infinite words
 need exactly one thing more — a way to say "repeat this loop forever" — because no
-product of finite pieces expresses `v^ω`. Adjoin that single operation, an **infinite
-power** `s ↦ s^ω`, to a finite monoid and you have an **ω-semigroup** `S = (S₊, S_ω)`:
+product of finite pieces expresses `v^ω`. Adjoining that single operation, an **infinite
+power** `s ↦ s^ω`, to a finite monoid yields an **ω-semigroup** `S = (S₊, S_ω)`:
 `S₊` the types of finite words, `S_ω` the types of ω-words [PP04, Ch. II]. That is the
 whole exotic content. A morphism `φ : Σ^∞ → S` **recognizes** `L` when membership
 depends only on the type — `L = φ⁻¹(P)` for a set `P` of accepting ω-types.
@@ -774,7 +774,7 @@ byte-equal after canonical keying. Notably `𝓘` needs no aperiodicity: it is d
 for *all* regular ω-languages, LTL or not. What one does with the object is the
 subject of §7; that one *has* it is the point of this section.
 
-*Example (canonicity you can see).* Compute `𝓘(GF(aa))` from the run-parity
+*Example (canonicity made visible).* Compute `𝓘(GF(aa))` from the run-parity
 presentation of Figure 1(a) — two states, a `Z₂` transition monoid — and again from
 the reset presentation of Figure 3 — the *same* two states, but every letter
 acting as a reset: an aperiodic transition monoid and a smaller enriched
@@ -789,7 +789,7 @@ separates them — the reason `P` is part of the invariant.
 
 ---
 
-`𝓘(GF(aa))` serialized (format v1, [`sos_format.md`](../sosl/sosl/sos/io/sos_format.md)):
+`𝓘(GF(aa))` serialized (format v1):
 
 ```
 SOS v1
@@ -908,7 +908,7 @@ exists, on finite words the minimal DFA *does* exist — yet definability is sti
 read off the algebra, not the automaton: the same moral, in the easier world.
 
 *Example.* The finite core of `Even` is `W = (aa)*·!a`, with `Even = W·Σ^ω` (the
-guarantee rung of §7.1 made literal). Its minimal DFA is Figure 1(b) read as a
+guarantee shape of §7.2's ladder made literal). Its minimal DFA is Figure 1(b) read as a
 DFA — the accepting sink cut back to a final state whose successors fall to the
 rejecting sink — and its syntactic monoid keeps the same `Z₂`: `[a]·[a] = [a·a]`,
 `[a·a]·[a] = [a]`, the period-2 cycle of Table 3. So `W` is not LTLf-definable,
@@ -919,7 +919,7 @@ finite traces, the specification idiom of AI planning, business-process modeling
 and runtime verification [DV13] — equals first-order logic on finite words
 [DV13, Thm 3], hence star-free [MP71], hence aperiodicity of the syntactic
 monoid [Sch65]:
-"is this regular trace property actually LTLf?" is the finite twin of §7.2's PSL
+"is this regular trace property actually LTLf?" is the finite twin of §7.1's PSL
 question, decided on the same object by the same group search. Finally, for the
 **learning** community [Kla94, AF16, ABF18, AF21], whose central obstruction is
 that the right congruence alone does not characterize an ω-language [AF21]: the
@@ -931,72 +931,25 @@ DFAs, is feasible; we leave this as a prospect.
 
 ---
 
-## 7. One object, every classification
+## 7. Leveraging the syntactic ω-semigroup
 
-The syntactic ω-semigroup earns the phrase *semantic benchmark*. The classical taxonomy of ω-regular
-languages — by acceptance type, by the safety–progress hierarchy, by topological
-complexity, by temporal-logic fragment, by acceptance index, and up to the complete
-Wagner classification — is, theorem by theorem, a taxonomy of *structural properties of
-the syntactic ω-semigroup*. Each question was historically answered by a construction
-tailored to a presentation: the cycles of a Muller automaton, the index of a parity
-automaton, the variety of a monoid. The SωS answers them all by reading one canonical
-object, because each classification *is*, by its own characterization theorem, a
-property of that object. We claim no economy for a single verdict — a dedicated
-algorithm for one class will usually beat materializing the whole algebra — but a
-*unifying* one: build the SωS once and each decision below is a table lookup, several
-of them decisions for which no practical tool exists today.
+The syntactic ω-semigroup was built to decide one question, and §7.1
+settles it: LTL-definability is a single group-theoretic read-off.
+But Theorem 5.1 delivers more than one verdict. The invariant is complete,
+canonical, and byte-comparable, so a whole family of further decisions —
+identity, the classical classifications, operations on languages — become
+read-offs of, and surgeries on, the one table. §7.2 opens that program.
 
-Many of these problems come with dedicated decision procedures already — Landweber's for
-the topological ladder [Lan69], the chain-based index tests of Wagner and Carton–Perrin
-[CP97, CP99], the variety-membership characterizations of the first-order fragments
-[DK09, Wilke99] — and a mature tool such as Spot implements a good number of the
-topological and acceptance-type ones. Our contribution is not to decide any of these
-faster: materializing the algebra is exponential (§8) and we do not pretend otherwise. It
-is that they are all the *same* object, decided by one read-off of it — and that a few of
-them, LTL-definability itself and the exact Wagner degree, carry no off-the-shelf
-implementation at all.
+### 7.1 Deciding LTL
 
-### 7.1 One ladder under three names
-
-Verification's safety–progress hierarchy of Manna and Pnueli [MP92] (safety, guarantee,
-obligation, recurrence/response, persistence, reactivity), Landweber's finite Borel
-hierarchy [Lan69], and the deterministic-acceptance hierarchy are three vocabularies for
-one ladder, and on the SωS they become literally the same conditions on linked pairs. A
-**safety** property (topologically closed, `Π⁰₁`) is one an ω-word fails only by
-committing to failure on a finite prefix; a **guarantee** / co-safety property (open,
-`Σ⁰₁`) is its dual, witnessed by a good prefix; their Boolean combinations are the
-**obligation** (equivalently *weak*, `Δ⁰₂`) properties. **Recurrence** (`GF`-shaped,
-`Π⁰₂ = Gδ`) is exactly the deterministic-Büchi-recognizable class — Landweber's original
-question — its **persistence** dual (`FG`, `Σ⁰₂ = Fσ`) the deterministic-co-Büchi class,
-and their combinations, **reactivity**, exhaust the ladder [Lan69, SW08, PW13].
-
-Landweber decides these on a Muller automaton by conditions on *realizable cycles*: his
-`Gδ` test asks that the family of accepting cycles be closed under union with cycles
-reachable at the same state [Lan69, Thm 4.2]. Transported to the SωS a realizable cycle
-*is* a linked pair, and each rung is a closure condition on the accepting linked-pair set
-`P` — the very data Theorem 5.1 isolates. The level in the ladder is read off `P`
-directly, with no automaton reanalysis.
-
-The three examples land on three different rungs — and, the point, two of them low.
-`Even = (aa)*·!a·Σ^ω` is of the form `W·Σ^ω`, an **open** (guarantee) property: a good
-prefix decides it. `GF(aa)` is **recurrence** (`Π⁰₂`, DBA-recognizable — `GF` is the
-archetype); no finite prefix commits it. `EvenBlocks`, with its `Fin(0) ∧ Inf(1)`
-condition, is a single Rabin pair, a **recurrence-and-persistence** conjunction higher up.
-That `Even` sits at the bottom while being *non-LTL* — a genuine mod-2 group inside an
-open set — makes the decoupling explicit: the topological ladder of this subsection and
-the aperiodic cut of the next are orthogonal axes on one object, and a language may be
-simple on one and hard on the other.
-
-### 7.2 The aperiodic cut, and finer logical fragments
-
-The famous cut is a single group-theoretic read-off: `S(L)₊` is **aperiodic**
+The cut is a single group-theoretic read-off: `S(L)₊` is **aperiodic**
 (group-free) iff `L` is **star-free** `= FO[<] =` **LTL** `=` counter-free
 [Sch65, Kam68, Tho79, DG08]. This is the paper's spine (§4) promoted to a decision:
 power-iterate each class (the class of `v^{k+1}` is a function of those of `v^k` and `v`,
 since `~` is a two-sided congruence by Lemma 4.4), report a repeated class in a power
 sequence as a group, and the verdict is exact in both directions — because `S(L)₊` *is*
 the presentation-independent invariant (Theorem 4.5), a group in it is never an artifact
-(Proposition 3.4). There is no separate screen.
+(Proposition 3.4).
 
 *A practical instance.* PSL/SERE properly extends LTL and is the industrial specification
 language (IEEE 1850); a written property in it may or may not fall in the far
@@ -1004,56 +957,53 @@ better-supported LTL fragment, and "is this PSL property actually LTL?" is asked
 tool to answer it. It is exactly the aperiodicity test above, and the two non-LTL running
 examples — both plain SEREs — are its minimal witnesses.
 
-Below star-free, the first-order fragments refine the classification further, and are
-decidable on the algebra too — though not as one-line read-offs. Over infinite
-words the two-variable fragment `FO²` is characterized by membership of the finite part
-in the variety **DA** *together with* a closure condition in an alphabetic topology, and
-`FO² ≠ Δ₂` here, unlike over finite words [DK09]; the quantifier-alternation levels
-`Σ₂, Δ₂` likewise pair a variety condition with an openness condition in that topology,
-and the until-nesting hierarchy of LTL is graded by a semigroup power condition [Wilke99].
-The syntactic ω-semigroup carries exactly the data these tests consume — the variety of `S(L)₊` and the
-residual/topological structure of §4 — so each is a decidable property of the object; we
-claim the data, not a slogan.
+Below star-free, the first-order fragments (`FO²`, the alternation levels
+`Σ₂/Δ₂`, the until-nesting hierarchy) refine the cut and are decidable on the
+algebra too — their characterizations pair a variety condition on `S(L)₊`
+with a topological side condition [DK09, Wilke99] — data the object carries;
+we claim the data, not the procedures.
 
-### 7.3 The acceptance index — what condition do you need?
+### 7.2 A calculus over the syntactic ω-semigroup
 
-A separate and thoroughly practical question: what is the *minimal* acceptance condition
-that recognizes `L` deterministically — Büchi, co-Büchi, parity `[i, j]`, or a genuine
-Rabin/Streett-`k`? This is the parity (Rabin, Mostowski) **index**, decidable for
-deterministic ω-automata, and its algebraic form is a chain condition: the index is the
-length of the longest **alternating chain** — a sequence of ultimately-periodic
-behaviours whose membership in `L` flips step by step. Introduced on automata by Wagner [Wag79],
-this length is, by a theorem of Carton and Perrin, computable in the *syntactic*
-ω-semigroup itself [CP97, Cor. 1].
-Deterministic-Büchi realizability (the recurrence rung of §7.1) is the bottom case, where
-the chain collapses. This is the most operational classification of all: it names the
-acceptance a tool should target, and whether a given Emerson–Lei condition carries more
-than the language needs. `GF(aa)` needs only Büchi (`GF` is recurrence); `EvenBlocks`
-needs a genuine Rabin pair, its `Fin(0) ∧ Inf(1)` not reducible to a Büchi condition.
+Theorem 5.1 has operational content beyond canonicity. On the reified
+invariant,
+language equivalence is byte equality of canonical serializations; complement
+is one flip, `P ↦ P^c` within the linked pairs (§5); emptiness is `P = ∅`,
+universality is `P =` all linked pairs; membership of a lasso `u·v^ω` is one
+fold through `λ` and `M` and one `P` lookup; and every nonempty pair set
+carries its own certificate — shortlex keys turn any accepting pair `(s, e)`
+into the canonical witness lasso. Each entry replaces a construction on
+automata — complementation costs `2^{Θ(n log n)}` on nondeterministic Büchi
+automata [Saf88], equivalence sits in PSPACE — with a scan of the one
+canonical table, once the entry price of §8 has been paid.
 
-### 7.4 The complete invariant — the Wagner degree
+The classical taxonomy of ω-regular
+languages is, theorem by theorem, a taxonomy of structural properties of the
+same object. Landweber's ladder — safety, guarantee, obligation, recurrence,
+persistence, in verification's vocabulary [MP92] — transports rung by rung: a
+realizable cycle of a Muller automaton *is* a linked pair, and each rung is a
+closure condition on the accepting set `P` [Lan69, SW08, PW13]. The
+acceptance index — the minimal deterministic condition `L` needs: Büchi,
+co-Büchi, parity `[i, j]`, a genuine Rabin pair — is the maximal length of an
+*alternating chain* of ultimately periodic behaviours, introduced on automata
+by Wagner [Wag79] and computable in the *syntactic* ω-semigroup by a theorem
+of Carton and Perrin [CP97, Cor. 1]. Subsuming every rung and the index, the
+exact **Wagner degree** — the complete classification of ω-regular languages
+up to continuous (Wadge) reducibility — is fixed by the chain and superchain
+structure of `S(L)` [CP97, CP99, SW08]. We claim no economy for a single
+verdict — a dedicated algorithm for one class will usually beat materializing
+the whole algebra — but a unifying one: build the SωS once, and each decision
+is a table search, several of them decisions for which no practical tool
+exists today. On the running examples the axes visibly decouple: `Even` is an
+*open* (guarantee) property — a good prefix decides it — yet non-LTL, a
+genuine mod-2 group inside an open set; `GF(aa)` is recurrence, needing only
+Büchi, and LTL; `EvenBlocks` needs its genuine Rabin pair. The topological
+ladder and the aperiodic cut of §7.1 are orthogonal coordinates of one
+object.
 
-Every classification above is a coarsening of one datum. **Wagner's hierarchy** is the
-complete classification of ω-regular languages up to continuous (Wadge) reducibility —
-the finest topological classification there is, an ordinal-indexed refinement of the
-Borel levels of §7.1. Introduced by Wagner in 1979 [Wag79], it was recast by Carton and Perrin,
-who define Wagner's *chains* and *superchains* directly in the ω-semigroup and prove
-their maximal lengths a function of the language alone — computable in the *syntactic*
-ω-semigroup [CP97, Cor. 1, Thm 5; CP99] — with Selivanov supplying the matching
-automaton-independent index [SW08]. The exact Wagner degree of `L` is therefore fixed by
-the maximal chain and superchain lengths in `S(L)`: one traversal of the object's chain
-structure.
-
-This is the precise sense in which the syntactic ω-semigroup is the semantic benchmark. It is a complete
-invariant not merely for language identity (Theorem 5.1) but for the entire Wagner
-classification, and the classical decision problems — safety versus liveness, the
-acceptance index, LTL-definability alongside as the orthogonal aperiodicity axis — are
-its projections. The object was built to decide one question, LTL-definability; having
-it, that question is a single coordinate, and the SωS is the coordinate system.
-
-The table gathers that coordinate system in one view: each row is a classical decision,
-the reference that defines it, the structural test it becomes on the SωS, and whether a
-practical tool answers it today.
+The table gathers the program in one view: each row is a classical decision,
+the reference that defines it, the structural test it becomes on the SωS, and
+whether a practical tool answers it today.
 
 | Band | Classification | Defined by | Test on the SωS | Practical tool |
 |---|---|---|---|---|
@@ -1068,6 +1018,19 @@ practical tool answers it today.
 Every row above the last is a projection of it: the Wagner/Wadge degree is the complete
 coordinate, and each classical decision reads one of its facets off the same table.
 
+Beyond verdicts, the same table supports *operations*. Two invariants align
+on a generated product table — the only product-priced move — after which
+Boolean combinations of languages are pointwise operations on pair sets,
+left quotients `u⁻¹L` are pair-set surgeries, and re-quotienting returns the
+canonical object of the result: a normal form automata do not have (minimal
+deterministic ω-automata do not exist). What stays expensive is exactly what
+must: the ω-rational constructors — concatenation by a prefix set,
+ω-power — and existential projection embed a powerset, and entering the
+calculus costs what determinization always cost (§8). Developing this
+calculus, the classification procedures behind the table, and the rendering
+of the algebra back into defining formulas are each downstream of the
+object: they consume it, and this paper delivers it.
+
 ---
 
 ## 8. Complexity
@@ -1076,7 +1039,7 @@ The construction is dominated by the size of the enriched monoid,
 `|EM(D)| ≤ (|Q|·2^{|C|})^{|Q|}`, and the `|Q|` in the exponent is the source of the
 explosion. That a size bound sits somewhere is a mathematical necessity, not an
 engineering apology: deciding aperiodicity of a regular ω-language — the
-LTL-definability question of §7.2 — is PSPACE-complete, with hardness transferred from
+LTL-definability question of §7.1 — is PSPACE-complete, with hardness transferred from
 minimal-DFA finite-word aperiodicity [CH91] and the ω upper bound from [DG08,
 Prop. 12.3], and the surrounding classifications are no cheaper. Everything around the
 materialized object is benign by contrast. Each enriched element is a vector of `|Q|`
