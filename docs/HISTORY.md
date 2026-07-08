@@ -2951,3 +2951,15 @@ Lemma 5.6(iii) gadget's action monoid is aperiodic (two-class actions
 fix class 1); realization-as-layer stated open. Companion files
 sos_toltl_experiments.md / sos_toltl_report.md still cite old numbering
 — to fix in the numbers pass.
+
+## 2026-07-08 — sos_classification §8 restructured as a mini-paper (0111ad55a)
+Why: the Wagner-degree section was one dense run, readable only alongside
+CP97/CP99. Split into 8.1 (the [CP99] formula and derivative, restated with
+a three-zone informal account, the escape language promoted to running
+example, two ASCII placeholder figures: zoned presentation + collapse with
+the recursion trace as Cantor normal form), 8.2 (Prop 8.1 obstruction opened
+by a two-trajectory table, Thm 8.5 bypass), 8.3 (Cabessa–Duparc discussion).
+Theorem numbers unchanged; §-refs elsewhere sharpened to 8.1/8.2/8.3 in a
+follow-up patch round. Figures stay ASCII until paper time (then rendered).
+Decision: no pointer from/to sos_calculus.md — that note is pure draft and
+this one must not depend on it.
