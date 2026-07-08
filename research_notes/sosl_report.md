@@ -708,13 +708,20 @@ three FDFAs can — that asymmetry, not any size or query count, is the point.
 — ours the Cayley transformation-closure product, ROLL's native RABIT against a
 state-based Büchi presentation; the asymmetry is mechanism, not level.
 
-**Census-wide medians (`tests/sosl/census_e3.py`).** Over all 129 languages of
-`2state1ap1acc`: median class count `N = 8` against ROLL FDFA-size medians
-periodic **10**, syntactic **12**, recurrent **8**. The size comparison confirms
-the wash empirically at scale — against ROLL's *smallest* FDFA per language, the
-algebra is smaller on **66**, larger on **42**, tied on **21** of 129. The
-objects genuinely trade places inside the `N+N²` envelope; the capability
-asymmetry, not size, remains the result.
+**Census-wide medians.** Reproduce:
+
+```
+cd sosl && python3 -m tests.sosl.census_e3 2state1ap1acc
+```
+
+Data: one row per language in `tests/sosl/logs/census_e3/results.csv`
+(`our_N`, and each mode's `fdfa`/`MQ`/`EQ`); the summary in
+`logs/census_e3/2state1ap1acc.md`. Read off those 129 rows: median class count
+`N = 8` against ROLL FDFA-size medians 10 / 12 / 8 (periodic / syntactic /
+recurrent). Against ROLL's *smallest* FDFA per language, the algebra is smaller
+on 66, larger on 42, tied on 21 of 129 — the wash confirmed at scale, the objects
+trading places inside the `N+N²` envelope. The capability asymmetry, not size,
+remains the result.
 
 ---
 
