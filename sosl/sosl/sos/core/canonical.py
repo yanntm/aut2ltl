@@ -10,8 +10,8 @@ numbering:
 
 `canonicalize` re-keys it by BFS over ``step(c, a) = mult[c][letter_class[a]]``
 from the identity, letters in mask order (the first word reaching a class is its
-canonical shortlex key), renumbers classes in that discovery order, remaps the
-tables and accepting set, and returns a validated `Invariant`.
+canonical shortlex key — `shortlex_bfs`), renumbers classes in that discovery
+order, remaps the tables and accepting set, and returns a validated `Invariant`.
 
 This is the single normal form shared by every producer of an invariant — the
 learner's export and the reference construction (`quotient`) — so that two
@@ -20,10 +20,40 @@ language. It is the format definition, not an algorithm of either producer.
 """
 from __future__ import annotations
 
-from typing import Dict, Iterable, List, Sequence, Tuple
+from typing import Callable, Dict, Iterable, List, Sequence, Tuple, TypeVar
 
-from ..alphabet import EMPTY, Alphabet, Word
+from ..alphabet import EMPTY, Alphabet, Letter, Word
 from ..invariant import Invariant
+
+_Node = TypeVar("_Node")
+
+
+def shortlex_bfs(
+    start: _Node,
+    letters: Sequence[Letter],
+    step: Callable[[_Node, Letter], _Node],
+) -> Tuple[List[_Node], List[Word]]:
+    """Discover the nodes reachable from ``start`` under ``step``, breadth first
+    with ``letters`` taken in order, and name each node by the first word that
+    reaches it — its shortlex-least word. Returns the discovery order and the
+    parallel key list (``keys[i]`` names ``order[i]``; ``keys[0] = eps``).
+
+    Discovery order *is* shortlex order on the keys, so it doubles as a
+    canonical numbering. The node type is any hashable: class ids when re-keying
+    an algebra, class *pairs* when generating a product of two algebras."""
+    keys: Dict[_Node, Word] = {start: EMPTY}
+    order: List[_Node] = [start]
+    i = 0
+    while i < len(order):
+        c = order[i]
+        i += 1
+        w = keys[c]
+        for a in letters:
+            d = step(c, a)
+            if d not in keys:
+                keys[d] = w + (a,)
+                order.append(d)
+    return order, [keys[c] for c in order]
 
 
 def canonicalize(
@@ -36,25 +66,17 @@ def canonicalize(
     """The canonical `Invariant` of the raw algebra (see module docstring)."""
     letters = alphabet.letters()
 
-    key: Dict[int, Word] = {identity: EMPTY}
-    order: List[int] = [identity]
-    queue: List[int] = [identity]
-    while queue:
-        c = queue.pop(0)
-        for a in letters:
-            d = mult[c][letter_class[a]]
-            if d not in key:
-                key[d] = key[c] + (a,)
-                order.append(d)
-                queue.append(d)
+    order, key_list = shortlex_bfs(
+        identity, letters, lambda c, a: mult[c][letter_class[a]]
+    )
     assert len(order) == len(mult), "raw algebra has classes unreachable from eps"
 
     new_id = {c: i for i, c in enumerate(order)}
     nn = len(order)
 
     keys: List[Word] = [EMPTY] * nn
-    for c in order:
-        keys[new_id[c]] = key[c]
+    for c, k in zip(order, key_list):
+        keys[new_id[c]] = k
 
     lc = [0] * alphabet.size
     for a in letters:
