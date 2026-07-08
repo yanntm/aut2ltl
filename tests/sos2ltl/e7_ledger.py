@@ -26,8 +26,8 @@ from collections import Counter
 from typing import Dict, List, Optional
 
 from aut2ltl.sos2ltl.witness import (
-    DualScan, Family, dual_scan, extract_family, omega_blind_by_right_ideal,
-    toggles)
+    DualScan, Family, dual_scan, extract_family, omega_blind_by_phase_collapse,
+    omega_blind_by_right_ideal, toggles)
 from aut2ltl.sos2ltl.witness.spot_oracle import oracle_for_hoa
 from sosl.sos import load_invariant
 
@@ -66,6 +66,10 @@ def main(argv: List[str]) -> int:
     mech: Counter = Counter()          # (h5?, right-ideal?) cross-tab
     mech_finding: List[str] = []       # H5 & not right-ideal — a real finding
     mech_bug: List[str] = []           # non-H5 & right-ideal — stop-the-line
+    pc: Counter = Counter()            # (h5?, phase-collapse?) cross-tab
+    pc_gap: List[str] = []             # H5 & not phase-collapse (PC not iff)
+    pc_bad: List[str] = []             # phase-collapse & not H5 (PC not sufficient)
+    ri_not_pc: List[str] = []          # right-ideal & not PC (containment broken)
 
     for fn in files:
         stem = fn[:-4]
@@ -94,6 +98,17 @@ def main(argv: List[str]) -> int:
         if not ds.h5_hit and ri:
             mech_bug.append(stem)          # column-true non-H5 — stop-the-line
 
+        # Candidate exact condition (F7): phase-collapse. RI ⟹ PC ⟹ H5 by
+        # construction; the census locates PC between them.
+        pcv = omega_blind_by_phase_collapse(inv)
+        pc[("h5" if ds.h5_hit else "nonh5", "pc" if pcv else "nopc")] += 1
+        if ds.h5_hit and not pcv:
+            pc_gap.append(stem)            # ω-blind but PC-false — PC not necessary
+        if pcv and not ds.h5_hit:
+            pc_bad.append(stem)            # PC-true but not ω-blind — PC not sufficient
+        if ri and not pcv:
+            ri_not_pc.append(stem)         # right ideal but PC-false — impossible
+
         det_hoa = os.path.join(det_dir, stem + ".hoa")
         member = oracle_for_hoa(det_hoa, inv.alphabet) if os.path.exists(det_hoa) else None
         replay: Dict[str, Optional[bool]] = {}
@@ -112,6 +127,7 @@ def main(argv: List[str]) -> int:
             "omega": _family_row(ds.omega),
             "h5_hit": ds.h5_hit,
             "right_ideal": ri,
+            "phase_collapse": pcv,
             "canonical": "omega" if canon and canon.omega_power else "linear",
             "det_replay": replay,
         })
@@ -138,15 +154,25 @@ def main(argv: List[str]) -> int:
         print(f"  max component length {max_comp} vs max |𝒞| {max_cls} "
               f"(Thm 4.4: each < |𝒞|)")
         # Mechanism column (Prop 4.5): right-ideal ⟺ H5, theory's prediction.
-        print(f"  mechanism (right-ideal ω-blind) × H5: "
+        print(f"  right-ideal × H5: "
               f"H5&RI={mech[('h5','ri')]} H5&¬RI={mech[('h5','nori')]} "
               f"¬H5&RI={mech[('nonh5','ri')]} ¬H5&¬RI={mech[('nonh5','nori')]}")
+        # Candidate exact condition (F7): phase-collapse. RI ⟹ PC ⟹ H5.
+        print(f"  phase-collapse × H5: "
+              f"H5&PC={pc[('h5','pc')]} H5&¬PC={pc[('h5','nopc')]} "
+              f"¬H5&PC={pc[('nonh5','pc')]} ¬H5&¬PC={pc[('nonh5','nopc')]}")
         if mech_finding:
-            print(f"  ** FINDING: H5 & not-right-ideal (2nd ω-blind mechanism): {mech_finding}")
+            print(f"  ** H5 & not-right-ideal (2nd mechanism): {len(mech_finding)}")
+        if pc_gap:
+            print(f"  ** PC NOT NECESSARY: H5 & not-phase-collapse: {pc_gap}")
+        if pc_bad:
+            print(f"  ** PC NOT SUFFICIENT (should be impossible): {pc_bad}")
         if mech_bug:
             print(f"  ** BUG: right-ideal & not-H5 (theorem violated): {mech_bug}")
+        if ri_not_pc:
+            print(f"  ** BUG: right-ideal & not-PC (containment broken): {ri_not_pc}")
     print(f"  -> {out}")
-    return 1 if (replay_fail or mech_bug) else 0
+    return 1 if (replay_fail or mech_bug or pc_bad or ri_not_pc) else 0
 
 
 if __name__ == "__main__":

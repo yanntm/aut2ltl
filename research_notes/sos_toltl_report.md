@@ -712,3 +712,45 @@ and whether it, too, is a clean combinatorial closure. Flagged for theory; no
 paper edit made. The `right_ideal` column is retained in the E7 ledger with
 this semantics (a column-true is a *certified* H5; a column-false H5 is
 verified ω-blind by the all-groups probe).
+
+### F7 addendum — the candidate exact condition is refuted too: ω-blindness has no multiplication-only characterization
+
+**The experiment** (the natural next question, run before theory asks). F7's
+candidate necessary-and-sufficient condition, *phase-collapse* (PC): a cycle
+`C` is ω-blind iff for every suffix class `y` the idempotent power `(c·y)^π` is
+one class independent of `c ∈ C` (then `Val(x, c·y)` is phase-free).
+Implemented (`witness/mechanism.py::omega_blind_by_phase_collapse`) and wired
+into `e7_ledger` beside the right-ideal column, with the containment guards
+`right ideal ⟹ PC ⟹ H5`. Both guards hold census-wide (0 violations;
+`¬H5 & PC = 0` over the whole non-LTL census including the 4267 at
+`2state2ap0acc` — PC is genuinely *sufficient*), and both containments are
+**strict**: the 17 distinct H5 languages split into **three tiers**,
+
+| tier | condition | distinct langs | where |
+|---|---|--:|---|
+| right ideal | `C·λ(Σ) ⊆ C` | 3 | `2state1ap1acc`, `\|𝒞\| ≥ 4` |
+| phase-collapse only | `(c·y)^π` phase-free, `C·y ⊄ C` | 8 | `3state1ap0acc`, `\|𝒞\| = 6…` |
+| P-level only | neither; ω-blind via `P` | 6 | `2state1ap1acc`, `\|𝒞\| ≥ 9` |
+
+So **PC is refuted as the characterization** — the 6 P-level languages are
+ω-blind with `PC` false. `right ideal ⊊ phase-collapse ⊊ ω-blind`, all strict.
+
+**Why there is no idempotent-level characterization (the P-level exhibit).**
+`2state1ap1acc_01681` (`|𝒞| = 13`, smallest P-level hit `|𝒞| = 9` at
+`2state1ap1acc_04900`). Its sole group is `C = {6, 9}` (both idempotent power
+`6`). Every suffix `y` that breaks phase-collapse sends `6` and `9` to
+**distinct** idempotents (e.g. `y=[!a]`: `6·y` folds to `3`, `9·y` folds to
+`11`) — yet those two idempotents are **`P`-equivalent**: `(x·3, 3) ∈ P ⇔
+(x·11, 11) ∈ P` for *every* `x` (checked for all eight PC-breaking suffixes,
+all `P`-equivalent). So `Val` is phase-constant not because the algebra
+collapses the phase but because `P` cannot tell the two phase-idempotents
+apart. Same `(𝒞, ·)` under a `P` that separated `3` from `11` would be
+ω-*visible*. **Conclusion for theory:** the exact ω-blindness condition is
+inherently acceptance-level — `∀ x, y : (x·(c·y)^π, (c·y)^π) ∈ P` independent
+of `c ∈ C`, which is exactly the extractor's own ω scan — and no purely
+multiplicative closure (right ideal, phase-collapse, or any condition on
+`(𝒞, ·)` alone) can be necessary, because `P`-equivalence of distinct
+idempotents rescues ω-blindness. The three tiers survive as a *sufficient-
+condition hierarchy* (cheap certificates: right ideal ⊊ phase-collapse), the
+exact test being the scan. Flagged for theory; no paper edit. Both mechanism
+columns kept in the ledger (`right_ideal`, `phase_collapse`), guards live.

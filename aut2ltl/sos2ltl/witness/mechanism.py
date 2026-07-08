@@ -48,4 +48,26 @@ def omega_blind_by_right_ideal(inv: Invariant) -> bool:
     return all(is_right_ideal(inv, cyc) for cyc in period_cycles(inv))
 
 
-__all__ = ["period_cycles", "is_right_ideal", "omega_blind_by_right_ideal"]
+def is_phase_collapse(inv: Invariant, cyc: FrozenSet[int]) -> bool:
+    """Whether `cyc` *phase-collapses*: for every suffix class `y`, the
+    idempotent power `(c·y)^π` is one class independent of `c ∈ cyc`. Then
+    `Val(x, c·y)` is phase-free, so the cycle carries no ω-power certificate.
+    Weaker than a right ideal (which forces `c·y ∈ cyc`, a single idempotent):
+    here `c·y` may leave `cyc` as long as it leaves into a region of uniform
+    idempotent power (paper F7's second mechanism)."""
+    for y in range(inv.n):
+        if len({inv.idempotent_power(inv.mult[c][y]) for c in cyc}) > 1:
+            return False
+    return True
+
+
+def omega_blind_by_phase_collapse(inv: Invariant) -> bool:
+    """True iff every period-`> 1` cycle phase-collapses — the candidate exact
+    (idempotent-level) condition for ω-blindness (F7). Implies, and is implied
+    by a right ideal in one direction (`right ideal ⟹ phase-collapse`); whether
+    it coincides with ω-blindness is the census question."""
+    return all(is_phase_collapse(inv, cyc) for cyc in period_cycles(inv))
+
+
+__all__ = ["period_cycles", "is_right_ideal", "omega_blind_by_right_ideal",
+           "is_phase_collapse", "omega_blind_by_phase_collapse"]
