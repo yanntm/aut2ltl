@@ -1,95 +1,125 @@
-"""Census-backed campaign: learn every language of one or more genaut shapes and
-classify the outcome (E1 scaling data + E2 permanent-stall hunt).
+"""Census-backed campaign over the flat, complement-closed catalogue: learn every
+language under the default (saturation on) and the ablation (`--no-saturation
+--eq-mode exact`) configs, **streaming one CSV row per run as it goes**.
 
-    python3 -m tests.sosl.census_campaign [shape ...] [--config default|ablate|both]
+    python3 -m tests.sosl.census_campaign [--config default|ablate|both]
+                                          [--limit N] [--budget S]
 
-Shapes name `genaut/corpus/det/<shape>/` folders (default: `2state1ap0acc`); the
-precomputed `corpus/sos/<shape>/*.sos` files are the byte-equality references
-(no per-case rebuild). `default` learns with saturation on (soundness + E1
-metrics); `ablate` runs `--no-saturation --eq-mode exact` (E2: every surviving
-stall is provably permanent). Results stream to `tests/sosl/logs/census/<run>/`.
+The source is the flat catalogue `genaut/corpus/flat_canon` (one file per
+language up to AP relabeling, closed under complement — the project standard);
+there are no shapes to select. `default` learns with saturation on (soundness +
+E1 cost metrics); `ablate` runs `--no-saturation --eq-mode exact` (E2: with exact
+equivalence every surviving stall is provably permanent).
 
-Reports: verdict tally (any MISMATCH is a bug — spec §9 P2/P3), the E1 metric
-rows, and every permanent specimen surfaced by the ablation leg — the first-class
-E2 exhibits, reported individually.
+This driver only *produces* the raw per-run data — it prints progress and appends
+`results.csv` incrementally (genaut style: sweep now, study later). The stats are
+computed a posteriori by `census_e1` (E1 soundness + per-N cost) and
+`census_e2_exhibits` (E2 permanent-stall family + exhibits), each reading this
+CSV. The run is **resumable**: `(case, config)` rows already present are skipped.
 """
 from __future__ import annotations
 
+import csv
 import sys
+import time
 from pathlib import Path
-from typing import List
+from typing import List, Set, Tuple
 
-from sosl.experiment.driver import run_matrix
-from sosl.experiment.manifest import DEFAULT, NOSAT_EXACT, census_shapes
-from sosl.experiment.run import Config
+from sosl.experiment.manifest import DEFAULT, NOSAT_EXACT, flat_canon_cases
+from sosl.experiment.run import Config, run_case
+from sosl.experiment.stats import CSV_FIELDS, csv_row
 
 OUT = Path("tests/sosl/logs/census")
-PER_CASE_BUDGET = 15
+PER_CASE_BUDGET = 30
 
 
-def _tally(results, config_id: str) -> dict:
-    d: dict = {}
-    for r in results:
-        if r.stats.config_id != config_id:
-            continue
-        d[r.stats.verdict] = d.get(r.stats.verdict, 0) + 1
-    return d
+def _done_runs(csv_path: Path) -> Set[Tuple[str, str]]:
+    """The `(case_id, config_id)` pairs already recorded in ``csv_path`` — the
+    resume set, so an interrupted sweep continues where it stopped."""
+    if not csv_path.exists():
+        return set()
+    with open(csv_path, newline="") as fh:
+        return {(r["case_id"], r["config_id"]) for r in csv.DictReader(fh)}
 
 
 def main(argv: List[str]) -> int:
     config_sel = "both"
-    shapes: List[str] = []
+    limit = 0
+    budget = PER_CASE_BUDGET
     skip = -1
     for i, a in enumerate(argv):
         if i == skip:
             continue
         if a == "--config":
-            config_sel = argv[i + 1] if i + 1 < len(argv) else config_sel
+            config_sel = argv[i + 1]
             skip = i + 1
-        elif not a.startswith("--"):
-            shapes.append(a)
-    if not shapes:
-        shapes = ["2state1ap0acc"]
+        elif a == "--limit":
+            limit = int(argv[i + 1])
+            skip = i + 1
+        elif a == "--budget":
+            budget = int(argv[i + 1])
+            skip = i + 1
 
-    cases = census_shapes(shapes=shapes)
+    cases = flat_canon_cases()
     if not cases:
-        print(f"no census cases for shapes={shapes} "
-              f"(is genaut/corpus/det/ built?)", file=sys.stderr)
+        print("no flat_canon cases (is genaut/corpus/flat_canon/det built?)",
+              file=sys.stderr)
         return 2
+    if limit:
+        cases = cases[:limit]
 
     configs: List[Config] = []
     if config_sel in ("default", "both"):
-        configs.append(Config(**{**DEFAULT.__dict__, "budget_seconds": PER_CASE_BUDGET}))
+        configs.append(Config(**{**DEFAULT.__dict__, "budget_seconds": budget}))
     if config_sel in ("ablate", "both"):
-        configs.append(Config(**{**NOSAT_EXACT.__dict__, "budget_seconds": PER_CASE_BUDGET}))
+        configs.append(Config(**{**NOSAT_EXACT.__dict__, "budget_seconds": budget}))
 
-    matrix = [(c, cfg) for cfg in configs for c in cases]
-    out_dir = OUT / ("_".join(shapes)[:40])
-    campaign = run_matrix(matrix, str(out_dir))
+    OUT.mkdir(parents=True, exist_ok=True)
+    csv_path = OUT / "results.csv"
+    done = _done_runs(csv_path)
+    total = len(cases) * len(configs)
+    print(f"flat_canon: {len(cases)} languages x {len(configs)} config(s) "
+          f"= {total} runs; {len(done)} already done", file=sys.stderr, flush=True)
 
-    print(f"shapes={shapes}  cases={len(cases)}  runs={len(campaign.results)}")
-    for cfg in configs:
-        print(f"  [{cfg.config_id}] {_tally(campaign.results, cfg.config_id)}")
+    fresh = not csv_path.exists()
+    fh = open(csv_path, "a", newline="")
+    writer = csv.writer(fh)
+    if fresh:
+        writer.writerow(CSV_FIELDS)
+        fh.flush()
 
-    # Soundness: no MISMATCH anywhere (a census byte-mismatch is a real bug).
-    mism = [r for r in campaign.results if r.stats.verdict == "MISMATCH"]
-    if mism:
-        print("\nMISMATCH (bug — investigate):")
-        for r in mism[:20]:
-            print(f"  {r.stats.case_id}/{r.stats.config_id}: {r.stats.detail}")
+    n = ran = 0
+    tally: dict = {}
+    t0 = time.time()
+    for case in cases:
+        for cfg in configs:
+            n += 1
+            if (case.case_id, cfg.config_id) in done:
+                continue
+            try:
+                res = run_case(case.case_id, case.hoa, cfg, reference_sos=case.sos)
+                st = res.stats
+            except Exception as exc:  # noqa: BLE001 -- the sweep never aborts
+                from sosl.experiment.stats import RunStats
+                st = RunStats(case_id=case.case_id, config_id=cfg.config_id,
+                              verdict="MISMATCH",
+                              detail=f"CAUGHT:{type(exc).__name__}: {exc}")
+            writer.writerow(csv_row(st))
+            fh.flush()
+            ran += 1
+            tally[st.verdict] = tally.get(st.verdict, 0) + 1
+            if ran % 100 == 0:
+                rate = ran / (time.time() - t0)
+                eta = (total - n) / rate / 60 if rate else 0
+                print(f"  {n}/{total}  ran={ran}  {dict(sorted(tally.items()))}"
+                      f"  {rate:.1f}/s  eta~{eta:.0f}m",
+                      file=sys.stderr, flush=True)
+    fh.close()
 
-    # E2: permanent specimens from the ablation leg.
-    perms = [r for r in campaign.results
-             if r.stats.config_id == "no-sat-exact"
-             and r.stats.stall_class == "permanent"]
-    print(f"\npermanent specimens (ablation leg): {len(perms)}")
-    for r in sorted(perms, key=lambda r: (r.stats.ref_classes, r.stats.case_id)):
-        s = r.stats
-        print(f"  {s.case_id}: ref={s.ref_classes} learned={s.learned_classes} "
-              f"gap={s.ref_classes - s.learned_classes} cert={s.eq_certification}")
-
-    print(f"\nartifacts: {campaign.csv_path}")
-    return 1 if mism else 0
+    print(f"done: {ran} new runs; verdicts {dict(sorted(tally.items()))}",
+          file=sys.stderr, flush=True)
+    print(str(csv_path))
+    return 0
 
 
 if __name__ == "__main__":
