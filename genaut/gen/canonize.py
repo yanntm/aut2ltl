@@ -55,23 +55,55 @@ def _ihash(dump: str) -> str:
     return hashlib.sha1(dump.encode()).hexdigest()[:16]
 
 
+def _ap_canonical_key() -> "callable":
+    """The shared AP-canonical dedup key (polarity ∘ names) from
+    `survey.normalize`, the same gate `enumerate.py` applies to the TGBA tier —
+    so the `spot_det` structural dedup is apples-to-apples with `tgba`."""
+    repo_root = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+    if repo_root not in sys.path:
+        sys.path.insert(0, repo_root)
+    from survey.normalize.dedup import default_key
+    return default_key
+
+
 def canonize(tag: str, in_dir: str, corpus: str) -> Dict:
     """Build the `det/` and `sos/` tiers for one shape from its TGBA folder,
     deduplicating by the syntactic `𝓘` key. Returns the funnel counts."""
     det_dir = os.path.join(corpus, "det", tag)
     sos_dir = os.path.join(corpus, "sos", tag)
-    for d in (det_dir, sos_dir):
+    spot_det_dir = os.path.join(corpus, "spot_det", tag)
+    for d in (det_dir, sos_dir, spot_det_dir):
         shutil.rmtree(d, ignore_errors=True)
         os.makedirs(d, exist_ok=True)
 
+    ap_key = _ap_canonical_key()
     files = sorted(f for f in os.listdir(in_dir) if f.endswith(".hoa"))
     seen: Dict[str, str] = {}                 # 𝓘-hash -> representative id
     abundance: Counter = Counter()            # 𝓘-hash -> automata realizing it
     sizes: Dict[str, int] = {}                # 𝓘-hash -> |𝒞|
     capped = 0
+    det_md5: set = set()                      # byte-distinct determinized forms
+    det_key: set = set()                      # AP-canonical determinized forms
+    det_folded = 0
     for fname in files:
         ident = fname[:-4]                    # <tag>_<id>
         D = canonical(spot.automaton(os.path.join(in_dir, fname)))
+
+        # spot_det tier: the SAME deterministic automaton D, deduped
+        # *structurally* (md5 → AP-canonical, the TGBA gates) rather than by
+        # language — the count of distinct deterministic presentations.
+        content = D.to_str("hoa")
+        if hashlib.md5(content.encode()).hexdigest() not in det_md5:
+            det_md5.add(hashlib.md5(content.encode()).hexdigest())
+            key = ap_key(content)
+            if key in det_key:
+                det_folded += 1
+            else:
+                det_key.add(key)
+                with open(os.path.join(spot_det_dir, f"{ident}.hoa"), "w") as fh:
+                    fh.write(content)
+
         inv = invariant_of(D)
         if inv is None:                       # algebra closure exceeded its cap
             capped += 1
@@ -97,8 +129,11 @@ def canonize(tag: str, in_dir: str, corpus: str) -> Dict:
         "size_min": min(sizes.values(), default=0),
         "size_median": int(statistics.median(sizes.values())) if sizes else 0,
         "size_max": max(sizes.values(), default=0),
+        "spot_det": len(det_key), "spot_det_byte": len(det_md5),
+        "spot_det_folded": det_folded,
     }
     _write_census(det_dir, sos_dir, funnel)
+    _write_spot_det_census(spot_det_dir, funnel)
     return funnel
 
 
@@ -124,6 +159,31 @@ def _write_census(det_dir: str, sos_dir: str, f: Dict) -> None:
         fh.write(body)
 
 
+def _write_spot_det_census(spot_det_dir: str, f: Dict) -> None:
+    """Record the *structural* determinized-form count — the middle tier
+    between `tgba` (presentation census) and `det`/`sos` (language census).
+    Deduping the deterministic automaton `D` by its bytes (AP-canonical) rather
+    than by `𝓘` keeps every distinct deterministic presentation of a language,
+    so this count sits between the TGBA `kept` and the language count."""
+    d2l = round(f["spot_det"] / f["languages"], 2) if f["languages"] else 0.0
+    body = (
+        f"# {f['tag']} — spot-determinized, structural dedup\n\n"
+        f"- TGBA survivors in: {f['tgba_in']}\n"
+        f"- byte-distinct determinized forms (md5): {f['spot_det_byte']}\n"
+        f"- polarity/name twins folded: {f['spot_det_folded']}\n"
+        f"- **kept (AP-canonical determinized forms): {f['spot_det']}**\n"
+        f"- TGBA-to-det collapse: "
+        f"{round(f['tgba_in'] / f['spot_det'], 2) if f['spot_det'] else 0.0}x\n"
+        f"- distinct languages (semantic `𝓘` dedup, see `det`/`sos`): "
+        f"{f['languages']}  → det-to-language {d2l}x\n\n"
+        f"The deterministic automaton `D` (`importer.canonical`) deduplicated by "
+        f"its AP-canonical bytes, **not** by language — contrast the `det`/`sos` "
+        f"tiers, which dedup the same `D` by the syntactic `𝓘` key. Built by "
+        f"`python3 genaut/gen/canonize.py {f['tag']}`.\n")
+    with open(os.path.join(spot_det_dir, "census.md"), "w") as fh:
+        fh.write(body)
+
+
 def main(argv: List[str]) -> int:
     ap = argparse.ArgumentParser(prog="canonize")
     ap.add_argument("tag")
@@ -135,9 +195,10 @@ def main(argv: List[str]) -> int:
         print(f"no TGBA source folder: {in_dir}", file=sys.stderr)
         return 1
     f = canonize(args.tag, in_dir, args.corpus)
-    print(f"[{f['tag']}] {f['tgba_in']} TGBA -> {f['languages']} languages "
+    print(f"[{f['tag']}] {f['tgba_in']} TGBA -> {f['spot_det']} determinized "
+          f"forms (structural) -> {f['languages']} languages (semantic) "
           f"({f['collapse']}x collapse, {f['capped']} capped) "
-          f"-> corpus/det/{f['tag']}/ + corpus/sos/{f['tag']}/")
+          f"-> corpus/{{det,sos,spot_det}}/{f['tag']}/")
     return 0
 
 

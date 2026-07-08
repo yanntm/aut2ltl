@@ -1,6 +1,6 @@
 HOA: v1
 States: 4
-Start: 1
+Start: 2
 AP: 1 "a"
 acc-name: Buchi
 Acceptance: 1 Inf(0)
@@ -11,10 +11,10 @@ State: 0 {0}
 [!0] 0
 [0] 3
 State: 1 {0}
-[0] 2
+[0] 0
 [!0] 3
 State: 2 {0}
-[0] 0
+[0] 1
 [!0] 3
 State: 3
 [t] 3

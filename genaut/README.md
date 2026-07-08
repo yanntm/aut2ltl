@@ -12,14 +12,19 @@ tractable shape; see [`SHAPES.md`](SHAPES.md) for the map, the dedup funnel, and
 the tractability wall. Exhaustive enumeration does not scale far, so this is a
 one-off census per shape, not a permanent runtime generator.
 
-## The three corpus tiers
+## The four corpus tiers
 
-Each shape lives in `corpus/` under three tiers, coarsest to canonical:
+Each shape lives in `corpus/` under four tiers, coarsest to canonical:
 
-    corpus/tgba/<tag>/   the enumerated survivors: deterministic-or-not, reduced
+    corpus/tgba/<tag>/     the enumerated survivors: deterministic-or-not, reduced
                          TGBA (HOA), deduplicated only up to a<->!a polarity and
                          AP renaming. Written by gen/enumerate.py. This is the raw
                          presentation census — many encodings per language.
+
+    corpus/spot_det/<tag>/ the canonical deterministic automaton D (sosl's
+                         importer.canonical, the SoS algorithm's input), deduplicated
+                         STRUCTURALLY — by D's AP-canonical bytes, the tgba gate — not
+                         by language. One per deterministic presentation. gen/canonize.py.
 
     corpus/det/<tag>/    the canonical automaton D of each distinct language:
                          deterministic, complete, transition-based, generic

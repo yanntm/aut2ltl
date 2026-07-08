@@ -3,10 +3,12 @@
 Composes the full dedup **funnel** of every censused shape, one row per shape,
 from the two census.md sources generation writes:
 
-  corpus/tgba/<tag>/census.md   combos -> byte-distinct (md5) -> AP-canonical
-                                `kept` (gen/enumerate.py);
-  corpus/det/<tag>/census.md    AP-canonical kept -> **language-distinct** (the
-                                syntactic `𝓘` dedup of gen/canonize.py).
+  corpus/tgba/<tag>/census.md      combos -> byte-distinct (md5) -> AP-canonical
+                                   `kept` (gen/enumerate.py);
+  corpus/spot_det/<tag>/census.md  kept -> **det-forms** (structural dedup of the
+                                   deterministic D, gen/canonize.py);
+  corpus/det/<tag>/census.md       det-forms -> **language-distinct** (the syntactic
+                                   `𝓘` dedup, gen/canonize.py).
 
 No arithmetic here beyond the collapse ratio — just read what each stage
 recorded — and write the SHAPES.md feasible-shapes table sorted by N. A shape
@@ -57,6 +59,17 @@ def parse_languages(tag: str) -> Optional[int]:
     return int(m.group(1)) if m else None
 
 
+def parse_det_forms(tag: str) -> Optional[int]:
+    """The structural determinized-form count from
+    `corpus/spot_det/<tag>/census.md`, or `None` if the tier is not built."""
+    path = os.path.join(CORPUS, "spot_det", tag, "census.md")
+    if not os.path.isfile(path):
+        return None
+    m = re.search(r"kept \(AP-canonical determinized forms\):\s*(\d+)",
+                  open(path).read())
+    return int(m.group(1)) if m else None
+
+
 PROSE_HEAD = """# genaut shapes — the bestiary map
 
 The shapes the census enumerates, and the tractability wall. A **shape** is
@@ -78,9 +91,10 @@ files** (`python3 genaut/shapes_table.py`), not hand-kept.
 The columns trace one shape's collapse across the pipeline's dedup levels:
 `combos` (generator-id space `N`) -> `byte-distinct` (md5 after Spot reduction) ->
 `kept` (AP-canonical, the `tgba/` tier: distinct up to `a<->!a` polarity and AP
-rename) -> **`langs`** (the `det/` and `sos/` tiers: distinct languages by the
-syntactic `𝓘` dedup). `collapse` is `kept / langs` — how many relabel-distinct
-TGBA share one language. `survey`: the high-`kept` shapes (**deferred**) are heavy
+rename) -> `det-forms` (the `spot_det/` tier: distinct deterministic presentations
+of the canonical automaton `D`, structural dedup) -> **`langs`** (the `det/` and
+`sos/` tiers: distinct languages by the syntactic `𝓘` dedup). `collapse` is
+`kept / langs` — how many relabel-distinct TGBA share one language. `survey`: the high-`kept` shapes (**deferred**) are heavy
 and run separately. A `—` in `langs` means the canonical tier is not built yet
 (`python3 genaut/gen/rebuild.py`).
 """
@@ -116,17 +130,19 @@ def main() -> None:
         for p in glob.glob(os.path.join(CORPUS, "tgba", "*", "census.md"))]
     rows.sort(key=lambda r: (r["combos"], r["tag"]))
     lines = ["| shape | n | k | c | slots | N (combos) | byte-distinct "
-             "| **kept** | **langs** | collapse | survey |",
-             "|---|---|---|---|---|---|---|---|---|---|---|"]
+             "| **kept** | det-forms | **langs** | collapse | survey |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
         survey = "deferred" if r["kept"] > DEFERRED_KEPT else ""
         langs = parse_languages(r["tag"])
+        detforms = parse_det_forms(r["tag"])
         lang_cell = "—" if langs is None else f"**{langs}**"
+        det_cell = "—" if detforms is None else str(detforms)
         collapse = "—" if not langs else f"{r['kept'] / langs:.2f}x"
         lines.append(
             f"| `{r['tag']}` | {r['nstates']} | {r['naps']} | {r['nacc']} "
             f"| {r['slots']} | {r['combos']} | {r['byte']} "
-            f"| **{r['kept']}** | {lang_cell} | {collapse} | {survey} |")
+            f"| **{r['kept']}** | {det_cell} | {lang_cell} | {collapse} | {survey} |")
     with open(OUT, "w") as out:
         out.write(PROSE_HEAD + "\n" + "\n".join(lines) + "\n" + PROSE_TAIL)
     print(f"wrote {OUT} from {len(rows)} census.md files")

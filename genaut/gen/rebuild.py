@@ -1,10 +1,11 @@
 """genaut/gen/rebuild.py — (re)build the canonical corpus tiers from TGBA.
 
 Loops `canonize` over shapes, turning each `corpus/tgba/<tag>/` into its
-`corpus/det/<tag>/` and `corpus/sos/<tag>/` tiers (see `canonize.py`). Additive
-by default — a shape whose `det/` and `sos/` folders already exist is **skipped**,
-so re-running only fills in what is missing; pass `--force` to `rm` and rebuild
-every named shape. (A direct `canonize.py <tag>` always rebuilds that one shape.)
+`corpus/det/<tag>/`, `corpus/sos/<tag>/` and `corpus/spot_det/<tag>/` tiers (see
+`canonize.py`). Additive by default — a shape whose three tier folders already
+exist is **skipped**, so re-running only fills in what is missing (including the
+`spot_det` tier for shapes built before it existed); pass `--force` to `rm` and
+rebuild every named shape. (A direct `canonize.py <tag>` always rebuilds one shape.)
 
 This does not enumerate: the TGBA tier is produced by `enumerate.py` and promoted
 to `corpus/tgba/` first (see README). To add a shape to the census, enumerate it,
@@ -53,15 +54,15 @@ def main(argv: List[str]) -> int:
         if not os.path.isdir(in_dir):
             print(f"  ! {tag}: no TGBA source, skipped", file=sys.stderr)
             continue
-        det = os.path.join(args.corpus, "det", tag)
-        sos = os.path.join(args.corpus, "sos", tag)
-        if not args.force and os.path.isdir(det) and os.path.isdir(sos):
+        tiers = [os.path.join(args.corpus, t, tag)
+                 for t in ("det", "sos", "spot_det")]
+        if not args.force and all(os.path.isdir(t) for t in tiers):
             print(f"  = {tag}: already built, skipped (--force to rebuild)")
             skipped += 1
             continue
         f = canonize(tag, in_dir, args.corpus)
-        print(f"  + {tag}: {f['tgba_in']} TGBA -> {f['languages']} languages "
-              f"({f['collapse']}x, {f['capped']} capped)")
+        print(f"  + {tag}: {f['tgba_in']} TGBA -> {f['spot_det']} det forms "
+              f"-> {f['languages']} languages ({f['collapse']}x, {f['capped']} capped)")
         built += 1
 
     print(f"rebuild: {built} built, {skipped} skipped, {len(shapes)} shapes total")

@@ -1,0 +1,10 @@
+=== sample 2state1ap2acc_parity (N=4294967296) seed=0 target_langs=1024 sample=None max_draws=4294967296 ===
+  ... 4721 draws, 64 languages (0 capped)
+  ... 21689 draws, 128 languages (0 capped)
+  ... 64680 draws, 192 languages (0 capped)
+  ... 152666 draws, 256 languages (0 capped)
+  ... 286864 draws, 320 languages (0 capped)
+  ... 588271 draws, 384 languages (0 capped)
+  ... 1435170 draws, 448 languages (0 capped)
+  ... 3220205 draws, 512 languages (0 capped)
+  ... 27949428 draws, 576 languages (0 capped)
