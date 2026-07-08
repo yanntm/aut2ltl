@@ -22,9 +22,12 @@ from __future__ import annotations
 import json
 import os
 import sys
+from collections import Counter
 from typing import Dict, List, Optional
 
-from aut2ltl.sos2ltl.witness import DualScan, Family, dual_scan, extract_family, toggles
+from aut2ltl.sos2ltl.witness import (
+    DualScan, Family, dual_scan, extract_family, omega_blind_by_right_ideal,
+    toggles)
 from aut2ltl.sos2ltl.witness.spot_oracle import oracle_for_hoa
 from sosl.sos import load_invariant
 
@@ -60,6 +63,9 @@ def main(argv: List[str]) -> int:
     replay_fail: List[str] = []
     shape_split = {"both": 0, "linear-only": 0, "omega-only": 0}
     h5 = 0
+    mech: Counter = Counter()          # (h5?, right-ideal?) cross-tab
+    mech_finding: List[str] = []       # H5 & not right-ideal — a real finding
+    mech_bug: List[str] = []           # non-H5 & right-ideal — stop-the-line
 
     for fn in files:
         stem = fn[:-4]
@@ -79,6 +85,15 @@ def main(argv: List[str]) -> int:
         if ds.h5_hit:
             h5 += 1
 
+        # Mechanism column (Prop 4.5): every period>1 cycle a right ideal
+        # ⟹ ω-blind (H5) by theorem. Cross-checked against the dual scan.
+        ri = omega_blind_by_right_ideal(inv)
+        mech[("h5" if ds.h5_hit else "nonh5", "ri" if ri else "nori")] += 1
+        if ds.h5_hit and not ri:
+            mech_finding.append(stem)      # column-false H5 — a real finding
+        if not ds.h5_hit and ri:
+            mech_bug.append(stem)          # column-true non-H5 — stop-the-line
+
         det_hoa = os.path.join(det_dir, stem + ".hoa")
         member = oracle_for_hoa(det_hoa, inv.alphabet) if os.path.exists(det_hoa) else None
         replay: Dict[str, Optional[bool]] = {}
@@ -96,6 +111,7 @@ def main(argv: List[str]) -> int:
             "linear": _family_row(ds.linear),
             "omega": _family_row(ds.omega),
             "h5_hit": ds.h5_hit,
+            "right_ideal": ri,
             "canonical": "omega" if canon and canon.omega_power else "linear",
             "det_replay": replay,
         })
@@ -121,8 +137,16 @@ def main(argv: List[str]) -> int:
               f"{'ALL REPLAYED' if not replay_fail else 'FAILURES ' + str(replay_fail)}")
         print(f"  max component length {max_comp} vs max |𝒞| {max_cls} "
               f"(Thm 4.4: each < |𝒞|)")
+        # Mechanism column (Prop 4.5): right-ideal ⟺ H5, theory's prediction.
+        print(f"  mechanism (right-ideal ω-blind) × H5: "
+              f"H5&RI={mech[('h5','ri')]} H5&¬RI={mech[('h5','nori')]} "
+              f"¬H5&RI={mech[('nonh5','ri')]} ¬H5&¬RI={mech[('nonh5','nori')]}")
+        if mech_finding:
+            print(f"  ** FINDING: H5 & not-right-ideal (2nd ω-blind mechanism): {mech_finding}")
+        if mech_bug:
+            print(f"  ** BUG: right-ideal & not-H5 (theorem violated): {mech_bug}")
     print(f"  -> {out}")
-    return 1 if replay_fail else 0
+    return 1 if (replay_fail or mech_bug) else 0
 
 
 if __name__ == "__main__":

@@ -642,3 +642,73 @@ locates the frontier. **The (B)-FAIL hunt (H3) stays empty** even at 2 AP —
 `2state2ap0acc`'s final layers all trivial-pass; a positive (B)-failure
 witness still awaits richer acceptance (the spec's "≥ 2 AP" is necessary, not
 yet shown sufficient).
+
+### F7 — the right-ideal mechanism is *sufficient but not necessary*: a second ω-blindness mechanism dominates
+
+**The ask** (theory's F5 adjudication, spec revision 2026-07-08): the E7
+mechanism column — per non-LTL language, is every period-`>1` cycle a right
+ideal `C·λ(Σ) ⊆ C`? Prediction (falsifiable): all 26 H5 hits column-true;
+a column-true non-H5 is a stop-the-line bug; a column-false H5 is a real
+finding (a second ω-blindness mechanism). Implemented as
+`aut2ltl/sos2ltl/witness/mechanism.py` (`omega_blind_by_right_ideal`), wired
+into `e7_ledger` as a `right_ideal × H5` cross-tab.
+
+**The run (whole non-LTL census).** Cross-tab `H5 × right-ideal`:
+`¬H5 & RI = 0`, `H5 & RI = 6`, `H5 & ¬RI = 20` (presentations; the parity twin
+duplicates `2state1ap1acc`, so **17 distinct H5 languages: 3 right-ideal,
+14 second-mechanism**). The prediction is **REFUTED** — only 6/26 hits are
+right-ideal — but its load-bearing half **survives**: `¬H5 & RI = 0`, so
+`right-ideal ⟹ ω-blind` (Prop 4.5(ii)) has **zero** counterexamples
+census-wide; no stop-the-line bug. Right-ideal is *sufficient, not necessary*,
+and at these sizes the second mechanism is the **common** case (the smallest
+H5 hits, `|𝒞| = 6` at `3state1ap0acc`, are all second-mechanism; the
+right-ideal ones start at `|𝒞| = 4`, `2state1ap1acc`).
+
+**Soundness first.** `dual_scan.h5_hit` scans ω-power contexts around the
+*first* group only; a column-false H5 could be an unsound overclaim (a later
+group carrying an ω-certificate the first-group scan missed). Ruled out by
+`tests/sos2ltl/e7_mechanism_probe.py`, which scans ω-contexts around **every**
+period-`>1` cycle: on `01681` (and the `|𝒞|=6` exhibit) the sole cycle is
+ω-constant though not a right ideal — genuinely ω-blind, not an artifact.
+
+**The exhibit (smallest second-mechanism H5, `|𝒞| = 6`).**
+`3state1ap0acc_004376`. The cycle `C = {[!a], [!a·!a]}` is the `!a`-parity
+group (both fold to the idempotent `[!a·!a]`). It is **not** a right ideal —
+`a` ejects it: `[!a]·a = [!a·a]`, `[!a·!a]·a = [a]`. But **both escape classes
+have idempotent power the zero** `[a·a]` (`idem([!a·a]) = idem([a]) = [a·a]`),
+so for every ω-context `y` the idempotent power of `g^{m+i}·y` is
+*phase-independent* — `[!a·!a]` while `y` stays in `C` (all `!a`), the zero
+once any `a` appears — hence every ω-power pattern is constant. Canonical `D`
+(deterministic weak Büchi, 4 states):
+
+    HOA: v1
+    States: 4
+    Start: 2
+    AP: 1 "a"
+    Acceptance: 1 Inf(0)
+    --BODY--
+    State: 0 {0}
+    [0] 1
+    [!0] 2
+    State: 1 {0}
+    [!0] 1
+    [0] 3
+    State: 2 {0}
+    [!0] 0
+    [0] 3
+    State: 3
+    [t] 3
+    --END--
+
+**The mechanism, for theory.** The exact ω-blindness condition a cycle `C`
+satisfies appears to be: *for every suffix class `y`, the idempotent power
+`(c·y)^π` is one class, independent of `c ∈ C`* (then `Val(x, g^{m+i}·y)` is
+phase-free). The right ideal is the special case `C·y ⊆ C` (unique idempotent
+in `C`); the second mechanism allows `C·y` to **leave** `C`, provided it
+leaves into a region of uniform idempotent power (here the zero). So the
+mechanism column stays useful — relabelled **sufficient, not iff** — and the
+open question is the exact necessary-and-sufficient condition (candidate above)
+and whether it, too, is a clean combinatorial closure. Flagged for theory; no
+paper edit made. The `right_ideal` column is retained in the E7 ledger with
+this semantics (a column-true is a *certified* H5; a column-false H5 is
+verified ω-blind by the all-groups probe).
