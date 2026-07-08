@@ -579,3 +579,66 @@ hit that is column-false is the real finding — a second ω-blindness
 mechanism, paper figure, bring it back immediately. Prediction (theory,
 falsifiable): all 26 hits are column-true. Runnable now on
 `corpus/sos/`; H5 in E6 re-scoped from hunt to mechanism map.
+
+### E1 / E2 re-keyed to the language, full bench (§3b) — supersedes the M1 tables
+
+The M1 E1/E2 section (above, "the 1-AP census") is automaton-weighted over
+981 automata of six 1-AP shapes; §3b (and the census addendum) demand the
+language as unit. Re-issued here over the whole `corpus/sos` bench, one record
+per distinct `.sos` (`tests/sos2ltl/census_build` → `tests/sos2ltl/census_report`;
+full table `tests/sos2ltl/logs/e12_report.txt`). Frame per shape: state / AP /
+acceptance-set count and family (gba = Inf-conjunction Büchi-flavoured, with the
+`_parity` twins); deterministic Emerson–Lei; exhaustive over the shape.
+
+**Degenerate line.** Every shape carries exactly two degenerate languages —
+`∅` (no accepting linked pair) and `Σ^ω` (all linked pairs accepting) — split
+out of every headline below; no shape has a non-degenerate single-word-class
+language. **Presentation multiplicity** (from `corpus/det/<tag>/census.md`,
+the `tgba → language` collapse) makes the §3b point concrete: 1-state shapes
+sit at ~1.0–1.4× (median 1 automaton per language), while `2state1ap1acc` is
+**7.2×, median 2 / max 331** — automaton-weighting there is mostly presentation
+noise, which is exactly why the tables are language-keyed.
+
+E1 (condition A) and E2 (condition B), non-degenerate LTL, pooled and the
+shapes where the strata are non-trivial (`A@1` = anchors at width 1; `A≤3` =
+anchors within the tester's `k ≤ 3`; `FAIL` = layers anchoring at no `k ≤ 3`;
+`stemk3` = languages every layer of which anchors at `k ≤ 3`):
+
+| shape | langs | layers | A@1 | A≤3 | FAIL | frozen | stemk3 | (B) PASS/UND/FAIL | k′≤2 |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| 1-AP, ≤2 states (all) | — | — | 89–100% | **100%** | **0** | 41–72% | **100%** | all PASS / 0 / 0 | 100% |
+| `2state1ap1acc` (+parity) | 80 | 427 | 89.5% | 100% | 0 | 41.2% | 100% | 271 / **42** / 0 | 86.6% |
+| `3state1ap0acc` | 831 | 8952 | 64.7% | 83.5% | **846** | 21.7% | **69.9%** | 5670 / 0 / 0 | 100% |
+| `2state2ap0acc` | 7043 | 41659 | 76.6% | 87.0% | **5418** | 32.9% | **74.4%** | 32425 / 0 / 0 | 100% |
+| **POOLED** | 9761 | 58185 | 77.6% | 88.2% | 6264 | 36.1% | 78.9% | 43620 / 90 / 0 | 99.8% |
+
+The pooled `A@1` (77.6%) and `stemk3` (78.9%) sit well below M1's 1-AP
+headline (96.5% at `k=1`, 100% at `k≤3`) — that headline was a 1-AP,
+automaton-weighted artifact; the harder shapes pull it down. (B) is clean
+census-wide: 0 FAIL anywhere, and the only 90 UNDECIDED are the
+`2state1ap1acc` frozen-final-layer node-budget stratum (F1) — not a
+determinacy gap.
+
+### F6 — the (A)-FAIL / scoped-fallback stratum is non-empty, and appears off the 1-AP/2-state corner
+
+**The M1 prediction** (spec E1, confirmed on the 1-AP census): "a large
+majority pass (A) at `k=1`", with 100% of languages fully stem-transcribable
+at `k ≤ 3`. Spec H2 left "first (A)-failing hit appears ⟨TBD: record where⟩"
+open, predicting none at 2 states / 1 AP.
+
+**The run.** Across the full bench the (A)-tester (which tops out at `k = 3`,
+so its gap is exactly the FAIL/scoped-fallback stratum, Prop 5.21/5.24)
+returns **6264 FAIL layers** — but **zero** at every 1-AP shape and every
+≤2-state shape. The first FAILs appear at `3state1ap0acc` (3 states, 1 AP:
+846 FAIL, `stemk3` 69.9%) and `2state2ap0acc` (2 states, 2 AP: 5418 FAIL,
+`stemk3` 74.4%). So spec-H2's "none at 2 states / 1 AP" is **confirmed**, and
+its `⟨TBD⟩` is **filled**: the fallback stratum switches on with the *third*
+state or the *second* AP, not before. This is §7's inner-frontier fraction as
+a measurement — roughly a quarter of languages at those shapes carry an
+(A)-failing layer, the scoped DG fallback's raison d'être — and it corrects
+the M1 "100% at `k ≤ 3`" to a 1-AP artifact. No refutation of a *paper* claim
+(the paper predicts the stratum exists); it fixes the empirical column and
+locates the frontier. **The (B)-FAIL hunt (H3) stays empty** even at 2 AP —
+`2state2ap0acc`'s final layers all trivial-pass; a positive (B)-failure
+witness still awaits richer acceptance (the spec's "≥ 2 AP" is necessary, not
+yet shown sufficient).

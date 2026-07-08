@@ -56,6 +56,12 @@ def census_line(inv: "Invariant", aperiodic: bool) -> str:
         from .cayley import build
         from .readoffs import is_prefix_independent
 
+        # The degenerate stratum (§3b): the language is empty (no accepting
+        # linked pair) or universal (every linked pair accepting) — one word
+        # class, passes (A)/(B) trivially, inflates headline fractions.
+        acc = inv.accept
+        rec["degenerate"] = ("empty" if not acc else
+                             "universal" if acc == inv.linked_pairs() else None)
         cay = build(inv)
         anchs = anchoring.analyze(cay)
         wins = windows.analyze(cay)
