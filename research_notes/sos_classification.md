@@ -25,10 +25,12 @@ remains a table computation, running on the right regular representation
 with the marking unchanged and the admissible stems shrinking
 (Theorem 8.5). Beyond the single language, a spectrum theorem bounds the
 Wagner degrees any generalized-Büchi input family can reach
-(Proposition 11.1), and a census of 15 091 distinct languages,
-systematically enumerated across the generalized-Büchi and parity
-acceptance families, yields the first measured Wagner-degree profile of
-such a class, every internal consistency law holding on every case.
+(Proposition 11.1), and a reference catalogue of 3938 small ω-languages —
+every language small deterministic automata realize, counted once up to
+atom renaming and closed under complement — yields the first measured
+Wagner-degree profile of such a class: 43% of it lies beyond LTL, the
+profile is exactly duality-symmetric, and every internal consistency law
+holds on every case.
 
 ## Introduction
 
@@ -68,12 +70,12 @@ everything below is polynomial in `N = |𝒞|`.
   corpus fixes, a priori, which Wagner degrees it can reach: deterministic
   generalized-Büchi inputs never need the derivative and stay within an
   explicit finite list of degrees.
-- *A measured profile* (§12). Run over a systematically enumerated census —
-  15 091 distinct languages across the generalized-Büchi and parity
-  acceptance families — the classifier produces the first measured
-  per-language Wagner-degree profile of such a class, with the duality and
-  consistency laws as internal oracles — holding on every case — and
-  Proposition 11.1's spectrum verified, converse included.
+- *A measured profile* (§12). Over a reference catalogue of 3938 small
+  ω-languages — systematically enumerated, deduplicated up to atom
+  renaming, closed under complement — the classifier produces the first
+  measured Wagner-degree profile of such a class: 43% non-LTL, a profile
+  exactly symmetric under duality, Proposition 11.1's spectrum verified
+  with its converse, and every consistency law holding on every case.
 
 **Related work.** Priority for computing the Wagner degree on the syntactic
 ω-semigroup belongs to Cabessa and Duparc [CD09a, CD09b], who reach it by a
@@ -188,7 +190,8 @@ throughout:
 `p(c) = 1` for all `c ∈ 𝒞₊`. By the classical chain of equivalences
 assembled in [SωS26 §7.2], aperiodicity of the *syntactic* algebra is
 exactly LTL-definability, in both directions and with no presentation
-artifacts possible.
+artifacts possible. The cut is also complement-blind: the test reads only
+`M`, and `𝓘(L̄)` differs only in `P` (§2).
 
 **Procedure.** Compute `p(c)` for every class (each orbit is at most `N`
 products; `O(N²)` total). Report **LTL** iff all periods are 1; otherwise
@@ -845,84 +848,96 @@ classifier or in the corpus's acceptance labeling.
 
 ## 12. The profile, measured
 
-The classifier of the engineering companion [Spec26, Rep26], run over a
-census of small deterministic, complete, transition-based automata:
-**19 shape families** (states × atomic propositions × colours × acceptance
+The measured object is the **reference catalogue** of the engineering
+companion [Spec26, Rep26]: every ω-language realized by a small
+deterministic, complete, transition-based automaton, **counted once**. From
+19 shape families (states × atomic propositions × colours × acceptance
 family, within 3 states, 3 atoms, 3 colours) exhaustively enumerated across
-the **generalized-Büchi** and **parity** acceptance families, plus one live
-uniform random sample of a two-state, two-colour parity shape whose
-enumeration space (`4.3·10⁹`) is beyond exhaustion (2026-07-08 run). Every
-enumerated automaton is reduced and deduplicated down to one deterministic
-presentation and one invariant `𝓘(L)` per **distinct language** — dedup by
-`𝓘`-hash, the one-pass operation of [SωS26, Thm. 5.1] — giving **15 563
-classification records over 15 091 distinct languages**; the 472-record
-excess is the same language reached from different shapes, a free
-cross-consistency oracle (every record in one `𝓘`-hash bucket must carry
-the same degree — zero splits). The duality gate and the internal laws of
-§5–6 ran on every case. Result: every case classified in full — zero law
-violations, zero budget overruns, zero partial verdicts — and the first
-measured per-language Wagner-degree profile of a systematically enumerated
-ω-language class:
+the **generalized-Büchi** and **parity** acceptance families, plus one
+uniform random sample of a two-state, two-colour parity shape beyond the
+enumeration wall (id-space `4.3·10⁹`), the sweep's redundancies are folded
+— sub-shape inclusion, unused atoms, and renaming/polarity of the atoms
+(the invariant is minimized over its letter-permutation orbit, an operation
+[SωS26, Thm. 5.1] makes exact) — and the result is **closed under
+complement**, a step that is free at the invariant level (§2: same table,
+`P` flipped). The funnel: 3790 languages at a fixed labeling → 2007 up to
+renaming (the **primals**: 1764 exhaustively enumerated, 243 sampled) →
+**3938** languages once complement-closed. Each language carries its
+classification as a corpus artifact, a pure read-off of its stored `𝓘(L)`
+— no automaton, no external tool, about one second for the whole catalogue
+— with the internal laws of §5–6 and the witness replay asserted on every
+case: zero violations, zero partial verdicts.
 
-| `ϕ = (γ, s)` | `(m⁺, m⁻, n⁺, n⁻)` | class (§7–8 dictionary) | languages |
-|---|---|---|--:|
-| `(0, σ)` | `(−1, 0, −1, 0)` | empty | 1 |
-| `(0, π)` | `(0, −1, 0, −1)` | universal | 1 |
-| `(1, δ)` | `(0, 0, 0, 0)` | clopen (properly `Δ₁`) | 81 |
-| `(1, σ)` | `(0, 0, 0, 1)` | properly open — guarantee | 6 |
-| `(1, π)` | `(0, 0, 1, 0)` | properly closed — safety | 12 949 |
-| `(2, σ)` | `(0, 0, 1, 2)` | properly `Σ₂` | 8 |
-| `(2, π)` | `(0, 0, 2, 1)` | properly `Π₂` | 2 |
-| `(ω, σ)` | `(0, 1, −1, 0)` | properly `Gδ` — DBA-proper | 1 642 |
-| `(ω, π)` | `(1, 0, 0, −1)` | properly `Fσ` — DCA-proper | 232 |
-| `(ω·2, π)` | `(1, 1, 1, 0)` | one Rabin pair, `π` side — first superchain (`n = 1`) | 16 |
-| `(ω², σ)` | `(1, 2, −1, 0)` | parity-`{0,1,2}`-proper | 153 |
+**The aperiodic cut.** 2240 of the 3938 languages are LTL-definable and
+1698 — **43%** — are not: among the small ω-languages, genuine ω-counting
+is not a corner case but almost half the population. The cut is
+complement-blind (§4), so it splits the primals in the same proportion
+(1142 LTL / 865 non-LTL of 2007).
 
-The table is ordered by Wagner degree, weakest first; the trivial pair sits
-apart below the hierarchy proper. 9 712 of the languages are LTL-definable,
-5 379 are not: the aperiodic axis cuts across the degree rows, as §7.1 of
-the core paper promised. (The parity sample still runs; its counts grow
-monotonically, adding languages to the deep rows without moving any
-existing one.)
+**The profile**, ordered by Wagner degree, weakest first — `non-LTL` is
+the row's share beyond the aperiodic cut, `primals` its shape-realized
+share (the rest are added complements):
 
-Four readings.
+| `ϕ = (γ, s)` | `(m⁺, m⁻, n⁺, n⁻)` | class (§7–8 dictionary) | languages | non-LTL | primals |
+|---|---|---|--:|--:|--:|
+| `(0, σ)` | `(−1, 0, −1, 0)` | empty | 1 | 0 | 1 |
+| `(0, π)` | `(0, −1, 0, −1)` | universal | 1 | 0 | 1 |
+| `(1, δ)` | `(0, 0, 0, 0)` | clopen — properly `Δ₁` | 62 | 0 | 36 |
+| `(1, σ)` | `(0, 0, 0, 1)` | properly open — guarantee | 1356 | 678 | 4 |
+| `(1, π)` | `(0, 0, 1, 0)` | properly closed — safety | 1356 | 678 | 1356 |
+| `(2, σ)` | `(0, 0, 1, 2)` | properly `Σ₂` | 4 | 0 | 4 |
+| `(2, π)` | `(0, 0, 2, 1)` | properly `Π₂` | 4 | 0 | 1 |
+| `(ω, σ)` | `(0, 1, −1, 0)` | properly `Gδ` — DBA-proper | 466 | 98 | 365 |
+| `(ω, π)` | `(1, 0, 0, −1)` | properly `Fσ` — DCA-proper | 466 | 98 | 128 |
+| `(ω·2, σ)` | `(1, 1, 0, 1)` | one Rabin pair — `σ` side (superchain `n = 1`) | 12 | 12 | 0 |
+| `(ω·2, π)` | `(1, 1, 1, 0)` | one Rabin pair — `π` side (superchain `n = 1`) | 12 | 12 | 12 |
+| `(ω², σ)` | `(1, 2, −1, 0)` | parity-`{0,1,2}`-proper | 99 | 61 | 99 |
+| `(ω², π)` | `(2, 1, 0, −1)` | co-parity-`{0,1,2}`-proper | 99 | 61 | 0 |
 
-**Proposition 11.1, verified per language — and its converse quantified.**
-Broken down by *canonical* acceptance family — the acceptance of the
-deduplicated deterministic presentation, not the enumeration tag — the
-14 690 generalized-Büchi and trivial languages all classify inside the
-proposition's list, ceiling `(ω, σ)`, `γ = µ` throughout: no partial
-verdict is possible there, and none occurred anywhere. The converse now
-shows at scale: a genuine positive chain (`m⁺ = 1`) occurs *only* under
-co-Büchi or genuine two-colour parity canonical acceptance — `(ω, π)` 232
-times, `(ω², σ)` 153 times, and the census's first superchain row
-`(ω·2, π)` 16 times, where the previous generalized-Büchi-only census
-reached the first two degrees once or twice, through hand-made specimens,
-and the third never. The acceptance family, before the state count, is the
-door to depth — exactly §11's ordering of the axes.
+The trivial pair sits apart below the hierarchy proper; the triptych sits
+inside the spectrum, and `γ` never exceeds `ω²`. Four readings.
 
-**The safety skew is a property of the class, not of the weighting.** The
-previous per-automaton profile was 84.6% properly closed, under suspicion
-of abundance skew (in one two-state Büchi shape, 759 automata collapse to
-at most 73 distinct languages, `true` alone absorbing 43.6% of them). The
-per-language restatement answers the suspicion: the skew survives dedup —
-12 949 of 15 091 languages, 85.8%, are properly closed. Small-shape
-enumeration genuinely produces a safety-dominated language class;
-abundance weighting barely moves the picture.
+**The duality laws, as a corpus identity.** The `languages` column is
+exactly symmetric under `σ ↔ π` — 1 = 1, 1356 = 1356, 4 = 4, 466 = 466,
+12 = 12, 99 = 99 — with the self-dual `(1, δ)` row standing alone, and the
+`non-LTL` column is symmetric too (the cut is complement-blind, §4). On a
+one-sided corpus the duality gate of §2 can only check each language
+against its computed complement, record by record; on a complement-closed
+catalogue it becomes an identity of the whole table. The `primals` column
+is where asymmetry survives, and it is the real measurement of the
+enumeration: small `Inf`-shapes realize the safety row directly (1356
+primals) and its guarantee dual almost never (4), and the deep degrees are
+reached on one side only (`(ω², σ)`: 99 primals against 0). What an
+enumeration *produces* is one-sided; what it *determines*, through the free
+closure, is not.
 
-**The `𝓘`-dedup is itself a measurement.** Per shape, the
-automaton-to-language compression ranges from 1.00× (language-sparse
-shapes) to 7.20× (929 presentations folding to 129 languages, a single
-language realised by up to 331 automata) — a shape's language-carrying
-capacity, computed by hashing `𝓘`, a datum no automaton-level object
-supports.
+**Proposition 11.1, read off the coordinates.** The Büchi-vs-not split
+needs no presentation: `m⁺ ≤ 0` is generalized-Büchi-realizability — 3250
+languages, the trivial, weak, and `(ω, σ)` rows; `m⁺ = 1 ∧ m⁻ = 0` is the
+co-Büchi-proper row (`(ω, π)`, 466); and `m⁺ ≥ 1 ∧ m⁻ ≥ 1` — the 222
+languages of the `(ω·2, ·)` and `(ω², ·)` rows — needs genuine parity. So
+688 of 3938 languages sit strictly above the generalized-Büchi ceiling,
+exactly at the co-Büchi and parity degrees: the proposition and its
+converse at catalogue scale, with the independent Spot-vs-algebra spectrum
+gate agreeing on the presentation tier [Rep26]. The deep band is reached
+only through the beyond-wall parity sample — and the derivative regime
+stays empty, as §11's sharp budget requires: its first inhabitant sits at
+the three-state, two-colour parity shape, past the current wall.
 
-**The cost claim of §10 holds.** Classification never approached its
-budget on any input; the practical ceiling met throughout was the
-construction of `𝓘(L)`, never the read-off.
+**Depth and countability are independent, in the numbers.** The non-LTL
+mass does not sit at the deep end: half of the *safety* row (678 of 1356)
+is already beyond LTL, a third of the deepest parity rows (38 of 99 per
+side) is LTL-definable, and only the one-Rabin-pair rows are wholly
+non-LTL. The two axes read off the same object — §4's cut and §7–8's
+degree — are exhibited by the catalogue as a full cross-product.
 
-**Future work (size versus depth).** The remaining per-shape quantity is
-the distribution of `N = |𝒞|` cross-tabulated against the degree. The
+**The cost claim of §10 holds.** Classifying is a read-off of the stored
+invariant — the entire catalogue in about one second — and the practical
+ceiling remains the construction of `𝓘(L)`, never the classification.
+
+**Future work (size versus depth).** The remaining measurement is the
+distribution of the algebra size `N = |𝒞|` across the catalogue,
+cross-tabulated against the degree. The
 dependence is one-directional: a chain of length `m` needs `m + 1` strictly
 `H`-descending idempotents and a superchain of length `n` needs `n + 1`
 strictly `R`-descending stems, so a deep degree forces `N` up — but not
@@ -930,8 +945,8 @@ conversely, since a large algebra can be topologically shallow (a safety
 language with an intricate finite-word core keeps `N` high at degree
 `(1, π)`, while `EvenBlocks` reaches `ω²` with `N = 8`). The expected picture
 is triangular — deep degrees only above a size floor, shallow degrees at
-every size — and where the census sits inside that triangle measures what
-small shapes actually exercise.
+every size — and where the catalogue sits inside that triangle measures
+what small shapes actually exercise.
 
 ---
 
@@ -958,12 +973,12 @@ invariant, whose agreement over a corpus is the natural cross-oracle for an
 implementation of either.
 
 Beyond the single language, the acceptance family of an input corpus fixes
-its reachable degrees a priori (Proposition 11.1), and the census of §12
-measures the first per-language Wagner-degree profile of a systematically
-enumerated class — 15 091 distinct languages, every internal law holding,
-the spectrum bound and its converse verified, classification never the
-bottleneck. The per-shape size-versus-depth picture is the next
-measurement on the same data.
+its reachable degrees a priori (Proposition 11.1), and the catalogue of
+§12 measures the first Wagner-degree profile of the small ω-languages —
+3938 of them, counted once and closed under complement: 43% beyond LTL, a
+profile exactly symmetric under duality, the spectrum bound and its
+converse verified, classification never the bottleneck. The
+size-versus-depth picture is the next measurement on the same data.
 
 ---
 
