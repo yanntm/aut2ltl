@@ -137,3 +137,68 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
     corpus/det/<tag>/    canonical D per language (HOA) + census.md.
     corpus/sos/<tag>/    syntactic 𝓘 per language (.sos) + census.md.
     logs/<tag>/      the committed reference survey run per shape.
+
+## Sampling beyond the wall — `gen/sample.py`
+
+For shapes past the tractability wall (`SHAPES.md`: id spaces of 1e9+), exhaustive
+enumeration is infeasible, but a **reproducible random sample** of the id space is
+cheap and, for our purposes, enough. `gen/sample.py` draws combo ids uniformly at
+random under a fixed seed, decodes each with the **index trick** — a direct
+base-`|guards|` decode, O(`|slots|`), *not* `Shape.combo_at` (which is O(index) and
+unusable on a 1e9 space) — and runs the exact census chain on it
+(`build → reduce → canonical D → 𝓘`), keeping a language only when it is new.
+
+    python3 genaut/gen/sample.py 2,1,2,parity --target-langs 1024 --seed 0
+
+It stops at `--target-langs` distinct languages (default 1024), or `--sample K`
+draws, or a `--max-draws` safety cap — whichever first — and writes a
+**clearly-non-exhaustive** tree so it never masquerades as a census:
+
+    corpus/sampled/<tag>__seed<S>/det/  + /sos/  + sample.json  (exhaustive:false)
+
+Dedup gates are the census's own: reduced-HOA md5, then `default_key`
+(polarity∘names), then the `𝓘` dump. Sampling is uniform over *presentations*, so
+a presentation-rich language is likelier drawn — the sample is a probe, not a
+census, and cannot support an "all languages" claim (those live at the exhaustive
+small shapes). Two placed tests guard it: `tests/sample_decode.py` (the fast
+decoder equals `Shape.combo_at`) and `tests/sample_subset.py` (the per-id chain
+reproduces the census `.sos` byte-for-byte — 129/129 on `2state1ap1acc`, proving
+the sampler skips no pipeline step).
+
+## Polarity / relabeling — a known non-canonicalization
+
+The `𝓘` / `.sos` form is **polarity-sensitive**: `GF(a)` and `GF(!a)` produce
+different `.sos`. Languages are deduplicated only **up to `polarity∘names` at the
+HOA text level** (`enumerate.py`'s `default_key`, from `survey.normalize` — it
+makes each AP's *first literal occurrence* positive and renames APs in order). That
+is a dedup **key**, not a structure-robust language-up-to-relabeling canonical
+form. Consequences:
+
+- The kept representative's polarity is **encounter-order dependent**, so two runs
+  — or the census vs. a sample — may store the *same language in opposite
+  polarity*, i.e. different `.sos` bytes for one language. (This is representative
+  choice, not a pipeline defect: `tests/sample_subset.py` shows the per-id chain is
+  byte-faithful to the census.)
+- Because the fold is text-first-occurrence based, structurally-different **relabel
+  twins can slip through as distinct** — so the corpus (and any sample) may carry
+  near-duplicate languages that differ only by an AP relabeling.
+
+Two candidate fixes, **neither implemented**:
+
+- **Option 1 — dedup at generation.** Build each HOA, map it straight to its
+  language `𝓘`, polarity-normalize, dedup, and keep the HOA only if the language is
+  new. *Downside:* this yields exactly one HOA per language — it destroys the
+  presentation multiplicity the `tgba/` tier exists to measure (the whole
+  combos→byte→kept→langs funnel collapses). Bad.
+- **Option 2 — canonicalize the `.sos` we have.** For each language, try all
+  `2^k · k!` AP relabelings of its `𝓘`, adopt the byte-smallest as the canonical
+  representative. Then `.sos` byte-equality *is* language-equality up to relabeling
+  ("`GF(a)`, never `GF(!a)`"). *Downside:* the relabeling group is explosive in `k`
+  (`2^k·k!` = 48 at k=3), and it must be applied to the `det/` HOA and the `.sos`
+  **together** — otherwise the learner, which learns from the det automaton and
+  byte-compares its exported `.sos` to the reference, breaks on a mismatched
+  polarity.
+
+**Status: neither is done.** Consumers of `corpus/sampled/` (and, strictly, the
+census tiers too) must read "distinct language" as "distinct over a fixed AP
+labeling, deduped up to text-level `polarity∘names`" — relabel twins may appear.
