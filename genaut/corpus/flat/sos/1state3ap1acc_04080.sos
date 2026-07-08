@@ -1,0 +1,13 @@
+SOS v1
+ap: c
+classes: 3
+0 eps
+1 !c
+2 c
+letters: !c->1 c->2
+mult:
+0: 0 1 2
+1: 1 1 2
+2: 2 2 2
+accept:
+2 2

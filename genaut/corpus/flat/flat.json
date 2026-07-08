@@ -1,0 +1,244 @@
+{
+  "corpus": "flat",
+  "excluded": [
+    "2state2ap0acc"
+  ],
+  "sources": 20,
+  "total_langs": 3790,
+  "rows": [
+    {
+      "source": "1state1ap0acc",
+      "n": 1,
+      "k": 1,
+      "c": 0,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 3,
+      "new_langs": 3,
+      "cumulative": 3
+    },
+    {
+      "source": "1state1ap1acc",
+      "n": 1,
+      "k": 1,
+      "c": 1,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 4,
+      "new_langs": 1,
+      "cumulative": 4
+    },
+    {
+      "source": "1state1ap1acc_parity",
+      "n": 1,
+      "k": 1,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": true,
+      "scanned": 4,
+      "new_langs": 0,
+      "cumulative": 4
+    },
+    {
+      "source": "1state1ap2acc",
+      "n": 1,
+      "k": 1,
+      "c": 2,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 5,
+      "new_langs": 1,
+      "cumulative": 5
+    },
+    {
+      "source": "1state1ap2acc_parity",
+      "n": 1,
+      "k": 1,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": true,
+      "scanned": 5,
+      "new_langs": 1,
+      "cumulative": 6
+    },
+    {
+      "source": "1state1ap3acc",
+      "n": 1,
+      "k": 1,
+      "c": 3,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 5,
+      "new_langs": 0,
+      "cumulative": 6
+    },
+    {
+      "source": "1state1ap3acc_parity",
+      "n": 1,
+      "k": 1,
+      "c": 3,
+      "family": "parity",
+      "exhaustive": true,
+      "scanned": 6,
+      "new_langs": 1,
+      "cumulative": 7
+    },
+    {
+      "source": "1state2ap0acc",
+      "n": 1,
+      "k": 2,
+      "c": 0,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 6,
+      "new_langs": 4,
+      "cumulative": 11
+    },
+    {
+      "source": "1state2ap1acc",
+      "n": 1,
+      "k": 2,
+      "c": 1,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 22,
+      "new_langs": 16,
+      "cumulative": 27
+    },
+    {
+      "source": "1state2ap1acc_parity",
+      "n": 1,
+      "k": 2,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": true,
+      "scanned": 22,
+      "new_langs": 0,
+      "cumulative": 27
+    },
+    {
+      "source": "1state2ap2acc",
+      "n": 1,
+      "k": 2,
+      "c": 2,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 66,
+      "new_langs": 44,
+      "cumulative": 71
+    },
+    {
+      "source": "1state2ap2acc_parity",
+      "n": 1,
+      "k": 2,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": true,
+      "scanned": 58,
+      "new_langs": 36,
+      "cumulative": 107
+    },
+    {
+      "source": "1state3ap0acc",
+      "n": 1,
+      "k": 3,
+      "c": 0,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 52,
+      "new_langs": 50,
+      "cumulative": 157
+    },
+    {
+      "source": "1state3ap1acc",
+      "n": 1,
+      "k": 3,
+      "c": 1,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 1480,
+      "new_langs": 1427,
+      "cumulative": 1584
+    },
+    {
+      "source": "2state1ap0acc",
+      "n": 2,
+      "k": 1,
+      "c": 0,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 25,
+      "new_langs": 22,
+      "cumulative": 1606
+    },
+    {
+      "source": "2state1ap1acc",
+      "n": 2,
+      "k": 1,
+      "c": 1,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 129,
+      "new_langs": 100,
+      "cumulative": 1706
+    },
+    {
+      "source": "2state1ap1acc_parity",
+      "n": 2,
+      "k": 1,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": true,
+      "scanned": 129,
+      "new_langs": 0,
+      "cumulative": 1706
+    },
+    {
+      "source": "3state1ap0acc",
+      "n": 3,
+      "k": 1,
+      "c": 0,
+      "family": "gba",
+      "exhaustive": true,
+      "scanned": 1645,
+      "new_langs": 1620,
+      "cumulative": 3326
+    },
+    {
+      "source": "2state1ap1acc__seed0",
+      "n": 2,
+      "k": 1,
+      "c": 1,
+      "family": "gba",
+      "exhaustive": false,
+      "scanned": 30,
+      "new_langs": 7,
+      "cumulative": 3333
+    },
+    {
+      "source": "2state1ap2acc_parity__seed0",
+      "n": 2,
+      "k": 1,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 591,
+      "new_langs": 457,
+      "cumulative": 3790
+    }
+  ],
+  "by_family": {
+    "gba": 3295,
+    "parity": 495
+  },
+  "by_exhaustive": {
+    "exhaustive": 3326,
+    "sampled": 464
+  },
+  "by_colours": {
+    "0": 1699,
+    "1": 1551,
+    "2": 539,
+    "3": 1
+  }
+}
