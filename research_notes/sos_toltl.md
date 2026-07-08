@@ -285,8 +285,9 @@ and `e` the idempotent power of `[z]`; prefix-independence gives
 
 The converse blindness — a non-LTL language whose group is visible to
 linear contexts only, every ω-power pattern constant — has, to our
-knowledge, neither a witness nor an impossibility proof; the census hunts
-it (§8, H5).
+knowledge, neither a witness nor an impossibility proof, and the triptych
+offers no witness (both its group specimens toggle in the ω-power shape,
+§4.3); the census hunts it (§8, H5).
 
 ### 4.2 Extraction: three scans of the table
 
@@ -423,13 +424,23 @@ early: `Even`'s toggle is caught by a *stem* manipulation against a fixed
 tail (the linear shape — the walk side), `EvenBlocks`' only by a *loop*
 manipulation (the ω-power shape — the window side). The certificate
 machinery is the extraction machinery, run on the other side of the
-verdict. The duality is in fact visible *before* any certificate is
+verdict. Part of the duality is visible *before* any certificate is
 extracted, in §5's own statistics run on these invariants: every layer of
 `Even` passes window-determinacy (Definition 5.7) trivially — each
 within-layer cycle of its group layer folds to one rejecting class — so
-the ω-power side has nothing to say on `Even`, exactly as the linear side
-has nothing to say on `EvenBlocks` (Proposition 4.2). One specimen is
-blind in each eye, and each blindness is a read-off.
+`Even`'s group is invisible to *layer-confined* windows, as
+`EvenBlocks`' is to linear contexts (Proposition 4.2). The two
+blindnesses are not symmetric, and the asymmetry is instructive: run to
+completion rather than stopped at its first hit, the ω-power scan
+separates `Even` too — `F₂(u=ε, v=a, y=a·!a, p′=2)`, the very family
+that certifies `EvenBlocks`, toggles on `Even` as well (samples
+`(a^{n+1}·!a)^ω`, accepted iff `n` odd) — because the pumped block of
+`u·(vⁿ·y)^ω` with `u = ε` sits at the very start of the word, exposing
+the prefix the group counts. Only `EvenBlocks`' blindness is a theorem
+(Proposition 4.2, prefix-independence); the dual blindness has no
+theorem, `Even` refutes the naive symmetry, and neither specimen is
+ω-blind: whether any non-LTL language is — every ω-power pattern
+constant — is exactly §4.1's open question, the census hunt H5.
 
 ### 4.4 The verification contract
 
