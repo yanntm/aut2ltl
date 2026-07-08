@@ -4,17 +4,13 @@ left  = results/reference/flat_canon/sos2ltl_dg.csv   (3938 inputs)
   validated: 159 TRUE, 0 FAIL, 2078 not-checked  (of 2237 LTL)   build 507.4s
 right = results/reference/flat_canon/sos2ltl.csv   (3938 inputs)
   resolved : 2237 LTL, 1698 not-LTL  |  no-answer 3  (decl 3, timeout 0, crash 0)
-  validated: 3133 TRUE, 394 FAIL, 408 not-checked  (of 2237 LTL)   build 677.5s
+  validated: 2856 TRUE, 0 FAIL, 1079 not-checked  (of 2237 LTL)   build 700.9s
 key sets: 3938 common | 0 absent-from-right | 0 absent-from-left
 
-CONSISTENCY: 394 FAIL, 0 CLASH   <-- UNSOUND
-  FAIL — verified non-equivalent: 394  (showing 3)
-    …canon/det/2state1ap0acc_086_c.hoa left SIZE | right FAIL
-    …canon/det/2state1ap0acc_106_c.hoa left SIZE | right FAIL
-    …on/det/3state1ap0acc_004422_c.hoa left SIZE | right FAIL
+CONSISTENCY: OK   (no FAIL, no LTL/NOT_LTL clash)
 
-on 3938 common:  LTL 2237->2237  not-LTL 0->1698  no-answer 1701->3  |  TRUE 159->3133  FAIL 0->394
-  validation moves: 2974  (showing 3)
+on 3938 common:  LTL 2237->2237  not-LTL 0->1698  no-answer 1701->3  |  TRUE 159->2856  FAIL 0->0
+  validation moves: 2697  (showing 3)
     …_canon/det/1state2ap0acc_01_c.hoa SIZE -> TRUE
     …at_canon/det/1state2ap0acc_06.hoa SIZE -> TRUE
     …_canon/det/1state2ap0acc_06_c.hoa SIZE -> TRUE
@@ -27,14 +23,14 @@ on 3938 common:  LTL 2237->2237  not-LTL 0->1698  no-answer 1701->3  |  TRUE 159
     …lat_canon/det/1state1ap0acc_1.hoa sos2ltl.dg -> sos2ltl+sos2ltl.engine
     …lat_canon/det/1state1ap0acc_3.hoa sos2ltl.dg -> sos2ltl+sos2ltl.engine
   size movers: 2236  (showing 3)
-    …on/det/3state1ap0acc_013844_c.hoa DAG 11504 -> 505 ( -95.6%)
-    …on/det/3state1ap0acc_021104_c.hoa DAG 11420 -> 529 ( -95.4%)
-    …on/det/3state1ap0acc_075916_c.hoa DAG 11327 -> 515 ( -95.5%)
+    …on/det/3state1ap0acc_029976_c.hoa DAG 15637 -> 8848 ( -43.4%)
+    …on/det/3state1ap0acc_025272_c.hoa DAG 15589 -> 8824 ( -43.4%)
+    …on/det/3state1ap0acc_071772_c.hoa DAG 15581 -> 8820 ( -43.4%)
   technique shift: 4
     2237 ->   0  (-2237)  sos2ltl.dg
-      0 -> 1798  (+1798)  sos2ltl+sos2ltl.engine
       0 -> 1698  (+1698)  sos2ltl
-      0 -> 439  (+439)  sos2ltl+sos2ltl.dg
-  runtime  build 507.4s -> 677.5s (+33.5%)   DAG 3829657->1232097 (-67.8%)  tree 650721580785633121083969646953086227695300432169964557246914048608193156148512904901623736696832->226819398122137230439221892663589395596058119621444150473570794612635131737862802307701687713792 (-65.1%)
+      0 -> 1123  (+1123)  sos2ltl+sos2ltl.dg
+      0 -> 1114  (+1114)  sos2ltl+sos2ltl.engine
+  runtime  build 507.4s -> 700.9s (+38.1%)   DAG 3829657->1862441 (-51.4%)  tree 650721580785633121083969646953086227695300432169964557246914048608193156148512904901623736696832->226819398122137230439221892663589395596058119621444150473570794612635131737862802307701687713792 (-65.1%)
 
-UNSOUND: 394 FAIL, 0 CLASH | LTL 2237->2237, not-LTL 0->1698, no-answer 1701->3, build +33.5%, DAG -67.8%
+consistent: 0 FAIL, 0 CLASH | LTL 2237->2237, not-LTL 0->1698, no-answer 1701->3, build +38.1%, DAG -51.4%
