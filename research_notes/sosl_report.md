@@ -1216,3 +1216,21 @@ this rule — the paper's ⟨TBD-M4⟩ replacements will cite those paths.
 dual-symmetry assertion (item 8), the wall-time line, the LTL-agreement
 count, and the shape manifest (items 3–6) — all now landing as curated
 `reference/` artefacts under item 9.
+
+**Addendum (spec 2026-07-08h) — the exact oracle is re-based; `OVERSIZE` is
+curable.** The transformation closure is exponential in `D`'s presentation
+— that is what the 200 000 cap measures — while the teacher already holds
+the minimal decision structure, the reference `R = 𝓘(L)`. Spec §3.2 `exact`
+is rewritten as **exact-by-reference**: equivalence = emptiness of the
+symmetric difference `(H ⊗ R̄) ∪ (H̄ ⊗ R)` in the SoS calculus — complement
+the free `P`-flip, **align** the lazily generated, memoized `≤ N_H·N_R`
+pair DAG (`H`-side verdicts through the P-cache discipline, never
+linked-pair laws the mid-run form may not satisfy; `R`-side algebraic), the
+disagreeing cell's canonical witness the shortlex-least counterexample.
+Polynomial; `D` exits the equivalence loop (its one job, building `R`, the
+corpus did). Section 8 item 10 has the gate (byte-identical to the closure
+oracle on the named cases) and the payoff: re-run the deferred `OVERSIZE`
+classifications — the `ref 57/93` stragglers enter E2's counts, and
+`OVERSIZE` becomes fallback-only (row F9 rescoped; the closure survives
+solely for referenceless E6 targets, there with lazy exploration +
+subsumption à la Fogarty–Vardi / Abdulla et al.).
