@@ -1,11 +1,14 @@
 # SoS Classifier — Implementation and Experimentation Specification
 
-**Status:** rev. 2, 2026-07-07. Rev. 1 was the declaration of intent; the
-iteration-1 report (`sos_classifier_report.md`) lands K1–K3 and X0/X1. This
-revision binds the next iteration: K4 with its designed fixture (`Fork`,
+**Status:** rev. 3, 2026-07-09. Rev. 1 was the declaration of intent; the
+iteration-1 report (`sos_classifier_report.md`) lands K1–K3 and X0/X1.
+Rev. 2 binds the next iteration: K4 with its designed fixture (`Fork`,
 C§9), the acceptance-family spectrum law (C§11), and the reporting
 requirements on the census — bench manifest, per-shape ventilation, degree
-ordering, dictionary naming.
+ordering, dictionary naming. Rev. 3 adds section 9 — the equivalence
+oracle, specified ahead of its commission: it is **blocked on
+`sosl.sos.calculus`** (`sos_calculus_spec.md`, milestone CAL2) and must not
+be started before that package stands; K4 is unaffected.
 
 **Normative math.** `research_notes/sos_classification.md` (the companion
 theory note, extending [SωS26] §7). Every procedure named below is defined
@@ -294,3 +297,79 @@ beyond this tool); any classification of non-ω-regular inputs.
 | F1 | Spot cross-check disagrees | X0/X1 | MAY be red | naming/dictionary mismatch first (C§7 box); only a failed witness replay downgrades it to a bug |
 | F2 | `gamma` PARTIAL without `--hoa` | any | expected | by design (exit 2); supply the HOA to resolve |
 | F3 | stretch-set case exceeds budget | X3 | allowed | record BUDGET; the ceiling being the construction, not the classifier, is itself the X3 result |
+
+---
+
+## 9. The equivalence oracle (rev. 3 — spec'd ahead, blocked on the calculus)
+
+**Commission gate.** Do not start before `sosl.sos.calculus` reaches CAL2
+(`sos_calculus_spec.md`). This section assumes that spec realized: `Table`,
+`FoldedLanguage`, `align`, `equivalent`, Proposition W's cell order, and
+witness replay all exist and their harness is green. Everything here is
+composition plus requirements — if an algorithm seems to be missing, it
+lives in the calculus spec, not here.
+
+**One-line goal.** `sos_equiv(A, B) -> EQUAL | Counterexample(lasso)`:
+decide language equality between a `FoldedLanguage` client `A` and a
+reference invariant `B = 𝓘(L)`, returning the *minimal* disagreeing lasso
+under the teacher discipline (shortest stem, then shortest loop, then
+shortlex) — the exact-by-reference oracle of `sos_learner_spec.md` §3.2
+(rev 2026-07-08h), packaged as a standalone component.
+
+**The two sides.**
+
+- `B` is always a genuine (reduced) `Invariant` — for census work, the
+  precomputed corpus `.sos`. Its verdicts are algebraic (`Val_P`).
+- `A` is anything satisfying `FoldedLanguage`: another invariant (then this
+  tool is the calculus's `equivalent`, nothing more), or a learner Cayley
+  hypothesis adapted to the protocol — `step` from its table, `verdict`
+  from its P-cache read-off. **Normative:** the adapter must route every
+  `A`-verdict through the hypothesis's own prediction discipline; no
+  linked-pair law, no idempotent-power shortcut on the `A` side — a
+  mid-run form need not be associative (`sos_learner_spec.md` §4.2), and
+  the oracle must certify the object *as it answers*, not an algebraic
+  idealization of it.
+
+**Procedure** (= calculus `align` + `equivalent`, with the requirements
+pinned):
+
+1. `aligned = align(A, B)` — shortlex BFS, lazy mult, `≤ n_A·n_B` nodes.
+2. Scan aligned cells in the normative order; first cell with
+   `Val_A ≠ Val_B` returns its canonical lasso as the counterexample
+   (globally minimal by Proposition W); an exhausted scan returns `EQUAL`
+   with the scan itself as the certificate (`|nodes|`, cell count — record
+   both in the run's stats).
+3. No work cap, no `ExactTooLarge`: the whole computation is
+   `O(n_A·n_B·|Σ|)` steps plus `O(|nodes|²)` constant-time verdicts. If a
+   census case ever feels slow here, that is a bug or a pathological
+   alignment ratio — report it, never cap it.
+
+**Acceptance gates (all three before the learner commission is requested):**
+
+1. **Closure-oracle conformance.** On the E0 named cases (triptych + the
+   two permanent-stall specimens, both legs): every counterexample, every
+   ledger, every learned invariant byte-identical to the existing
+   transformation-closure oracle's. Both decide the same question and both
+   minimize under the same discipline, so any drift convicts one of them —
+   bisect with the witness replay before touching either.
+2. **Witness replay.** Every returned counterexample replays correctly
+   against both sides and, where a det HOA exists, against it (bounded).
+3. **The OVERSIZE stragglers.** Re-run the deferred `OVERSIZE`
+   classifications of the flat_canon ablation leg (`ref 57 / 93`,
+   `3state1ap0acc`) to completion; their permanent-vs-transient verdicts
+   are the payoff and go to the learner thread's E2 counts
+   (`sosl_report.md`). Outputs land under the curated `reference/` tree
+   per the reproducibility floor.
+
+**Certification note (record with every run).** The trust anchor is the
+reference `B` — the construction's output, independently cross-checked by
+the census byte-equality gate — not a product with the presenting
+automaton. Same certification level as the closure oracle, different
+mechanism (the F6/RABIT precedent in `sos_learner_spec.md`).
+
+**Consumers, in order.** (1) The learner teacher's `--eq-mode exact`
+(`sos_learner_spec.md` §3.2) — a separate commission, requested only after
+the gates above are green. (2) This tool's own harness: the duality gate
+(section 4.2) and the corpus cross-checks may replace bounded acceptor
+comparisons with `sos_equiv` once it stands. (3) Referenceless targets
+(learner E6) are out of scope here — they keep the closure fallback.
