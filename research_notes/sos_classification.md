@@ -79,7 +79,7 @@ everything below is polynomial in `N = |𝒞|`.
 
 **Related work.** Priority for computing the Wagner degree on the syntactic
 ω-semigroup belongs to Cabessa and Duparc [CD09a, CD09b], who reach it by a
-route that never forms the derivative; §8 details the relation, and the two
+route that never forms the derivative; §8.3 details the relation, and the two
 procedures cross-validate each other. The mathematical spine is Carton and
 Perrin's pair of papers on chains and superchains [CP97, CP99]: their
 theorems are stated on arbitrary recognizing ω-semigroups and on Muller
@@ -435,7 +435,8 @@ particular `(1, δ)`, coordinates `(0, 0, 0, 0)`, is the **nontrivial clopen**
 class — both the open and the closed test of §7 pass — properly `Δ₁`, one
 notch *below* the properly open/closed pair, not above it; the first properly
 `Δ₂` degree is `(2, δ)`, coordinates `(0, 0, 1, 1)`. Indirectly, `δ`
-propagates through the derivative (`s(X) = s(∂X)` below), producing self-dual
+propagates through the derivative (`s(X) = s(∂X)`, the last clause of `s`
+above), producing self-dual
 degrees with infinite `γ` — §9's fourth specimen is one. The profile table
 of §12 names these levels by this dictionary.
 
@@ -468,7 +469,8 @@ quantities coincide with the language quantities `m^±`, `n^±`
 deterministic automaton for `X` into three zones by what remains reachable:
 a state is *committed positive* if the full positive superchain structure
 is still accessible from it but the negative one no longer is, *committed
-negative* dually, and *undecided* if both are still accessible. The
+negative* dually, and *undecided* if both are still accessible (states
+retaining neither are grouped with the committed-negative zone). The
 derivation truncates every run at the moment of commitment — entering the
 committed-positive zone accepts immediately, entering the committed-negative
 zone rejects immediately — and retains only the undecided core. `∂X` is
@@ -566,7 +568,7 @@ refutes this. Trace two ω-words through its six-state presentation:
 No left context rescues either word — every `u·a·d^ω` and every `u·d^ω`
 lies outside `X` — so the syntactic congruence of `X` identifies them. Yet
 the first entered the committed-positive zone before reaching the sink and
-the second did not, and `∂X` separates them. In general:
+the second did not, and `∂X` separates them. Hence:
 
 **Proposition 8.1.** There is an ω-rational `X` with `m = 1`, `n⁺ = n⁻ = 0`
 whose derivative is not saturated by the syntactic congruence of `X`: no
@@ -583,9 +585,7 @@ neither. ∎
 The failure is structural, not an artifact of the example: membership in
 `∂X` records whether the prefix trajectory *visited* the committed region
 `Q⁺ − Q⁻`, an event the ω-image — which only remembers where the
-trajectory *ends up* — cannot see. This is also why the recursion of
-[CP99], as published, runs on automaton presentations rather than on a
-recognizing algebra.
+trajectory *ends up* — cannot see.
 
 **The bypass: the table as a machine.** The object that does carry the
 derivation is the **right regular representation** of `𝓘(X)`: the *Cayley
@@ -837,7 +837,7 @@ needed. On the three-state presentation below, the derivation `∂` of
 [CP99 §3] collapses the two maximal-chain basins — the `a`-successor
 component (negative) onto a rejecting sink, the `!a`-successor (positive)
 onto an accepting sink — leaving `∂Fork = !a·Σ^ω`: nontrivial clopen,
-`ϕ(∂Fork) = (1, δ)` by §8's dictionary. Hence
+`ϕ(∂Fork) = (1, δ)` by §8.1's dictionary. Hence
 
 ```
     γ(Fork) = µ + γ(∂Fork) = ω + 1,      s(Fork) = s(∂Fork) = δ .
@@ -862,7 +862,7 @@ acceptance reduces to `Inf(0)` — infinitely many `a`; a run through `q_b`
 never sees `0`, so it reduces to `Fin(1)` — finitely many `a`. `Fork` is a
 fixture of the implementation [Spec26]: by Theorem 8.5 its degree is read
 off `𝓘(Fork)` alone — the table derivation collapses all of `𝒞₊` into the
-two sinks and returns `ϕ(∂Fork) = (1, δ)` directly (§8, worked checks) —
+two sinks and returns `ϕ(∂Fork) = (1, δ)` directly (§8.2, worked checks) —
 and the presentation-level derivation of [CP99 §3], run on this three-state
 automaton, is kept as an independent cross-check of the collapse.
 
@@ -875,7 +875,7 @@ Every procedure above is a polynomial search in the table: power orbits
 longest-alternating-path DP over the idempotent order DAG per admissible
 stem; superchains, the same over the `R`-order; the degree, arithmetic on
 the results plus at most `m(X)` derivation levels, each one more engine pass
-on a shrunken stem set (§8, Theorem 8.5). Carton and Perrin note that on
+on a shrunken stem set (§8.2, Theorem 8.5). Carton and Perrin note that on
 *presentations* the picture is harsher — computing `m(𝒜)` is NP-complete
 for Rabin automata, polynomial for Muller and parity ones (results of
 Krishnan–Puri–Brayton and of Wilke–Yoo, reported in [CP97, §7]) — which
@@ -917,7 +917,7 @@ conjunction of `Inf` is a finite intersection of `Gδ` sets, hence `Gδ`, i.e.
 `m⁺(L) ≤ 0` by the §7 table. Case `m⁺ = −1`: no positive chain means no
 accepting pair, `L = ∅`, degree `(0, σ)`. Case `m⁺ = 0, m⁻ = −1`: dually `L`
 is universal, `(0, π)`. Case `m⁺ = m⁻ = 0`: `L` is weak; both signs carry
-maximal (length-0) chains, so `n⁺, n⁻ ≥ 0` and §8 gives `γ = µ` finite `≥ 1`
+maximal (length-0) chains, so `n⁺, n⁻ ≥ 0` and §8.1 gives `γ = µ` finite `≥ 1`
 with any of the three signs. Case `m⁺ = 0, m⁻ = 1` (`|m⁺ − m⁻| ≤ 1` allows no
 more): every maximal chain is negative, and a superchain of length `≥ 1`
 needs maximal chains of both signs, so `(n⁺, n⁻) = (−1, 0)`:
