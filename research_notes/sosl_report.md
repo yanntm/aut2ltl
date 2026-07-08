@@ -18,15 +18,16 @@ the questions the spec raises; it describes the implementation as it is.
   (`sosl/sosl/teacher/exact.py`) are landed; every census language reaches its
   canonical invariant, the Even run reproduces the paper's §4.3 trace, and the
   two permanent-stall specimens behave as Proposition 4.4 predicts.
-- **M4 — Campaign.** In progress. **M4.a (driver + E0), M4.b (E1 scaling +
-  E2 ablation), the census-backed E2 harvest, E5 (counterexample sensitivity),
-  and M4.c (E3 ROLL baseline, named cases) done** — the `sosl.experiment`
-  package (driver, manifest, per-run stats, E0/E1/E2/E4/E5 reports, ROLL
-  baseline) is landed, the E0 gate is green, the E2 stall classes match theory,
-  E5 confirms the harvest term is `log(|cex|)`, and E3 delivers the paired table
-  + capability column (below). Remaining to close M4: the **census-wide ROLL
-  medians** and the **full-census N-spread** E1's scatter needs (both larger
-  census runs via `manifest.census_shapes`).
+- **M4 — Campaign.** Essentially complete. **E0, E1 (named + census N-spread),
+  E2 (named + census harvest with the 44-language permanent family and its
+  structural buckets), E5, and E3 (ROLL, named + census medians) all delivered**
+  — the `sosl.experiment` package (driver, manifest, per-run stats,
+  E0/E1/E2/E3/E4/E5 reports, ROLL baseline) is landed, the E0 gate is green, the
+  E2 stall classes match theory, E5 confirms the harvest term is `log(|cex|)`,
+  E3 is a size wash inside `N+N²` with the capability column the real result, and
+  the learner is SOUND on all 541 tractable census languages with `splits ≤ N`
+  throughout. Each result carries its reproduce command below. Only **E6**
+  (beyond-census random instances) remains, a stretch goal.
 
 ## Ground truth: reference builder vs the paper
 
@@ -818,3 +819,40 @@ richer). If prefix-dependence still holds 100% there, it becomes worth a proof
 attempt; a single prefix-independent permanent stall refutes the necessity
 outright. That deeper-shape cross-tab is the ask — it is the same renderer you
 just built, pointed at a bigger manifest.
+
+---
+
+## Census-backed E1 — cost vs N (2026-07-08)
+
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.census_e1` →
+`tests/sosl/logs/census_e1/{results.csv, summary.md}`. One row per language in
+`results.csv` (`N`, `splits`, per-phase membership, `equiv`, `wall`); the per-N
+medians below are read off it.
+
+The learner runs (default config) over the whole tractable non-deferred census —
+**541 languages, `N ∈ [2, 21]`, every one SOUND** (byte-equal to the precomputed
+reference; soundness holds across the entire frontier, not just the named cases).
+The designed bound **`splits ≤ N` holds on all 541**; the sharpest is `N = 21`
+with 18 splits. Per-N medians:
+
+| N | langs | median splits | max splits | median fill | median member | median equiv |
+|--:|--:|--:|--:|--:|--:|--:|
+| 2 | 32 | 0 | 0 | 2 | 3 | 1 |
+| 3 | 131 | 0 | 1 | 20 | 23 | 1 |
+| 4 | 120 | 0 | 2 | 41 | 47 | 1 |
+| 5 | 57 | 1 | 3 | 62 | 71 | 1 |
+| 6 | 38 | 3 | 3 | 51 | 67 | 2 |
+| 7 | 18 | 3 | 5 | 59 | 85 | 2 |
+| 8 | 46 | 5 | 6 | 67 | 89 | 2 |
+| 9 | 35 | 6 | 7 | 112 | 145 | 3 |
+| 10 | 18 | 7 | 8 | 146 | 188 | 2 |
+| 12 | 10 | 9 | 10 | 174 | 221 | 2 |
+| 13 | 22 | 10 | 11 | 215 | 262 | 2 |
+| 15 | 4 | 12 | 12 | 262 | 320 | 3 |
+| 16 | 4 | 13 | 13 | 362 | 446 | 3 |
+| 18 | 2 | 15 | 15 | 332 | 418 | 3 |
+| 21 | 4 | 18 | 18 | 515 | 621 | 4 |
+
+The table membership (`fill`) tracks the `O(N²·|Σ|)` envelope; equivalence queries
+stay in the single digits (1–4) across the whole range. This is the N-spread the
+E1 scatter plots consume — the last `⟨TBD-M4⟩` the paper was waiting on.
