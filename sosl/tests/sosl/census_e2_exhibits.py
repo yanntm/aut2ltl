@@ -17,12 +17,45 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+import spot
+
 from sosl.experiment.driver import run_matrix
 from sosl.experiment.manifest import DEFAULT, NOSAT_EXACT, census_shapes
 from sosl.experiment.report import _permanent_exhibit
 from sosl.experiment.run import RunResult
+from sosl.sos.build import reference_of_hoa
+from sosl.sos.invariant import Invariant
 
 OUT = Path("tests/sosl/logs/census_e2")
+
+
+def _prefix_independent(inv: Invariant) -> bool:
+    """Is L prefix-independent? Exactly: acceptance of every linked pair ``(s, e)``
+    is invariant under left-multiplication ``s -> c·s`` (prepending any word maps
+    ``s`` into its left ideal, and ``c·s`` stays ``e``-stable), so membership does
+    not depend on the stem."""
+    acc = inv.accept
+    for (s, e) in inv.linked_pairs():
+        bit = (s, e) in acc
+        for c in range(inv.n):
+            if (((inv.mult[c][s], e) in acc)) != bit:
+                return False
+    return True
+
+
+def _acc_type(hoa_path: str) -> str:
+    """The acceptance shape of the canonical D: buchi / co-buchi / parity /
+    trivial / other (read off the automaton's acceptance condition via Spot)."""
+    acc = spot.automaton(hoa_path).acc()
+    if acc.is_t() or acc.is_f():
+        return "trivial"
+    if acc.is_buchi():
+        return "buchi"
+    if acc.is_co_buchi():
+        return "co-buchi"
+    if acc.is_parity()[0]:
+        return "parity"
+    return "other"
 
 
 def main(argv: List[str]) -> int:
@@ -34,6 +67,7 @@ def main(argv: List[str]) -> int:
         print(f"no census cases for {shape}", file=sys.stderr)
         return 2
     ref_of: Dict[str, str] = {c.case_id: c.sos for c in cases}
+    hoa_of: Dict[str, str] = {c.case_id: c.hoa for c in cases}
 
     matrix = ([(c, DEFAULT) for c in cases]
               + [(c, NOSAT_EXACT) for c in cases])
@@ -70,6 +104,42 @@ def main(argv: List[str]) -> int:
     lines.append("|---|" + "--:|" * len(gaps))
     lines.append("| languages | " + " | ".join(str(gaps[g]) for g in sorted(gaps)) + " |")
     lines.append("")
+
+    # Structural cross-tabulation (theory §6.3 ask): the 44 permanent languages
+    # by prefix-independence x acceptance type, and by gap x prefix-independence.
+    feats = []
+    for r in distinct:
+        inv = reference_of_hoa(hoa_of[r.stats.case_id])
+        feats.append((_prefix_independent(inv), _acc_type(hoa_of[r.stats.case_id]),
+                      r.stats.ref_classes - r.stats.learned_classes))
+    acc_types = sorted({at for _pi, at, _g in feats})
+    lines.append("Structural features of the permanent languages "
+                 "(prefix-independence × acceptance type):")
+    lines.append("")
+    lines.append("| prefix-indep | " + " | ".join(acc_types) + " | total |")
+    lines.append("|---|" + "--:|" * (len(acc_types) + 1))
+    for pi in (True, False):
+        row = [sum(1 for p, at, _g in feats if p == pi and at == t)
+               for t in acc_types]
+        lines.append(f"| {'yes' if pi else 'no'} | "
+                     + " | ".join(str(x) for x in row)
+                     + f" | {sum(row)} |")
+    tot = [sum(1 for _p, at, _g in feats if at == t) for t in acc_types]
+    lines.append("| **total** | " + " | ".join(f"**{x}**" for x in tot)
+                 + f" | **{len(feats)}** |")
+    lines.append("")
+    lines.append("Gap × prefix-independence:")
+    lines.append("")
+    lines.append("| prefix-indep | " + " | ".join(f"gap {g}" for g in sorted(gaps))
+                 + " |")
+    lines.append("|---|" + "--:|" * len(gaps))
+    for pi in (True, False):
+        row = [sum(1 for p, _at, g in feats if p == pi and g == gg)
+               for gg in sorted(gaps)]
+        lines.append(f"| {'yes' if pi else 'no'} | "
+                     + " | ".join(str(x) for x in row) + " |")
+    lines.append("")
+
     lines.append(f"## The {top_k} sharpest specimens")
     lines.append("")
     sharpest = sorted(distinct,
@@ -81,8 +151,12 @@ def main(argv: List[str]) -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / f"{shape}.md").write_text("\n".join(lines), encoding="utf-8")
 
+    pi_count = sum(1 for p, _at, _g in feats if p)
+    at_counts = {t: sum(1 for _p, at, _g in feats if at == t) for t in acc_types}
     print(f"{shape}: {len(perms)} permanent runs -> {len(distinct)} distinct "
           f"languages; gaps {dict(sorted(gaps.items()))}")
+    print(f"  structural: prefix-independent {pi_count}/{len(feats)}; "
+          f"acceptance {at_counts}")
     print(f"sharpest {top_k} rendered -> {OUT / (shape + '.md')}")
     for r in sharpest:
         s = r.stats

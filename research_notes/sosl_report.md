@@ -19,12 +19,14 @@ the questions the spec raises; it describes the implementation as it is.
   canonical invariant, the Even run reproduces the paper's §4.3 trace, and the
   two permanent-stall specimens behave as Proposition 4.4 predicts.
 - **M4 — Campaign.** In progress. **M4.a (driver + E0), M4.b (E1 scaling +
-  E2 ablation), the census-backed E2 harvest, and E5 (counterexample
-  sensitivity) done** — the `sosl.experiment` package (driver, manifest,
-  per-run stats, E0/E1/E2/E4/E5 reports) is landed, the E0 gate is green, the
-  E2 stall classes match theory, and E5 confirms the harvest term is empirically
-  `log(|cex|)` (below). Remaining: **E3 (ROLL)** baseline — the schedule risk;
-  the census-backed E1 scatter folds in via `manifest.census_shapes`.
+  E2 ablation), the census-backed E2 harvest, E5 (counterexample sensitivity),
+  and M4.c (E3 ROLL baseline, named cases) done** — the `sosl.experiment`
+  package (driver, manifest, per-run stats, E0/E1/E2/E4/E5 reports, ROLL
+  baseline) is landed, the E0 gate is green, the E2 stall classes match theory,
+  E5 confirms the harvest term is `log(|cex|)`, and E3 delivers the paired table
+  + capability column (below). Remaining to close M4: the **census-wide ROLL
+  medians** and the **full-census N-spread** E1's scatter needs (both larger
+  census runs via `manifest.census_shapes`).
 
 ## Ground truth: reference builder vs the paper
 
@@ -584,6 +586,18 @@ escalations — three branch-1, two frozen-chain) and `2state1ap1acc_19552`
 (`ref 15 → stall 10`). The beyond-wall shapes are reached by reproducible
 sampling (`genaut/gen/sample.py`), not exhaustive enumeration.
 
+**Structural cross-tabulation (closes the §6.3 TBD).** The renderer now buckets
+the 44 by prefix-independence (exact, from the invariant: acceptance invariant
+under left-multiplication of `s`) and acceptance type (from the canonical `D`).
+The result is uniform and telling: **all 44 are prefix-*dependent* (0 of 44
+prefix-independent) and all Büchi-acceptance**. That is the structural signature
+of a permanent stall — the class the right congruence merges is separated only
+by a left context, so the language must be prefix-dependent; a prefix-independent
+language (like `EvenBlocks`, whose stall is *transient*) never lands here. The
+predicate is validated against known languages
+(`tests/sosl/prefix_independence_check.py`: `GF(aa)`, `EvenBlocks`
+prefix-independent; `Even`, `a_once`, `a_implies_xa` not).
+
 ---
 
 ## M4 — E5 counterexample sensitivity (2026-07-08)
@@ -681,13 +695,18 @@ three canonical FDFA learners, harvesting `#MQ`/`#EQ` and the FDFA size (leading
 | a_implies_xa | 5 (43/1) | 12 (64/4) | 14 (145/7) | 9 (128/7) |
 | a_once | 4 (35/2) | 8 (52/4) | 10 (75/4) | 7 (63/4) |
 
-Our syntactic-ω-semigroup `N` is generally **smaller** than ROLL's FDFA (sum of
-DFA states) — `even` 5 vs 9–15, `a_once` 4 vs 7–10, `a_implies_xa` 5 vs 9–14 —
-except `gf_aa` (4 vs 6) and `evenblocks` (tie at 8). **Capability (the headline
-result):** only our invariant answers "is `L` LTL-definable" (the aperiodicity /
-group test on the algebra); an FDFA cannot — reported as a result, not a gap.
-**Certification asymmetry (F6):** our equivalence is exact (Cayley
-transformation closure), ROLL's is its own automaton equivalence (RABIT). The
+The size comparison is a **wash, not a win**: every entry sits inside
+Proposition 5.3(a)'s `N + N²` envelope, and within it the two objects **trade
+places** — the algebra is smaller on `even` (5 vs 9–15), `a_implies_xa`
+(5 vs 9–14) and `a_once` (4 vs 7–10), **larger** on `gf_aa` (6 vs 4), and tied on
+`evenblocks` (8). We do **not** claim "the algebra is smaller" — the census is
+too small to reach the 5.3(b) separation, and that claim would contradict it.
+**The real result is the capability column:** only our invariant answers "is `L`
+LTL-definable" (the aperiodicity / group test on the algebra); none of ROLL's
+three FDFAs can — that asymmetry, not any size or query count, is the point.
+**Certification (F6):** both learners certify *exactly*, by different mechanisms
+— ours the Cayley transformation-closure product, ROLL's native RABIT against a
+state-based Büchi presentation; the asymmetry is mechanism, not level. The
 census-wide paired medians are the remaining E3 step.
 
 ---
