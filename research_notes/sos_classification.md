@@ -1,4 +1,4 @@
-# Classifying an ω-Regular Language on its Syntactic ω-Semigroup
+# Classifying an ω-Regular Language from its Syntactic ω-Semigroup
 
 **Yann Thierry-Mieg**
 
@@ -7,32 +7,96 @@ With significant inputs from
 
 *Working draft — 2026-07-08 — extends §7 of [SωS26]*
 
-This note expands §7 of the core paper [SωS26] into the decision procedures
-themselves: for each band of the classification table — identity, the
-aperiodic (LTL) cut, the safety–progress/topological ladder, the acceptance
-index, and up to the exact Wagner degree — the algorithm that reads the
-verdict off the invariant `𝓘(L)`, with its justification pinned to the
-sources. It is standalone in the sense that every definition it uses is
-restated; it relies on the core paper for the object itself (its
-construction, canonicity, and the serialized `.sos` form). The engineering
-companion is `sos_learner_spec.md`'s sibling, `sos_classifier_spec.md`.
-Two closing sections leave the single language: §11 bounds what an entire
-acceptance *family* of inputs can reach, and §12 reports the measured
-Wagner-degree profile of the first systematically enumerated corpus.
+## Abstract
 
-The mathematical spine is Carton and Perrin's pair of papers on chains and
-superchains [CP97, CP99]. Their theorems are stated on arbitrary recognizing
-ω-semigroups and on Muller automata; what this note adds is the transport to
-the invariant `𝓘(L) = (𝒞, λ, M, P)` — the syntactic ω-semigroup in its
-exportable form — where each classification becomes a finite search in the
-multiplication table, polynomial in `N = |𝒞|`. The exponential price was
-paid once, constructing `𝓘(L)` [SωS26 §8]; everything below is cheap.
+The syntactic ω-semigroup of a regular ω-language `L` is its canonical
+algebra; the core paper [SωS26] constructs it from any deterministic
+Emerson–Lei automaton and reifies it as the exportable invariant
+`𝓘(L) = (𝒞, λ, M, P)`. This note turns the classification claims of
+[SωS26 §7] into decision procedures: for each band of the classification
+table — identity, the aperiodic (LTL) cut, the safety–progress/topological
+ladder, the acceptance index, and up to the exact Wagner degree — an
+algorithm that reads the verdict off `𝓘(L)` by finite search in the
+multiplication table, polynomial in `N = |𝒞|`. The searches transport
+Carton and Perrin's chains and superchains to the invariant. One step
+resists the transport: Wagner's derivative is not an algebraic operation —
+no re-marking of the accepting pairs computes it (Proposition 8.1) — yet it
+remains a table computation, running on the right regular representation
+with the marking unchanged and the admissible stems shrinking
+(Theorem 8.5). Beyond the single language, a spectrum theorem bounds the
+Wagner degrees any generalized-Büchi input family can reach
+(Proposition 11.1), and a census of 18 239 systematically enumerated
+automata yields the first measured Wagner-degree profile of such a class,
+every internal consistency law holding on every case.
+
+## Introduction
+
+The core paper [SωS26] builds the syntactic ω-semigroup of a regular
+ω-language `L` from any deterministic Emerson–Lei automaton and exports it
+as the invariant `𝓘(L) = (𝒞, λ, M, P)`: the classes of Arnold's syntactic
+congruence, the letter map, the multiplication table, and the accepting
+linked pairs. Its §7 argues that the classical taxonomy of ω-regular
+languages — the safety–progress and topological hierarchies, the acceptance
+index, LTL-definability, and, subsuming them all, the exact Wagner degree —
+is a taxonomy of that one object's structure. This note is that section
+made effective: the decision procedures themselves, each pinned to its
+source theorem, each a finite search in the multiplication table. The
+exponential price was paid once, constructing `𝓘(L)` [SωS26 §8];
+everything below is polynomial in `N = |𝒞|`.
+
+**Contributions.**
+
+- *The transport* (§5–7). Chains and superchains — the two combinatorial
+  quantities the whole classification reduces to — are computed exactly on
+  `𝓘(L)`: completeness comes from Carton and Perrin's transfer theorems,
+  soundness of the normal-form search is proved directly on the table, and
+  every rung of the ladder and the acceptance index becomes an inequality
+  on four integers `(m⁺, m⁻, n⁺, n⁻)` (§7).
+- *An obstruction* (Proposition 8.1). The Wagner derivative `∂X` — the
+  recursion step of Carton–Perrin's ordinal formula — is not an algebraic
+  operation: there is an `X` whose derivative is not saturated by the
+  syntactic congruence of `X`, so no re-marking of the accepting pairs of
+  `𝓘(X)` recognizes `∂X`.
+- *Its bypass* (Theorem 8.5). The derivation is nonetheless a table
+  computation: on the right regular representation of `𝓘(X)` it becomes a
+  restriction of the admissible stems — the marking never changes, the same
+  chain and superchain engines run at every level, the recursion trace is
+  the Cantor normal form of the degree, and every level's witnesses are
+  lassos over `𝒞`.
+- *A spectrum bound* (Proposition 11.1). The acceptance family of an input
+  corpus fixes, a priori, which Wagner degrees it can reach: deterministic
+  generalized-Büchi inputs never need the derivative and stay within an
+  explicit finite list of degrees.
+- *A measured profile* (§12). Run over a census of 18 239 systematically
+  enumerated deterministic automata, the classifier produces the first
+  measured Wagner-degree profile of such a class, with the duality and
+  consistency laws as internal oracles — holding on every case — and
+  Proposition 11.1's spectrum verified.
+
+**Related work.** Priority for computing the Wagner degree on the syntactic
+ω-semigroup belongs to Cabessa and Duparc [CD09a, CD09b], who reach it by a
+route that never forms the derivative; §8 details the relation, and the two
+procedures cross-validate each other. The mathematical spine is Carton and
+Perrin's pair of papers on chains and superchains [CP97, CP99]: their
+theorems are stated on arbitrary recognizing ω-semigroups and on Muller
+automata, and what this note adds at each step is the transport to `𝓘(L)`.
 Around that spine: the ladder's verification vocabulary and its canonical
 temporal-formula schemes are Manna and Pnueli's [MP92]; the bottom rungs,
 their original cycle conditions, and the first effective classifier are
 Landweber's [Lan69]; the complexity landscape on automaton *presentations*
 — against which the algebra's read-offs are measured — is Selivanov and
 Wagner's [SW08].
+
+The note is standalone: every definition it uses is restated, and it relies
+on the core paper only for the object itself — its construction,
+canonicity, and serialized `.sos` form. §1 fixes the input and the claim,
+§2 the toolkit. §§3–4 dispatch the identity band and the aperiodic cut.
+§§5–6 compute chains and superchains, §7 reads the ladder and the index off
+them, and §8 computes the Wagner degree, derivative included. §9 classifies
+the running examples end to end, §10 collects the complexity. §11 and §12
+leave the single language: the spectrum bound for acceptance families, and
+the measured profile. The implementation and the experimental protocol are
+documented in the engineering companion [Spec26, Rep26].
 
 ---
 
@@ -42,7 +106,9 @@ Wagner's [SW08].
 `𝒞` of Arnold's syntactic congruence with the fresh identity `[ε]` adjoined,
 the letter map `λ`, the multiplication table `M`, and the accepting
 linked pairs `P ⊆ 𝒞 × 𝒞`. Write `𝒞₊ = 𝒞 \ {[ε]}` for the word classes —
-the syntactic semigroup `S(L)₊` — and recall that a **linked pair** is
+the syntactic semigroup `S(L)₊` — and `𝒞¹` for the same set `𝒞` used
+multiplicatively, `[ε]` acting as the unit (so `t·𝒞¹ = {t} ∪ t·𝒞₊`), and
+recall that a **linked pair** is
 `(s, e)` with `e·e = e`, `s·e = s`, both in `𝒞₊`, and that membership of any
 lasso is decided by folding to its linked pair and consulting `P`.
 
@@ -77,12 +143,12 @@ contains exactly one idempotent power `c^k = c^{2k}`. Write `E ⊆ 𝒞₊` for
 the set of idempotents. (The identity `[ε]` is excluded throughout: linked
 pairs range over word classes [SωS26 §5].)
 
-**Green's preorders** ([CP97, §6.1]). On `𝒞₊`, with `S¹` denoting "allow
-the empty factor":
+**Green's preorders** ([CP97, §6.1]). On `𝒞₊`, with `𝒞¹` allowing the
+empty factor (§1):
 
 ```
-    s ≤_R t  ⟺  s ∈ t·S¹        (right-Cayley reachability)
-    s ≤_L t  ⟺  s ∈ S¹·t        (left-Cayley reachability)
+    s ≤_R t  ⟺  s ∈ t·𝒞¹        (right-Cayley reachability)
+    s ≤_L t  ⟺  s ∈ 𝒞¹·t        (left-Cayley reachability)
     s ≤_H t  ⟺  s ≤_R t and s ≤_L t
 ```
 
@@ -120,7 +186,8 @@ artifacts possible.
 
 **Procedure.** Compute `p(c)` for every class (each orbit is at most `N`
 products; `O(N²)` total). Report **LTL** iff all periods are 1; otherwise
-report the **witness**: the first class `c` with `p(c) > 1` and its cycle
+report the **witness**: the first class `c` (in shortlex key order) with
+`p(c) > 1` and its cycle
 `{c^k, c^{k+1}, …, c^{k+p-1}}` — a genuine group in the canonical algebra,
 the portable non-LTL certificate of [SωS26].
 
@@ -141,6 +208,9 @@ tables of [SωS26 §4].)
     W_i = Y·Z_m^*·(Z_i^*·z_i)^ω        0 ≤ i ≤ m .
 ```
 
+(Products, `+`, `*` and `(·)^ω` are lifted to sets — `+` is union, each
+`z_i` read as a singleton, `(·)^ω` the set of infinite products — so each
+`W_i ⊆ S_ω`.)
 `C` is an **X-chain** iff the `W_i` are alternately included in `X` and
 disjoint from `X`; its **length** is `m` (the number of alternations); it is
 **positive** if `W₀ ⊆ X`, **negative** if `W₀ ∩ X = ∅`. `m⁺(X)` (resp.
@@ -150,9 +220,9 @@ the convention `−1` when none exists; `m(X) = max(m⁺, m⁻)`. For ω-rationa
 `m⁺(X) = m⁻(X̄)` ([CP97, Prop. 6]).
 
 **The finite normal form** ([CP97, Thm. 6]). In a *finite* ω-semigroup,
-from any X-chain a strong X-chain `C' = (Y', E)` of the same length and sign
-may be deduced with `Y' = {s}` a singleton and `E = e₀, e₁, …, e_m` such
-that
+every X-chain yields one of the same length and sign in **normal form**
+`C' = ({s}, E)`: a singleton stem and a sequence `E = e₀, e₁, …, e_m` of
+idempotents such that
 
 1. every `(s, e_i)` is a linked pair (`s·e_i = s`, `e_i² = e_i`), and
 2. the sequence is strictly decreasing for the `H`-order:
@@ -175,12 +245,14 @@ membership of `(s, e)` in `P`. Two directions make the search exact:
   pairs, and the linkage of intermediate pairs is automatic
   (`s·e_i = s·e_m·e_i = s·e_m = s`).
 
-**Procedure.** Build the Hasse diagram of `(E, >_H)`. For each idempotent
-`e` and each stem `s` with `s·e = s`, the candidate chains ending at `e` are
-the `>_H`-descending paths through `E` ending at `e`, scored by the
-alternation of `(s, ·) ∈ P` along the path. Longest-alternating-path by
-dynamic programming over the DAG, once per stem: `m⁺` is the best score over
-paths whose top pair is accepting, `m⁻` over rejecting tops. `O(N·|E|²)`.
+**Procedure.** Compute the strict order `>_H` on `E` — as a DAG this is the
+full order relation, at most `|E|²` edges, not its Hasse covers: a chain may
+skip levels. For each idempotent `e` and each stem `s` with `s·e = s`, the
+candidate chains ending at `e` are the `>_H`-descending sequences through
+`E` ending at `e`, scored by the alternation of `(s, ·) ∈ P` along the
+sequence. Longest-alternating-sequence by dynamic programming over the DAG,
+once per stem: `m⁺` is the best score over sequences whose top pair is
+accepting, `m⁻` over rejecting tops. `O(N·|E|²)`.
 
 *Worked instance (`GF(aa)`, table in [SωS26 §4]).* `E = {[!a], [!a·a],
 [a·!a], [a·a]}`; `[a·a]` is the two-sided zero, so `[a·a] <_H e` for the
@@ -214,7 +286,7 @@ normal-form chain, and the stems are strictly decreasing for the `R`-order:
 **Transport to `𝓘(L)`.** Completeness as before (Theorem 7 plus the
 morphism transfer of chains, [CP97 §4.4/§5]); soundness again by direct
 check: for singleton chains, accessibility `s_{i−1}·E^*·u ⊆ {s_i}` is
-exactly `s_i ∈ s_{i−1}·S₊` (the `E`-factors are absorbed into `s_{i−1}`),
+exactly `s_i ∈ s_{i−1}·𝒞₊` (the `E`-factors are absorbed into `s_{i−1}`),
 which is `s_i <_R s_{i−1}`, strict by Proposition 11 once signs alternate.
 
 **Procedure.** From §5, mark every stem `s` that carries a maximal-length
@@ -223,6 +295,10 @@ longest sign-alternating, strictly `R`-descending paths through the marked
 stems (DP over the `R`-order DAG restricted to `R`-classes of marked
 stems), starting positive resp. negative. `O(N²)` after §5.
 
+*Worked instance (`GF(aa)`, continued).* Every maximal (length-1) chain of
+§5 is negative, at the single stem `[a·a]`: no sign alternation is
+available, and `n⁺ = −1`, `n⁻ = 0`.
+
 ---
 
 ## 7. The read-offs: ladder and index as inequalities
@@ -230,7 +306,9 @@ stems), starting positive resp. negative. `O(N²)` after §5.
 The four integers `(m⁺, m⁻, n⁺, n⁻)` decide every rung of [SωS26 §7.1] and
 the acceptance index of [SωS26 §7.3]. The characterizations are Carton and
 Perrin's, stated on their Wagner-indexed classes `Σ_α / Π_α / Δ_α`
-[CP99 §3–5]; the table gives all three namings — the verification
+[CP99 §3–5]: for an ordinal `α < ω^ω`, `Σ_α` is the class of languages of
+Wagner degree at most `(α, σ)` in the sense of §8, `Π_α` its dual, and
+`Δ_α = Σ_α ∩ Π_α`. The table gives all three namings — the verification
 vocabulary with its canonical temporal scheme ([MP92 §4.2]; `p`, `q` range
 over *past* formulas), the Wagner class, and the test.
 
@@ -238,13 +316,13 @@ over *past* formulas), the Wagner class, and the test.
 |---|:--:|---|---|---|
 | **guarantee** (open, co-safety) | `◇p` | `Σ₁` | `m = 0 ∧ n⁺ ≤ 0` | [CP99, Thm. 6] |
 | **safety** (closed) | `□p` | `Π₁` | `m = 0 ∧ n⁻ ≤ 0` | dual of the above |
-| level `n` of the boolean (Hausdorff) hierarchy over open | — | `Σ_n` | `m = 0 ∧ n⁺ ≤ n−1` | [CP99, Thm. 6] |
+| level `k` of the boolean (Hausdorff) hierarchy over open | — | `Σ_k` | `m = 0 ∧ n⁺ ≤ k−1` | [CP99, Thm. 6] |
 | **obligation / weak** (Staiger–Wagner, BC(open)) | `⋀ᵢ(□pᵢ ∨ ◇qᵢ)` | `Δ_ω` | `m = 0` | [CP99, Cor. 7] |
 | **response / recurrence** (DBA-realizable; Borel `Gδ = Π⁰₂`) | `□◇p` | `Σ_ω` | `m⁺ ≤ 0` | [Lan69, Thms. 3.3, 4.5; CP99, Thm. 11] |
 | **persistence** (DCA-realizable; Borel `Fσ = Σ⁰₂`) | `◇□p` | `Π_ω` | `m⁻ ≤ 0` | dual |
-| deterministic **parity of length `m`** (priorities `{0,…,m}`) | — | `Σ_{ω^m}` | `m⁺ ≤ m−1` | [CP99, Thm. 11] |
-| co-parity of length `m` | — | `Π_{ω^m}` | `m⁻ ≤ m−1` | dual |
-| coarse Wagner class ((m, n−1)-superparity-realizable) | — | `Σ_{ω^m·n}` | `m(X) < m`, or `m(X) = m ∧ n⁺ ≤ n−1` | [CP99 §3, Thm. 14] |
+| deterministic **parity of length `k`** (priorities `{0,…,k}`) | — | `Σ_{ω^k}` | `m⁺ ≤ k−1` | [CP99, Thm. 11] |
+| co-parity of length `k` | — | `Π_{ω^k}` | `m⁻ ≤ k−1` | dual |
+| coarse Wagner class ((k, l−1)-superparity-realizable) | — | `Σ_{ω^k·l}` | `m < k`, or `m = k ∧ n⁺ ≤ l−1` | [CP99 §3, Thm. 14] |
 | **reactivity** | `⋀ᵢ(□◇pᵢ ∨ ◇□qᵢ)` | — | always (m, n finite, [CP97 Props. 6, 10]) | — |
 
 On the vocabulary column: [MP92 §4.2] defines each class as the properties
@@ -255,15 +333,14 @@ The scheme column also explains the two names of the `□◇` rung: Manna and
 Pnueli say *response* (every stimulus is answered), the topological
 tradition says *recurrence*; the core paper's §7.1 uses both.
 
-One naming caution, worth a box: **Carton–Perrin's `Σ_ω` is the rational
-`Gδ` class** — Wagner-hierarchy indexing puts the DBA class on the `Σ` side,
+**Remark (naming).** Carton–Perrin's `Σ_ω` is the **rational `Gδ` class** —
+Wagner-hierarchy indexing puts the DBA class on the `Σ` side,
 while Borel notation calls the same class `Π⁰₂` (Landweber's own notation is
 `G₂` for `Gδ`, `F₂` for `Fσ` [Lan69 §2]). The core paper's §7.1 speaks
 Borel; this table is the dictionary.
 
-The table's history is worth one paragraph, because it *is* the history of
-this classifier. Landweber 1969 already decided the bottom of the ladder
-effectively: his Theorem 4.1 characterizes the open sets of a Muller
+**Remark (history).** Landweber 1969 already decided the bottom of the
+ladder effectively: his Theorem 4.1 characterizes the open sets of a Muller
 automaton by a condition on realizable cycles, his Theorem 4.2 the `Gδ`
 sets by a **union-closure** condition — `D ∈ 𝒟 ∩ 𝓗_s` and `E ∈ 𝓗_s` imply
 `D ∪ E ∈ 𝒟`, accepting cycles absorb co-reachable cycles — and his
@@ -280,8 +357,8 @@ condition transported to the algebra, where "realizable cycle at `s`"
 has become "idempotent linked to `s`".
 
 The **minimal deterministic acceptance** of [SωS26 §7.3] falls out of the
-parity rows: the least `m` with `m⁺ ≤ m−1` is the minimal parity length for
-`L`, the least `m` with `m⁻ ≤ m−1` the minimal one for `L̄`, and the pair
+parity rows: the least `k` with `m⁺ ≤ k−1` is the minimal parity length for
+`L`, the least `k` with `m⁻ ≤ k−1` the minimal one for `L̄`, and the pair
 locates the exact parity/Rabin index — Büchi at `(m⁺ ≤ 0)`, co-Büchi at
 `(m⁻ ≤ 0)`, weak at `m = 0`, a genuine Rabin pair strictly above.
 
@@ -320,8 +397,8 @@ class — both the open and the closed test of §7 pass — properly `Δ₁`, on
 notch *below* the properly open/closed pair, not above it; the first properly
 `Δ₂` degree is `(2, δ)`, coordinates `(0, 0, 1, 1)`. Indirectly, `δ`
 propagates through the derivative (`s(X) = s(∂X)` below), producing self-dual
-degrees with infinite `γ` — §9's fourth specimen is one. Profile tables
-should name these levels by this dictionary.
+degrees with infinite `γ` — §9's fourth specimen is one. The profile table
+of §12 names these levels by this dictionary.
 
 **When the recursion is needed.** Only in the case `m ≥ 1 ∧ n⁺ = n⁻` does
 `γ` involve the **derivative** `∂X` — Wagner's derivation, realized by
@@ -359,16 +436,17 @@ marking `P′` of the linked pairs of `𝓘(X)` recognizes `∂X`.
 *Proof.* Over `Σ = {a, b, c, d}` take the escape language
 
 ```
-    X = c*·a·K⁺ ∪ c*·b·K⁻ ,     K⁺ = {α ∈ {a,b}^ω : infinitely many a} ,
+    X = c*·a·K⁻ ∪ c*·b·K⁺ ,     K⁺ = {α ∈ {a,b}^ω : infinitely many a} ,
                                 K⁻ = {α ∈ {a,b}^ω : finitely many a} ,
 ```
 
 so any occurrence of `d`, or of `c` past the leading `c`-block, is fatal.
 On the evident six-state deterministic presentation (a hub with a `c`-loop,
-a two-state `K⁺`-component, a two-state `K⁻`-component, a dead sink): the
-`K⁺`-component carries a positive chain of length 1 (its all-`b` loop is
-rejecting inside its accepting full loop), the `K⁻`-component the dual
-negative chain, the two components are mutually unreachable — `m⁺ = m⁻ = 1`,
+a two-state `K⁻`-component, a two-state `K⁺`-component, a dead sink): the
+`K⁻`-component carries a positive chain of length 1 (its all-`b` loop is
+accepting inside its rejecting full loop), the `K⁺`-component the dual
+negative chain (all-`b` loop rejecting inside the accepting full loop), and
+the two components are mutually unreachable — `m⁺ = m⁻ = 1`,
 `n⁺ = n⁻ = 0`, the derivative regime. The collapse gives `∂X = c*·a·Σ^ω`
 (the hub keeps only its `c`-loop, which is rejecting; `a` commits positive,
 `b` and `d` negative). Now `a·d^ω ∈ ∂X` and `d^ω ∉ ∂X`, yet for every
@@ -384,17 +462,19 @@ cannot see.
 **…but not the table.** The object that does carry the derivation is the
 **right regular representation** of `𝓘(X)`: the *Cayley automaton* `A_X`
 with states `𝒞`, initial `[ε]`, transitions `t · a := t·λ(a)`, and accepting
-family `T_X = {S : S admissible, pair(S) ∈ P}`. (The infinity set `S` of a
-run is contained in one `R`-class and folds to a linked pair
-`pair(S) = (s, φ(w)^π)` — base `s ∈ S`, loop word `w` covering `S`;
-conjugacy-invariance of `P` makes the choices immaterial — so `A_X`
-recognizes `X`.) `A_X` *is* the table read as a machine; applying the
+family `T_X = {S : S admissible, pair(S) ∈ P}`. Here `S ⊆ 𝒞` is
+**admissible** iff it is the infinity set of some run of `A_X`; such an `S`
+is contained in one `R`-class and folds to a linked pair
+`pair(S) = (s, φ(w)^π)` — base `s ∈ S`, loop word `w` covering `S` — and
+conjugacy invariance of `P` (a linked pair and its conjugates carry the same
+verdict [PP04, Ch. II]) makes the choices immaterial, so `A_X`
+recognizes `X`. `A_X` *is* the table read as a machine; applying the
 derivation to it stays a table search, by the following three steps.
 
 **Lemma 8.2 (transport at a location).** For every `t ∈ 𝒞`: the
 `A_X`-chains (resp. superchains) accessible from state `t` correspond,
 preserving length and sign, to the normal-form chains (superchains) of §5–6
-whose stem (top stem) lies in `t·S¹`.
+whose stem (top stem) lies in `t·𝒞¹`.
 
 *Proof sketch.* Realization: a normal-form chain `(s, e₀ >_H ⋯ >_H e_m)`
 yields nested loops at state `s` — loop `R_i` reads one word of each of
@@ -405,13 +485,15 @@ Extraction: from nested accessible loops `R₀ ⊂ ⋯ ⊂ R_m` at a base `s′`
 `e₀ := φ(v₀)^π` for a loop word `v₀` of `R₀`, and
 `e_{i+1} := (e_i·z_{i+1}·e_i)^π` where `z_{i+1}` is the product of a loop of
 `R_{i+1}` threaded through the `R_i`-loop — the construction of
-[CP97, Thm. 6] — giving an `H`-descent at stem `s′` with the same bits; for
+[CP97, Thm. 6] — giving an `H`-descent at stem `s′` with the same bits
+(each `e_{i+1}` absorbs `e_i` on both sides by construction, strictly since
+the alternating `P`-bits force `e_{i+1} ≠ e_i`); for
 superchains the connecting paths give `R`-descents, strict by
 [CP97, Prop. 11]. Accessibility from `t` is right multiplication, i.e.
-membership in `t·S¹`, in both directions. ∎
+membership in `t·𝒞¹`, in both directions. ∎
 
 **Corollary 8.3 (zones).** `Q^±(A_X) = T^± := {t ∈ 𝒞 : some maximal
-±-superchain has its top stem in t·S¹}` — unions of `R`-classes (plus
+±-superchain has its top stem in t·𝒞¹}` — unions of `R`-classes (plus
 `[ε]`, which is in both), computed from §6's DP output by one right-Cayley
 reachability pass. Write `U := T⁺ − T⁻` and `B := T⁺ ∩ T⁻` (the kept
 states).
@@ -456,7 +538,9 @@ level; and every level's witnesses remain lassos over `𝒞`.
 
 *Proof.* By Corollary 8.3 the derived Cayley automaton `∂A_X` is exactly the
 zone collapse of the table; by [CP99, Prop. 3] it recognizes `∂X`; by
-[CP99, Thms. 1–2] its chains and superchains compute `m^±(∂X)`, `n^±(∂X)`.
+[CP99, Thms. 1–2] — the chains and superchains of a deterministic Muller
+presentation compute the language quantities — its chains and superchains
+compute `m^±(∂X)`, `n^±(∂X)`.
 Its admissible loops are the two sink loops plus the Cayley loops at
 `B`-stems (a loop stays inside one `R`-class, and `B` is a union of
 `R`-classes); its internal accessibility is ideal containment
@@ -471,7 +555,7 @@ and recurse by Theorem 8.5 — never leaving the multiplication table.
 
 **Worked checks.** On `Fork` (§9): the negative maximal chain's stem `[a]`
 is its own `R`-ideal, so `[a] ∈ T⁻−T⁺`; `[!a]` and `[!a·a]` lie in
-`T⁺−T⁻` (a `!a`-prefix has already committed: `[!a·a] ∈ [!a]·S¹` tops the
+`T⁺−T⁻` (a `!a`-prefix has already committed: `[!a·a] ∈ [!a]·𝒞¹` tops the
 positive chain, and no negative top does). Hence `B ∩ 𝒞₊ = ∅`: the kept part
 is the hub `[ε]` alone, the restricted engines see only the two sinks,
 `(m′, n′⁺, n′⁻) = (0, 0, 0)`, `ϕ(∂Fork) = (1, δ)`, `γ(Fork) = ω + 1` — the
@@ -519,11 +603,11 @@ double as fixtures for the implementation.
 and `[a·!a]` strictly below it and incomparable to each other. Stems linked
 to `[!a]` are `{[!a], [a·!a]}`; to `[a·!a]`, `{[!a], [a·!a]}`; every
 `H`-descent tops out at `[a·a]`, whose linked stems are `{[!a], [a·!a],
-[a·a], [a]}`-checked against `M`. Exhausting the two descents against their
+[a·a], [a]}`, checked against `M`. Exhausting the two descents against their
 admissible stems yields *no* alternation anywhere — every stem sees
 constant acceptance along both descents — so all chains have length 0:
 `m⁺ = m⁻ = 0`, `Even` is **weak**. Superchains: the positive pairs all have
-stem `[!a]`, which is `R`-minimal (`[!a]·S₊ = {[!a]}`), so no positive
+stem `[!a]`, which is `R`-minimal (`[!a]·𝒞₊ = {[!a]}`), so no positive
 superchain extends: `n⁺ = 0`. Negatively, `([a],[a·a]) ∉ P` at the
 `R`-maximal class of `[a]`, descending strictly to `[!a]` with
 `([!a],[!a]) ∈ P`: `n⁻ = 1`, and `[!a]` ends the descent. So
@@ -593,7 +677,7 @@ has depth two, so `m⁺ = m⁻ = 1`.
 
 *Superchains.* The two maximal chains sit at stems `[a]` (negative) and
 `[!a·a]` (positive), and both stems are `R`-minimal singletons
-(`[a]·S₊ = {[a]}`, `[!a·a]·S₊ = {[!a·a]}`), mutually unreachable: no
+(`[a]·𝒞₊ = {[a]}`, `[!a·a]·𝒞₊ = {[!a·a]}`), mutually unreachable: no
 superchain of length 1 exists in either sign, `n⁺ = n⁻ = 0`.
 
 *The degree, through the derivative.* `m = 1` and `n⁺ = n⁻`:
@@ -624,17 +708,16 @@ each a sink of self-loops; marks `{0,1}` on `q_a`'s `a`-loop, `{1}` on
 `q_a`'s `!a`-loop, `{1}` on `q_b`'s `a`-loop, none on `q_b`'s `!a`-loop;
 acceptance `Inf(0) ∨ Fin(1)`. A run through `q_a` sees mark `1` forever, so
 acceptance reduces to `Inf(0)` — infinitely many `a`; a run through `q_b`
-never sees `0`, so it reduces to `Fin(1)` — finitely many `a`. This is the
-K4 fixture of the engineering companion: exit 2 with `PARTIAL(ω)` from the
-`.sos` alone, `ϕ = (ω+1, δ)` with the presentation supplied. By
-Theorem 8.5 the presentation is no longer *needed* — the table derivation
-collapses all of `𝒞₊` into the two sinks and returns `ϕ(∂Fork) = (1, δ)`
-directly (§8, worked checks) — but the fixture keeps its `--hoa` path as an
-independent cross-check of the collapse.
+never sees `0`, so it reduces to `Fin(1)` — finitely many `a`. `Fork` is a
+fixture of the implementation [Spec26]: by Theorem 8.5 its degree is read
+off `𝓘(Fork)` alone — the table derivation collapses all of `𝒞₊` into the
+two sinks and returns `ϕ(∂Fork) = (1, δ)` directly (§8, worked checks) —
+and the presentation-level derivation of [CP99 §3], run on this three-state
+automaton, is kept as an independent cross-check of the collapse.
 
 ---
 
-## 10. Complexity, and the point
+## 10. Complexity
 
 Every procedure above is a polynomial search in the table: power orbits
 `O(N²)`; the Green preorders, graph reachability; chains, a
@@ -648,11 +731,7 @@ Krishnan–Puri–Brayton and of Wilke–Yoo, reported in [CP97, §7]) — which
 sharpens the division of labor: the hardness lives in getting from a
 presentation to the canonical object ([SωS26 §8], PSPACE-hard already for
 the aperiodicity coordinate), and once `𝓘(L)` is in hand the entire
-classification tower, Wagner degree included, is a cheap read-off. That is
-[SωS26 §7]'s "semantic benchmark" claim, made executable: one object in,
-every verdict out, each with a witness — a group cycle, an alternating
-chain, a superchain descent — that is itself a set of lassos replayable
-against any presentation of `L`.
+classification tower, Wagner degree included, is a cheap read-off.
 
 ---
 
@@ -716,23 +795,23 @@ classifier or in the corpus's acceptance labeling.
 
 ## 12. The profile, measured
 
-The engineering companion's classifier, run over the genaut census
-(iteration 1, 2026-07-07): **18 239** deterministic, complete,
+The classifier of the engineering companion [Spec26, Rep26], run over a
+census of **18 239** inputs (2026-07-07 run): deterministic, complete,
 transition-based automata with **generalized-Büchi** acceptance
 `Inf(0) ∧ ⋯ ∧ Inf(c−1)`, exhaustively enumerated over small shape families
 (states × atomic propositions × colours × guard alphabet), plus the triptych
-and two stall specimens as the only non-generalized-Büchi inputs. For every
-input the reference invariant `𝓘(L)` was built by the construction of
-[SωS26 §8] and classified; the duality gate and the internal laws of §5–6 ran
-on every case. Result: 18 239 SOUND, zero law violations, zero over budget,
-zero PARTIAL — and the first measured Wagner-degree profile of a
-systematically enumerated ω-language class:
+and two hand-made stall specimens as the only inputs outside the
+enumeration. For every input the reference invariant `𝓘(L)` was built by
+the construction of [SωS26, Thm. 4.5] and classified; the duality gate and
+the internal laws of §5–6 ran on every case. Result: every case classified
+in full — zero law violations, zero budget overruns, zero partial verdicts —
+and the first measured Wagner-degree profile of a systematically enumerated
+ω-language class:
 
 | `ϕ = (γ, s)` | `(m⁺, m⁻, n⁺, n⁻)` | class (§7–8 dictionary) | count |
 |---|---|---|--:|
 | `(0, σ)` | `(−1, 0, −1, 0)` | empty | 16 |
 | `(0, π)` | `(0, −1, 0, −1)` | universal | 352 |
-| *— the trivial pair, set apart: the weakest class —* | | | *368* |
 | `(1, δ)` | `(0, 0, 0, 0)` | clopen (properly `Δ₁`) | 470 |
 | `(1, σ)` | `(0, 0, 0, 1)` | properly open — guarantee | 68 |
 | `(1, π)` | `(0, 0, 1, 0)` | properly closed — safety | 15 432 |
@@ -742,7 +821,9 @@ systematically enumerated ω-language class:
 | `(ω, π)` | `(1, 0, 0, −1)` | properly `Fσ` — DCA-proper | 2 |
 | `(ω², σ)` | `(1, 2, −1, 0)` | parity-`{0,1,2}`-proper | 1 |
 
-The table is ordered by Wagner degree, weakest first. 12 205 of the languages
+The table is ordered by Wagner degree, weakest first; the first two rows —
+the trivial pair, 368 cases in all — sit apart below the hierarchy proper.
+12 205 of the languages
 are LTL-definable, 6 034 are not: the aperiodic axis cuts across the degree
 rows, as §7.1 of the core paper promised.
 
@@ -750,9 +831,10 @@ Three readings. **The profile is Proposition 11.1, verified.** Every row lies
 in the generalized-Büchi list except the three outliers — `(ω, π)` twice and
 `(ω², σ)` once — and those are exactly the non-generalized-Büchi inputs: the
 two stall specimens and `EvenBlocks` (`Even` and `GF(aa)` fold into the
-`(1, σ)` and `(ω, σ)` rows). The zero-PARTIAL column is likewise the
+`(1, σ)` and `(ω, σ)` rows). That no input needed a partial verdict is
+likewise the
 proposition's prediction, not luck: no generalized-Büchi input *can* need the
-derivative. And the pilot extension of the generator with a parity acceptance
+derivative. And a pilot extension of the enumeration with a parity acceptance
 family confirms the converse immediately: a single one-state parity shape
 (98 surviving languages) realizes `(ω², σ)` eighteen times and `(ω, π)`
 thirty times — degrees the 18 239-case generalized-Büchi census reaches once
@@ -765,20 +847,21 @@ classifies both sides of every case, is what keeps the other side honest.
 input and every budget slot is empty; the practical ceiling met throughout
 was the construction of `𝓘(L)`, never the read-off.
 
-One correction is owed and queued: the counts above are per enumerated
+**Limitation (weighting).** The counts above are per enumerated
 *automaton*, i.e. they weight each language by its enumeration abundance —
-and the abundance is heavily skewed (in a first probe of the
-`2state1ap1acc_buchi` shape, 759 LTL-answering automata collapse to at most
+and the abundance is heavily skewed (in a first probe of one two-state,
+one-atom Büchi shape family, 759 LTL-answering automata collapse to at most
 73 distinct languages by formula hash, with `true` alone absorbing 43.6% of
 the answers; the formula hash is only an upper bound on the collapse, being
-presentation-dependent). The next iteration restates the profile over
-**distinct languages** — dedup by `𝓘`-hash, Theorem 5.1's one-pass
-operation — with abundance kept as a column: the per-language table is the
+presentation-dependent). The natural restatement is the profile over
+**distinct languages** — dedup by `𝓘`-hash, a one-pass operation by
+[SωS26, Thm. 5.1] — with abundance kept as a column: the per-language table
+is the
 Wagner profile of the enumerated *class*, the abundance-weighted one the
 profile of a random small *automaton*, and both are data.
 
-Two further per-shape quantities are queued for the next iteration's manifest
-(engineering spec §5), read off the same run. *How many languages does a
+**Future work (per-shape profiles).** Two further per-shape quantities are
+read off the same run. *How many languages does a
 shape carry?* Distinct-`𝓘` counts per shape family — counting languages,
 rather than automata, is exactly the dedup above, and a shape's
 automaton-to-language compression ratio is a datum no other tool computes. *How big are the algebras, and does size track depth?* The
@@ -795,6 +878,38 @@ small shapes actually exercise.
 
 ---
 
+## Conclusion
+
+The classical taxonomy of ω-regular languages is decidable on the syntactic
+ω-semigroup by table search alone. The exponential price is paid once,
+constructing `𝓘(L)`; after that, identity, the aperiodic cut, every rung of
+the safety–progress/topological ladder, the acceptance index, and the exact
+Wagner degree are polynomial read-offs — [SωS26 §7]'s "semantic benchmark"
+claim made executable: one object in, every verdict out, each with a
+witness — a group cycle, an alternating chain, a superchain descent — that
+is itself a set of lassos replayable against any presentation of `L`.
+
+The Wagner degree earns its verdict rather than inheriting it. Its
+derivative recursion is not an algebraic operation — no re-marking of the
+accepting pairs can carry it (Proposition 8.1) — but it is a table
+computation: on the right regular representation the derivation becomes a
+restriction of the admissible stems, the same chain and superchain engines
+run at every level, and the recursion trace is the Cantor normal form of
+the degree (Theorem 8.5). This complements Cabessa and Duparc's one-pass
+computation of the same value [CD09b]: two disjoint routes to the complete
+invariant, whose agreement over a corpus is the natural cross-oracle for an
+implementation of either.
+
+Beyond the single language, the acceptance family of an input corpus fixes
+its reachable degrees a priori (Proposition 11.1), and the census of §12
+measures the first Wagner-degree profile of a systematically enumerated
+class — 18 239 inputs, every internal law holding, the spectrum bound
+verified, classification never the bottleneck. The per-language restatement
+of the profile and the per-shape size-versus-depth picture are the next
+measurements on the same data.
+
+---
+
 ## References
 
 - **[CD09a]** J. Cabessa, J. Duparc. *A game theoretical approach to the
@@ -808,6 +923,22 @@ small shapes actually exercise.
   673–695.
 - **[CP99]** O. Carton, D. Perrin. *The Wagner hierarchy.* Int. J. Algebra
   Comput. 9(5) (1999) 597–620.
+- **[Lan69]** L. H. Landweber. *Decision problems for ω-automata.* Math.
+  Systems Theory 3(4) (1969) 376–384.
+- **[MP92]** Z. Manna, A. Pnueli. *The Temporal Logic of Reactive and
+  Concurrent Systems: Specification.* Springer, 1992.
+- **[PP04]** D. Perrin, J.-É. Pin. *Infinite Words: Automata, Semigroups,
+  Logic and Games.* Elsevier, 2004.
+- **[Rep26]** Y. Thierry-Mieg, with Claude (Anthropic). *The SoS classifier:
+  experiment reports.* Companion document, 2026
+  (`research_notes/sos_classifier_report.md`).
+- **[Spec26]** Y. Thierry-Mieg, with Claude (Anthropic). *The SoS classifier:
+  engineering specification.* Companion document, 2026
+  (`research_notes/sos_classifier_spec.md`).
+- **[SW08]** V. Selivanov, K. W. Wagner. *Complexity of topological
+  properties of regular ω-languages.* Fund. Inform. 83(1–2) (2008).
 - **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing the
   syntactic ω-semigroup from a deterministic Emerson–Lei automaton.* Working
   draft, 2026 (`research_notes/sos_constructed.md`).
+- **[Wag79]** K. Wagner. *On ω-regular sets.* Information and Control 43
+  (1979) 123–177.

@@ -2923,3 +2923,13 @@ renderer). Report rewritten present-tense (prior feedback round digested and
 folded in, transcript removed).
 2026-07-07 — theory: sos_classification.md gains §8 self-dual/clopen dictionary, §9 Fork specimen (ϕ=(ω+1,δ), the K4 derivative fixture), §11 gen-Büchi spectrum (Prop 11.1), §12 measured census profile; sos_classifier_spec.md rev.2 binds iteration 2 (bench manifest, per-shape ventilation, spectrum law, Fork gate, (1,δ)=clopen naming fix).
 2026-07-08 — theory: census must count distinct languages, not automata — spec X1 rev.2 gains (iv) 𝓘-hash dedup + abundance column + cross-path formula gate; sos_classification.md §12 owns the per-automaton correction (probe: 2state1ap1acc_buchi, 759 LTL answers ≤ 73 languages, true = 43.6%).
+
+## 2026-07-08 — sos_classification.md: paper-shaping pass
+Review + edit pass by theory team. Fixed Prop 8.1 (chain signs of the escape
+language's two components were swapped vs the paper's own W0-convention; X is
+now c*.a.K- + c*.b.K+ so dX = c*.a.Sigma^w holds). Added Abstract, Introduction
+(contributions, CD09 priority up front), Conclusion; completed references
+(Lan69, MP92, PP04, SW08, Wag79, Spec26, Rep26). De-notebooked §9/§12 (K4/exit
+codes, genaut/iteration jargon, queued-work phrasing -> Limitation/Future work).
+Notation: C1 defined and swept over S1/S+, Wagner classes defined, table params
+m,n -> k,l, chain DP over full >_H order not Hasse covers, §6 worked instance.
