@@ -2933,3 +2933,21 @@ now c*.a.K- + c*.b.K+ so dX = c*.a.Sigma^w holds). Added Abstract, Introduction
 codes, genaut/iteration jargon, queued-work phrasing -> Limitation/Future work).
 Notation: C1 defined and swept over S1/S+, Wagner classes defined, table params
 m,n -> k,l, chain DP over full >_H order not Hasse covers, §6 worked instance.
+
+## 2026-07-08 — sos_toltl.md paper-shape pass (e476d4da8)
+
+Theory-team review pass, structure and text only (numbers deferred).
+Why: draft was written in its own idiom before defining it; §5 was a
+1250-line monolith with the architecture buried mid-window-engine; L/M/W
+notation collided (stutter set vs language, weak-until vs window term);
+"daisy stems" collided with the stem coordinate. Split §5 -> §5 (walk
+engine) + §6 (window engine, worked example, combinators, architecture),
+renumbered everything (old 5.21-24 -> 5.11-14; old 5.12-20 -> 6.1-6.9;
+Claim 5.11 -> canonicity Corollary 5.15 with proof). Cross-checked all
+[SωS26]/[DG08] citations against sos_constructed.md before the sweep —
+all correct, masked during renumbering. Fixed one real bug (remark after
+Thm 5.10 credited the "third" asymmetry for the second's work). Verified
+Lemma 5.6(iii) gadget's action monoid is aperiodic (two-class actions
+fix class 1); realization-as-layer stated open. Companion files
+sos_toltl_experiments.md / sos_toltl_report.md still cite old numbering
+— to fix in the numbers pass.
