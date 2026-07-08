@@ -396,16 +396,16 @@ reach canonical under saturation+exact.
 
 | case | config | ref | init | learned | member (f/h/s/p) | eq | cex | sat | cert | stall | verdict |
 |---|---|--:|--:|--:|--:|--:|--:|--:|---|---|---|
-| gf_aa_parity | default | 6 | 3 | 6 | 74 (51/4/9/10) | 2 | 1 | 2 | bounded:8 | transient | SOUND |
-| gf_aa_reset | default | 6 | 3 | 6 | 74 (51/4/9/10) | 2 | 1 | 2 | bounded:8 | transient | SOUND |
-| even | default | 5 | 3 | 5 | 51 (32/4/7/8) | 2 | 1 | 1 | bounded:8 | transient | SOUND |
-| evenblocks | default | 8 | 3 | 8 | 99 (67/4/14/14) | 2 | 1 | 2 | bounded:8 | transient | SOUND |
-| a_implies_xa | default | 5 | 4 | 5 | 43 (32/0/2/9) | 1 | 0 | 1 | bounded:8 | transient | SOUND |
-| a_once | default | 4 | 2 | 4 | 35 (26/3/2/4) | 2 | 1 | 1 | bounded:8 | transient | SOUND |
+| gf_aa_parity | default | 6 | 3 | 6 | 74 (51/4/9/10) | 2 | 1 | 2 | bounded:8 | n/a | SOUND |
+| gf_aa_reset | default | 6 | 3 | 6 | 74 (51/4/9/10) | 2 | 1 | 2 | bounded:8 | n/a | SOUND |
+| even | default | 5 | 3 | 5 | 51 (32/4/7/8) | 2 | 1 | 1 | bounded:8 | n/a | SOUND |
+| evenblocks | default | 8 | 3 | 8 | 99 (67/4/14/14) | 2 | 1 | 2 | bounded:8 | n/a | SOUND |
+| a_implies_xa | default | 5 | 4 | 5 | 43 (32/0/2/9) | 1 | 0 | 1 | bounded:8 | n/a | SOUND |
+| a_once | default | 4 | 2 | 4 | 35 (26/3/2/4) | 2 | 1 | 1 | bounded:8 | n/a | SOUND |
 | a_implies_xa | no-sat-exact | 5 | 4 | 4 | 21 (17/0/0/4) | 1 | 0 | 0 | exact | permanent | ACCEPTOR_ONLY |
-| a_implies_xa | exact | 5 | 4 | 5 | 43 (32/0/2/9) | 1 | 0 | 1 | exact | transient | SOUND |
+| a_implies_xa | exact | 5 | 4 | 5 | 43 (32/0/2/9) | 1 | 0 | 1 | exact | n/a | SOUND |
 | a_once | no-sat-exact | 4 | 2 | 3 | 18 (13/3/0/2) | 2 | 1 | 0 | exact | permanent | ACCEPTOR_ONLY |
-| a_once | exact | 4 | 2 | 4 | 35 (26/3/2/4) | 2 | 1 | 1 | exact | transient | SOUND |
+| a_once | exact | 4 | 2 | 4 | 35 (26/3/2/4) | 2 | 1 | 1 | exact | n/a | SOUND |
 
 The two T1 presentations (`gf_aa_parity`, `gf_aa_reset`) produce identical
 ledgers and signature matrices — a presentation-independence witness the driver
@@ -482,8 +482,6 @@ proven-permanent specimen. The named-case census found the two smallest; fold
 in `genaut/corpus/` (E1/E2), and any new permanent stall at a larger shape is a
 first-class exhibit — report it individually with both fixpoints and the
 separating left context before it enters any aggregate.
-broad permanent-stall hunt (M4.b) fold the census back in through
-`manifest.census_cases` once it is ready.
 
 ---
 
@@ -614,3 +612,80 @@ run SOUND, same class count):
 This is the design's logarithmic counterexample term, confirmed empirically:
 padding changes only the query cost, never the outcome. Artifacts under
 `tests/sosl/logs/e5/` (`results.csv`, `e5_report.md`).
+
+---
+
+## Theory-thread feedback — M4.b + census-E2 + E5 accepted (2026-07-08)
+
+Accepted, and integrated into `sos_learning.md` §6 this round. The three drops
+are clean and the numbers cross-check, so this is mostly a "banked" note with
+one small ask and the paper deltas recorded.
+
+**The stall_class fix took.** E2's table now reads the class off the
+`no-sat learned` (ablation) leg — `permanent 2 / transient 4`, matching theory
+— and the saturated runs no longer carry a spurious `transient`. That closes
+the M4.a blocker (spec §7, row P6); nothing further owed there.
+
+**Census-backed E2 is the round's real result, and it is now the paper's.**
+258 languages exhaustively, byte-exact on all 258 under saturation, and 44
+distinct permanent-stall languages under ablation — the two §4.2 specimens
+revealed as the two smallest of a populated family, with the right-vs-syntactic
+gap reaching 5 (`ref 13 → 8`, `ref 15 → 10`). We checked the internal
+consistency (88 = 44×2, every gap bucket exactly doubled) and it holds. This
+upgrades the paper's §4.2 argument from a two-example finding to a generic one:
+`sos_learning.md` §6.3 now carries the census family and its gap distribution,
+resolving the old `⟨TBD-M4: the list … or the statement that none exists⟩` in
+the strong direction, and the abstract/§6.1/§8 headlines now cite the 258/44
+result. Keep the `census_e2_exhibits` renderer and the two gap-5 headliners
+(`2state1ap1acc_06496`, `_19552`) stable — they are paper-anchored now.
+
+**E1 bounds and E5 log-term** both land in the paper as confirmations, not
+predictions: §6.2 states `splits ≤ N` and fill inside `N²·|Σ|` on every named
+case; §6.5 states the harvest term at `≈ log₂ ℓ` (+1 per doubling), with the
+honest note that `first` coincides with `minimal` for these minimal-order
+oracles, so E5 is two series, not three — the paper now says so rather than
+implying three distinct policies.
+
+**One small ask, to close the last §6.3 TBD.** The frequency table "stall class
+against structural features (prefix-independence, acceptance type, `N`)" is
+still open on the paper side — the census-E2 exhibits have the per-language
+fixpoints but not that cross-tabulation. If the E2 renderer can emit the 44
+permanent languages bucketed by prefix-independence and acceptance shape (even
+just counts), that TBD closes too; it is a natural column on `e2_report`.
+
+**Two housekeeping notes.** The milestone bullet at the top of this report
+(§"Milestones") still reads "M4.a done … M4.b–M4.d next" — stale now that
+M4.b, the census E2, and E5 have all landed; worth a one-line refresh. And the
+remaining campaign legs the paper is still waiting on are **E3 (ROLL baseline,
+M4.c)** and the **full-census N-spread** that E1's scatter needs — those two
+keep the last handful of `⟨TBD-M4⟩` markers open; everything else in §6 is now
+filled.
+
+---
+
+## M4.c — E3 ROLL FDFA baseline (2026-07-08)
+
+ROLL (`~/git/roll-library`, built from source) learns the language of a target
+Büchi automaton, so the baseline (`sosl/sosl/experiment/baseline.py`) feeds it a
+**state-based** Büchi presentation of each census language (Spot, `SBAcc` — a
+transition-based Büchi is misread by ROLL as a trivial language) and runs its
+three canonical FDFA learners, harvesting `#MQ`/`#EQ` and the FDFA size (leading
++ progress DFA states) from ROLL's own `Statistics`. Named-case paired table
+(`tests/sosl/campaign_e3.py`):
+
+| case | ours N (MQ/EQ) | ROLL periodic | ROLL syntactic | ROLL recurrent |
+|---|---|--:|--:|--:|
+| gf_aa_parity | 6 (74/2) | 4 (20/2) | 4 (20/2) | 4 (20/2) |
+| even | 5 (51/2) | 12 (79/5) | 15 (112/5) | 9 (92/5) |
+| evenblocks | 8 (99/2) | 8 (74/4) | 8 (74/4) | 8 (74/4) |
+| a_implies_xa | 5 (43/1) | 12 (64/4) | 14 (145/7) | 9 (128/7) |
+| a_once | 4 (35/2) | 8 (52/4) | 10 (75/4) | 7 (63/4) |
+
+Our syntactic-ω-semigroup `N` is generally **smaller** than ROLL's FDFA (sum of
+DFA states) — `even` 5 vs 9–15, `a_once` 4 vs 7–10, `a_implies_xa` 5 vs 9–14 —
+except `gf_aa` (4 vs 6) and `evenblocks` (tie at 8). **Capability (the headline
+result):** only our invariant answers "is `L` LTL-definable" (the aperiodicity /
+group test on the algebra); an FDFA cannot — reported as a result, not a gap.
+**Certification asymmetry (F6):** our equivalence is exact (Cayley
+transformation closure), ROLL's is its own automaton equivalence (RABIT). The
+census-wide paired medians are the remaining E3 step.

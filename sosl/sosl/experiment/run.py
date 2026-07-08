@@ -242,7 +242,7 @@ def run_case(case_id: str, hoa_path: str, config: Config,
         byte_equal = _norm(ref_dump) == _norm(dump_invariant(inv))
         p1_ok = hyp_acceptor_ok(teacher, _build_hypothesis(table, p),
                                 config.acceptor_bound)
-        stats.stall_class = _classify_stall(stats, byte_equal)
+        stats.stall_class = _classify_stall(stats, byte_equal, config.saturation)
         stats.verdict, stats.detail = _classify_verdict(
             byte_equal, p1_ok, config, stats)
         return RunResult(stats, inv, ledger, _signature(table, p))
@@ -346,15 +346,19 @@ def _signature(table: Table, p: Partition) -> Signature:
     return Signature(header, rows)
 
 
-def _classify_stall(stats: RunStats, byte_equal: bool) -> str:
-    """Spec §6 / §7 stall class. A surviving (non-byte-equal) stall is reported
-    ``permanent`` — E2 runs its ablation leg under exact so that label is
-    trustworthy; the ``eq_certification`` field records the oracle that stood
-    behind it. A byte-equal run is ``transient`` if a coarser fixpoint preceded
-    the canonical one, else ``none``."""
+def _classify_stall(stats: RunStats, byte_equal: bool, saturation: bool) -> str:
+    """Spec §7 / §9 P6 stall class — a **per-language** property read from the
+    **no-saturation + exact** leg alone. A saturation-on run does not exhibit a
+    stall, so it is ``n/a`` (never ``transient``/``permanent`` — that mislabel
+    contradicts Proposition 4.4 when E2 aggregates). Under no saturation: a
+    surviving (non-byte-equal) fixpoint is ``permanent`` (trustworthy only when
+    ``eq_certification`` is exact); a byte-equal run is ``transient`` if a coarser
+    fixpoint preceded the canonical one, else ``none``."""
+    if saturation:
+        return "n/a"
     if not byte_equal:
         return "permanent"
-    if stats.n_classes_initial >= 0 and stats.n_classes_initial < stats.learned_classes:
+    if 0 <= stats.n_classes_initial < stats.learned_classes:
         return "transient"
     return "none"
 
