@@ -39,7 +39,8 @@ complement flip; the aperiodicity read-off lives in the classifier subproject
 `sosl/sosl/sos/classify/aperiodic/` and is consumed, not duplicated),
 `witness/` (§4 certificate + the presentation-agnostic toggle replay + the dual
 scan), `dg/` (the Diekert–Gastin baseline, E4b), and `engine.py`
-(C4 — the walk+window transcription; **unsound, F8**). The `translator.py`
+(C4 — the walk+window transcription; sound, with the graded stratum deferred to
+the DG baseline, F8). The `translator.py`
 flow: bridge `Language → 𝓘(L)`; a step-0 group scan (a certificate replayed by
 membership against the *input* automaton before the absorbing `NOT_LTL`, a
 failed replay declining, never verdicting); on an aperiodic invariant the
@@ -193,10 +194,11 @@ languages emitted, 0 timeout, 0 crash**, total flat-tree-carrying **DAG
 a *distribution* rather than the single `GF(aa)` exemplar (19 nodes / arena
 1287 / flat 1 991 717). Group-bearing (non-LTL) inputs are declined upstream by
 the aperiodicity read-off (1701 declines). The engine column (a) is provisional
-pending F8: its total DAG (~1 232 000 over 1798 emitted) is ~3× below the
-baseline — the compression the paper's §6 predicts — but 394 of those answers
-are still non-equivalent (F8 defect 2), so the (a)-vs-(b) ledger is not yet
-trustworthy.
+now sound (F8): the engine answers where it is provably exact (width-1 layers
+and committed-accepting classes) and declines the non-committed graded stratum
+to DG, so column (a) is smaller than the full census but **0 FAIL**. Its DAG is
+~3× below the baseline where it does answer — the compression the paper's §6
+predicts; the full (a)-vs-(b) ledger awaits the graded engine's return.
 
 ## E7 — certificate validation: the dual scan and ω-blindness tiers
 
@@ -366,7 +368,7 @@ membership is constant-action (diagonal included). The paper states the overlap
 (`A(c) ∩ L(c)` = diagonals) but not the reporting convention; harmless, worth
 one sentence in §5.2 if the letter tables become paper material.
 
-## §3 conformance and F8 — the transcription engine (C4) is unsound — CALL FOR ATTENTION
+## §3 conformance and F8 — engine soundness restored; the graded stratum deferred to DG
 
 Spec §3 mandates a conformance gate: every emitted formula `φ` must have
 `𝓘(L(φ))` byte-equal to the input `𝓘`, a mismatch being *a stop-the-line bug in
@@ -382,8 +384,10 @@ into declines.
 oracle. Removing the gate exposed **842 verified non-equivalent (FAIL)** answers,
 **every one `sos2ltl.engine`** — the walk+window transcription (C4), never the
 certificate side and never the DG fallback (`sos2ltl_dg` has **0 FAIL**, only
-SIZE-unverified explosions). This split into **two distinct defects**; the first
-is fixed, leaving **394**. Per §3 these are stop-the-line bugs, not statistics.
+SIZE-unverified explosions). These were two distinct engine defects, **both now
+resolved**: the engine is sound catalogue-wide (**0 FAIL**, survey SUCCESS),
+trading coverage for soundness on one stratum (defect 2). Per §3 the FAILs were
+stop-the-line bugs, not statistics — and are now closed.
 
 **Defect 1 — the window term rendered one representative, not the class (fixed,
 −448).** A window word is built from λ-class representatives, and `Ω(R,c)`'s
@@ -400,12 +404,14 @@ letter is a single literal or `⊤`, so representative and class coincide and th
 truncation is invisible — the 2-AP switch-on of F6) and floored at `|𝒞|=3`; the
 fix clears all 448 such cases.
 
-**Defect 2 — the multi-layer bricks under-approximate (open).** The remaining
-394 FAILs are uniformly **`|𝒞| ≥ 12`, ≥ 4 states, degree (1,σ)/(1,π)** — the
-guarantee/safety multi-layer stratum (F6's (A)-fallback tier), over **1 AP**, so
-*not* a rendering fault. The window term is now correct; the defect is in the
-multi-layer brick assembly (`_leave` / `_sojourn` / `Final`, the Theorem-5.10
-skeleton across nested layers).
+**Defect 2 — committed-accepting layers not collapsed to `true` (fixed by §6.3
+short-circuit + a decline guard).** The remaining 394 were uniformly **`|𝒞| ≥ 12`,
+≥ 4 states, degree (1,σ)/(1,π)** — the guarantee/safety stratum, over **1 AP** so
+not a rendering fault. They are **terminal committed-accepting layers**: from
+such a class every continuation is accepted (tail language `T_c = Σ^ω`, i.e.
+every linked pair whose stem is reachable from `c` lies in `P`), so the exact
+`Final(c)` is `true` — but the graded Theorem-5.23 exit-chain fails to collapse
+it, under-approximating.
 
 Smallest exhibit — **`2state1ap0acc_086_c`: `|𝒞| = 12`, 4 states, 1 AP, degree
 (1,σ) (properly open — guarantee).** A reach-the-accepting-sink language.
@@ -479,53 +485,40 @@ multi-layer structure the bricks assemble across):
     9 10
     9 11
 
-The engine emits a 453-character nested multi-layer formula (its shape:
-`(!a & X(… F(a & X(!a & Xa)) …)) | (a & X(…))`) that **strictly
-under-approximates** `L`: the witness `a·a·a·!a·a·(!a)^ω` reaches the sink and is
-in `L`, but the formula rejects it. `tests.sos2ltl.engine_fails` ranks the 394
-smallest-first (all `sos2ltl.engine`).
+On this exhibit `D`'s start reads `a → sink`, so `a⁻¹L = Σ^ω`, and classes
+`2 = [a]`, `5 = [a·!a]`, `8 = [a·!a·!a]` have `T_c = Σ^ω` — committed to
+acceptance, so `Final(c) = true`, whence `Final(0)`'s `a`-arm `= a ∧ X true = a`
+("first letter `a` ⟹ accept", correct: `a·a·a·!a·a·(!a)^ω` accepts). The engine's
+graded `Final(2)` was not `true`, so it rejected that witness — a 2-anchored
+layer (`a` a partial constant onto `2`, `!a` acting `2↦5↦8↦8`: mixed at width 1,
+constant at length ≥ 2) whose graded Theorem-5.23 exit-chain must reduce to
+`true` here but did not.
 
-**The ask.** Both defects are genuine C4 correctness bugs, not downstream-tool
-artifacts (small, fully verified). Defect 1 confirmed the theory reading — a
-rendering fault, construction sound — and is closed. Defect 2 is a *second,
-distinct* implementation fault in the multi-layer transcription, confined to the
-guarantee/safety degree-1 stratum; the faithful-or-NOK contract requires
-`transcribe` to be corrected there, or to **decline** (return `None` so the caller
-falls through to the DG baseline) wherever a layer's label is not provably exact.
-No change to the construction; no paper edit. Flagged for theory feedback.
+**The cure (implemented, `engine.py`; construction sound, no paper edit).** Two
+parts, per theory's §6.3 strength-stratification reading:
 
-**Theory feedback (Defect 2 — construction sound; the bricks fail to collapse a
-committed-accepting region to `true`).** Worked the smallest exhibit by hand and
-the construction is exact — no paper edit, agreeing with your read. The unifying
-diagnosis is cleaner than "multi-layer assembly" and explains the whole stratum:
-the 394 failures are the **guarantee/safety (co-safety) degree, which is dominated
-by terminal committed-accepting layers**, and the walk bricks under-approximate
-precisely because they do not collapse such a layer to `true`. On
-`2state1ap0acc_086_c`: `D`'s start reads `a → sink`, so `a⁻¹L = Σ^ω`, hence for the
-classes `2 = [a]`, `5 = [a·!a]`, `8 = [a·!a·!a]` the tail language is `T_c = Σ^ω`
-— the class has **committed to acceptance**, `(c·f, f) ∈ P` for every idempotent
-continuation `f` — so the exact `Final(c)` is `true`. The top brick then gives
-`Final(0)`'s `a`-arm `= a ∧ X Final(2) = a ∧ X true = a`, i.e. "first letter `a`
-⟹ accept", which is exactly right (`a·a·a·!a·a·(!a)^ω` accepts). The engine's
-`Final(2)` is not `true`, so the arm rejects — the entire fault. Two structural
-notes so the fix lands in the right place. (1) *This is not the (A)-fallback
-(§5.4) stratum.* Those three classes form one 3-SCC on which `a` is a partial
-constant onto `2` and `!a` acts `2↦5, 5↦8, 8↦8` — mixed at width 1 but constant
-at every length ≥ 2, so the layer is **2-anchored**: the engine runs the graded
-§5.3 / Theorem 5.13 bricks (`TL_j` / `TR_j` / `step_κ`, κ = 3), which are licensed
-and must reduce to `true` here but don't. So the bug is inside the graded exit-chain
-assembly, not a missing fallback. (2) *The cheap, principled cure is §6.3's
-strength stratification.* A terminal (committed) layer — `(s·x, f) ∈ P` for every
-linked continuation, an `O(|𝒞|²)` read-off — takes the co-safety template
-`Final = true` directly, short-circuiting the graded walk entirely; on the
-guarantee stratum that is the common case, so the read-off both fixes the bulk and,
-run as an assertion (graded `Final` on a committed class must be ⊨-equivalent to
-`true`), pins the residual `TL_j` defect. To localize it concretely: walk the
-recursion bottom-up on the exhibit — `Final(9) = true` (absorbing sink), then
-`Final(8)`, `Final(5)`, `Final(2)`; the first that is not `true`-equivalent is the
-broken brick, the likely culprit being the graded `TL_0` exit disjunction failing
-to collapse `G a ∨ (a U (!a ∧ X φ))` when `φ` is the (correct) child `true`.
-Decline-to-DG remains the right guard until the collapse is exact.
+- *Committed short-circuit.* A committed-accepting class — the `O(|𝒞|²)`
+  read-off `_committed`: every linked pair whose stem is reachable from `c` in
+  `Cay(L)` lies in `P` — takes `Final(c) = true` directly, in place of the walk
+  brick. On the guarantee/safety stratum this is the common case.
+- *Decline-to-DG guard.* A `k ≥ 2` (graded) layer carrying any non-committed
+  class **declines** (`transcribe` returns `None`, falling through to the DG
+  baseline) rather than emit the Theorem-5.23 exit-chain, whose exact collapse
+  is not yet proven. The exhibit now declines to DG — a correct,
+  SIZE-unverifiable formula, no longer FAIL.
+
+The result is **0 verified-non-equivalent answers catalogue-wide** (survey
+SUCCESS, E0 green): faithful-or-NOK restored. The cost is coverage — a
+non-committed graded layer now falls to DG instead of the compact engine
+formula.
+
+**Remaining work.** Repair the graded Theorem-5.23 exit-chain so it collapses
+exactly, then lift the decline guard and return the graded engine to service.
+Theory localizes the residual to the graded `TL_0` exit disjunction failing to
+reduce `G a ∨ (a U (!a ∧ X φ))` when the child `φ` is `true`; the bottom-up walk
+on the exhibit (`Final(9) = true` at the absorbing sink, then `Final(8)`,
+`Final(5)`, `Final(2)`, each ⊨-equivalent to `true`) pins the broken brick. Until
+the collapse is exact and assertable, decline-to-DG is the sound guard.
 
 ## Reproduction
 
@@ -569,10 +562,12 @@ the committed reference copies live in `results/reference/flat_canon/`.
     python3 -m tests.sos2ltl.e7_mechanism_probe \
         genaut/corpus/flat_canon/sos/2state1ap1acc_01681.sos   # P-level, |𝒞|=13
 
-**F8 exhibit (engine unsoundness).**
+**F8 exhibits (0 FAIL after the fixes).**
 
-    python3 -m tests.sos2ltl.engine_fails logs/flat_canon/sos2ltl/survey_*.csv
-    cat genaut/corpus/flat_canon/det/1state2ap1acc_030.hoa
-    cat genaut/corpus/flat_canon/sos/1state2ap1acc_030.sos
-    python3 -m survey.diff.diff_hoa genaut/corpus/flat_canon/det/1state2ap1acc_030.hoa \
-        "((a | !b) & GF(!a & !b)) | (!a & b & F((a | !b) & GF(!a & !b)))"
+    python3 -m tests.sos2ltl.engine_fails logs/flat_canon/sos2ltl/survey_*.csv   # 0 FAIL
+    # defect 1 (window class) — now exact, engine answers GF(a|!b):
+    python3 -m survey --hoa genaut/corpus/flat_canon/det/1state2ap1acc_030.hoa --use sos2ltl
+    # defect 2 (committed-accepting layer) — engine declines, DG answers:
+    python3 -m survey --hoa genaut/corpus/flat_canon/det/2state1ap0acc_086_c.hoa --use sos2ltl
+    cat genaut/corpus/flat_canon/det/2state1ap0acc_086_c.hoa
+    cat genaut/corpus/flat_canon/sos/2state1ap0acc_086_c.sos
