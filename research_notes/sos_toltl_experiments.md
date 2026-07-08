@@ -321,7 +321,11 @@ every non-LTL specimen run both scans to completion and record two
 columns: first separating linear context (or `all-constant`), first
 separating ω-power context (or `all-constant`). A specimen with ω-power
 all-constant is an H5 hit (linear-only certificate); a census with none
-is evidence toward "F₂ always available". **Sizes.** Tabulate component
+is evidence toward "F₂ always available". Triptych vectors (run
+2026-07-08, report F4): `Even` — linear ✓ *and* ω-power ✓, the ω-power
+family being `F₂(u=ε, v=a, y=a·!a, p′=2)`, the same family that
+certifies `EvenBlocks`; `EvenBlocks` — linear `all-constant`, ω-power ✓.
+Neither is an H5 hit; H5 is genuinely a census hunt. **Sizes.** Tabulate component
 lengths (`|u|`, `|v|`, `|x|`/`|y|`, `p′`) against the Theorem-4.4 bounds,
 per shape and per `|𝒞|` (§3b). **Scheduling.** E7 consumes only M1
 components (`witness/` + the reference automata): it runs at M1.5 on the
