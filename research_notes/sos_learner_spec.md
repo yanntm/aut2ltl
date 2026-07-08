@@ -26,6 +26,15 @@ ordered sub-gates M4.a–M4.d; section 9 gains rows P5 / F6 / F7. The M3
 probes named in `sosl_report.md` are the campaign's starting points, not
 throwaways.
 
+**Revision 2026-07-08 (M4.a integration).** M4.a is done (`sosl_report.md`:
+driver + E0 gate green). One normative correction fed back from the E0 table,
+which mislabelled the two proven-permanent specimens `transient` on their
+saturation-on rows: `stall_class` is now pinned as a **per-language** property
+read from the **no-saturation + exact leg alone**, and every saturation-on run
+carries `stall_class = n/a` — never `transient`/`permanent` (section 7,
+tightened; section 6 E2; new section 9 row P6). This must be corrected before
+E2 aggregates, or the frequency table contradicts Proposition 4.4.
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -478,7 +487,12 @@ leg under `--eq-mode exact`; classify each case's `stall_class` (section 7):
 counterexample broke it; `permanent` — the exact oracle certifies a
 non-canonical fixpoint (with exact equivalence, every *surviving* stall is
 permanent by definition; a bounded oracle can only under-report, which is
-why the ablation leg runs exact). Cross-check against theory:
+why the ablation leg runs exact). The classification is **per language, read
+from the ablation (no-saturation + exact) leg alone**: a saturation-on run
+carries `stall_class = n/a` and never contributes to the frequency counts —
+otherwise a proven-permanent language, whose saturated run breaks its stall by
+the sweep with `cex 0`, is miscounted `transient` (the M4.a E0 table exhibited
+exactly this mislabel; see section 7 and row P6). Cross-check against theory:
 `a_implies_xa` and `a_once` MUST land in `permanent` (rows P4/F5);
 `F(a & Xa)`, `Even`, `GF(aa)` in `transient`. Deliverable: stall frequency
 by class and by structural features (prefix-independence, acceptance type);
@@ -551,7 +565,7 @@ ap_count, ref_classes, learned_classes,
 n_member_total, n_member_fill, n_member_harvest, n_member_saturation, n_member_pcache,
 n_equiv, n_splits, n_columns_lin, n_columns_om,
 n_saturation_checks, n_saturation_escalations,
-n_classes_initial, stall_class (none|transient|permanent),
+n_classes_initial, stall_class (none|transient|permanent|n/a),
 cex_policy (minimal|first|padded:<k>),
 max_cex_stem, max_cex_loop, max_query_word_len,
 eq_certification (reps|bounded:<B>|exact),
@@ -559,9 +573,19 @@ wall_seconds, verdict (SOUND|MISMATCH|BUDGET|ACCEPTOR_ONLY)
 ```
 
 `n_classes_initial` is the class count of the first stabilized table (the
-ledgers' starting point); `stall_class` is the E2 classification (section 6),
-`none` outside E2's ablation leg unless a pre-equivalence non-canonical
-fixpoint was observed; `cex_policy` is `minimal` everywhere except E5.
+ledgers' starting point); `cex_policy` is `minimal` everywhere except E5.
+
+`stall_class` is the E2 classification (section 6): a **per-language**
+property determined **solely by the no-saturation + exact leg** — `permanent`
+if that leg certifies a non-canonical fixpoint, else `transient` if a
+non-canonical fixpoint was observed before a counterexample broke it, else
+`none`. On any **saturation-on** run `stall_class` is `n/a` — a saturated run
+resolves the stall by the sweep, which the trichotomy does not name, so it
+must never carry `transient` or `permanent` (a saturated run of a
+proven-permanent language would otherwise be mislabelled `transient`, its
+stall being broken with `cex 0`; the M4.a E0 table did exactly this). E2 reads
+the ablation-leg row only and never folds a saturated-run label into the
+frequency counts.
 
 `ACCEPTOR_ONLY` is reserved for `--no-saturation` runs that pass the acceptor
 check but fail byte-equality.
@@ -690,6 +714,7 @@ recorded outcome, not a defect.
 | P5 | Even / EvenBlocks ledgers match the M3 baselines (trigger sequence, minted columns, per-phase counts — `sosl_report.md`) | M4 driver, default config | always green | behavior drift: diff the audit logs and reconcile before touching paper or baselines |
 | F6 | a ROLL `eq` answer certified only `bounded:<B>` | E3 | expected | record it; the certification asymmetry is a reported result, not a defect |
 | F7 | budget exhausted on an E6 random case | E6 | allowed | record `BUDGET`; census sizing (F4) does not apply to E6 |
+| P6 | `stall_class` on any saturation-on run | M4.b+ (E2) | must be `n/a` | driver bug: a saturated run must never carry `transient`/`permanent` (section 7) — the M4.a E0 table had this wrong; E2's frequency counts read the ablation leg only |
 
 Two "surprising green" notes, so nobody distrusts a passing run:
 

@@ -1155,8 +1155,9 @@ surviving stalls as first-class output.
 
 ## 6. Evaluation
 
-*⟨Structure in place; every value marked ⟨TBD-M4: …⟩ awaits the campaign's
-data — nothing below is predicted.⟩*
+*⟨Structure in place; the E0 validation stage has landed and its values are
+filled below; every value still marked ⟨TBD-M4: …⟩ awaits the later campaign
+stages — nothing below is predicted.⟩*
 
 The algorithm of §3–5 is implemented as a pure query learner: its only source
 of truth is the teacher interface, and no automaton is ever visible to it. The
@@ -1197,7 +1198,13 @@ is byte-reproducible, and the traces of §3–5 are not illustrations but the
 transcripts of the corresponding runs, which the implementation is gated to
 reproduce. Validation is Theorem 5.1 exercised end-to-end: on every corpus
 case the learned invariant must be byte-equal to the constructed reference
-⟨TBD-M4: n/n cases, zero mismatches⟩.
+⟨TBD-M4: n/n cases, zero mismatches⟩. The campaign's first stage (E0)
+validates the named cases — the triptych, the two §4.2 specimens, and two
+distinct automata for `GF(aa)` — ahead of the full census: ten runs, zero
+mismatches, gate green. The two `GF(aa)` presentations return byte-identical
+split ledgers and signature matrices, so Theorem 5.1's canonicity —
+presentation-independence — is witnessed on the *learner's* side and not only
+the construction's: a metamorphic check the algorithm passes for free.
 
 ### 6.2 Cost against the canonical target (Q1)
 
@@ -1221,7 +1228,16 @@ and each case is classified: **none** (the first fixpoint is already
 canonical), **transient** (a non-canonical fixpoint later broken by a
 counterexample), **permanent** (the exact oracle certifies a non-canonical
 fixpoint). §4.2 fixes the anchors: `a → Xa` and `a ∧ XG¬a` must land
-permanent, the triptych and `F(a ∧ Xa)` transient. ⟨TBD-M4: the frequency
+permanent, the triptych and `F(a ∧ Xa)` transient. The two anchors are
+already measured, ahead of the frequency sweep: under the ablation with the
+exact oracle each certifies its non-canonical fixpoint with *no*
+counterexample — four classes for `a → Xa`, three for `a ∧ XG¬a` — and under
+saturation each reaches its canonical algebra, five and four. `a → Xa` is the
+extreme point: with the sweep on it reaches the canonical five-class algebra
+with **zero counterexamples and a single equivalence query**, the query-free
+saturation doing the entire job the oracle provably cannot (Proposition 4.4).
+On this language the ablation's difference is not a smaller query count but
+the algebra itself. ⟨TBD-M4: the frequency
 table — stall class against structural features: prefix-independence,
 acceptance type, `N`.⟩ More valuable than any frequency, every *new*
 permanent specimen is reported individually — each is a further language

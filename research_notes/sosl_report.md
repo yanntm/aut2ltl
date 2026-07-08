@@ -420,6 +420,72 @@ broad permanent-stall hunt (M4.b) fold the census back in through
 
 ---
 
+## Theory-thread feedback — M4.a accepted, one blocker before E2 (2026-07-08)
+
+M4.a is accepted. The E0 gate PASS, the row-P5 byte-stability lock, and the
+machine-generated signature matrix (which retires our last hand-derived table)
+are exactly what M4.a asked for. Two E0 facts are already integrated into the
+paper, `sos_learning.md` §6 (they are landed campaign data, not predictions,
+so they belong there now): the E0 named-case gate in §6.1, and — the result we
+value most — `a_implies_xa` reaching its canonical five-class algebra under
+saturation with **zero counterexamples and a single equivalence query**, in
+§6.3. That row is the cleanest exhibit in the whole campaign of what
+saturation buys: on the flagship permanent-stall language the sweep alone
+produces the algebra and the oracle merely rubber-stamps it — the ablation's
+difference is the algebra itself, not a query count. Keep that run
+paper-anchored; any drift on it is a paper regression. The presentation-
+independence freebie (`gf_aa_parity` and `gf_aa_reset` returning byte-identical
+ledgers and signature matrices) is also now in §6.1 as a learner-side witness
+of Theorem 5.1's canonicity — a genuine metamorphic check you got for free;
+please keep it wired as an assertion in the E0 lock.
+
+**One blocker before E2 — the `stall_class` labels are a category error on the
+saturated rows, and E2's whole deliverable rides on this field.** The E0 table
+labels both proven-permanent specimens `transient` on their saturation-on rows
+(`a_implies_xa` default and exact; `a_once` default and exact). By the spec's
+*own* §6 definition, `transient` means "a pre-equivalence fixpoint was
+non-canonical **but a counterexample broke it**." On `a_implies_xa` default the
+count is `cex 0` — the 4→5 split came from the **sweep**, not a counterexample —
+so the run satisfies neither `transient` (no counterexample), nor `none` (the
+first fixpoint was non-canonical, 4≠5), nor `permanent` (it did reach
+canonical). It falls outside the trichotomy, which was written for the
+ablation (saturation-off) leg only; the driver defaulted it to `transient`, and
+that word now sits on the paper's flagship *permanent* stall.
+
+This is harmless in E0 (the verdicts are all correct; only the label is wrong)
+but it is *not* harmless in E2: E2's headline is the stall-frequency table, and
+the paper (§6.3) pins `a → Xa` and `a ∧ XG¬a` as **permanent**. If
+`stall_class` is aggregated per-run across configs, those two land `transient`
+in half their rows and the frequency table contradicts the theorem. The fix is
+a definition, not driver guesswork — we are tightening it in the spec (see the
+§6/§7 revision landing with this note):
+
+- `stall_class` is a **per-language** property, determined **solely by the
+  no-saturation + exact leg** — `permanent` if that leg certifies a
+  non-canonical fixpoint, else `transient` if a non-canonical fixpoint was
+  observed before a counterexample broke it, else `none`.
+- On any **saturation-on** run, `stall_class` is reported as `n/a` (never
+  `transient`, never `permanent`) — a saturated run resolves the stall by the
+  sweep, which the trichotomy does not name, so it must not carry a class.
+- E2's per-language classification reads the ablation-leg row only; the driver
+  must not fold saturated-run labels into the frequency counts.
+
+Concretely for the E0 table: the four saturated-run `stall` cells for the two
+specimens should read `n/a`, and the two `no-sat-exact` rows keep `permanent`.
+Regenerate that column under the tightened rule before E2 aggregates anything —
+otherwise the first thing E2 produces will disagree with Proposition 4.4.
+
+For M4.b, the E2 leg is where new science can appear, exactly as before: with
+saturation off and `--eq-mode exact`, every *surviving* stall is a
+proven-permanent specimen. The named-case census found the two smallest; fold
+in `genaut/corpus/` (E1/E2), and any new permanent stall at a larger shape is a
+first-class exhibit — report it individually with both fixpoints and the
+separating left context before it enters any aggregate.
+broad permanent-stall hunt (M4.b) fold the census back in through
+`manifest.census_cases` once it is ready.
+
+---
+
 ## M4.b — E1 scaling + E2 ablation (2026-07-08)
 
 Both experiments run over the named cases through the driver
