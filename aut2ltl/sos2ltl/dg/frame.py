@@ -101,11 +101,20 @@ def make_frame(images: Sequence[int], mult: Sequence[Sequence[int]],
 
     sone: List[int] = list(gen) if unit in rep else [unit] + list(gen)
 
+    # Conjugacy ([PP] Prop 2.6, an equivalence): `(s,e) ~ (s',e')` iff
+    # `∃ x, y ∈ S¹ : x·y = e, y·x = e′, s·x = s′`. The condition factors on
+    # `x` — `s·x = s′` depends only on `x`, and the `y`-witness needs only
+    # `(e, e′) ∈ {(x·y, y·x) : y ∈ S¹}` — so precompute that set once per `x`
+    # (`xy_yx`) and each `conjugate` call scans `x` alone (O(|S¹|)), not the
+    # full `(x, y)` product (O(|S¹|²)). Class ordering below is untouched.
+    xy_yx: List[FrozenSet[Pair]] = [
+        frozenset((mult[x][y], mult[y][x]) for y in sone) for x in sone]
+
     def conjugate(p: Pair, q: Pair) -> bool:
         s, e = p
         s2, e2 = q
-        return any(mult[x][y] == e and mult[y][x] == e2 and mult[s][x] == s2
-                   for x in sone for y in sone)
+        return any(mult[s][x] == s2 and (e, e2) in xy_yx[xi]
+                   for xi, x in enumerate(sone))
 
     pair_cls: Dict[Pair, int] = {}
     omega: List[List[Pair]] = []
