@@ -1,7 +1,10 @@
 # SoS Calculus — Implementation Specification
 
-**Status:** rev. 1, 2026-07-09 — specification / declaration of intent.
-Nothing below exists yet except the objects layer it builds on.
+**Status:** rev. 2, 2026-07-09 — CAL1–CAL3 implemented as
+`sosl/sosl/sos/calculus/`, harness 1–8 green; gates in `sosl/tests/calculus/`.
+Rev-2 edits are marked inline and all correct rev-1 errors found in
+implementation (the saturation rule of §3.3 chief among them). CAL4 (the V1/V2
+ledger) remains open.
 
 **Normative math.** `research_notes/sos_calculus.md` (the calculus paper:
 align / operate / reduce, the surgery catalog, the ledger) with [SωS26] for
@@ -82,6 +85,8 @@ interface a decision procedure needs from one side of a comparison:
 
 ```
 class FoldedLanguage(Protocol):
+    alphabet : Alphabet                   # rev 2: align needs Σ, and cannot
+                                          # recover it from the class set
     classes  : Sequence[ClassId]          # identity first
     identity : ClassId
     def step(self, c: ClassId, a: Letter) -> ClassId: ...
@@ -187,9 +192,24 @@ fact as its docstring; the harness (section 4) replays them.
 
   ```
   saturate(Q): least fixpoint of
-      (s, e) ∈ Q, x, y ∈ 𝒞, M(x,y) = e, M(y,x) = f, t = M(s,x)
-      ⟹ (t, f) ∈ Q        (f idempotent and (t,f) linked follow)
+      (s, e) ∈ Q, x, y ∈ 𝒞, M(x,y) = e
+      ⟹ linked_pair_of(M(s,x), M(y,x)) ∈ Q
+  where linked_pair_of(t, f) = (M(t, idem(f)), idem(f))
   ```
+
+  **Rev 2 correction.** The rule was first stated as `(t, f) ∈ Q` for
+  `f = M(y,x)`, with the parenthetical "*f idempotent and (t,f) linked
+  follow*". That parenthetical is **false**: `M(x,y) = e` idempotent does not
+  make `M(y,x)` idempotent. Counterexample, `flat_canon/sos/
+  3state1ap0acc_074764.sos` (20 classes): the linked pair `(7,7)` factors as
+  `e = M(1,8)`, and `f = M(8,1) = 13` has `M(13,13) ≠ 13`; 69 such firings
+  occur in that one table. What *is* true is the word identity
+  `u·(xy)^ω = (ux)·(yx)^ω`, a law about **cells**, not about linked pairs:
+  `Val_P(s, e) = Val_P(M(s,x), M(y,x))` whenever `M(x,y) = e`. So the
+  conjugate cell must be normalized back to a linked pair through `Val`'s own
+  lookup — that is `linked_pair_of` above — before it is inserted. Conjugacy
+  is symmetric (swap `x` and `y`), so the closure is a union of conjugacy
+  classes.
 
   `O(|linked|·n²)` worst case, run rarely. Two uses: (i) legality check —
   `pair_language` asserts `saturate(pairs) = pairs`; (ii) **internal law**
@@ -257,6 +277,9 @@ shapes over the table. Algorithm — partition refinement, letters only:
    emit): the quotient's `Val` pulls back to the input's `Val` on every
    cell (`O(n²)`); `reduce` of the result is byte-identical to the result
    (idempotence); the result parses back through the `.sos` io round-trip.
+   Rev 2: behind a `check: bool = True` parameter — the interior of the
+   idempotence check, and scans over large aligned products where the
+   quadratic pullback would dominate, pass `check=False`.
 
 Cost target: `O(n²·|Σ| + n²)` after the base signatures (`O(n²)` `Val`
 calls) — negligible at census sizes (`n ≤ 121`, aligned products a few
