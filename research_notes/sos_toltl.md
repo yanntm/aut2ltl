@@ -100,8 +100,8 @@ anchors are reset actions, stuttering is locally neutral action, the
 park/fairness dichotomy is the linked pairs of `P`, and the graded window
 ladder is a ladder of definiteness equations on the multiplication table.
 Each precondition is an equation on `𝓘(L)`, decided once, on the canonical
-object — so whether a language transcribes flatly, and at which width, is
-itself a definability property of `L` (§5.5) — and under the two
+object; whether a language transcribes flatly, and at which width, is
+therefore itself a definability property of `L` (§5.5). Under the two
 preconditions the transcription is exact by construction (§5.2, graded
 to arbitrary anchoring width in §5.3): that
 exactness theorem is one of the paper's two central technical claims.
@@ -665,14 +665,15 @@ Ex(c) = { a ∈ Σ_λ : c·a ∉ R }               -- exit: strict R-descent (Le
 ```
 
 partition `Σ_λ`. For a letter `a`, its **within-layer action** is the
-partial map `c ↦ c·a` restricted to sources and images in `R`. The
-*phase* of the walk — the class of the prefix read so far — is what the
-bricks must recover from letters alone; a *park* — a walk that stutters
-at `c` forever — is acceptance-wise nothing but a linked pair `(c, e)`,
-`e` the fold of the recurring stutter content, looked up in `P`; and the
-child label `φ_d` at an exit toward class `d` is the extraction rooted
-at `d`, **memoized per class**: at most `|𝒞|` distinct children ever,
-the output DAG is class-indexed. One thing the vocabulary deliberately
+partial map `c ↦ c·a` restricted to sources and images in `R`. Three
+more words fix the vocabulary. The *phase* of the walk is the class of
+the prefix read so far — what the bricks must recover from letters
+alone. A *park* is a walk that stutters at `c` forever — acceptance-wise
+nothing but a linked pair `(c, e)`, `e` the fold of the recurring
+stutter content, looked up in `P`. The child label `φ_d` at an exit
+toward class `d` is the extraction rooted at `d`, **memoized per
+class**: at most `|𝒞|` distinct children ever, the output DAG is
+class-indexed. One thing the vocabulary deliberately
 does **not** contain is any acceptance marking of classes or edges —
 Lemma 5.2(ii) — acceptance lives on pairs, never on classes.
 
@@ -706,8 +707,13 @@ letters no stateless observer can attribute are the *shared* ones,
 `St(c) \ An(c)`; they are what the graded ladder tolerates
 (Definition 5.5). Identity-or-reset is the Krohn–Rhodes reset brick —
 the atomic layer of the aperiodic cascade — surfacing as the
-transcribable case, which is not a coincidence ⟨TBD: remark tying to the
-cascade literature [KR65, Mal10]⟩.
+transcribable case, and that is not a coincidence: Krohn–Rhodes
+decomposes every aperiodic monoid into wreath products of exactly such
+identity-or-reset layers [KR65], and cascaded decompositions translate
+into temporal logic [Mal10]. A 1-anchored layer is the case where the
+canonical machine carries the reset brick on its own R-classes, with no
+decomposition manufactured; what the transcription emits against what a
+blindly-built cascade of `Cay(L)` would cost is §10's comparison ⟨TBD⟩.
 
 *Reporting convention* (fixed here because letter tables appear below):
 a letter's *kind* is reported identity-first — a letter neutral wherever
@@ -1885,8 +1891,8 @@ operator is the same wrapper). Safety is the dual through
 
 Extraction as computed is a **class-indexed DAG**: one node per
 (class, engine-context) pair, children memoized — the implementation
-computes it at scale ⟨TBD: cite the implementation's numbers once §9
-exists⟩. Three renderings:
+computes it at scale (§9 ⟨TBD: the DAG-vs-|𝒞| ledger once the engine
+emits⟩). Three renderings:
 
 1. **The DAG itself** — the working format, and polynomial on the
    anchored+ladder fragment: the walk side has one label per layer and one
@@ -1946,14 +1952,15 @@ induces a second, finer map, and every coordinate is a read-off:
 | residual | (A) or (B) fails at every affordable width | genuine nesting; until-rank certifies | steps 3–4 fallback, stem side scoped (Prop 5.14) |
 
 **Table 1.** The inner frontier: which fragment of LTL a language actually
-needs, decided on `𝓘(L)` before any formula is built. ⟨TBD: align the
-strata with the known sub-LTL hierarchies — definite / locally testable /
-TL[F] of Cohen–Perrin–Pin / until hierarchy [Wil99, PW13] — so each row is
-a known variety with our operational reading; the census then *maps* the
-strata empirically — first data in §9: at 1 AP / ≤ 2 states the residual
-row is unwitnessed, and width 2 covers both (A) and (B) everywhere the
-tests decide; find the smallest specimen in each lower row (H2/H3/H4 of
-the companion spec).⟩
+needs, decided on `𝓘(L)` before any formula is built.
+
+The census maps the strata empirically (§9): at 1 AP / ≤ 2 states the
+residual row is unwitnessed, and width 2 covers both (A) and (B)
+everywhere the tests decide; the smallest specimen of each lower row is
+an open hunt. ⟨TBD: align the strata with the known sub-LTL
+hierarchies — definite / locally testable / TL[F] of Cohen–Perrin–Pin /
+until hierarchy [Wil99, PW13] — so each row is a known variety with our
+operational reading.⟩
 
 The inner frontier is also the size story of §7 made structural: flat cost
 concentrates exactly in the residual stratum, and the strata above it are
@@ -1973,59 +1980,76 @@ ledger — optimality gaps. Verdicts checked by
 the construction of [SωS26]: every emitted formula's 𝓘 must be byte-equal
 to the input's — the equivalence oracle is the object itself.⟩
 
-**First data** (the census, language-keyed: the
-unit is the distinct canonical invariant — the group-bearing Büchi
-shape presents one language up to 331 ways, median 2, which is why the
-automaton cannot be the unit — over nineteen exhaustive shapes, states,
+**The corpus.** The census is language-keyed: its unit is the distinct
+canonical invariant, not the automaton — the group-bearing Büchi shape
+presents one language up to 331 ways, median 2, which is why the
+automaton cannot be the unit. Nineteen exhaustive shapes, with states,
 atomic propositions and acceptance sets grown one notch at a time,
-generalized-Büchi and parity families, some 15 000 languages in all;
-the degenerate stratum is exactly `{∅, Σ^ω}` per shape and is excluded
-throughout). Non-LTL languages appear only from two states up — a
-single state cannot carry a counting group. On the LTL side, 9 761
-languages carrying 58 185 layers: condition (A) holds at width 1 on
-77.6% of layers and within the ladder (`k ≤ 3`) on 88.2%; 36.1% of
-layers are frozen; 78.9% of languages are fully stem-transcribable at
-`k ≤ 3`. The fallback stratum is empty on every one-state shape and
-every two-state 1-AP shape, and switches on abruptly one notch out —
-846 layers beyond the ladder at the third state over one proposition,
-5 418 at the second proposition over two states — where a quarter (two
-propositions) to three-tenths (three states) of languages carry an
-(A)-failing layer: §8's stem-side residual row, witnessed and located.
-The tester caps at `k = 3`, so "beyond the ladder" does not yet decide
-"anchors at no width"; the uncapped fixpoint of Lemma 5.6(v) settles
-that split and is the census's next read-off. Condition (B) is the
-counterpoint: of 43 710 final-candidate layers not one fails — the
-2-AP shape's 32 425 final layers all pass — every decided layer is
-window-determined at `k′ ≤ 2`, width 2 is needed 18 times in all (the
-`GF(aa)` family), and the 90 UNDECIDED are enumeration-budget gaps,
-not conflicts, retiring when Proposition 6.4(iii)'s normative closure
-lands. The two conditions are not symmetric at these sizes: the stem
-side breaks first, and the loop side has not broken at all — the
-walk's flat ladder is the binding constraint, acceptance staying
-window-determined everywhere measured. Prefix-independence, 60% of the
-smallest frame, is 1.5% of the bench. ⟨TBD: per-shape tables; the
-arbitrary-EL acceptance axis; the E4 size ledgers and DAG-vs-|𝒞|
-scatter once the engine emits.⟩
+generalized-Büchi and parity families: some 15 000 languages in all.
+The degenerate stratum is exactly `{∅, Σ^ω}` per shape and is excluded
+throughout. Non-LTL languages appear only from two states up — a single
+state cannot carry a counting group. Prefix-independence, 60% of the
+smallest frame, is 1.5% of the bench.
 
-**Second data** (the dual certificate scan, on the same
-census). On the
-non-LTL side every emitted family replays against the canonical
-deterministic acceptor by membership queries alone, with no failures,
-and every component length sits inside Theorem 4.4's bounds with
-margin. The scan settles §4.1's availability question negatively: 26
-languages are ω-blind — certifiable in the linear shape only — none
-below four classes, §4.3's `L₄` the smallest. Where the two blindnesses
-cohabit (two states, one atomic proposition, one Inf set: 129
-languages, 47 of them non-LTL), 34 languages speak both shapes, 9 are
-linear-only, 4 ω-power-only — and the ω-power-only stratum is exactly
-the prefix-independent one, Proposition 4.2 observed as data. Both
-blindnesses are rare, and both live at the smallest non-trivial shapes;
-whether Proposition 4.5's right-ideal condition accounts for every
-ω-blind specimen is the next measurement.
+**First data: the two conditions on the LTL side** (9 761 languages
+carrying 58 185 layers).
+
+| read-off | value |
+|---|---|
+| condition (A) at width 1 | 77.6% of layers |
+| condition (A) within the ladder (`k ≤ 3`) | 88.2% of layers |
+| frozen layers | 36.1% |
+| languages fully stem-transcribable at `k ≤ 3` | 78.9% |
+| layers beyond the ladder, 3 states / 1 AP | 846 |
+| layers beyond the ladder, 2 states / 2 AP | 5 418 |
+| condition (B) failures, over 43 710 final-candidate layers | 0 |
+| (B) width needed, where decided | `k′ ≤ 2`; `k′ = 2` in 18 cases (the `GF(aa)` family) |
+| (B) undecided (enumeration-budget gaps, not conflicts) | 90 |
+
+**Table 2.** Census read-offs for conditions (A) and (B).
+
+The fallback stratum is empty on every one-state shape and every
+two-state 1-AP shape, and switches on abruptly one notch out, where a
+quarter (two propositions) to three-tenths (three states) of languages
+carry an (A)-failing layer: §8's stem-side residual row, witnessed and
+located. Two caveats keep the table honest. The tester caps at `k = 3`,
+so "beyond the ladder" does not yet decide "anchors at no width" — the
+uncapped fixpoint of Lemma 5.6(v) settles that split and is the
+census's next read-off. And the 90 (B)-undecided layers retire when
+Proposition 6.4(iii)'s normative closure lands. The headline is the
+asymmetry: the stem side breaks first, and the loop side has not broken
+at all — the walk's flat ladder is the binding constraint, acceptance
+staying window-determined everywhere measured (the 2-AP shape's 32 425
+final layers all pass). ⟨TBD: per-shape tables; the arbitrary-EL
+acceptance axis; the E4 size ledgers and DAG-vs-|𝒞| scatter once the
+engine emits.⟩
+
+**Second data: the certificate scan** (same census, non-LTL side).
+Every emitted family replays against the canonical deterministic
+acceptor by membership queries alone, with no failures, and every
+component length sits inside Theorem 4.4's bounds with margin. The scan
+settles §4.1's availability question negatively: 26 languages are
+ω-blind — certifiable in the linear shape only — none below four
+classes, §4.3's `L₄` the smallest. On the one cohort where the two
+blindnesses cohabit (two states, one atomic proposition, one Inf set:
+129 languages, 47 of them non-LTL):
+
+| certificate shapes available | languages |
+|---|---|
+| both shapes | 34 |
+| linear only (ω-blind) | 9 |
+| ω-power only (= exactly the prefix-independent stratum, Proposition 4.2 as data) | 4 |
+
+**Table 3.** Shape availability on the 47 non-LTL languages of the
+2-state / 1-AP / 1-Inf cohort.
+
+Both blindnesses are rare, and both live at the smallest non-trivial
+shapes; whether Proposition 4.5's right-ideal condition accounts for
+every ω-blind specimen is the next measurement.
 
 ## 10. Related work
 
-⟨TBD: full pass. The skeleton of the section:⟩
+⟨TBD: biblio sweep still pending on the cites marked below.⟩
 
 **Algebra to formula.** [DG08, §8] is the reference construction (§3); its
 local divisor descends from Meyberg's local algebras, and the finite-word
@@ -2064,16 +2088,34 @@ side of the aperiodicity verdict.
 
 ## 11. Conclusion
 
-⟨TBD — the arc, once the theory sections close: The syntactic ω-semigroup
-was built to decide one question; on either side of that decision it now
-rebuilds the object the answer calls for — a portable refutation, or a
-defining formula that is a transcription of the algebra's own shape:
-letters quotiented by λ, templates chosen by P's ladder, layers walked down
-the R-order, flat bricks where the layers anchor, ω-templates where the
-walk freezes — Arnold's two shapes, met for the third time, now as the two
-engines of extraction — and nesting only where the until-rank proves it
-unavoidable. The formula was always going to be large sometimes; the
-algebra says exactly when, and exactly why.⟩
+The syntactic ω-semigroup was built to decide one question. This paper
+is about the day after: on either side of the decision, the same four
+tables rebuild the object the answer calls for. On the non-LTL side, a
+counting family — words and one period, extracted by three scans of the
+multiplication table, total by construction (Theorem 4.4), checkable
+against any acceptor by lasso membership queries alone, and canonical:
+the refutation attaches to the specification, not to our tooling. On
+the LTL side, a formula that is a transcription of the algebra's own
+shape: letters quotiented by `λ`, templates chosen by `P`'s ladder,
+layers walked down the R-order, flat bricks where the layers anchor
+(Theorems 5.10 and 5.13), window templates where the walk freezes
+(Proposition 6.4) — Arnold's two context shapes, met for the third time,
+now as the two engines of extraction — and nesting only where the
+algebra demands it. The deliverable split is part of the result: the
+DAG is polynomial and canonical, the flat formula's size is the
+language's own, and the definitional format avoids that size exactly
+(§7).
+
+Three open problems mark where the paper stops. The main one: an
+ω-specific descent that beats DG on the residual stratum — the one
+place extraction still pays the generic price (§6.1). Second, the
+ω-word transfer of the Thérien–Wilke until-rank characterization (§2),
+which would turn the depth lower bound from conditional to certified.
+Third, the realization questions the census sharpened: a layer
+anchoring at no width over two letters (§5.2), an ω-blind language
+without a right-ideal group (§4.3), a sufficient tour cap for deciding
+(B) (§6.1). The formula was always going to be large sometimes; the
+algebra now says exactly when, and exactly why.
 
 ---
 
