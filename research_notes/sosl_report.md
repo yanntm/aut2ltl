@@ -469,3 +469,40 @@ the left prefix `a` (`a·[]·!a`); `a_implies_xa` merges `[a;a]` into `[!a]`,
 reaching its 5-vs-4 gap with zero counterexamples and one escalation
 (`a·([]·a)^ω`). Artifacts under `tests/sosl/logs/m4b/`
 (`results.csv`, `e1_report.md`, `e2_report.md`).
+
+---
+
+## Census-backed E2 — permanent stalls at the LTL frontier (2026-07-08)
+
+With the census tier wired (`manifest.census_shapes`, precomputed `corpus/sos/`
+references), the ablation hunt runs over the exhaustive `2state1ap1acc` and its
+parity twin `2state1ap1acc_parity` — the smallest shapes where non-LTL languages
+appear (SHAPES.md: "not-LTL first appears at `2state1ap0acc`; the LTL frontier is
+n ≥ 2 ∧ k ≥ 1"). 258 languages, two configs, `tests/sosl/census_campaign.py`.
+
+**Soundness across the frontier.** Default config (saturation on) is **SOUND on
+all 258** — byte-equal to the precomputed reference, zero MISMATCH. The learner
+is correct on the entire exhaustive shape (spec §9 P2/P3 at scale).
+
+**The permanent-stall harvest.** Under `--no-saturation --eq-mode exact`, **44
+distinct languages** (88 gba+parity presentations, every one exact-certified)
+sit on a permanent stall — a non-canonical right-congruence fixpoint no
+counterexample breaks. Saturation recovers the canonical algebra for every one
+of them (which is why default is 258/258 SOUND). This exhaustively enumerates
+*all* permanent-stall languages at this shape — the two named specimens
+`a_once` (ref 4) and `a_implies_xa` (ref 5) are no longer isolated exhibits but
+the smallest members of a populated family.
+
+Gap (reference − stalled) distribution over the 88 runs:
+
+| gap | 1 | 2 | 3 | 4 | 5 |
+|---|--:|--:|--:|--:|--:|
+| runs | 52 | 16 | 6 | 10 | 4 |
+
+The sharpest exhibits reach gap 5 (`ref 13 → learned 8`, `ref 15 → learned 10`),
+far past the minimal `a_implies_xa` (gap 1): the right congruence can fall many
+classes short of the syntactic one, all recovered by the left-context sweep.
+Characterization of the 44 (identifying the named two, cataloguing by gap,
+rendering the sharpest fixpoint pairs and separating contexts) is the next E2
+deliverable; the beyond-wall shapes are reached by reproducible sampling, not
+exhaustive enumeration.
