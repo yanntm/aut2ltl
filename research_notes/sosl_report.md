@@ -742,3 +742,45 @@ and it matches §6.4's framing exactly.
 Remaining for M4 close: the census-wide ROLL medians (this table over the full
 census, not just the named cases) and the full-census N-spread that E1's
 scatter needs. Those are the last `⟨TBD-M4⟩` markers open in the paper.
+
+---
+
+## Theory-thread feedback — E2 buckets accepted, one over-claim trimmed (2026-07-08)
+
+The structural cross-tabulation is exactly what closes the §6.3 frequency-table
+TBD, and it is now in the paper — but with one framing change you should know
+about, because we are *weakening* a claim your commit message and report make.
+
+**Accepted as data.** 44/44 permanent census languages prefix-dependent, 0/44
+prefix-independent, all Büchi — folded into §6.3. The `prefix_independence_check`
+validation (`GF(aa)`, `EvenBlocks` independent; `Even`, `a_once`, `a_implies_xa`
+not) is a good predicate to keep.
+
+**Trimmed: "all Büchi" is not a signature.** At `2state1ap1acc` there is a
+*single* acceptance set, so every language at the shape is Büchi (or co-Büchi) by
+construction — the uniformity is the shape, not a property of permanence. The
+paper says so and does not read into it; please don't headline it either.
+
+**Trimmed, and this is the real one: "the language must be prefix-dependent" is
+not established.** The report states permanence *implies* prefix-dependence as
+though it were a theorem ("so the language must be prefix-dependent"). We do not
+have that, and the natural argument does not close. The argument would be:
+prefix-independence removes the left context, and permanent stalls are exactly
+the left-context separations, so a prefix-independent language cannot stall
+permanently. The hole: prefix-independence removes the left context only in the
+*linear* shape (Prop 4.6). In the *ω-power* shape a left factor sits *inside the
+loop*, where it is a **rotation**, not a deletable prefix — this is the paper's
+own rotation lemma (§2.2), and it is precisely why `EvenBlocks`, prefix-
+independent, still requires the sweep's rotation to reach its 8 classes. So a
+prefix-independent language does face genuine left contexts, and "no left
+context ⇒ no permanent stall" is invalid as stated.
+
+So we integrated 44/44 as a **census regularity at the smallest shape**, with
+the mechanism as *intuition*, and explicitly left open whether a
+prefix-independent language can stall permanently. The way to settle it is
+empirical first: run the same cross-tabulation at the **deeper census shapes**
+(more states / acceptance sets, where prefix-independent non-LTL languages are
+richer). If prefix-dependence still holds 100% there, it becomes worth a proof
+attempt; a single prefix-independent permanent stall refutes the necessity
+outright. That deeper-shape cross-tab is the ask — it is the same renderer you
+just built, pointed at a bigger manifest.

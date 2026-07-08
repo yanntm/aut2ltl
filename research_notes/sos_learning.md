@@ -1289,9 +1289,25 @@ Permanence is therefore not a curiosity of two hand-picked languages but
 *generic* at the LTL frontier — the strongest form of §4.2's finding, and the
 reason the saturation sweep is not an optimization but part of the
 construction: on 44 of the 258 smallest-shape languages, no membership-and-
-equivalence learner without it reaches the algebra at all. ⟨TBD-M4: the
-frequency table's structural-feature breakdown (prefix-independence, acceptance
-type) over the 44, closing the table above's remaining axis.⟩
+equivalence learner without it reaches the algebra at all.
+
+The 44 admit a clean structural cross-tabulation, which we report with a
+caution. All 44 are **prefix-dependent** (none prefix-independent), and all
+carry Büchi acceptance. The acceptance uniformity is an artifact of the
+shape — a single acceptance set *is* Büchi — and reads into nothing. The
+prefix-dependence is more suggestive, and it fits the mechanism: a permanent
+stall is a separation the right congruence misses and only a *left* context
+recovers, and prefix-independence neutralizes the left context in the *linear*
+shape (Proposition 4.6), so one expects permanent stalls to be prefix-dependent
+— and at this shape every one is. We stop short of reading this as a necessity,
+and deliberately: the *ω-power* shape carries a genuine left context even for a
+prefix-independent language — a left factor inside a loop is a rotation, not a
+deletable prefix (§2.2), which is exactly why `EvenBlocks`, prefix-independent,
+still needs the rotation the sweep supplies. So the intuition "no left context
+needed ⇒ no permanent stall" does not close, and whether a prefix-independent
+language can stall *permanently* remains open — the census refutes it only at
+the smallest shape. ⟨TBD-M4: the same cross-tabulation at deeper census shapes,
+to promote the regularity toward a theorem or refute it.⟩
 
 ### 6.4 The FDFA baseline (Q3)
 

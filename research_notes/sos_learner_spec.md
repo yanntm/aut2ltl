@@ -58,6 +58,20 @@ forbids) with the LTL-definability read-off as the sole capability
 differentiator. Open toward M4 close: census-wide ROLL medians and the
 full-census N-spread for E1's scatter.
 
+**Revision 2026-07-08d (E2 structural buckets; necessity downgraded).** The E2
+renderer now cross-tabulates the 44 permanent census languages by
+prefix-independence and acceptance type (`census_e2_exhibits`,
+`prefix_independence_check`): all 44 prefix-dependent, all Büchi. This closes
+the §6.3 frequency-table TBD as **census data**. One theory correction: the
+report framed permanence as *implying* prefix-dependence ("the language must be
+prefix-dependent"); that necessity is **not** established — a left factor inside
+an ω-power loop is a rotation, not a deletable prefix (paper §2.2), so
+prefix-independence does not remove all left contexts, and the natural proof
+does not close. The paper carries it as a regularity + intuition, open. Next E2
+ask (M4.b tail): the same cross-tabulation at deeper census shapes, to promote
+the regularity toward a theorem or refute it with one prefix-independent
+permanent stall.
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
