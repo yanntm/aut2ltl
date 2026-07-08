@@ -82,6 +82,13 @@ redundancy of an exhaustive sweep — is `research_notes/genaut_corpus.md`.
 
     python3 genaut/gen/flatten.py --canon    # also (re)build corpus/flat_canon/
 
+`flat_study.py` renders the language-level benchmark study
+(`corpus/flat_canon/STUDY.md`): headline census, composition, and per-origin-shape
+states / algebra size — the language view, complementary to `SHAPES.md`'s
+presentation funnel (which shape-reading consumers still use).
+
+    python3 genaut/flat_study.py             # -> corpus/flat_canon/STUDY.md
+
 ## The slot model (the tgba tier)
 
 State `q0` is always initial. For every ordered pair `(src, dst)` and every
