@@ -37,8 +37,8 @@ certificate's two-shape scan is forced by the languages themselves.
 
 ## 1. Introduction
 
-The classical chain `LTL = FO[<] = star-free = aperiodic` [Kam68, Tho79,
-Per84, DG08] makes LTL-definability of an ω-regular language `L` a property
+The classical chain `LTL = FO[<] = star-free = aperiodic` [Kam68, Sch65,
+Tho79, Per84, DG08] makes LTL-definability of an ω-regular language `L` a property
 of one canonical object: the syntactic ω-semigroup `S(L)`, aperiodic exactly
 when `L` is LTL. For four decades the chain was a classification without a
 workflow — the object was never built. It now is [SωS26], and is even
@@ -157,7 +157,7 @@ Boolean connectives, with the usual derived operators `F φ = ⊤ U φ`,
 `G φ = ¬F¬φ`, and weak until `φ W ψ = (φ U ψ) ∨ G φ`; formulas are
 future-only, evaluated on ω-words, and `⟦φ⟧ ⊆ Σ^ω` is the language of
 `φ`. `GF`/`FG` name the recurrence and persistence shapes. LTLf is the
-same syntax on finite words ⟨TBD: cite De Giacomo–Vardi⟩. On the algebra
+same syntax on finite words [DV13]. On the algebra
 side [PP04]: an element `e` is *idempotent* if `e·e = e`; every element
 `d` of a finite semigroup has a unique idempotent among its powers,
 written `d^π`; a *linked pair* is `(s, e)` with `s·e = s` and `e`
@@ -190,19 +190,18 @@ iff their invariants are byte-equal [SωS26, Thm 5.1].
   propositions last.
 - *the ladder position* — safety / co-safety / obligation / recurrence /
   persistence / reactivity [MP92] as closure conditions on `P`
-  [SωS26, §7.1].
+  [SωS26, §7.1]; deciding a language's level is classical [Lan69].
 - *residual count* — one residual ⟺ prefix-independent ⟺ the linear half
   is blind [SωS26, Prop 4.6].
 - *absorbing classes* — two-sided zeros; runs that reach them have committed.
 - *until-rank* — the minimal until-nesting depth, computable from the
   syntactic semigroup: level `k` of the until hierarchy is characterized
   by a `k`-fold semidirect power of the level-1 variety
-  (Thérien–Wilke's effective characterization, surveyed in [Wil99,
-  Thm 8]); a lower bound on the depth of any defining formula. ⟨TBD:
-  freeze the exact semigroup condition from the source paper (library
-  request: Thérien–Wilke, FOCS'96) — and note the characterization is
-  stated on finite words; the ω-word transfer is this paper's own
-  obligation.⟩
+  (Thérien–Wilke's effective characterization [TW96], surveyed in
+  [Wil99, Thm 8]); a lower bound on the depth of any defining formula.
+  ⟨TBD: freeze the exact semigroup condition from [TW96] — and note the
+  characterization is stated on finite words; the ω-word transfer is
+  this paper's own obligation.⟩
 - *complementation* — `P ↦ P^c` for free; extraction may choose the cheaper
   of `L`, `L̄` and negate.
 
@@ -1262,9 +1261,8 @@ formula with the semantics: `α ⊨ ⟨ψ; a; φ⟩` iff for some position `i`,
 the finite prefix `α_0⋯α_{i−1}` satisfies `ψ` (as a finite word),
 `α_i = a`, and the suffix `α_{≥i+1}` satisfies `φ`. Such a formula is
 computable from `ψ` by the standard strong-next compilation of LTLf
-into LTL ⟨TBD: cite the De Giacomo–Vardi / weak-next lineage, shared
-with §6.4's step 2⟩; everything below uses only the displayed
-semantics.
+into LTL over infinite words [DV13] (the same wrapper as §6.4's
+step 2); everything below uses only the displayed semantics.
 
 **Proposition 5.14 (the scoped fallback).** Let `R` be a layer, `r`
 its entry class. (i) Each `L_{r→c}` is a finite-word language over
@@ -1882,8 +1880,7 @@ continuation's pair is `([u]·s', e')` — so `Pre` is recognized by the
 finite part of the algebra, the finite-word extractor (step 5) applies to
 it, and the wrapper is the standard strong/weak insertion of a finite-word
 formula into LTL over ω-words ("some prefix satisfies `φ_{Pre}`": strong
-next in positive positions, weak under negation ⟨TBD: cite the LTLf/RV
-lineage, De Giacomo–Vardi and the weak-next tradition⟩ — §5.4's insertion
+next in positive positions, weak under negation [DV13] — §5.4's insertion
 operator is the same wrapper). Safety is the dual through
 `P ↦ P^c`; obligation, Boolean combinations of the two.
 
@@ -1958,9 +1955,9 @@ The census maps the strata empirically (§9): at 1 AP / ≤ 2 states the
 residual row is unwitnessed, and width 2 covers both (A) and (B)
 everywhere the tests decide; the smallest specimen of each lower row is
 an open hunt. ⟨TBD: align the strata with the known sub-LTL
-hierarchies — definite / locally testable / TL[F] of Cohen–Perrin–Pin /
-until hierarchy [Wil99, PW13] — so each row is a known variety with our
-operational reading.⟩
+hierarchies — definite [PRS63] / locally testable [BS73] / TL[F] of
+Cohen–Perrin–Pin [CPP93] / until hierarchy [TW96, Wil99, PW13] — so
+each row is a known variety with our operational reading.⟩
 
 The inner frontier is also the size story of §7 made structural: flat cost
 concentrates exactly in the residual stratum, and the strata above it are
@@ -2058,8 +2055,8 @@ less blindly. Wilke's and Diekert–Kufleitner's fragment characterizations
 [Wil99, DK09] decide *membership* of sub-LTL fragments on the algebra; we
 use them as extraction strata and depth certificates rather than as
 verdicts. Preugschat–Wilke [PW13] decide the simple fragments via
-Carton–Michel automata — the nearest decision-side relative of our frozen-
-layer templates.
+Carton–Michel automata [CM03] — the nearest decision-side relative of our
+frozen-layer templates.
 
 **Cascades.** Krohn–Rhodes for aperiodic monoids = wreath products of
 resets; Maler's work on cascaded decomposition translates automaton
@@ -2070,15 +2067,14 @@ transcription emits vs. what a KR cascade of Cay(L) would; the claim that
 R-depth ≤ cascade height obtainable blindly.⟩
 
 **Local languages and definiteness.** The anchoring ladder relaxes local /
-k-definite / k-testable recognizability modulo stuttering
-(Chomsky–Schützenberger locals; Perles–Rabin–Shamir definiteness;
-Brzozowski–Simon local testability — cites pending the biblio sweep); the
+k-definite / k-testable recognizability modulo stuttering (local
+languages [CS63]; definiteness [PRS63]; local testability [BS73]); the
 algebraic counterparts (varieties `D`, `LI`, locally testable) are
 classical, and our per-layer equations are their localizations to
 R-classes. The "modulo stuttering" throughout is a per-layer, per-class
-relaxation — not the global stutter-invariance of LTL−X (Peled–Wilke,
-cite pending), though the kinship deserves a remark. ⟨TBD: nail the
-exact variety statements.⟩
+relaxation — not the global stutter-invariance of LTL−X [PW97], though
+the kinship deserves a remark. ⟨TBD: nail the exact variety
+statements.⟩
 
 **Companions.** This paper is the third member of a family in which the
 same two-shape structure was constructed [SωS26] and learned [SωSL26]: the
@@ -2123,14 +2119,29 @@ algebra now says exactly when, and exactly why.
 
 - **[Arn85]** A. Arnold. *A syntactic congruence for rational ω-languages.*
   TCS 39 (1985) 333–335.
+- **[BS73]** J. A. Brzozowski, I. Simon. *Characterizations of locally
+  testable events.* Discrete Mathematics 4(3) (1973) 243–271.
+- **[CM03]** O. Carton, M. Michel. *Unambiguous Büchi automata.* TCS 297
+  (2003) 37–81.
+- **[CPP93]** J. Cohen, D. Perrin, J.-É. Pin. *On the expressive power of
+  temporal logic.* JCSS 46(3) (1993) 271–294.
+- **[CS63]** N. Chomsky, M. P. Schützenberger. *The algebraic theory of
+  context-free languages.* In *Computer Programming and Formal Systems*,
+  North-Holland, 1963.
 - **[DG08]** V. Diekert, P. Gastin. *First-order definable languages.* In
-  *Logic and Automata*, 2008.
+  J. Flum, E. Grädel, T. Wilke (eds.), *Logic and Automata: History and
+  Perspectives*, Texts in Logic and Games 2, Amsterdam University Press,
+  2008, 261–306.
 - **[DK09]** V. Diekert, M. Kufleitner. *Fragments of first-order logic
   over infinite words.* STACS 2009.
+- **[DV13]** G. De Giacomo, M. Y. Vardi. *Linear temporal logic and linear
+  dynamic logic on finite traces.* IJCAI 2013, 854–860.
 - **[Kam68]** H. Kamp. *Tense Logic and the Theory of Linear Order.* PhD
   thesis, UCLA, 1968.
 - **[KR65]** K. Krohn, J. Rhodes. *Algebraic theory of machines I.* Trans.
   AMS 116 (1965).
+- **[Lan69]** L. H. Landweber. *Decision problems for ω-automata.*
+  Mathematical Systems Theory 3(4) (1969) 376–384.
 - **[Mal10]** O. Maler. *On the Krohn–Rhodes cascaded decomposition
   theorem.* In *Time for Verification* (Pnueli memorial), LNCS 6200, 2010.
 - **[MP71]** R. McNaughton, S. Papert. *Counter-Free Automata.* MIT
@@ -2141,9 +2152,16 @@ algebra now says exactly when, and exactly why.
   MFCS 1984.
 - **[PP04]** D. Perrin, J.-É. Pin. *Infinite Words: Automata, Semigroups,
   Logic and Games.* Elsevier, 2004.
+- **[PRS63]** M. Perles, M. O. Rabin, E. Shamir. *The theory of definite
+  automata.* IEEE Trans. Electronic Computers EC-12 (1963) 233–243.
 - **[PW13]** S. Preugschat, T. Wilke. *Effective characterizations of
   simple fragments of temporal logic using Carton–Michel automata.* LMCS
   9(2:08), 2013.
+- **[PW97]** D. Peled, T. Wilke. *Stutter-invariant temporal properties
+  are expressible without the next-time operator.* IPL 63(5) (1997)
+  243–246.
+- **[Sch65]** M. P. Schützenberger. *On finite monoids having only trivial
+  subgroups.* Information and Control 8(2) (1965) 190–194.
 - **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing the
   syntactic ω-semigroup from a deterministic Emerson–Lei automaton.*
   Working draft, 2026.
@@ -2153,8 +2171,12 @@ algebra now says exactly when, and exactly why.
   the census companion.⟩ Working draft, 2026.
 - **[Tho79]** W. Thomas. *Star-free regular sets of ω-sequences.*
   Information and Control 42 (1979).
+- **[TW96]** D. Thérien, T. Wilke. *Temporal logic and semidirect
+  products: an effective characterization of the until hierarchy.*
+  FOCS 1996, 256–263.
 - **[Wil99]** T. Wilke. *Classifying discrete temporal properties.* STACS
   1999.
-- ⟨TBD: Cohen–Perrin–Pin (TL[F]); Brzozowski–Simon (locally testable);
-  Perles–Rabin–Shamir (definite); De Giacomo–Vardi (LTLf template);
-  Peled–Wilke (stutter-invariance); Landweber; Schützenberger.⟩
+- ⟨TBD, sources to fetch: Beauquier–Pin / Wilke (locally
+  (threshold-)testable ω-varieties, for the (B)-stratum alignment);
+  Thérien–Weiss (the FO[+1] separator in §6.1); Kufleitner et al.
+  (finite-word local-divisor proofs, §10).⟩
