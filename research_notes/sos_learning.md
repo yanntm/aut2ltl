@@ -43,7 +43,7 @@ counterexample — output-polynomial in the canonical target. The established FD
 approach learns one of three competing canonical families of DFAs — none of them
 the language's own algebra, all of them acceptors, answering no definability
 question by themselves; this learner converges to the one object such questions
-are read from — and two learned invariants are compared by byte-equality, where
+are read from — and two learned invariants are compared by byte-equality, whereas
 acceptors need a product construction. On a census of 541 ω-regular languages the learner reconstructs
 every canonical invariant byte-for-byte; at the smallest non-LTL shape the
 saturation sweep is load-bearing on an exhaustively enumerated family of 44,
@@ -373,10 +373,9 @@ membership is one deterministic run, and an equivalence query is decided
 with the transformation closure of the hypothesis — each loop word acts on the
 hypothesis's classes as a function, so one representative lasso per
 (configuration, loop-action) cell fixes both verdicts, and the shortlex-least
-disagreeing cell is the counterexample. (In production the teacher ascends to
-this exact product through cheaper passes — a representative audit, then
-bounded enumeration; §6.1 records which rung certifies a run, and what backs
-them all.) Our teacher returns
+disagreeing cell is the counterexample. (The experiments ascend to this exact
+product through cheaper passes — a representative audit, then bounded
+enumeration; §6.1 records which rung certifies each run.) Our teacher returns
 *minimal* counterexamples (shortest stem, then shortest loop, then shortlex),
 which makes runs deterministic and the worked examples reproducible; §6 measures
 what non-minimal policies cost. Nothing in the learner's correctness depends on
@@ -609,6 +608,15 @@ one per equivalence query, at a cost of `O(log(|w| + |𝒞_T|·|z|))` membership
 queries: the normalized lengths are `n ≤ |w| + 2|𝒞_T|·|z|` and
 `m ≤ 2|𝒞_T|·|z|`, since the stabilization power satisfies `k ≤ 2|𝒞_T|`.
 
+*Proof.* A flip exists: the concatenated chain runs from the teacher's bit on
+the counterexample to the (wrong) prediction, so its endpoints differ, and
+the junction bit `γ_n = δ_0` decides which half flips. The flip splits a
+class by Lemma 4.1 resp. 4.2: the frontier word `u` differs from the row `v`
+on the minted column, so `u` leaves `v`'s class when the table refills. The
+cost: the two chains total `n + m` positions with the stated bounds, and one
+junction query plus a binary search over a bit sequence with differing
+endpoints finds an adjacent flip in the stated logarithm. ∎
+
 *Example (two counterexamples, one wrong name, two shapes).* The two running
 specimens' first equivalence queries return different lassos — `Even`'s
 teacher hands back `(ε, aa!a)`, `EvenBlocks`'s the shortlex-earlier
@@ -690,8 +698,8 @@ if two rows with `u ≉_L v` are merged, and no harvested column happens to carr
 the separating prefix `x`, nothing observable ever goes wrong: every prediction
 is computed from literal prefixes, every lasso verdict can be correct, the
 equivalence oracle assents — and the learner stops with a table **coarser than
-the syntactic congruence**. The fixpoint object is then a right-congruence-
-flavored acceptor: an FDFA in algebraic clothing. This is the obstruction of
+the syntactic congruence**. The fixpoint object is then a
+right-congruence-flavored acceptor: an FDFA in algebraic clothing. This is the obstruction of
 [AF21] reborn one level up — the table's *columns* are two-sided, but its *error
 signal* is not — and it is, we believe, the true reason no observation-table
 route to the syntactic algebra existed: the missing ingredient is not a cleverer
@@ -714,15 +722,23 @@ or exact; the fixpoint is strictly coarser than `S(L)₊¹` — four classes
 against five: the two accepting idempotents `[!a]` and `[aa]`,
 right-indistinguishable but separated by the left context `x = a`, stay merged
 inside `C₁` — and the export is broken as an algebra: its multiplication table
-is not associative, and its membership read-off rejects `a^ω`.
+is not associative, and its membership read-off is not even
+presentation-invariant — it accepts `a^ω` written as the lasso `(ε, a)` and
+rejects the same ω-word written `(a, a)`.
 
 *Proof.* Membership of an ω-word depends only on its first two letters, so on
 lassos it is a function of the *commitment* of the literal prefix: every word
 of `C₁` begins a member, every word of `C₀` begins a non-member, and the only
 uncommitted non-empty word is the single letter `a` — the class `[a]` is a
 singleton. The four-class partition is closed and consistent (`C₁` and `C₀`
-absorb both letters; `a` steps into one or the other), so the learner reaches
-it and stays. Now take any lasso `w·z^ω` with predicting pair
+absorb both letters; `a` steps into one or the other), and the learner
+provably lands on it: every pre-equivalence column has prefix `x = ε` — the
+initial column does, and consistency mints preserve the prefix
+(Definition 3.2) — and an `x = ε` context evaluates any word of length ≥ 2 by
+its commitment alone, so no such column can split `C₁` or `C₀`; conversely
+the inconsistency of `a` against `!a` at `(ε, ε)` (their `!a`-successors'
+bits differ) forces the mint `(ε, !a)` that isolates `[a]`. Now take any
+lasso `w·z^ω` with predicting pair
 `s = ψ(w·z^k)`, `e = ψ(z^k)`. The stem `w·z^k` can never be the word `a`:
 either it is longer than one letter, or `w = ε` and `z = a` — and there
 `k = 1` fails the stabilization test (`ψ(a) = [a]` but `ψ(aa) = C₁`), so
@@ -732,23 +748,25 @@ always, and the prediction — the teacher's bit on `w_s·(w_e)^ω`, with
 the truth of the queried lasso. No counterexample exists. ∎
 
 The census's second specimen, `a ∧ XG¬a` — the language of the single ω-word
-`a·(!a)^ω` — stalls the same way one step deeper: the canonical `[!a·a]` stays
+`a·(!a)^ω` — stalls the same way one step deeper, and the same argument
+proves it permanent: the canonical `[!a·a]` stays
 merged into `[!a]`, again separated only by `x = a`. There the alive class
 `{a·!a^m}` squares to the dead class, so the loop idempotent `e` is always
 dead, and the stem class `s` stays alive only when the literal `w·z^k` is of
 the form `a·!a^m` — which forces a pure-`!a` loop, on which the representative
 lasso `a·(!a)^ω` answers correctly; any stray `a` in the loop drags `s` to
-dead through the literal fold before the faulty merge can matter. Two
-exhibits, one mechanism, and both minimal:
+dead through the literal fold before the faulty merge can matter — every
+predicting pair again answers with the truth, and no counterexample exists.
+Two exhibits, one mechanism, and both minimal:
 
-| specimen | `\|S(L)₊¹\|` | stalled fixpoint | merged pair | separated by | export error |
+| specimen | `\|S(L)₊¹\|` | stalled fixpoint | merged pair | separated by | export error (read as `(a, a)`) |
 |---|:--:|---|---|:--:|---|
 | `a → Xa` | 5 | **4 — zero counterexamples** | `[!a] = [aa]`, both accepting idempotents | `x = a` only | rejects `a^ω` |
 | `a ∧ XG¬a` | 4 | 3 — one counterexample | `[!a] = [!a·a]` | `x = a` only | accepts `a^ω` |
 
-The export defect deserves display, because "one class short" undersells it.
-Export the stalled fixpoint of `a → Xa` by §5's recipe,
-`M(c, c') := fold(c, rep(c'))`, next to the canonical algebra of the language:
+"One class short" undersells the defect. Export the stalled fixpoint of
+`a → Xa` by §5's recipe, `M(c, c') := fold(c, rep(c'))`, next to the
+canonical algebra of the language:
 
 ```
     canonical S(L)₊¹  (5 classes)          stalled export  (4 classes)
@@ -769,21 +787,26 @@ of the product — and substituting a representative mid-product is exactly what
 a merely-right congruence does not license. The hypothesis is immune, because
 it folds the literal letters of the queried lasso and never substitutes — that
 is how one partition carries a correct acceptor and a broken algebra at once.
-Broken means broken downstream: on the non-associative table the linked-pair
-reduction of `a^ω` is bracketing-dependent, and the exported invariant's
-read-off rejects it — `a^ω` is the shortlex-least word on which export and
-teacher diverge. On the second specimen the same defect points the other way.
-The canonical algebra of `a ∧ XG¬a` keeps `[a]·[a] = [!a·a]` as its own
-non-accepting idempotent; the stalled export merges it into `[!a]`, so the
-reduction of `a^ω` runs `e = [a]·[a] = [!a]`, `s = [a]·e = [a]`, and lands on
-the accepting pair `([a], [!a])` — the bit of `a·(!a)^ω`, the one word the
-language contains: the export *accepts* `a^ω`.
+Broken means broken downstream: on a non-associative table the linked-pair
+reduction is bracketing-dependent, so the export does not even define a
+*language* — its verdict depends on how the lasso is written. Read `a^ω` as
+the lasso `(ε, a)`: `e = [a]² = [!a]`, `s = [ε]·e = [!a]`, the pair
+`([!a],[!a])` — accept, agreeing with the teacher. Read the same ω-word as
+`(a, a)`: the stem class now multiplies the merged idempotent,
+`s = [a]·[!a] = [a!a]`, pair `([a!a],[!a])` — reject. The exhibit table
+reports this second reading, the shortlex-least divergence from the teacher.
+On the second specimen the same defect points the other way: the canonical
+algebra of `a ∧ XG¬a` keeps `[a]·[a] = [!a·a]` as its own non-accepting
+idempotent, the stalled export merges it into `[!a]`, and the `(a, a)`
+reading of `a^ω` lands on the accepting pair `([a], [!a])` — the bit of
+`a·(!a)^ω`, the one word the language contains — while its `(ε, a)` reading
+agrees with the teacher: one ω-word, two verdicts, no language.
 
 Both languages are LTL-definable and utterly plain: the flagship stall is a
 two-letter implication, on which the saturation-free learner converges and is
 certified by a *complete* equivalence oracle. (Mechanically confirmed: the exact oracle of §2.3
-certifies both stalled fixpoints — the proposition turns those two runs into
-fixtures for the oracle itself, a counterexample there being an oracle bug —
+certifies both stalled fixpoints — these permanence proofs turn those two runs
+into fixtures for the oracle itself, a counterexample there being an oracle bug —
 and with saturation on, both reach their canonical algebras, byte-equal to
 the reference.) Canonicity is therefore beyond counterexample-guided
 refinement: the CEGAR loop that carries L\* — and every ω-learner since — has
@@ -821,9 +844,9 @@ context: `A = [x°·r·u·y°·t°^ω]`, `B = [x°·r·v·y°·t°^ω]` (ω-sort
   peeling one `r` off the repeating block gives
   `x°·(r·w·y°)^ω = x°·r·(w·y°·r)^ω`: `r` must seed *both* the prefix and the
   period's tail — `(x°·r, y°·r)`. (The bare-prefix form `(x°·r, y°)` keeps
-  the period `w·y°` and need not separate at all: a prefix-independent
-  language swallows the prefix — on `GF(aa)` it maps both `a` and `aa` to
-  accepting, and the sweep never converges.) Either way the minted column
+  the period `w·y°` unchanged and need not separate at all: for a
+  prefix-independent `L` its added prefix is vacuous outright,
+  Proposition 4.6.) Either way the minted column
   separates `u` from `v` directly — a genuine Arnold context — splitting
   their shared class.
 - If `A = B`: the bits `A, B` cannot both agree with the two differing
@@ -839,6 +862,11 @@ context: `A = [x°·r·u·y°·t°^ω]`, `B = [x°·r·v·y°·t°^ω]` (ω-sort
   `rep(ψ((r·u)[1..j]))·(r·u)[j+1]` from the row `rep(ψ((r·u)[1..j+1]))` by the
   column `(x°, (r·u)[j+2..]·y°, t°)` — the prefix is `x°` alone, the unconsumed
   segment migrating into the middle component. Either way one class splits. ∎
+
+*Remark (the ω-mint's shape matters).* Implemented with the bare-prefix form
+`(x°·r, y°)`, the sweep on `GF(aa)` — prefix-independent, so the added prefix
+is swallowed — separates nothing and never converges; only the reseeded
+period of `(x°·r, y°·r)` carries `r`'s left action into the loop.
 
 *Example (a saturation sweep on `Even`, in full).* Resume `Even` after §4.1's
 split: four classes `[ε], [a], [!a], [aa]`, with `a·!a` still merged into
@@ -901,7 +929,7 @@ leaves `[a]`.
 Two membership bits and a two-probe chain did the work of an equivalence
 round: this merge was transient (the very next equivalence query would have
 returned `(ε, a!a)`), but the sweep neither knew nor needed to know that —
-and §4.2's permanent stall, should it exist, is caught by nothing else. One
+and §4.2's permanent stall is caught by nothing else. One
 remark completes the picture: the *other* hit, `(a·!a, [a])`, escalates
 through the **first** branch — there `c_a = [!a]`, `c_b = [aa]`, the
 separating column is the original ω-column `κ = (ε, ε)`, and the probes
@@ -931,8 +959,8 @@ splits. The sweep runs after closedness and consistency, before each equivalence
 query; a clean sweep certifies that `ψ`'s kernel is a **left** congruence on
 table words — and it was a right congruence by Lemma 3.3.
 
-One structural fact about *which* languages can need the sweep is worth
-recording here, since the evaluation (§6.3) leans on it.
+The left contexts the sweep enforces come in Arnold's two shapes, and
+prefix-independence silences exactly one of them:
 
 **Proposition 4.6 (prefix-independence and the two shapes).** Let `L` be
 prefix-independent (`w ∈ L ⟺ σ·w ∈ L` for every finite `σ`). Then the prefix
@@ -1033,7 +1061,7 @@ class `c` under BFS is the shortlex-least word of its `≈_L`-class. ∎
 The theorem earns the paper's title: nothing about the *language* forced the
 fixpoint to be canonical — §4.2 exhibits the non-canonical stall — it is the
 saturation rule, i.e. the rotation lemma's slot collapse, that pins the fixpoint
-to the syntactic object. One dependence is worth making explicit: the step
+to the syntactic object. The step
 *the kernel saturates `L`* consumes the equivalence oracle's exactness. Under
 a bounded oracle the fixpoint is still a two-sided congruence (the sweep, not
 the oracle, delivered left-invariance) and every split still witnesses a
@@ -1089,8 +1117,8 @@ happened, every loop accepts; this is `P`. (b) Power iteration of every
 class: a single orbit of period two, `[a] → [aa] → [a]` — the genuine `Z₂` —
 so `Even` is **not** LTL-definable, read off the learned object in four
 lines (§2's aperiodicity read-off). Five classes is exactly `|S(Even)₊¹|`,
-and the `.sos` export is byte-equal to the construction from the
-automaton — the equivalence oracle's last check, passed by construction.
+and the exported invariant is byte-equal to the construction from the
+automaton — the harness's final check.
 
 `EvenBlocks` completes the same way, and entirely in the ω-sort: beyond the
 counterexample traced in §4.1, two saturation escalations carry the table
@@ -1115,8 +1143,8 @@ on Table 2's three-class table agrees, the computation Table 4 spells out
 for `Even` — so row 1, §4.1's split, is the run's first event; rows 2–3 are the sweep
 enforcing two-sidedness — no second counterexample is ever needed, and the
 run's second equivalence query certifies. Every one of the four columns is
-of the ω-sort: prefix-independence in action (`~lin` is blind, so every
-separation lives in the loop). The final sweep mints `(ε, !a)` — the very
+of the ω-sort: prefix-independence in action (the linear shape is blind —
+Proposition 4.6 — so every separation lives in the loop). The final sweep mints `(ε, !a)` — the very
 column §3 exhibited by inspection. The resulting bit-signatures are the
 fixpoint (the Table 6 analogue), pairwise distinct — with `[ε]`, the eight
 classes of `S(EvenBlocks)₊¹`:
@@ -1172,7 +1200,7 @@ target `N` is the honest yardstick — `N` can be exponentially larger than a
 smallest acceptor (Proposition 5.3 makes both directions of the size
 comparison exact), and §6 measures exactly that.
 
-The converse of the yardstick is the sale: on languages with trivial or
+The converse of the yardstick is the selling point: on languages with trivial or
 near-trivial right congruence — `EvenBlocks`, `FG(a ∨ Xa)` [AF21], and
 generically tail properties — the right-congruence-seeded part of any FDFA
 degenerates while nothing here does, because nothing here is seeded by the right
@@ -1203,9 +1231,11 @@ the syntactic and recurrent congruences add only clauses of the forms
 each progress automaton has at most `N` states, and there is one per leading
 state. (b) Take four letters acting on `{1, …, n}` and generating the monoid
 `PT_n` of all partial transformations (two generate the permutations, one
-lowers rank, one restricts the domain; undefined images go to a rejecting
-sink `⊥`), plus a letter `c` sending state `1` to an accepting sink `⊤` and
-every other state to `⊥`; let `L_n` be "the run reaches `⊤`". Distinct
+lowers rank, one restricts the domain — a standard generating set; undefined
+images go to a rejecting sink `⊥`), plus a letter `c` sending state `1` to an
+accepting sink `⊤` and every other state to `⊥`; let `L_n` be "the run
+reaches `⊤`" — a run *commits* when it does, is *doomed* at `⊥`, and is
+*uncommitted* otherwise. Distinct
 partial maps `f ≠ g` are `≈_{L_n}`-inequivalent: pick `q` with
 `f(q) ≠ g(q)`, reach `q` from `1` by a permutation word `x` (action letters
 never touch `⊤`, so nothing commits en route), and append a permutation `π`
@@ -1229,19 +1259,17 @@ the price of the deliverable. The algebra `L_n` owns *is* that large, every
 definability read-off consumes it, and any route to it — learned here,
 constructed in [SωS26] — pays `N`. Output-polynomial in `N`
 (Proposition 5.2) is the strongest guarantee compatible with delivering the
-object. The unsaturated stall of §4.2, for its part, is no longer a
-conjecture: Proposition 4.4's `a → Xa` is the smallest exhibit an exhaustive
-census of one-atom automata can produce — found exactly as §6's protocol
-prescribes, by running the ablated learner over the census and treating its
-surviving stalls as first-class output.
+object. The unsaturated stall of §4.2, for its part, is not an isolated
+artifact: Proposition 4.4's `a → Xa` is the smallest exhibit an exhaustive
+census of one-atom automata can produce (§6.3).
 
 ## 6. Evaluation
 
 *⟨Four bookkeeping values remain open, marked ⟨TBD-M4⟩ below: the shape
-manifest (§6.1), a wall-time note (§6.2), the LTL-agreement count (§6.4), and
-the deeper-shape cross-tabulation (§6.3). Everything else is measured, not
-predicted — the spec's M4.e lists the closers, including one audit (the
-census `N`-semantics at `N = 2`) that gates §6.2's per-`N` table.⟩*
+manifest (§6.1), a wall-time note (§6.2), the deeper-shape cross-tabulation
+(§6.3), and the LTL-agreement count (§6.4). Everything else is measured, not
+predicted; one audit of the census `N` convention at the low end is pending
+and gates §6.2's per-`N` table.⟩*
 
 The algorithm of §3–5 is implemented as a pure query learner: its only source
 of truth is the teacher interface, and no automaton is ever visible to it. The
@@ -1282,8 +1310,8 @@ residuals `L`, `a·Σ^ω`, `Σ^ω`, `∅` force them), has a two-state
 nondeterministic presentation and so belongs to the two-state census. Every
 input is determinized on import; ground truth is computed by the construction
 of [SωS26]: the reference `𝓘(L)`, its class count `N`, its LTL verdict. The
-triptych is mandatory in every experiment, as are the two permanent-stall
-specimens of §4.2. After deduplication by language the tractable census is
+three running examples are mandatory in every experiment, as are the two
+permanent-stall specimens of §4.2. After deduplication by language the tractable census is
 **541 languages** with `N` ranging from 2 to 21; the smallest shape at which
 non-LTL languages appear, `2state1ap1acc` (129 languages; its parity twin
 re-presents the same languages), is enumerated exhaustively and carries the
@@ -1318,7 +1346,11 @@ splits, and columns by sort, against `N`. The named cases in full, the two
 | `EvenBlocks` | 8 | 3 | 5 | 99 (67/4/14/14) | 2 | 1 |
 
 (*initial* = classes of the first stabilized table; on every row the split
-count is exactly `N −` initial.) The designed bounds hold on every case:
+count is exactly `N −` initial.) The `GF(aa)` row also pays off §2.3's
+promise: the learned algebra's power orbits all have period one — aperiodic,
+the presentation's `Z₂` destroyed — so its LTL verdict is read off the
+learned object, as `Even`'s non-LTL verdict was in Table 7(b). The designed
+bounds hold on every case:
 `splits ≤ N`, the fill term inside `N²·|Σ|` (at `N = 8`, 67 against 128),
 harvest and saturation adding the counterexample-analysis term. Over the
 whole census — 541 languages, `N ∈ [2, 21]` — `splits ≤ N` holds on every one
@@ -1418,9 +1450,10 @@ acceptor, from which it is not.
 ### 6.5 Counterexample sensitivity
 
 Proposition 5.2 depends on the teacher only through the `log(N·ℓ)` harvest
-term. The corpus is re-run under counterexample policies — minimal
-(the default) and adversarially padded, stem and loop pumped by factors 2 to
-32 — comparing total and harvest-only membership queries. As the loop is pumped
+term. The counterexample-bearing named cases are re-run under counterexample
+policies — minimal (the default) and adversarially padded, stem and loop
+pumped by factors 2 to 32 — comparing total and harvest-only membership
+queries. As the loop is pumped
 from length 3 to 96 the harvest term grows from 4 to 9 queries: one query per
 doubling, `harvest ≈ log₂ ℓ`, the binary search over the stem/loop chain, the
 learned invariant unchanged. Padding costs queries, not correctness. (A
