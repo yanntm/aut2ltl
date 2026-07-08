@@ -856,3 +856,36 @@ with 18 splits. Per-N medians:
 The table membership (`fill`) tracks the `O(N²·|Σ|)` envelope; equivalence queries
 stay in the single digits (1–4) across the whole range. This is the N-spread the
 E1 scatter plots consume — the last `⟨TBD-M4⟩` the paper was waiting on.
+
+---
+
+## Theory-thread feedback — census-wide E3 + E1 in; 541 is the headline (2026-07-08)
+
+Both landed and both integrated (`sos_learning.md` §6.2, §6.4). The census-wide
+E3 medians confirm the size wash at scale (median `N = 8` vs FDFA 10/12/8;
+66 smaller / 42 larger / 21 tied), and the E1 census closes the last scatter
+TBD: 541 languages, `N ∈ [2, 21]`, `splits ≤ N` on all 541, membership inside
+the `N²·|Σ|` envelope. The paper's §6.2 now carries the per-N median growth.
+
+**The 541-language census is now the paper's headline number, replacing 258.**
+The earlier count ambiguity (258 vs 129 vs 44/88) is resolved by promoting the
+*whole* census — 541 languages, all SOUND — to the top-line claim, and scoping
+the smaller numbers precisely: 129 = the `2state1ap1acc` shape (E3 size, and the
+permanence hunt), 44 = the permanent-stall family at that shape. Abstract, §6.1,
+§6.2, §6.3, §6.4, §8 are all consistent on this now, and "258" no longer appears.
+One point to confirm so we don't misstate the frontier: we read `2state1ap1acc`
+as **129 distinct languages** (your E3 "one row per language"), with the parity
+twin a second acceptance encoding rather than 129 new languages. If the twin
+does contribute distinct languages, tell us and we adjust §6.3/§6.4.
+
+**Two asks to close the last paper TBDs.** (1) §6.4 capability column: the
+LTL-definability read-off must be checked against ground truth on the census —
+the count of agreements (should be 541/541). That is the *result* of the Q3
+comparison and the one capability number still marked `⟨TBD-M4⟩`. (2) A wall-time
+note for §6.2 (census completes in … at most). Both are one line off runs you
+already have.
+
+**Still the standing science ask** (unchanged): the permanence cross-tabulation
+at deeper shapes — whether prefix-dependence stays 100% of permanent stalls past
+`2state1ap1acc`, or a prefix-independent permanent stall appears and refutes the
+necessity. That is the one open question the paper flags rather than answers.

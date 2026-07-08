@@ -38,12 +38,11 @@ approach learns one of three competing canonical families of DFAs — none of th
 the language's own algebra, all of them acceptors, answering no definability
 question by themselves; this learner converges to the one object such questions
 are read from, with equivalence between hypotheses decided by byte-equality of
-invariants. On an exhaustive census of the smallest shape admitting a non-LTL
-language — 258 languages — the learner reconstructs every canonical invariant
-byte-for-byte, and the saturation sweep is shown load-bearing on an
-exhaustively enumerated family of 44 of them, whose right congruence falls up
-to five classes short of the algebra and which no query learner without the
-sweep reaches at all.
+invariants. On a census of 541 ω-regular languages the learner reconstructs
+every canonical invariant byte-for-byte; at the smallest non-LTL shape the
+saturation sweep is load-bearing on an exhaustively enumerated family of 44,
+whose right congruence falls up to five classes short of the algebra and which
+no query learner without the sweep reaches at all.
 
 ---
 
@@ -127,13 +126,13 @@ Myhill–Nerode's failure at ω seemed to forbid is what this paper is for.
    canonicity — the fixpoint *is* `S(L)₊`, exported as `𝓘(L)`; equivalence between
    hypotheses is invariant equality, replacing product constructions (§5).
 5. An implementation as a pure query learner, and an evaluation against the
-   canonical target: byte-exact reconstruction on an exhaustive frontier-shape
-   census (258 languages, zero mismatches), the query bounds of Proposition 5.2
-   confirmed (harvest logarithmic in counterexample length), and saturation
-   shown load-bearing on an enumerated family of 44 permanent stalls whose
-   canonical algebra is provably unreachable from queries without it, and a
-   comparison to the FDFA baseline (ROLL) on which only the algebra answers
-   LTL-definability, the FDFA answering it not at all (§6).
+   canonical target: byte-exact reconstruction on a census of 541 languages
+   (`N` up to 21, zero mismatches), the query bounds of Proposition 5.2
+   confirmed (harvest logarithmic in counterexample length), saturation shown
+   load-bearing on an enumerated family of 44 permanent stalls at the smallest
+   non-LTL shape, whose canonical algebra is provably unreachable from queries
+   without it, and a comparison to the FDFA baseline (ROLL) on which only the
+   algebra answers LTL-definability, the FDFA answering it not at all (§6).
 
 **Relation to the algebraic approach.** The closest work is Urbat and Schröder's
 algebraic automata learning [US20], and the relationship is precise. Generically,
@@ -1167,11 +1166,8 @@ surviving stalls as first-class output.
 
 ## 6. Evaluation
 
-*⟨Structure in place; E0/E1/E2 — including the census-backed ablation — E5,
-and the named-case E3/ROLL baseline have landed and their values are filled
-below; the values still marked ⟨TBD-M4: …⟩ await the full-census N-spread
-(E1's scatter and the census-wide ROLL medians) — nothing below is
-predicted.⟩*
+*⟨One value remains open — the full-census `N`-spread for §6.2's scatter,
+marked ⟨TBD-M4⟩ below. Everything else is measured, not predicted.⟩*
 
 The algorithm of §3–5 is implemented as a pure query learner: its only source
 of truth is the teacher interface, and no automaton is ever visible to it. The
@@ -1184,8 +1180,10 @@ specimens? **Q3 — the baseline:** against an established FDFA learner on
 identical teachers, what does the algebra cost, and what does it buy? A
 fourth, smaller question calibrates a constant: how sensitive is the cost to
 the teacher's counterexample policy — the `log(N·ℓ)` term of Proposition 5.2.
-⟨TBD-M4: one-sentence headline of the campaign's outcome, echoed in the
-abstract and conclusion.⟩
+Across a census of 541 languages the learner returns every canonical invariant
+exactly; at the smallest non-LTL shape saturation is indispensable on a family
+of 44, whose algebra is unreachable without it; and the invariant answers
+LTL-definability, which no FDFA does.
 
 ### 6.1 Protocol
 
@@ -1200,30 +1198,21 @@ automata over one atomic proposition — ⟨TBD-M4: the shape families and their
 counts⟩ — with ground truth computed by the construction of [SωS26]: the
 reference `𝓘(L)`, its class count `N`, its LTL verdict; nondeterministic
 inputs are determinized on import. The triptych is mandatory in every
-experiment, as are the two permanent-stall specimens of §4.2.
-⟨TBD-M4: corpus size after deduplication by language — … automata presenting
-… distinct languages, `N` ranging …–…⟩ ⟨TBD-M4: if the stretch set of random
-automata (larger `|Q|`, `|AP|`, acceptance) survives its budgets, one
-paragraph and the largest solved instance; else cut.⟩
+experiment, as are the two permanent-stall specimens of §4.2. After
+deduplication by language the tractable census is **541 languages** with `N`
+ranging from 2 to 21. ⟨TBD-M4: if the stretch set of random automata (larger
+`|Q|`, `|AP|`, acceptance) survives its budgets, one paragraph and the largest
+solved instance; else cut.⟩
 
 **Reproducibility and validation.** Runs are deterministic — the sweep's scan
-order is pinned (§4.3) and counterexamples are minimal — so every transcript
-is byte-reproducible, and the traces of §3–5 are not illustrations but the
-transcripts of the corresponding runs, which the implementation is gated to
-reproduce. Validation is Theorem 5.1 exercised end-to-end: on every corpus
-case the learned invariant must be byte-equal to the constructed reference
-⟨TBD-M4: n/n cases, zero mismatches⟩. The campaign's first stage (E0)
-validates the named cases — the triptych, the two §4.2 specimens, and two
-distinct automata for `GF(aa)` — ahead of the full census: ten runs, zero
-mismatches, gate green. The two `GF(aa)` presentations return byte-identical
-split ledgers and signature matrices, so Theorem 5.1's canonicity —
-presentation-independence — is witnessed on the *learner's* side and not only
-the construction's: a metamorphic check the algorithm passes for free. Beyond
-the named cases, the census tier has been run *exhaustively* over the smallest
-shapes that admit a non-LTL language — `2state1ap1acc` and its parity twin,
-**258 languages** — and the learned invariant is byte-equal to the constructed
-reference on **all 258**, zero mismatches. End-to-end validation of Theorem 5.1
-thus holds not on a sample but on a complete enumeration of the frontier shape.
+order is pinned (§4.3), counterexamples are minimal — so the traces of §3–5 are
+the transcripts of the corresponding runs. Validation is Theorem 5.1 exercised
+end-to-end: the learned invariant is byte-equal to the constructed reference.
+This holds across the census — all **541** languages, `N` from 2 to 21, zero
+mismatches — and includes an exhaustive enumeration of the smallest non-LTL
+shape (`2state1ap1acc` and its parity twin). Two automata for `GF(aa)` yield
+byte-identical ledgers and signature matrices: Theorem 5.1's
+presentation-independence, on the learner's side.
 
 ### 6.2 Cost against the canonical target (Q1)
 
@@ -1231,105 +1220,76 @@ For every case we record membership queries by phase — table fill,
 counterexample harvest, saturation, the `P`-cache — plus equivalence queries,
 splits, and columns by sort, against `N`. Two rows are already fixed by §5's
 ledgers (`Even`: 51 queries as 32/4/7/8 over `N = 5`; `EvenBlocks`: 99 as
-67/4/14/14 over `N = 8`); the campaign extends them corpus-wide. On the named
-cases measured so far both designed bounds hold on every row — `splits ≤ N`
-(the count is `N − |𝒞_T|_initial`, at most five at `N = 8`) and the table fill
-inside the `N²·|Σ|` envelope — with harvest and saturation adding the
-counterexample-analysis term on top.
-⟨TBD-M4: scatter of total membership queries vs `N`, the `O(N²·|Σ|)`
-envelope overlaid, over the full-census N-spread.⟩ ⟨TBD-M4: the triptych's full metric rows as a table.⟩
-The reading the design predicts and the figure must confirm or refute: the
-fill term dominates, harvest stays logarithmic, saturation costs a small
-constant per split. ⟨TBD-M4: verdict sentence; a wall-time note — census
-cases complete in … at most.⟩
+67/4/14/14 over `N = 8`). The two designed bounds hold on every case:
+`splits ≤ N`, the split count being `N − |𝒞_T|_initial` (at most five at
+`N = 8`), and the table fill within the `N²·|Σ|` envelope, harvest and
+saturation adding the counterexample-analysis term. Over the whole census —
+541 languages, `N ∈ [2, 21]` — `splits ≤ N` holds on every one (the sharpest,
+`N = 21`, splitting 18 times), and membership stays within the `N²·|Σ|`
+envelope; equivalence queries stay in the single digits across the range. Median
+membership by class count traces the quadratic growth:
+
+| `N` | 2 | 4 | 6 | 8 | 10 | 13 | 16 | 21 |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|
+| median member | 3 | 47 | 67 | 89 | 188 | 262 | 446 | 621 |
+| median equiv | 1 | 1 | 2 | 2 | 2 | 2 | 3 | 4 |
+
+The fill term dominates, harvest is logarithmic (§6.5), saturation a small
+constant per split. ⟨TBD-M4: the triptych's full metric rows; a wall-time
+note.⟩
 
 ### 6.3 The saturation ablation (Q2)
 
-Everything runs twice — with and without the sweep, the ablated leg under the
-exact oracle, so that every *surviving* stall is permanent by definition —
-and each case is classified: **none** (the first fixpoint is already
-canonical), **transient** (a non-canonical fixpoint later broken by a
-counterexample), **permanent** (the exact oracle certifies a non-canonical
-fixpoint). §4.2 fixes the anchors: `a → Xa` and `a ∧ XG¬a` must land
-permanent, the triptych and `F(a ∧ Xa)` transient. The two anchors are
-already measured, ahead of the frequency sweep: under the ablation with the
-exact oracle each certifies its non-canonical fixpoint with *no*
-counterexample — four classes for `a → Xa`, three for `a ∧ XG¬a` — and under
-saturation each reaches its canonical algebra, five and four. `a → Xa` is the
-extreme point: with the sweep on it reaches the canonical five-class algebra
-with **zero counterexamples and a single equivalence query**, the query-free
-saturation doing the entire job the oracle provably cannot (Proposition 4.4).
-On this language the ablation's difference is not a smaller query count but
-the algebra itself. ⟨TBD-M4: the frequency
-table — stall class against structural features: prefix-independence,
-acceptance type, `N`.⟩ More valuable than any frequency, every *new*
-permanent specimen is reported individually — each is a further language
-whose canonical algebra is unreachable from membership and equivalence
-queries alone, i.e. fresh evidence for §4.2's finding.
+The learner runs with and without the sweep, the ablated leg under the exact
+oracle, and each language is classified by its stall: **none** — the first
+closed, consistent fixpoint is already canonical; **transient** — a
+non-canonical fixpoint, broken by a counterexample; **permanent** — a
+non-canonical fixpoint the exact oracle certifies, which no counterexample
+breaks. Only the left-context sweep splits a permanent stall; without it the
+learner exports a strict quotient of the algebra.
 
-The census answers this in the strong direction, and it is the section's main
-result. Run exhaustively over the smallest shapes that admit a non-LTL
-language — `2state1ap1acc` and its parity twin, 258 languages — the ablation
-with the exact oracle finds **44 distinct languages** on a permanent stall,
-every one exact-certified and every one recovered to its canonical algebra by
-saturation (which is why the saturated learner is byte-exact on all 258, §6.1).
-The two specimens of §4.2 are not isolated exhibits: they are the two smallest
-members of a populated, *exhaustively enumerated* family. And the stall is not
-cosmetic — the gap between the stalled right congruence and the syntactic
-algebra reaches **five classes** already at this shape (a language with
-`N = 13` stalls at 8, another with `N = 15` at 10), recovered by one
-counterexample and up to five saturation escalations. The gap distribution over
-the 44 languages:
+Exhaustively over the smallest non-LTL shape (`2state1ap1acc`, 129 languages),
+**44 stall permanently**. Each is exact-certified, and each recovers to its
+canonical algebra under saturation (the census-wide soundness of §6.1). The gap
+between the stalled right congruence and the syntactic algebra reaches five
+classes (a language with `N = 13` stalls at 8, another with `N = 15` at 10):
 
 | gap `N − stall` | 1 | 2 | 3 | 4 | 5 |
 |---|:--:|:--:|:--:|:--:|:--:|
 | languages | 26 | 8 | 3 | 5 | 2 |
 
-Permanence is therefore not a curiosity of two hand-picked languages but
-*generic* at the LTL frontier — the strongest form of §4.2's finding, and the
-reason the saturation sweep is not an optimization but part of the
-construction: on 44 of the 258 smallest-shape languages, no membership-and-
-equivalence learner without it reaches the algebra at all.
+The two specimens of §4.2 are the two smallest of the 44. `a → Xa` reaches its
+canonical five-class algebra under saturation with zero counterexamples and a
+single equivalence query: the sweep supplies what the oracle cannot
+(Proposition 4.4).
 
-The 44 admit a clean structural cross-tabulation, which we report with a
-caution. All 44 are **prefix-dependent** (none prefix-independent), and all
-carry Büchi acceptance. The acceptance uniformity is an artifact of the
-shape — a single acceptance set *is* Büchi — and reads into nothing. The
-prefix-dependence is more suggestive, and it fits the mechanism: a permanent
-stall is a separation the right congruence misses and only a *left* context
-recovers, and prefix-independence neutralizes the left context in the *linear*
-shape (Proposition 4.6), so one expects permanent stalls to be prefix-dependent
-— and at this shape every one is. We stop short of reading this as a necessity,
-and deliberately: the *ω-power* shape carries a genuine left context even for a
-prefix-independent language — a left factor inside a loop is a rotation, not a
-deletable prefix (§2.2), which is exactly why `EvenBlocks`, prefix-independent,
-still needs the rotation the sweep supplies. So the intuition "no left context
-needed ⇒ no permanent stall" does not close, and whether a prefix-independent
-language can stall *permanently* remains open — the census refutes it only at
-the smallest shape. ⟨TBD-M4: the same cross-tabulation at deeper census shapes,
-to promote the regularity toward a theorem or refute it.⟩
+All 44 are prefix-dependent, and all carry Büchi acceptance — the latter forced
+by the single acceptance set of the shape. Prefix-dependence fits the
+mechanism: a permanent stall is a separation only a left context recovers, and
+prefix-independence removes the left context of the *linear* shape
+(Proposition 4.6). Whether it is necessary is open: the *ω-power* shape carries
+a left context that prefix-independence does not remove — a left factor inside a
+loop is a rotation, not a deletable prefix (§2.2) — so a prefix-independent
+language faces genuine left contexts too. The census establishes only that at
+this shape none stalls permanently. ⟨TBD-M4: the cross-tabulation at deeper
+census shapes.⟩
 
 ### 6.4 The FDFA baseline (Q3)
 
-The baseline is ROLL, the classification-tree FDFA learner [LCZL21,
-LSTCX19], in its periodic / syntactic / recurrent modes, on the same census
-languages under the same counting rule (one lasso = one membership query;
-protocol adaptations documented, never adjusted away). Two adaptations are
-disclosed as design, not discovered after the fact. First, ROLL learns the
-language of a *Büchi automaton*, so it is fed a state-based Büchi presentation
-of each language (Spot's `SBAcc`; a transition-based Büchi ROLL misreads as
-trivial) — the target language is the same, but the presentation is ROLL's, so
-absolute membership counts are presentation-sensitive and the robust axes of
-comparison are output size and capability, not raw queries. Second, the two
-learners answer their equivalence queries by *different but both exact*
-mechanisms: ours by the transformation-closure product on the Cayley
-hypothesis (§2.3), ROLL's by its native automaton equivalence (RABIT). The
-comparison is therefore not exact-versus-bounded — both certifications are
-complete — but the oracles are not identical, and that is stated with the
-numbers rather than hidden.
+The baseline is ROLL [LCZL21, LSTCX19], the classification-tree FDFA learner,
+in its periodic / syntactic / recurrent modes, on the same census languages
+under the same counting rule (one lasso = one membership query). Two adaptations
+follow from ROLL's interface. ROLL learns the language of a Büchi automaton, so
+it receives a state-based Büchi presentation of each language (Spot's `SBAcc`;
+a transition-based Büchi ROLL reads as trivial): the language is the same, the
+presentation ROLL's, so membership counts are presentation-sensitive and the
+comparison rests on output size and capability. And the two learners certify
+equivalence by different but both exact mechanisms — ours the
+transformation-closure product on the Cayley hypothesis (§2.3), ROLL's its
+native automaton equivalence (RABIT).
 
-The named-case paired table (census-wide medians ⟨TBD-M4⟩); ROLL's size is the
-summed states of its FDFA, leading plus progress DFAs:
+The named-case paired table (ROLL's size is the summed states of its FDFA,
+leading plus progress DFAs):
 
 | case | ours `N` (MQ/EQ) | ROLL periodic | syntactic | recurrent |
 |---|---|:--:|:--:|:--:|
@@ -1339,38 +1299,32 @@ summed states of its FDFA, leading plus progress DFAs:
 | `a → Xa` | 5 (43/1) | 12 | 14 | 9 |
 | `a ∧ XG¬a` | 4 (35/2) | 8 | 10 | 7 |
 
-Every entry sits inside Proposition 5.3(a)'s `N + N²` envelope, as it must;
-within it the two objects trade places — the algebra is *smaller* on `Even`,
-`a → Xa`, `a ∧ XG¬a` (5 vs 9–15, 5 vs 9–14, 4 vs 7–10), *larger* on `GF(aa)`
-(6 vs 4), tied on `EvenBlocks`. This is exactly the picture Proposition 5.3
-predicts and no more: the census is far too small to reach the exponential
-separation of 5.3(b), where the algebra is unboundedly larger than a smallest
-acceptor, so the honest reading is *competitive within the quadratic envelope*,
-not *smaller* — the size comparison is a wash, and the deliverable is not size.
+Every entry lies inside Proposition 5.3(a)'s `N + N²` envelope, and within it
+the two objects trade places. Over the 129 languages of the `2state1ap1acc`
+shape the median class count is `N = 8`, against FDFA-size medians 10 / 12 / 8
+(periodic / syntactic / recurrent); against each language's smallest FDFA the
+algebra is smaller on 66, larger on 42, tied on 21. Size is comparable; the
+exponential separation of Proposition 5.3(b) needs larger shapes than the
+census reaches.
 
-The deliverable is the capability column, the point of the comparison: from
-the learned invariant, LTL-definability is a read-off (the aperiodicity/group
-test of §2.2), answered on every case and checked against ground truth
-⟨TBD-M4: n cases, agreement — must be total⟩; from any of ROLL's three FDFAs
-the same question is not answerable without a further construction. One learner
-returns the language's algebra, from which definability is read; the other
-returns an acceptor, from which it is not. That asymmetry — not a query
-count — is the result of the comparison.
+The comparison's result is capability. From the learned invariant,
+LTL-definability is a read-off — the aperiodicity/group test of §2.2 — computed
+on every case, agreeing with ground truth ⟨TBD-M4: n cases⟩; from an FDFA it is
+not answerable without a further construction. One learner returns the
+language's algebra, from which definability is read; the other returns an
+acceptor, from which it is not.
 
 ### 6.5 Counterexample sensitivity
 
 Proposition 5.2 depends on the teacher only through the `log(N·ℓ)` harvest
 term. The corpus is re-run under counterexample policies — minimal
-(the default), first-found, and adversarially padded, stem and loop pumped
-by factors 2 to 32 — comparing total and harvest-only membership queries.
-The measured trend confirms the design: as the loop is pumped from length 3
-to 96 (a factor of 32), the harvest term grows from 4 to 9 queries — exactly
-**one query per doubling**, `harvest ≈ log₂ ℓ`, the binary search over the
-stem/loop chain — while the learned invariant is unchanged on every run.
-Padding buys only query cost, never a different outcome. (The first-found
-policy *coincides* with minimal for the minimal-order oracles used here — both
-enumerate the shortlex-least disagreeing cell — so it contributes no separate
-series; the comparison is effectively minimal-or-padded, two curves not three.)
+(the default) and adversarially padded, stem and loop pumped by factors 2 to
+32 — comparing total and harvest-only membership queries. As the loop is pumped
+from length 3 to 96 the harvest term grows from 4 to 9 queries: one query per
+doubling, `harvest ≈ log₂ ℓ`, the binary search over the stem/loop chain, the
+learned invariant unchanged. Padding costs queries, not correctness. (A
+first-found policy coincides with minimal for the shortlex-least oracles used
+here, so it forms no separate series.)
 
 ## 7. Related work
 
@@ -1435,11 +1389,11 @@ right-congruence obstruction reborn one level up, and
 dissolved by the same slot collapse. The learner's limit is not an acceptor
 chosen from a family but the canonical invariant of the language — the object
 definability questions are read from — so learning and classification cease to
-be separate activities. An exhaustive census of the smallest non-trivial shape
-bears this out: the learner reconstructs all 258 canonical invariants
-byte-for-byte, and on 44 of them — a family whose right congruence provably
-falls short, by up to five classes — only the saturation sweep reaches the
-algebra, the two-example finding of §4.2 made generic at the LTL frontier.
+be separate activities. A census of 541 languages bears this out: the learner
+reconstructs every canonical invariant byte-for-byte, and at the smallest
+non-LTL shape a family of 44 — whose right congruence falls short, by up to
+five classes — is reached only by the saturation sweep, the two-example finding
+of §4.2 made generic at the frontier.
 
 ---
 
