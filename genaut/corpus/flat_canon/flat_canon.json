@@ -4,7 +4,9 @@
     "2state2ap0acc"
   ],
   "sources": 19,
-  "total_langs": 2007,
+  "primal_langs": 2007,
+  "dual_langs": 1931,
+  "total_langs": 3938,
   "rows": [
     {
       "source": "1state1ap0acc",

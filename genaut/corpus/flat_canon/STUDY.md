@@ -9,13 +9,15 @@ The project's reference benchmark: every ω-language a small automaton realizes,
 | catalogue | languages |
 |---|--:|
 | fixed AP labeling (`flat/`, distinct `.sos`) | 3790 |
-| **up to renaming symbols (`flat_canon/`)** | **2007** |
+| distinct up to renaming symbols (primals) | 2007 |
 | &nbsp;&nbsp;— from exhaustive shapes | 1764 |
 | &nbsp;&nbsp;— from sampled shapes (non-exhaustive) | 243 |
+| + complements added to close under complement | 1931 |
+| **complement-closed total (`flat_canon/`)** | **3938** |
 
-The relabeling + unused-AP fold removes 1783 of 3790 entries (47%): those were relabel/polarity twins or carried a redundant AP. Automaton states over the catalogue: 1 / 5 / 9 (min / median / max); algebra size `|𝒞|`: 2 / 15 / 121.
+The relabeling + unused-AP fold takes 3790 fixed-labeling `.sos` to 2007 languages up to renaming (47% were relabel/polarity twins or carried a redundant AP); closing under complement (no language is its own, so the total is even) adds 1931, reaching 3938. Primal automaton states: 1 / 5 / 9 (min / median / max); algebra size `|𝒞|`: 2 / 15 / 121.
 
-## Composition
+## Composition (primals — the shape-realized languages; + 1931 complements close the set)
 
 | axis | bucket | languages |
 |---|---|--:|
@@ -27,7 +29,9 @@ The relabeling + unused-AP fold removes 1783 of 3790 entries (47%): those were r
 | acceptance colours | c=1 | 329 |
 | acceptance colours | c=2 | 285 |
 | acceptance colours | c=3 | 0 |
-| **total** | | **2007** |
+| **primals** | | **2007** |
+| + complements (dual acceptance) | | 1931 |
+| **complement-closed total** | | **3938** |
 
 ## By origin shape
 

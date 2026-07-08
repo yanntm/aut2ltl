@@ -1,11 +1,11 @@
-# flat_canon — distinct languages up to AP relabeling
+# flat_canon — distinct languages up to AP relabeling, complement-closed
 
-One representative per language **up to AP relabeling** (2007 in all): the `B_k` orbit-min of `flat/`, folding the signed permutations of the atomic propositions (`GF(a) ≡ GF(!a)`, `a↔b` twins). Both the det HOA and the `.sos` are relabeled into the orbit's canonical labeling (σ* applied to both — a self-consistent pair), and the smallest-shape `<tag>_<id>` name is preserved. The relabeling σ* is chosen on the semigroup core alone, so a language and its complement pick the same σ* (`𝓘(L̄)` = `𝓘(L)` with `accept` flipped, byte-exact).
+**3938** languages: **2007** distinct up to AP relabeling (the `B_k` orbit-min of `flat/`, folding the signed permutations of the atomic propositions — `GF(a) ≡ GF(!a)`, `a↔b` twins) plus **1931** complements added to close the catalogue under complement. Both the det HOA and the `.sos` are relabeled into the orbit's canonical labeling (σ* applied to both — a self-consistent pair); primals keep the smallest-shape `<tag>_<id>` name, each added dual is `<primal>_c`. σ* is chosen on the semigroup core alone, so `L` and `L̄` pick the same labeling (`𝓘(L̄)` = `𝓘(L)` with `accept` flipped, byte-exact) — the complement is the trivial P-flip, cross-checked against `dualize(det)`. No language is its own complement, so the closed count is even.
 
 Excluded: `2state2ap0acc`.
 
 
-## Composition
+## Composition (primals — the shape-realized languages)
 
 | axis | bucket | languages |
 |---|---|--:|
@@ -17,7 +17,9 @@ Excluded: `2state2ap0acc`.
 | acceptance colours | c=1 | 329 |
 | acceptance colours | c=2 | 285 |
 | acceptance colours | c=3 | 0 |
-| **total** | | **2007** |
+| **primals** | | **2007** |
+| complements added | | 1931 |
+| **total (closed)** | | **3938** |
 
 ## Contribution by source (traversal order)
 
