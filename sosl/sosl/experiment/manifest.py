@@ -167,3 +167,57 @@ def census_shapes(
     for s in chosen:
         out.extend(census_cases(str(det / s)))
     return out
+
+
+# The flat, complement-closed catalogue (one file per language up to AP
+# relabeling, closed under complement — genaut `flatten.py --canon`). Unlike the
+# per-shape census tiers, `det/` and `sos/` are a single flat pool; the shape is
+# the filename prefix and is not needed here (no shape ventilation).
+FLAT_CANON_ROOT = "../genaut/corpus/flat_canon"
+
+
+@dataclass(frozen=True)
+class Category:
+    """A language's `.cat` category, read off its syntactic invariant `𝓘(L)`:
+    the LTL-definability cut and the Wagner degree `ϕ = (γ, s)` with its class
+    name (genaut `gen/categorize.py`; one `.cat` per language)."""
+
+    ltl: bool
+    phi: str                                # e.g. "1,pi"  (γ, side)
+    cls: str                                # human class name
+
+
+def load_category(sos_path: str) -> Optional[Category]:
+    """Parse the `.cat` sidecar next to ``sos_path`` (same basename), or
+    ``None`` if absent. Format: ``CAT v1`` then ``ltl:`` / ``phi:`` / ``class:``
+    lines (``coords:`` is ignored — recomputable from ``phi``)."""
+    cat = Path(sos_path).with_suffix(".cat")
+    if not cat.exists():
+        return None
+    ltl = True
+    phi = ""
+    cls = ""
+    for line in cat.read_text().splitlines():
+        if line.startswith("ltl:"):
+            ltl = line.split(":", 1)[1].strip() == "yes"
+        elif line.startswith("phi:"):
+            phi = line.split(":", 1)[1].strip()
+        elif line.startswith("class:"):
+            cls = line.split(":", 1)[1].strip()
+    return Category(ltl=ltl, phi=phi, cls=cls)
+
+
+def flat_canon_cases(corpus_root: str = FLAT_CANON_ROOT) -> List[Case]:
+    """Every language of the flat, complement-closed catalogue as a `Case`,
+    each paired with its precomputed `sos/*.sos` reference (the fast path). The
+    `.cat` category is not carried on the `Case` — load it with
+    `load_category(case.sos)` where a run needs the LTL/Wagner cut."""
+    det = Path(corpus_root) / "det"
+    if not det.is_dir():
+        return []
+    cases: List[Case] = []
+    for p in sorted(det.glob("*.hoa")):
+        cand = Path(corpus_root) / "sos" / (p.stem + ".sos")
+        sos = str(cand) if cand.exists() else None
+        cases.append(Case(p.stem, str(p), sos=sos, tags=("flat_canon",)))
+    return cases
