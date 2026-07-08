@@ -1,23 +1,26 @@
 # SoS Classifier — Report on What Is Answered
 
 **Status:** progress report against `sos_classifier_spec.md` **rev. 2**,
-2026-07-08. Iteration 2: the X1 profile restated per **distinct language** with
-the bench manifest, per-acceptance-family ventilation, weakest-first degree
-ordering, and the C§7–8 dictionary naming the rev.-2 spec binds.
+2026-07-08. **Iteration 3:** the census is restated over the project's
+irredundant reference benchmark — the **`flat_canon` catalogue** (every small
+ω-language, deduped up to renaming and closed under complement) — and the
+classification is now a **first-class corpus artifact**: every language carries a
+`.cat` category sidecar next to its `.sos`, and the benchmark's auto-built study
+(`genaut/corpus/flat_canon/STUDY.md`) aggregates them. The classifier is no
+longer run as a separate campaign; its verdict ships with the corpus.
 **Normative math:** `sos_classification.md` (references below as C§n).
-**Code:** `sosl/sosl/sos/classify/` (package map in its `README.md`); tests under
-`sosl/tests/sosl/classify_*.py`. Census + profile drivers `classify_census`,
-`classify_profile`; the bench manifest is `genaut/manifest.py`.
+**Code:** classifier `sosl/sosl/sos/classify/` (package map in its `README.md`);
+categorizer + study `genaut/gen/categorize.py`, `genaut/flat_study.py`.
 
 **One line.** The classifier reads one `.sos` invariant and emits the full
-classification record — aperiodicity, `(m±, n±)`, the safety–progress / topological
-rung, the parity/Rabin index, and the Wagner degree `ϕ = (γ, s)` — with a
-replayable witness on every non-trivial verdict, **for every language whose degree
-does not require Wagner's derivative** (all of the triptych, and every language whose
-maximal superchains carry a single sign). The derivative tail (C§8) is detected and
-reported as PARTIAL rather than resolved; that is the single spec field not yet
-computed, exactly as the spec's exit-code-2 anticipates — and, by Proposition 11.1,
-no generalized-Büchi input can reach it, which the whole census confirms.
+classification record — the **LTL / non-LTL cut** (aperiodicity), `(m±, n±)`, the
+safety–progress / topological rung, the parity/Rabin index, and the Wagner
+degree `ϕ = (γ, s)` — with a replayable witness on every non-trivial verdict,
+**for every language whose degree does not require Wagner's derivative** (all of
+the triptych, and every one of the 3938 catalogue languages). The derivative tail
+(C§8) is detected and reported as PARTIAL rather than resolved; that is the single
+spec field not yet computed, and — by Proposition 11.1 — no census language
+reaches it, which the whole catalogue confirms (0 PARTIAL).
 
 ---
 
@@ -28,15 +31,16 @@ no generalized-Büchi input can reach it, which the whole census confirms.
 | **K1** primitives + identity + LTL cut | layer 3.1, C§3–4 | **done** — `primitives/`, `aperiodic/`; group witness emitted |
 | **K2** chains | engine 3.2, `m`-rungs, parity lengths | **done** — `chains/`; triptych `(m⁺,m⁻)` exact |
 | **K3** superchains + degree (non-derived) | engine 3.3, `µ`/`s`, `γ` on `m=0 ∨ n⁺≠n⁻` | **done** — `superchains/`, `readoff/`, `record/`; full triptych `ϕ` reproduced |
-| **X0/X1** validation + profile | census + profile drivers | **done (rev. 2)** — 15 091 distinct languages over 19 exhaustive shapes + 1 live parity sample; harness green; per-language profile in §6, bench manifest in `genaut/MANIFEST.md` |
-| **K4** derivation | component 3.4, `Fork` fixture | **open** — PARTIAL emitted correctly; `∂𝒜` not wired. No census case reaches the derivative regime (Prop 11.1); the `Fork` specimen (C§9, now fully presented) is the dedicated exercise, still to build |
+| **X0/X1** validation + profile | census + `.cat` materialization + study | **done (iter. 3)** — the whole `flat_canon` catalogue classified (3938 languages), one `.cat` per language, aggregated into `STUDY.md`; internal laws + duality symmetry green |
+| **K4** derivation | component 3.4, `Fork` fixture | **open** — PARTIAL emitted correctly; `∂𝒜` not wired. No catalogue language reaches the derivative regime (Prop 11.1); the `Fork` specimen (C§9) is the dedicated exercise, still to build |
 
 Every band above is a pure table search on `𝓘(L)` (C§10): power orbits `O(N²)`,
 the Green preorders as one-shot principal ideals, chains a longest-alternating-path
-DP over the idempotent Hasse DAG per stem `O(N·|E|²)`, superchains the same over the
-`R`-order `O(N²)`, the degree arithmetic on four integers. No automaton, no external
-tool, no Spot call is on the classification path (Spot enters only as the independent
-oracle of the spectrum cross-check, §3).
+DP over the idempotent Hasse DAG per stem, superchains the same over the `R`-order,
+the degree arithmetic on four integers. No automaton, no external tool, no Spot
+call is on the classification path — which is exactly why the category can be read
+off the stored `.sos` alone and written as a sidecar (`categorize.py`). Spot enters
+only as the independent oracle of the spectrum cross-check (§3), on the HOA tier.
 
 ---
 
@@ -46,7 +50,7 @@ The three running examples of [SωS26], each read off its published invariant by
 tool — reproducing, byte for byte, the hand-computed records of C§9. This is the
 worked table the spec's X2 asks for, exercised end to end (`classify_record`).
 
-| | `m⁺` | `m⁻` | `n⁺` | `n⁻` | aperiodic | rungs | parity / co- | `µ` | `s` | `γ` | `ϕ` |
+| | `m⁺` | `m⁻` | `n⁺` | `n⁻` | LTL | rungs | parity / co- | `µ` | `s` | `γ` | `ϕ` |
 |---|:--:|:--:|:--:|:--:|:--:|---|:--:|:--:|:--:|:--:|:--:|
 | `Even` | 0 | 0 | 0 | 1 | no | open, weak, dba, dca | 1 / 1 | 1 | σ | 1 | `(1, σ)` |
 | `GF(aa)` | 0 | 1 | −1 | 0 | **yes** | dba | 1 / 2 | ω | σ | ω | `(ω, σ)` |
@@ -55,9 +59,9 @@ worked table the spec's X2 asks for, exercised end to end (`classify_record`).
 Reading the rows: `Even` is *properly open* (guarantee, weak, not closed);
 `GF(aa)` is *properly `Gδ`* (DBA/recurrence, not DCA, not weak — and LTL-definable);
 `EvenBlocks` is *properly parity-`{0,1,2}`* (one genuine Rabin pair, neither DBA nor
-DCA). `Even`'s boolean level is 1 (`Σ₁`). None of the three needs the derivative
-(`n⁺ ≠ n⁻` in every row), so `γ = µ` throughout. Each row ships its witnesses
-(spec §1), all replayable by plain membership queries.
+DCA). None of the three needs the derivative (`n⁺ ≠ n⁻` in every row), so `γ = µ`
+throughout. Each row ships its witnesses (spec §1), all replayable by plain
+membership queries. All three sit inside the catalogue's degree spectrum below.
 
 ---
 
@@ -65,22 +69,20 @@ DCA). `Even`'s boolean level is 1 (`Σ₁`). None of the three needs the derivat
 
 | harness item (spec §4) | coverage | status |
 |---|---|---|
-| **4.1** internal laws (always-on) | `0 ≤ m`, `|m⁺−m⁻|≤1`, `|n⁺−n⁻|≤1`, `n≥1 ⇒ m⁺=m⁻`; witness linkage / strict descents / alternation | **green** — asserted inside `classify()` and in every band test |
-| **4.2** duality gate | classify `L` and `L̄` (flip `P`): `m⁺↔m⁻`, `n⁺↔n⁻`, `σ↔π`, `δ↔δ`, `γ` equal, open↔closed, dba↔dca | **green** — every census case |
+| **4.1** internal laws (always-on) | `0 ≤ m`, `|m⁺−m⁻|≤1`, `|n⁺−n⁻|≤1`, `n≥1 ⇒ m⁺=m⁻`; witness linkage / strict descents / alternation | **green** — asserted inside `classify()` on all **3938** categorizations (a failure raises; none did) |
+| **4.5** witness replay (self) | each chain lasso, folded by `Invariant.member`, matches its bit | **green** — asserted inside `classify()`, corpus-wide |
+| **4.2** duality gate | `L` and `L̄` swap `m⁺↔m⁻`, `n⁺↔n⁻`, `σ↔π`, open↔closed, dba↔dca; `γ` equal | **green — and now structural**: the catalogue is complement-closed, so the degree profile is **exactly** duality-symmetric (every `(γ,σ)` row equals its `(γ,π)` dual; §6.3). The per-record gate also runs in `classify_census` |
+| **4.6** spectrum law (C§11) | a language whose *canonical* presentation is generalized-Büchi classifies with `m⁺ ≤ 0` — Spot's determinization vs. the chain algebra, two independent engines | **green** on the HOA tier (`classify_census` over `det/`); and **visible in the catalogue read-off**: `m⁺ ≥ 1` occurs only at the co-Büchi/parity degrees (§6.4), Prop 11.1's converse |
 | **4.3** triptych fixtures | records byte-equal to C§9 | **green** — `classify_record`, `classify_readoff` |
-| **4.5** witness replay (self) | each chain lasso, folded by `Invariant.member`, matches its bit | **green** — asserted inside `classify()` |
-| **4.6** spectrum law (C§11) | every input whose *canonical* presentation is generalized-Büchi classifies with `m⁺ ≤ 0` — Spot's determinization vs. the Carton–Perrin chain algebra, two independent engines | **green** — 0 violations over 15 563 records |
-| cross-abundance / cross-path | within one `𝓘`-hash bucket every record carries the same `ϕ` (a language invariant); a split convicts the classifier | **green** — 0 splits, incl. the same language reached via `gba` *and* `parity` enumeration |
-| **X0** census validation | classify + all gates over the corpus | **green** — 15 563 records, all SOUND, 0 MISMATCH, 0 BUDGET, 0 PARTIAL |
 | **4.5** witness replay (vs `--hoa`) | replay against a presentation's teacher | **not wired** — `--certificates` reserved |
-| **4.4** Spot rung/index cross-checks | safety / weak / DBA / parity-index naming vs Spot | **partial** — the spectrum law (4.6) is the one Spot cross-check wired; the full rung-by-rung dictionary reconciliation is deferred |
+| **4.4** Spot rung/index cross-checks | full rung-by-rung dictionary vs Spot | **partial** — the spectrum law (4.6) is the one Spot cross-check wired; the rung dictionary reconciliation is deferred |
 
-The spectrum-law gate is the rev.-2 addition and the sharpest of the always-on
-checks: it is not a self-consistency assertion but an agreement between two
-independent constructions — Spot's determinization (which fixes the *canonical*
-acceptance family) and our chain algebra (which fixes `m⁺`). Prop 11.1 says a
-generalized-Büchi canonical presentation forces `m⁺ ≤ 0`; a disagreement is exit 4.
-Zero fired.
+The duality result is the sharpest of the always-on checks and iteration 3
+strengthens it: on the old one-sided per-shape census the gate could only assert
+"pairs appear together up to which side the census enumerated". On the
+complement-closed catalogue it is an **identity** — the profile's σ- and π-columns
+are equal number by number (§6.3), a corpus-wide duality certificate that needs no
+reclassification, just the two `.cat` of a language and its stored complement.
 
 ---
 
@@ -91,171 +93,164 @@ Honest accounting against the spec, so the gaps are not mistaken for bugs:
 - **The derivative recursion (K4, C§8 / component 3.4).** Only the case
   `m ≥ 1 ∧ n⁺ = n⁻` needs `∂X`. The tool detects it and emits `gamma_partial`
   with `sign = "PARTIAL"`, `gamma = None`, exit code 2 (spec F2, by design).
-  **No census language reaches this regime** — not by luck but by Prop 11.1 for the
-  generalized-Büchi inputs, and even the parity shapes stay off it (their deep
-  degrees `(ω·2, π)`, `(ω², σ)` all have `n⁺ ≠ n⁻`; §6). The regime therefore
-  remains untested by real data. Rev. 2 supplies the missing exercise: the `Fork`
-  specimen `(a ∧ GF a) ∨ (¬a ∧ FG ¬a)`, coordinates `(1,1,0,0)`, `ϕ = (ω+1, δ)`,
-  now fully presented in C§9 with its `.sos` and its 3-state EL HOA. Wiring `∂𝒜`
-  (collapse the maximal-superchain basins, rebuild `𝓘(∂X)`, recurse) against that
-  fixture is the next unit of work: exit 2 with `PARTIAL(ω)` from the `.sos` alone,
-  `ϕ = (ω+1, δ)` and `n_derivations = 1` with `--hoa`.
+  **No catalogue language reaches this regime** — not by luck but by Prop 11.1 for
+  the generalized-Büchi inputs, and even the parity shapes stay off it (their deep
+  degrees `(ω·2, ·)`, `(ω², ·)` all have `n⁺ ≠ n⁻`; §6.3). The regime therefore
+  remains untested by real data. The `Fork` specimen `(a ∧ GF a) ∨ (¬a ∧ FG ¬a)`,
+  coordinates `(1,1,0,0)`, `ϕ = (ω+1, δ)` (C§9), is the dedicated exercise. Wiring
+  `∂𝒜` against it is the next unit of work.
 
-- **Per-language enumeration abundance.** The §6 profile is per distinct language
-  (dedup by `𝓘`-hash). Its **abundance** — how many enumerated automata realise
-  each language — is reported per shape (`genaut/MANIFEST.md`, median / max from the
-  build-time `census.md`), not per individual language: the compact `det/`/`sos/`
-  tiers are already 1-per-language, so per-language abundance would require
-  re-classifying the full `tgba/` presentation tier (deferred; the aggregate is
-  authoritative and free).
+- **The `.cat` is `.sos`-only.** The sidecar records the language's degree, cut,
+  and coordinates — everything the read-off yields from the invariant. It does *not*
+  store the *minimal deterministic acceptance family* (gen-Büchi / co-Büchi /
+  parity), which is a Spot read-off of the `det/` presentation. §6.4 recovers the
+  Büchi-vs-not split from the coordinates (Prop 11.1, exact) without Spot; the
+  finer minimal-acceptance ventilation stays on the HOA tier
+  (`classify_census --logs …` over `flat_canon/det/`), not in the auto-report.
 
-- **X3 cost curves.** Per-input wall is logged; the headline holds (classification
-  never approached budget — the ceiling is the construction, not the read-off). The
-  cost-vs-`N` scatter with the C§10 bounds overlaid, and the construction-vs-classify
-  split, are not yet drawn.
+- **Presentation abundance.** The `.cat`/`flat_canon` view is one entry per
+  language (the irredundant catalogue). *How many automata* realize each language
+  is a property of the presentation census (`SHAPES.md`, `genaut/MANIFEST.md`), not
+  of this tier — deliberately: `flat_canon` measures languages, the `tgba/` tier
+  measures presentations.
 
 - **HOA-backed certificate replay (3.5 / 4.5)** and the **full Spot rung dictionary
-  (4.4)** remain deferred, as in iteration 1.
+  (4.4)** remain deferred.
 
 ---
 
-## 5. Where each spec component lives
+## 5. Where each piece lives
 
-| spec §3 component | module |
+| concern | module |
 |---|---|
-| 3.1 primitives (C§2) | `classify/primitives/` (`green.py`, `idempotents.py`) |
-| — identity / LTL cut (C§3–4) | `classify/aperiodic/` |
-| 3.2 chain engine (C§5) | `classify/chains/engine.py` |
-| 3.3 superchain engine (C§6) | `classify/superchains/engine.py` |
-| — read-off table (C§7–8) | `classify/readoff/` (`table.py`, `ordinal.py`) |
+| 3.1 primitives (C§2) | `sosl/…/classify/primitives/` (`green.py`, `idempotents.py`) |
+| — identity / LTL cut (C§3–4) | `sosl/…/classify/aperiodic/` |
+| 3.2 chain engine (C§5) | `sosl/…/classify/chains/engine.py` |
+| 3.3 superchain engine (C§6) | `sosl/…/classify/superchains/engine.py` |
+| — read-off table (C§7–8) | `sosl/…/classify/readoff/` (`table.py`, `ordinal.py`) |
 | 3.4 degree assembly (C§8, derived) | *(open — see §4)* |
-| 3.5 certificate emitter | `classify/witness.py` (render); replay reserved |
-| §1 record / §2 tool | `classify/record.py`, `emit.py`, `__main__.py` |
-| §5 bench manifest | `genaut/manifest.py` → `genaut/MANIFEST.md` |
-| §5–6 census / profile | `tests/sosl/classify_census.py`, `classify_profile.py` |
+| §1 record / emit | `sosl/…/classify/record.py`, `emit.py`, `__main__.py` |
+| **category materialization** (`.cat` per language, class vocabulary) | `genaut/gen/categorize.py` |
+| **auto-report** (LTL cut + degree profile) | `genaut/flat_study.py` → `flat_canon/STUDY.md` |
+| presentation-tier census + HOA gates | `sosl/tests/sosl/classify_census.py`, `classify_profile.py` |
 
 ---
 
-## 6. X1 — the measured Wagner-degree profile, per language
+## 6. X1 — the measured profile over the reference catalogue
 
-### 6.1 The bench (spec §5)
+### 6.1 The bench
 
-The corpus is the genaut census: for a fixed **shape** `(n states, k APs, c
-colours, acceptance family)`, every tiny automaton is enumerated, Spot-reduced,
-deduplicated to presentations (`tgba/`), then canonicalized to one deterministic
-automaton and one syntactic invariant `𝓘(L)` **per distinct language**
-(`det/` / `sos/`, deduped by the `𝓘`-hash of [SωS26 Thm. 5.1]). The full
-reduction funnel — combos → byte-distinct → kept → **languages**, the collapse
-ratio, the enumeration abundance, and the algebra-size spread `N = |𝒞|` — is the
-bench manifest `genaut/MANIFEST.md`, one row per shape × acceptance family. The
-headline:
+The corpus is the genaut **`flat_canon` catalogue** (`research_notes/genaut_corpus.md`,
+`genaut/corpus/flat_canon/STUDY.md`): every ω-language a small automaton realizes,
+**counted once**. It folds the three redundancies of an exhaustive automaton sweep
+— sub-shape inclusion, unused APs, and AP renaming/polarity (`B_k` orbit-min of the
+syntactic `𝓘`) — and is then **closed under complement**. From **19** census shapes
+below the tractability wall plus **one** beyond-wall parity sample
+(`2state1ap2acc_parity`, id-space `4.3·10⁹`):
 
-- **19 exhaustively censused shapes**, generalized-Büchi and parity families over
-  `n ≤ 3`, `k ≤ 3`, `c ≤ 3` (under the tractability wall of `SHAPES.md`);
-- **1 live non-exhaustive parity sample**, `2state1ap2acc_parity` (id-space
-  `4.3·10⁹`), a uniform random probe still extracting — the report cites the folder's
-  live language count, not `sample.json`'s in-run checkpoint;
-- the compression the `𝓘` dedup buys ranges from `1.00x` (language-sparse shapes) to
-  **`7.20x`** (`2state1ap1acc`: 929 presentations → 129 languages, one language
-  realised by up to 331 automata);
-- **15 563 classification records → 15 091 distinct languages** (the 472-record gap
-  is the same language reached from more than one shape — folded by `𝓘`-hash, and a
-  free cross-consistency check, §3).
+- **3790** languages at a fixed AP labeling → **2007** up to renaming (the primals,
+  1764 exhaustive + 243 sampled) → **3938** once complement-closed (2007 primals +
+  1931 added duals);
+- one `.cat` per language, written by `categorize.py` reading each `.sos` — a pure
+  read-off, no automaton, no Spot, ~1 s for all 3938;
+- superseding iteration 2's per-shape census (15 091 relabel-distinct, one-sided
+  languages over the `det/` tiers): this is the **irredundant, complement-symmetric
+  language count**, the honest denominator.
 
-The parity family is the whole reason the corpus reaches depth. Every bare
-(generalized-Büchi) shape and every 1-colour parity shape canonically collapses to
-generalized-Büchi; only the **2-colour parity** shapes produce genuinely deeper
-canonical acceptance (`1state2ap2acc_parity`: 18 parity + 18 co-Büchi of 58
-languages; the sampled `2state1ap2acc_parity`: 151 parity + 214 co-Büchi).
+### 6.2 The LTL cut — the line everyone asks about first
 
-### 6.2 The degree profile — distinct languages, weakest-first
+Is the language **LTL-definable** (star-free / first-order / aperiodic syntactic
+ω-semigroup) or does it genuinely **count**? Over the complement-closed catalogue:
 
-The first measured Wagner-degree distribution of a systematically enumerated
-ω-language class, over **distinct languages** (spec §5(iv)), ordered by Wagner
-degree with the trivial pair set apart and named by the C§7–8 dictionary:
+| definability | languages |
+|---|--:|
+| **LTL-definable** (aperiodic) | **2240** |
+| **non-LTL** (genuine ω-counting) | **1698** |
+| total | 3938 |
 
-| `ϕ = (γ, s)` | `(m⁺, m⁻, n⁺, n⁻)` | class (§7–8 dictionary) | languages |
-|---|---|---|--:|
-| `(0, σ)` | `(−1, 0, −1, 0)` | empty (trivial open) | 1 |
-| `(0, π)` | `(0, −1, 0, −1)` | universal (trivial closed) | 1 |
-| *— the trivial pair, set apart: the weakest class —* | | | *2* |
-| `(1, δ)` | `(0, 0, 0, 0)` | **clopen — properly `Δ₁`** | 81 |
-| `(1, σ)` | `(0, 0, 0, 1)` | properly open — guarantee | 6 |
-| `(1, π)` | `(0, 0, 1, 0)` | properly closed — safety | 12 949 |
-| `(2, σ)` | `(0, 0, 1, 2)` | properly `Σ₂` | 8 |
-| `(2, π)` | `(0, 0, 2, 1)` | properly `Π₂` | 2 |
-| `(ω, σ)` | `(0, 1, −1, 0)` | properly `Gδ` — DBA-proper | 1 642 |
-| `(ω, π)` | `(1, 0, 0, −1)` | properly `Fσ` — DCA-proper | 232 |
-| `(ω·2, π)` | `(1, 1, 1, 0)` | one Rabin pair, `π` side (superchain `n=1`) | 16 |
-| `(ω², σ)` | `(1, 2, −1, 0)` | parity-`{0,1,2}`-proper | 153 |
+**43 % of the small ω-languages are beyond LTL.** The cut is complement-invariant
+(aperiodicity is a property of the semigroup `M`, not of `accept`), so it splits the
+primals the same way — 1142 LTL / 865 non-LTL of 2007 — and it cuts *across* the
+Wagner degrees below: depth and countability are independent axes (§6.3).
 
-LTL-definable: **9 712**; non-LTL: **5 379** — the aperiodic axis cuts across the
-degree rows (C§7.1), independent of topological depth.
+### 6.3 The Wagner-degree profile — distinct languages, weakest-first
 
-**The `(1, δ)` correction, owed to the theory team.** Iteration 1 misnamed this row
-"properly `Δ₂`". Per C§8: `(1, δ)`, coordinates `(0,0,0,0)`, is the nontrivial
-**clopen** class — both the open and the closed test of C§7 pass — properly
-`Δ₁`, one notch *below* the properly open/closed pair. Properly `Δ₂` is `(2, δ)`,
-coordinates `(0,0,1,1)`, which the census does not reach (it is a derivative-free
-self-dual level requiring `n⁺ = n⁻ = 1`). Corrected here and in the driver's naming.
+The first Wagner-degree distribution of the systematically-enumerated small
+ω-language class stated over the **irredundant, complement-closed** catalogue.
+`non-LTL` is the count in the row that fails the aperiodicity cut; `primals` the
+shape-realized share (the rest are added complements):
 
-### 6.3 Ventilation by acceptance family (C§11 made visible, spec §5(i))
+| `ϕ = (γ, s)` | `(m⁺, m⁻, n⁺, n⁻)` | class (C§7–8) | languages | non-LTL | primals |
+|---|---|---|--:|--:|--:|
+| `(0, σ)` | `(−1, 0, −1, 0)` | empty — trivial open | 1 | 0 | 1 |
+| `(0, π)` | `(0, −1, 0, −1)` | universal — trivial closed | 1 | 0 | 1 |
+| *— trivial pair (weakest), set apart —* | | | *2* | | |
+| `(1, δ)` | `(0, 0, 0, 0)` | clopen — properly Δ₁ | 62 | 0 | 36 |
+| `(1, σ)` | `(0, 0, 0, 1)` | properly open — guarantee | 1356 | 678 | 4 |
+| `(1, π)` | `(0, 0, 1, 0)` | properly closed — safety | 1356 | 678 | 1356 |
+| `(2, σ)` | `(0, 0, 1, 2)` | properly Σ₂ | 4 | 0 | 4 |
+| `(2, π)` | `(0, 0, 2, 1)` | properly Π₂ | 4 | 0 | 1 |
+| `(ω, σ)` | `(0, 1, −1, 0)` | properly Gδ — DBA-proper | 466 | 98 | 365 |
+| `(ω, π)` | `(1, 0, 0, −1)` | properly Fσ — DCA-proper | 466 | 98 | 128 |
+| `(ω·2, σ)` | `(1, 1, 0, 1)` | one Rabin pair — σ side | 12 | 12 | 0 |
+| `(ω·2, π)` | `(1, 1, 1, 0)` | one Rabin pair — π side | 12 | 12 | 12 |
+| `(ω², σ)` | `(1, 2, −1, 0)` | parity-`{0,1,2}` — proper | 99 | 61 | 99 |
+| `(ω², π)` | `(2, 1, 0, −1)` | co-parity-`{0,1,2}` — proper | 99 | 61 | 0 |
 
-The same profile, split by the **canonical** acceptance family (read off the
-deterministic presentation, not the enumeration tag — a parity-*enumerated*
-language whose canonical form is generalized-Büchi lands in the gba bucket):
+Read the `languages` column top to bottom against its mirror: **1 = 1, 1356 = 1356,
+4 = 4, 466 = 466, 12 = 12, 99 = 99** — the profile is *exactly* duality-symmetric,
+the complement closure made visible (§3). The self-dual `δ` row `(1, δ) = 62` stands
+alone. Total 3938; `γ` never exceeds `ω²`; **0 PARTIAL** — no language reaches
+Wagner's derivative (`γ = µ` throughout, Prop 11.1). The `primals` column is *not*
+symmetric (`(ω, σ)`: 365 vs `(ω, π)`: 128) — it shows exactly which side the
+one-sided enumeration reached and which the complement closure had to add.
 
-| canonical acceptance | degrees reached | languages | Prop 11.1 |
-|---|---|--:|---|
-| generalized-Büchi | `(0,σ)`, `(1,δ)`, `(1,σ)`, `(1,π)`, `(2,σ)`, `(2,π)`, `(ω,σ)` | 14 689 | **inside the list** — every one has `m⁺ ≤ 0`, ceiling `(ω,σ)` |
-| trivial (`t`) | `(0,π)` | 1 | inside the list |
-| co-Büchi | `(ω,π)` | 232 | `m⁺ = 1` — outside gba, exactly as allowed |
-| genuine parity | `(ω·2,π)`, `(ω²,σ)` | 169 | `m⁺ = 1` — the deep band, parity-only |
+**Depth ≠ countability, in the numbers.** The non-LTL count spreads over every
+depth, not the deep end: half of *safety* (`(1, π)`: 678 / 1356) is already non-
+star-free, while a third of the deepest *parity-`{0,1,2}`* rows (`(ω²)`: 38 / 99 per
+side) *is* LTL-definable. Only the one-Rabin-pair rows (`(ω·2)`: 12 / 12) are wholly
+non-LTL. The aperiodicity axis and the Wagner axis are independent — the classifier
+measures both, and the catalogue exhibits their full cross-product.
 
-This *is* Proposition 11.1, verified, and its converse demonstrated at scale.
-Read the first two rows: no generalized-Büchi or trivial input — 14 690 languages,
-**however many states, colours, or letters were enumerated** — escapes the
-proposition's `{(0,σ),(0,π)} ∪ {(n,s):1≤n<ω} ∪ {(ω,σ)}` list, and none reaches the
-derivative regime (`γ = µ` throughout, 0 PARTIAL). The bottom two rows are the
-converse: `m⁺ = 1` — a genuine positive chain — appears **only** where the canonical
-acceptance is co-Büchi or parity. Against iteration 1's generalized-Büchi-only
-census, where `(ω, π)` and `(ω², σ)` each surfaced once or twice through hand-made
-specimens, the parity family populates them **232** and **153** times, and adds the
-new `(ω·2, π)` (16) — the cheapest door to depth is the acceptance family, before
-the state count, precisely as C§11 argues.
+### 6.4 Acceptance depth, read off the coordinates (Prop 11.1)
 
-### 6.4 Self-consistency and cost
+The minimal deterministic acceptance family is a Spot read-off of the `det/`
+presentation, but Prop 11.1 lets the **Büchi-vs-not** split be read straight off the
+`.cat` coordinates — `m⁺ ≤ 0 ⟺ generalized-Büchi-realizable`:
 
-The duality pairs appear together with matching multiplicities up to which side the
-census enumerates (`(2,σ)`↔`(2,π)`, `(ω,σ)`↔`(ω,π)`, `(1,σ)`↔`(1,π)`,
-`(0,σ)`↔`(0,π)`), and the self-dual `δ` rows sit alone — the duality gate's
-prediction, visible corpus-wide. Classification never approached its budget; the
-practical ceiling met throughout is the **construction** of `𝓘(L)`, never the
-read-off — direct evidence for C§10's claim that once the invariant is in hand the
-whole tower is cheap. Per-input records (coordinates, rungs, `ϕ`, verdict, wall) are
-the `stats.json`-shaped ledgers under `sosl/tests/sosl/logs/rev2/`.
+| by `m⁺` | degrees | languages |
+|---|---|--:|
+| `m⁺ ≤ 0` — generalized-Büchi-realizable | `(0,·)`, `(1,·)`, `(2,·)`, `(ω, σ)` | 3250 |
+| `m⁺ = 1`, one positive chain — co-Büchi-proper | `(ω, π)` | 466 |
+| `m⁺ ≥ 1`, both signs positive — genuine parity | `(ω·2, ·)`, `(ω², ·)` | 222 |
+
+So **688** of 3938 languages sit genuinely above the generalized-Büchi ceiling, and
+they are *exactly* the co-Büchi and parity degrees — Prop 11.1's converse, exhibited
+at catalogue scale without a single Spot call. The deep parity band (`(ω·2)`,
+`(ω²)`) is reached only by the beyond-wall parity sample, its complement side added
+by closure (§6.3, `primals` column). The independent Spot-vs-algebra spectrum gate
+(4.6) runs on the `det/` tier and agrees.
 
 ### 6.5 Reproduction
 
 ```
-# 1. build / refresh the corpus tiers (genaut) — one-off per shape
-python3 genaut/gen/rebuild.py                       # tgba -> det + sos, all shapes
-python3 genaut/gen/sample.py 2,1,2,parity --target-langs 1024 --seed 0   # the sample
+# 1. build / refresh the catalogue (writes .sos, det HOA, and .cat sidecars)
+python3 genaut/gen/flatten.py --canon              # -> corpus/flat_canon/
 
-# 2. the bench manifest (parses the build-time census.md — recomputes nothing)
-python3 genaut/manifest.py                          # -> genaut/MANIFEST.md
+# 1b. or just (re)categorize an existing sos tier (pure read-off, no rebuild)
+python3 genaut/gen/categorize.py                   # -> corpus/flat_canon/sos/*.cat
 
-# 3. classify the det tier per shape (acceptance family + spectrum gate need the
-#    presentation; the sos tier is faster but has no acceptance axis)
-for tag in $(ls genaut/corpus/det/); do \
-  python3 -m tests.sosl.classify_census genaut/corpus/det/$tag \
-      --logs sosl/tests/sosl/logs/rev2/$tag ; done            # (run from sosl/)
+# 2. the language-level study: LTL cut + Wagner-degree profile, aggregated
+#    from the .cat sidecars (no classifier at report time)
+python3 genaut/flat_study.py                       # -> corpus/flat_canon/STUDY.md
 
-# 4. aggregate the per-language profile over all ledgers
-python3 -m tests.sosl.classify_profile sosl/tests/sosl/logs/rev2/*/records.jsonl \
-    --out sosl/tests/sosl/logs/rev2
+# 3. (HOA tier, from sosl/) the presentation census + Spot spectrum gate: needs the
+#    det/ HOAs, which .sos-only .cat cannot supply — the independent Spot oracle
+python3 -m tests.sosl.classify_census genaut/corpus/flat_canon/det \
+    --logs sosl/tests/sosl/logs/flat_canon
+python3 -m tests.sosl.classify_profile sosl/tests/sosl/logs/flat_canon/records.jsonl
 ```
 
-The parity sample is a moving target (extraction over a `4.3·10⁹` id-space runs on);
-its counts are as of this report's run and grow monotonically — rerunning step 3–4
-after more draws only adds languages to the deep rows, never moves an existing one.
+The `.cat` sidecars are git-tracked corpus artifacts, so step 2 (and any consumer
+of the categories) is a pure text read-off of the corpus — the classification data
+lives *in* the benchmark, regenerated only when the languages change.
