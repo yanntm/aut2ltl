@@ -308,6 +308,12 @@ def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
             fh.write(comp_sos)
         dual += 1
 
+    # Categorize: one `.cat` sidecar per language (LTL cut + Wagner degree),
+    # read off the `.sos` — covers both the sos and the det HOA of that basename.
+    sys.path.insert(0, os.path.dirname(__file__))
+    from categorize import write_cats                      # noqa: E402
+    write_cats(sos_dir)
+
     record = {
         "corpus": "flat_canon", "excluded": list(exclude), "sources": len(sources),
         "primal_langs": total, "dual_langs": dual, "total_langs": total + dual,
