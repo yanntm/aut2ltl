@@ -72,6 +72,29 @@ ask (M4.b tail): the same cross-tabulation at deeper census shapes, to promote
 the regularity toward a theorem or refute it with one prefix-independent
 permanent stall.
 
+**Revision 2026-07-08e (theory review pass — consistency + paper-close
+deliverables).** A theory review of `sos_learning.md` against the campaign
+data landed three things here. (1) The paper now *displays* the stalled
+`a_implies_xa` export next to the canonical algebra (§4.2) and states its
+multiplication table is **non-associative** —
+`([a]·[a])·[a] = [!a] ≠ [a!a] = [a]·([a]·[a])` — with the `a^ω` verdicts of
+both specimens derived from it. That display is paper-anchored data: it gains
+a stats field (section 7, `export_associative`), two harness rows (section 9,
+P7/F8), and a fixture (section 8, M4.e item 2). (2) One **blocker-grade
+audit** is opened: the census-E1 per-N table reports 32 languages at `N = 2`,
+but `|S(L)₊¹| = 2` forces every lasso onto the single linked pair, i.e.
+`L ∈ {∅, Σ^ω}` — at most two languages. Either `ref_classes` excludes the
+identity (then every `N` axis the paper cites is off by one) or language
+dedup is incomplete across shapes (then "541 languages" overcounts). Resolve
+before any further census aggregation (section 8, M4.e item 1). (3) The
+remaining paper TBDs are promoted to explicit deliverables (M4.e items 3–6);
+the paper side has already integrated the E0 named-case metric rows into
+§6.2, restated the teacher's equivalence-certification ladder (default runs
+certify `bounded:8`, backed by byte-equality; exact on the ablation leg), and
+scoped the census fill-envelope claim (median fill exceeds `N²·|Σ|` by up to
+~30% at `N = 3–5`; inside from `N = 6` up — the paper no longer claims
+"within" unqualified).
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -622,6 +645,7 @@ n_classes_initial, stall_class (none|transient|permanent|n/a),
 cex_policy (minimal|first|padded:<k>),
 max_cex_stem, max_cex_loop, max_query_word_len,
 eq_certification (reps|bounded:<B>|exact),
+export_associative (true|false|n/a),
 wall_seconds, verdict (SOUND|MISMATCH|BUDGET|ACCEPTOR_ONLY)
 ```
 
@@ -642,6 +666,15 @@ frequency counts.
 
 `ACCEPTOR_ONLY` is reserved for `--no-saturation` runs that pass the acceptor
 check but fail byte-equality.
+
+`export_associative` is computed on the exported multiplication table
+(`n/a` when no export was produced): brute-force check of
+`M(M(a,b),c) = M(a,M(b,c))` over all class triples — `O(n³)` on tables of
+this size, negligible. On a saturated run it must be `true` (the export is a
+two-sided congruence quotient — section 9 row P7); on an ablation-leg
+permanent stall it is expected `false`, and the first violating triple is
+recorded as the witness (row F8): non-associativity is the §4.2 display's
+sharpest evidence that a stalled export is not an algebra at all.
 
 ---
 
@@ -751,6 +784,42 @@ check but fail byte-equality.
     Accept: sensitivity table; every figure and
     table regenerated from `results.csv` by one script (no hand-edited
     numbers anywhere). E6 remains stretch, after M4.d.
+  - **M4.e — Paper-close deliverables** *(added 2026-07-08e, theory review
+    pass; these are what still stands between the campaign and a submittable
+    §6)*:
+    1. **`N`-semantics / dedup audit — BLOCKER.** State, in one line, what
+       `ref_classes` counts (`|S(L)₊¹|` with the fresh identity, per
+       section 1.1 — or not), and reconcile the census-E1 per-N table with
+       the algebra: 32 languages at `N = 2` is impossible for
+       `N = |S(L)₊¹|` (`L ∈ {∅, Σ^ω}` are the only two). If the convention
+       is off by one, regenerate the per-N medians under the stated one; if
+       dedup across shapes is incomplete, recount and restate the census
+       total. Gates the paper's §6.2 table, its `N ∈ [2, 21]` range, and the
+       541 headline. Deliverable: convention line + regenerated
+       `census_e1/summary.md` + a correction note in `sosl_report.md`.
+    2. **Associativity probe + stalled-export fixture.** Implement
+       `export_associative` (section 7) and rows P7/F8 (section 9). Emit the
+       stalled `a_implies_xa` 4-class export and assert it matches the
+       paper's §4.2 display cell-for-cell (keys `eps/!a/a/a!a`; row `a` =
+       `a, a!a, !a, !a`; witness triple `([a],[a],[a])`) — a paper-anchored
+       conformance lock, same status as the Even/EvenBlocks traces (row P5).
+    3. **Parity-twin identity check.** Byte-compare the reference `.sos`
+       *sets* of `2state1ap1acc` and `2state1ap1acc_parity`. Expected:
+       identical 129-language sets — the paper's §6.1 now states the twin
+       re-presents the same languages; if the sets differ, report the delta
+       and the paper adjusts (§6.1/§6.3/§6.4).
+    4. **LTL read-off agreement count.** Over the (post-item-1) census:
+       learned invariant's aperiodicity verdict vs ground truth, expected
+       agreement on every case. Closes the §6.4 `⟨TBD-M4: n cases⟩`.
+    5. **Wall-time line.** Total and worst-case census wall time, one
+       sentence. Closes the §6.2 `⟨TBD-M4⟩`.
+    6. **Shape manifest.** Emit the per-shape family/count table from
+       `manifest.py` (shapes, presentations, languages after dedup). Closes
+       the §6.1 corpus `⟨TBD-M4⟩`.
+    Standing science ask, unchanged (revision 2026-07-08d): the permanence
+    cross-tabulation at deeper census shapes — one prefix-independent
+    permanent stall refutes the necessity conjecture; 100% prefix-dependence
+    at richer shapes promotes it toward a proof attempt.
 
 Non-goals for this iteration: performance tuning beyond the budgets above,
 black-box teachers other than the wire protocol, alphabets beyond `2^AP`,
@@ -785,6 +854,8 @@ recorded outcome, not a defect.
 | F6 | ROLL certified by its native RABIT equivalence, not our teacher's oracle | E3 | expected | record it; both learners certify exactly by different mechanisms — the asymmetry is a reported result, not a defect (design note revised 2026-07-08c) |
 | F7 | budget exhausted on an E6 random case | E6 | allowed | record `BUDGET`; census sizing (F4) does not apply to E6 |
 | P6 | `stall_class` on any saturation-on run | M4.b+ (E2) | must be `n/a` | driver bug: a saturated run must never carry `transient`/`permanent` (section 7) — the M4.a E0 table had this wrong; E2's frequency counts read the ablation leg only |
+| P7 | exported `M` is associative (`export_associative = true`) | any **saturated** run | always green | the sweep failed to deliver a two-sided congruence — learner bug; a two-sided quotient's table is associative by construction |
+| F8 | exported `M` is associative | `--no-saturation` runs | MAY be red; on `a_implies_xa` MUST be red with witness triple `([a],[a],[a])` | record the witness triple, never "fix" it — it anchors the paper's §4.2 display (a green here on `a_implies_xa` means the export or the check is wrong) |
 
 Two "surprising green" notes, so nobody distrusts a passing run:
 
