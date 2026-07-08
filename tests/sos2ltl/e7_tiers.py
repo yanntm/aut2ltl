@@ -1,17 +1,23 @@
-"""The ω-blindness tier table across E7 ledger outputs (F7 + addendum).
+"""The E7 dual-scan + ω-blindness tiers, ventilated by Wagner degree.
 
-    python3 -m tests.sos2ltl.e7_tiers <e7_TAG.jsonl> [<e7_TAG2.jsonl> ...]
+    python3 -m tests.sos2ltl.e7_tiers <e7.jsonl> [<e7b.jsonl> ...] \
+        [--sos-dir genaut/corpus/flat_canon/sos]
 
-Reads the per-language records `e7_ledger` writes (each carries `h5_hit`,
-`right_ideal`, `phase_collapse`) and reports the sufficient-condition
-hierarchy `right ideal ⊊ phase-collapse ⊊ ω-blind`:
+Reads the per-non-LTL-language records `e7_ledger` writes (each carries
+`h5_hit`, `right_ideal`, `phase_collapse`, and the `linear`/`omega` family
+rows) and places each language in its **Wagner degree** bucket (`ϕ=(γ,s)` from
+its `.cat` sidecar). Per degree it reports:
 
-  * the H5 tier split — right-ideal / phase-collapse-only / P-level — per shape
-    and pooled (the language is the unit; pass `--distinct` to drop shapes
-    whose languages duplicate another, e.g. a `_parity` twin);
-  * the containment / sufficiency guards that must hold: `right ideal ⟹ PC`
+  * the **dual-scan shape** — both context shapes separate / ω-only / linear-only
+    (= H5, the F₂-blind stratum);
+  * the **ω-blindness tier** of the H5 hits — right-ideal ⊊ phase-collapse ⊊
+    P-level (the sufficient-condition hierarchy F7 + addendum);
+  * the containment / sufficiency **guards** that must hold: `right ideal ⟹ PC`
     (no RI &¬PC) and `PC ⟹ H5` (no ¬H5 & PC). A violation is a stop-the-line
     bug and exits nonzero.
+
+`flat_canon` is complement-closed and relabel-canonical, so there are no
+`_parity`/relabel twins to drop — the old `--distinct` flag is gone.
 """
 from __future__ import annotations
 
@@ -21,10 +27,9 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, List
 
+from tests.sos2ltl.cat_sidecar import PHI_LABEL, cat_for, phi_rank
 
-def _tag(path: str) -> str:
-    stem = Path(path).stem
-    return stem[3:] if stem.startswith("e7_") else stem
+DEFAULT_SOS_DIR = "genaut/corpus/flat_canon/sos"
 
 
 def _tier(r: Dict) -> str:
@@ -35,36 +40,55 @@ def _tier(r: Dict) -> str:
     return "phase-collapse" if r["phase_collapse"] else "P-level"
 
 
-def main(argv: List[str]) -> int:
-    paths = [a for a in argv if not a.startswith("--")]
-    distinct = "--distinct" in argv
-    if distinct:  # drop shapes whose language set duplicates a kept one
-        paths = [p for p in paths if "parity" not in p]
+def _shape(r: Dict) -> str:
+    if r["linear"] is not None and r["omega"] is not None:
+        return "both"
+    return "linear-only" if r["linear"] is not None else "omega-only"
 
-    pooled: Counter = Counter()
+
+def _row(label: str, c: Counter, s: Counter) -> str:
+    h5 = c["right-ideal"] + c["phase-collapse"] + c["P-level"]
+    return (f"  {label:16s} {sum(c.values()):6d} {s['both']:5d} "
+            f"{s['omega-only']:6d} {h5:5d} "
+            f"{c['right-ideal']:4d} {c['phase-collapse']:8d} {c['P-level']:8d}")
+
+
+def main(argv: List[str]) -> int:
+    sos_dir = DEFAULT_SOS_DIR
+    if "--sos-dir" in argv:
+        sos_dir = argv[argv.index("--sos-dir") + 1]
+    paths = [a for a in argv if not a.startswith("--") and a != sos_dir]
+
+    by_phi: Dict[str, Counter] = {}          # degree -> tier counts
+    shape_by_phi: Dict[str, Counter] = {}    # degree -> dual-scan shape counts
+    pooled_tier: Counter = Counter()
+    pooled_shape: Counter = Counter()
     bug: List[str] = []
-    print(f"  {'shape':22s} {'RI':>4} {'PC-only':>8} {'P-level':>8} "
-          f"{'H5':>5} {'non-H5':>7}")
     for p in paths:
-        c: Counter = Counter()
         for l in Path(p).read_text().splitlines():
             if not l:
                 continue
             r = json.loads(l)
-            c[_tier(r)] += 1
+            cat = cat_for(sos_dir, r["id"])
+            phi = cat.phi if cat else "?"
+            by_phi.setdefault(phi, Counter())[_tier(r)] += 1
+            shape_by_phi.setdefault(phi, Counter())[_shape(r)] += 1
+            pooled_tier[_tier(r)] += 1
+            pooled_shape[_shape(r)] += 1
             if r["right_ideal"] and not r["phase_collapse"]:
                 bug.append(f"{r['id']}:RI&¬PC")
             if r["phase_collapse"] and not r["h5_hit"]:
                 bug.append(f"{r['id']}:PC&¬H5")
-        pooled.update(c)
-        h5 = c["right-ideal"] + c["phase-collapse"] + c["P-level"]
-        print(f"  {_tag(p):22s} {c['right-ideal']:4d} {c['phase-collapse']:8d} "
-              f"{c['P-level']:8d} {h5:5d} {c['non-H5']:7d}")
 
-    h5 = pooled["right-ideal"] + pooled["phase-collapse"] + pooled["P-level"]
-    print(f"  {'POOLED':22s} {pooled['right-ideal']:4d} "
-          f"{pooled['phase-collapse']:8d} {pooled['P-level']:8d} "
-          f"{h5:5d} {pooled['non-H5']:7d}")
+    print("=== E7 dual-scan shape + ω-blindness tiers, non-LTL, by Wagner degree ===")
+    print(f"  (H5 = linear-only = F₂-blind; tiers: right-ideal ⊊ "
+          f"phase-collapse ⊊ P-level)")
+    print(f"  {'ϕ=(γ,s)':16s} {'nonLTL':>6} {'both':>5} {'ω-only':>6} "
+          f"{'H5':>5} {'RI':>4} {'PC-only':>8} {'P-level':>8}")
+    for phi in sorted(by_phi, key=phi_rank):
+        print(_row(PHI_LABEL.get(phi, phi), by_phi[phi], shape_by_phi[phi]))
+    print(_row("POOLED", pooled_tier, pooled_shape))
+
     print(f"\n  guards: right-ideal⟹PC and PC⟹H5  ->  "
           f"{'HOLD' if not bug else 'VIOLATED ' + str(bug)}")
     return 1 if bug else 0
