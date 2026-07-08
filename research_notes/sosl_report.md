@@ -1156,3 +1156,63 @@ convention statement is still owed.
 "too large to certify exactly", ablation leg only, `stall_class` deferred
 and never folded into frequency counts, `MISMATCH` reserved for byte
 mismatch.
+
+---
+
+## Theory-thread feedback — witness lock banked; 7d retired by theorem; reproducibility floor (2026-07-08)
+
+**The witness lock is accepted, and §6.3's positive side is closed.** The
+lock green on all four witnesses — canonical-invariant prefix-independence
+plus the Corollary 4.7(b) ω-sort signature, with the minted-column ledgers
+embedded — is exactly the certificate the paper needed, and it is
+integrated: §6.3 now states the refutation with the certificate language,
+and the exhibits pattern (`reference/witness_lock_exhibits.md`) is the model
+for everything below.
+
+**Item 7(d) is retired — there is no exhaustive-shape witness to hunt, and
+we can prove it.** New paper **Lemma 4.8** (prefix-independence needs
+depth): *a prefix-independent closed — safety — language is `∅` or `Σ^ω`;
+dually for open.* Proof in one line: for `w ∈ L` and any `x ∈ Σ^ω`, the
+words `x[0..n]·w` all lie in `L` by prefix-independence and converge to `x`,
+so closedness forces `x ∈ L`. Three consequences. (i) A `c = 0` shape
+recognizes only safety languages (every run accepting; finite branching +
+König), so the unfinished `3state1ap0acc` can never contribute a witness —
+at any point of its sweep, `OVERSIZE` deferrals included. (ii) Every other
+exhaustive shape is completely swept, and your E2 Wagner table's
+`prefix-indep` column is zero on all of them. (iii) The smallest shapes not
+ruled out sit beyond the wall (`2state1ap2acc` at `4^16 ≈ 4.3·10⁹` ids and
+up). So the exhaustive tier provably contains no witness, the ask was
+unsatisfiable — and nothing is lost: the refutation is an existence claim
+carried by the per-witness lock, which is provenance-independent. §6.3 now
+claims the *frontier* instead of a shape: prefix-independent permanent
+stalls first arise beyond the enumeration wall. The lemma also upgrades
+three rows of your Wagner table from census fact to theorem: `prefix-indep
+= 0` at `(1, δ)`, `(1, σ)`, `(1, π)` could not have been otherwise. What
+remains genuinely open, and worth watching as the sweep and any deeper
+sampling proceed: whether a prefix-independent permanent stall exists at
+intermediate depth — `(ω, ·)` or `(ω·2, ·)`; the witnesses are `(ω², ·)`
+and the lemma only forbids depth one.
+
+In place of 7(d), one cheap gate — **(d′), spec 2026-07-08g**: at sweep
+completion, assert the exhaustive negative (zero prefix-independent
+permanent stalls over the whole exhaustive tier), emitted as a
+machine-generated one-line count per shape.
+
+**Reproducibility floor — the report must be self-sufficient as a source
+(spec 2026-07-08g, section 8 item 9, normative).** Every flat-canon table
+above says "read off `results.csv`", but nothing under `tests/sosl/logs/`
+is committed: the numbers currently trace only to build-machine files, and
+the reproduce commands re-run full sweeps. The one committed evidence file
+— `reference/witness_lock_exhibits.md` — is exactly the right pattern, so
+generalize it: when a drop is validated, **copy** its load-bearing outputs
+out of `logs/` into the curated, committed `reference/` tree (nest
+`reference/<campaign>/` and `.../sos/` for claim-bearing specimens),
+immutable per drop, and cite the committed path next to each table the
+report reads off. From this drop on, a figure that traces only to `logs/`
+does not enter the paper. The final-sweep drop (item 8) should land under
+this rule — the paper's ⟨TBD-M4⟩ replacements will cite those paths.
+
+**Standing items, unchanged otherwise:** the completed sweep with the
+dual-symmetry assertion (item 8), the wall-time line, the LTL-agreement
+count, and the shape manifest (items 3–6) — all now landing as curated
+`reference/` artefacts under item 9.

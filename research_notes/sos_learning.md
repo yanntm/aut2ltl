@@ -16,7 +16,11 @@ rev. 2026-07-08b (§6 re-based on the flat, complement-closed `flat_canon`
 catalogue — 3938 languages, `N` to 121, the permanent family in the
 thousands and crossing the LTL cut; Corollary 4.7 added, and the
 prefix-dependence necessity conjecture refuted by census witnesses (§6.3);
-figures preliminary until the sweep completes)*
+figures preliminary until the sweep completes),
+rev. 2026-07-08c (Lemma 4.8 — prefix-independence needs depth; §6.3 closes
+the witness-provenance question: the sampled-tier witnesses stand on their
+per-language certificates, and an exhaustive-shape witness is proved
+impossible below the census's enumeration wall)*
 
 ## Abstract
 
@@ -1019,6 +1023,20 @@ uses it in the other direction, as a certificate: a permanent stall of a
 prefix-independent language must be recovered entirely by ω-sort mints, a
 machine-checkable signature of every such census witness.
 
+Prefix-independence also has a floor, which bounds where such witnesses
+can live at all:
+
+**Lemma 4.8 (prefix-independence needs depth).** A prefix-independent
+language that is topologically closed — a safety language — is `∅` or
+`Σ^ω`; dually for open. A nontrivial prefix-independent language is
+therefore neither closed nor open.
+
+*Proof.* Let `L` be closed, prefix-independent, and nonempty, and pick
+`w ∈ L`. Every `x ∈ Σ^ω` is the limit of the words `x[0..n]·w`, each in
+`L` by prefix-independence; closedness puts the limit in `L`, so
+`L = Σ^ω`. An open prefix-independent language has a closed
+prefix-independent complement. ∎
+
 **The loop, assembled.**
 
 ```
@@ -1308,8 +1326,8 @@ census of one-atom automata can produce (§6.3).
 *⟨The census sweep is complete on every shape but the largest, which
 supplies the large-`N` tail; counts that depend on it can only grow and are
 marked. Open, marked ⟨TBD-M4⟩ below: the shape manifest (§6.1), a wall-time
-note and a low-`N` fill audit (§6.2), the prefix-independent witness lock
-and an exhaustive-shape witness (§6.3), and the LTL-agreement count (§6.4).⟩*
+note (§6.2), the per-shape confirmation of §6.3's exhaustive negative, and
+the LTL-agreement count (§6.4).⟩*
 
 The algorithm of §3–5 is implemented as a pure query learner: its only source
 of truth is the teacher interface, and no automaton is ever visible to it. The
@@ -1344,12 +1362,12 @@ equivalence queries are counted separately (§2.1).
 **Corpus.** The census is a flat, complement-closed catalogue: **3938**
 ω-regular languages up to atomic-proposition relabeling, one representative
 per language, every language accompanied by its complement. Its sources are
-automaton *shapes* — transition-based generalized-Büchi automata over one
-atomic proposition with `n` states and `k` acceptance sets
-(`nstate·1ap·kacc`), nondeterminism allowed, each shape doubled by a
-parity-acceptance variant of the same skeleton — the smallest enumerated
-exhaustively, the deeper reached by reproducible sampling, all deduplicated
-by language. Nondeterminism matters for where a language first appears:
+automaton *shapes* — transition-based generalized-Büchi automata over one to
+three atomic propositions (`|Σ| = 2^AP`, up to 8) with `n` states and `k`
+acceptance sets (`nstate·map·kacc`), nondeterminism allowed, each shape
+doubled by a parity-acceptance variant of the same skeleton — the smallest
+enumerated exhaustively, the deeper reached by reproducible sampling, all
+deduplicated by language. Nondeterminism matters for where a language first appears:
 `a → Xa`, whose smallest *deterministic* acceptor has four states (its four
 residuals `L`, `a·Σ^ω`, `Σ^ω`, `∅` force them), has a two-state
 nondeterministic presentation and so belongs to the two-state shapes. Every
@@ -1398,11 +1416,14 @@ bounds hold on every case:
 harvest and saturation adding the counterexample-analysis term. Over the
 whole census `splits ≤ N` holds on every language — the sharpest, at
 `N = 121`, splits 118 times — and the fill term tracks the quadratic
-envelope across the upper range, the low-`N` buckets sitting above it,
-dominated by the initial table's stabilization ⟨TBD-M4: the low-`N` fill
-audit⟩; equivalence queries stay in the single digits across the entire
-range, `N = 121` included. Median membership by class count traces the
-quadratic growth:
+envelope at every alphabet size; the per-`N` aggregates mix alphabets, so a
+bucket reads against `N²·|Σ|` at its own `|Σ|` — the `N = 4` bucket's
+median fill of 145, dominated by `|Σ| = 8` languages, sits at their
+envelope of 128, its `|Σ| = 2` minority at 17 against 32. Equivalence
+queries stay in the single digits across the entire range, `N = 121`
+included. Median membership by class count traces the quadratic growth
+(the two `N = 2` languages are `∅` and `Σ^ω`, as the adjoined identity
+demands):
 
 | `N` | 2 | 4 | 8 | 13 | 21 | 32 | 50 | 72 | 97 | 121 |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
@@ -1468,12 +1489,25 @@ left action survives prefix-independence as a rotation (Corollary 4.7), and
 the census realizes it: two prefix-independent languages, with their
 complements, stall permanently — `N = 10` stalled at 8, `N = 16` at 14, both
 exact-certified, both properly requiring a three-priority parity acceptance
-(beyond deterministic Büchi and co-Büchi power). Corollary 4.7(b) pins their
-recoveries to the ω-sort: every column their saturated runs mint must be an
-ω-column — the recovering left contexts act inside the loop, where no prefix
-exists to delete. ⟨TBD-M4: the witnesses' ω-sort signature lock, and a
-witness at an exhaustively enumerated shape — the two known ones come from a
-sampled tier.⟩
+(beyond deterministic Büchi and co-Büchi power). The Corollary 4.7 certificate holds on all
+four: prefix-independence is verified algebraically on the canonical
+invariant — acceptance invariant under every left multiplication of the
+stem class — and every column their saturated runs mint is an ω-column
+(4.7(b)), the recovering left contexts acting inside the loop, where no
+prefix exists to delete. Both witnesses come from the census's sampled
+tier, and necessarily so: no exhaustively enumerated shape can supply
+one. Every completed exhaustive shape carries no prefix-independent
+permanent stall, and the one shape whose sweep is unfinished recognizes
+only safety languages — its trivial acceptance makes every run accepting
+— which Lemma 4.8 bars from nontrivial prefix-independence outright. The
+refutation loses nothing to sampling: an existence claim is carried by
+its per-language certificate, not by the enumeration that found it. What
+exhaustion contributes is the complementary negative — prefix-independent
+permanent stalls first arise beyond the census's enumeration wall. Between
+Lemma 4.8's floor and the witnesses' three-priority degree the territory
+stays open: no witness has appeared at deterministic-Büchi, co-Büchi, or
+single-Rabin-pair power. ⟨TBD-M4: the completed sweep's per-shape
+confirmation of the exhaustive negative.⟩
 
 At the top of the range a handful of languages exceed the exact oracle's
 work cap: their permanent-vs-transient classification is recorded as

@@ -95,6 +95,22 @@ scoped the census fill-envelope claim (median fill exceeds `N²·|Σ|` by up to
 ~30% at `N = 3–5`; inside from `N = 6` up — the paper no longer claims
 "within" unqualified).
 
+**Revision 2026-07-08g (witness lock banked; 7d retired by theorem;
+reproducibility floor).** The witness lock (section 8 item 7 a–c) is
+delivered and green on all four prefix-independent witnesses; the paper's
+§6.3 refutation is closed on the positive side. Item 7(d) — an
+exhaustive-shape witness — is **retired as provably empty**: paper Lemma 4.8
+(a prefix-independent closed or open language is trivial) rules out every
+`c = 0` shape including the unfinished `3state1ap0acc`, all other exhaustive
+shapes are completely swept with zero prefix-independent permanent stalls,
+and the smallest shapes not ruled out lie beyond the enumeration wall
+(`≥ 4.3·10⁹` ids). Replaced by gate (d′): assert the exhaustive negative,
+per shape, at sweep completion. New section 8 item 9, normative: the report
+must be self-sufficient — validated campaign outputs (raw CSV, summaries,
+rendered tables, claim-bearing `.sos`) are copied out of `logs/` into a
+curated committed `reference/` tree, and every reported figure cites its
+committed source; `logs/`-only numbers do not enter the paper.
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -582,9 +598,25 @@ witness lock (blocks the paper's §6.3 claim):**
   build-stopping either way;
 - (c) emit the full exhibits (coarse and canonical `.sos`, complete split
   ledger with every escalation and minted column) into the report;
-- (d) hunt a witness at an exhaustively enumerated shape — the two known
-  ones are sampled-tier; exhaustive `2state1ap2acc_parity` if tractable,
-  else the smallest shape that yields one.
+- (d) RETIRED (2026-07-08g) — the hunt has no quarry. Theory: a
+  prefix-independent language that is closed (safety) or open is trivial
+  (paper Lemma 4.8). A `c = 0` shape recognizes only safety languages
+  (every run accepting; finite branching + König: a word has an infinite
+  run iff each of its prefixes has a run), so the unfinished
+  `3state1ap0acc` can never yield a witness at any point of its sweep;
+  every other exhaustive shape is already completely swept with zero
+  prefix-independent permanent stalls (the E2 Wagner table's
+  `prefix-indep` column); and the smallest shapes not so ruled out sit
+  beyond the enumeration wall (`2state1ap2acc` at `4^16 ≈ 4.3·10⁹`
+  generator ids, and up). No exhaustive-shape witness is reachable — and
+  none is needed: the refutation is an existence claim carried by the
+  per-witness lock (a)–(b), which certifies on the canonical invariant,
+  independent of provenance.
+- (d′) NEW gate, replaces (d): at sweep completion, assert the
+  **exhaustive negative** — zero prefix-independent permanent stalls over
+  the entire exhaustive tier, emitted as a machine-generated one-line
+  count per shape. This grounds the paper's §6.3 complementary claim:
+  prefix-independent permanent stalls first arise beyond the wall.
 
 **E3 — Baseline: FDFA learning (ROLL).** Question: cost and capability
 comparison against the established FDFA learner on identical teachers.
@@ -853,19 +885,37 @@ sharpest evidence that a stalled export is not an algebra at all.
     6. **Shape manifest.** Emit the per-shape family/count table from
        `manifest.py` (shapes, presentations, languages after dedup). Closes
        the §6.1 corpus `⟨TBD-M4⟩`.
-    7. **The witness lock + exhaustive-shape witness** (section 6, E2
-       recorded-outcome note, 2026-07-08f): gates the paper's §6.3
-       refutation claim.
+    7. **The witness lock** (section 6, E2 recorded-outcome note,
+       2026-07-08f): gates the paper's §6.3 refutation claim. Items
+       (a)–(c) DELIVERED (report 2026-07-08, the lock green on all four
+       witnesses). Item (d) — the exhaustive-shape witness hunt — is
+       RETIRED as provably empty (2026-07-08g; see the rewritten (d) in
+       section 6); its replacement is the exhaustive-negative gate (d′)
+       there, asserted at sweep completion.
     8. **Complete the flat_canon sweep** (`3state1ap0acc` outstanding):
        final E1/E2/E3 figures replace the paper's §6 ⟨TBD-M4⟩ markers; at
        completion assert the dual-symmetry of every E2 count (section 6
        corpus note — the current 440/441 guarantee/safety split and the odd
        gap-bucket counts are partial-sweep artifacts that must vanish).
+    9. **Data persistence — the reproducibility floor (2026-07-08g).**
+       Every figure the report states must trace to a git-committed,
+       machine-generated file. `tests/**/logs/` stays scratch and is never
+       cited as evidence; when a campaign drop is validated, its
+       load-bearing outputs — the raw `results.csv`, the analyzer
+       summaries, the rendered tables, the exhibit `.sos` where a specimen
+       carries a claim — are **copied** into a curated, committed folder
+       (`reference/`, the pattern `witness_lock_exhibits.md` already
+       follows; nest `reference/<campaign>/` and `.../sos/` as needed),
+       immutable per drop. The report cites the committed path next to
+       each table it reads off. A number that traces only to a
+       build-machine file does not enter the paper.
     Standing science ask — ANSWERED in the refutation direction
     (2026-07-08f): the flat_canon sweep surfaced two prefix-independent
-    permanent stalls (plus complements); the necessity conjecture is dead
-    pending the witness lock (item 7), which — with the completed sweep
-    (item 8) — is the remaining M4 science deliverable.
+    permanent stalls (plus complements), and the witness lock (item 7,
+    DELIVERED) certifies them; the necessity conjecture is dead. The
+    remaining M4 science deliverables are the completed sweep (item 8)
+    with the exhaustive-negative gate (item 7 d′), under the persistence
+    floor (item 9).
 
 Non-goals for this iteration: performance tuning beyond the budgets above,
 black-box teachers other than the wire protocol, alphabets beyond `2^AP`,
