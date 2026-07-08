@@ -706,8 +706,15 @@ LTL-definable" (the aperiodicity / group test on the algebra); none of ROLL's
 three FDFAs can — that asymmetry, not any size or query count, is the point.
 **Certification (F6):** both learners certify *exactly*, by different mechanisms
 — ours the Cayley transformation-closure product, ROLL's native RABIT against a
-state-based Büchi presentation; the asymmetry is mechanism, not level. The
-census-wide paired medians are the remaining E3 step.
+state-based Büchi presentation; the asymmetry is mechanism, not level.
+
+**Census-wide medians (`tests/sosl/census_e3.py`).** Over all 129 languages of
+`2state1ap1acc`: median class count `N = 8` against ROLL FDFA-size medians
+periodic **10**, syntactic **12**, recurrent **8**. The size comparison confirms
+the wash empirically at scale — against ROLL's *smallest* FDFA per language, the
+algebra is smaller on **66**, larger on **42**, tied on **21** of 129. The
+objects genuinely trade places inside the `N+N²` envelope; the capability
+asymmetry, not size, remains the result.
 
 ---
 
