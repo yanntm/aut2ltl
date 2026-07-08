@@ -49,6 +49,13 @@ Element = Tuple[Profile, Tuple[int, ...]]
 DEFAULT_MAX_ELEMENTS = 200_000
 
 
+class ExactTooLarge(Exception):
+    """The exact oracle's transformation closure exceeded the work cap — the
+    instance is too large to decide exactly. A capacity limit, distinct from a
+    wrong answer: a caller should record it as a capability skip, never as a
+    soundness failure."""
+
+
 def _compose_profile(p1: Profile, p2: Profile) -> Profile:
     """The profile of ``v1.v2`` from the profiles of ``v1`` and ``v2``: run
     ``v1`` (giving state ``q1`` and marks ``m1``), then ``v2`` from ``q1``."""
@@ -118,7 +125,7 @@ def _loop_elements(
             nxt = (_compose_profile(p1, p2), _compose_trans(t1, t2))
             if nxt not in word_of:
                 if len(word_of) >= max_elements:
-                    raise ValueError(
+                    raise ExactTooLarge(
                         f"exact: transformation closure exceeds {max_elements} "
                         "elements (instance too large for exact mode)"
                     )
