@@ -40,6 +40,7 @@ from sosl.sos.invariant import Invariant
 from sosl.sos.io.serialize import render_word
 from sosl.teacher import HoaTeacher
 from sosl.teacher.equiv import resolve_prediction
+from sosl.teacher.exact import ExactTooLarge
 
 
 @dataclass
@@ -248,6 +249,12 @@ def run_case(case_id: str, hoa_path: str, config: Config,
         return RunResult(stats, inv, ledger, _signature(table, p))
     except _Budget:
         stats.verdict = "BUDGET"
+        return RunResult(stats)
+    except ExactTooLarge as exc:
+        # The exact oracle could not build its closure — a capability limit, not
+        # a soundness failure (the learner never produced a wrong byte here).
+        stats.verdict = "OVERSIZE"
+        stats.detail = f"OVERSIZE:{exc}"
         return RunResult(stats)
     except Exception as exc:  # noqa: BLE001 -- a run records its own fault, never aborts
         stats.verdict = "MISMATCH"
