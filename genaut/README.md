@@ -43,6 +43,29 @@ presentation-distinct automaton of one language onto a single entry; the collaps
 is large where nondeterminism proliferates presentations (`2state1ap1acc`: 929
 TGBA -> 129 languages) and near 1 where the shape is already language-sparse.
 
+## The flat pool — cross-shape union of distinct languages
+
+The per-shape tiers language-dedup *within* a shape, but the same language recurs
+*across* shapes: a bigger shape emits a superset of a smaller one's languages (more
+states / colours / a parity acceptance over the **same** alphabet). `corpus/flat/`
+folds that redundancy into one pool — `flat/det/` + `flat/sos/`, **one file per
+distinct language**, kept from the **smallest** shape that emits it so the
+`<tag>_<id>` name traces the language to its minimal setting — plus a `census.md` +
+`flat.json` composition report. Built by `gen/flatten.py`.
+
+The dedup notion is **language identity up to a fixed AP labeling** (the `.sos`
+`𝓘` key; cross-`k` languages never collide, being over different alphabets).
+Shapes are traversed in a linear extension of the subset order — `(n, k, c,
+family)` with `gba < parity` — exhaustive shapes first, the non-exhaustive
+`sampled/` folders appended last (contributing only languages no census shape
+reached). Folding relabel/polarity twins (`GF(a) ≡ GF(!a)`) is a **later** work
+item; until then a sampled folder may report "new" languages that are only
+opposite-polarity twins of census ones (its encounter-order representative choice
+— see "Polarity / relabeling" below).
+
+    python3 genaut/gen/flatten.py            # (re)build corpus/flat/
+    python3 genaut/gen/flatten.py --exclude 2state2ap0acc   # default: drop dominators
+
 ## The slot model (the tgba tier)
 
 State `q0` is always initial. For every ordered pair `(src, dst)` and every
@@ -133,6 +156,8 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
                        canonize.py   a tgba shape -> canonical D (det/) + 𝓘 (sos/),
                                      deduped by the syntactic key + census.md.
                        rebuild.py    loop canonize over shapes (skip built; --force).
+                       flatten.py    cross-shape union -> corpus/flat/ (det + sos +
+                                     census.md + flat.json), deduped by language.
     analyze_frontier.py
                      one frontier report from a survey CSV (digest + PDF).
     probes/          diagnostics from the original 2state1ap1acc study.
@@ -141,6 +166,8 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
     corpus/tgba/<tag>/   enumerated TGBA survivors + census.md (git-tracked).
     corpus/det/<tag>/    canonical D per language (HOA) + census.md.
     corpus/sos/<tag>/    syntactic 𝓘 per language (.sos) + census.md.
+    corpus/flat/         cross-shape union: one det+sos per distinct language,
+                     smallest-shape naming + census.md + flat.json.
     logs/<tag>/      the committed reference survey run per shape.
 
 ## Sampling beyond the wall — `gen/sample.py`
