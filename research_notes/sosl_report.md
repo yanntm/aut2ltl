@@ -568,7 +568,19 @@ Gap (reference − stalled) distribution over the 88 runs:
 The sharpest exhibits reach gap 5 (`ref 13 → learned 8`, `ref 15 → learned 10`),
 far past the minimal `a_implies_xa` (gap 1): the right congruence can fall many
 classes short of the syntactic one, all recovered by the left-context sweep.
-Characterization of the 44 (identifying the named two, cataloguing by gap,
-rendering the sharpest fixpoint pairs and separating contexts) is the next E2
-deliverable; the beyond-wall shapes are reached by reproducible sampling, not
-exhaustive enumeration.
+**Exhibits delivered.** `tests/sosl/census_e2_exhibits.py` deduplicates the
+permanent runs to the 44 distinct languages and renders the sharpest as
+first-class exhibits (`logs/census_e2/<shape>.md`): for each, the coarse
+(certified non-canonical) `.sos`, the canonical `.sos`, and the separating left
+context (the saturation escalations, with their splits and minted columns). Gap
+distribution over the 44 **distinct languages**:
+
+| gap | 1 | 2 | 3 | 4 | 5 |
+|---|--:|--:|--:|--:|--:|
+| languages | 26 | 8 | 3 | 5 | 2 |
+
+The two gap-5 specimens are the headline: `2state1ap1acc_06496`
+(`ref 13 → stall 8`, recovered by 1 counterexample and **5** saturation
+escalations — three branch-1, two frozen-chain) and `2state1ap1acc_19552`
+(`ref 15 → stall 10`). The beyond-wall shapes are reached by reproducible
+sampling (`genaut/gen/sample.py`), not exhaustive enumeration.
