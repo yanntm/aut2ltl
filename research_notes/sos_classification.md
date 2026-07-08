@@ -5,7 +5,7 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Working draft — 2026-07-07 — extends §7 of [SωS26]*
+*Working draft — 2026-07-08 — extends §7 of [SωS26]*
 
 This note expands §7 of the core paper [SωS26] into the decision procedures
 themselves: for each band of the classification table — identity, the
@@ -46,12 +46,14 @@ the syntactic semigroup `S(L)₊` — and recall that a **linked pair** is
 `(s, e)` with `e·e = e`, `s·e = s`, both in `𝒞₊`, and that membership of any
 lasso is decided by folding to its linked pair and consulting `P`.
 
-**Claim.** Every classification in this note is a function of `𝓘(L)` alone,
-computed by table search — no automaton, no residuals block, no external
-tool. The single exception is the tail of the Wagner degree (§8): when the
-degree's recursion genuinely needs the *derivative* language, the procedure
-re-enters through a presentation of `L`; the base invariants `m±`, `n±`,
-`µ`, and the sign are still read off `𝓘(L)` directly.
+**Claim.** Every classification in this note — the Wagner degree included,
+derivative tail and all — is a function of `𝓘(L)` alone, computed by table
+search: no automaton presentation, no residuals block, no external tool.
+One step earns that claim rather than inheriting it: the degree's derivative
+recursion provably cannot be carried by a re-marking of `P`
+(Proposition 8.1), and runs instead on the right regular representation of
+the same table — the marking never changes, the admissible stems shrink
+(Theorem 8.5).
 
 **Why this is legitimate.** Chains and superchains — the two combinatorial
 quantities the whole classification reduces to — are *syntactic invariants*:
@@ -323,20 +325,169 @@ should name these levels by this dictionary.
 
 **When the recursion is needed.** Only in the case `m ≥ 1 ∧ n⁺ = n⁻` does
 `γ` involve the **derivative** `∂X` — Wagner's derivation, realized by
-Carton–Perrin as an automaton transformation `∂𝒜` (collapse the states
-reaching maximal positive resp. negative superchains onto two fresh sinks;
-[CP99 §3]) with `m(∂X) < m(X)`, so the recursion terminates within `m(X)`
-steps. On all other inputs — including every language whose maximal
-superchains are of a single sign — `γ = µ` and the degree is a direct
-read-off of `𝓘(L)`.
+Carton–Perrin as an automaton transformation [CP99 §3]. On all other inputs
+— including every language whose maximal superchains are of a single sign —
+`γ = µ` and the degree is a direct read-off of `𝓘(L)`. The rest of this
+section shows the derivative case is a read-off too: not of the marking `P`
+(that is provably impossible), but of the same multiplication table through
+its right regular representation.
+
+**The derivation, precisely** ([CP99 §3]). Let `𝒜 = (Q, i, T)` be a
+deterministic complete Muller automaton recognizing `X`, with `m(X) ≥ 1` and
+`n⁺ = n⁻ = n`. Call a state *positive* (resp. *negative*) if a maximal —
+length `n`, sign `+` (resp. `−`) — superchain is accessible from it, and
+write `Q⁺`, `Q⁻`. The derived automaton `∂𝒜` keeps `Q⁺ ∩ Q⁻`, adds an
+accepting sink `q₊` and a rejecting sink `q₋`, redirects every transition
+entering `Q⁺ − Q⁻` to `q₊` and every other transition leaving `Q⁺ ∩ Q⁻` to
+`q₋`, and accepts by `{S ⊆ Q⁺∩Q⁻ : S ∈ T} ∪ {{q₊}}`. The definition is
+deliberately asymmetric: states from which *no* maximal superchain is
+accessible are merged with `q₋` [CP99 §3]. Then `∂𝒜` recognizes a language
+`∂X` that depends only on `X` ([CP99, Prop. 3] — their §3 also gives the
+presentation-free form `∂X = (X − V_X·Σ^ω) ∪ U_X·Σ^ω`, where `U_X` collects
+the finite words whose future retains the full positive but not the full
+negative superchain structure, and `V_X` those whose future has lost `m` or
+`n⁺`), and `m(∂X) < m(X)`, so the recursion of `γ` terminates within `m(X)`
+steps.
+
+**The derivative leaves the algebra…** One could hope `∂X` is recognized by
+`𝓘(X)` itself under a re-marked accepting set. It is not:
+
+**Proposition 8.1.** There is an ω-rational `X` with `m = 1`, `n⁺ = n⁻ = 0`
+whose derivative is not saturated by the syntactic congruence of `X`: no
+marking `P′` of the linked pairs of `𝓘(X)` recognizes `∂X`.
+
+*Proof.* Over `Σ = {a, b, c, d}` take the escape language
+
+```
+    X = c*·a·K⁺ ∪ c*·b·K⁻ ,     K⁺ = {α ∈ {a,b}^ω : infinitely many a} ,
+                                K⁻ = {α ∈ {a,b}^ω : finitely many a} ,
+```
+
+so any occurrence of `d`, or of `c` past the leading `c`-block, is fatal.
+On the evident six-state deterministic presentation (a hub with a `c`-loop,
+a two-state `K⁺`-component, a two-state `K⁻`-component, a dead sink): the
+`K⁺`-component carries a positive chain of length 1 (its all-`b` loop is
+rejecting inside its accepting full loop), the `K⁻`-component the dual
+negative chain, the two components are mutually unreachable — `m⁺ = m⁻ = 1`,
+`n⁺ = n⁻ = 0`, the derivative regime. The collapse gives `∂X = c*·a·Σ^ω`
+(the hub keeps only its `c`-loop, which is rejecting; `a` commits positive,
+`b` and `d` negative). Now `a·d^ω ∈ ∂X` and `d^ω ∉ ∂X`, yet for every
+`u ∈ Σ^*` neither `u·a·d^ω` nor `u·d^ω` is in `X` — so the two ω-words have
+the same syntactic ω-image, and any language of the form `φ_ω^{-1}(Acc)`
+contains both or neither. ∎
+
+The failure is structural, not an artifact: membership in `∂X` records
+whether the prefix trajectory *visited* the committed region `Q⁺ − Q⁻`, an
+event the ω-image — which only remembers where the trajectory *ends up* —
+cannot see.
+
+**…but not the table.** The object that does carry the derivation is the
+**right regular representation** of `𝓘(X)`: the *Cayley automaton* `A_X`
+with states `𝒞`, initial `[ε]`, transitions `t · a := t·λ(a)`, and accepting
+family `T_X = {S : S admissible, pair(S) ∈ P}`. (The infinity set `S` of a
+run is contained in one `R`-class and folds to a linked pair
+`pair(S) = (s, φ(w)^π)` — base `s ∈ S`, loop word `w` covering `S`;
+conjugacy-invariance of `P` makes the choices immaterial — so `A_X`
+recognizes `X`.) `A_X` *is* the table read as a machine; applying the
+derivation to it stays a table search, by the following three steps.
+
+**Lemma 8.2 (transport at a location).** For every `t ∈ 𝒞`: the
+`A_X`-chains (resp. superchains) accessible from state `t` correspond,
+preserving length and sign, to the normal-form chains (superchains) of §5–6
+whose stem (top stem) lies in `t·S¹`.
+
+*Proof sketch.* Realization: a normal-form chain `(s, e₀ >_H ⋯ >_H e_m)`
+yields nested loops at state `s` — loop `R_i` reads one word of each of
+`e₀, …, e_i` in order (the product collapses to `e_i` by absorption), so
+`R_{i−1} ⊆ R_i` and `pair(R_i) = (s, e_i)`; alternation of the `P`-bits
+forces the inclusions strict. Superchain connectors become Cayley paths.
+Extraction: from nested accessible loops `R₀ ⊂ ⋯ ⊂ R_m` at a base `s′`, take
+`e₀ := φ(v₀)^π` for a loop word `v₀` of `R₀`, and
+`e_{i+1} := (e_i·z_{i+1}·e_i)^π` where `z_{i+1}` is the product of a loop of
+`R_{i+1}` threaded through the `R_i`-loop — the construction of
+[CP97, Thm. 6] — giving an `H`-descent at stem `s′` with the same bits; for
+superchains the connecting paths give `R`-descents, strict by
+[CP97, Prop. 11]. Accessibility from `t` is right multiplication, i.e.
+membership in `t·S¹`, in both directions. ∎
+
+**Corollary 8.3 (zones).** `Q^±(A_X) = T^± := {t ∈ 𝒞 : some maximal
+±-superchain has its top stem in t·S¹}` — unions of `R`-classes (plus
+`[ε]`, which is in both), computed from §6's DP output by one right-Cayley
+reachability pass. Write `U := T⁺ − T⁻` and `B := T⁺ ∩ T⁻` (the kept
+states).
+
+**Lemma 8.4 (committed tops).** The top stem of a maximal positive
+superchain lies in `U`; dually for negative.
+
+*Proof.* If a maximal negative superchain were accessible from the top stem
+`s₀`, prepending `s₀`'s (positive, maximal) top chain to it would give a
+positive superchain of length `n+1`, contradicting `n⁺ = n`. ∎
+
+Three consequences. (i) Every element of `B` reaches, inside its `R`-ideal,
+both a `U`-element and a `T⁻−T⁺`-element — in `∂A_X` both sinks are
+admissible. (ii) A stem carrying a maximal chain is never in `B` (its chain
+would prepend as above) — all maximal chains die in the collapse, and
+`m(∂X) < m(X)` falls out in one line. (iii) `B` is `≤_R`-upward closed, so a
+Cayley path between `B`-elements never leaves `B`: accessibility inside the
+kept part is plain ideal containment.
+
+**Theorem 8.5 (derivation on the invariant).** Let `X` be in the derivative
+regime. Then the classification data of `∂X` are computed on `𝓘(X)` by the
+§5–6 engines with the marking `P` **unchanged** and the stems **restricted**
+to those whose `R`-class lies in `B`:
+
+- `m^±(∂X) = max(0, restricted §5 numbers)` — each sink contributes a
+  length-0 chain of its sign and nothing longer (a loop containing an
+  absorbing sink is that sink alone);
+- if `m′ := m(∂X) ≥ 1`: `n^±(∂X)` are the restricted §6 numbers (the sinks
+  carry no `m′`-chain);
+- if `m′ = 0`: the §6 search additionally allows each descent to end with
+  one virtual stem of sign opposite to its last chain — a sink, accessible
+  from every `B`-stem, from which nothing continues — and the empty descent
+  with a single sink floors both signs at `0`.
+
+The `γ`/`s` recursion then proceeds with these numbers, re-zoning within `B`
+(the level-`k` superchain tops within `B_k` give `B_{k+1} ⊆ B_k`; the
+previous sinks, carrying no maximal chain once the recursion continues, are
+merged into the new `q₋`). It terminates in at most `m(X)` levels; each
+level costs one engine pass, `O(N·|E|² + N²)`; the recursion trace
+`µ₀, µ₁, …` is the Cantor normal form of `γ`, with `s` read at the last
+level; and every level's witnesses remain lassos over `𝒞`.
+
+*Proof.* By Corollary 8.3 the derived Cayley automaton `∂A_X` is exactly the
+zone collapse of the table; by [CP99, Prop. 3] it recognizes `∂X`; by
+[CP99, Thms. 1–2] its chains and superchains compute `m^±(∂X)`, `n^±(∂X)`.
+Its admissible loops are the two sink loops plus the Cayley loops at
+`B`-stems (a loop stays inside one `R`-class, and `B` is a union of
+`R`-classes); its internal accessibility is ideal containment
+(Lemma 8.4 (iii)); and Lemma 8.2 converts its chains and superchains into
+the restricted normal-form searches, strictness both ways by
+[CP97, Prop. 11]. Termination is Lemma 8.4 (ii). ∎
 
 **Procedure.** Compute `(m±, n±)` (§5–6), then `µ` and the sign. If
-`m = 0 ∨ n⁺ ≠ n⁻`, emit `ϕ = (µ, s)` and stop. Otherwise construct `∂X`
-from a deterministic presentation of `L` via `∂𝒜`, rebuild `𝓘(∂X)` by the
-construction of [SωS26], and recurse — the one step in this note that leaves
-the single invariant. Whether the derivative's `(m±, n±)` can be read off
-`𝓘(X)` directly, without rebuilding, is left open here as a research
-direction; nothing downstream depends on it.
+`m = 0 ∨ n⁺ ≠ n⁻`, emit `ϕ = (µ, s)` and stop. Otherwise compute the
+superchain tops and the zones (Corollary 8.3), restrict the stems to `B`,
+and recurse by Theorem 8.5 — never leaving the multiplication table.
+
+**Worked checks.** On `Fork` (§9): the negative maximal chain's stem `[a]`
+is its own `R`-ideal, so `[a] ∈ T⁻−T⁺`; `[!a]` and `[!a·a]` lie in
+`T⁺−T⁻` (a `!a`-prefix has already committed: `[!a·a] ∈ [!a]·S¹` tops the
+positive chain, and no negative top does). Hence `B ∩ 𝒞₊ = ∅`: the kept part
+is the hub `[ε]` alone, the restricted engines see only the two sinks,
+`(m′, n′⁺, n′⁻) = (0, 0, 0)`, `ϕ(∂Fork) = (1, δ)`, `γ(Fork) = ω + 1` — the
+§9 record, no presentation touched. On Proposition 8.1's escape language:
+the single `B`-pair `([c], [c])` is rejecting; descending from it to `q₊`
+gives `n′⁻ = 1 > n′⁺ = 0`, so `ϕ(∂X) = (1, σ)` — indeed `∂X = c*·a·Σ^ω`,
+properly open — and `γ(X) = ω + 1`, `s = σ`. [CP99]'s own Example 4 (their
+Figs. 4–5) has the same shape, and their published `γ(X₃) = ω + 1` agrees.
+
+**Related work, to be pinned.** Cabessa and Duparc [CD09a, CD09b] develop
+the algebraic counterpart of the Wagner hierarchy on finite pointed
+ω-semigroups by game-theoretic means; the precise relation of their decision
+procedure to the present one — same §5–6 engines, shrinking stem set, plus
+Proposition 8.1 explaining why the marking alone cannot carry the derivative
+— is to be assessed once their construction is on the table (reading
+queued).
 
 ---
 
@@ -459,7 +610,11 @@ acceptance `Inf(0) ∨ Fin(1)`. A run through `q_a` sees mark `1` forever, so
 acceptance reduces to `Inf(0)` — infinitely many `a`; a run through `q_b`
 never sees `0`, so it reduces to `Fin(1)` — finitely many `a`. This is the
 K4 fixture of the engineering companion: exit 2 with `PARTIAL(ω)` from the
-`.sos` alone, `ϕ = (ω+1, δ)` with the presentation supplied.
+`.sos` alone, `ϕ = (ω+1, δ)` with the presentation supplied. By
+Theorem 8.5 the presentation is no longer *needed* — the table derivation
+collapses all of `𝒞₊` into the two sinks and returns `ϕ(∂Fork) = (1, δ)`
+directly (§8, worked checks) — but the fixture keeps its `--hoa` path as an
+independent cross-check of the collapse.
 
 ---
 
@@ -469,7 +624,8 @@ Every procedure above is a polynomial search in the table: power orbits
 `O(N²)`; the Green preorders, graph reachability; chains, a
 longest-alternating-path DP over the idempotent Hasse DAG per admissible
 stem; superchains, the same over the `R`-order; the degree, arithmetic on
-the results plus at most `m(X)` derivations. Carton and Perrin note that on
+the results plus at most `m(X)` derivation levels, each one more engine pass
+on a shrunken stem set (§8, Theorem 8.5). Carton and Perrin note that on
 *presentations* the picture is harsher — computing `m(𝒜)` is NP-complete
 for Rabin automata, polynomial for Muller and parity ones (results of
 Krishnan–Puri–Brayton and of Wilke–Yoo, reported in [CP97, §7]) — which
@@ -625,6 +781,12 @@ small shapes actually exercise.
 
 ## References
 
+- **[CD09a]** J. Cabessa, J. Duparc. *A game theoretical approach to the
+  algebraic counterpart of the Wagner hierarchy: Part I.* RAIRO Theor.
+  Inform. Appl. 43(3) (2009) 443–461.
+- **[CD09b]** J. Cabessa, J. Duparc. *A game theoretical approach to the
+  algebraic counterpart of the Wagner hierarchy: Part II.* RAIRO Theor.
+  Inform. Appl. 43(3) (2009) 463–515.
 - **[CP97]** O. Carton, D. Perrin. *Chains and superchains for ω-rational
   sets, automata and semigroups.* Int. J. Algebra Comput. 7(6) (1997)
   673–695.
