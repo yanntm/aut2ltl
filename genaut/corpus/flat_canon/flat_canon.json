@@ -3,7 +3,7 @@
   "excluded": [
     "2state2ap0acc"
   ],
-  "sources": 20,
+  "sources": 19,
   "total_langs": 2007,
   "rows": [
     {
@@ -205,17 +205,6 @@
       "cumulative": 1764
     },
     {
-      "source": "2state1ap1acc__seed0",
-      "n": 2,
-      "k": 1,
-      "c": 1,
-      "family": "gba",
-      "exhaustive": false,
-      "scanned": 30,
-      "new_langs": 1,
-      "cumulative": 1765
-    },
-    {
       "source": "2state1ap2acc_parity__seed0",
       "n": 2,
       "k": 1,
@@ -223,13 +212,13 @@
       "family": "parity",
       "exhaustive": false,
       "scanned": 591,
-      "new_langs": 242,
+      "new_langs": 243,
       "cumulative": 2007
     }
   ],
   "by_family": {
-    "gba": 1745,
-    "parity": 262
+    "gba": 1744,
+    "parity": 263
   },
   "by_exhaustive": {
     "exhaustive": 1764,
@@ -237,8 +226,8 @@
   },
   "by_colours": {
     "0": 1393,
-    "1": 330,
-    "2": 284,
+    "1": 329,
+    "2": 285,
     "3": 0
   }
 }

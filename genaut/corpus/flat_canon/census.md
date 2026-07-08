@@ -9,13 +9,13 @@ Excluded: `2state2ap0acc`.
 
 | axis | bucket | languages |
 |---|---|--:|
-| acceptance family | `gba` | 1745 |
-| acceptance family | `parity` | 262 |
+| acceptance family | `gba` | 1744 |
+| acceptance family | `parity` | 263 |
 | provenance | exhaustive | 1764 |
 | provenance | sampled | 243 |
 | acceptance colours | c=0 | 1393 |
-| acceptance colours | c=1 | 330 |
-| acceptance colours | c=2 | 284 |
+| acceptance colours | c=1 | 329 |
+| acceptance colours | c=2 | 285 |
 | acceptance colours | c=3 | 0 |
 | **total** | | **2007** |
 
@@ -41,7 +41,6 @@ Excluded: `2state2ap0acc`.
 | 16 | `2state1ap1acc` | 2 | 1 | 1 | gba | exhaustive | 129 | 93 | 419 |
 | 17 | `2state1ap1acc_parity` | 2 | 1 | 1 | parity | exhaustive | 129 | 0 | 419 |
 | 18 | `3state1ap0acc` | 3 | 1 | 0 | gba | exhaustive | 1645 | 1345 | 1764 |
-| 19 | `2state1ap1acc__seed0` | 2 | 1 | 1 | gba | **sampled** | 30 | 1 | 1765 |
-| 20 | `2state1ap2acc_parity__seed0` | 2 | 1 | 2 | parity | **sampled** | 591 | 242 | 2007 |
+| 19 | `2state1ap2acc_parity__seed0` | 2 | 1 | 2 | parity | **sampled** | 591 | 243 | 2007 |
 
 Built by `python3 genaut/gen/flatten.py --canon`.

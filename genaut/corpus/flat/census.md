@@ -1,6 +1,6 @@
 # flat — cross-shape union of distinct languages
 
-One representative per distinct language (3790 in all), pooled from 20 shape sources and deduped by language identity (the `.sos` `𝓘` key, [SωS26 Thm. 5.1], up to a fixed AP labeling — relabel/polarity twins are kept, a later work item). Each language is kept from the **smallest** shape that emits it, so the `<tag>_<id>` filename traces it to its minimal setting.
+One representative per distinct language (3790 in all), pooled from 19 shape sources and deduped by language identity (the `.sos` `𝓘` key, [SωS26 Thm. 5.1], up to a fixed AP labeling — relabel/polarity twins are kept, a later work item). Each language is kept from the **smallest** shape that emits it, so the `<tag>_<id>` filename traces it to its minimal setting.
 
 Excluded (alphabet-blow-up dominators): `2state2ap0acc`.
 
@@ -9,13 +9,13 @@ Excluded (alphabet-blow-up dominators): `2state2ap0acc`.
 
 | axis | bucket | languages |
 |---|---|--:|
-| acceptance family | `gba` | 3295 |
-| acceptance family | `parity` | 495 |
+| acceptance family | `gba` | 3288 |
+| acceptance family | `parity` | 502 |
 | provenance | exhaustive | 3326 |
 | provenance | sampled | 464 |
 | acceptance colours | c=0 | 1699 |
-| acceptance colours | c=1 | 1551 |
-| acceptance colours | c=2 | 539 |
+| acceptance colours | c=1 | 1544 |
+| acceptance colours | c=2 | 546 |
 | acceptance colours | c=3 | 1 |
 | **total** | | **3790** |
 
@@ -43,7 +43,6 @@ A source's `new` is the languages first seen there — those a smaller shape did
 | 16 | `2state1ap1acc` | 2 | 1 | 1 | gba | exhaustive | 129 | 100 | 1706 |
 | 17 | `2state1ap1acc_parity` | 2 | 1 | 1 | parity | exhaustive | 129 | 0 | 1706 |
 | 18 | `3state1ap0acc` | 3 | 1 | 0 | gba | exhaustive | 1645 | 1620 | 3326 |
-| 19 | `2state1ap1acc__seed0` | 2 | 1 | 1 | gba | **sampled** | 30 | 7 | 3333 |
-| 20 | `2state1ap2acc_parity__seed0` | 2 | 1 | 2 | parity | **sampled** | 591 | 457 | 3790 |
+| 19 | `2state1ap2acc_parity__seed0` | 2 | 1 | 2 | parity | **sampled** | 591 | 464 | 3790 |
 
 Built by `python3 genaut/gen/flatten.py`.
