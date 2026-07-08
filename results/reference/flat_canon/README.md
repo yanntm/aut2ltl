@@ -19,8 +19,9 @@ it; re-running it must reproduce the file.
 
 The CSVs are keyed on `source` (the unique per-language provenance path); `input`
 is the readable label and may repeat. The survey run is verified by the Spot
-oracle — `sos2ltl.SUMMARY.txt` ends `FAIL` because F8's 842 non-equivalent
-engine answers are real, not a harness error.
+oracle — `sos2ltl.SUMMARY.txt` ends `FAIL` because F8's non-equivalent engine
+answers are real, not a harness error (394 remaining after F8 defect 1 was
+fixed; F8 defect 2 open).
 
 Refresh discipline (per `results/README.md`): re-run into gitignored `logs/`,
 diff against these committed files, overwrite only when the diff is understood.
