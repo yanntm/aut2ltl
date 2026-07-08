@@ -101,6 +101,34 @@ class _Budget(Exception):
     """Raised by the wall-clock alarm to abort a runaway run."""
 
 
+def _norm(sos_text: str) -> str:
+    """Normalize a `.sos` dump for byte-comparison: drop trailing blank lines and
+    trailing whitespace per line (a stored file may carry a final newline the
+    in-memory dump does not)."""
+    return "\n".join(line.rstrip() for line in sos_text.rstrip().splitlines())
+
+
+def _reference(hoa_path: str, reference_sos: Optional[str]):
+    """The reference ``(sos_dump, class_count)`` — read from a precomputed `.sos`
+    file when given, else built from the HOA. Raises `ReferenceError` if the HOA
+    has no SoS reference."""
+    if reference_sos is not None:
+        with open(reference_sos, encoding="utf-8") as fh:
+            text = fh.read()
+        n = _parse_classes(text)
+        return text, n
+    ref = reference_of_hoa(hoa_path)
+    return dump_invariant(ref), ref.n
+
+
+def _parse_classes(sos_text: str) -> int:
+    """The class count from a `.sos` dump's ``classes: <n>`` line."""
+    for line in sos_text.splitlines():
+        if line.startswith("classes:"):
+            return int(line.split(":", 1)[1].strip())
+    return -1
+
+
 def _alarm(_sig: int, _frame: object) -> None:
     raise _Budget()
 
@@ -173,12 +201,15 @@ def inv_acceptor_ok(inv: Invariant, teacher: HoaTeacher, bound: int = 3) -> bool
 # -- the instrumented run ----------------------------------------------------
 
 
-def run_case(case_id: str, hoa_path: str, config: Config) -> RunResult:
+def run_case(case_id: str, hoa_path: str, config: Config,
+             reference_sos: Optional[str] = None) -> RunResult:
     """Learn ``hoa_path`` under ``config`` and return the full `RunResult`.
 
-    Builds the reference (for the class count and byte-equality), then drives the
-    learner under a wall-clock budget. Classifies the verdict from byte-equality,
-    the two acceptor checks, and the certifying equivalence strategy.
+    The reference (for the class count and byte-equality) is a precomputed `.sos`
+    file when ``reference_sos`` is given — the census fast path, avoiding a
+    per-case reference rebuild — otherwise it is built from ``hoa_path``. Then it
+    drives the learner under a wall-clock budget and classifies the verdict from
+    byte-equality, the two acceptor checks, and the certifying strategy.
     """
     stats = RunStats(case_id=case_id, config_id=config.config_id, seed=config.seed,
                      cex_policy=config.cex_policy)
@@ -187,7 +218,7 @@ def run_case(case_id: str, hoa_path: str, config: Config) -> RunResult:
     signal.alarm(config.budget_seconds)
     try:
         try:
-            ref = reference_of_hoa(hoa_path)
+            ref_dump, ref_n = _reference(hoa_path, reference_sos)
         except ReferenceError as exc:
             stats.verdict = "MISMATCH"
             stats.detail = f"NONDEF: {exc}"
@@ -195,7 +226,7 @@ def run_case(case_id: str, hoa_path: str, config: Config) -> RunResult:
         teacher = HoaTeacher.of_hoa(hoa_path, eq_mode=config.eq_mode)
         teacher.eq_bound = config.eq_bound
         stats.ap_count = len(teacher.alphabet.aps)
-        stats.ref_classes = ref.n
+        stats.ref_classes = ref_n
 
         result = _drive(teacher, config, stats)
         table, p, inv, ledger, eq_cert = result
@@ -207,7 +238,7 @@ def run_case(case_id: str, hoa_path: str, config: Config) -> RunResult:
         stats.n_columns_om = len(table.columns) - n_lin
         stats.n_splits = inv.n - stats.n_classes_initial
 
-        byte_equal = dump_invariant(ref) == dump_invariant(inv)
+        byte_equal = _norm(ref_dump) == _norm(dump_invariant(inv))
         p1_ok = hyp_acceptor_ok(teacher, _build_hypothesis(table, p),
                                 config.acceptor_bound)
         stats.stall_class = _classify_stall(stats, byte_equal)

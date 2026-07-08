@@ -55,7 +55,7 @@ def run_matrix(
         if budget_seconds is not None:
             cfg = Config(**{**config.__dict__, "budget_seconds": budget_seconds})
         try:
-            res = run_case(case.case_id, case.hoa, cfg)
+            res = run_case(case.case_id, case.hoa, cfg, reference_sos=case.sos)
         except Exception as exc:  # noqa: BLE001 -- defensive: the driver never aborts
             stats = RunStats(case_id=case.case_id, config_id=cfg.config_id,
                              verdict="MISMATCH",

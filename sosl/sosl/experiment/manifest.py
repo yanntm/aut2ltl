@@ -24,11 +24,13 @@ MANIFEST_VERSION = "m4a-2026-07-08"
 
 @dataclass(frozen=True)
 class Case:
-    """One named corpus case: a stable id, its source HOA (relative to the sosl
-    root), the triptych slot it fills (if any), role tags, and a one-line note."""
+    """One corpus case: a stable id, its source HOA (relative to the sosl root),
+    an optional precomputed reference `.sos` (the census fast path), the triptych
+    slot it fills (if any), role tags, and a one-line note."""
 
     case_id: str
     hoa: str
+    sos: Optional[str] = None               # precomputed reference .sos, if any
     triptych: Optional[str] = None          # T1 | T2 | T3
     tags: Tuple[str, ...] = ()
     note: str = ""
@@ -122,12 +124,46 @@ def case_by_id(case_id: str) -> Optional[Case]:
     return None
 
 
-def census_cases(folder: Optional[str] = None) -> List[Case]:
-    """The census tier — guarded. Returns nothing until a folder is passed and
-    the tier is deliberately enabled; the `genaut/corpus/` sweep is curated
-    elsewhere and must not be pulled into E0 by default."""
-    if not folder:
+# Census location (relative to the sosl root) and the shapes SHAPES.md marks
+# "deferred" — heavy `kept`/`langs` counts run separately from the main sweep.
+CENSUS_ROOT = "../genaut/corpus"
+DEFERRED_SHAPES = frozenset({"1state3ap1acc", "2state2ap0acc", "3state1ap0acc"})
+
+
+def census_cases(det_folder: str) -> List[Case]:
+    """Every canonical automaton under a `corpus/det/<shape>/` folder as a `Case`,
+    each paired with its precomputed `corpus/sos/<shape>/*.sos` reference (the
+    fast path). The shape name is carried as a tag so runs can group by shape."""
+    root = Path(det_folder)
+    shape = root.name
+    cases: List[Case] = []
+    for p in sorted(root.rglob("*.hoa")):
+        cand = Path(str(p).replace("/det/", "/sos/")).with_suffix(".sos")
+        sos = str(cand) if cand.exists() else None
+        cases.append(Case(p.stem, str(p), sos=sos, tags=("census", shape)))
+    return cases
+
+
+def census_shapes(
+    corpus_root: str = CENSUS_ROOT,
+    shapes: Optional[List[str]] = None,
+    include_deferred: bool = False,
+) -> List[Case]:
+    """The census cases across shapes under ``corpus_root/det/``. With ``shapes``
+    given, exactly those; otherwise every built shape, minus `DEFERRED_SHAPES`
+    unless ``include_deferred``. The tractable non-deferred set spans the whole
+    LTL frontier (SHAPES.md: not-LTL first appears at `2state1ap0acc`)."""
+    det = Path(corpus_root) / "det"
+    if not det.is_dir():
         return []
-    root = Path(folder)
-    return [Case(p.stem, str(p), tags=("census",))
-            for p in sorted(root.rglob("*.hoa"))]
+    available = sorted(d.name for d in det.iterdir() if d.is_dir())
+    if shapes is not None:
+        chosen = [s for s in available if s in set(shapes)]
+    elif include_deferred:
+        chosen = available
+    else:
+        chosen = [s for s in available if s not in DEFERRED_SHAPES]
+    out: List[Case] = []
+    for s in chosen:
+        out.extend(census_cases(str(det / s)))
+    return out
