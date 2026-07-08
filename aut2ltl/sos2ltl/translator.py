@@ -23,6 +23,7 @@ from aut2ltl.witness import Witness
 
 from sosl.sos import dump_invariant
 from sosl.sos.build.importer import import_ltl
+from sosl.sos.classify.aperiodic import first_group
 from sosl.sos.core.quotient import invariant_of
 
 from .bridge import BridgeDecline, invariant_of_language
@@ -42,9 +43,11 @@ TAG_DG = "sos2ltl.dg"
 
 
 def _cubes(inv: "Invariant") -> List[str]:
-    """Letter cubes in mask order: the Spot rendering of each letter."""
+    """Letter cubes in mask order: the Spot rendering of each letter. An
+    atom-free alphabet has a single letter constraining nothing — the `true`
+    cube, rendered `1` (the empty conjunction is not valid Spot syntax)."""
     ab = inv.alphabet
-    return ["&".join(p if p in ab.true_aps(a) else "!" + p for p in ab.aps)
+    return ["&".join(p if p in ab.true_aps(a) else "!" + p for p in ab.aps) or "1"
             for a in ab.letters()]
 
 
@@ -140,3 +143,24 @@ def sos2ltl(lang: "Language") -> LTLResult:
         return LTLResult.decline(f"sos2ltl: {e}", TAG, TAG_DG)
     return LTLResult.success(
         _to_formula(ast, phi, _cubes(inv)), TAG, TAG_DG)
+
+
+def sos2ltl_dg(lang: "Language") -> LTLResult:
+    """The E4(b) DG baseline: bridge to `𝓘(L)`, then the dg local-divisor
+    induction with no walk+window engine and no simplifier — the naive
+    transcription whose flat form is the paper's §3 explosion. Declines on a
+    group (the certificate side is not part of this baseline) and on a dg
+    cap; never the engine's compact bricks."""
+    try:
+        inv = invariant_of_language(lang)
+    except BridgeDecline as e:
+        return LTLResult.decline(f"sos2ltl_dg: {e}", TAG_DG)
+    if first_group(inv) is not None:
+        return LTLResult.decline("sos2ltl_dg: group-bearing (baseline is "
+                                 "aperiodic-only)", TAG_DG)
+    try:
+        ast, phi, _ = synthesize(inv)
+    except DgDecline as e:
+        return LTLResult.decline(f"sos2ltl_dg: {e}", TAG_DG)
+    return LTLResult.success(
+        _to_formula(ast, phi, _cubes(inv)), TAG_DG, TAG_DG)
