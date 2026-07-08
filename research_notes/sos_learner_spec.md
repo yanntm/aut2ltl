@@ -500,11 +500,18 @@ Layered; every layer is automated and green before any experiment is reported.
 
 ## 6. Experiments
 
-Corpus note. The primary corpus is the in-repo *census* of small deterministic
-Emerson-Lei automata (fixed shape families: 2 states / 1 AP / 1 acceptance
-set, and the neighboring shapes already enumerated in-repo), for which
-reference invariants are computable. Three named languages are mandatory
-worked cases in every experiment ("the triptych"):
+Corpus note (revised 2026-07-08f). The primary corpus is the flat,
+complement-closed catalogue `genaut/corpus/flat_canon` — 3938 languages up
+to AP relabeling, one representative per language, dual included
+(`corpus/flat_canon/STUDY.md`), with precomputed reference invariants — which
+supersedes the per-shape census for E1/E2/E3. Exhaustive claims (the
+permanent-stall family at the smallest non-LTL shape) stay scoped to the
+exhaustively enumerated `2state1ap1acc`. Because the catalogue is
+complement-closed and a run on `¬L` is the bit-flip of the run on `L` (same
+partition, same splits, same counterexamples, same query counts), every
+E1/E2 statistic must be exactly dual-symmetric at sweep completion — the
+report generators should assert this, not assume it. Three named languages
+are mandatory worked cases in every experiment ("the triptych"):
 
 - `T1`: "infinitely many `aa`" — `GF(a & Xa)` as a 2-state Buchi automaton;
 - `T2`: "an even block of `a` then `!a`, then anything" —
@@ -516,11 +523,10 @@ worked cases in every experiment ("the triptych"):
 Two further named cases are mandatory wherever the ablation is involved
 (E0, E2): `a_implies_xa` and `a_once`, the proven-permanent stall specimens
 (paper Prop. 4.4; sources in `research_notes/sos_figs/sources/`). The census
-manifest is the `genaut/corpus/` sweep already exercised by
-`sosl/tests/sosl/genaut_census.py` — nondeterministic inputs are covered through
-the sos import layer's determinization — plus the named cases above. The
-manifest file is itself a deliverable: cases are named and versioned, never
-selected ad hoc.
+manifest is the `flat_canon` catalogue plus the named cases above —
+nondeterministic inputs are covered through the sos import layer's
+determinization. The manifest file is itself a deliverable: cases are named
+and versioned, never selected ad hoc.
 
 **E0 — Validation campaign.** Run the full harness (section 5) over the
 corpus. E0 subsumes the M3 gates, now run under the driver: the saturation
@@ -559,6 +565,26 @@ by class and by structural features (prefix-independence, acceptance type);
 every `permanent` case beyond the two known specimens reported individually
 with both fixpoints and the separating left context. These exhibits feed
 the theory side; treat them as a first-class output, not a statistic.
+
+*Recorded outcome (flat_canon, preliminary — `sosl_report.md` 2026-07-08).*
+1180 permanent-stall languages on the partial sweep, gap to 53; permanence
+cuts the LTL boundary (582/1180 aperiodic); and **four prefix-independent
+entries — two languages and their complements**
+(`2state1ap2acc_parity_0088836118`, `_1178851077`), the refutation witnesses
+of the prefix-dependence necessity conjecture. **New deliverable — the
+witness lock (blocks the paper's §6.3 claim):**
+
+- (a) assert prefix-independence on each witness's *canonical* invariant —
+  `(s, e) ∈ P ⟺ (c·s, e) ∈ P` for every class `c` and linked pair `(s, e)`;
+- (b) assert the ω-sort signature (paper Cor. 4.7(b); row P8): every column
+  minted in the witness's saturated run is of the ω-sort — a linear mint
+  means the prefix-independence predicate or the sweep is wrong,
+  build-stopping either way;
+- (c) emit the full exhibits (coarse and canonical `.sos`, complete split
+  ledger with every escalation and minted column) into the report;
+- (d) hunt a witness at an exhaustively enumerated shape — the two known
+  ones are sampled-tier; exhaustive `2state1ap2acc_parity` if tractable,
+  else the smallest shape that yields one.
 
 **E3 — Baseline: FDFA learning (ROLL).** Question: cost and capability
 comparison against the established FDFA learner on identical teachers.
@@ -646,7 +672,7 @@ cex_policy (minimal|first|padded:<k>),
 max_cex_stem, max_cex_loop, max_query_word_len,
 eq_certification (reps|bounded:<B>|exact),
 export_associative (true|false|n/a),
-wall_seconds, verdict (SOUND|MISMATCH|BUDGET|ACCEPTOR_ONLY)
+wall_seconds, verdict (SOUND|MISMATCH|BUDGET|ACCEPTOR_ONLY|OVERSIZE)
 ```
 
 `n_classes_initial` is the class count of the first stabilized table (the
@@ -666,6 +692,13 @@ frequency counts.
 
 `ACCEPTOR_ONLY` is reserved for `--no-saturation` runs that pass the acceptor
 check but fail byte-equality.
+
+`OVERSIZE` (added 2026-07-08f) records the exact oracle exceeding its
+transformation-closure work cap (`ExactTooLarge`): an honest "too large to
+certify exactly", occurring only on the ablation leg of the largest
+languages. The run's `stall_class` is deferred (`n/a`) and never enters E2's
+frequency counts; `MISMATCH` stays reserved for a genuine byte mismatch
+(row F9).
 
 `export_associative` is computed on the exported multiplication table
 (`n/a` when no export was produced): brute-force check of
@@ -794,9 +827,13 @@ sharpest evidence that a stalled export is not an algebra at all.
        `N = |S(L)₊¹|` (`L ∈ {∅, Σ^ω}` are the only two). If the convention
        is off by one, regenerate the per-N medians under the stated one; if
        dedup across shapes is incomplete, recount and restate the census
-       total. Gates the paper's §6.2 table, its `N ∈ [2, 21]` range, and the
-       541 headline. Deliverable: convention line + regenerated
-       `census_e1/summary.md` + a correction note in `sosl_report.md`.
+       total. *(Update 2026-07-08f: the flat_canon rerun reports 2 languages
+       at `N = 2` — consistent with `N = |S(L)₊¹|` — so the anomaly was the
+       old census's; the one-line convention statement is still owed, and a
+       new low-`N` anomaly replaces it: the `N = 4` bucket's median fill of
+       145 against an `N²·|Σ| = 32` envelope at median splits 0 — explain
+       it.)* Deliverable: convention line + explanation of the `N = 4` fill
+       + a note in `sosl_report.md`.
     2. **Associativity probe + stalled-export fixture.** Implement
        `export_associative` (section 7) and rows P7/F8 (section 9). Emit the
        stalled `a_implies_xa` 4-class export and assert it matches the
@@ -816,10 +853,19 @@ sharpest evidence that a stalled export is not an algebra at all.
     6. **Shape manifest.** Emit the per-shape family/count table from
        `manifest.py` (shapes, presentations, languages after dedup). Closes
        the §6.1 corpus `⟨TBD-M4⟩`.
-    Standing science ask, unchanged (revision 2026-07-08d): the permanence
-    cross-tabulation at deeper census shapes — one prefix-independent
-    permanent stall refutes the necessity conjecture; 100% prefix-dependence
-    at richer shapes promotes it toward a proof attempt.
+    7. **The witness lock + exhaustive-shape witness** (section 6, E2
+       recorded-outcome note, 2026-07-08f): gates the paper's §6.3
+       refutation claim.
+    8. **Complete the flat_canon sweep** (`3state1ap0acc` outstanding):
+       final E1/E2/E3 figures replace the paper's §6 ⟨TBD-M4⟩ markers; at
+       completion assert the dual-symmetry of every E2 count (section 6
+       corpus note — the current 440/441 guarantee/safety split and the odd
+       gap-bucket counts are partial-sweep artifacts that must vanish).
+    Standing science ask — ANSWERED in the refutation direction
+    (2026-07-08f): the flat_canon sweep surfaced two prefix-independent
+    permanent stalls (plus complements); the necessity conjecture is dead
+    pending the witness lock (item 7), which — with the completed sweep
+    (item 8) — is the remaining M4 science deliverable.
 
 Non-goals for this iteration: performance tuning beyond the budgets above,
 black-box teachers other than the wire protocol, alphabets beyond `2^AP`,
@@ -856,6 +902,8 @@ recorded outcome, not a defect.
 | P6 | `stall_class` on any saturation-on run | M4.b+ (E2) | must be `n/a` | driver bug: a saturated run must never carry `transient`/`permanent` (section 7) — the M4.a E0 table had this wrong; E2's frequency counts read the ablation leg only |
 | P7 | exported `M` is associative (`export_associative = true`) | any **saturated** run | always green | the sweep failed to deliver a two-sided congruence — learner bug; a two-sided quotient's table is associative by construction |
 | F8 | exported `M` is associative | `--no-saturation` runs | MAY be red; on `a_implies_xa` MUST be red with witness triple `([a],[a],[a])` | record the witness triple, never "fix" it — it anchors the paper's §4.2 display (a green here on `a_implies_xa` means the export or the check is wrong) |
+| P8 | ω-sort discipline on prefix-independent cases: every column ever minted in a default-config run is of the ω-sort (paper Cor. 4.7(b)) | any prefix-independent case (`GF(aa)`, `EvenBlocks`, the E2 witnesses) | always green | a linear mint means the prefix-independence predicate or the sweep is wrong — build-stopping either way; the corollary's proof leaves no third option |
+| F9 | exact oracle raises `ExactTooLarge` at the top of the shape range | E2 ablation leg | allowed | record `OVERSIZE` (section 7); permanence classification deferred, default-leg soundness stands — never `MISMATCH` |
 
 Two "surprising green" notes, so nobody distrusts a passing run:
 

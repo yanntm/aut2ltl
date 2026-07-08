@@ -1042,3 +1042,75 @@ the E2 ablation leg** of the few largest languages; the learner is **SOUND** on
 every one under the default leg, so their E1/soundness result stands and only
 their exact permanent-vs-transient classification is deferred. `MISMATCH` stays
 reserved for a genuine byte mismatch (of which there are none).
+
+---
+
+## Theory-thread feedback — flat-canon rerun integrated; the conjecture is dead (2026-07-08)
+
+The preliminary drop is accepted, and the paper is re-based on it now rather
+than after the sweep (`sos_learning.md`, rev 2026-07-08b): abstract, §6.1,
+§6.2, §6.3, §6.4 and §8 carry the flat_canon census — the 3938 catalogue,
+byte-exact on all 2492 swept, `N` to 121, the 1180-strong permanent family,
+gap to 53, and all three LTL-cut ventilations (cost §6.2, permanence §6.3,
+the E3 size trade §6.4) — with ⟨TBD-M4⟩ markers exactly where the unfinished
+`3state1ap0acc` sweep will move a figure. The 44-at-`2state1ap1acc` result
+survives where exhaustiveness is the claim (§6.3); "541" no longer appears.
+Your Wagner ventilation is used in the paper for one thing — locating the
+prefix-independent witnesses — and otherwise stays report-side.
+
+**The refutation is integrated as the finding, not as a flag.** The
+necessity conjecture (permanent ⇒ prefix-dependent) is dead, and §6.3 now
+says so with your two witnesses. The theory side added the instrument that
+makes the claim checkable — new **Corollary 4.7** (§4.3): for
+prefix-independent `L`, (a) `≈_L` is the joint kernel of pure right
+extensions and *bare* ω-powers, so any separation beyond the right
+congruence is ω-power-only; and (b) — learner-side, and stronger — **every
+column of every run on a prefix-independent language is of the ω-sort**: the
+initial column is, every mint inherits the sort of the column it derives
+from (Definition 3.2; both Lemma 4.5 branches), and the harvest's stem chain
+is *flat* under prefix replacement, so every flip lands in the loop chain.
+Part (b) is the machine-checkable signature the witness lock below asserts —
+and it is retroactively a gate on `GF(aa)` and `EvenBlocks` too (both
+prefix-independent; EvenBlocks' 0/4 lin/ω column ledger already conforms).
+
+**New deliverables** (spec revised 2026-07-08f — §6 corpus note + E2
+recorded-outcome, §7 `OVERSIZE`, §8 M4.e items 7–8, §9 rows P8/F9):
+
+1. **The witness lock — blocks the §6.3 claim.** For
+   `2state1ap2acc_parity_0088836118` / `_1178851077` and their complements:
+   prefix-independence asserted on the *canonical* invariant
+   (`(s,e) ∈ P ⟺ (c·s,e) ∈ P`, all `c`); the Cor. 4.7(b) ω-sort signature
+   asserted on the saturated run (row P8 — a linear mint is build-stopping:
+   it convicts the predicate or the sweep, no third option); full exhibits
+   (both `.sos` + complete split ledger) into this report.
+2. **An exhaustive-shape witness.** The two known ones are sampled-tier;
+   exhaustive `2state1ap2acc_parity` if tractable, else the smallest shape
+   that yields one — §6.3 wants to claim a shape, not a sample.
+3. **Complete the sweep**, then assert **dual-symmetry** everywhere in E2: a
+   run on `¬L` is the bit-flip of the run on `L` (same partition, splits,
+   counterexamples, query counts), so permanence and gap are
+   complement-invariant and every count must pair off exactly. The current
+   440/441 guarantee/safety split and the odd gap-2 bucket (205) are
+   partial-sweep artifacts that must vanish; an asymmetry surviving the full
+   sweep is a bug, not a finding.
+
+**Cross-checks done, and three nits.** E1's ventilations sum exactly
+(1486 + 1006 = 2492; the Wagner rows likewise). E2's report-side Wagner
+table mixes per-side and σ/π-split entries (the LTL cells `44` and `15` are
+per-side where `220 / 221` is split) — the exhibit file is unambiguous;
+normalize the report table to the split form so nobody imports a doubled or
+halved count. E3 covers 2491 of 2492 and the missing language is aperiodic
+(862 + 534 + 89 = 1485 vs 1486): name it and record why it dropped. And the
+`N = 4` bucket is anomalous — median fill 145 over 500 languages against an
+`N²·|Σ| = 32` envelope, *above* the `N = 8` bucket's 84, at median splits 0;
+the paper's §6.2 says only "the low-`N` buckets sit above the envelope" with
+a ⟨TBD-M4⟩ audit marker until you explain the 145 (stabilization mints
+without splits? more than one AP in that bucket? a convention issue?). The
+old M4.e item-1 anomaly (32 languages at `N = 2`) is meanwhile resolved by
+flat_canon — 2 languages at `N = 2`, as `N = |S(L)₊¹|` demands; the one-line
+convention statement is still owed.
+
+**`OVERSIZE` is ratified** and now normative (spec §7 + row F9): an honest
+"too large to certify exactly", ablation leg only, `stall_class` deferred
+and never folded into frequency counts, `MISMATCH` reserved for byte
+mismatch.
