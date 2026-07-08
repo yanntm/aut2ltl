@@ -14,6 +14,12 @@ Importable as a module path:
 
 ## Services
 
+One **key** for `.sos` syntactic-ω-semigroup dumps:
+
+- **`sos.py`** — `sos_key` is the language dedup key of a `.sos` dump (its canonical
+  content). Byte-equal ⟺ equal language, up to a **fixed** AP labeling; folding
+  relabel/polarity twins of a dump is not done yet — `sos.py` is the seam for it.
+
 Two **normalisers** (pure, content-level — one touches names, the other signs, so
 they compose freely):
 
@@ -27,8 +33,9 @@ Two **folder tools** that walk a tree recursively and either report (dry run) or
 `--prune` to write, both on the shared **`sweep`** engine:
 
 - **`dedup.py`** — keep the first item per **pluggable** key (one item per HOA file,
-  one per non-comment `.ltl` line), drop later duplicates. `default_key` is
-  `polarity ∘ names`.
+  one per non-comment `.ltl` line, **one per `.sos` file**), drop later duplicates.
+  `default_key` is `polarity ∘ names` for HOA/LTL; `.sos` dumps key on **language
+  identity** (`sos.sos_key`, [SωS26 Thm. 5.1]: byte-equal ⟺ equal language).
 - **`canon.py`** — `dedup` **with renaming built in**: AP-rename every file to
   canonical form *and* drop duplicates in one recursive pass — the maximal normalize.
 
