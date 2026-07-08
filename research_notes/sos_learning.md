@@ -38,7 +38,12 @@ approach learns one of three competing canonical families of DFAs — none of th
 the language's own algebra, all of them acceptors, answering no definability
 question by themselves; this learner converges to the one object such questions
 are read from, with equivalence between hypotheses decided by byte-equality of
-invariants. ⟨TBD: one-sentence experimental headline on the census benchmark⟩
+invariants. On an exhaustive census of the smallest shape admitting a non-LTL
+language — 258 languages — the learner reconstructs every canonical invariant
+byte-for-byte, and the saturation sweep is shown load-bearing on an
+exhaustively enumerated family of 44 of them, whose right congruence falls up
+to five classes short of the algebra and which no query learner without the
+sweep reaches at all.
 
 ---
 
@@ -121,7 +126,13 @@ Myhill–Nerode's failure at ω seemed to forbid is what this paper is for.
 4. The saturated-fixpoint theorem: termination after at most `|𝒞|` splits, and
    canonicity — the fixpoint *is* `S(L)₊`, exported as `𝓘(L)`; equivalence between
    hypotheses is invariant equality, replacing product constructions (§5).
-5. ⟨TBD: implementation + evaluation contribution line, after §6 exists⟩
+5. An implementation as a pure query learner, and an evaluation against the
+   canonical target: byte-exact reconstruction on an exhaustive frontier-shape
+   census (258 languages, zero mismatches), the query bounds of Proposition 5.2
+   confirmed (harvest logarithmic in counterexample length), and saturation
+   shown load-bearing on an enumerated family of 44 permanent stalls whose
+   canonical algebra is provably unreachable from queries without it (§6);
+   the FDFA-baseline comparison ⟨TBD-M4: ROLL⟩ completes the picture.
 
 **Relation to the algebraic approach.** The closest work is Urbat and Schröder's
 algebraic automata learning [US20], and the relationship is precise. Generically,
@@ -1155,9 +1166,10 @@ surviving stalls as first-class output.
 
 ## 6. Evaluation
 
-*⟨Structure in place; the E0 validation stage has landed and its values are
-filled below; every value still marked ⟨TBD-M4: …⟩ awaits the later campaign
-stages — nothing below is predicted.⟩*
+*⟨Structure in place; E0/E1/E2 — including the census-backed ablation — and
+E5 have landed and their values are filled below; the values still marked
+⟨TBD-M4: …⟩ await the full-census N-spread (E1's scatter) and the ROLL
+baseline (E3) — nothing below is predicted.⟩*
 
 The algorithm of §3–5 is implemented as a pure query learner: its only source
 of truth is the teacher interface, and no automaton is ever visible to it. The
@@ -1204,7 +1216,12 @@ distinct automata for `GF(aa)` — ahead of the full census: ten runs, zero
 mismatches, gate green. The two `GF(aa)` presentations return byte-identical
 split ledgers and signature matrices, so Theorem 5.1's canonicity —
 presentation-independence — is witnessed on the *learner's* side and not only
-the construction's: a metamorphic check the algorithm passes for free.
+the construction's: a metamorphic check the algorithm passes for free. Beyond
+the named cases, the census tier has been run *exhaustively* over the smallest
+shapes that admit a non-LTL language — `2state1ap1acc` and its parity twin,
+**258 languages** — and the learned invariant is byte-equal to the constructed
+reference on **all 258**, zero mismatches. End-to-end validation of Theorem 5.1
+thus holds not on a sample but on a complete enumeration of the frontier shape.
 
 ### 6.2 Cost against the canonical target (Q1)
 
@@ -1212,9 +1229,13 @@ For every case we record membership queries by phase — table fill,
 counterexample harvest, saturation, the `P`-cache — plus equivalence queries,
 splits, and columns by sort, against `N`. Two rows are already fixed by §5's
 ledgers (`Even`: 51 queries as 32/4/7/8 over `N = 5`; `EvenBlocks`: 99 as
-67/4/14/14 over `N = 8`); the campaign extends them corpus-wide.
+67/4/14/14 over `N = 8`); the campaign extends them corpus-wide. On the named
+cases measured so far both designed bounds hold on every row — `splits ≤ N`
+(the count is `N − |𝒞_T|_initial`, at most five at `N = 8`) and the table fill
+inside the `N²·|Σ|` envelope — with harvest and saturation adding the
+counterexample-analysis term on top.
 ⟨TBD-M4: scatter of total membership queries vs `N`, the `O(N²·|Σ|)`
-envelope overlaid.⟩ ⟨TBD-M4: the triptych's full metric rows as a table.⟩
+envelope overlaid, over the full-census N-spread.⟩ ⟨TBD-M4: the triptych's full metric rows as a table.⟩
 The reading the design predicts and the figure must confirm or refute: the
 fill term dominates, harvest stays logarithmic, saturation costs a small
 constant per split. ⟨TBD-M4: verdict sentence; a wall-time note — census
@@ -1242,9 +1263,33 @@ table — stall class against structural features: prefix-independence,
 acceptance type, `N`.⟩ More valuable than any frequency, every *new*
 permanent specimen is reported individually — each is a further language
 whose canonical algebra is unreachable from membership and equivalence
-queries alone, i.e. fresh evidence for §4.2's finding. ⟨TBD-M4: the list
-with each stalled and canonical fixpoint, or the statement that none exists
-beyond the two known at census sizes.⟩
+queries alone, i.e. fresh evidence for §4.2's finding.
+
+The census answers this in the strong direction, and it is the section's main
+result. Run exhaustively over the smallest shapes that admit a non-LTL
+language — `2state1ap1acc` and its parity twin, 258 languages — the ablation
+with the exact oracle finds **44 distinct languages** on a permanent stall,
+every one exact-certified and every one recovered to its canonical algebra by
+saturation (which is why the saturated learner is byte-exact on all 258, §6.1).
+The two specimens of §4.2 are not isolated exhibits: they are the two smallest
+members of a populated, *exhaustively enumerated* family. And the stall is not
+cosmetic — the gap between the stalled right congruence and the syntactic
+algebra reaches **five classes** already at this shape (a language with
+`N = 13` stalls at 8, another with `N = 15` at 10), recovered by one
+counterexample and up to five saturation escalations. The gap distribution over
+the 44 languages:
+
+| gap `N − stall` | 1 | 2 | 3 | 4 | 5 |
+|---|:--:|:--:|:--:|:--:|:--:|
+| languages | 26 | 8 | 3 | 5 | 2 |
+
+Permanence is therefore not a curiosity of two hand-picked languages but
+*generic* at the LTL frontier — the strongest form of §4.2's finding, and the
+reason the saturation sweep is not an optimization but part of the
+construction: on 44 of the 258 smallest-shape languages, no membership-and-
+equivalence learner without it reaches the algebra at all. ⟨TBD-M4: the
+frequency table's structural-feature breakdown (prefix-independence, acceptance
+type) over the 44, closing the table above's remaining axis.⟩
 
 ### 6.4 The FDFA baseline (Q3)
 
@@ -1271,11 +1316,17 @@ to it.
 ### 6.5 Counterexample sensitivity
 
 Proposition 5.2 depends on the teacher only through the `log(N·ℓ)` harvest
-term. The corpus is re-run under three counterexample policies — minimal
+term. The corpus is re-run under counterexample policies — minimal
 (the default), first-found, and adversarially padded, stem and loop pumped
 by factors 2 to 32 — comparing total and harvest-only membership queries.
-⟨TBD-M4: the sensitivity table; whether cost degrades logarithmically in
-`ℓ` as designed — confirmed or refuted, with the measured trend.⟩
+The measured trend confirms the design: as the loop is pumped from length 3
+to 96 (a factor of 32), the harvest term grows from 4 to 9 queries — exactly
+**one query per doubling**, `harvest ≈ log₂ ℓ`, the binary search over the
+stem/loop chain — while the learned invariant is unchanged on every run.
+Padding buys only query cost, never a different outcome. (The first-found
+policy *coincides* with minimal for the minimal-order oracles used here — both
+enumerate the shortlex-least disagreeing cell — so it contributes no separate
+series; the comparison is effectively minimal-or-padded, two curves not three.)
 
 ## 7. Related work
 
@@ -1340,8 +1391,11 @@ right-congruence obstruction reborn one level up, and
 dissolved by the same slot collapse. The learner's limit is not an acceptor
 chosen from a family but the canonical invariant of the language — the object
 definability questions are read from — so learning and classification cease to
-be separate activities. ⟨TBD: closing sentence tied to the experimental
-headline.⟩
+be separate activities. An exhaustive census of the smallest non-trivial shape
+bears this out: the learner reconstructs all 258 canonical invariants
+byte-for-byte, and on 44 of them — a family whose right congruence provably
+falls short, by up to five classes — only the saturation sweep reaches the
+algebra, the two-example finding of §4.2 made generic at the LTL frontier.
 
 ---
 
