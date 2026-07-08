@@ -1,0 +1,31 @@
+=== frame ===
+  catalogue     genaut/corpus/flat_canon/sos — one deterministic Emerson–Lei automaton per distinct language, complement-closed
+  languages     3938  (2240 LTL / 1698 non-LTL)
+  degenerate    empty 1, universal 1 (split out of E1/E2 below)
+  E1/E2 over    2238 non-degenerate LTL languages, ventilated by Wagner degree ϕ=(γ,s) from the .cat sidecars
+
+=== E1 — anchoring (condition A), non-degenerate LTL, by degree ===
+  ϕ=(γ,s)          langs  layers     A@1     A≤3  FAIL  frozen  stemk3  pfxind
+  (1,δ)               62     568  100.0%  100.0%     0   50.7%  100.0%    0.0%
+  (1,σ)              678    7263   63.2%   82.5%   716   20.8%   67.7%    0.0%
+  (1,π)              678    7263   63.2%   82.5%   716   20.8%   67.7%    0.0%
+  (2,σ)                4      19  100.0%  100.0%     0   68.4%  100.0%    0.0%
+  (2,π)                4      19  100.0%  100.0%     0   68.4%  100.0%    0.0%
+  (ω,σ)              368    1694   95.6%  100.0%     0   61.4%  100.0%   12.0%
+  (ω,π)              368    1694   95.6%  100.0%     0   61.4%  100.0%   12.0%
+  (ω²,σ)              38     281   80.8%  100.0%     0   38.4%  100.0%   31.6%
+  (ω²,π)              38     281   80.8%  100.0%     0   38.4%  100.0%   31.6%
+  POOLED            2238   19082   70.6%   86.7%  1432   29.5%   80.4%    5.0%
+
+=== E2 — window determinacy (condition B), non-degen LTL, by degree ===
+  ϕ=(γ,s)           final   PASS   UND  FAIL    k′≤2        PASSwidth
+  (1,δ)               288    288     0     0  100.0%         {1: 288}
+  (1,σ)              4626   4626     0     0  100.0%        {1: 4626}
+  (1,π)              4626   4626     0     0  100.0%        {1: 4626}
+  (2,σ)                15     15     0     0  100.0%          {1: 15}
+  (2,π)                15     15     0     0  100.0%          {1: 15}
+  (ω,σ)              1256   1161    95     0   92.4% {1: 1146, 2: 15}
+  (ω,π)              1256   1161    95     0   92.4% {1: 1146, 2: 15}
+  (ω²,σ)              217    126    91     0   58.1%   {1: 123, 2: 3}
+  (ω²,π)              217    126    91     0   58.1%   {1: 123, 2: 3}
+  POOLED            12516  12144   372     0   97.0% {1: 12108, 2: 36}

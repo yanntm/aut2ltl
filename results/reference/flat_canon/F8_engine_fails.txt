@@ -1,0 +1,28 @@
+842 verified-non-equivalent (FAIL) answers
+  by technique: {'sos2ltl+sos2ltl.engine': 842}
+  smallest 12 by (|𝒞|, states, |formula|):
+  id                                |𝒞|  st   degree  technique / formula
+  1state2ap2acc_parity_01800          3   1 omega,pi  sos2ltl+sos2ltl.engine
+       (a | !b) W (!a & b & G(F(!a & !b) & FG(a | !b)))
+  1state3ap1acc_16320_c               3   1 omega,pi  sos2ltl+sos2ltl.engine
+       (b | !c) W (!b & c & G(F(!b & !c) & FG(b | !c)))
+  1state2ap1acc_030                   3   1 omega,sigma  sos2ltl+sos2ltl.engine
+       ((a | !b) & GF(!a & !b)) | (!a & b & F((a | !b) & GF(!a & !b)))
+  1state3ap1acc_01020                 3   1 omega,sigma  sos2ltl+sos2ltl.engine
+       ((b | !c) & GF(!b & !c)) | (!b & c & F((b | !c) & GF(!b & !c)))
+  1state3ap1acc_32640_c               3   1 omega,pi  sos2ltl+sos2ltl.engine
+       (a | b | !c) W (!a & !b & c & G(F(!a & !b & !c) & FG(a | b | !c)))
+  1state2ap2acc_parity_01545          3   1 omega,pi  sos2ltl+sos2ltl.engine
+       ((!a & b) | (a & !b)) W (((!a & !b) | (a & b)) & G(F(!a & b) & FG(a | b)))
+  1state3ap1acc_15555_c               3   1 omega,pi  sos2ltl+sos2ltl.engine
+       ((!b & c) | (b & !c)) W (((!b & !c) | (b & c)) & G(F(!b & c) & FG(b | c)))
+  1state3ap1acc_02040_c               3   1 omega,pi  sos2ltl+sos2ltl.engine
+       ((!b & c) | (a & c)) W ((!c | (!a & b)) & G(F(!a & !b & c) & FG(a | b | c)))
+  1state3ap1acc_08160_c               3   1 omega,pi  sos2ltl+sos2ltl.engine
+       (!c | (!a & b)) W (((!b & c) | (a & c)) & G(F(!a & !b & !c) & FG(a | b | !c)))
+  1state2ap1acc_105                   3   1 omega,sigma  sos2ltl+sos2ltl.engine
+       (((!a & !b) | (a & b)) & GF(!a & !b)) | (((!a & b) | (a & !b)) & F(((!a & !b) | …
+  1state2ap2acc_parity_00270          3   1 omega,pi  sos2ltl+sos2ltl.engine
+       ((a | !b) & G(F(!a & b) & FG(a | b))) | (!a & b & ((!a & b) W ((a | !b) & G(F(!a…
+  1state3ap1acc_00510                 3   1 omega,sigma  sos2ltl+sos2ltl.engine
+       ((a | b | !c) & GF(!a & !b & !c)) | (!a & !b & c & F((a | b | !c) & GF(!a & !b &…

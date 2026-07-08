@@ -1,0 +1,14 @@
+=== E7 dual-scan shape + ω-blindness tiers, non-LTL, by Wagner degree ===
+  (H5 = linear-only = F₂-blind; tiers: right-ideal ⊊ phase-collapse ⊊ P-level)
+  ϕ=(γ,s)          nonLTL  both ω-only    H5   RI  PC-only  P-level
+  (1,σ)               678   673      0     5    0        5        0
+  (1,π)               678   673      0     5    0        5        0
+  (ω,σ)                98    38     26    34    4        0       30
+  (ω,π)                98    38     26    34    4        0       30
+  (ω·2,σ)              12    12      0     0    0        0        0
+  (ω·2,π)              12    12      0     0    0        0        0
+  (ω²,σ)               61    22     28    11    0        0       11
+  (ω²,π)               61    22     28    11    0        0       11
+  POOLED             1698  1490    108   100    8       10       82
+
+  guards: right-ideal⟹PC and PC⟹H5  ->  HOLD
