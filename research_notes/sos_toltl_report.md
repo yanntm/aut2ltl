@@ -521,16 +521,19 @@ universally available (34 both / 9 F₁-only / 4 F₂-only), and running *both*
 scans — the dual scan itself — is necessary, not a convenience. F4's asymmetry
 becomes: each blindness occurs, one by theorem and one by census witness.
 
-**Sweep (every shape bar the excluded ~11k `2state2ap0acc`).** H5 hits total
-**26**: 9 in `2state1ap1acc` and 9 in its `_parity` twin (same languages, min
-`|𝒞| = 4`), 8 in `3state1ap0acc` (min `|𝒞| = 6`); none below `|𝒞| = 4`.
-Non-LTL languages occur **only** at ≥ 2 states — every 1-state shape (through
-3 AP / 3 acc, gba and parity) is entirely LTL, as expected (a single state
-cannot carry a counting group). `2state1ap0acc` has 6 non-LTL, all two-shape
-(0 H5). Every non-LTL certificate across the whole sweep replays against its
-`D` (0 failures — the presentation-agnostic verifier holds census-wide). The
-F₁-blind (ω-only) direction appears only in `2state1ap1acc` (4) — the
-prefix-independent theorem stratum. Only `2state2ap0acc` remains unrun.
+**Sweep (complete — every shape in the bench).** H5 hits total **26**: 9 in
+`2state1ap1acc` and 9 in its `_parity` twin (same languages, min `|𝒞| = 4`),
+8 in `3state1ap0acc` (min `|𝒞| = 6`); none below `|𝒞| = 4`. Non-LTL languages
+occur **only** at ≥ 2 states — every 1-state shape (through 3 AP / 3 acc, gba
+and parity) is entirely LTL, as expected (a single state cannot carry a
+counting group). The largest shape, `2state2ap0acc` (11 312 languages,
+4 267 non-LTL), and `2state1ap0acc` (6 non-LTL) are **all two-shape** — 0 H5,
+0 F₁-blind. Every non-LTL certificate across the whole census replays against
+its `D` (0 failures — the presentation-agnostic verifier holds census-wide).
+The F₁-blind (ω-only) direction appears only in `2state1ap1acc` (4) — the
+prefix-independent theorem stratum; the H5 (F₂-blind) direction only in
+`2state1ap1acc` (+ twin) and `3state1ap0acc`. Both blindnesses are rare and
+live at the smallest non-trivial shapes.
 
 **Paper edit flagged, not made** (per F4's handling): §4.1's H5 paragraph
 should record the negative settlement and cite the `|𝒞| = 4` exhibit above;
