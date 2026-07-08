@@ -49,8 +49,8 @@ def _per_shape(corpus: str) -> List[Dict]:
     canon = os.path.join(corpus, "flat_canon")
     acc: Dict[str, Dict] = {}
     for fname in sorted(os.listdir(os.path.join(canon, "sos"))):
-        if not fname.endswith(".sos"):
-            continue
+        if not fname.endswith(".sos") or fname[:-4].endswith("_c"):
+            continue                          # skip added complements: not shape-realized
         tag = _origin_tag(fname)
         parsed = _parse_tag(tag)
         if parsed is None:
@@ -70,9 +70,12 @@ def build_study(corpus: str) -> str:
     canon_json = json.load(open(os.path.join(corpus, "flat_canon", "flat_canon.json")))
     flat_json = json.load(open(os.path.join(corpus, "flat", "flat.json")))
     shapes = _per_shape(corpus)
-    fixed, canon = flat_json["total_langs"], canon_json["total_langs"]
+    fixed = flat_json["total_langs"]
+    primal = canon_json["primal_langs"]
+    dual = canon_json["dual_langs"]
+    closed = canon_json["total_langs"]
     exhaustive = sum(len(s["states"]) for s in shapes if s["exhaustive"])
-    sampled = canon - exhaustive
+    sampled = primal - exhaustive
     all_states = [x for s in shapes for x in s["states"]]
     all_classes = [x for s in shapes for x in s["classes"]]
 
@@ -98,16 +101,21 @@ def build_study(corpus: str) -> str:
     L.append("| catalogue | languages |")
     L.append("|---|--:|")
     L.append(f"| fixed AP labeling (`flat/`, distinct `.sos`) | {fixed} |")
-    L.append(f"| **up to renaming symbols (`flat_canon/`)** | **{canon}** |")
+    L.append(f"| distinct up to renaming symbols (primals) | {primal} |")
     L.append(f"| &nbsp;&nbsp;— from exhaustive shapes | {exhaustive} |")
     L.append(f"| &nbsp;&nbsp;— from sampled shapes (non-exhaustive) | {sampled} |")
-    L.append(f"\nThe relabeling + unused-AP fold removes "
-             f"{fixed - canon} of {fixed} entries ({100*(fixed-canon)/fixed:.0f}%): "
-             f"those were relabel/polarity twins or carried a redundant AP. "
-             f"Automaton states over the catalogue: {_dist(all_states)} "
-             f"(min / median / max); algebra size `|𝒞|`: {_dist(all_classes)}.\n")
+    L.append(f"| + complements added to close under complement | {dual} |")
+    L.append(f"| **complement-closed total (`flat_canon/`)** | **{closed}** |")
+    L.append(f"\nThe relabeling + unused-AP fold takes {fixed} fixed-labeling "
+             f"`.sos` to {primal} languages up to renaming "
+             f"({100*(fixed-primal)/fixed:.0f}% were relabel/polarity twins or "
+             f"carried a redundant AP); closing under complement (no language is "
+             f"its own, so the total is even) adds {dual}, reaching {closed}. "
+             f"Primal automaton states: {_dist(all_states)} (min / median / max); "
+             f"algebra size `|𝒞|`: {_dist(all_classes)}.\n")
 
-    L.append("## Composition\n")
+    L.append("## Composition (primals — the shape-realized languages; +"
+             f" {dual} complements close the set)\n")
     L.append("| axis | bucket | languages |")
     L.append("|---|---|--:|")
     for fam, v in sorted(canon_json["by_family"].items()):
@@ -120,7 +128,9 @@ def build_study(corpus: str) -> str:
     L.append(f"| provenance | sampled | {sampled} |")
     for cc, v in sorted(canon_json["by_colours"].items(), key=lambda kv: int(kv[0])):
         L.append(f"| acceptance colours | c={cc} | {v} |")
-    L.append(f"| **total** | | **{canon}** |")
+    L.append(f"| **primals** | | **{primal}** |")
+    L.append(f"| + complements (dual acceptance) | | {dual} |")
+    L.append(f"| **complement-closed total** | | **{closed}** |")
 
     L.append("\n## By origin shape\n")
     L.append("Each language attributed to the smallest shape realizing it (its "
