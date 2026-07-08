@@ -106,8 +106,8 @@ preconditions the transcription is exact by construction (§5.2, graded
 to arbitrary anchoring width in §5.3): that
 exactness theorem is one of the paper's two central technical claims.
 
-The second claim emerged from working the engine on the running example
-(§6.1): the class walk transcribes exactly the
+The second claim is the structural split of §6.1: the class walk
+transcribes exactly the
 *linear* half of Arnold's congruence, and where the walk freezes with
 acceptance still open — which for a prefix-independent language is
 essentially everywhere — the remaining content is exactly the *ω-power* half,
@@ -128,8 +128,8 @@ engines.** The construction is one family: the same split, met a third time.
    (B); both conditions are equations on the object, and together they
    yield exactness by construction (§5–§6).
 3. The deliverable split, stated as a result: extraction is
-   output-polynomial as a class-indexed DAG (which our implementation
-   computes at scale); the flat formula is the language's intrinsic cost,
+   output-polynomial as a class-indexed DAG; the flat formula is the
+   language's intrinsic cost,
    bounded by the R-depth and until-rank read-offs, and avoidable in a
    definitional format (§7).
 4. The inner frontier: within LTL, the algebra grades which layers admit
@@ -236,20 +236,18 @@ Four sources of explosion, each a blindness:
    *syntactic* algebra (the coarsest recognizer, with the smallest block
    alphabets and the smallest J-depth) is available.
 
-Our implementation experience sharpens the diagnosis: with class-indexed
-memoization the DG-style recursion *computes* at scale — the formula-DAG is
-tractable — and what explodes is exclusively the *flat* rendering, LTL syntax
-having no sharing. The measurement, on the running example itself: on the
-six-class algebra of `GF(aa)` the memoized recursion takes 19 recursion
-nodes and a shared arena of 1 287 nodes, while the flat tree unfolds to
+Class-indexed memoization localizes the explosion: the DG-style recursion
+*computes* at scale — the formula-DAG is tractable — and what explodes is
+exclusively the *flat* rendering, LTL syntax having no sharing. On the
+six-class algebra of `GF(aa)` the memoized recursion is 19 recursion nodes
+and a shared arena of 1 287 nodes, while the flat tree unfolds to
 1 991 717 nodes — 4.4 MB of rendered formula, Spot-equivalent to
-`GF(a ∧ Xa)` — and the output is canonical: two presentations of the
+`GF(a ∧ Xa)`; and the output is canonical: two presentations of the
 language (a parity and a reset automaton) bridge to the byte-identical
 invariant and the character-identical formula. The bottleneck is not
-computation but the deliverable
-format; §7 makes that split a stated result rather than an engineering
-apology. The extraction of §5 attacks what remains: the flat size, by making
-the formula's shape follow the language's.
+computation but the deliverable format, which §7 states as a result. The
+extraction of §5 attacks what remains — the flat size — by making the
+formula's shape follow the language's.
 
 ## 4. The non-LTL side: the witness certificate
 
@@ -621,9 +619,7 @@ both read from class `5`, traverse the same recurring-edge set
 `{(5, a), (5, !a)}`; their loop idempotents are `[a·!a]` and `[a·a]` —
 verdicts again opposite. ∎
 
-Lemma 5.2(ii) deserves a pause: the opposite claim — the walk decides
-membership — is the natural first guess, and the running example itself
-refutes it. It is [SωS26, Prop 3.4] reborn: the frozen class
+Lemma 5.2(ii) is [SωS26, Prop 3.4] in this setting: the frozen class
 `5` *is* that proposition's one-state automaton with trivial action, where
 no amount of state bookkeeping recovers acceptance. There the repair was
 enrichment — marks along runs. `Cay(L)` has no marks to enrich with; the
@@ -1419,12 +1415,10 @@ idempotent `e` arising from a tail. Well-definedness and `T_c = u⁻¹L`
 are Lemma 5.7(i) and its consequence; prefix-independence is transport,
 `V(c, w·α) = V(c·[w], α) = V(c, α)` (Lemma 5.7(ii)). ∎
 
-It is tempting to "recurse" on `T_c` — build
-its invariant, extract, wrap. The temptation must be resisted, and `GF(aa)`
-shows why: there `T_5 = GF(aa) = L` itself. Prefix-independent languages
-are fixed points of the walk-then-tail decomposition; the frozen engine is
-not a recursive call, it is the *other base case*, and it needs its own
-method:
+Recursing on `T_c` — build its invariant, extract, wrap — does not
+terminate: `T_5 = GF(aa) = L` itself, and prefix-independent languages are
+fixed points of the walk-then-tail decomposition. The frozen engine is not
+a recursive call but the *other base case*, and needs its own method:
 
 The frozen-layer engine has a closed form of its own. A frozen class `c`
 is a one-state machine: every letter either stutters at `c` (a
@@ -1908,9 +1902,9 @@ emits⟩). Three renderings:
    layers anchor, flat nesting depth is at most `c(k)·d + c′(k′)` for
    R-depth `d`: linear in the R-depth, the constant owned by the widths.
    The lower bound is the language's: the until-rank read-off
-   *lower-bounds* the depth any extraction whatsoever can achieve — so on
-   census specimens we certify "the flat explosion is the language's, not
-   ours". ⟨TBD: the until-rank lower bound — gated on §2's until-rank
+   *lower-bounds* the depth any extraction whatsoever can achieve — so the
+   flat explosion is the language's own, not an artifact of the extraction.
+   ⟨TBD: the until-rank lower bound — gated on §2's until-rank
    read-off, itself gated on the Thérien–Wilke source (library request)
    and on the ω-transfer; component C6 of the companion experiment spec
    implements whatever is frozen there; plus the size ledger DG vs. ours
@@ -1926,7 +1920,7 @@ emits⟩). Three renderings:
    and the lower traces — and `α ∈ L ⟺ α̂ ⊨ p_root`. So `L` is the
    projection of `⟦Def ∧ p_root⟧` onto `AP`, and the second-order
    quantifier hidden in that projection is *deterministic*: a definitional
-   extension, never a guess. That is the remark the format deserves:
+   extension, never a guess. The distinction is exact:
    *inside* the transcription a fresh disambiguating proposition is
    refused — there it would be a genuine guess, its projection leaves LTL
    for QPTL, and that wall *is* the (A)-fail stratum — while as an output
@@ -2086,7 +2080,8 @@ tables rebuild the object the answer calls for. On the non-LTL side, a
 counting family — words and one period, extracted by three scans of the
 multiplication table, total by construction (Theorem 4.4), checkable
 against any acceptor by lasso membership queries alone, and canonical:
-the refutation attaches to the specification, not to our tooling. On
+the refutation attaches to the specification, not to the extractor that
+produced it. On
 the LTL side, a formula that is a transcription of the algebra's own
 shape: letters quotiented by `λ`, templates chosen by `P`'s ladder,
 layers walked down the R-order, flat bricks where the layers anchor

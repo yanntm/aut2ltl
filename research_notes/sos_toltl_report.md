@@ -494,6 +494,39 @@ guarantee/safety degree-1 stratum; the faithful-or-NOK contract requires
 falls through to the DG baseline) wherever a layer's label is not provably exact.
 No change to the construction; no paper edit. Flagged for theory feedback.
 
+**Theory feedback (Defect 2 — construction sound; the bricks fail to collapse a
+committed-accepting region to `true`).** Worked the smallest exhibit by hand and
+the construction is exact — no paper edit, agreeing with your read. The unifying
+diagnosis is cleaner than "multi-layer assembly" and explains the whole stratum:
+the 394 failures are the **guarantee/safety (co-safety) degree, which is dominated
+by terminal committed-accepting layers**, and the walk bricks under-approximate
+precisely because they do not collapse such a layer to `true`. On
+`2state1ap0acc_086_c`: `D`'s start reads `a → sink`, so `a⁻¹L = Σ^ω`, hence for the
+classes `2 = [a]`, `5 = [a·!a]`, `8 = [a·!a·!a]` the tail language is `T_c = Σ^ω`
+— the class has **committed to acceptance**, `(c·f, f) ∈ P` for every idempotent
+continuation `f` — so the exact `Final(c)` is `true`. The top brick then gives
+`Final(0)`'s `a`-arm `= a ∧ X Final(2) = a ∧ X true = a`, i.e. "first letter `a`
+⟹ accept", which is exactly right (`a·a·a·!a·a·(!a)^ω` accepts). The engine's
+`Final(2)` is not `true`, so the arm rejects — the entire fault. Two structural
+notes so the fix lands in the right place. (1) *This is not the (A)-fallback
+(§5.4) stratum.* Those three classes form one 3-SCC on which `a` is a partial
+constant onto `2` and `!a` acts `2↦5, 5↦8, 8↦8` — mixed at width 1 but constant
+at every length ≥ 2, so the layer is **2-anchored**: the engine runs the graded
+§5.3 / Theorem 5.13 bricks (`TL_j` / `TR_j` / `step_κ`, κ = 3), which are licensed
+and must reduce to `true` here but don't. So the bug is inside the graded exit-chain
+assembly, not a missing fallback. (2) *The cheap, principled cure is §6.3's
+strength stratification.* A terminal (committed) layer — `(s·x, f) ∈ P` for every
+linked continuation, an `O(|𝒞|²)` read-off — takes the co-safety template
+`Final = true` directly, short-circuiting the graded walk entirely; on the
+guarantee stratum that is the common case, so the read-off both fixes the bulk and,
+run as an assertion (graded `Final` on a committed class must be ⊨-equivalent to
+`true`), pins the residual `TL_j` defect. To localize it concretely: walk the
+recursion bottom-up on the exhibit — `Final(9) = true` (absorbing sink), then
+`Final(8)`, `Final(5)`, `Final(2)`; the first that is not `true`-equivalent is the
+broken brick, the likely culprit being the graded `TL_0` exit disjunction failing
+to collapse `G a ∨ (a U (!a ∧ X φ))` when `φ` is the (correct) child `true`.
+Decline-to-DG remains the right guard until the collapse is exact.
+
 ## Reproduction
 
 Every table above is machine-built and audited against a committed output under
