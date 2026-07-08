@@ -609,11 +609,12 @@ becomes a condition on the accepting pair set `P` — concretely, one of
 §2.5's inequalities on the four integers.
 
 **Remark (history).** Landweber 1969 already decided the bottom of the
-ladder effectively: his Theorem 4.1 characterizes the open sets of a Muller
-automaton by a condition on realizable cycles, his Theorem 4.2 the `Gδ`
+ladder effectively:
+[Lan69, Thm. 4.1] characterizes the open sets of a Muller
+automaton by a condition on realizable cycles, [Lan69, Thm. 4.2] the `Gδ`
 sets by a **union-closure** condition — `D ∈ 𝒟 ∩ 𝓗_s` and `E ∈ 𝓗_s` imply
-`D ∪ E ∈ 𝒟`, accepting cycles absorb co-reachable cycles — and his
-Theorems 4.3–4.4 assemble "an effective procedure for deciding the
+`D ∪ E ∈ 𝒟`, accepting cycles absorb co-reachable cycles — and
+[Lan69, Thms. 4.3–4.4] assemble "an effective procedure for deciding the
 complexity of `T(𝓜)` … whether `T(𝓜)` is in `G₁, F₁, G₂, F₂` or
 `G₃ ∩ F₃`" [Lan69 §4]: a five-verdict classifier on presentations, in
 1969. Wagner's chains, in Carton–Perrin's algebraic form, subsume those
