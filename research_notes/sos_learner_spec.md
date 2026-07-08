@@ -35,6 +35,17 @@ carries `stall_class = n/a` — never `transient`/`permanent` (section 7,
 tightened; section 6 E2; new section 9 row P6). This must be corrected before
 E2 aggregates, or the frequency table contradicts Proposition 4.4.
 
+**Revision 2026-07-08b (M4.b + census-E2 + E5 integration).** All three landed
+(`sosl_report.md`), the P6 stall_class fix is adopted, and the results are in
+the paper (§6). Recorded here: E5's `first` policy coincides with `minimal`
+for the minimal-order oracles (§6 E5, so E5 is two series not three); the
+census-backed E2 over the frontier shapes (`2state1ap1acc` + parity twin, 258
+languages) is SOUND on all 258 and enumerates 44 permanent-stall languages,
+promoting §4.2's finding from two specimens to a family. Still open toward M4
+close: E3 (ROLL, M4.c) and the full-census N-spread for E1's scatter; and a
+per-structural-feature breakdown of the 44 permanent languages would close the
+last §6.3 frequency-table TBD in the paper.
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -545,6 +556,15 @@ confirmation (or refutation) that cost grows logarithmically with
 counterexample length. Implementation hook: the teacher grows a
 `--cex-policy minimal|first|padded:<k>` flag; `minimal` is the existing
 shortlex-least cell of the exact oracle, the other two are new.
+
+*Recorded outcome (M4, `sosl_report.md`).* `first` **coincides with
+`minimal`** for both the bounded and the exact oracles — they enumerate in
+shortlex-least order, so first-found *is* minimal and contributes no separate
+series. E5 is therefore two policies in effect (`minimal`/`first` identical,
+vs `padded:<k>`), not three; the paper states this rather than implying three
+distinct data points. The `padded:<k>` leg confirmed the design: the harvest
+term grows `+1` per doubling of counterexample length (`harvest ≈ log₂ ℓ`)
+with the learned invariant unchanged.
 
 **E6 — Stretch: beyond the census.** Random deterministic Emerson-Lei
 automata (parameters: `|Q| in 3..8`, `|AP| in 1..3`, acceptance sets `1..3`,
