@@ -100,9 +100,11 @@ ladder is a ladder of definiteness equations on the multiplication table.
 Each precondition is an equation on `𝓘(L)`, decided once, on the canonical
 object; whether a language transcribes flatly, and at which width, is
 therefore itself a definability property of `L` (§5.5). Under the two
-preconditions the transcription is exact by construction (§5.2, graded
-to arbitrary anchoring width in §5.3): that
-exactness theorem is one of the paper's two central technical claims.
+preconditions the width-1 transcription is exact by construction (§5.2);
+its graded extension to higher anchoring width (§5.3) is exact away from
+a near-entry seam, closed there by the committed base case and the scoped
+fallback (§5.3, correction). That exactness theorem is one of the paper's
+two central technical claims.
 
 The second claim is the structural split of §6.1: the class walk
 transcribes exactly the
@@ -1239,6 +1241,37 @@ move through `i+k−1`, the witness window's letters are licensed (hence
 in-layer), its pin is truthful — the walk sits at `c′` at `i+κ` — and
 `leave(c′)`, stutters then an exit with its child obligation,
 concludes by induction and transport. ∎
+
+**Correction (the graded exit-chain is incomplete near the entry; the
+committed base case, the counterexample, and the repair).** The
+completeness argument above places the `TL_0` `U`-witness at `μ − k`, `μ`
+the last within-layer change before an exit. When `μ ∈ [t+k, t+2k)` — an
+exit close to the entry — `μ − k ∈ [t, t+k)` lies inside the depth-`k`
+transient, which `TL_0`'s `U` (rooted at `t+k`) cannot witness: the
+`κ`-window certifying the exit class straddles the transient seam, and no
+transient depth removes the seam (deepening it only shifts the band). So
+Theorem 5.13 as stated is **incomplete**. Witness: on the layer `{2,5,8}`
+of the invariant of `L = { α : α reaches an accepting sink }`
+(2-anchored, `κ = 3`; `a` a partial constant onto `2`, `!a` acting
+`2↦5↦8↦8`), entry class `2`, the word `a·a·!a·a·(!a)^ω` stutters twice at
+`2`, moves to `5`, and exits to the accepting sink; its certifying window
+`(a,a,!a) ∈ An_3(5)` opens at the entry, and the constructed `Final(2)`
+rejects the word though it lies in `T_2 = Σ^ω`.
+
+Two facts restore exactness. First, the **committed base case**: call
+`c` *committed* if `T_c = Σ^ω` — equivalently every linked pair whose
+stem is reachable from `c` in `Cay(L)` lies in `P`, an `O(|𝒞|²)` scan —
+in which case `Final(c) = true` is exact (`⟦true⟧ = Σ^ω = T_c`); this is
+the co-safety base of §6.3's strength stratification, and a committed
+class takes `true` in place of any walk brick. The failure above
+concentrates on the guarantee / co-safety stratum, where committed
+classes are the common case, so the base case removes the bulk of it.
+Second, a non-committed layer anchoring only at `k ≥ 2` takes the scoped
+fallback (§5.4) rather than the graded exit-chain. The direct repair of
+the exit-chain itself roots the window-leave `U` at the entry — a
+disjunct `sojourn(r) ∧ ( step_κ U ⋁_{c′}⋁_{w∈An_κ(c′)}( ŵ ∧ X^κ
+leave(c′) ) )` scanned from `t`, so a window opening at the entry is seen
+(it recovers the witness above); its completeness re-proof is ⟨TBD⟩.
 
 ### 5.4 The scoped fallback
 

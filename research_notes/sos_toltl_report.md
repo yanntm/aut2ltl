@@ -83,7 +83,7 @@ character-identical formula (19 nodes / arena 1287 / flat 4 357 185).
 Non-degenerate LTL languages (2238), ventilated by `ϕ`. `A@1` anchors at width
 1; `A≤3` within the tester's `k ≤ 3`; `FAIL` layers anchoring at no `k ≤ 3`
 (the (A)-tester tops out at 3, so its gap *is* the scoped-fallback stratum,
-Prop 5.21/5.24); `stemk3` languages every layer of which anchors at `k ≤ 3`;
+Prop 5.11/5.14); `stemk3` languages every layer of which anchors at `k ≤ 3`;
 `pfxind` prefix-independent. Built by `census_build` → `census_report`.
 
 | `ϕ=(γ,s)` | class | langs | layers | A@1 | A≤3 | FAIL | frozen | stemk3 | pfxind |
@@ -410,8 +410,13 @@ short-circuit + a decline guard).** The remaining 394 were uniformly **`|𝒞| �
 not a rendering fault. They are **terminal committed-accepting layers**: from
 such a class every continuation is accepted (tail language `T_c = Σ^ω`, i.e.
 every linked pair whose stem is reachable from `c` lies in `P`), so the exact
-`Final(c)` is `true` — but the graded Theorem-5.23 exit-chain fails to collapse
-it, under-approximating.
+`Final(c)` is `true` — but the graded Theorem 5.13 exit-chain
+under-approximates it. Theory has since established this is a **genuine
+incompleteness in the graded construction** (paper §5.3, correction), not a
+simplification failure: a near-entry exit is certified by a `κ`-window that
+straddles the transient seam, which the exit-chain's `U` (rooted past the
+transient) cannot witness. The committed short-circuit is therefore exact and
+the decline guard is *necessary*, not merely prudent.
 
 Smallest exhibit — **`2state1ap0acc_086_c`: `|𝒞| = 12`, 4 states, 1 AP, degree
 (1,σ) (properly open — guarantee).** A reach-the-accepting-sink language.
@@ -491,11 +496,12 @@ acceptance, so `Final(c) = true`, whence `Final(0)`'s `a`-arm `= a ∧ X true = 
 ("first letter `a` ⟹ accept", correct: `a·a·a·!a·a·(!a)^ω` accepts). The engine's
 graded `Final(2)` was not `true`, so it rejected that witness — a 2-anchored
 layer (`a` a partial constant onto `2`, `!a` acting `2↦5↦8↦8`: mixed at width 1,
-constant at length ≥ 2) whose graded Theorem-5.23 exit-chain must reduce to
-`true` here but did not.
+constant at length ≥ 2) on which the graded Theorem 5.13 exit-chain is
+incomplete for this near-entry exit (paper §5.3, correction).
 
-**The cure (implemented, `engine.py`; construction sound, no paper edit).** Two
-parts, per theory's §6.3 strength-stratification reading:
+**The cure (implemented, `engine.py`; the construction had a genuine gap, now
+corrected in paper §5.3).** Two parts, per theory's §6.3 strength-stratification
+reading:
 
 - *Committed short-circuit.* A committed-accepting class — the `O(|𝒞|²)`
   read-off `_committed`: every linked pair whose stem is reachable from `c` in
@@ -503,7 +509,7 @@ parts, per theory's §6.3 strength-stratification reading:
   brick. On the guarantee/safety stratum this is the common case.
 - *Decline-to-DG guard.* A `k ≥ 2` (graded) layer carrying any non-committed
   class **declines** (`transcribe` returns `None`, falling through to the DG
-  baseline) rather than emit the Theorem-5.23 exit-chain, whose exact collapse
+  baseline) rather than emit the Theorem 5.13 exit-chain, whose exact collapse
   is not yet proven. The exhibit now declines to DG — a correct,
   SIZE-unverifiable formula, no longer FAIL.
 
@@ -512,13 +518,14 @@ SUCCESS, E0 green): faithful-or-NOK restored. The cost is coverage — a
 non-committed graded layer now falls to DG instead of the compact engine
 formula.
 
-**Remaining work.** Repair the graded Theorem-5.23 exit-chain so it collapses
-exactly, then lift the decline guard and return the graded engine to service.
-Theory localizes the residual to the graded `TL_0` exit disjunction failing to
-reduce `G a ∨ (a U (!a ∧ X φ))` when the child `φ` is `true`; the bottom-up walk
-on the exhibit (`Final(9) = true` at the absorbing sink, then `Final(8)`,
-`Final(5)`, `Final(2)`, each ⊨-equivalent to `true`) pins the broken brick. Until
-the collapse is exact and assertable, decline-to-DG is the sound guard.
+**Remaining work (construction-level).** The graded exit-chain repair is in the
+paper, not the engine: paper §5.3 (correction) roots the window-leave `U` at the
+layer entry — the disjunct `sojourn(r) ∧ (step_κ U ⋁_{c′}⋁_{w∈An_κ(c′)}(ŵ ∧ X^κ
+leave(c′)))` scanned from `t` — so a window opening at the entry is witnessed
+(it recovers the exhibit). Once its completeness re-proof lands, the engine can
+implement the entry-rooted form and lift the decline guard for non-committed
+graded layers. Until then, decline-to-DG is the sound guard, and the committed
+short-circuit carries the guarantee/co-safety stratum exactly.
 
 ## Reproduction
 
