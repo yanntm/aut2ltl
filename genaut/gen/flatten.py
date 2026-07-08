@@ -43,6 +43,43 @@ if _REPO not in sys.path:
     sys.path.insert(0, _REPO)
 from survey.normalize.sos import sos_key                   # noqa: E402
 
+
+def relabel_hoa(text: str, sigma: "Tuple[Tuple[int, ...], int]", k: int) -> str:
+    """Apply a signed AP permutation `sigma = (pi, flips)` to a det HOA. `sigma`
+    is stated over the **sorted** AP name-slots (the `.sos` alphabet convention):
+    new slot `j` is old slot `pi[j]`, negated iff `flips` has bit `k-1-j` set. The
+    slots are the AP names in lexicographic order, which may differ from the HOA's
+    own AP-declaration order (and be non-contiguous, e.g. `a, c`, when the language
+    drops an AP) — so HOA indices are mapped through the names. AP names are
+    preserved (kept in sorted order, as the `.sos` keeps them); only bracketed
+    guards are touched."""
+    if k == 0:
+        return text                                        # B_0 is trivial (no APs)
+    pi, flips = sigma
+    hm = re.search(r'AP:\s*\d+((?:\s+"[^"]*")+)', text)
+    names = re.findall(r'"([^"]*)"', hm.group(1))          # HOA index i -> names[i]
+    ordered = sorted(names)                                # slot j -> ordered[j]
+    slot_of = {i: ordered.index(names[i]) for i in range(len(names))}
+    inv_pi = [0] * k
+    for j in range(k):
+        inv_pi[pi[j]] = j                                  # old slot -> new slot
+    newidx = {i: inv_pi[slot_of[i]] for i in range(len(names))}
+    flip = {i: (flips >> (k - 1 - newidx[i])) & 1 for i in range(len(names))}
+
+    def lit(m: "re.Match[str]") -> str:
+        tok = m.group(0)
+        neg = tok.startswith("!")
+        oi = int(tok[1:] if neg else tok)
+        positive = (not neg) ^ bool(flip[oi])              # flipped AP: true<->false
+        return ("" if positive else "!") + str(newidx[oi])
+
+    def guard(m: "re.Match[str]") -> str:
+        return "[" + re.sub(r"!?\d+", lit, m.group(1)) + "]"
+
+    out = re.sub(r"\[([^\]]*)\]", guard, text)
+    header = 'AP: %d %s' % (k, " ".join('"%s"' % n for n in ordered))
+    return re.sub(r'AP:\s*\d+(?:\s+"[^"]*")+', header, out)
+
 _CORPUS = os.path.normpath(
     os.path.join(os.path.dirname(__file__), os.pardir, "corpus"))
 
@@ -167,6 +204,83 @@ def flatten(corpus: str, exclude: Tuple[str, ...]) -> Dict:
     return record
 
 
+def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
+    """Materialize `corpus/flat_canon/` — one representative per distinct language
+    **up to AP relabeling** (`B_k` orbit-min, `sosl.sos.relabel`). Each kept
+    language's det HOA and `.sos` are relabeled into the same canonical labeling
+    (σ* applied to both), so the pair is consumable as-is; the smallest-shape
+    `<tag>_<id>` name is preserved. Heavier than `flatten` (it runs the sosl
+    construction per language), so it imports sosl lazily."""
+    sys.path.insert(0, os.path.join(_REPO, "sosl"))
+    import spot                                            # noqa: E402
+    from sosl.sos.build.importer import canonical          # noqa: E402
+    from sosl.sos.core.quotient import invariant_of        # noqa: E402
+    from sosl.sos.io.serialize import dump_invariant       # noqa: E402
+    from sosl.sos.relabel import canonical_relabeling, canonical_sos  # noqa: E402
+
+    det_dir = os.path.join(corpus, "flat_canon", "det")
+    sos_dir = os.path.join(corpus, "flat_canon", "sos")
+    for d in (det_dir, sos_dir):
+        shutil.rmtree(d, ignore_errors=True)
+        os.makedirs(d, exist_ok=True)
+
+    sources = discover(corpus, exclude)
+    seen: Dict[str, str] = {}                 # canonical .sos bytes -> owning tag
+    rows: List[Dict] = []
+    total = 0
+    for src in sources:
+        sos_files = sorted(f for f in os.listdir(src.sos_dir) if f.endswith(".sos"))
+        new = 0
+        for fname in sos_files:
+            ident = fname[:-4]
+            det_src = os.path.join(src.det_dir, ident + ".hoa")
+            if not os.path.isfile(det_src):
+                continue
+            # The det, canonicalized and alphabet-minimized, is the ground truth.
+            # `remove_unused_ap` sheds every AP no edge mentions (spot only folds
+            # the all-`t` case on its own; a declared-but-unused AP otherwise
+            # stays — cf. aut2ltl/language.py), so a language recurs at exactly one
+            # alphabet size: `GF a` over `{a}` and over `{a,b}` fold together, and
+            # `universal` collapses to 0 APs. We key off this, never the stored
+            # .sos, which a sampled entry may leave non-minimal.
+            D0 = canonical(spot.automaton(open(det_src).read()))
+            D0.remove_unused_ap()
+            inv = invariant_of(D0)
+            sigma, canon_inv = canonical_relabeling(inv)
+            canon_sos = dump_invariant(canon_inv)
+            if canon_sos in seen:
+                continue                      # a smaller shape owns this orbit
+            relabeled = relabel_hoa(D0.to_str("hoa"), sigma, len(inv.alphabet.aps))
+            D = canonical(spot.automaton(relabeled))
+            if dump_invariant(invariant_of(D)) != canon_sos:
+                raise AssertionError(f"relabel_hoa disagrees with algebra on {ident}")
+            seen[canon_sos] = src.tag
+            with open(os.path.join(det_dir, ident + ".hoa"), "w") as fh:
+                fh.write(D.to_str("hoa"))
+            with open(os.path.join(sos_dir, ident + ".sos"), "w") as fh:
+                fh.write(canon_sos)
+            new += 1
+        total += new
+        rows.append({
+            "source": src.tag, "n": src.n, "k": src.k, "c": src.c,
+            "family": src.family, "exhaustive": src.exhaustive,
+            "scanned": len(sos_files), "new_langs": new, "cumulative": total,
+        })
+
+    record = {
+        "corpus": "flat_canon", "excluded": list(exclude), "sources": len(sources),
+        "total_langs": total, "rows": rows,
+        "by_family": dict(_tally(rows, "family")),
+        "by_exhaustive": {"exhaustive": sum(r["new_langs"] for r in rows if r["exhaustive"]),
+                          "sampled": sum(r["new_langs"] for r in rows if not r["exhaustive"])},
+        "by_colours": dict(_tally(rows, "c")),
+    }
+    _write_canon_census(os.path.join(corpus, "flat_canon"), record)
+    with open(os.path.join(corpus, "flat_canon", "flat_canon.json"), "w") as fh:
+        json.dump(record, fh, indent=2)
+    return record
+
+
 def _tally(rows: List[Dict], field: str) -> Counter:
     t: Counter = Counter()
     for r in rows:
@@ -218,17 +332,65 @@ def _write_census(flat_dir: str, r: Dict) -> None:
         fh.write("\n".join(lines))
 
 
+def _write_canon_census(canon_dir: str, r: Dict) -> None:
+    """Census + composition for the AP-relabeling-folded pool."""
+    lines: List[str] = []
+    lines.append("# flat_canon — distinct languages up to AP relabeling\n")
+    lines.append(
+        f"One representative per language **up to AP relabeling** "
+        f"({r['total_langs']} in all): the `B_k` orbit-min of `flat/`, folding the "
+        f"signed permutations of the atomic propositions (`GF(a) ≡ GF(!a)`, "
+        f"`a↔b` twins). Both the det HOA and the `.sos` are relabeled into the "
+        f"orbit's canonical labeling (σ* applied to both — a self-consistent pair), "
+        f"and the smallest-shape `<tag>_<id>` name is preserved. The relabeling σ* "
+        f"is chosen on the semigroup core alone, so a language and its complement "
+        f"pick the same σ* (`𝓘(L̄)` = `𝓘(L)` with `accept` flipped, byte-exact).\n")
+    if r["excluded"]:
+        lines.append(f"Excluded: {', '.join('`' + e + '`' for e in r['excluded'])}.\n")
+
+    lines.append("\n## Composition\n")
+    lines.append("| axis | bucket | languages |")
+    lines.append("|---|---|--:|")
+    for fam, v in sorted(r["by_family"].items()):
+        lines.append(f"| acceptance family | `{fam}` | {v} |")
+    for kind, v in r["by_exhaustive"].items():
+        lines.append(f"| provenance | {kind} | {v} |")
+    for c, v in sorted(r["by_colours"].items(), key=lambda kv: int(kv[0])):
+        lines.append(f"| acceptance colours | c={c} | {v} |")
+    lines.append(f"| **total** | | **{r['total_langs']}** |")
+
+    lines.append("\n## Contribution by source (traversal order)\n")
+    lines.append("| # | source | n | k | c | family | tier | scanned | new | cumulative |")
+    lines.append("|--:|---|--:|--:|--:|---|---|--:|--:|--:|")
+    for i, row in enumerate(r["rows"], 1):
+        tier = "exhaustive" if row["exhaustive"] else "**sampled**"
+        lines.append(
+            f"| {i} | `{row['source']}` | {row['n']} | {row['k']} | {row['c']} | "
+            f"{row['family']} | {tier} | {row['scanned']} | {row['new_langs']} | "
+            f"{row['cumulative']} |")
+
+    lines.append("\nBuilt by `python3 genaut/gen/flatten.py --canon`.\n")
+    with open(os.path.join(canon_dir, "census.md"), "w") as fh:
+        fh.write("\n".join(lines))
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description="Build corpus/flat/ (cross-shape language union).")
     ap.add_argument("--corpus", default=_CORPUS, help="corpus root (default genaut/corpus)")
     ap.add_argument("--exclude", nargs="*", default=list(_DEFAULT_EXCLUDE),
                     help="shape tags to omit (default: the alphabet-blow-up dominators)")
+    ap.add_argument("--canon", action="store_true",
+                    help="also materialize corpus/flat_canon/ (B_k relabeling fold)")
     args = ap.parse_args(argv)
     rec = flatten(args.corpus, tuple(args.exclude))
     print(f"[flat] {rec['total_langs']} distinct languages from {rec['sources']} sources "
           f"(exhaustive {rec['by_exhaustive']['exhaustive']}, "
           f"sampled {rec['by_exhaustive']['sampled']}); "
           f"excluded {rec['excluded']}")
+    if args.canon:
+        crec = build_canon(args.corpus, tuple(args.exclude))
+        print(f"[flat_canon] {crec['total_langs']} languages up to AP relabeling "
+              f"(from {rec['total_langs']} fixed-labeling)")
     return 0
 
 
