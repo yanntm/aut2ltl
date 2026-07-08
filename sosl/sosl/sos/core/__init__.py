@@ -5,7 +5,7 @@ from a deterministic complete Emerson-Lei automaton ``D`` to the canonical
 invariant ``I(L)`` of its language. Self-contained over spot and the ``sos``
 data structures — no dependency on ``aut2ltl``. See ``algorithm.md``.
 """
-from .canonical import canonicalize
+from .canonical import canonicalize, shortlex_bfs
 from .closure import Monoid, close
 from .congruence import Profile, profile, refine, residual_classes
 from .enriched import Elem, compose, identity_elem, letter_elems
@@ -27,4 +27,5 @@ __all__ = [
     "freeze",
     "invariant_of",
     "canonicalize",
+    "shortlex_bfs",
 ]
