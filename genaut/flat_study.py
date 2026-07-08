@@ -16,11 +16,17 @@ import json
 import os
 import re
 import statistics
+import sys
 from typing import Dict, List, Optional, Tuple
+
+sys.path.insert(0, os.path.dirname(__file__))            # for `gen.categorize`
+from gen.categorize import (                             # noqa: E402
+    parse_cat, degree_sort_key, phi_pretty)
 
 _CORPUS = os.path.normpath(
     os.path.join(os.path.dirname(__file__), "corpus"))
 _TAG_RE = re.compile(r"^(\d+)state(\d+)ap(\d+)acc(_parity)?$")
+_TRIVIAL = {("0", "sigma"), ("0", "pi")}
 
 
 def _origin_tag(fname: str) -> str:
@@ -66,6 +72,77 @@ def _per_shape(corpus: str) -> List[Dict]:
                                  1 if r["family"] == "parity" else 0))
 
 
+def _categories(corpus: str) -> List[Dict]:
+    """Read every `.cat` sidecar of `flat_canon/sos/` — one category per language
+    (`gen/categorize.py`): its LTL cut, Wagner degree `ϕ`, coordinates, class, and
+    whether it is a `_c` complement. Empty if the corpus is not categorized yet."""
+    sos = os.path.join(corpus, "flat_canon", "sos")
+    out: List[Dict] = []
+    for fname in sorted(os.listdir(sos)):
+        if not fname.endswith(".cat"):
+            continue
+        cat = parse_cat(open(os.path.join(sos, fname)).read())
+        cat["complement"] = fname[:-4].endswith("_c")
+        out.append(cat)
+    return out
+
+
+def _degree_section(cats: List[Dict]) -> List[str]:
+    """The Wagner-degree profile of the complement-closed catalogue: distinct
+    languages per degree `ϕ = (γ, s)`, weakest-first with the trivial pair set
+    apart, each row carrying its coordinates, class, the non-LTL count (the cut),
+    and the primal (shape-realized) count."""
+    per: Dict[Tuple[str, str], Dict] = {}
+    for c in cats:
+        phi = c["phi"]
+        d = per.setdefault(phi, {"n": 0, "nonltl": 0, "primal": 0,
+                                 "coords": c["coords"], "class": c["class"]})
+        d["n"] += 1
+        d["nonltl"] += 0 if c["ltl"] else 1
+        d["primal"] += 0 if c["complement"] else 1
+
+    order = sorted(per, key=degree_sort_key)
+    triv = [p for p in order if p in _TRIVIAL]
+    proper = [p for p in order if p not in _TRIVIAL]
+    partial = sum(1 for c in cats if c["phi"][1] == "PARTIAL")
+
+    def row(phi: Tuple[str, str]) -> str:
+        d = per[phi]
+        m0, m1, n0, n1 = d["coords"]
+        return (f"| {phi_pretty(phi)} | ({m0}, {m1}, {n0}, {n1}) | {d['class']} "
+                f"| {d['n']} | {d['nonltl']} | {d['primal']} |")
+
+    L: List[str] = []
+    L.append("\n## Wagner-degree profile (classified, complement-closed)\n")
+    L.append(
+        "Each language's **category**, read off its syntactic invariant `𝓘(L)` "
+        "into a `.cat` sidecar (`gen/categorize.py`, a pure table search — no "
+        "automaton, no Spot) and aggregated here. `ϕ = (γ, s)` is the Wagner "
+        "degree (`γ` the ordinal depth, `s ∈ {σ, π, δ}` the side); `(m⁺, m⁻, n⁺, "
+        "n⁻)` the chain/superchain coordinates; `non-LTL` the count in that row "
+        "that is **not** LTL-definable; `primals` the shape-realized share (the "
+        "rest are added complements). Because the catalogue is closed under "
+        "complement, the profile is **exactly duality-symmetric**: every `(γ, σ)` "
+        "row matches its `(γ, π)` dual, and the self-dual `δ` rows stand alone.\n")
+    L.append("| `ϕ = (γ, s)` | `(m⁺, m⁻, n⁺, n⁻)` | class | languages | non-LTL | primals |")
+    L.append("|---|---|---|--:|--:|--:|")
+    for phi in triv:
+        L.append(row(phi))
+    if triv and proper:
+        tl = sum(per[p]["n"] for p in triv)
+        L.append(f"| *— trivial pair (weakest), set apart —* | | | *{tl}* | | |")
+    for phi in proper:
+        L.append(row(phi))
+
+    tail = ("no language reaches Wagner's derivative (`γ = μ` throughout, "
+            "Prop. 11.1)" if partial == 0 else f"**{partial}** languages hit the "
+            "derivative regime (`PARTIAL`)")
+    L.append(f"\nDegrees span `(0, σ)` (trivial) up to `(ω², ·)` (parity-`{{0,1,2}}`); "
+             f"{tail}. The degree is a language invariant — a `.cat` says the same "
+             "for a language however many shapes, states, or colours presented it.")
+    return L
+
+
 def build_study(corpus: str) -> str:
     canon_json = json.load(open(os.path.join(corpus, "flat_canon", "flat_canon.json")))
     flat_json = json.load(open(os.path.join(corpus, "flat", "flat.json")))
@@ -78,6 +155,12 @@ def build_study(corpus: str) -> str:
     sampled = primal - exhaustive
     all_states = [x for s in shapes for x in s["states"]]
     all_classes = [x for s in shapes for x in s["classes"]]
+
+    cats = _categories(corpus)
+    ltl = sum(1 for c in cats if c["ltl"])
+    nonltl = len(cats) - ltl
+    prim_ltl = sum(1 for c in cats if c["ltl"] and not c["complement"])
+    prim_nonltl = primal - prim_ltl
 
     L: List[str] = []
     L.append("# genaut language benchmark — the deduped corpus, by language\n")
@@ -114,6 +197,27 @@ def build_study(corpus: str) -> str:
              f"Primal automaton states: {_dist(all_states)} (min / median / max); "
              f"algebra size `|𝒞|`: {_dist(all_classes)}.\n")
 
+    if cats:
+        L.append("## The LTL cut\n")
+        L.append(
+            f"The dividing line everyone asks about first — is the language "
+            f"**LTL-definable** (equivalently, star-free / first-order / aperiodic "
+            f"syntactic ω-semigroup) or does it genuinely **count**? Read off each "
+            f"language's `.cat` (aperiodicity of `𝓘(L)`), over the "
+            f"complement-closed catalogue:\n")
+        L.append("| definability | languages |")
+        L.append("|---|--:|")
+        L.append(f"| **LTL-definable** (aperiodic) | **{ltl}** |")
+        L.append(f"| **non-LTL** (genuine ω-counting) | **{nonltl}** |")
+        L.append(f"| total (`flat_canon/`) | {len(cats)} |")
+        L.append(
+            f"\nSo **{100*nonltl/len(cats):.0f}%** of the small ω-languages are "
+            f"beyond LTL. The cut is complement-invariant (aperiodicity is a "
+            f"property of the semigroup, not of `accept`), so it splits the primals "
+            f"the same way: {prim_ltl} LTL / {prim_nonltl} non-LTL of {primal}. It "
+            f"cuts *across* the Wagner degrees below — depth and countability are "
+            f"independent axes.\n")
+
     L.append("## Composition (primals — the shape-realized languages; +"
              f" {dual} complements close the set)\n")
     L.append("| axis | bucket | languages |")
@@ -128,9 +232,15 @@ def build_study(corpus: str) -> str:
     L.append(f"| provenance | sampled | {sampled} |")
     for cc, v in sorted(canon_json["by_colours"].items(), key=lambda kv: int(kv[0])):
         L.append(f"| acceptance colours | c={cc} | {v} |")
+    if cats:
+        L.append(f"| definability | LTL (aperiodic) | {prim_ltl} |")
+        L.append(f"| definability | non-LTL | {prim_nonltl} |")
     L.append(f"| **primals** | | **{primal}** |")
     L.append(f"| + complements (dual acceptance) | | {dual} |")
     L.append(f"| **complement-closed total** | | **{closed}** |")
+
+    if cats:
+        L += _degree_section(cats)
 
     L.append("\n## By origin shape\n")
     L.append("Each language attributed to the smallest shape realizing it (its "
@@ -145,9 +255,10 @@ def build_study(corpus: str) -> str:
                  f"{tier} | {len(s['states'])} | {_dist(s['states'])} | "
                  f"{_dist(s['classes'])} |")
 
-    L.append("\nGenerated by `python3 genaut/flat_study.py` from `corpus/flat_canon/`. "
-             "For the per-shape *presentation* funnel (automata, not languages) see "
-             "`SHAPES.md`.\n")
+    L.append("\nGenerated by `python3 genaut/flat_study.py` from `corpus/flat_canon/` "
+             "(the LTL cut and Wagner-degree profile aggregate the per-language "
+             "`.cat` sidecars written by `gen/categorize.py`). For the per-shape "
+             "*presentation* funnel (automata, not languages) see `SHAPES.md`.\n")
     return "\n".join(L)
 
 
