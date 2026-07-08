@@ -66,7 +66,7 @@ opposite-polarity twins of census ones (its encounter-order representative choic
     python3 genaut/gen/flatten.py            # (re)build corpus/flat/
     python3 genaut/gen/flatten.py --exclude 2state2ap0acc   # default: drop dominators
 
-### corpus/flat_canon — the irredundant catalogue (up to renaming)
+### corpus/flat_canon — the irredundant, complement-closed catalogue
 
 `flat/` still counts a language once **per AP labeling and alphabet size**:
 `GF(a)`, `GF(!a)`, and `GF(a)`-with-a-declared-unused-`b` are three entries.
@@ -76,9 +76,13 @@ permutations, `sosl.sos.relabel`) over the **alphabet-minimized** automaton
 (`remove_unused_ap` sheds APs no edge uses). Both det and `.sos` are relabeled
 into the canonical labeling (a self-consistent pair), smallest-shape name kept.
 The relabeling is chosen on the semigroup core, so complement stays "flip
-`accept`" byte-exact. Built by `flatten.py --canon` (heavier: it runs the sosl
-construction per language). The rationale — why these three axes are the complete
-redundancy of an exhaustive sweep — is `research_notes/genaut_corpus.md`.
+`accept`" byte-exact — which is used to **close the catalogue under complement**:
+every language's dual is present, added (where the enumeration was one-sided) as
+`<primal>_c` (`.sos` by flipping `P`, det by `spot.dualize`, the two cross-checked).
+No language equals its own complement, so the closed catalogue is **even**.
+Built by `flatten.py --canon` (heavier: it runs the sosl construction per
+language). The rationale — why these axes are the complete redundancy of an
+exhaustive sweep — is `research_notes/genaut_corpus.md`.
 
     python3 genaut/gen/flatten.py --canon    # also (re)build corpus/flat_canon/
 
