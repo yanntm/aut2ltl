@@ -431,3 +431,107 @@ column. First run: the E7 dual-scan ledger — `dual_scan` partitions each
 `corpus/sos/*.sos` (None ⟹ aperiodic/LTL, `DualScan` ⟹ non-LTL certificate),
 and the non-LTL rows carry the two-column dual scan, `h5_hit`, component
 lengths against the Theorem-4.4 bounds, and the `corpus/det/` replay.
+
+### F5 — the census refutes "F₂ always available": H5 hits exist at the smallest shape
+
+**The prediction.** Spec E7/H5: "a census with none [no ω-power-all-constant
+specimen] is evidence toward 'F₂ always available'"; the dual scan looks for
+the dual of Proposition 4.2's blindness, a non-LTL language certifiable in the
+**linear** shape only.
+
+**The run** (`tests/sos2ltl/e7_ledger.py` over `corpus/sos/2state1ap1acc`,
+gba/Inf, deterministic-EL canonical `D` as the acceptor; the language census,
+1:1 per §3b): 129 languages, 82 LTL / 47 non-LTL. All 47 non-LTL certificates
+replay against `D` by membership only — the presentation-agnostic verifier
+holds across the shape (0 replay failures). Dual-scan split: **34 both shapes,
+9 linear-only (H5), 4 ω-power-only.** Component lengths ≤ 4 against `|𝒞|` ≤ 15
+(Theorem 4.4's `< |𝒞|` holds with margin).
+
+**REFUTED.** Nine H5 hits at 2 states / 1 AP — the ω-power scan is
+*all-constant* (exact: it is read off the syntactic invariant `𝓘(L)`, which
+`corpus/sos` *is*), the linear certificate `F₁` replays against `D`. One
+confirmed witness settles §4.1's existence question **negatively**: F₂ (the
+ω-power certificate) is *not* always available.
+
+**The exhibit (smallest H5 witness, `|𝒞| = 4`).** `2state1ap1acc_04644`, the
+language `L₄ = { w : |w|_a = ∞ } ∪ { w : |w|_a < ∞ and even }` — "*if only
+finitely many `a` occur, their number is even*". Non-LTL because that parity
+is a group on the finite-`a` stratum; H5 because **every** ω-power context
+`(vⁿ·y)^ω` whose loop carries an `a` has infinitely many `a` and so is
+accepted unconditionally — the ω-power scan sees only constants. Only the
+linear shape separates: `F₁(u=a, v=a, x=(!a)^ω, p′=2)` drives the word into
+the absorbing `(!a)^ω` tail, exposing the finite-`a` parity (samples
+`a^{n+1}·(!a)^ω`, accept iff `n` odd). Replays 5/5 against the canonical `D`
+by membership. Its `|𝒞| = 4` twin `…_16929` is the complement (odd count),
+pattern `(T,F)`; the `_parity` shape yields the identical two languages.
+
+Canonical automaton `D` (deterministic, complete, transition-based Büchi):
+
+    HOA: v1
+    States: 2
+    Start: 0
+    AP: 1 "a"
+    Acceptance: 1 Inf(0)
+    --BODY--
+    State: 0
+    [!0] 0 {0}
+    [0] 1 {0}
+    State: 1
+    [0] 0 {0}
+    [!0] 1
+    --END--
+
+Syntactic invariant `𝓘(L₄)` in full (`.sos`, with the residual trailer —
+`tests/sos/build_sos.py --residuals`, a two-state parity residual DFA):
+
+    SOS v1
+    ap: a
+    classes: 4
+    0 eps
+    1 !a
+    2 a
+    3 a;a
+    letters: !a->1 a->2
+    mult:
+    0: 0 1 2 3
+    1: 1 1 2 3
+    2: 2 2 3 2
+    3: 3 3 2 3
+    accept:
+    1 1
+    2 3
+    3 1
+    3 3
+    residuals: 2
+    0 eps
+    1 a
+    res-step:
+    0: 0 1
+    1: 1 0
+
+The group is `{[a], [a·a]}` (order 2 under `·[a]`); `[!a]` and the two group
+powers are the three idempotents; `res-step` is the parity toggle on `a`, the
+residual DFA the aperiodic reading cannot see is periodic.
+
+**The symmetric reading.** The 4 ω-power-only languages are F₁-blind — the
+direction theory already has as a *theorem* (prefix-independent ⟹ linear
+context constant). The 9 H5 hits are the direction theory had *no* theorem for
+and leaned toward "cannot happen"; it happens. So **neither** context shape is
+universally available (34 both / 9 F₁-only / 4 F₂-only), and running *both*
+scans — the dual scan itself — is necessary, not a convenience. F4's asymmetry
+becomes: each blindness occurs, one by theorem and one by census witness.
+
+**Sweep (every shape bar the excluded ~11k `2state2ap0acc`).** H5 hits total
+**26**: 9 in `2state1ap1acc` and 9 in its `_parity` twin (same languages, min
+`|𝒞| = 4`), 8 in `3state1ap0acc` (min `|𝒞| = 6`); none below `|𝒞| = 4`.
+Non-LTL languages occur **only** at ≥ 2 states — every 1-state shape (through
+3 AP / 3 acc, gba and parity) is entirely LTL, as expected (a single state
+cannot carry a counting group). `2state1ap0acc` has 6 non-LTL, all two-shape
+(0 H5). Every non-LTL certificate across the whole sweep replays against its
+`D` (0 failures — the presentation-agnostic verifier holds census-wide). The
+F₁-blind (ω-only) direction appears only in `2state1ap1acc` (4) — the
+prefix-independent theorem stratum. Only `2state2ap0acc` remains unrun.
+
+**Paper edit flagged, not made** (per F4's handling): §4.1's H5 paragraph
+should record the negative settlement and cite the `|𝒞| = 4` exhibit above;
+the extractor's two-shape scan earns a "necessary" note. Awaiting theory.
