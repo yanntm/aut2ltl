@@ -22,10 +22,13 @@ class BridgeDecline(Exception):
 
 
 def invariant_of_language(lang: "Language", cap: int = 20000) -> Invariant:
-    """The canonical invariant `𝓘(L)` of the Language, via the reference
-    construction on its minimal deterministic generic form. Raises
-    `BridgeDecline` when the monoid closure exceeds `cap` elements."""
-    inv = invariant_of(canonical(lang.det_generic_minimal()), cap)
+    """The canonical invariant `𝓘(L)` of the Language. `canonical` determinizes
+    and completes the Language's base automaton (Spot postprocess), and the
+    reference closure builds `𝓘(L)` from that form; the invariant is a
+    *language* property (byte-equal per language, [SωS26 Thm 5.1]),
+    independent of which equivalent deterministic presentation seeds it.
+    Raises `BridgeDecline` when the closure exceeds `cap`."""
+    inv = invariant_of(canonical(lang._base()), cap)
     if inv is None:
         raise BridgeDecline(f"invariant closure exceeded cap {cap}")
     return inv
