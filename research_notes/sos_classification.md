@@ -21,12 +21,12 @@ off `𝓘(L)` by finite search in the multiplication table, polynomial in
 `N = |𝒞|`. The searches transport
 Carton and Perrin's chains and superchains to the invariant. One step
 resists the transport: Wagner's derivative is not an algebraic operation —
-no re-marking of the accepting pairs computes it (Proposition 8.1) — yet it
+no re-marking of the accepting pairs computes it (Proposition 4.1) — yet it
 remains a table computation, running on the right regular representation
 with the marking unchanged and the admissible stems shrinking
-(Theorem 8.5). Beyond the single language, a spectrum theorem bounds the
+(Theorem 4.5). Beyond the single language, a spectrum theorem bounds the
 Wagner degrees any generalized-Büchi input family can reach
-(Proposition 11.1), and a reference catalogue of 3938 small ω-languages —
+(Proposition 7.1), and a reference catalogue of 3938 small ω-languages —
 every language small deterministic automata realize, counted once up to
 atom renaming and closed under complement — yields the first measured
 Wagner-degree profile of such a class: 43% of it lies beyond LTL, the
@@ -94,54 +94,54 @@ computed by search in the multiplication table in time polynomial in
 tool.*
 
 *Proof.* Assembled over the paper. The identity band is [SωS26, Thm. 5.1]
-read off directly (§3). The aperiodic cut is Proposition 4.1. The chain and
+read off directly (§3.1). The aperiodic cut is Proposition 3.1. The chain and
 superchain numbers `(m⁺, m⁻, n⁺, n⁻)` are computed exactly on the table by
-Propositions 5.1 and 6.1; every ladder rung and the acceptance index are
-inequalities in those four integers (§7 — the characterizations of
+Propositions 3.2 and 3.3; every ladder rung and the acceptance index are
+inequalities in those four integers (§3.5 — the characterizations of
 Landweber and Carton–Perrin recalled in §2.5). The Wagner degree, including
-its derivative recursion, is Theorem 8.5. The polynomial bounds are
-collected in §10. ∎
+its derivative recursion, is Theorem 4.5. The polynomial bounds are
+collected in §6. ∎
 
 One step earns the theorem rather than inheriting it: the degree's
 derivative recursion provably cannot be carried by a re-marking of `P`
-(Proposition 8.1), and runs instead on the right regular representation of
+(Proposition 4.1), and runs instead on the right regular representation of
 the same table — the marking never changes, the admissible stems shrink
-(Theorem 8.5).
+(Theorem 4.5).
 
 **Contributions.**
 
-- *The transport* (§5–7). Chains and superchains — the two combinatorial
+- *The transport* (§3.3–3.5). Chains and superchains — the two combinatorial
   quantities the whole classification reduces to — are computed exactly on
-  `𝓘(L)` (Propositions 5.1 and 6.1): completeness comes from Carton and
+  `𝓘(L)` (Propositions 3.2 and 3.3): completeness comes from Carton and
   Perrin's transfer theorems,
   soundness of the normal-form search is proved directly on the table, and
   every rung of the ladder and the acceptance index becomes an inequality
-  on four integers `(m⁺, m⁻, n⁺, n⁻)` (§7).
-- *An obstruction* (Proposition 8.1). The Wagner derivative `∂X` — the
+  on four integers `(m⁺, m⁻, n⁺, n⁻)` (§3.5).
+- *An obstruction* (Proposition 4.1). The Wagner derivative `∂X` — the
   recursion step of Carton–Perrin's ordinal formula — is not an algebraic
   operation: there is an `X` whose derivative is not saturated by the
   syntactic congruence of `X`, so no re-marking of the accepting pairs of
   `𝓘(X)` recognizes `∂X`.
-- *Its bypass* (Theorem 8.5). The derivation is nonetheless a table
+- *Its bypass* (Theorem 4.5). The derivation is nonetheless a table
   computation: on the right regular representation of `𝓘(X)` it becomes a
   restriction of the admissible stems — the marking never changes, the same
   chain and superchain engines run at every level, the recursion trace is
   the Cantor normal form of the degree, and every level's witnesses are
   lassos over `𝒞`.
-- *A spectrum bound* (Proposition 11.1). The acceptance family of an input
+- *A spectrum bound* (Proposition 7.1). The acceptance family of an input
   corpus fixes, a priori, which Wagner degrees it can reach: deterministic
   generalized-Büchi inputs never need the derivative and stay within an
   explicit finite list of degrees.
-- *A measured profile* (§12). Over a reference catalogue of 3938 small
+- *A measured profile* (§8). Over a reference catalogue of 3938 small
   ω-languages — systematically enumerated, deduplicated up to atom
   renaming, closed under complement — the classifier produces the first
   measured Wagner-degree profile of such a class: 43% non-LTL, a profile
-  exactly symmetric under duality, Proposition 11.1's spectrum verified
+  exactly symmetric under duality, Proposition 7.1's spectrum verified
   with its converse, and every consistency law holding on every case.
 
 **Related work.** Priority for computing the Wagner degree on the syntactic
 ω-semigroup belongs to Cabessa and Duparc [CD09a, CD09b], who reach it by a
-route that never forms the derivative; §8.2 details the relation, and the two
+route that never forms the derivative; §4.2 details the relation, and the two
 procedures cross-validate each other. The mathematical spine is Carton and
 Perrin's pair of papers on chains and superchains [CP97, CP99]: their
 theorems are stated on arbitrary recognizing ω-semigroups and on Muller
@@ -159,11 +159,11 @@ canonicity. §2 collects the context, none of it ours: the input invariant
 (§2.1), the table primitives (§2.2), Carton and Perrin's chains and
 superchains with their finite normal forms (§2.3), the Wagner degree with
 its ordinal formula and derivative (§2.4), and the ladder's three
-vocabularies (§2.5). The contributions follow: §§3–4 dispatch the identity
-band and the aperiodic cut, §§5–6 compute the chain and superchain numbers
-on the invariant, §7 reads the ladder and the index off them, and §8
-computes the Wagner degree, derivative included. §9 classifies the running
-examples end to end, §10 collects the complexity. §11 and §12 leave the
+vocabularies (§2.5). The contributions follow: §§3.1–3.2 dispatch the identity
+band and the aperiodic cut, §§3.3–3.4 compute the chain and superchain numbers
+on the invariant, §3.5 reads the ladder and the index off them, and §4
+computes the Wagner degree, derivative included. §5 classifies the running
+examples end to end, §6 collects the complexity. §7 and §8 leave the
 single language: the spectrum bound for acceptance families, and the
 measured profile.
 
@@ -220,7 +220,7 @@ of `M`. For **idempotents** the `H`-order has a one-line test
 set of all linked pairs [SωS26 §5]. Every procedure below therefore
 classifies the complement at no extra cost, and the dualities it must
 satisfy (`m⁺ ↔ m⁻`, `n⁺ ↔ n⁻`, `σ ↔ π` — the quantities and signs
-defined in §§2.3–2.4 and computed in §§5–8; [CP97, Props. 6, 10]) are the
+defined in §§2.3–2.4 and computed in §§3.3–4; [CP97, Props. 6, 10]) are the
 classifier's cheapest correctness oracle.
 
 ### 2.3 Chains and superchains
@@ -256,7 +256,7 @@ the convention `−1` when none exists; `m(X) = max(m⁺, m⁻)`. For ω-rationa
 **Strong chains — the normal form** ([CP97, Thm. 6]). Searching all pairs
 `(Y, Z)` would be hopeless; in a *finite* ω-semigroup it is also needless.
 Every X-chain yields one of the same length and sign in the form Carton
-and Perrin call *strong* — our normal form for the searches of §5:
+and Perrin call *strong* — our normal form for the searches of §3.3:
 `C' = ({s}, E)`, a singleton **stem** `s` — the element whose left
 multiplication anchors all the sets `W_i` — and a sequence
 `E = e₀, e₁, …, e_m` of idempotents such that
@@ -292,7 +292,7 @@ lengths "can be computed in any ω-semigroup recognizing the set `X`. In
 particular, this can be done in the syntactic ω-semigroup of `X`"
 ([CP97, Cor. 1] for chains; [CP97, Thm. 5] with the same transfer for
 superchains). The finite normal forms above are what make the computation
-a search (§§5–6).
+a search (§§3.3–3.4).
 
 ### 2.4 The Wagner degree
 
@@ -343,8 +343,8 @@ notch *below* the properly open/closed pair, not above it; the first properly
 `Δ₂` degree is `(2, δ)`, coordinates `(0, 0, 1, 1)`. Indirectly, `δ`
 propagates through the derivative (`s(X) = s(∂X)`, the last clause of `s`
 above), producing self-dual
-degrees with infinite `γ` — §9's fourth specimen is one. The profile table
-of §12 names these levels by this dictionary.
+degrees with infinite `γ` — §5's fourth specimen is one. The profile table
+of §8 names these levels by this dictionary.
 
 **Reading the formula.** Only one branch is not a direct read-off of the
 chain and superchain numbers. When `m = 0`, or when one sign dominates the
@@ -359,9 +359,9 @@ Since `m(∂X) < m(X)`, the recursion terminates within `m(X)` steps, and its
 successive terms `µ₀, µ₁, …` have strictly decreasing exponents: the sum
 they form is the Cantor normal form of `γ`. The analogy with polynomials is
 exact — each derivative lowers the leading exponent and exposes the next
-coefficient of the degree. §8 shows how to run this recursion without
+coefficient of the degree. §4 shows how to run this recursion without
 leaving the table: not by re-marking `P` (that is provably impossible,
-Proposition 8.1), but through the right regular representation.
+Proposition 4.1), but through the right regular representation.
 
 **Chains on an automaton** ([CP99 §2]). The derivative is defined on a
 presentation, so the quantities are also needed in loop form. On a
@@ -461,7 +461,21 @@ this section speaks Borel; this table is the dictionary.
 
 ---
 
-## 3. Band 0 — identity
+## 3. From the invariant to the ladder
+
+This section runs the classification from the invariant up to the acceptance
+index — every band below the Wagner degree, which §4 treats on its own. Each
+verdict is a finite search in the multiplication table of `𝓘(L)`. §3.1
+fixes the identity band — equality, complement, emptiness, universality — as
+direct read-offs of [SωS26, Thm. 5.1]. §3.2 cuts the aperiodic
+(LTL-definable) languages from the rest by a period test on the power orbits of
+`𝒞₊`. §3.3 and §3.4 compute the two combinatorial quantities the
+whole ladder reduces to — the chain numbers `(m⁺, m⁻)` and the
+superchain numbers `(n⁺, n⁻)` — as normal-form searches on the table.
+§3.5 then reads every rung of the safety–progress/topological ladder and
+the deterministic-acceptance index off those four integers as inequalities.
+
+### 3.1 Band 0 — identity
 
 Read-offs of [SωS26, Thm. 5.1], restated to fix the conventions used
 throughout:
@@ -471,11 +485,9 @@ throughout:
 - **complement** — flip `P` within the linked pairs;
 - **emptiness** — `P = ∅`; **universality** — `P` is all linked pairs.
 
----
+### 3.2 Band 1 — the aperiodic cut (LTL-definability)
 
-## 4. Band 1 — the aperiodic cut (LTL-definability)
-
-**Proposition 4.1 (the aperiodic cut).** *`L` is LTL-definable iff every
+**Proposition 3.1 (the aperiodic cut).** *`L` is LTL-definable iff every
 power orbit in `𝒞₊` has eventual period 1: `p(c) = 1` for all `c ∈ 𝒞₊`.*
 
 *Proof.* `S(L)₊` is **aperiodic** (contains no nontrivial group) iff every
@@ -514,11 +526,9 @@ conditions that are again properties of the table — so each fragment is a
 decidable property of the invariant; developing those searches to the
 standard of the rest of this paper is left open.
 
----
+### 3.3 Computing chains — the quantity `(m⁺, m⁻)`
 
-## 5. Computing chains — the quantity `(m⁺, m⁻)`
-
-**Proposition 5.1 (chain transport).** *Take `X` = the image of `L` in
+**Proposition 3.2 (chain transport).** *Take `X` = the image of `L` in
 `S(L)_ω`, i.e. membership of `(s, e)` read in `P`. Then `m⁺(L)` and
 `m⁻(L)` are exactly the maximal alternation scores of the normal-form
 candidates on the table: a stem `s`, a strictly `>_H`-descending sequence
@@ -561,14 +571,12 @@ pair, so the descent `[!a] >_H [a·a]` at stem `[a·a]` scores the alternation
 length 1 exists (an accepting top would force `e₀ = [a·a]`, which has
 nothing below). Hence `m⁺ = 0`, `m⁻ = 1`.
 
----
+### 3.4 Computing superchains — the quantity `(n⁺, n⁻)`
 
-## 6. Computing superchains — the quantity `(n⁺, n⁻)`
-
-**Proposition 6.1 (superchain transport).** *`n⁺(L)` and `n⁻(L)` are
+**Proposition 3.3 (superchain transport).** *`n⁺(L)` and `n⁻(L)` are
 exactly the maximal lengths of sign-alternating, strictly `R`-descending
 sequences of stems on the table, each stem carrying a maximal-length
-normal-form chain of the required sign (Proposition 5.1).*
+normal-form chain of the required sign (Proposition 3.2).*
 
 *Proof.* Completeness as before (the normal form
 [CP97, Thm. 7] plus the morphism transfer of chains, [CP97 §4.4/§5]);
@@ -578,22 +586,20 @@ exactly `s_i ∈ s_{i−1}·𝒞₊` (the `E`-factors are absorbed into `s_{i−
 which is `s_i <_R s_{i−1}`, strict by [CP97, Prop. 11] once signs
 alternate. ∎
 
-**Procedure.** From §5, mark every stem `s` that carries a maximal-length
+**Procedure.** From §3.3, mark every stem `s` that carries a maximal-length
 chain, with its available signs (a stem can carry both). `n⁺`/`n⁻` are the
 longest sign-alternating, strictly `R`-descending paths through the marked
 stems (DP over the `R`-order DAG restricted to `R`-classes of marked
-stems), starting positive resp. negative. `O(N²)` after §5.
+stems), starting positive resp. negative. `O(N²)` after §3.3.
 
 *Worked instance (`GF(aa)`, continued).* Every maximal (length-1) chain of
-§5 is negative, at the single stem `[a·a]`: no sign alternation is
+§3.3 is negative, at the single stem `[a·a]`: no sign alternation is
 available, and `n⁺ = −1`, `n⁻ = 0`.
 
----
+### 3.5 The read-offs: ladder and index as inequalities
 
-## 7. The read-offs: ladder and index as inequalities
-
-With `(m⁺, m⁻, n⁺, n⁻)` computed exactly on `𝓘(L)` (Propositions 5.1
-and 6.1), every row of the ladder table of §2.5 is decided by evaluating
+With `(m⁺, m⁻, n⁺, n⁻)` computed exactly on `𝓘(L)` (Propositions 3.2
+and 3.3), every row of the ladder table of §2.5 is decided by evaluating
 its inequality — each rung of the safety–progress/topological ladder, each
 level of the boolean hierarchy, each parity band — with the witnessing
 chain or superchain as the certificate. Landweber decided the low rungs
@@ -635,22 +641,22 @@ locates the exact parity/Rabin index — Büchi at `(m⁺ ≤ 0)`, co-Büchi at
 
 ---
 
-## 8. The Wagner degree
+## 4. The Wagner degree
 
-§7 read every rung of the ladder and the acceptance index off the four
+§3.5 read every rung of the ladder and the acceptance index off the four
 integers `(m⁺, m⁻, n⁺, n⁻)`. Above all the rungs sits the complete
 invariant: the **Wagner degree** of §2.4. When `m(X) = 0` or
 `n⁺(X) ≠ n⁻(X)`, the degree `ϕ(X) = (γ, s)` is a direct read-off of the
-§5–6 numbers; in the tied case `m ≥ 1 ∧ n⁺ = n⁻` the formula recurses
+§3.3–3.4 numbers; in the tied case `m ≥ 1 ∧ n⁺ = n⁻` the formula recurses
 through the derivative `∂X`. That recursion is the one step of the
 classification that resists the transport to the algebra, and it
 structures the section: a running example first — the smallest language
-in the derivative regime — then §8.1 proves the two results this paper
+in the derivative regime — then §4.1 proves the two results this paper
 adds: the derivative is *not* an algebraic operation (no re-marking of the
-accepting pairs of `𝓘(X)` recognizes `∂X`, Proposition 8.1), yet it *is* a
+accepting pairs of `𝓘(X)` recognizes `∂X`, Proposition 4.1), yet it *is* a
 computation on the multiplication table once the table is read as a machine
 (the marking never changes, only the admissible stems shrink,
-Theorem 8.5). §8.2 places both results against Cabessa and Duparc's
+Theorem 4.5). §4.2 places both results against Cabessa and Duparc's
 earlier, derivative-free route to the same degree.
 
 **A running example.** Over `Σ = {a, b, c, d}` take the *escape language*
@@ -708,7 +714,7 @@ sink merging into `q₋`:
                     γ(X) = ω + 1  —  the trace is the Cantor normal form
 ```
 
-### 8.1 The derivative leaves the algebra — but not the table
+### 4.1 The derivative leaves the algebra — but not the table
 
 One could hope the derivation is an algebraic operation: that `∂X` is
 recognized by `𝓘(X)` itself under a re-marked accepting set `P′`, so that
@@ -726,7 +732,7 @@ lies outside `X` — so the syntactic congruence of `X` identifies them. Yet
 the first entered the committed-positive zone before reaching the sink and
 the second did not, and `∂X` separates them. Hence:
 
-**Proposition 8.1.** There is an ω-rational `X` with `m = 1`, `n⁺ = n⁻ = 0`
+**Proposition 4.1.** There is an ω-rational `X` with `m = 1`, `n⁺ = n⁻ = 0`
 whose derivative is not saturated by the syntactic congruence of `X`: no
 marking `P′` of the linked pairs of `𝓘(X)` recognizes `∂X`.
 
@@ -758,7 +764,7 @@ trajectories over `𝒞`, and a trajectory retains exactly the visit
 information the ω-image discards. Applying the derivation to it stays a
 table search, by the following three steps.
 
-**Lemma 8.2 (transport at a location).** For every `t ∈ 𝒞`: the
+**Lemma 4.2 (transport at a location).** For every `t ∈ 𝒞`: the
 `A_X`-chains (resp. superchains) accessible from state `t` correspond,
 preserving length and sign, to the normal-form chains (superchains) of §2.3
 whose stem (top stem) lies in `t·𝒞¹`.
@@ -779,13 +785,13 @@ superchains the connecting paths give `R`-descents, strict by
 [CP97, Prop. 11]. Accessibility from `t` is right multiplication, i.e.
 membership in `t·𝒞¹`, in both directions. ∎
 
-**Corollary 8.3 (zones).** `Q^±(A_X) = T^± := {t ∈ 𝒞 : some maximal
+**Corollary 4.3 (zones).** `Q^±(A_X) = T^± := {t ∈ 𝒞 : some maximal
 ±-superchain has its top stem in t·𝒞¹}` — unions of `R`-classes (plus
-`[ε]`, which is in both), computed from §6's DP output by one right-Cayley
+`[ε]`, which is in both), computed from §3.4's DP output by one right-Cayley
 reachability pass. Write `U := T⁺ − T⁻` and `B := T⁺ ∩ T⁻` (the kept
 states).
 
-**Lemma 8.4 (committed tops).** The top stem of a maximal positive
+**Lemma 4.4 (committed tops).** The top stem of a maximal positive
 superchain lies in `U`; dually for negative.
 
 *Proof.* If a maximal negative superchain were accessible from the top stem
@@ -801,17 +807,17 @@ would prepend as above) — all maximal chains die in the collapse, and
 and a Cayley path between `B`-elements never leaves `B`: accessibility
 inside the kept part is plain ideal containment.
 
-**Theorem 8.5 (derivation on the invariant).** Let `X` be in the derivative
+**Theorem 4.5 (derivation on the invariant).** Let `X` be in the derivative
 regime. Then the classification data of `∂X` are computed on `𝓘(X)` by the
-§5–6 engines with the marking `P` **unchanged** and the stems **restricted**
+§3.3–3.4 engines with the marking `P` **unchanged** and the stems **restricted**
 to those whose `R`-class lies in `B`:
 
-- `m^±(∂X) = max(0, restricted §5 numbers)` — each sink contributes a
+- `m^±(∂X) = max(0, restricted §3.3 numbers)` — each sink contributes a
   length-0 chain of its sign and nothing longer (a loop containing an
   absorbing sink is that sink alone);
-- if `m′ := m(∂X) ≥ 1`: `n^±(∂X)` are the restricted §6 numbers (the sinks
+- if `m′ := m(∂X) ≥ 1`: `n^±(∂X)` are the restricted §3.4 numbers (the sinks
   carry no `m′`-chain);
-- if `m′ = 0`: the §6 search additionally allows each descent to end with
+- if `m′ = 0`: the §3.4 search additionally allows each descent to end with
   one virtual stem of sign opposite to its last chain — a sink, accessible
   from every `B`-stem, from which nothing continues — and the empty descent
   with a single sink floors both signs at `0`.
@@ -824,40 +830,40 @@ level costs one engine pass, `O(N·|E|² + N²)`; the recursion trace
 `µ₀, µ₁, …` is the Cantor normal form of `γ`, with `s` read at the last
 level; and every level's witnesses remain lassos over `𝒞`.
 
-*Proof.* By Corollary 8.3 the derived Cayley automaton `∂A_X` is exactly the
+*Proof.* By Corollary 4.3 the derived Cayley automaton `∂A_X` is exactly the
 zone collapse of the table; by [CP99, Prop. 3] it recognizes `∂X`; by
 [CP99, Thms. 1–2] its chains and superchains (in the loop form above)
 compute `m^±(∂X)`, `n^±(∂X)`.
 Its admissible loops are the two sink loops plus the Cayley loops at
 `B`-stems (a loop stays inside one `R`-class, and `B` is a union of
 `R`-classes); its internal accessibility is ideal containment
-(Lemma 8.4 (iii)); and Lemma 8.2 converts its chains and superchains into
+(Lemma 4.4 (iii)); and Lemma 4.2 converts its chains and superchains into
 the restricted normal-form searches, strictness both ways by
 [CP97, Prop. 11]. For `m′ = 0` the maximal chains of `∂A_X` are its linked
 pairs, the two sink pairs included; a superchain passes through a sink only
 as its final element (the sinks are absorbing), which is the virtual stem,
 and the sinks alone realize the empty-descent floor. Termination is
-Lemma 8.4 (ii). ∎
+Lemma 4.4 (ii). ∎
 
-**Procedure.** Compute `(m±, n±)` (§5–6), then `µ` and the sign. If
+**Procedure.** Compute `(m±, n±)` (§3.3–3.4), then `µ` and the sign. If
 `m = 0 ∨ n⁺ ≠ n⁻`, emit `ϕ = (µ, s)` and stop. Otherwise compute the
-superchain tops and the zones (Corollary 8.3), restrict the stems to `B`,
-and recurse by Theorem 8.5 — never leaving the multiplication table.
+superchain tops and the zones (Corollary 4.3), restrict the stems to `B`,
+and recurse by Theorem 4.5 — never leaving the multiplication table.
 
-**Worked checks.** On `Fork` (§9): the negative maximal chain's stem `[a]`
+**Worked checks.** On `Fork` (§5): the negative maximal chain's stem `[a]`
 is its own `R`-ideal, so `[a] ∈ T⁻−T⁺`; `[!a]` and `[!a·a]` lie in
 `T⁺−T⁻` (a `!a`-prefix has already committed: `[!a·a] ∈ [!a]·𝒞¹` tops the
 positive chain, and no negative top does). Hence `B ∩ 𝒞₊ = ∅`: the kept part
 is the hub `[ε]` alone, the restricted engines see only the two sinks,
 `(m′, n′⁺, n′⁻) = (0, 0, 0)`, `ϕ(∂Fork) = (1, δ)`, `γ(Fork) = ω + 1` — the
-§9 record, no presentation touched. On the escape language above: the
+§5 record, no presentation touched. On the escape language above: the
 single `B`-pair `([c], [c])` is rejecting; descending from it to `q₊` gives
 `n′⁻ = 1 > n′⁺ = 0`, so `ϕ(∂X) = (1, σ)` and `γ(X) = ω + 1`, `s = σ` — the
 trace of the collapse figure above, recovered without ever building the
 six-state presentation. [CP99]'s own Example 4 (their Figs. 4–5) has the
 same shape, and their published `γ(X₃) = ω + 1` agrees.
 
-### 8.2 Discussion: two routes to the degree
+### 4.2 Discussion: two routes to the degree
 
 The gap this section closes was first crossed, by a different route, by
 Cabessa and Duparc [CD09a, CD09b]: they prove the Wagner degree is a
@@ -872,13 +878,13 @@ composition rule along the DAG absorbs both the superchain count and the
 derivative recursion, which their procedure never forms. Priority for
 computing the degree on the syntactic ω-semigroup is therefore theirs.
 
-What the present section adds is complementary. Proposition 8.1: the
+What the present section adds is complementary. Proposition 4.1: the
 derivative *itself* is not an algebraic operation — which is why [CP99]'s
 own recursion stalls at presentations, and why a bypass like [CD09b]'s, or
-a change of object like Theorem 8.5's, is necessary rather than convenient.
-Theorem 8.5: the derivative-faithful form — [CP99]'s actual recursion
+a change of object like Theorem 4.5's, is necessary rather than convenient.
+Theorem 4.5: the derivative-faithful form — [CP99]'s actual recursion
 running on the invariant through its right regular representation, reusing
-the §5–6 engines unchanged, with a lasso witness at every level and the
+the §3.3–3.4 engines unchanged, with a lasso witness at every level and the
 recursion trace as the Cantor normal form.
 
 The two procedures compute the same value by disjoint routes — a one-pass
@@ -888,7 +894,7 @@ corpus is the natural cross-oracle for an implementation of either
 
 ---
 
-## 9. The triptych, classified
+## 5. The triptych, classified
 
 The three running examples of [SωS26], classified end to end on their
 published tables — the values below are hand-computed from `𝓘` alone and
@@ -940,14 +946,14 @@ with its `Fin(0) ∧ Inf(1)` acceptance, is a single genuine Rabin pair — a
 recurrence-and-persistence conjunction, and nothing weaker fits: `GF(aa)`
 needs only Büchi, while `EvenBlocks`'s condition is not reducible to one.
 And that `Even` sits at the bottom of the ladder while being non-LTL
-(§4) — a genuine mod-2 group inside an open set — makes the decoupling
+(§3.2) — a genuine mod-2 group inside an open set — makes the decoupling
 explicit: the topological ladder and the aperiodic cut are orthogonal
 axes on one object, and a language may be simple on one and hard on the
 other.
 
 **A fourth specimen: `Fork`, into the derivative.** Nothing in the triptych —
-and, by Proposition 11.1, nothing in any generalized-Büchi corpus — reaches
-the derivative regime `m ≥ 1 ∧ n⁺ = n⁻` of §8. The regime needs maximal
+and, by Proposition 7.1, nothing in any generalized-Büchi corpus — reaches
+the derivative regime `m ≥ 1 ∧ n⁺ = n⁻` of §4. The regime needs maximal
 chains of both signs (`m⁺ = m⁻ ≥ 1`) whose stems no superchain connects, and
 the minimal recipe is to route between a properly-`Gδ` and a properly-`Fσ`
 behavior on the first letter:
@@ -958,7 +964,7 @@ behavior on the first letter:
 
 over the single atom `a`: a word starting with `a` must carry infinitely many
 `a`, a word starting with `!a` finitely many. `Fork` is LTL-definable — the
-derivative regime is orthogonal to the aperiodic cut of §4.
+derivative regime is orthogonal to the aperiodic cut of §3.2.
 
 *The invariant.* A nonempty word acts only through its first letter and
 whether it contains an `a`, so `S(Fork)₊¹` has four classes
@@ -1001,7 +1007,7 @@ has depth two, so `m⁺ = m⁻ = 1`.
 superchain of length 1 exists in either sign, `n⁺ = n⁻ = 0`.
 
 *The degree, through the derivative.* `m = 1` and `n⁺ = n⁻`:
-`µ = ω¹·(0+1) = ω` and, for the first time, §8's recursion is genuinely
+`µ = ω¹·(0+1) = ω` and, for the first time, §4's recursion is genuinely
 needed. On the three-state presentation below, the derivation `∂` of
 [CP99 §3] collapses the two maximal-chain basins — the `a`-successor
 component (negative) onto a rejecting sink, the `!a`-successor (positive)
@@ -1018,7 +1024,7 @@ onto an accepting sink — leaving `∂Fork = !a·Σ^ω`: nontrivial clopen,
 
 The first composite ordinal and the first recursive sign: `Fork` is
 self-dual (its complement is the same construction with the branches
-swapped), fails all five rung tests of §7, has parity and co-parity length
+swapped), fails all five rung tests of §3.5, has parity and co-parity length
 both 2, and needs exactly one derivation. The duality laws hold on the nose:
 `m⁺ ↔ m⁻` and `n⁺ ↔ n⁻` are fixed points, `δ ↔ δ`, `γ` equal.
 
@@ -1029,22 +1035,22 @@ each a sink of self-loops; marks `{0,1}` on `q_a`'s `a`-loop, `{1}` on
 acceptance `Inf(0) ∨ Fin(1)`. A run through `q_a` sees mark `1` forever, so
 acceptance reduces to `Inf(0)` — infinitely many `a`; a run through `q_b`
 never sees `0`, so it reduces to `Fin(1)` — finitely many `a`. By
-Theorem 8.5 the degree is read
+Theorem 4.5 the degree is read
 off `𝓘(Fork)` alone — the table derivation collapses all of `𝒞₊` into the
-two sinks and returns `ϕ(∂Fork) = (1, δ)` directly (§8.1, worked checks) —
+two sinks and returns `ϕ(∂Fork) = (1, δ)` directly (§4.1, worked checks) —
 while the presentation-level derivation of [CP99 §3], run on this
 three-state automaton, provides an independent cross-check of the collapse.
 
 ---
 
-## 10. Complexity
+## 6. Complexity
 
 Every procedure above is a polynomial search in the table: power orbits
 `O(N²)`; the Green preorders, graph reachability; chains, a
 longest-alternating-path DP over the idempotent order DAG per admissible
 stem; superchains, the same over the `R`-order; the degree, arithmetic on
 the results plus at most `m(X)` derivation levels, each one more engine pass
-on a shrunken stem set (§8.1, Theorem 8.5). Carton and Perrin note that on
+on a shrunken stem set (§4.1, Theorem 4.5). Carton and Perrin note that on
 *presentations* the picture is harsher — computing `m(𝒜)` is NP-complete
 for Rabin automata, polynomial for Muller and parity ones (results of
 Krishnan–Puri–Brayton and of Wilke–Yoo, reported in [CP97, §7]) — which
@@ -1055,7 +1061,7 @@ classification tower, Wagner degree included, is a cheap read-off.
 
 ---
 
-## 11. What an acceptance family can reach
+## 7. What an acceptance family can reach
 
 The classifications above are per-language. One step up, the same machinery
 bounds an entire *input family*: the acceptance condition a corpus of
@@ -1063,7 +1069,7 @@ deterministic automata is allowed to carry fixes, a priori, which Wagner
 degrees the corpus can contain at all — no matter how many states, colours,
 or letters are enumerated.
 
-**Proposition 11.1 (generalized-Büchi spectrum).** Let `L` be recognized by a
+**Proposition 7.1 (generalized-Büchi spectrum).** Let `L` be recognized by a
 deterministic, complete automaton whose acceptance is
 `Inf(c₀) ∧ ⋯ ∧ Inf(c_{k−1})` (generalized Büchi, any `k ≥ 1`). Then
 `m⁺(L) ≤ 0`, and the Wagner degree of `L` is one of
@@ -1076,7 +1082,7 @@ deterministic, complete automaton whose acceptance is
 
 and every degree in the list is attained already by a deterministic Büchi
 automaton (`k = 1`). In particular the derivative regime `m ≥ 1 ∧ n⁺ = n⁻`
-of §8 — which forces `m⁺ = m⁻ ≥ 1` — is unreachable: on such a corpus
+of §4 — which forces `m⁺ = m⁻ ≥ 1` — is unreachable: on such a corpus
 `γ = µ` always, and a classifier without the derivation is complete.
 
 *Proof.* For deterministic complete `D` the run over `α` is a letter-by-letter
@@ -1102,15 +1108,15 @@ dimension unbounded — and a general Emerson–Lei (equivalently Muller)
 condition reaches every ω-regular degree. Three consequences for corpus
 design. First, a census's degree ceiling is set by its acceptance family
 *before* its state count: generalized-Büchi enumeration, however exhaustive,
-stays inside Proposition 11.1's list. Second, the `Fin`/`Inf`-alternating
+stays inside Proposition 7.1's list. Second, the `Fin`/`Inf`-alternating
 (parity) family is the cheapest door to the deep degrees. Third, the
 derivative regime needs maximal chains of both signs in `R`-incomparable
-basins — a `Fork`-shaped budget (§9): at least a routing state plus two
+basins — a `Fork`-shaped budget (§5): at least a routing state plus two
 components, and an acceptance able to accept in one component and co-accept
 in the other. The state budget is sharp: the two basins are mutually
 unreachable yet both reachable, so neither contains the initial state and
 three states are the floor — and three suffice, since `Fork`'s
-`Inf(0) ∨ Fin(1)` acceptance (§9) is a two-colour (min-even) parity
+`Inf(0) ∨ Fin(1)` acceptance (§5) is a two-colour (min-even) parity
 condition. A parity census therefore first meets the derivative regime at
 that three-state, two-colour shape; no two-state sample, however long, can
 produce one. Conversely the proposition is a free corpus-level oracle: a
@@ -1119,7 +1125,7 @@ classifier or in the corpus's acceptance labeling.
 
 ---
 
-## 12. The profile, measured
+## 8. The profile, measured
 
 The measured object is a **reference catalogue** of the small ω-regular
 languages: every ω-language realized by a small
@@ -1144,7 +1150,7 @@ case: zero violations, zero partial verdicts.
 **The aperiodic cut.** 2240 of the 3938 languages are LTL-definable and
 1698 — **43%** — are not: among the small ω-languages, genuine ω-counting
 is not a corner case but almost half the population. The cut is
-complement-blind (§4), so it splits the primals in the same proportion
+complement-blind (§3.2), so it splits the primals in the same proportion
 (1142 LTL / 865 non-LTL of 2007).
 
 **The profile**, ordered by Wagner degree, weakest first — `non-LTL` is
@@ -1173,7 +1179,7 @@ inside the spectrum, and `γ` never exceeds `ω²`. Four readings.
 **The duality laws, as a corpus identity.** The `languages` column is
 exactly symmetric under `σ ↔ π` — 1 = 1, 1356 = 1356, 4 = 4, 466 = 466,
 12 = 12, 99 = 99 — with the self-dual `(1, δ)` row standing alone, and the
-`non-LTL` column is symmetric too (the cut is complement-blind, §4). On a
+`non-LTL` column is symmetric too (the cut is complement-blind, §3.2). On a
 one-sided corpus the duality gate of §2 can only check each language
 against its computed complement, record by record; on a complement-closed
 catalogue it becomes an identity of the whole table. The `primals` column
@@ -1184,7 +1190,7 @@ reached on one side only (`(ω², σ)`: 99 primals against 0). What an
 enumeration *produces* is one-sided; what it *determines*, through the free
 closure, is not.
 
-**Proposition 11.1, read off the coordinates.** The Büchi-vs-not split
+**Proposition 7.1, read off the coordinates.** The Büchi-vs-not split
 needs no presentation: `m⁺ ≤ 0` is generalized-Büchi-realizability — 3250
 languages, the trivial, weak, and `(ω, σ)` rows; `m⁺ = 1 ∧ m⁻ = 0` is the
 co-Büchi-proper row (`(ω, π)`, 466); and `m⁺ ≥ 1 ∧ m⁻ ≥ 1` — the 222
@@ -1193,17 +1199,17 @@ languages of the `(ω·2, ·)` and `(ω², ·)` rows — needs genuine parity. S
 exactly at the co-Büchi and parity degrees: the proposition and its
 converse at catalogue scale. The deep band is reached
 only through the beyond-wall parity sample — and the derivative regime
-stays empty, as §11's sharp budget requires: its first inhabitant sits at
+stays empty, as §7's sharp budget requires: its first inhabitant sits at
 the three-state, two-colour parity shape, past the current wall.
 
 **Depth and countability are independent, in the numbers.** The non-LTL
 mass does not sit at the deep end: half of the *safety* row (678 of 1356)
 is already beyond LTL, a third of the deepest parity rows (38 of 99 per
 side) is LTL-definable, and only the one-Rabin-pair rows are wholly
-non-LTL. The two axes read off the same object — §4's cut and §8's
+non-LTL. The two axes read off the same object — §3.2's cut and §4's
 degree — are exhibited by the catalogue as a full cross-product.
 
-**The cost claim of §10 holds.** Classifying is a read-off of the stored
+**The cost claim of §6 holds.** Classifying is a read-off of the stored
 invariant — the entire catalogue in about one second — and the practical
 ceiling remains the construction of `𝓘(L)`, never the classification.
 
@@ -1239,18 +1245,18 @@ and the algebra is the coordinate system.
 
 The Wagner degree earns its verdict rather than inheriting it. Its
 derivative recursion is not an algebraic operation — no re-marking of the
-accepting pairs can carry it (Proposition 8.1) — but it is a table
+accepting pairs can carry it (Proposition 4.1) — but it is a table
 computation: on the right regular representation the derivation becomes a
 restriction of the admissible stems, the same chain and superchain engines
 run at every level, and the recursion trace is the Cantor normal form of
-the degree (Theorem 8.5). This complements Cabessa and Duparc's one-pass
+the degree (Theorem 4.5). This complements Cabessa and Duparc's one-pass
 computation of the same value [CD09b]: two disjoint routes to the complete
 invariant, whose agreement over a corpus is the natural cross-oracle for an
 implementation of either.
 
 Beyond the single language, the acceptance family of an input corpus fixes
-its reachable degrees a priori (Proposition 11.1), and the catalogue of
-§12 measures the first Wagner-degree profile of the small ω-languages —
+its reachable degrees a priori (Proposition 7.1), and the catalogue of
+§8 measures the first Wagner-degree profile of the small ω-languages —
 3938 of them, counted once and closed under complement: 43% beyond LTL, a
 profile exactly symmetric under duality, the spectrum bound and its
 converse verified, classification never the bottleneck. The
