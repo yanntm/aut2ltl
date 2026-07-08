@@ -37,7 +37,7 @@ The relabeling + unused-AP fold takes 3790 fixed-labeling `.sos` to 2007 languag
 
 Each language attributed to the smallest shape realizing it (its model name). `states` is the canonical deterministic automaton's state count; `|𝒞|` the syntactic-semigroup size — both min / median / max over the shape's languages.
 
-| shape | n | k | c | family | tier | languages | states | `|𝒞|` |
+| shape | n | k | c | family | tier | languages | states | algebra `𝒞` |
 |---|--:|--:|--:|---|---|--:|---|---|
 | `1state1ap0acc` | 1 | 1 | 0 | gba | exhaustive | 3 | 1 / 1 / 2 | 2 / 2 / 3 |
 | `1state1ap1acc` | 1 | 1 | 1 | gba | exhaustive | 1 | 1 / 1 / 1 | 3 / 3 / 3 |

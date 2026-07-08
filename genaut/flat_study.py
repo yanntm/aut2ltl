@@ -137,7 +137,7 @@ def build_study(corpus: str) -> str:
              "model name). `states` is the canonical deterministic automaton's "
              "state count; `|𝒞|` the syntactic-semigroup size — both min / median "
              "/ max over the shape's languages.\n")
-    L.append("| shape | n | k | c | family | tier | languages | states | `|𝒞|` |")
+    L.append("| shape | n | k | c | family | tier | languages | states | algebra `𝒞` |")
     L.append("|---|--:|--:|--:|---|---|--:|---|---|")
     for s in shapes:
         tier = "exhaustive" if s["exhaustive"] else "**sampled**"
