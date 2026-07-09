@@ -12,13 +12,14 @@ The finite algebraic normal form of an omega-regular language:
     ``mult[e][e] == e`` and ``mult[s][e] == s``.
 
 Membership of any lasso is decided from this tuple alone (see `member`), with no
-automaton. The construction of a valid instance is the job of the builders
-(`sos.build`, or the learner's export); this module only holds one and
-reads it.
+automaton. Building a valid instance from a presentation is the job of the
+builders (`sos.build`, or the learner's export); this module holds one, reads it
+(`member`, `linked_pairs`), and derives the one language that shares its algebra
+outright — the `complement`, a flip of ``P``.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import FrozenSet, List, Tuple
 
 from .alphabet import EMPTY, Alphabet, Word
@@ -92,6 +93,20 @@ class Invariant:
                     assert s != self.identity, s
                     pairs.append((s, e))
         return frozenset(pairs)
+
+    def complement(self) -> "Invariant":
+        """``I(L-bar)``: the same algebra with ``P`` flipped against the linked
+        pairs. Correct because `member` decides by looking one linked pair up in
+        ``accept``, so flipping the set flips the verdict pointwise; the classes,
+        keys, lambda and M all depend on the syntactic congruence of ``L``, which
+        ``L`` and ``L-bar`` share. Hence the complement is free — no closure, no
+        automaton — and it is an involution.
+
+        The table is untouched, so a byte-canonical invariant stays byte-canonical:
+        ``dump_invariant`` of the result differs from the original's only in the
+        ``P`` block. (`sos.calculus.surgery.complement` is the same operation one
+        level down, on a `Table`'s pair sets.)"""
+        return replace(self, accept=self.linked_pairs() - self.accept)
 
     def validate(self) -> None:
         """Assert the structural laws: identity is the empty word's class and a
