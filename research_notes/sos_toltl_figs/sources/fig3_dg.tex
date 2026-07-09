@@ -10,7 +10,20 @@
 \definecolor{boxfill}{HTML}{F4F5F7}
 \definecolor{frozen}{HTML}{E9EEF6}
 \definecolor{ref}{HTML}{A6ADB4}
+\definecolor{hilite}{HTML}{DCE7F5}
 \definecolor{ink}{HTML}{222629}
+% Spot's LaTeX formula printer (`formula.to_str('latex')`) emits these.
+\newcommand{\ttrue}{\top}
+\newcommand{\ffalse}{\bot}
+\newcommand{\limplies}{\rightarrow}
+\newcommand{\liff}{\leftrightarrow}
+\newcommand{\X}{\mathsf{X}\,}
+\newcommand{\G}{\mathsf{G}\,}
+\newcommand{\F}{\mathsf{F}\,}
+\newcommand{\U}{\mathbin{\mathsf{U}}}
+\newcommand{\W}{\mathbin{\mathsf{W}}}
+\newcommand{\R}{\mathbin{\mathsf{R}}}
+\newcommand{\M}{\mathbin{\mathsf{M}}}
 \tikzset{
   % ---- classes and machines -------------------------------------
   cls/.style        = {circle, draw=ink, line width=.5pt, fill=white,
@@ -37,171 +50,141 @@
                        -{Stealth[length=2mm]}},
   elab/.style       = {font=\scriptsize, inner sep=1.5pt,
                        fill=white, fill opacity=.85, text opacity=1},
-  % ---- recursion panels ------------------------------------------
-  dgnode/.style     = {circle, draw=ink, fill=white, line width=.5pt,
-                       inner sep=0pt, minimum size=6.5mm,
-                       font=\scriptsize},
-  dgleaf/.style     = {dgnode, fill=boxfill, draw=order},
-  treeedge/.style   = {draw=ink, line width=.4pt, opacity=.55},
+  % ---- formula panels --------------------------------------------
+  opnode/.style     = {rounded corners=2pt, draw=ink, fill=white,
+                       line width=.5pt, inner sep=3pt, minimum height=5.5mm,
+                       minimum width=9mm, font=\small, align=center},
+  ophandle/.style   = {opnode, draw=order, fill=boxfill,
+                       font=\footnotesize},
+  opatom/.style     = {opnode, draw=letterA, text=letterA,
+                       font=\small\ttfamily},
   dagedge/.style    = {draw=ink, line width=.6pt, -{Stealth[length=1.6mm]}},
-  refedge/.style    = {draw=ref, line width=.35pt, densely dotted,
+  refedge/.style    = {draw=ref, line width=.5pt, densely dotted,
                        -{Stealth[length=1.4mm]}},
-  emult/.style      = {font=\tiny, text=ref, inner sep=1pt, fill=white},
-  elide/.style      = {font=\scriptsize, text=ink, align=center},
+  slot/.style       = {font=\tiny, text=ref, inner sep=1pt, fill=white,
+                       fill opacity=.85, text opacity=1},
+  badge/.style      = {font=\tiny, text=order, inner sep=1pt},
+  elide/.style      = {font=\scriptsize\itshape, text=order, align=center},
   panelcap/.style   = {font=\scriptsize, text=ink, align=center},
+  % ---- derivation panels ------------------------------------------
+  minicls/.style    = {circle, draw=order, fill=white, line width=.3pt,
+                       inner sep=0pt, minimum size=3.4mm, font=\tiny,
+                       text=ink},
+  minibox/.style    = {rounded corners=1.4pt, draw=boxline, fill=white,
+                       line width=.4pt},
+  minidone/.style   = {minibox, fill=boxfill},
+  minilive/.style   = {minibox, draw=letterA, fill=hilite, line width=.7pt},
+  miniorder/.style  = {draw=order, line width=.9pt,
+                       -{Stealth[length=1.5mm]}, opacity=.6},
+  blockhead/.style  = {font=\small\bfseries, text=ink, anchor=west},
+  blocknote/.style  = {font=\scriptsize\itshape, text=order, anchor=west},
+  brick/.style      = {font=\small, text=ink, anchor=west},
+  rulelab/.style    = {font=\scriptsize\itshape, text=order, anchor=west},
 }
 
 \begin{document}
 \begin{tikzpicture}
 \begin{scope}[local bounding box=treepanel]
-  \node[dgnode] (t0-0) at (0.00,-0.00) {0};
-  \node[dgnode] (t1-0) at (-9.90,-2.00) {1};
-  \draw[treeedge] (t0-0) -- (t1-0);
-  \node[dgnode] (t1-1) at (-7.70,-2.00) {1};
-  \draw[treeedge] (t0-0) -- (t1-1);
-  \node[dgnode] (t1-2) at (-5.50,-2.00) {1};
-  \draw[treeedge] (t0-0) -- (t1-2);
-  \node[dgnode] (t1-3) at (-3.30,-2.00) {6};
-  \draw[treeedge] (t0-0) -- (t1-3);
-  \node[dgnode] (t1-4) at (-1.10,-2.00) {6};
-  \draw[treeedge] (t0-0) -- (t1-4);
-  \node[dgnode] (t1-5) at (1.10,-2.00) {6};
-  \draw[treeedge] (t0-0) -- (t1-5);
-  \node[dgnode] (t1-6) at (3.30,-2.00) {8};
-  \draw[treeedge] (t0-0) -- (t1-6);
-  \node[dgnode] (t1-7) at (5.50,-2.00) {12};
-  \draw[treeedge] (t0-0) -- (t1-7);
-  \node[dgnode] (t1-8) at (7.70,-2.00) {13};
-  \draw[treeedge] (t0-0) -- (t1-8);
-  \node[dgnode] (t1-9) at (9.90,-2.00) {16};
-  \draw[treeedge] (t0-0) -- (t1-9);
-  \node[dgleaf] (t2-0) at (-10.63,-4.00) {2};
-  \draw[treeedge] (t1-0) -- (t2-0);
-  \node[dgleaf] (t2-1) at (-9.90,-4.00) {2};
-  \draw[treeedge] (t1-0) -- (t2-1);
-  \node[dgleaf] (t2-2) at (-9.17,-4.00) {3};
-  \draw[treeedge] (t1-0) -- (t2-2);
-  \node[dgleaf] (t2-3) at (-8.43,-4.00) {4};
-  \draw[treeedge] (t1-0) -- (t2-3);
-  \node[dgleaf] (t2-4) at (-7.70,-4.00) {5};
-  \draw[treeedge] (t1-0) -- (t2-4);
-  \node[dgleaf] (t2-5) at (-6.97,-4.00) {2};
-  \draw[treeedge] (t1-1) -- (t2-5);
-  \node[dgleaf] (t2-6) at (-6.23,-4.00) {2};
-  \draw[treeedge] (t1-1) -- (t2-6);
-  \node[dgleaf] (t2-7) at (-5.50,-4.00) {3};
-  \draw[treeedge] (t1-1) -- (t2-7);
-  \node[dgleaf] (t2-8) at (-4.77,-4.00) {4};
-  \draw[treeedge] (t1-1) -- (t2-8);
-  \node[dgleaf] (t2-9) at (-4.03,-4.00) {5};
-  \draw[treeedge] (t1-1) -- (t2-9);
-  \node[dgleaf] (t2-10) at (-3.30,-4.00) {2};
-  \draw[treeedge] (t1-2) -- (t2-10);
-  \node[dgleaf] (t2-11) at (-2.57,-4.00) {2};
-  \draw[treeedge] (t1-2) -- (t2-11);
-  \node[dgleaf] (t2-12) at (-1.83,-4.00) {3};
-  \draw[treeedge] (t1-2) -- (t2-12);
-  \node[dgleaf] (t2-13) at (-1.10,-4.00) {4};
-  \draw[treeedge] (t1-2) -- (t2-13);
-  \node[dgleaf] (t2-14) at (-0.37,-4.00) {5};
-  \draw[treeedge] (t1-2) -- (t2-14);
-  \node[dgleaf] (t2-15) at (0.37,-4.00) {7};
-  \draw[treeedge] (t1-3) -- (t2-15);
-  \node[dgleaf] (t2-16) at (1.10,-4.00) {4};
-  \draw[treeedge] (t1-3) -- (t2-16);
-  \node[dgleaf] (t2-17) at (1.83,-4.00) {7};
-  \draw[treeedge] (t1-4) -- (t2-17);
-  \node[dgleaf] (t2-18) at (2.57,-4.00) {4};
-  \draw[treeedge] (t1-4) -- (t2-18);
-  \node[dgleaf] (t2-19) at (3.30,-4.00) {7};
-  \draw[treeedge] (t1-5) -- (t2-19);
-  \node[dgleaf] (t2-20) at (4.03,-4.00) {4};
-  \draw[treeedge] (t1-5) -- (t2-20);
-  \node[dgnode] (t2-21) at (4.77,-4.00) {9};
-  \draw[treeedge] (t1-6) -- (t2-21);
-  \node[dgleaf] (t2-22) at (5.50,-4.00) {11};
-  \draw[treeedge] (t1-6) -- (t2-22);
-  \node[dgleaf] (t2-23) at (6.23,-4.00) {11};
-  \draw[treeedge] (t1-7) -- (t2-23);
-  \node[dgnode] (t2-24) at (6.97,-4.00) {14};
-  \draw[treeedge] (t1-8) -- (t2-24);
-  \node[dgleaf] (t2-25) at (7.70,-4.00) {11};
-  \draw[treeedge] (t1-8) -- (t2-25);
-  \node[dgleaf] (t2-26) at (8.43,-4.00) {11};
-  \draw[treeedge] (t1-8) -- (t2-26);
-  \node[dgnode] (t2-27) at (9.17,-4.00) {17};
-  \draw[treeedge] (t1-9) -- (t2-27);
-  \node[dgleaf] (t2-28) at (9.90,-4.00) {11};
-  \draw[treeedge] (t1-9) -- (t2-28);
-  \node[dgleaf] (t2-29) at (10.63,-4.00) {11};
-  \draw[treeedge] (t1-9) -- (t2-29);
-  \node[dgleaf] (t3-0) at (-9.62,-6.00) {7};
-  \draw[treeedge] (t2-21) -- (t3-0);
-  \node[dgleaf] (t3-1) at (-6.88,-6.00) {10};
-  \draw[treeedge] (t2-21) -- (t3-1);
-  \node[dgleaf] (t3-2) at (-4.12,-6.00) {15};
-  \draw[treeedge] (t2-24) -- (t3-2);
-  \node[dgleaf] (t3-3) at (-1.38,-6.00) {2};
-  \draw[treeedge] (t2-27) -- (t3-3);
-  \node[dgleaf] (t3-4) at (1.38,-6.00) {2};
-  \draw[treeedge] (t2-27) -- (t3-4);
-  \node[dgleaf] (t3-5) at (4.12,-6.00) {10};
-  \draw[treeedge] (t2-27) -- (t3-5);
-  \node[dgleaf] (t3-6) at (6.88,-6.00) {18};
-  \draw[treeedge] (t2-27) -- (t3-6);
-  \node[dgleaf] (t3-7) at (9.62,-6.00) {15};
-  \draw[treeedge] (t2-27) -- (t3-7);
+  \node[opnode] (troot) at (0,0) {$\bigvee\;{\cdot}7$};
+  \node[opnode] (tp1167) at (-14.40,-2.6) {$\bigwedge\;{\cdot}9$\\[-2pt]{\tiny\itshape $+3$ private}};
+  \draw[dagedge] (troot) --  (tp1167);
+  \node[ophandle] (t1167h424) at (-18.90,-6.2) {$\psi_{1}$ {\scriptsize$\times$7}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{9 / 12}}};
+  \draw[dagedge] (tp1167) --  (t1167h424);
+  \node[ophandle] (t1167h989) at (-17.10,-6.2) {$\psi_{2}$ {\scriptsize$\times$7}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{12 / 45}}};
+  \draw[dagedge] (tp1167) --  (t1167h989);
+  \node[ophandle] (t1167h429) at (-15.30,-6.2) {$\psi_{3}$ {\scriptsize$\times$2}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{6 / 6}}};
+  \draw[dagedge] (tp1167) --  (t1167h429);
+  \node[ophandle] (t1167h1075) at (-13.50,-6.2) {$\psi_{4}$ {\scriptsize$\times$6}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{3 / 10}}};
+  \draw[dagedge] (tp1167) --  (t1167h1075);
+  \node[ophandle] (t1167h1102) at (-11.70,-6.2) {$\psi_{5}$ {\scriptsize$\times$3}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{86 / 12\,938}}};
+  \draw[dagedge] (tp1167) --  (t1167h1102);
+  \node[ophandle] (t1167h1164) at (-9.90,-6.2) {$\psi_{6}$ {\scriptsize$\times$3}\\[-2pt]{\tiny $\lor\;{\cdot}3$}\\[-1pt]{\tiny\textcolor{order}{114 / 430\,508}}};
+  \draw[dagedge] (tp1167) --  (t1167h1164);
+  \node[opnode] (tp1196) at (-1.80,-2.6) {$\bigwedge\;{\cdot}12$\\[-2pt]{\tiny\itshape $+4$ private}};
+  \draw[dagedge] (troot) --  (tp1196);
+  \node[ophandle] (t1196h424) at (-8.10,-6.2) {$\psi_{1}$ {\scriptsize$\times$7}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{9 / 12}}};
+  \draw[dagedge] (tp1196) --  (t1196h424);
+  \node[ophandle] (t1196h989) at (-6.30,-6.2) {$\psi_{2}$ {\scriptsize$\times$7}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{12 / 45}}};
+  \draw[dagedge] (tp1196) --  (t1196h989);
+  \node[ophandle] (t1196h997) at (-4.50,-6.2) {$\psi_{7}$ {\scriptsize$\times$5}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{7 / 34}}};
+  \draw[dagedge] (tp1196) --  (t1196h997);
+  \node[ophandle] (t1196h1172) at (-2.70,-6.2) {$\psi_{8}$ {\scriptsize$\times$4}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{24 / 298}}};
+  \draw[dagedge] (tp1196) --  (t1196h1172);
+  \node[ophandle] (t1196h1034) at (-0.90,-6.2) {$\psi_{9}$ {\scriptsize$\times$2}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{26 / 522}}};
+  \draw[dagedge] (tp1196) --  (t1196h1034);
+  \node[ophandle] (t1196h1075) at (0.90,-6.2) {$\psi_{4}$ {\scriptsize$\times$6}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{3 / 10}}};
+  \draw[dagedge] (tp1196) --  (t1196h1075);
+  \node[ophandle] (t1196h1102) at (2.70,-6.2) {$\psi_{5}$ {\scriptsize$\times$3}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{86 / 12\,938}}};
+  \draw[dagedge] (tp1196) --  (t1196h1102);
+  \node[ophandle] (t1196h1164) at (4.50,-6.2) {$\psi_{6}$ {\scriptsize$\times$3}\\[-2pt]{\tiny $\lor\;{\cdot}3$}\\[-1pt]{\tiny\textcolor{order}{114 / 430\,508}}};
+  \draw[dagedge] (tp1196) --  (t1196h1164);
+  \node[opnode] (tp1230) at (12.60,-2.6) {$\bigwedge\;{\cdot}8$};
+  \draw[dagedge] (troot) --  (tp1230);
+  \node[ophandle] (t1230h424) at (6.30,-6.2) {$\psi_{1}$ {\scriptsize$\times$7}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{9 / 12}}};
+  \draw[dagedge] (tp1230) --  (t1230h424);
+  \node[ophandle] (t1230h989) at (8.10,-6.2) {$\psi_{2}$ {\scriptsize$\times$7}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{12 / 45}}};
+  \draw[dagedge] (tp1230) --  (t1230h989);
+  \node[ophandle] (t1230h997) at (9.90,-6.2) {$\psi_{7}$ {\scriptsize$\times$5}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{7 / 34}}};
+  \draw[dagedge] (tp1230) --  (t1230h997);
+  \node[ophandle] (t1230h1172) at (11.70,-6.2) {$\psi_{8}$ {\scriptsize$\times$4}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{24 / 298}}};
+  \draw[dagedge] (tp1230) --  (t1230h1172);
+  \node[ophandle] (t1230h1218) at (13.50,-6.2) {$\psi_{10}$ {\scriptsize$\times$2}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{61 / 6\,865}}};
+  \draw[dagedge] (tp1230) --  (t1230h1218);
+  \node[ophandle] (t1230h1075) at (15.30,-6.2) {$\psi_{4}$ {\scriptsize$\times$6}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{3 / 10}}};
+  \draw[dagedge] (tp1230) --  (t1230h1075);
+  \node[ophandle] (t1230h1102) at (17.10,-6.2) {$\psi_{5}$ {\scriptsize$\times$3}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{86 / 12\,938}}};
+  \draw[dagedge] (tp1230) --  (t1230h1102);
+  \node[ophandle] (t1230h1164) at (18.90,-6.2) {$\psi_{6}$ {\scriptsize$\times$3}\\[-2pt]{\tiny $\lor\;{\cdot}3$}\\[-1pt]{\tiny\textcolor{order}{114 / 430\,508}}};
+  \draw[dagedge] (tp1230) --  (t1230h1164);
+  \node[elide] (telide) at (20.70,-2.6) {$\cdots$ 4 more\\disjuncts};
+  \draw[refedge] (troot) -- (telide);
 \end{scope}
-\begin{scope}[xshift=18cm]
+\begin{scope}[xshift=32cm]
 \begin{scope}[local bounding box=dagpanel]
-  \node[dgnode] (d0) at (0.00,-0.00) {0};
-  \node[dgnode] (d1) at (-3.88,-2.00) {1};
-  \node[dgnode] (d6) at (-2.33,-2.00) {6};
-  \node[dgnode] (d8) at (-0.78,-2.00) {8};
-  \node[dgnode] (d12) at (0.78,-2.00) {12};
-  \node[dgnode] (d13) at (2.33,-2.00) {13};
-  \node[dgnode] (d16) at (3.88,-2.00) {16};
-  \node[dgleaf] (d3) at (-4.65,-4.00) {3};
-  \node[dgleaf] (d4) at (-3.10,-4.00) {4};
-  \node[dgleaf] (d5) at (-1.55,-4.00) {5};
-  \node[dgnode] (d9) at (0.00,-4.00) {9};
-  \node[dgleaf] (d11) at (1.55,-4.00) {11};
-  \node[dgnode] (d14) at (3.10,-4.00) {14};
-  \node[dgnode] (d17) at (4.65,-4.00) {17};
-  \node[dgleaf] (d2) at (-3.10,-6.00) {2};
-  \node[dgleaf] (d7) at (-1.55,-6.00) {7};
-  \node[dgleaf] (d10) at (0.00,-6.00) {10};
-  \node[dgleaf] (d15) at (1.55,-6.00) {15};
-  \node[dgleaf] (d18) at (3.10,-6.00) {18};
-  \draw[dagedge] (d0) to node[emult] {3$\times$} (d1);
-  \draw[dagedge] (d0) to node[emult] {3$\times$} (d6);
-  \draw[dagedge] (d0) to (d8);
-  \draw[dagedge] (d0) to (d12);
-  \draw[dagedge] (d0) to (d13);
-  \draw[dagedge] (d0) to (d16);
-  \draw[refedge] (d1) to[bend right=20] node[emult] {2$\times$} (d2);
-  \draw[dagedge] (d1) to (d3);
-  \draw[dagedge] (d1) to (d4);
-  \draw[dagedge] (d1) to (d5);
-  \draw[dagedge] (d6) to (d4);
-  \draw[refedge] (d6) to[bend right=20] (d7);
-  \draw[dagedge] (d8) to (d9);
-  \draw[dagedge] (d8) to (d11);
-  \draw[dagedge] (d9) to (d7);
-  \draw[dagedge] (d9) to (d10);
-  \draw[dagedge] (d12) to (d11);
-  \draw[dagedge] (d13) to node[emult] {2$\times$} (d11);
-  \draw[dagedge] (d13) to (d14);
-  \draw[dagedge] (d14) to (d15);
-  \draw[dagedge] (d16) to node[emult] {2$\times$} (d11);
-  \draw[dagedge] (d16) to (d17);
-  \draw[dagedge] (d17) to node[emult] {2$\times$} (d2);
-  \draw[dagedge] (d17) to (d10);
-  \draw[dagedge] (d17) to (d15);
-  \draw[dagedge] (d17) to (d18);
+  \node[opnode] (droot) at (0,0) {$\bigvee\;{\cdot}7$};
+  \node[opnode] (dp1167) at (-4.20,-2.6) {$\bigwedge\;{\cdot}9$\\[-2pt]{\tiny\itshape $+3$ private}};
+  \draw[dagedge] (droot) --  (dp1167);
+  \node[opnode] (dp1196) at (0.00,-2.6) {$\bigwedge\;{\cdot}12$\\[-2pt]{\tiny\itshape $+4$ private}};
+  \draw[dagedge] (droot) --  (dp1196);
+  \node[opnode] (dp1230) at (4.20,-2.6) {$\bigwedge\;{\cdot}8$};
+  \draw[dagedge] (droot) --  (dp1230);
+  \node[elide] (delide) at (7.8,-2.6) {$\cdots$ 4 more\\disjuncts};
+  \draw[refedge] (droot) -- (delide);
+  \node[ophandle] (dh424) at (-8.10,-6.2) {$\psi_{1}$ {\scriptsize$\times$7}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{9 / 12}}};
+  \node[ophandle] (dh989) at (-6.30,-6.2) {$\psi_{2}$ {\scriptsize$\times$7}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{12 / 45}}};
+  \node[ophandle] (dh429) at (-4.50,-6.2) {$\psi_{3}$ {\scriptsize$\times$2}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{6 / 6}}};
+  \node[ophandle] (dh1075) at (-2.70,-6.2) {$\psi_{4}$ {\scriptsize$\times$6}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{3 / 10}}};
+  \node[ophandle] (dh1102) at (-0.90,-6.2) {$\psi_{5}$ {\scriptsize$\times$3}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{86 / 12\,938}}};
+  \node[ophandle] (dh1164) at (0.90,-6.2) {$\psi_{6}$ {\scriptsize$\times$3}\\[-2pt]{\tiny $\lor\;{\cdot}3$}\\[-1pt]{\tiny\textcolor{order}{114 / 430\,508}}};
+  \node[ophandle] (dh997) at (2.70,-6.2) {$\psi_{7}$ {\scriptsize$\times$5}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{7 / 34}}};
+  \node[ophandle] (dh1172) at (4.50,-6.2) {$\psi_{8}$ {\scriptsize$\times$4}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{24 / 298}}};
+  \node[ophandle] (dh1034) at (6.30,-6.2) {$\psi_{9}$ {\scriptsize$\times$2}\\[-2pt]{\tiny $\phi \U \psi$}\\[-1pt]{\tiny\textcolor{order}{26 / 522}}};
+  \node[ophandle] (dh1218) at (8.10,-6.2) {$\psi_{10}$ {\scriptsize$\times$2}\\[-2pt]{\tiny $\phi \lor \psi$}\\[-1pt]{\tiny\textcolor{order}{61 / 6\,865}}};
+  \draw[dagedge] (dp1167) --  (dh424);
+  \draw[dagedge] (dp1167) --  (dh989);
+  \draw[dagedge] (dp1167) --  (dh429);
+  \draw[dagedge] (dp1167) --  (dh1075);
+  \draw[dagedge] (dp1167) --  (dh1102);
+  \draw[dagedge] (dp1167) --  (dh1164);
+  \draw[refedge] (dp1196) --  (dh424);
+  \draw[refedge] (dp1196) --  (dh989);
+  \draw[dagedge] (dp1196) --  (dh997);
+  \draw[dagedge] (dp1196) --  (dh1172);
+  \draw[dagedge] (dp1196) --  (dh1034);
+  \draw[refedge] (dp1196) --  (dh1075);
+  \draw[refedge] (dp1196) --  (dh1102);
+  \draw[refedge] (dp1196) --  (dh1164);
+  \draw[refedge] (dp1230) --  (dh424);
+  \draw[refedge] (dp1230) --  (dh989);
+  \draw[refedge] (dp1230) --  (dh997);
+  \draw[refedge] (dp1230) --  (dh1172);
+  \draw[dagedge] (dp1230) --  (dh1218);
+  \draw[refedge] (dp1230) --  (dh1075);
+  \draw[refedge] (dp1230) --  (dh1102);
+  \draw[refedge] (dp1230) --  (dh1164);
 \end{scope}
 \end{scope}
-\node[panelcap] at ($(treepanel.south)+(0,-1.1)$) {\textbf{substitution: a copy per occurrence}\\[2pt]49 recursion-tree nodes over 4 depths\\flat formula: 1\,991\,717 nodes};
-\node[panelcap] at ($(dagpanel.south)+(0,-1.1)$) {\textbf{memoization: a reference per occurrence}\\[2pt]19 recursion nodes\\shared arena: 1\,287 nodes};
+\node[panelcap] at ($(treepanel.south)+(0,-1.0)$) {\textbf{substitution: a copy per occurrence}\\[2pt]22 copies of 10 subterms, in this slice alone\\flat formula: 1\,991\,717 nodes};
+\node[panelcap] at ($(dagpanel.south)+(0,-1.0)$) {\textbf{hash-consing: a reference per occurrence}\\[2pt]10 boxes, 22 in-arcs\\shared arena: 1\,287 nodes};
 \end{tikzpicture}
 \end{document}
