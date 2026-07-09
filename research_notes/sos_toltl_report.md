@@ -117,7 +117,10 @@ fallback's raison d'être is entirely the Wagner-degree-1 tier (safety /
 guarantee languages whose entry layers resist finite-width anchoring). This is
 §7's inner-frontier fraction as a measurement. No refutation of a paper claim
 (the stratum is predicted to exist); it fixes the empirical column and pins the
-frontier to a degree. The FAIL floor needs **≥ 2 AP** (no 1-AP language fails).
+frontier to a degree. ~~The FAIL floor needs **≥ 2 AP** (no 1-AP language
+fails).~~ — **refuted, see F14**: every (A)-failing language is 1 AP, and the
+floor is `|𝒞| = 15` at 3 states (`3state1ap0acc_004260`). The degree
+localisation above stands.
 
 ## E2 — window determinacy, by Wagner degree
 
@@ -727,6 +730,13 @@ its final layer genuinely fails condition (B). This is the E6/H3 hunt —
 candidate for the *order beyond windows* example — recorded until now as
 **not found**.
 
+The specimen is committed: **`samples/fixtures/hoa/anchor/gafb_response.hoa`**
+(the kanchor fixture E9(2) already names) and its canonical invariant
+**`samples/fixtures/hoa/sos/gafb_response.sos`**. The two agree by construction:
+bridging the fixture automaton and bridging the formula `G(a -> F b)` produce
+the *byte-identical* `.sos` — the canonicity cross-check of §3b, run here as a
+`cmp`.
+
 `𝓘(L)` has 5 classes, `|AP| = 2`, `ϕ = (ω,σ)` (DBA-proper), 2 residuals, not
 prefix-independent. Its final layer is `R = {2, 4}` — strongly connected,
 accepting, *moving* (not frozen: `!a&b ↦ reset(2)`, `a&!b ↦ reset(4)`), which
@@ -798,11 +808,76 @@ raw formulas, simplification off, emitted child-first down the R-order — which
 the paper's §5.2 stack, `Final(5) = GF(a ∧ Xa)` first and `STAY = 0` on both
 all-rejecting moving layers.
 
-⟨candidates 1, 3, 3a, 3b, 4, 5 — pending; candidate 2 is F13 above, and it
-declines rather than illustrating a live `STAY∞`, so E9(2) needs a *different*
-specimen: the wanted stratum is an accepting moving final layer that is also
-(B)-determined. Theory to note that `G(a → F b)` cannot serve as the §5.2
-worked example it was designated for.⟩
+`e9_scan` puts the gallery's structural strata on the catalogue as *sorts*, not
+hunts: it records per language whether it is a pure peel (all layers singleton,
+R-depth ≥ 3, not prefix-independent), whether it carries a **live** final layer
+(accepting *and* moving *and* (B)-determined *and* with exits — `STAY∞` live and
+a `LEAVE` chain in the same layer), and whether any layer is graded (`k ≥ 2`).
+Every row is gated on `rendered` — only a language the engine actually
+transcribes can be a worked example. Over the 2240 LTL languages, 1114 render.
+
+Smallest specimen per stratum, all paths under `genaut/corpus/flat_canon/sos/`
+(tracked; each has a sibling `.cat` and a `det/` automaton):
+
+| E9 | stratum | smallest | `\|𝒞\|` | AP | `ϕ` | simplified label |
+|---|---|---|--:|--:|---|---|
+| 1 | pure peel, depth 3 | `1state1ap0acc_1` | 3 | 1 | (1,π) | `Ga` |
+| 1 | **pure peel, depth 4** | `1state2ap1acc_018` | **4** | 2 | (ω,σ) | `G(!b ∧ F(!a ∧ !b))` |
+| 1 | pure peel, depth 7 (deepest) | `3state1ap0acc_078341` | 12 | 1 | — | — |
+| 2 | **live `STAY∞` + `LEAVE`** | `2state1ap0acc_024` | **6** | 1 | (1,π) | `!a ∧ X(a ∧ G((a∨Xa) ∧ (!a∨X!a)))` |
+| 4 | graded (`k = 2`) | `2state1ap0acc_086` | 12 | 1 | (1,σ) | — (declines) |
+
+**E9(2) is answered — by a different specimen than the spec designated.**
+`2state1ap0acc_024` (`|𝒞| = 6`, 219 such languages, smallest by `|𝒞|`) has the
+final layer `R = {1,4}`: two classes, moving (`!a ↦ reset(1)`, `a ↦ reset(4)`),
+(B)-determined trivially, accepting with a **live** `STAY∞` — the alternation
+`G((a ∨ Xa) ∧ (!a ∨ X!a))` — and it has exits, so a `LEAVE` chain sits in the
+same layer. That is exactly the stratum `GF(aa)` misses (its moving layers are
+all-rejecting) and the one `G(a → F b)` misses the other way (its moving
+accepting layer fails (B) — F13). The designated candidate cannot serve; this
+one can.
+
+**E9(1).** The depth-3 minimum `1state1ap0acc_1` is `Ga` — the safety twin of
+§5.2's `F a` and just as degenerate. The useful one is the depth-4 minimum
+`1state2ap1acc_018` at `|𝒞| = 4`: four singleton layers, a genuine `leave`
+chain, one-line label `G(!b ∧ F(!a ∧ !b))`. Chains run to depth **7**
+(`3state1ap0acc_078341`, `|𝒞| = 12`) if theory wants a long one.
+
+**E9(4) — the graded stratum is empty of examples, and that is the finding.**
+The catalogue has **952 graded languages** (some layer anchored only at `k ≥ 2`),
+smallest `|𝒞| = 12` — so the F8 exhibit `2state1ap0acc_086_c` *is* the holder,
+and nothing smaller exists. But **zero of the 952 render**: F8's decline guard
+takes the entire graded stratum to DG. The 1126 engine declines break down as
+graded 952, (A)-failing 258 (192 both), and 108 declining for neither reason —
+those are the (B)-`UNDECIDED` window-term stratum of F1. So the graded engine
+(M3) is not a marginal completion: it is 42.5% of the LTL catalogue.
+
+### F14 — H2 and H4 answered, and the "(A)-FAIL needs ≥ 2 AP" claim is refuted
+
+E6 left "**H2**: smallest LTL specimen with an (A)-failing layer" and "**H4**:
+smallest specimen whose extraction must invoke the DG fallback" open, predicting
+only that they do not exist at 2 states / 1 AP and leaving "first hits appear
+⟨TBD: record where⟩". The scan records them:
+
+- **H2 = `3state1ap0acc_004260`** (`|𝒞| = 15`, **1 AP**, 3 states, `ϕ = (1,π)`
+  safety; complement `_c` at `(1,σ)`). Its layers `{3,8,12}`, `{6,11,14}`,
+  `{9,10,13}` are each 3 classes with both letters `mixed` — no width `k ≤ 3`
+  anchors them. 258 languages (A)-fail catalogue-wide.
+- **H4 = H2** on this catalogue: the DG fallback is first forced by an
+  (A)-failure at `|𝒞| = 15`, and by a graded layer at `|𝒞| = 12` — so if H4 is
+  read as "must invoke the fallback *at all*", the graded stratum reaches it
+  first, at `2state1ap0acc_086` (`|𝒞| = 12`). The prediction "H2 does not exist
+  at 2 states / 1 AP" is **confirmed**: every hit has 3 states.
+
+**F6 is refuted in its parenthesis.** F6 concluded "The FAIL floor needs **≥ 2
+AP** (no 1-AP language fails)". The opposite holds: **all 258 (A)-failing
+languages are 1 AP**, and *no* 2-AP or 3-AP language in the catalogue has an
+(A)-failing layer. The (A) frontier is driven by **states** (⟹ algebra size,
+`|𝒞| ≥ 15`), not by alphabet width — which is the natural reading of Def 4.4,
+since a mixed action needs several classes to be mixed *over*, not several
+letters. F6's degree localisation (every FAIL at `ϕ = (1,σ)/(1,π)`) stands and
+is confirmed by the exhibit's `.cat`. The E1 table is unaffected — it counts
+layers and never claimed the AP floor; only F6's prose did.
 
 ## Reproduction
 
@@ -865,14 +940,29 @@ the committed reference copies live in `results/reference/flat_canon/`.
     python3 -m tests.sos2ltl.e10_ledger genaut/corpus/flat_canon/sos/1state2ap1acc_030.sos
     python3 -m tests.sos2ltl.e0_engine genaut/corpus/flat_canon/sos/1state2ap1acc_030.sos
 
-**E9 profiles, and the F13 / H3 exhibit.**
+**F13 / H3 — the (B)-failing specimen.** Both presentations are committed
+(`samples/fixtures/hoa/anchor/gafb_response.hoa`, the automaton;
+`samples/fixtures/hoa/sos/gafb_response.sos`, its canonical invariant).
 
-    python3 -m tests.sos2ltl.e9_profile samples/fixtures/hoa/sos/gf_aa.sos
+    python3 -m tests.sos2ltl.e0_windows samples/fixtures/hoa/sos/gafb_response.sos
+    python3 -m tests.sos2ltl.e9_profile samples/fixtures/hoa/anchor/gafb_response.hoa
+    # canonicity: the fixture automaton and the formula bridge to one invariant
     python3 -m tests.sos2ltl.e9_profile --ltl "G(a -> F b)" \
-        --dump-sos tests/sos2ltl/logs/e9_gafb.sos
-    python3 -m tests.sos2ltl.e0_windows tests/sos2ltl/logs/e9_gafb.sos  # FAIL + witnesses
-    # the (B) fix leaves the catalogue tables byte-identical:
+        --dump-sos tests/sos2ltl/logs/gafb.sos --no-stack
+    cmp tests/sos2ltl/logs/gafb.sos samples/fixtures/hoa/sos/gafb_response.sos
+    # the (B) fix leaves the catalogue tables byte-identical to E1E2.txt:
     python3 -m tests.sos2ltl.census_build genaut/corpus/flat_canon/sos \
         --out tests/sos2ltl/logs/e12_flat_canon.jsonl
     python3 -m tests.sos2ltl.census_report tests/sos2ltl/logs/e12_flat_canon.jsonl
+
+**E9 gallery and F14 (H2/H4).** The scan is the sort; the profile is the
+per-candidate deliverable (add `--no-stack` to drop the brick dump).
+
+    python3 -m tests.sos2ltl.e9_scan genaut/corpus/flat_canon/sos \
+        --out tests/sos2ltl/logs/e9_scan.jsonl
+    python3 -m tests.sos2ltl.e9_profile genaut/corpus/flat_canon/sos/2state1ap0acc_024.sos
+    python3 -m tests.sos2ltl.e9_profile genaut/corpus/flat_canon/sos/1state2ap1acc_018.sos
+    python3 -m tests.sos2ltl.e9_profile genaut/corpus/flat_canon/sos/1state1ap0acc_1.sos
+    python3 -m tests.sos2ltl.e0_anchoring genaut/corpus/flat_canon/sos/3state1ap0acc_004260.sos
+    python3 -m tests.sos2ltl.e9_profile samples/fixtures/hoa/sos/gf_aa.sos   # the FIG-2 stack
 
