@@ -25,8 +25,8 @@ reproduce, and results come back as findings in `sos_toltl_report.md`
   early pass); full E4 and E8; C6 + E5 (unblocked — the paper's §2.2
   Thérien–Wilke read-off is frozen, C6 carries the procedure); H8 (the
   park-irreparable witness conformance); H6 and smallest-H3 (census-next
-  `2state2ap`); the graded engine (M3) once the paper's §4.3
-  entry-rooted repair carries its completeness re-proof — 42.5% of the
+  `2state2ap`); the graded engine (M3) — **unblocked**: paper
+  Theorem 4.13 is complete with the seam bricks — 42.5% of the
   LTL catalogue is graded, so M3 is the coverage frontier.
 
 **One-line goal.** Provide the data for `sos_toltl.md`: per-layer anchoring
@@ -513,7 +513,7 @@ Spot-simplified formula)`:
 4. **Graded exhibit, smallest available.** A `k = 2`-anchored layer
    with the smallest `|𝒞|` in the catalogue (the F8 exhibit
    `2state1ap0acc_086_c` at 12 classes is the current holder — is
-   there smaller?), for the §4.3 correction's discussion.
+   there smaller?), for the §4.3 graded engine's discussion.
 5. **Kanchor/daisy showpieces.** From the automaton portfolio's test
    set: two or three large-automaton inputs whose portfolio formula is
    tiny; run them through the SoS path (`𝓘(L)`, layers, engine) and
@@ -607,10 +607,17 @@ residual-sharing wins.
   engine covers; conformance via the survey oracle. *(Done, plus E10
   beyond plan; the graded stratum declines to DG per report F8.)*
 - **M3** — graded engine at window width `k+1` (paper §4.3, Thm 4.13:
-  transient fold trees `TR`/`TL`, `step_κ`), scoped DG fallback on the
-  layer action monoid `𝒜_R` (paper Prop 4.14) — full-coverage engine;
-  full E4, E3; E8. *(Todo; the graded engine is gated on the paper's
-  §4.3 completeness re-proof; C7 is done.)*
+  transient fold trees `TR`/`TL`, `step_κ`, and the **seam bricks
+  `seam(c)` — mandatory, the exit-chain is incomplete without them**),
+  scoped DG fallback on the
+  layer action monoid `𝒜_R` (paper Prop 4.14), now needed only on
+  no-width layers — full-coverage engine;
+  full E4, E3; E8. *(Todo; unblocked — Thm 4.13 is complete; C7 is
+  done. Do NOT implement the older entry-rooted-`U` sketch: it is
+  unsound — paper §4.3, the seam remark. Gate: the remark's witness —
+  layer `{2,5,8}` of "reaches an accepting sink", word
+  `a·a·!a·a·(!a)^ω` from entry 2 — must accept via the root seam
+  disjunct.)*
 - **M4** — C6 + E5; E6 sweeps; E7 re-run on census-next. *(Todo;
   unblocked — C6 carries the frozen procedure and its budget
   discipline.)*
