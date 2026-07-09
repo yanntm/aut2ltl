@@ -51,34 +51,74 @@ within each layer one letter suffices, which is what makes width 1 enough.
 
 ## FIG-2 — the label stack as a derivation
 
-**Not built.** Requirement, panel layout, and the engine trace hook it
-needs are specified in
-[`../sos_toltl_figures.md`](../sos_toltl_figures.md) (FIG-2). The paper's
-§5.2 code block carries the content in the meantime.
+![the label stack of GF(aa), as a derivation](img/fig2_stack.png)
+
+**The label of `GF(aa)`, assembled child-first.** One block per layer, in the
+order the R-order descent builds them: the frozen `{5}` first, then the two
+moving layers, then the transient root. Left, the descent — a miniature of
+FIG-1 with the layer being labelled lit and the layers already labelled
+shaded. Right, the bricks that layer contributes, each tagged with the rule
+that produced it; a brick that repeats a formula already introduced prints
+that formula's *name*, so the panel is the label DAG rather than its
+unfolding — `leave(3)` names `Final(5)`, `Final(3)` names `leave(3)` twice.
+The formulas are the engine's own, dumped by `SOS2LTL_TRACE` with
+simplification off; they are the paper's §5.2 stack, character for character,
+with the ⊤/⊥ collapses the engine's constructors apply (`sojourn(1) = !a W a`
+prints as `⊤`).
+
+Read the degeneracies: both moving layers are all-rejecting as final layers,
+so their `STAY∞` is `⊥` and `Final = LEAVE`; the root cannot sojourn at all,
+so its label is its exit fan — `Final(0) = leave(0)` is the derivation saying
+the root contributes only a fan. The mirror symmetry is literal: `Final(4)`
+and `Final(1)` are the same formula, as are `Final(3)` and `Final(2)`.
+
+Two rows are absent by design. `STAY∞` and `LEAVE` are the two disjuncts of
+`Final`, and the only fact they carry that `Final` hides is whether the
+confinement branch survived — which is each block's side note. And the panel
+is drawn with the engine's *plain* rendering (`Rendering(residual=False)`):
+under the default rendering exit children are keyed by residual, and since
+`GF(aa)` is prefix-independent (one residual) the root's whole fan collapses
+to `X Final(5)` — correct, cheaper, and it would leave the last step of the
+derivation with nothing to show. The collapse is FIG-3's and §6's subject,
+not this one's.
+
+<!-- from: python3 -m tests.sos2ltl.figs.fig2 sources/gf_aa.sos sources/fig2_stack.tex -->
 
 ---
 
-## FIG-3 — the DG recursion: substitution tree vs memoized DAG (paper Figure 1)
+## FIG-3 — the DG formula: substitution tree vs memoized DAG (paper Figure 1)
 
-![DG recursion, tree vs DAG](img/fig3_dg.png)
+![DG formula, tree vs DAG](img/fig3_dg.png)
 
-**The same recursion, drawn twice.** Left, the induction unfolded as a
-substituting recursion would build it: one node per *call site*, so the call
-`DG(M′, T, ·)` that four different parents make is copied four times (see how
-often `2`, `11` and `4` recur across the row). Right, the same recursion
-memoized on the key `(frame, target)`: 19 distinct nodes, each built once,
-with a *reference* — thin dotted arrow, annotated `n×` where one parent
-references the same child `n` times — wherever the left panel copied. Shaded
-nodes are base cases (every letter invisible); the recursion is acyclic
-because the local-divisor induction strictly decreases.
+**The same formula, drawn twice.** Both panels draw the DG induction's
+*formula*, as operators over slots: a node says what it is (`⋁`, `⋀`, `φ U ψ`,
+`X φ`, an atom verbatim), never an id. Right, the hash-consed arena: a subterm
+used twice is one box with two in-arcs — the first arc builds it, every later
+one is a *reference* (thin dotted). Left, the same slice as a substituting
+recursion writes it: one copy per occurrence. In this slice alone, 22 copies
+against 10 boxes.
 
-For `GF(aa)`'s six-class algebra the recursion *tree* is a modest 49 nodes over
-4 depths (`1, 10, 30, 8`) across 34 call sites, 26 of them distinct. The
-violence is not in the recursion but in what each node's `tilde` substitution
-does to the *formula*: the shared arena of 1 287 formula nodes has a flat
-unfolding of **1 991 717** nodes. That is the size recurrence of §2.3 —
-`f(M, Σ) ≈ f(M′, T) · maxₘ f(M, Σ∖{c})`, multiplicative because a block
-formula is copied into every occurrence of every `T`-letter — and it is
+The cut. `GF(aa)`'s arena is 1 287 nodes and its top is wide, not deep — a
+seven-way `⋁` of `⋀`s of nine to nineteen conjuncts, 94 arcs onto 36 distinct
+children — so the figure draws a *pattern* and states every elision in place.
+`⋀`/`⋁` are associative-commutative: their arcs carry no slot label and the
+node carries an arity badge (`⋀ ·12`) instead; only `X`/`U`/`XU` arcs name
+their slots. The root's three cheapest disjuncts are drawn (`⋯ 4 more`); under
+each, an arc goes to every child two drawn disjuncts share, plus one unshared
+representative, and the rest are that node's `+k private` line. Each handle
+`ψᵢ` carries its in-degree over *all seven* disjuncts (`ψ₁ ×7`: every disjunct
+references it), its own head, and its `arena / flat` sizes — so the sharing the
+cut could not draw is still counted. The `ψᵢ` are exactly the fresh
+propositions of the paper's §6 definitional rendering.
+
+Read the badges and the explosion is located. `ψ₁` is 9 arena nodes and 12
+flat; `ψ₆`, a three-way `⋁`, is 114 arena nodes and **430 508** flat.
+The violence is not in the recursion — which is a modest 49-node tree over 4
+depths (`1, 10, 30, 8`) from 34 call sites, 26 distinct, 19 memoized — but in
+what each node's `tilde` substitution does to the formula: the shared arena of
+1 287 nodes has a flat unfolding of **1 991 717**. That is the size recurrence
+of §2.3 — `f(M, Σ) ≈ f(M′, T) · maxₘ f(M, Σ∖{c})`, multiplicative because a
+block formula is copied into every occurrence of every `T`-letter — and it is
 confined entirely to the unfolding step. The number of distinct sub-calls is
 governed by the algebra, not by the tree.
 

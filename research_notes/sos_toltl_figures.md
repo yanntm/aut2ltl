@@ -11,10 +11,16 @@ improvising.*
 
 | figure | subject | state |
 |---|---|---|
-| FIG-1 | layered Cayley graph of `GF(aa)` | built, in the paper (Figure 3) — **one fix pending** (moving-layer tags, below) |
-| FIG-2 | label-stack derivation panel | **todo** — blocked on the engine trace hook (below) |
-| FIG-3 | DG explosion, tree vs DAG | built, in the paper (Figure 1) — **rebuild to the readable-formula spec** below |
+| FIG-1 | layered Cayley graph of `GF(aa)` | built, in the paper (Figure 3) — done (moving-layer tags fixed) |
+| FIG-2 | label-stack derivation panel | built off the `SOS2LTL_TRACE` hook — **not yet placed in the paper** |
+| FIG-3 | DG explosion, tree vs DAG | rebuilt to the readable-formula spec — **the paper's Figure 1 caption still describes the old call-shaped panels, and must be rewritten** |
 | FIG-4 | `F a` micro-machine | built, in the paper (Figure 2) — done |
+
+Two decisions taken against the letter of the spec, argued in
+[`sos_toltl_figs/notes.md`](sos_toltl_figs/notes.md): FIG-2 is a panel rather
+than a table (§3), and FIG-3 draws three open branches rather than one (§1c) —
+which stays inside the node/arc budget and is what keeps the tree panel
+meaningful. The specimen-swap fallback was not needed.
 
 ## Ground rules (every figure)
 

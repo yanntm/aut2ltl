@@ -45,6 +45,9 @@ Equivalently, one figure at a time (this is the provenance footer of each):
 python3 -m tests.sos2ltl.figs.fig1 \
   research_notes/sos_toltl_figs/sources/gf_aa.sos \
   research_notes/sos_toltl_figs/sources/fig1_cayley.tex
+python3 -m tests.sos2ltl.figs.fig2 \
+  research_notes/sos_toltl_figs/sources/gf_aa.sos \
+  research_notes/sos_toltl_figs/sources/fig2_stack.tex
 python3 -m tests.sos2ltl.figs.fig3 \
   research_notes/sos_toltl_figs/sources/gf_aa.sos \
   research_notes/sos_toltl_figs/sources/fig3_dg.tex
@@ -65,6 +68,10 @@ primitives (`Ast.tree_size`, `len(Ast)`). They own only the placement.
 Cross-check any figure against the standing E0 probes:
 
 ```sh
+# FIG-2: the bricks themselves, straight from the engine
+SOS2LTL_TRACE=1 python3 -m tests.sos2ltl.e0_engine samples/fixtures/hoa/sos/gf_aa.sos
+#   -> one `[engine] layer=… brick=… formula=…` line per brick, on stderr
+
 # FIG-1: layers and the R-order; the (A) widths; the (B) widths + witnesses
 python3 -m tests.sos2ltl.e0_layers    samples/fixtures/hoa/sos/gf_aa.sos --expect gfaa
 python3 -m tests.sos2ltl.e0_anchoring samples/fixtures/hoa/sos/gf_aa.sos --expect gfaa
@@ -92,5 +99,7 @@ committed class `[a]`.
 The palette, the node/edge styles and the `standalone` preamble live once in
 [`tests/sos2ltl/figs/tikz.py`](../../tests/sos2ltl/figs/tikz.py); the layered
 machine drawing (FIG-1, FIG-4) in
-[`machine.py`](../../tests/sos2ltl/figs/machine.py). Letters are told apart by
-hue *and* dash pattern, so the figures survive greyscale printing.
+[`machine.py`](../../tests/sos2ltl/figs/machine.py); the operator view of the
+DG arena that FIG-3 draws (heads, slots, arity, AC) in
+[`formulaview.py`](../../tests/sos2ltl/figs/formulaview.py). Letters are told
+apart by hue *and* dash pattern, so the figures survive greyscale printing.

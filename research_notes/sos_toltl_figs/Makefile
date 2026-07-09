@@ -14,7 +14,7 @@ IMG    := img
 DPI    := 220
 PY     := python3
 
-FIGS   := fig1_cayley fig3_dg fig4_fa
+FIGS   := fig1_cayley fig2_stack fig3_dg fig4_fa
 PNGS   := $(addprefix $(IMG)/,$(addsuffix .png,$(FIGS)))
 
 .PHONY: all tex img clean
@@ -25,6 +25,9 @@ tex:
 	cd $(ROOT) && $(PY) -m tests.sos2ltl.figs.fig1 \
 	  research_notes/sos_toltl_figs/$(SRC)/gf_aa.sos \
 	  research_notes/sos_toltl_figs/$(SRC)/fig1_cayley.tex
+	cd $(ROOT) && $(PY) -m tests.sos2ltl.figs.fig2 \
+	  research_notes/sos_toltl_figs/$(SRC)/gf_aa.sos \
+	  research_notes/sos_toltl_figs/$(SRC)/fig2_stack.tex
 	cd $(ROOT) && $(PY) -m tests.sos2ltl.figs.fig3 \
 	  research_notes/sos_toltl_figs/$(SRC)/gf_aa.sos \
 	  research_notes/sos_toltl_figs/$(SRC)/fig3_dg.tex
