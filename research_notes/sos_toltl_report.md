@@ -527,6 +527,195 @@ implement the entry-rooted form and lift the decline guard for non-committed
 graded layers. Until then, decline-to-DG is the sound guard, and the committed
 short-circuit carries the guarantee/co-safety stratum exactly.
 
+## E10 — branch factoring: guard synthesis, guard grouping, residual-indexed exits
+
+The three renderings of spec E10, implemented and priced. All three are
+exactness-preserving by the label contract (any exact label for the tail
+language serves), and each is switchable (`engine.Rendering`) so the ledger
+can hold the others fixed. Two structural changes came first.
+
+**F9 — the engine emitted strings, so the class memo bought nothing.** `Final(c)`
+was a Python `str` spliced into every exit arm, and `translator.py` re-parsed
+the flat string to recover a DAG. The transcription therefore paid *flat-tree*
+cost at construction time — the very explosion §3 measures on the DG baseline —
+and the "class-indexed sharing is the memo" line of the engine docstring was
+false. `engine.py` now builds a hash-consed `spot.formula` end to end; `Final(d)`
+is one node, referenced. No paper edit: the construction always said DAG.
+
+**F10 — guard grouping must key on the child, not on the target class.** The
+exit fan was already grouped by target class (`_by_dest`), which is spec E10(1)
+read literally. But then E10(2)'s residual indexing cannot fire *through* it:
+two classes with one residual stay two arms, each carrying the same child. Fans
+now group on the **child key** — the class, or the residual when indexing is on
+— which is what turns the spec's `⊤`-guard arc ("all exits one target") from a
+rarity into the common case. The two sharings do not compose otherwise. Spec
+E10(1) is patched: *group by child, not by class*.
+
+### The triptych of renderings on one language
+
+`1state2ap1acc_030` = `GF(a ∨ ¬b)` (`|𝒞| = 3`, 2 AP, degree (ω,σ)) — the F8
+defect-1 exhibit, prefix-independent. **Two size regimes**: the raw label, which
+the paper prints for traceability of the bricks on small examples, and the
+shipped label after the `hi` simplifier the `sos2ltl` recipe applies
+(`Simplify(sos2ltl, "hi")`) — the size a claim is about.
+
+| rendering | raw DAG | raw tree | **hi DAG** | hi tree |
+|---|--:|--:|--:|--:|
+| plain (cube guards, per-letter fans, class children) | 28 | 222 | 11 | 28 |
+| + minimized guards (item 0) | 25 | 141 | 11 | 28 |
+| + grouping (item 1) | 22 | 76 | 11 | 28 |
+| + residual indexing (item 2) | 13 | 45 | **6** | 6 |
+| **both sharings** | 7 | 7 | **6** | 6 |
+
+Raw, the collapse to `X GF(a | !b)` needs the *composition*: neither sharing
+alone reaches it (grouping stops at 22, residual at 13), because the two exit
+arms have different target classes but one residual — keying the fan on the
+residual merges them and the guard becomes `⊤`.
+
+Simplified, the picture inverts and is the honest one. **Guard synthesis and
+guard grouping are entirely subsumed by Spot** (all three top rows land at
+DAG 11): they remove syntactic redundancy, and `X GF φ ≡ GF φ` is a rewrite
+Spot does for free. **Residual indexing is not subsumed** — it is what takes the
+formula to `GF(a | !b)` (DAG 6), because it identifies two *different classes*
+as one tail language, a semantic fact about `P` that no formula-level simplifier
+can recover. The sharings that matter after simplification are the ones the
+simplifier cannot do; the others earn their keep by keeping the DAG small
+enough that Spot's containment checks stay affordable (`_SIMP_FULL_LIMIT`).
+
+### The ledger (1114 rendered languages of `flat_canon`)
+
+`e10_ledger` → `e10_report`, keyed by language, ventilated by Wagner degree.
+Of the 3938 catalogue languages: 1698 group (non-LTL, no formula), 1126 decline
+to DG (the F8 guard), **1114 rendered by the engine**. Sizes summed per row,
+post-`hi` (the shipped label); the raw columns are in the log.
+
+| `ϕ=(γ,s)` | langs | hi-DAG plain | guards | +group | +residual | **all** | win |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| (1,δ) | 62 | 457 | 457 | 457 | 457 | 457 | 1.00× |
+| (1,σ) | 207 | 2913 | 2913 | 2928 | 2609 | 2618 | 1.11× |
+| (1,π) | 207 | 2534 | 2534 | 2542 | 2297 | 2268 | 1.12× |
+| (2,σ) / (2,π) | 4 ea | 25 / 29 | = | = | = | = | 1.00× |
+| (ω,σ) | 305 | 9118 | 6943 | 5369 | 3738 | 3718 | 2.45× |
+| (ω,π) | 305 | 14397 | 12916 | 8642 | 6431 | 6220 | 2.31× |
+| (ω²,σ) | 9 | 337 | 329 | 297 | 176 | 176 | 1.91× |
+| (ω²,π) | 9 | 690 | 516 | 417 | 303 | 303 | 2.28× |
+| **POOLED** | 1114 | 30502 | 26664 | 20708 | 16067 | **15816** | **1.93×** |
+
+Post-`hi`, the three renderings together shrink the shipped DAG **1.93×** and
+the shipped flat tree **18.1×** (1 702 355 → 32 134), concentrated at degree ω
+and above where the layer stacks are deep. Raw (traceability sizes, no
+simplifier): DAG 38 061 → 24 579 (1.55×), tree 2 002 480 → 90 788 (22.1×).
+
+Structure: over 5096 exit fans, classes see 8088 distinct children, residuals
+7322; 51.0% of fans are single-child under class keying, 56.3% under residual
+keying, and **264 fans carry a `⊤` guard** (every letter exits to one child).
+
+At the survey level the win is invisible (total DAG 1 862 441 → 1 856 896,
+0.3%): the engine renders 1114 languages, the other 1126 LTL languages decline
+to the DG baseline (F8's guard), and DG's DAGs dominate the total. The E10
+ledger is the honest frame — it measures the engine where the engine answers.
+
+### F11 — the simplifier subsumes the syntactic sharings, not the semantic one
+
+The decisive column is post-`hi`, because the `sos2ltl` recipe ships
+`Simplify(sos2ltl, "hi")` and Spot rewrites cosmetic residue (`X GF φ ≡ GF φ`)
+for free. Splitting the pooled win by rendering, against the `guards` baseline:
+
+| sharing | raw DAG | hi DAG | verdict |
+|---|--:|--:|---|
+| guard grouping (item 1) | 1.06× | 1.29× | partly survives |
+| residual indexing (item 2) | 1.34× | **1.66×** | survives |
+| both | 1.52× | **1.69×** | — |
+
+and guard synthesis (item 0) is worth `1.00×` on the raw *tree* below 2 AP:
+
+| AP | langs | tree plain → guards | hi-DAG plain → all |
+|---|--:|--:|--:|
+| 0 | 2 | 1.00× | 1.00× |
+| 1 | 540 | **1.00×** | 1.14× |
+| 2 | 112 | 1.44× | 1.97× |
+| 3 | 460 | 2.26× | **2.48×** |
+
+Two mechanisms, only one of which the simplifier can imitate. Guard synthesis
+and guard grouping remove *syntactic* redundancy — a cube union that is really
+one literal, a fan arm that repeats its sibling's child — and on the E10 exhibit
+Spot recovers all of it unaided (plain, guards, guards+group all land at
+hi-DAG 11). Residual indexing removes a *semantic* redundancy: it identifies two
+distinct classes as one tail language, a fact about `P` that no formula-level
+simplifier can see, and it is what takes the exhibit to `GF(a | !b)` (hi-DAG 6).
+That is why grouping's advantage grows post-`hi` (1.06× → 1.29×) only where the
+DAG was large enough to defeat Spot's own containment checks
+(`_SIMP_FULL_LIMIT` gates the expensive rules by tree size): the syntactic
+sharings earn their keep by keeping the input *affordable* for the simplifier,
+not by doing the simplifier's job. The paper's §6 should say which size it
+claims, and should claim the post-simplifier one.
+
+Cost side, unpredicted: guard minimization **never** enlarges the raw tree
+(0 of 1114) but enlarges the raw **DAG** on 82 languages, all 3-AP (exhibit
+`1state3ap1acc_00262`: DAG 34 → 36, tree 566 → 404). The `2^{|AP|}` concrete
+cubes are a small fixed vocabulary that every guard position reuses, whereas
+each minimized guard is bespoke to its letter set — fewer nodes per guard, more
+distinct guards. Flat size and DAG size are optimized by opposite renderings.
+
+### F12 — residual indexing is not monotone, and it fires on the *majority*
+
+Two spec-E10 predictions refuted:
+
+1. *"Residual indexing fires on a measurable minority of languages."* Classes
+   are strictly finer than residuals on **1012 of 1114** rendered languages
+   (90.8%) — the vast majority, not a minority. The prediction's own reasoning
+   ("every non-prefix-independent language with a group-free algebra has
+   candidates") is right; its quantifier was wrong.
+2. *"On prefix-independent languages residual indexing degenerates (one
+   residual) and the correct mechanism is the paper's Lemma 5.2 emit-directly
+   rule, not the memo."* It does not degenerate — it **is** the emit-directly
+   rule, discovered by the memo. The 94 prefix-independent languages get the
+   *best* win of any stratum (hi-DAG 2.19× vs 1.65× for the other 1020),
+   because with one residual every exit child is the label of the single
+   deepest class, which is exactly the whole tail language Lemma 5.2 says to
+   emit directly. The spec's requested "emit-directly column, not a
+   residual-sharing win" is a distinction without a difference: same formula,
+   same mechanism, reached by the memo.
+
+The genuine cost: no rendering is **size-monotone**. Raw, residual indexing
+enlarges the DAG on 12 languages and the tree on one — exhibit
+`3state1ap0acc_028962` (`|𝒞| = 14`, 6 residuals, 1 AP): DAG 24 → 26, tree
+85 → 86. Its fans merge *nothing* (13 distinct children by class, 13 by
+residual), so the substitution buys no sharing and simply swaps each target's
+own label for its residual representative's — both exact for the same tail
+language, the representative's one node bigger. The representative is fixed as
+*the first class built* (deepest layer), which the spec's acyclicity care point
+demands; choosing the *smallest built label* of the residual would restore
+monotonicity and stays acyclic. Not implemented. Post-`hi` the non-monotone
+counts are 37 (guards), 13 (grouping), 11 (residual) and 7 (`+group` over
+`+residual`) languages out of 1114 — the simplifier both hides some regressions
+and creates others, none exceeding a few nodes against a pooled 1.93× win.
+
+### Implementation
+
+`guards.py` (new) renders a letter set `S ⊆ Σ` as a minimized formula over `AP`
+— BDD + Minato ISOP through `aut2ltl.ltl.builders.fuse_or`, the repo's existing
+guard-fusion pass, not a new minimizer. Its one hazard is canonicity: the ISOP
+shape depends on the BDD variable order, which the shared process `bdd_dict`
+fixes by *registration order*. `builders.register_aps` (new) pins it to the
+alphabet's canonical AP order at `Guards` construction, so two presentations of
+one language still render byte-identically (E0's canonicity case, green).
+
+`readoffs.residual_partition` (new) reads the right congruence off `P` alone:
+`T_c = T_d ⟺ ∀ (s,e) ∈ linked : (c·s, e) ∈ P ⟺ (d·s, e) ∈ P`, since every tail
+`z·y^ω` from `c` lands on the linked pair `(c·[z]·[y]^π, [y]^π)`. This does not
+consume the `.sos` residuals trailer — optional, and absent from a learner's
+export — and the ledger cross-checks the two computations on every catalogue
+language that carries one (0 mismatches).
+
+Acyclicity (the spec's care point) is discharged structurally rather than by an
+R-minimality argument: a residual's representative is registered only once its
+layer is fully labelled, and exits point strictly down the R-order, so the
+representative is always already built when an exit reaches it. The extreme case
+the spec warns about — prefix-independence, one residual shared by every class —
+is safe for the same reason: the single representative sits in the deepest
+layer, and the root's label is never redirected into itself.
+
 ## Reproduction
 
 Every table above is machine-built and audited against a committed output under
@@ -578,3 +767,12 @@ the committed reference copies live in `results/reference/flat_canon/`.
     python3 -m survey --hoa genaut/corpus/flat_canon/det/2state1ap0acc_086_c.hoa --use sos2ltl
     cat genaut/corpus/flat_canon/det/2state1ap0acc_086_c.hoa
     cat genaut/corpus/flat_canon/sos/2state1ap0acc_086_c.sos
+
+**E10 branch factoring (F9–F12).**
+
+    python3 -m tests.sos2ltl.e10_ledger genaut/corpus/flat_canon/sos \
+        --out tests/sos2ltl/logs/e10_ledger.jsonl
+    python3 -m tests.sos2ltl.e10_report tests/sos2ltl/logs/e10_ledger.jsonl
+    # the triptych-of-renderings exhibit, one language:
+    python3 -m tests.sos2ltl.e10_ledger genaut/corpus/flat_canon/sos/1state2ap1acc_030.sos
+    python3 -m tests.sos2ltl.e0_engine genaut/corpus/flat_canon/sos/1state2ap1acc_030.sos
