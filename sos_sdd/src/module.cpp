@@ -203,7 +203,28 @@ PYBIND11_MODULE(_core, m) {
       .def_property_readonly("nodes", [](const SoSCore &s) {
         const auto n = s.nodes();
         return py::make_tuple(n.first, n.second);
-      });
+      })
+      .def(
+          "shortlex_words",
+          [](const SoSCore &s, size_t limit) {
+            // Elements as ((state, marks), ...) per slot; words as the
+            // least letter of each class stepped through.
+            py::list out;
+            const auto &classes = s.classes();
+            const auto &space = s.space();
+            for (const auto &[elem, word] : s.shortlex_words(limit)) {
+              py::list slots;
+              for (int v : elem)
+                slots.append(py::make_tuple(space.state_of(v), space.marks_of(v)));
+              py::list letters;
+              for (int c : word)
+                letters.append(classes[static_cast<size_t>(c)].least);
+              out.append(py::make_tuple(py::tuple(slots), py::tuple(letters)));
+            }
+            return out;
+          },
+          py::arg("limit") = 100000,
+          "Every EM1 element with its shortlex word (test/debug reading).");
 
   m.def("build", &build, py::arg("payload"), py::arg("config"),
         py::arg("until_phase"),
