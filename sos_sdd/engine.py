@@ -8,8 +8,8 @@ from dataclasses import dataclass, asdict
 from typing import Any, Callable, Dict, Literal, Optional, Sequence, Union
 
 from .contract import SoS
-from .letters import letter_classes
-from .model import Automaton, Input, Product
+from .model import Input, Product
+from .slotmodel import async_factored, async_flat, from_automaton
 
 Discipline = Literal["layered", "chaining", "saturation"]
 StatsSink = Union[None, str, Callable[[Dict[str, Any]], None]]
@@ -46,29 +46,16 @@ class Engine:
         if not (1 <= until_phase <= 6):
             raise ValueError(f"until_phase {until_phase} out of range 1..6")
         if isinstance(aut, Product):
-            raise NotImplementedError("Product inputs arrive with the scaling families")
-        return _core().build(_payload(aut), self._config(), until_phase)
+            model = (async_factored(aut) if self.coords == "factored"
+                     else async_flat(aut))
+        else:
+            model = from_automaton(aut)
+        return _core().build(model.payload(), self._config(), until_phase)
 
     def _config(self) -> Dict[str, Any]:
         cfg = asdict(self)
         cfg["stats"] = self.stats  # keep the callable; asdict deep-copies
         return cfg
-
-
-def _payload(aut: Automaton) -> Dict[str, Any]:
-    """Numeric digest crossing the binding: states, marks, and the sorted
-    letter-behavior classes — no guard syntax reaches the C++ side."""
-    return {
-        "name": aut.name,
-        "n_states": aut.states,
-        "n_marks": aut.marks,
-        "init": aut.init,
-        "classes": [
-            {"least": c.least, "count": c.count,
-             "dst": list(c.dst), "marks": list(c.marks)}
-            for c in letter_classes(aut)
-        ],
-    }
 
 
 def align(s: SoS, t: SoS) -> SoS:
