@@ -29,10 +29,17 @@ class SlotClass:
 
 @dataclass(frozen=True)
 class SlotModel:
+    """`mark_bits` and `block_base` declare the packing to the engine's
+    crossing (Phase 2): slot values are (state << mark_bits[q]) | marks
+    with a component-local state, and block_base[q] is the global slot
+    index of that component's state 0."""
+
     name: str
     doms: Tuple[int, ...]
     identity: Tuple[int, ...]
     classes: Tuple[SlotClass, ...]
+    mark_bits: Tuple[int, ...]
+    block_base: Tuple[int, ...]
 
     def payload(self) -> Dict[str, Any]:
         return {
@@ -44,6 +51,8 @@ class SlotModel:
                  "maps": [list(m) for m in c.maps]}
                 for c in self.classes
             ],
+            "mark_bits": list(self.mark_bits),
+            "block_base": list(self.block_base),
         }
 
 
@@ -71,6 +80,8 @@ def from_automaton(aut: Automaton) -> SlotModel:
         doms=(dom,) * aut.states,
         identity=tuple(pack(q, 0, aut.marks) for q in range(aut.states)),
         classes=tuple(classes),
+        mark_bits=(aut.marks,) * aut.states,
+        block_base=(0,) * aut.states,
     )
 
 
@@ -87,14 +98,19 @@ def async_factored(p: Product) -> SlotModel:
     id_maps = [tuple(range(d)) for d in doms]
     classes: List[SlotClass] = []
     offset = 0
+    mark_bits: List[int] = []
+    block_base: List[int] = []
     for ci, m in enumerate(comps):
         block = len(m.doms)
         for c in m.classes:
             maps = list(id_maps)
             maps[offset:offset + block] = list(c.maps)
             classes.append(SlotClass(f"{ci}:{c.least}", c.count, tuple(maps)))
+        mark_bits.extend(m.mark_bits)
+        block_base.extend(offset + b for b in m.block_base)
         offset += block
-    return SlotModel(p.name, doms, identity, tuple(classes))
+    return SlotModel(p.name, doms, identity, tuple(classes),
+                     tuple(mark_bits), tuple(block_base))
 
 
 def async_flat(p: Product) -> SlotModel:
@@ -129,4 +145,6 @@ def async_flat(p: Product) -> SlotModel:
     return SlotModel(p.name + "_flat",
                      (dom,) * len(joint_states),
                      tuple(index[js] << total_marks for js in joint_states),
-                     tuple(classes))
+                     tuple(classes),
+                     (total_marks,) * len(joint_states),
+                     (0,) * len(joint_states))

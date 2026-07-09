@@ -5,7 +5,9 @@
 // Currently exposed: selftest(stats), which exercises the primitive layer
 // and the instrumentation hooks on a toy slot space — set algebra and
 // comparison, model counts, single-variable relational apply, and the
-// layered-vs-saturation fixpoint disciplines cross-checked for equality.
+// layered-vs-saturation fixpoint disciplines cross-checked for equality;
+// build(payload, config, until_phase) running phases 0..2 (closure, then
+// the crossing / idempotent-power map) on a numeric digest payload.
 
 #include <fstream>
 #include <memory>
@@ -145,9 +147,9 @@ void check_config(const py::dict &config) {
 
 SoSCore build(const py::dict &payload, const py::dict &config,
               int until_phase) {
-  if (until_phase != 1)
+  if (until_phase < 1 || until_phase > 2)
     not_implemented("until_phase=" + std::to_string(until_phase) +
-                    " (only phase 1 is implemented)");
+                    " (only phases 1..2 are implemented)");
   check_config(config);
 
   SlotSpace space{py::cast<std::vector<int>>(payload["doms"]),
@@ -174,6 +176,19 @@ SoSCore build(const py::dict &payload, const py::dict &config,
   const double time_budget =
       config.contains("time_budget") ? py::cast<double>(config["time_budget"]) : 0.0;
   core.close(st, node_budget, time_budget);
+  if (until_phase >= 2) {
+    // The squaring shortcut is deferred (pending a 2k-variable relation
+    // encoding of the simultaneous step); only the general pairing runs.
+    const std::string square =
+        config.contains("square") ? py::cast<std::string>(config["square"])
+                                  : "off";
+    if (square != "off")
+      not_implemented("square=" + square +
+                      " (squaring shortcut deferred; only off is implemented)");
+    PackInfo pack{py::cast<std::vector<int>>(payload["mark_bits"]),
+                  py::cast<std::vector<int>>(payload["block_base"])};
+    core.cross(st, pack, node_budget, time_budget);
+  }
   return core;
 }
 
@@ -196,6 +211,19 @@ PYBIND11_MODULE(_core, m) {
   py::class_<SoSCore>(m, "SoS")
       .def_property_readonly("name", &SoSCore::name)
       .def("em1_count", &SoSCore::em1_count)
+      .def("pi_count", &SoSCore::pi_count)
+      .def("pi_nodes", &SoSCore::pi_nodes)
+      .def(
+          "pi_pairs",
+          [](const SoSCore &s, size_t limit) {
+            py::list out;
+            for (const auto &[x, y] : s.pi_pairs(limit))
+              out.append(py::make_tuple(py::tuple(py::cast(x)),
+                                        py::tuple(py::cast(y))));
+            return out;
+          },
+          py::arg("limit") = 100000,
+          "Every (x, x^pi) pair as raw slot values (test/debug reading).")
       .def_property_readonly("depth", &SoSCore::depth)
       .def_property_readonly(
           "layers", [](const SoSCore &s) { return profile_to_py(s.profile()); })
@@ -236,7 +264,8 @@ PYBIND11_MODULE(_core, m) {
         py::arg("until_phase"),
         "Run phases 0..until_phase on a numeric digest payload.");
 
-  // Budget findings surface as the Python-side Finding classes.
+  // Budget findings surface as the Python-side Finding classes; invariant
+  // violations as StopTheLine (a defect, never caught-and-ledgered).
   py::register_exception_translator([](std::exception_ptr p) {
     try {
       if (p) std::rethrow_exception(p);
@@ -248,6 +277,10 @@ PYBIND11_MODULE(_core, m) {
       for (const auto &r : e.profile)
         profile.append(py::make_tuple(r.k, r.card, r.nodes));
       PyErr_SetObject(cls.ptr(), cls(e.phase, profile).ptr());
+    } catch (const LineStopped &e) {
+      const py::object cls =
+          py::module_::import("sos_sdd.errors").attr("StopTheLine");
+      PyErr_SetObject(cls.ptr(), cls(e.what).ptr());
     }
   });
 }

@@ -65,3 +65,32 @@ systems. Phase 2 (`Comp`/ExprHom) still not started.
   `tests/sos_sdd/logs/e2_flat_3.jsonl`). Recorded as the `TIME_BUDGET`
   finding it is; the proper divergence plot is E3's, with C9's order
   sweep still to come.
+
+## C4 — the crossing (Phase 2: pairing lfp; squaring deferred)
+
+Engine state added: the pair space (y-block stacked above the x-block),
+`Comp` as the paper's `|Q|`-way case split over plain scalar GAL
+expressions (`assignExpr`/`predicate` of libITS-gal — no arrays, no
+`syncAssignExpr`), the pairing lfp from the diagonal and the idempotence
+predicate; `until_phase=2` live. The squaring shortcut is deferred
+(simultaneous step — pending a 2k-variable relation encoding);
+`square="check"/"on"` are refused, never ignored.
+
+- **F8 — π element-exact everywhere tried.** Engine `{(x, x^π)}` equals
+  an explicit power-orbit ground truth on **every** element of every
+  case: triptych 10/7/16, a period-3 cycle (6 elements, 5 pairing
+  rounds — the orbit shape squaring could never carry), and
+  `EvenBlocks^{⊗2}` factored (256 elements, the case split crossing
+  component block offsets). π functional (|π| = |EM¹|) on all — the
+  built-in Prop 3.2 check (`tests/sos_sdd/phase2_test.py`, streams in
+  `tests/sos_sdd/logs/phase2_*.jsonl`).
+- **F9 — mechanism note: the variable orientation was load-bearing.**
+  Phase 1's `Hom_Basic` bricks key on variable numbers only and silently
+  tolerated diagrams built upside-down (variable 0 topmost); ExprHom
+  navigates the order and the first crossing attempt died in unbounded
+  mutual recursion. Convention now fixed engine-wide: variable 0
+  adjacent to the terminal, written block above read block so
+  data-dependent reads resolve downward through the query mechanism.
+  Arrays (`x[i]` cells + `createArrayAccess`) were dropped with the
+  author's direction — the space is fixed-size, scalars + the case
+  split are the spec'd rendering (the paper's `Comp` formula verbatim).

@@ -2,7 +2,9 @@
 // own domain — heterogeneous on purpose, factored product coordinates
 // concatenate blocks of different component types. Packing semantics
 // live on the Python side (slotmodel.py); here a slot is a domain size
-// and an identity value, in natural variable order (slot 0 on top).
+// and an identity value. Slot i is DDD variable i, and variable 0 is
+// adjacent to the terminal (the library convention — required by the
+// expression homomorphisms and the SDD growth path).
 
 #pragma once
 
@@ -38,7 +40,7 @@ struct SlotSpace {
 
   GDDD identity() const {
     GDDD d = GDDD::one;
-    for (int i = n_slots() - 1; i >= 0; --i)
+    for (int i = 0; i < n_slots(); ++i)
       d = GDDD(i, static_cast<GDDD::val_t>(identity_vals[i]), d);
     return d;
   }

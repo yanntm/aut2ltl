@@ -50,8 +50,20 @@ if(NOT DDD_INCLUDE_DIR OR NOT DDD_LIBRARY)
 endif()
 message(STATUS "libDDD headers: ${DDD_INCLUDE_DIR}; library: ${DDD_LIBRARY}")
 
-target_include_directories(_core PRIVATE ${DDD_INCLUDE_DIR})
-target_link_libraries(_core PRIVATE ${DDD_LIBRARY})
+# libITS: the gal component (ExprHom — Phase 2's indexed read) joins at
+# Phase 2. Same prefix conventions as libDDD; static archive, linked
+# before libDDD (it depends on it).
+find_path(ITS_INCLUDE_DIR its/gal/ExprHom.hpp HINTS ${_libddd_hints}
+          PATH_SUFFIXES include)
+find_library(ITS_LIBRARY NAMES libITS.a ITS HINTS ${_libddd_hints}
+             PATH_SUFFIXES lib)
+if(NOT ITS_INCLUDE_DIR OR NOT ITS_LIBRARY)
+  message(FATAL_ERROR "libITS not found (searched: ${_libddd_hints}); run ./install_deps.sh")
+endif()
+message(STATUS "libITS headers: ${ITS_INCLUDE_DIR}; library: ${ITS_LIBRARY}")
+
+target_include_directories(_core PRIVATE ${DDD_INCLUDE_DIR} ${ITS_INCLUDE_DIR})
+target_link_libraries(_core PRIVATE ${ITS_LIBRARY} ${DDD_LIBRARY})
 get_filename_component(_ddd_libdir ${DDD_LIBRARY} DIRECTORY)
 set_target_properties(_core PROPERTIES
   BUILD_RPATH ${_ddd_libdir}

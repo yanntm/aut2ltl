@@ -35,9 +35,17 @@ the derived-census driver, the engine's first consumer at scale),
   (`16ⁿ` exact, additive nodes `9n+1`, Prop 4.1 element-exact to
   `n = 4`) with the flat `n = 3` `TIME_BUDGET` finding previewing E3 —
   ledger rows F5–F7 in `sos_symbolic_report.md`.
-- **TODO: everything else.** C4–C6 (Phase 2 pins on libITS-gal
-  `ExprHom`), C9–C10, E1/E3–E9, M2–M5 proper (E2 still owes the second
-  component family and per-point budget sweeps at scale).
+- **DONE (engine-side): C4, pairing path** — Phase 2's crossing as the
+  `|Q|`-way case split over scalar GAL expressions (libITS-gal
+  `assignExpr`/`predicate`; no arrays), pairing lfp + idempotence
+  predicate, π element-exact vs power-orbit ground truth on triptych /
+  period-3 / `EvenBlocks^{⊗2}` — ledger rows F8–F9. The **squaring
+  shortcut is deferred** (simultaneous step, pending a 2k-variable
+  relation encoding); `square≠"off"` is refused, so C4's check gate
+  waits on that encoding.
+- **TODO: everything else.** C4's squaring shortcut, C5–C6, C9–C10,
+  E1/E3–E9, M2–M5 proper (E2 still owes the second component family and
+  per-point budget sweeps at scale).
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat

@@ -184,12 +184,19 @@ stream.
   classes of the digest** — the letter coupling never puts α variables in
   the diagram and never enumerates the alphabet; α-bits-as-variables is
   the recorded fallback if cube refinement ever explodes. Phase 2's
-  `Comp` (indexed read `z_i ← y[state(x_i)]`) uses the GAL expression
-  homomorphisms — `assignExpr` / `syncAssignExpr` / `predicate` of
-  `its/gal/ExprHom.hpp` (the CAV 2012 symbolic expression evaluation) —
+  `Comp` is the paper's `|Q|`-way case split rendered over **plain
+  scalar variables** (`x_q`/`y_q` — the space is fixed-size, no array
+  encoding) as guarded assignments: `assignExpr` / `predicate` of
+  `its/gal/ExprHom.hpp` (the CAV 2012 symbolic expression evaluation),
   from **libITS' gal component**, which depends only on libITS root
   contracts + libDDD (parsers depend on it, never the reverse). That
   dependency joins at Phase 2; Phases 0–1 are pure libDDD.
+- **Variable order convention**: DDD variable 0 is adjacent to the
+  terminal (slot `i` = variable `i`, higher variables on top) — the
+  library convention, load-bearing for the expression homomorphisms and
+  the SDD growth path. Pair spaces stack the written block (`y`) *above*
+  the read block (`x`), so data-dependent reads resolve downward through
+  the ExprHom query mechanism.
 - **Guard**: DDD edge values are `val_t` (`short` in stock libDDD); the
   packed slot encoding caps at `|Q × 2^C| ≤ 32767`; the engine rejects a
   digest that exceeds it (reachable in flat coordinates on scaling
@@ -214,6 +221,12 @@ stream.
 - No standalone CLI for now: the drivers are Python, the API is the tool. If
   profiling ever needs a pure-C++ entry point, a thin `main.cpp` replaying a
   digest dump can be added without touching this contract.
+- The C4 squaring shortcut is **deferred**: `y ← y·y` rewrites every slot
+  while reading the others, a genuinely simultaneous step — planned as a
+  2k-variable relation encoding rather than `syncAssignExpr`. Until it
+  lands only `square="off"` is implemented; `"check"`/`"on"` are refused
+  loudly (never silently ignored), and Phase 2 runs the general pairing,
+  which is the always-correct path.
 
 ## Build
 

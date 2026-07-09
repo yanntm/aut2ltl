@@ -13,6 +13,7 @@
 #pragma once
 
 #include <chrono>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,6 +22,8 @@
 #include "ddd/Hom.h"
 #include "ddd/Hom_Basic.hh"
 
+#include "crossing.hh"
+#include "findings.hh"
 #include "primitives.hh"
 #include "slotspace.hh"
 #include "stats.hh"
@@ -31,20 +34,6 @@ struct LetterClassRow {
   std::string least;                   // lex-least letter of the class
   long long count = 0;                 // number of letters in the class
   std::vector<std::vector<int>> maps;  // per slot: value -> value
-};
-
-struct LayerRow {
-  int k;
-  double card;
-  unsigned long long nodes;
-};
-
-// Budget exhaustion findings (translated to sos_sdd.errors classes at the
-// binding); they carry the layer profile accumulated so far.
-struct BudgetExhausted {
-  bool is_time;
-  int phase;
-  std::vector<LayerRow> profile;
 };
 
 class SoSCore {
@@ -121,11 +110,29 @@ public:
     em1_ = current;
     depth_ = k - 1;
     built_ = true;
+    close_secs_ =
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - t0)
+            .count();
     st.emit(Record("phase").add("phase", 1LL)
                 .add("rounds", static_cast<long long>(k))
                 .add("em1", model_count(em1_))
                 .add("depth", static_cast<long long>(depth_))
                 .add("nodes_final", node_count(em1_)));
+  }
+
+  // Phase 2: build the crossing on the doubled slot space and compute the
+  // idempotent-power map pi. A wall budget spans the whole build, so only
+  // the remainder after the closure is granted here.
+  void cross(Stats &st, const PackInfo &pack, long long node_budget,
+             double time_budget) {
+    require();
+    double remaining = 0.0;
+    if (time_budget > 0) {
+      remaining = time_budget - close_secs_;
+      if (remaining <= 0) throw BudgetExhausted{true, 2, profile_};
+    }
+    cross_ = std::make_shared<Crossing>(name_, space_, pack, em1_);
+    cross_->run(st, model_count(em1_), node_budget, remaining, profile_);
   }
 
   // -- shortlex extraction (the C7 mechanism, reused by witnesses) ----
@@ -174,9 +181,10 @@ public:
     require();
     if (em1_count() > static_cast<double>(limit))
       throw std::invalid_argument(name_ + ": EM1 larger than the explicit cap");
+    // Paths run top-down, i.e. from the highest variable to slot 0.
     std::vector<std::vector<int>> elems;
     callback_t cb = [&elems](state_t &path) {
-      elems.emplace_back(path.begin(), path.end());
+      elems.emplace_back(path.rbegin(), path.rend());
     };
     iterate(static_cast<const GDDD &>(em1_), &cb);
     return elems;
@@ -191,6 +199,12 @@ public:
       out.emplace_back(e, shortlex_of(e));
     return out;
   }
+
+  // -- phase 2 readings ----------------------------------------------
+  double pi_count() const { return crossing().pi_count(); }
+  unsigned long long pi_nodes() const { return crossing().pi_nodes(); }
+  std::vector<std::pair<std::vector<int>, std::vector<int>>>
+  pi_pairs(size_t limit) const { return crossing().pi_pairs(limit); }
 
   // -- readings ------------------------------------------------------
   const std::string &name() const { return name_; }
@@ -208,6 +222,12 @@ private:
   void require() const {
     if (!built_)
       throw std::logic_error(name_ + ": phase 1 has not been run");
+  }
+
+  const Crossing &crossing() const {
+    if (!cross_)
+      throw std::logic_error(name_ + ": phase 2 has not been run");
+    return *cross_;
   }
 
   void check_class(const LetterClassRow &c) const {
@@ -228,7 +248,7 @@ private:
 
   DDD singleton(const std::vector<int> &elem) const {
     GDDD d = GDDD::one;
-    for (int i = space_.n_slots() - 1; i >= 0; --i)
+    for (int i = 0; i < space_.n_slots(); ++i)
       d = GDDD(i, static_cast<GDDD::val_t>(elem[i]), d);
     return DDD(d);
   }
@@ -243,7 +263,9 @@ private:
   DDD em1_;
   std::vector<DDD> layers_;
   std::vector<LayerRow> profile_;
+  std::shared_ptr<Crossing> cross_;
   int depth_ = -1;
+  double close_secs_ = 0.0;
   bool built_ = false;
 };
 
