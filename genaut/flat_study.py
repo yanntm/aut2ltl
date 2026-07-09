@@ -74,8 +74,8 @@ def _per_shape(corpus: str) -> List[Dict]:
 
 
 def _categories(corpus: str) -> List[Dict]:
-    """Read every `.cat` sidecar of `flat_canon/sos/` — one category per language
-    (`gen/categorize.py`): its LTL cut, Wagner degree `ϕ`, coordinates, class, and
+    """Read every `.cat` sidecar of `flat_canon/sos/` — one category per language:
+    its LTL cut, stutter-invariance, Wagner degree `ϕ`, coordinates, class, and
     whether it is a `_c` complement. Empty if the corpus is not categorized yet."""
     sos = os.path.join(corpus, "flat_canon", "sos")
     out: List[Dict] = []
@@ -96,11 +96,12 @@ def _degree_section(cats: List[Dict]) -> List[str]:
     per: Dict[Tuple[str, str], Dict] = {}
     for c in cats:
         phi = c["phi"]
-        d = per.setdefault(phi, {"n": 0, "nonltl": 0, "primal": 0,
+        d = per.setdefault(phi, {"n": 0, "nonltl": 0, "primal": 0, "stutter": 0,
                                  "coords": c["coords"], "class": c["class"]})
         d["n"] += 1
         d["nonltl"] += 0 if c["ltl"] else 1
         d["primal"] += 0 if c["complement"] else 1
+        d["stutter"] += 1 if c["stutter_invariant"] else 0
 
     order = sorted(per, key=degree_sort_key)
     triv = [p for p in order if p in _TRIVIAL]
@@ -111,27 +112,28 @@ def _degree_section(cats: List[Dict]) -> List[str]:
         d = per[phi]
         m0, m1, n0, n1 = d["coords"]
         return (f"| {phi_pretty(phi)} | ({m0}, {m1}, {n0}, {n1}) | {d['class']} "
-                f"| {d['n']} | {d['nonltl']} | {d['primal']} |")
+                f"| {d['n']} | {d['nonltl']} | {d['stutter']} | {d['primal']} |")
 
     L: List[str] = []
     L.append("\n## Wagner-degree profile (classified, complement-closed)\n")
     L.append(
         "Each language's **category**, read off its syntactic invariant `𝓘(L)` "
-        "into a `.cat` sidecar (`gen/categorize.py`, a pure table search — no "
-        "automaton, no Spot) and aggregated here. `ϕ = (γ, s)` is the Wagner "
-        "degree (`γ` the ordinal depth, `s ∈ {σ, π, δ}` the side); `(m⁺, m⁻, n⁺, "
-        "n⁻)` the chain/superchain coordinates; `non-LTL` the count in that row "
-        "that is **not** LTL-definable; `primals` the shape-realized share (the "
-        "rest are added complements). Because the catalogue is closed under "
-        "complement, the profile is **exactly duality-symmetric**: every `(γ, σ)` "
-        "row matches its `(γ, π)` dual, and the self-dual `δ` rows stand alone.\n")
-    L.append("| `ϕ = (γ, s)` | `(m⁺, m⁻, n⁺, n⁻)` | class | languages | non-LTL | primals |")
-    L.append("|---|---|---|--:|--:|--:|")
+        "into a `.cat` sidecar (a pure table search — no automaton, no Spot) and "
+        "aggregated here. `ϕ = (γ, s)` is the Wagner degree (`γ` the ordinal "
+        "depth, `s ∈ {σ, π, δ}` the side); `(m⁺, m⁻, n⁺, n⁻)` the chain/superchain "
+        "coordinates; `non-LTL` the count in that row that is **not** "
+        "LTL-definable; `stutter-inv` the count that is stutter-invariant; "
+        "`primals` the shape-realized share (the rest are added complements). "
+        "Because the catalogue is closed under complement, the profile is "
+        "**exactly duality-symmetric**: every `(γ, σ)` row matches its `(γ, π)` "
+        "dual, and the self-dual `δ` rows stand alone.\n")
+    L.append("| `ϕ = (γ, s)` | `(m⁺, m⁻, n⁺, n⁻)` | class | languages | non-LTL | stutter-inv | primals |")
+    L.append("|---|---|---|--:|--:|--:|--:|")
     for phi in triv:
         L.append(row(phi))
     if triv and proper:
         tl = sum(per[p]["n"] for p in triv)
-        L.append(f"| *— trivial pair (weakest), set apart —* | | | *{tl}* | | |")
+        L.append(f"| *— trivial pair (weakest), set apart —* | | | *{tl}* | | | |")
     for phi in proper:
         L.append(row(phi))
 
@@ -162,6 +164,8 @@ def build_study(corpus: str) -> str:
     nonltl = len(cats) - ltl
     prim_ltl = sum(1 for c in cats if c["ltl"] and not c["complement"])
     prim_nonltl = primal - prim_ltl
+    si = sum(1 for c in cats if c["stutter_invariant"])
+    prim_si = sum(1 for c in cats if c["stutter_invariant"] and not c["complement"])
 
     L: List[str] = []
     L.append("# genaut language benchmark — the deduped corpus, by language\n")
@@ -219,6 +223,27 @@ def build_study(corpus: str) -> str:
             f"cuts *across* the Wagner degrees below — depth and countability are "
             f"independent axes.\n")
 
+        L.append("### Stutter-invariant — the X-free refinement of LTL\n")
+        L.append(
+            f"A language is **stutter-invariant** iff its syntactic monoid keeps no "
+            f"letter apart from its square (`M(λa, λa) = λa` for every `a`) — the "
+            f"read-off sitting beside aperiodicity in each `.cat`. This is a "
+            f"*subclass* of LTL (stutter-invariant `≡` LTL without `X`), so it lands "
+            f"entirely inside the aperiodic column; a language that genuinely counts "
+            f"letters cannot be stutter-blind. Over the catalogue:\n")
+        L.append("| sub-class of LTL | languages | of LTL |")
+        L.append("|---|--:|--:|")
+        L.append(f"| **stutter-invariant** (X-free) | **{si}** | {100*si/ltl:.0f}% |")
+        L.append(f"| stutter-sensitive but LTL | {ltl - si} | {100*(ltl-si)/ltl:.0f}% |")
+        L.append(f"| (non-LTL — all stutter-sensitive) | {nonltl} | — |")
+        L.append(
+            f"\nSo **{100*si/len(cats):.0f}%** of the catalogue ({si} of {len(cats)}) "
+            f"is stutter-invariant, i.e. **{100*si/ltl:.0f}%** of the {ltl} "
+            f"LTL-definable languages drop the `X` operator. Like the LTL cut it is "
+            f"complement-invariant, splitting the primals {prim_si} / {primal}. The "
+            f"per-degree `stutter-inv` column below shows how it distributes over the "
+            f"Wagner ladder.\n")
+
     L.append("## Composition (primals — the shape-realized languages; +"
              f" {dual} complements close the set)\n")
     L.append("| axis | bucket | languages |")
@@ -235,6 +260,7 @@ def build_study(corpus: str) -> str:
         L.append(f"| acceptance colours | c={cc} | {v} |")
     if cats:
         L.append(f"| definability | LTL (aperiodic) | {prim_ltl} |")
+        L.append(f"| definability | &nbsp;&nbsp;— stutter-invariant (X-free ⊆ LTL) | {prim_si} |")
         L.append(f"| definability | non-LTL | {prim_nonltl} |")
     L.append(f"| **primals** | | **{primal}** |")
     L.append(f"| + complements (dual acceptance) | | {dual} |")
@@ -257,9 +283,9 @@ def build_study(corpus: str) -> str:
                  f"{_dist(s['classes'])} |")
 
     L.append("\nGenerated by `python3 genaut/flat_study.py` from `corpus/flat_canon/` "
-             "(the LTL cut and Wagner-degree profile aggregate the per-language "
-             "`.cat` sidecars written by `gen/categorize.py`). For the per-shape "
-             "*presentation* funnel (automata, not languages) see `SHAPES.md`.\n")
+             "(the LTL cut, stutter refinement, and Wagner-degree profile aggregate "
+             "the per-language `.cat` sidecars). For the per-shape *presentation* "
+             "funnel (automata, not languages) see `SHAPES.md`.\n")
     return "\n".join(L)
 
 
