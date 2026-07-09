@@ -467,10 +467,12 @@ to implement and measure:
    anchors, window letters after λ-restore) goes through this
    component. Paper reference: §2.1's set-as-formula convention.
 1. **Guard grouping (rendering-level).** Every exit fan
-   `⋁_{a ∈ Ex(c)} (a ∧ X φ_{c·a})` renders grouped by target:
-   `⋁_d ((⋁_{a: c·a = d} a) ∧ X φ_d)` — one disjunct per target class,
-   the guard a letter set rendered by item 0 (`⊤` when all letters
-   agree on the target). Same
+   `⋁_{a ∈ Ex(c)} (a ∧ X φ_{c·a})` renders grouped **by child key** —
+   the target class, or its residual when item 2 is on — one disjunct
+   per distinct child, the guard a letter set rendered by item 0 (`⊤`
+   when all letters agree). *(Patched per report F10: grouping by
+   target class, as this item first read, blocks composition with
+   item 2 — two classes sharing one residual kept two arms.)* Same
    grouping inside `leave`'s disjunction and the `TL` trees. Purely a
    printer/DAG-shape change; conformance identical.
 2. **Residual-indexed exit children (memo-level).** Key exit children
