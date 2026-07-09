@@ -8,7 +8,8 @@ from dataclasses import dataclass, asdict
 from typing import Any, Callable, Dict, Literal, Optional, Sequence, Union
 
 from .contract import SoS
-from .model import Input
+from .letters import letter_classes
+from .model import Automaton, Input, Product
 
 Discipline = Literal["layered", "chaining", "saturation"]
 StatsSink = Union[None, str, Callable[[Dict[str, Any]], None]]
@@ -38,19 +39,36 @@ class Engine:
 
     def build(self, aut: Input, until_phase: int = 6) -> SoS:
         """Run phases 0..until_phase on a digested input and return the
-        (possibly partial) invariant object."""
+        (possibly partial) invariant object. The digest is reduced to a
+        numeric payload here (letter-class refinement — C2's symbolic
+        half never sees guard syntax)."""
         aut.validate()
         if not (1 <= until_phase <= 6):
             raise ValueError(f"until_phase {until_phase} out of range 1..6")
-        core = _core()
-        if not hasattr(core, "build"):
-            raise NotImplementedError("sos_sdd._core does not carry the pipeline yet")
-        return core.build(aut, self._config(), until_phase)
+        if isinstance(aut, Product):
+            raise NotImplementedError("Product inputs arrive with the scaling families")
+        return _core().build(_payload(aut), self._config(), until_phase)
 
     def _config(self) -> Dict[str, Any]:
         cfg = asdict(self)
         cfg["stats"] = self.stats  # keep the callable; asdict deep-copies
         return cfg
+
+
+def _payload(aut: Automaton) -> Dict[str, Any]:
+    """Numeric digest crossing the binding: states, marks, and the sorted
+    letter-behavior classes — no guard syntax reaches the C++ side."""
+    return {
+        "name": aut.name,
+        "n_states": aut.states,
+        "n_marks": aut.marks,
+        "init": aut.init,
+        "classes": [
+            {"least": c.least, "count": c.count,
+             "dst": list(c.dst), "marks": list(c.marks)}
+            for c in letter_classes(aut)
+        ],
+    }
 
 
 def align(s: SoS, t: SoS) -> SoS:
