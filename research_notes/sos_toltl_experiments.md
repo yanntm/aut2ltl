@@ -14,15 +14,19 @@ reproduce, and results come back as findings in `sos_toltl_report.md`
   linear-only certificates — the two-shape scan is load-bearing); E10
   (guard synthesis, grouping, residual indexing — measured); the F8
   soundness campaign (engine 0 FAIL, graded stratum declined to DG);
-  E9 opened (`e9_profile`, the FIG-2 trace hook; F13: H3 is found —
-  `G(a → F b)` is a (B)-failing final layer, and the (B) tester's
-  blindness bugs it exposed are fixed).
-- **Todo:** the E9 gallery (candidates 1, 2 re-designated, 3–5); E3
-  (presentation cross-test, early pass); full E4 and E8; E5 (blocked
-  on C6, itself blocked on the paper's Thérien–Wilke freeze); the E6
-  hunts H2 (an E1-ledger query), H6, and smallest-H3 (census-next
+  E9 opened and its gallery sorted (`e9_scan`/`e9_profile`, the FIG-2
+  trace hook; F13: H3 found — `G(a → F b)`, the (B) tester's blindness
+  bugs fixed; F14: H2/H4 answered, the "≥ 2 AP" (A)-floor refuted —
+  all 258 (A)-failing languages are 1 AP, floor `|𝒞| = 15`; E9
+  candidates 1, 2, 4 have their smallest specimens).
+- **Todo:** E9 candidates 3, 3a, 3b, 5 (the named 2-AP builds, the
+  `GFa ∧ FGb` conformance, the width exemplar, the showpieces); H7
+  (uncapped (A) fixpoint over the 258); E3 (presentation cross-test,
+  early pass); full E4 and E8; E5 (blocked on C6, itself blocked on
+  the paper's Thérien–Wilke freeze); H6 and smallest-H3 (census-next
   `2state2ap`); the graded engine (M3) once the paper's §4.3
-  entry-rooted repair carries its completeness re-proof.
+  entry-rooted repair carries its completeness re-proof — 42.5% of the
+  LTL catalogue is graded, so M3 is the coverage frontier.
 
 **One-line goal.** Provide the data for `sos_toltl.md`: per-layer anchoring
 and window-determinacy statistics over the census, the size ledgers against
@@ -301,10 +305,18 @@ Exhaustive sweeps, census then census-next (grow states/AP/acceptance one
 notch at a time, smallest-first):
 - **H1**: smallest non-LTL specimen *(known — reconfirm against the
   certificate extractor, E7)*.
-- **H2**: smallest LTL specimen with an (A)-failing layer at `k ≤ 3`.
-  The stratum is populated (E1: 1 432 layers, all `(1,σ)`/`(1,π)`,
-  ≥ 2 AP); the smallest specimen is a *query on the E1 ledger*, not a
-  new run.
+- **H2** *(found — report F14)*: smallest LTL specimen with an
+  (A)-failing layer at `k ≤ 3` is `3state1ap0acc_004260` — `|𝒞| = 15`,
+  **1 AP**, 3 states, `ϕ = (1,π)`; three 3-class layers, both letters
+  mixed on each. 258 languages (A)-fail catalogue-wide, *all* 1 AP
+  (F6's "≥ 2 AP floor" is refuted — the frontier is algebra size, not
+  alphabet width).
+- **H7** *(new)*: run the **uncapped** Lemma 4.6(v) fixpoint over the
+  258 (A)-failing languages — per layer, the exact anchoring width or
+  a *no-width* verdict. A no-width two-letter layer settles the
+  paper's §4.2 open question and realizes Lemma 4.6(iii)'s scheme at
+  half its alphabet budget; either way the `k`-distribution beyond the
+  cap is the paper's §4.2 ⟨TBD⟩.
 - **H3** *(found — report F13; remaining: the smallest witness)*: an
   LTL specimen with a (B)-failing final layer — the paper's "order
   beyond windows" example (§5.1). First witness `G(a → F b)`: 5
@@ -314,9 +326,11 @@ notch at a time, smallest-first):
   `!a&!b`). A (B) failure needs ≥ 2 AP *and* ≥ 2 states at once — a
   shape the catalogue omits; `2state2ap` is the census-next axis and
   minimality is decided there.
-- **H4**: smallest LTL specimen whose extraction must invoke the DG
-  fallback at all (= H2 ∪ H3 minimum; both sides now carry witnesses,
-  so H4 is a comparison, not a hunt).
+- **H4** *(answered — report F14)*: smallest specimen forced to the DG
+  fallback. Read as "(A)-forced": `|𝒞| = 15` (= H2). Read as "forced
+  at all": the graded stratum reaches it first, at `|𝒞| = 12`
+  (`2state1ap0acc_086`, the F8 exhibit — confirmed the smallest graded
+  language, 952 catalogue-wide).
 - **H5** *(done — report F5/F7; remaining: re-run on census-next)*: a
   non-LTL specimen whose ω-power patterns are *all constant*
   (certificate exists in linear shape only) — the dual of the paper's
@@ -409,18 +423,14 @@ Spot-simplified formula)`:
    not prefix-independent (so `leave` chains and reach shape survive);
    the `F a` of paper §5.2 is the depth-2 instance — find depth 3–4
    with the formula still one line.
-2. **Anchored moving layer, ≥ 2 classes, non-prefix-independent, with
-   a live `STAY∞`.** A width-1 layer whose `LEAVE` chain and a live
-   `STAY∞` both appear — an accepting final layer that is not frozen
-   *and is (B)-determined* — the stratum `GF(aa)` misses (its moving
-   layers are all-rejecting). `G(a → F b)` cannot serve: its final
-   layer fails (B) at every width (report F13 / E6-H3), so the engine
-   rightly declines it. Select instead by *query on the E1/E2
-   ledgers*: smallest `|𝒞|` with a final layer that is moving,
-   accepting, (B)-PASS, and ≥ 2 residuals; profile the top candidates
-   with `e9_profile`. Side note kept for theory: the exact label of
+2. **Anchored moving layer with a live `STAY∞`** *(answered — the
+   gallery's `2state1ap0acc_024`, `|𝒞| = 6`: final layer `{1,4}`
+   moving, accepting, (B)-determined, with exits — `STAY∞` and `LEAVE`
+   live in one layer; 219 such languages, this the smallest)*.
+   `G(a → F b)` cannot serve: its final layer fails (B) at every width
+   (report F13 / E6-H3). Side note kept for theory: the exact label of
    `G(a → F b)` is `GF b ∨ G(!a∧!b) ∨ F(b ∧ X G(!a∧!b))` — flat LTL —
-   so the obstruction of F13 is the (B) *vocabulary* (recurring window
+   so F13's obstruction is the (B) *vocabulary* (recurring window
    sets), not LTL-expressibility; see the paper's §5.1 ⟨TBD⟩ on
    anchored parks.
 3. **The named 2-AP builds:** `a U G b`, `a W G b`, `(GF a) U (G b)` —
