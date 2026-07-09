@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from sos_sdd import Automaton, Engine  # noqa: E402
 from sos_sdd.letters import letter_classes  # noqa: E402
+from sos_sdd.slotmodel import unpack  # noqa: E402
 from e0_triptych import TRIPTYCH  # noqa: E402
 
 Elem = Tuple[Tuple[int, int], ...]
@@ -45,7 +46,10 @@ def main() -> None:
         assert len(gt) == expected, (aut.name, len(gt))
 
         s = Engine().build(aut, until_phase=1)
-        engine_words = {tuple(elem): word for elem, word in s.shortlex_words()}
+        engine_words = {
+            tuple(unpack(v, aut.marks) for v in elem): word
+            for elem, word in s.shortlex_words()
+        }
         assert len(engine_words) == expected, (aut.name, len(engine_words))
         for elem, word in engine_words.items():
             assert gt[elem] == word, (aut.name, elem, word, gt[elem])
