@@ -4,7 +4,13 @@
 `sosl/sosl/sos/calculus/`, harness 1–8 green; gates in `sosl/tests/calculus/`.
 Rev-2 edits are marked inline and all correct rev-1 errors found in
 implementation (the saturation rule of §3.3 chief among them). CAL4 (the V1/V2
-ledger) remains open.
+ledger) remains open. **Theory-ratified 2026-07-09:** the §3.3 correction is
+confirmed — `x·y` idempotent does not make `y·x` idempotent, only `(y·x)²`
+is (`(yx)³ = y·(xy)²·x = (yx)²`) — and the cell-level law with
+`linked_pair_of` renormalization is adopted into the calculus paper as
+Proposition 3.1 (with witness minimality as Proposition 3.2; the stutter
+scan renumbered to 3.3, V2 below updated). The `FoldedLanguage` alphabet
+field and the scoped `check` flag on reduce are accepted as specced.
 
 **Normative math.** `research_notes/sos_calculus.md` (the calculus paper:
 align / operate / reduce, the surgery catalog, the ledger) with [SωS26] for
@@ -338,9 +344,11 @@ No Spot dependency inside the package; replay hooks are injected.
   discipline). Deliverable: the measured rows of the calculus paper's §4
   ledger and the "pay canonicity once" pipeline demo (k complements +
   conjunctions, Spot's cumulative cost vs one entry + free surgery).
-- **V2 — read-off validation.** Stutter-invariance by Prop 3.1
-  (`λ(a)·λ(a) = λ(a)` scan) vs Spot's check over the census; disagreements
-  are dictionary items first, bugs only on a failed replay.
+- **V2 — read-off validation.** Stutter-invariance by the paper's
+  Prop 3.3 (`λ(a)·λ(a) = λ(a)` scan; renumbered from 3.1 — §3.2's
+  conjugacy and witness-minimality propositions now precede it) vs
+  Spot's check over the census; disagreements are dictionary items
+  first, bugs only on a failed replay.
 
 Per the reproducibility floor (`sos_learner_spec.md` §8 item 9): validated
 V-outputs are copied into the curated committed `reference/` tree and cited

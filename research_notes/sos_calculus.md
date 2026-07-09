@@ -110,10 +110,25 @@ fragment: every result's syntactic algebra divides `M`.
   the residual automaton of `L`, internalized. These rootings are
   exactly the memoized class children of the extraction [SωSX26, §5.2],
   and Lemma 5.9 there (reach absorption) is a rooting identity.
-- **Pair languages and prolongations.** Any union of pair classes is a
-  language: `P' = {(s, e)}` gives "the words realizing exactly this
-  pair" — the user-facing reading is *prolonging the language from one
-  of its accepting behaviors*. The finest granularity of the OR-split
+- **Pair languages and prolongations.** The pair classes are the
+  conjugacy classes, and conjugacy is a law about *cells*, not pairs:
+
+  **Proposition 3.1 (conjugacy and saturation).** For every linked pair
+  `(s, e)` and every factorization `e = x·y`:
+  `s·e^ω = (s·x)·(y·x)^ω`, so the cells `(s, e)` and `(s·x, y·x)` carry
+  one verdict. The conjugate cell renormalizes to the linked pair
+  `((s·x)·f, f)` with `f = (y·x)^π` — and the renormalization is not
+  optional: `x·y` idempotent does not make `y·x` idempotent; only
+  `(y·x)²` is guaranteed to be (`(yx)³ = y·(xy)²·x = (yx)²`), so the
+  naive pair-level transport `(s, e) ↦ (s·x, y·x)` leaves the linked
+  pairs. Two linked pairs denote the same ω-word class iff the closure
+  under these renormalized moves connects them [PP04]; a set of linked
+  pairs is a language over the table iff it is a union of such classes —
+  *saturated*.
+
+  Any saturated `P'` is then a language: a single class gives "the words
+  realizing exactly this accepting behavior" — *prolonging the language
+  from one of its behaviors*, the finest granularity of the OR-split
   combinator [SωSX26, §5.6], with its Wagner-ladder guard.
 - **Inverse substitutions.** For `π : Σ' → Σ` (relabeling, letter
   merging): compose `λ ∘ π`, same table, reduce. Inverse morphic images
@@ -123,7 +138,21 @@ fragment: every result's syntactic algebra divides `M`.
   keys giving *the* canonical witness word. Emptiness is `P = ∅`;
   universality is `P = all linked pairs`; a witness or counterexample is
   read off in the same scan — the certificate discipline of
-  [SωSX26, §4], available to every operation.
+  [SωSX26, §4], available to every operation. And the witness is not
+  merely canonical:
+
+  **Proposition 3.2 (the canonical witness is minimal).** Order lassos
+  by stem length, then loop length, then lexicographically, and scan
+  cells `(c, d)` in the order of their lassos `key(c)·key(d)^ω`. For any
+  property that factors through the membership oracle, the first
+  satisfying cell's lasso is the least satisfying lasso *among all
+  lassos*: a satisfying `(u, v)` lives in the cell
+  `(fold(u), fold(v))`, whose keys are shortlex-least in their classes,
+  so the cell's lasso dominates it componentwise. Every certificate the
+  calculus emits — an emptiness witness, an inclusion or equivalence
+  counterexample — is therefore the minimal one, and a client consuming
+  counterexamples (the learner's teacher [SωSL26]) inherits its
+  minimal-order guarantee from the scan order alone.
 - **Decision procedures as scans.** On reduced objects: equivalence is
   byte equality [SωS26, Thm 5.1]; inclusion `L₁ ⊆ L₂` after alignment is
   the pointwise test `Val₁ ≤ Val₂`, with the first failing pair
@@ -180,7 +209,7 @@ them; on the invariant the same queries are equations:
 
 - **Stutter invariance, one scan.**
 
-  **Proposition 3.1.** `L` is stutter-invariant iff `λ(a)·λ(a) = λ(a)`
+  **Proposition 3.3.** `L` is stutter-invariant iff `λ(a)·λ(a) = λ(a)`
   for every letter `a ∈ Σ`.
 
   *Proof sketch.* (⇒) `u·a·v` and `u·a·a·v` are stutter-equivalent in
@@ -232,7 +261,7 @@ paper — source to be added to the library.⟩
 | determinize | Safra/Zielonka | *meaningless* — object already canonical-deterministic; the cost sits at entry |
 | degeneralize / to-parity / acc transforms | bespoke constructions | *dissolved* — acceptance is `P`; the needed strength is a read-off |
 | minimize / simulation reductions | heuristic, model-bound | reduce: the normal form, always, uniquely |
-| stutter-invariance | closure-automata test | `λ(a)² = λ(a)` scan (Prop 3.1) |
+| stutter-invariance | closure-automata test | `λ(a)² = λ(a)` scan (Prop 3.3) |
 | safety/obligation/… tests | model-specific checks | ladder scans on `P` |
 | concatenation `W·L`, `W^ω` | native (nondeterminism) | exponential — intrinsic (§3.4) |
 | projection `remove_ap` | subset-flavored | exponential — the QPTL wall (§3.4) |
