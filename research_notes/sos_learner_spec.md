@@ -813,6 +813,7 @@ n_saturation_checks, n_saturation_escalations,
 n_classes_initial, stall_class (none|transient|permanent|n/a),
 cex_policy (minimal|first|padded:<k>),
 max_cex_stem, max_cex_loop, max_query_word_len,
+n_guard_firings, guard_fired_final (true|false),
 eq_certification (reps|bounded:<B>|exact),
 export_associative (true|false|n/a),
 wall_seconds, verdict (SOUND|MISMATCH|BUDGET|ACCEPTOR_ONLY|OVERSIZE)
@@ -824,8 +825,16 @@ ledgers' starting point); `cex_policy` is `minimal` everywhere except E5.
 `eq_certification` (revised 2026-07-09): every campaign row must read
 `exact` — `bounded` is retired from the campaign legs (section 3.2 default),
 so a `bounded:<B>` certification on a campaign row is a driver defect, not a
-recorded outcome. The field keeps its enum for black-box and diagnostic
-runs.
+recorded outcome — except a recorded **cap-escape** (amended 09b: a
+guard-fired query whose closure fallback exceeds its cap certifies
+`bounded:8` on the default leg, distinguishably recorded). The field keeps
+its enum for black-box and diagnostic runs.
+
+`n_guard_firings` / `guard_fired_final` (added 2026-07-09): the count of
+functionality-guard firings over the run's equivalence queries (row F10),
+and whether the *final*, certifying query fired — which on a `SOUND`
+(byte-equal) run is a defect: a canonical table's fold is the syntactic
+morphism.
 
 `stall_class` is the E2 classification (section 6): a **per-language**
 property determined **solely by the no-saturation + exact leg** — `permanent`
@@ -1078,7 +1087,19 @@ sharpest evidence that a stalled export is not an algebra at all.
        certifying query (a canonical table's fold is the syntactic
        morphism, so a final-query firing convicts the run); a committed
        exhibit of one firing with two concrete witness words `y ≈_L y'`,
-       `ψ(y) ≠ ψ(y')`.)*
+       `ψ(y) ≠ ψ(y')`.)* *(Closed 2026-07-09 except the tallies: the
+       amended escalation and the default-leg switch are DONE — E0 green,
+       `eq_certification = exact` on all ten rows, Even / EvenBlocks
+       ledgers byte-stable (P5) through the oracle swap; the firing
+       exhibit is DELIVERED (`y = !a;!a;a ≈_L a;!a;!a = y'`, one R-class,
+       fold values differ; re-verified against reference and fold) and
+       displayed in the paper §2.3 — copy the verified probe output under
+       `reference/` at the next drop (item 9); `guard_fired_final` is
+       implemented and `013908`'s default leg conforms (one mid-run
+       firing, clean final query, byte-equal); `075976` and its dual both
+       guard-fire and cap — both `OVERSIZE`, the deferred set is
+       dual-symmetric. Outstanding: the sweep-wide tallies, which retire
+       the paper's two guard ⟨TBD-M4⟩ markers.)*
     Standing science ask — ANSWERED in the refutation direction
     (2026-07-08f): the flat_canon sweep surfaced two prefix-independent
     permanent stalls (plus complements), and the witness lock (item 7,

@@ -386,12 +386,13 @@ no two nodes share their `𝓘(L)`-component, i.e. the fold never splits a
 syntactic class — for then the loop orbit, the stabilization power, and the
 predicting pair are all determined by the cell. Functionality is not
 assumed, and it genuinely fails mid-run — the fold of a closed, consistent
-table can *split* a syntactic class beyond its table words, so a mid-run
-hypothesis is not merely coarser than the algebra (§4.2) but incomparable
-with it: the oracle asserts functionality on the built graph at every query
-⟨TBD-M4: the sweep-wide firing tally⟩, and a firing hands the query to the
-product of the automaton with the hypothesis's transformation closure,
-which needs no such hypothesis. Keys being shortlex-least and
+table can *split* a syntactic class beyond its table words (realized on a
+census language: `!a·!a·a ≈_L a·!a·!a`, yet the two words fold to different
+classes), so a mid-run hypothesis is not merely coarser than the algebra
+(§4.2) but incomparable with it: the oracle asserts functionality on the
+built graph at every query ⟨TBD-M4: the sweep-wide firing tally⟩, and a
+firing hands the query to the product of the automaton with the
+hypothesis's transformation closure, which needs no such hypothesis. Keys being shortlex-least and
 cells scanned in lasso order, the returned counterexample is the globally
 *minimal* one (shortest stem, then shortest loop, then shortlex) — which
 makes runs deterministic and the worked examples reproducible; §6 measures
@@ -1524,7 +1525,8 @@ At the top of the range a handful of languages exceed the exact oracle's
 reach — their aligned graphs are non-functional and the fallback product
 exceeds its work cap — so their permanent-vs-transient classification is
 recorded as deferred and never folded into the counts, while their saturated
-runs remain byte-exact.
+runs remain byte-exact. The deferred set is itself complement-closed, as the
+bit-flip symmetry demands.
 
 ### 6.4 The FDFA baseline (Q3)
 

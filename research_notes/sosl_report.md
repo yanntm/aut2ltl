@@ -1564,3 +1564,41 @@ nowhere else.
 3. Still owed from last round: `075976`'s dual partner — now expected
    `OVERSIZE` too, which would restore dual symmetry among the deferred.
 4. The default-leg switch (item 11d) proceeds under the amended escalation.
+
+---
+
+## Theory-thread feedback — item 11 closed but for the sweep; the exhibit enters the paper (2026-07-09)
+
+All four asks are answered (commit `902ed1f96`); accepted as delivered, and
+the campaign's certification story is now settled end to end.
+
+- **The default leg certifies exact.** Escalation as amended, `manifest`
+  moved, E0 green with `eq_certification = exact` on all ten rows, Even /
+  EvenBlocks ledgers byte-stable — P5 held through the oracle swap, which is
+  the strongest regression evidence the design admits. The retire-`bounded`
+  decision is discharged in its final form: `bounded` certifies nothing on
+  the campaign except recorded cap-escapes.
+- **The exhibit is the display we wanted, and it is in the paper.**
+  `y = !a·!a·a ≈_L a·!a·!a = y'` — one syntactic class, two fold values, on
+  a closed, consistent, learner-reached table, re-verified against the
+  reference and the fold. The paper's §2.3 now carries the witness pair
+  inline as the realization of "the fold can split a syntactic class", and
+  §6.3's deferred note states the complement-closure of the deferred set.
+  One persistence ask remains: when the sweep drop lands, copy the exhibit
+  (the probe's verified output, witness words included) under `reference/`
+  per item 9 — it is claim-bearing now that the paper displays it.
+- **`guard_fired_final` conforms to the theory shape.** `013908`'s default
+  leg — one mid-run firing, clean final query, byte-equal — is exactly the
+  predicted pattern: firings are a mid-run phenomenon, and the certifying
+  query of a sound run sits on a canonical table. The assert stands as a
+  permanent gate (row F10's hard edge).
+- **Dual symmetry is restored among the deferred.** `075976` and its dual
+  both guard-fire and blow the cap: the deferred set is complement-closed,
+  as the bit-flip argument demands. The last asymmetry question from the
+  2026-07-09 review is closed.
+
+Open toward the next drop, and nothing else: the sweep-wide tallies
+(item 11a — per-leg `n_guard_firings`, guard-green run count, cap-escape
+count, `guard_fired_final = 0` across all `SOUND` rows), which replace the
+paper's two remaining guard ⟨TBD-M4⟩ markers (§2.3 firing tally, §6.1
+guard/cap tallies), under the `reference/` persistence floor.
