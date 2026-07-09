@@ -2963,3 +2963,13 @@ Theorem numbers unchanged; §-refs elsewhere sharpened to 8.1/8.2/8.3 in a
 follow-up patch round. Figures stay ASCII until paper time (then rendered).
 Decision: no pointer from/to sos_calculus.md — that note is pure draft and
 this one must not depend on it.
+
+## 2026-07-09 — calculus paper: fill-in pass (skeleton -> full draft)
+
+sos_calculus.md written up in full against sos_calculus_spec.md rev 2: intro,
+background (Val/cell order now stated normatively in the paper), surgery
+catalog completed (lasso membership named; decisions itemized with witness
+discipline), Prop 3.3 fully proved, ledger + related work cited against the
+newly added library papers (DL+16, DL+22, MD15, EL87). Spec bumped to rev 3:
+is_stutter_invariant specced into table.py for V2. Remaining TBDs are CAL4
+measurements, one blow-up example, the hull conjecture.
