@@ -646,8 +646,7 @@ The claims here are different ones: (i) the query runs on the factored
 diagram in cases where the flat product state space is itself the
 explosion (§4.2); (ii) acceptance stays a predicate — automata-side
 emptiness under an arbitrary Emerson–Lei condition is NP-complete in
-the condition ⟨TBD: cite — the Emerson–Lei fairness-emptiness result;
-request in the References⟩, the accepting-cycle search growing with
+the condition [EL87, Thm 4.7], the accepting-cycle search growing with
 the Boolean structure, while here idempotency dissolved the cycle into
 a slot read and the Boolean structure into a predicate evaluated on
 one slot's mark bits (Phase 3): that hardness is absorbed into the
@@ -796,26 +795,27 @@ when consumed.⟩
 
 - **[CH91]** S. Cho, D. T. Huynh. *Finite-automaton aperiodicity is
   PSPACE-complete.* TCS 88 (1991) 99–116.
+- **[EL87]** E. A. Emerson, C.-L. Lei. *Modalities for model checking:
+  branching time logic strikes back.* Sci. Comput. Program. 8 (1987)
+  275–306. (Thm 4.7: the fair-state problem under a general
+  canonical-form fairness constraint is NP-complete.)
 - **[PP04]** D. Perrin, J.-É. Pin. *Infinite Words: Automata, Semigroups,
   Logic and Games.* Elsevier, 2004.
 - **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing
   the syntactic ω-semigroup from a deterministic Emerson–Lei automaton.*
   To appear, 2026.
-⟨TBD: the symbolic lineage — precise library requests for the biblio
+⟨TBD: the symbolic lineage — in the library, to be cited at the §9
 sweep:
 
 - R. E. Bryant. *Graph-Based Algorithms for Boolean Function
   Manipulation.* IEEE Trans. Computers, 1986. (BDDs)
-- R. E. Bryant. *On the Complexity of VLSI Implementations and Graph
-  Representations of Boolean Functions with Application to Integer
-  Multiplication.* IEEE Trans. Computers, 1991. (the
-  hidden-weighted-bit lower bound — §4.2's flat-order lemma style)
 - J. R. Burch, E. M. Clarke, K. L. McMillan, D. L. Dill, L. J. Hwang.
   *Symbolic Model Checking: 10²⁰ States and Beyond.* Inf. & Comput.,
   1992. (symbolic reachability)
 - T. Kam, T. Villa, R. K. Brayton, A. Sangiovanni-Vincentelli.
-  *Multi-valued Decision Diagrams: Theory and Applications.*
-  Int. J. Multiple-Valued Logic, 1998. (MDDs)
+  *Multi-valued Decision Diagrams: Theory and Applications.* UCB/ERL
+  memo, 1996 (journal version: Int. J. Multiple-Valued Logic, 1998).
+  (MDDs)
 - G. Ciardo, G. Lüttgen, R. Siminiceanu. *Saturation: An Efficient
   Iteration Strategy for Symbolic State-Space Generation.* TACAS 2001.
   (saturation / event locality — §4.1's fixpoint discipline)
@@ -827,16 +827,23 @@ sweep:
   (hierarchical variants + operation homomorphisms)
 - A. Bouali, R. de Simone. *Symbolic Bisimulation Minimisation.*
   CAV 1992. (nearest relative of Phases 4–5)
+- A. Duret-Lutz, A. Lewkowicz, A. Fauchille, T. Michaud, E. Renault,
+  L. Xu. *Spot 2.0 — A Framework for LTL and ω-Automata Manipulation.*
+  ATVA 2016; with A. Duret-Lutz. *LTL Translation Improvements in
+  Spot 1.0.* IJCCBS, 2014; A. Duret-Lutz et al. *From Spot 2.0 to
+  Spot 2.10: What's New?* CAV 2022; T. Michaud, A. Duret-Lutz.
+  *Practical Stutter-Invariance Checks for ω-Regular Languages.*
+  SPIN 2015. (the toolbox baseline of §6.7)
+
+Still missing from the library:
+
+- R. E. Bryant. *On the Complexity of VLSI Implementations and Graph
+  Representations of Boolean Functions with Application to Integer
+  Multiplication.* IEEE Trans. Computers, 1991. (the
+  hidden-weighted-bit lower bound — §4.2's flat-order lemma style)
 - R. Wimmer, M. Herbstritt, H. Hermanns, K. Strampp, B. Becker.
   *Sigref — A Symbolic Bisimulation Tool Box.* ATVA 2006. (signature
   refinement)
 - O. Matz, A. Miller, A. Potthoff, W. Thomas, E. Valkema. *Report on
   the Program AMoRE.* Tech. Rep. 9507, CAU Kiel, 1995. (explicit
-  transition-monoid baseline)
-- A. Duret-Lutz, A. Lewkowicz, A. Fauchille, T. Michaud, E. Renault,
-  L. Xu. *Spot 2.0 — A Framework for LTL and ω-Automata Manipulation.*
-  ATVA 2016. (the toolbox baseline of §6.7)
-- E. A. Emerson, C.-L. Lei. *Modalities for Model Checking: Branching
-  Time Logic Strikes Back.* Sci. Comput. Program., 1987. (Emerson–Lei
-  conditions; verify this is the right source for the NP-completeness
-  of EL emptiness cited in §6.4)⟩
+  transition-monoid baseline)⟩
