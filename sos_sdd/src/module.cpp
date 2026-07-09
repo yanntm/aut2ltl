@@ -150,16 +150,15 @@ SoSCore build(const py::dict &payload, const py::dict &config,
                     " (only phase 1 is implemented)");
   check_config(config);
 
-  SlotSpace space{py::cast<int>(payload["n_states"]),
-                  py::cast<int>(payload["n_marks"])};
+  SlotSpace space{py::cast<std::vector<int>>(payload["doms"]),
+                  py::cast<std::vector<int>>(payload["identity"])};
   std::vector<LetterClassRow> classes;
   for (const auto &item : payload["classes"]) {
     const auto d = py::cast<py::dict>(item);
     LetterClassRow row;
     row.least = py::cast<std::string>(d["least"]);
     row.count = py::cast<long long>(d["count"]);
-    row.dst = py::cast<std::vector<int>>(d["dst"]);
-    row.marks = py::cast<std::vector<int>>(d["marks"]);
+    row.maps = py::cast<std::vector<std::vector<int>>>(d["maps"]);
     classes.push_back(std::move(row));
   }
 
@@ -205,21 +204,28 @@ PYBIND11_MODULE(_core, m) {
         return py::make_tuple(n.first, n.second);
       })
       .def(
+          "elements",
+          [](const SoSCore &s, size_t limit) {
+            py::list out;
+            for (const auto &e : s.elements(limit))
+              out.append(py::tuple(py::cast(e)));
+            return out;
+          },
+          py::arg("limit") = 100000,
+          "Every EM1 element as raw slot values (test/debug reading).")
+      .def(
           "shortlex_words",
           [](const SoSCore &s, size_t limit) {
-            // Elements as ((state, marks), ...) per slot; words as the
-            // least letter of each class stepped through.
+            // Elements as raw slot-value tuples (the caller owns the
+            // packing); words as the least letter of each class.
             py::list out;
             const auto &classes = s.classes();
-            const auto &space = s.space();
             for (const auto &[elem, word] : s.shortlex_words(limit)) {
-              py::list slots;
-              for (int v : elem)
-                slots.append(py::make_tuple(space.state_of(v), space.marks_of(v)));
               py::list letters;
               for (int c : word)
                 letters.append(classes[static_cast<size_t>(c)].least);
-              out.append(py::make_tuple(py::tuple(slots), py::tuple(letters)));
+              out.append(py::make_tuple(py::tuple(py::cast(elem)),
+                                        py::tuple(letters)));
             }
             return out;
           },
