@@ -1,9 +1,10 @@
 # sosl.sos.classify — classifying an ω-language on its invariant
 
 Reads one `Invariant` `(𝒞, λ, M, P)` and emits the complete classification
-record of the language: LTL-definability, the safety–progress / topological
-rung, the chain and superchain numbers, the parity/Rabin index, and the Wagner
-degree — every verdict carrying a replayable witness. Each classification is a
+record of the language: LTL-definability, stutter-invariance (the X-free
+refinement of LTL), the safety–progress / topological rung, the chain and
+superchain numbers, the parity/Rabin index, and the Wagner degree — every
+verdict carrying a replayable witness. Each classification is a
 polynomial table search; no automaton and no external tool is consulted (the
 one exception, the derivative recursion of the degree tail, is not yet wired —
 see below). Normative math: `research_notes/sos_classification.md` (procedures
@@ -22,6 +23,11 @@ and sources, referenced here as C§n); tool shape and experiment plan:
                   iff every orbit has period 1; on failure the first group
                   carrier in shortlex order. The cheap standalone "is LTL" cut,
                   kept off the full-classify path (it is called far more often).
+
+    stutter.py    stutter-invariant iff every letter's class is idempotent
+                  (M(λa, λa) = λa; sos_calculus.md Prop 3.3). The one-line
+                  equational read-off beside aperiodicity — the X-free subclass
+                  of LTL, complement-invariant.
 
     chains/       C§5 — (m+, m-) by longest-alternating-path DP over the
                   H-descending idempotent DAG, per admissible stem; one maximal
@@ -46,11 +52,18 @@ and sources, referenced here as C§n); tool shape and experiment plan:
                   the always-on internal laws (4.1) and self-replays each chain
                   witness through Invariant.member, and packages the flat record.
 
-    emit.py       Record -> flat dict (JSON) / text (spec §1 output shape).
+    emit.py       Record -> compact human text (spec §1 output shape).
+
+    io/           the `.cat` sidecar — the serialization of a classification.
+                  writer (Record -> .cat text + batch write_cats over a folder),
+                  reader (parse_cat -> flat dict), and the Wagner vocabulary
+                  (class naming, weakest-first ordering) a study aggregates
+                  without pulling the classifier. `python3 -m sosl.sos.classify.io
+                  <sos-folder>` writes one `.cat` beside each `.sos`.
 
     __main__.py   the `sos_classify` tool: `python3 -m sosl.sos.classify
-                  <file.sos> [--hoa H] [--json OUT] [--certificates]
-                  [--expect FIX]`, with the spec §2 exit codes (0 ok; 2 gamma
+                  <file.sos> [--hoa H] [--cat OUT] [--certificates]
+                  [--expect FIX.cat]`, with the spec §2 exit codes (0 ok; 2 gamma
                   PARTIAL; 3 malformed; 4 internal-invariant violation).
 
 ## Not yet wired

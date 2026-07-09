@@ -526,6 +526,18 @@ conditions that are again properties of the table — so each fragment is a
 decidable property of the invariant; developing those searches to the
 standard of the rest of this paper is left open.
 
+**The stutter-invariant (X-free) refinement — one more read-off.** One
+fragment *is* a one-line read-off: `L` is **stutter-invariant** (closed
+under doubling/collapsing adjacent equal letters, equivalently definable in
+`LTL∖X`) iff every letter's class is idempotent, `λ(a)·λ(a) = λ(a)` for all
+`a ∈ Σ` — then no fold distinguishes `a` from `aa`, so no context does (the
+calculus paper's Proposition 3.3, with proof). It sits strictly below the
+aperiodic cut: a stutter-invariant language is `X`-free, hence LTL, hence
+aperiodic, so the read-off is reported alongside the LTL bit and never
+contradicts it. It is complement-invariant (a property of the algebra, not
+of `accept`). *On the examples:* all three of `GF(aa)`, `Even`, `EvenBlocks`
+carry a non-idempotent letter, so all three are stutter-sensitive.
+
 ### 3.3 Computing chains — the quantity `(m⁺, m⁻)`
 
 **Proposition 3.2 (chain transport).** *Take `X` = the image of `L` in
