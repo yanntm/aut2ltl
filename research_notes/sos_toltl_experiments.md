@@ -144,8 +144,10 @@ reduces `∗ D` to `∗ D_{|S|}` (Thm 4.13/Prop 4.13); membership in
 `R ∗ (MD1^k ∗ D_l)` is the Thérien–Weiss graph-congruence check
 against the effectively-locally-finite `MD1^k ∗ D_l` (Thms 4.14–4.15;
 the underlying procedure is in their [19], Thérien–Weiss JPAA 1985 —
-verify the library's `Therien_Weiss_1986_RAIRO` is or contains it
-before leaning on it). **No elementary complexity bound exists (TW01
+**verified missing**: the library's `Therien_Weiss_1986_RAIRO` is
+"Varieties of finite categories", the framework paper, not the
+graph-congruence/wreath one; JPAA 36 (1985) stays on the library
+request). **No elementary complexity bound exists (TW01
 Problem 1)**: budget every stage; an over-budget verdict is
 `UNDECIDED(k)`, never a rank; scan `k = 0, 1, …` under one global
 budget (every LTL language has a finite rank, so the scan terminates

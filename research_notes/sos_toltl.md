@@ -1755,10 +1755,13 @@ are the ladder's:
   positive `GF` shapes (`GF(aa)`: accept iff the window `aa` recurs —
   `GF(a ∧ Xa)`), persistence rungs the dual `FG`, reactivity the general
   Boolean combination. The general read-off is Proposition 5.4 below.
-  ⟨TBD: bound the needed width by a layer-local definiteness degree; align
-  the (B)-stratum with the locally-(threshold-)testable ω-varieties
-  (Beauquier–Pin / Wilke — sources to be added to the library) so the
-  stratum is a known class with our operational reading.⟩
+  The kinship is local testability: on finite words, membership decided
+  by the set of length-`k` factors is the locally testable class of
+  Brzozowski–Simon and McNaughton [BS73, BP91], and condition (B) is
+  its trace on confined ω-tails — the deciding set being the
+  *recurring* factors. Whether the (B)-stratum coincides with a known
+  ω-variety is a classification question, outside this paper's scope.
+  ⟨TBD: bound the needed width by a layer-local definiteness degree.⟩
 - **(B) fails at every affordable width** — the recurring windows do
   not determine the verdict. On a 1-anchored layer this failure has two
   distinct sources, separated by the park dichotomy (Lemma 5.5 below):
@@ -1786,8 +1789,10 @@ are the ladder's:
   one owes a `b`, the other owes nothing — and the window set,
   anchor-free, cannot name it; the last anchor names it for free. The
   second blindness is the genuine nesting case, the classical separator
-  between `FO[<]` and locally testable (`FO[+1]`, Thérien–Weiss;
-  cite-TBD), and it survives the parks: its witness
+  between `FO[<]` and the locally (threshold) testable languages —
+  which on finite words are exactly first-order logic with successor
+  in place of order (Thomas [Tho82]; [BP91, Thm 4.2]) — and it
+  survives the parks: its witness
   `GF(a ∧ X((!a∧!b) U a))` — infinitely often two `a`s with only
   silence between — defeats windows and parks together at every width
   (the residual floor, after Proposition 5.7). On this stratum, and
@@ -2761,10 +2766,13 @@ stratum is `GF(a ∧ X((!a∧!b) U a))` (§5.1), ten classes. The open
 hunts that remain: the smallest witness of each of the two loop
 strata, and the smallest witness of each graded stem stratum beyond
 the tester's cap.
-⟨TBD: align the strata with the known sub-LTL
-hierarchies — definite [PRS63] / locally testable [BS73] / TL[F] of
-Cohen–Perrin–Pin [CPP93] / until hierarchy [TW01, Wil99, PW13] — so
-each row is a known variety with our operational reading.⟩
+(The full alignment of the strata with the known sub-LTL
+hierarchies — definite [PRS63], locally testable [BS73], the
+until-free fragment of Cohen–Perrin–Pin [CPP93] (level 0 of the until
+hierarchy), the until hierarchy [TW01, Wil99, PW13] —
+is a classification question, deliberately outside this paper's
+scope; the rows state operational conditions, and the kinships are
+noted where each condition is introduced.)
 
 The inner frontier is also the size story of §6 made structural: flat cost
 concentrates exactly in the residual stratum, and the strata above it are
@@ -2992,6 +3000,8 @@ exactly when, and exactly why.
 
 - **[Arn85]** A. Arnold. *A syntactic congruence for rational ω-languages.*
   TCS 39 (1985) 333–335.
+- **[BP91]** D. Beauquier, J.-É. Pin. *Languages and scanners.*
+  TCS 84 (1991) 3–21.
 - **[BS73]** J. A. Brzozowski, I. Simon. *Characterizations of locally
   testable events.* Discrete Mathematics 4(3) (1973) 243–271.
 - **[CM03]** O. Carton, M. Michel. *Unambiguous Büchi automata.* TCS 297
@@ -3040,6 +3050,8 @@ exactly when, and exactly why.
   Working draft, 2026.
 - **[Tho79]** W. Thomas. *Star-free regular sets of ω-sequences.*
   Information and Control 42 (1979).
+- **[Tho82]** W. Thomas. *Classifying regular events in symbolic
+  logic.* JCSS 25 (1982) 360–375.
 - **[TW01]** D. Thérien, T. Wilke. *Temporal logic and semidirect
   products: an effective characterization of the until hierarchy.*
   SIAM J. Comput. 31(3) (2001) 777–798. Conference version FOCS 1996.
