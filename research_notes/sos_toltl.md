@@ -125,9 +125,10 @@ resurface in extraction as two engines.**
    R-classes) transcribes the stem coordinate under an anchoring condition
    (A), and — the walk provably cannot carry the loop coordinate (Lemma
    4.2) — a window engine transcribes `e` under a determinacy condition
-   (B); both conditions are equations on the object, and together they
+   (B), relaxed on anchored layers by a vocabulary of parks (B̃); the
+   conditions are equations on the object, and together they
    yield exactness by construction, assembled end to end as
-   Theorem 5.10 (§4–§5).
+   Theorem 5.13 (§4–§5).
 3. The deliverable split, stated as a result: extraction is
    output-polynomial as a class-indexed DAG; the flat formula is the
    language's intrinsic cost,
@@ -1079,7 +1080,7 @@ A labeler exact at every class defines the language at the root:
 `⟦φ_{[ε]}⟧ = T_{[ε]} = L` (Lemma 4.7(iii)). Every engine of §§4–5 —
 bricks, graded bricks, committed base case, scoped fallback, window
 templates, and the combinator recombinations — is a labeler for its
-stratum, and the end-to-end statement (Theorem 5.10) is that the
+stratum, and the end-to-end statement (Theorem 5.13) is that the
 assembled dispatch meets the contract at every class it labels.
 
 Anchoring is the *stem-side* precondition: it makes the walk transcribable.
@@ -1122,9 +1123,10 @@ Final(r)    =  STAY∞(R,r) ∨ LEAVE(r)
 where `Ω(R, r)` is the acceptance term owned by the window engine (§5.1),
 *per entry class*: under condition (B) at width `k'`, the exact-set normal
 form of Proposition 5.4 — one disjunct `⋀ GF(w) ∧ ⋀ FG(¬w)` per
-realizable recurring-window set whose verdict from `r` accepts; its
-width-1 fringe is the *park*, a pure pair lookup (`(c, e) ∈ P` for the
-stutter fold `e`). In `LEAVE(r)`, the first disjunct `leave(r)` is the
+realizable recurring-window set whose verdict from `r` accepts — and
+under the relaxed condition (B̃), Proposition 5.7's anchored-park form;
+its width-1 fringe is the *park*, a pure pair lookup (`(c, e) ∈ P` for
+the stutter fold `e`). In `LEAVE(r)`, the first disjunct `leave(r)` is the
 case where the class never changes before the exit; the second walks the
 layer under the law to a last anchored reset, then exits — a
 correspondence Lemma 4.9(iii) makes exact.
@@ -1229,7 +1231,8 @@ The section's centerpiece can now be stated and proved:
   formula `Ω(R, c)` over `Σ_λ` with `β ⊨ Ω(R, c) ⟺ V(c, β) = 1` for
   every ω-word `β` confined to `R` from `c` (the window engine
   discharges it: Proposition 5.4 constructs `Ω` whenever `R` is
-  (B)-determined at some width; a layer no run can stay in forever needs
+  (B)-determined at some width, Proposition 5.7 whenever `R` is
+  (B̃)-determined; a layer no run can stay in forever needs
   none, and an all-rejecting layer takes `Ω(R, c) = false`).
 
 Then for every class `c`, `⟦Final(c)⟧ = T_c`; in particular
@@ -1612,7 +1615,9 @@ Emerson–Lei condition on its recurring edges decides it;
 (iii) *windows own the loop*: if `R` is (B)-determined at width `k`,
 then for every `j` past the walk's entry into `R`, membership is the
 window read-off of the tail — `[α ∈ L] = f_{q_j}(Win_k(α_{≥j}))` —
-realized in LTL by `Ω(R, q_j)`;
+realized in LTL by `Ω(R, q_j)`; under the relaxed condition (B̃) on a
+1-anchored `R`, the read-off gains one coordinate, the parking class,
+and Proposition 5.7 realizes it;
 
 (iv) *jointly they suffice*: under (A) and the window contract, the two
 engines assemble to a defining label.
@@ -1718,44 +1723,46 @@ are the ladder's:
   the (B)-stratum with the locally-(threshold-)testable ω-varieties
   (Beauquier–Pin / Wilke — sources to be added to the library) so the
   stratum is a known class with our operational reading.⟩
-- **(B) fails at every affordable width** — the genuine nesting case: the
-  recurring windows do not determine the verdict, because acceptance hangs
-  on *order* among recurring factors, the classical separator between
-  `FO[<]` and locally testable (`FO[+1]`, Thérien–Weiss; cite-TBD). The
-  stratum is real, and its first witness is a household formula:
-  `G(a → F b)`, five classes over two propositions. Its final layer is
-  moving and 1-anchored — condition (A) is not the obstacle — and carries
-  the idle letter `!a ∧ !b`, neutral on the layer. The two confined lassos
+- **(B) fails at every affordable width** — the recurring windows do
+  not determine the verdict. On a 1-anchored layer this failure has two
+  distinct sources, separated by the park dichotomy (Lemma 5.5 below):
+  the window set is blind to the **parking class** — the class holding
+  the walk once it stops changing — or blind to the **order** among
+  recurring anchors. The first blindness is repaired exactly: every
+  within-layer change reads an anchor onto its destination
+  (Lemma 4.9(i)), so an ultimately idle confined tail parks on the
+  class its last anchor named, and a loop vocabulary of *anchored
+  parks* `F(An(d) ∧ X G St(d))` beside the `GF` windows recovers
+  exactness — condition (B) relaxed to windows-plus-parks,
+  Definition 5.6 and Proposition 5.7 below. Its witness is a household
+  formula: `G(a → F b)`, five classes over two propositions, final
+  layer moving and 1-anchored — condition (A) is not the obstacle —
+  carrying the idle letter `!a ∧ !b`, neutral on the layer. The two
+  confined lassos
 
   ```
   (!a∧b) · (!a∧!b)^ω             no a is ever owed a b     accepted
   (!a∧b · a∧!b) · (!a∧!b)^ω      the a is never repaid     rejected
   ```
 
-  have the same recurring window set `{!a∧!b}` at *every* width: no
-  window set determines the verdict at any `k′`. What separates them is
-  the class the walk holds when the idling begins — one owes a `b`, the
-  other owes nothing — an *obligation carried by the stem*, invisible to
-  every recurrence of factors: order beyond windows, in the strongest
-  form. On this stratum, and only here, a DG-style descent survives,
-  demoted to the engine inside one final layer and scoped to that layer's
-  tail algebra — which
-  is not smaller in general (`T_c = L` whenever `L` is prefix-independent,
+  have the same recurring window set `{!a∧!b}` at *every* width: what
+  separates them is the class the walk holds when the idling begins —
+  one owes a `b`, the other owes nothing — and the window set,
+  anchor-free, cannot name it; the last anchor names it for free. The
+  second blindness is the genuine nesting case, the classical separator
+  between `FO[<]` and locally testable (`FO[+1]`, Thérien–Weiss;
+  cite-TBD), and it survives the parks: its witness
+  `GF(a ∧ X((!a∧!b) U a))` — infinitely often two `a`s with only
+  silence between — defeats windows and parks together at every width
+  (the residual floor, after Proposition 5.7). On this stratum, and
+  only here, a DG-style descent survives, demoted to the engine inside
+  one final layer and scoped to that layer's tail algebra — which is
+  not smaller in general (`T_c = L` whenever `L` is prefix-independent,
   Lemma 5.2(ii)). The plain statement, then: this stratum is where
   extraction still pays DG's price; the census finds it nowhere inside
-  its own frame, and its first witness one shape beyond it
-  (§8). An ω-specific descent that beats DG on this stratum is the paper's
-  main open problem — and now has a concrete instance to beat it on.
-  ⟨TBD: the witness also points at the repair. On a 1-anchored layer
-  every phase change reads an anchor (Lemma 4.9(i)), so an
-  ultimately-idle confined tail parks on the class its *last anchor*
-  named — and the witness's exact label has precisely that shape:
-  `G(a → F b) ≡ GF b ∨ G(!a∧!b) ∨ F(b ∧ X G(!a∧!b))` — recurring
-  anchor, park at the entry class, park after the anchor `b`. A loop
-  vocabulary of *anchored parks* `F(An(c) ∧ X G(idle))` beside the
-  `GF` windows — condition (B) relaxed to
-  windows-plus-last-anchor on (A)-passing layers — may recover
-  exactness on exactly this stratum. To be developed.⟩
+  its own frame, and its first witness one shape beyond it (§8). An
+  ω-specific descent that beats DG on this stratum is the paper's main
+  open problem — and now has a concrete instance to beat it on.
 
 The first bullet's read-off, in full:
 
@@ -1856,6 +1863,184 @@ over `𝒞`.
 satisfies `⋁_min ⋀ GF` iff `Win_k(β)` contains some minimal accepted set
 iff `f_c(Win_k(β)) = 1`. On `GF(aa)`, acceptance from the frozen class
 is "the window `aa` recurs" (§5.2): upward-closed, minimum `{aa}`. ∎
+
+The second bullet's repair, in full. On a 1-anchored layer the anchors
+sort every confined tail into one of two regimes, and the sorting is
+visible in the window set itself:
+
+**Lemma 5.5 (the park dichotomy).** Let `R` be 1-anchored and `β`
+confined to `R` from `c`, with trajectory `(q_j)`. Exactly one of:
+
+(i) *`β` parks.* The class changes finitely often: there are `d ∈ R`
+and `m` with `q_j = d` and `α_j ∈ St(d)` for all `j ≥ m`; if any change
+occurs, the last one reads a letter of `An(d)`, and otherwise `d = c`.
+
+(ii) *`β` is anchor-recurring.* The class changes infinitely often;
+then letters of `An(d′)` and `An(d″)` recur in `β` for at least two
+**distinct** classes `d′ ≠ d″`.
+
+Consequently, for every width `k`: say `S ⊆ Σ_λ^k` is **parked-type**
+if the letters occurring in its windows meet the anchor sets of at most
+one class of `R`, and **recurring-type** otherwise. Then `β` parks iff
+`Win_k(β)` is parked-type — the two regimes never share a recurring
+window set.
+
+*Proof.* (i) Let `μ` be the last change, `d = q_{μ+1}` (or `d = c` if
+none); `α_μ ∈ An(d)` by Lemma 4.9(i). For `j > μ`, `α_j` fixes `d`, so
+`α_j ∈ St(d)`; in particular no letter of `An(d′)`, `d′ ≠ d`, is ever
+read after `μ` — such a letter, read at `d` while staying in `R`, has
+`d` in its within-layer domain and its action is constant onto `d′`: a
+change. (ii) Infinitely many changes distribute over finitely many
+target classes, so some `d′` receives infinitely many; between two
+consecutive changes onto `d′` the walk must leave `d′`, a change onto a
+class `≠ d′`, so a second class `d″` also receives infinitely many; each
+change onto a class reads its anchor (4.9(i)). For the consequence: the
+letters occurring in recurring `k`-windows are exactly the recurring
+letters of `β` (every letter of a recurring window recurs; a recurring
+letter sits inside some window type that recurs, the window types being
+finitely many). A parked tail's recurring letters lie in `St(d)`, which
+meets anchors only in `An(d)` (the diagonal argument of §4.2); an
+anchor-recurring tail's recurring letters meet two anchor sets. ∎
+
+**Definition 5.6 (park-window determinacy).** A 1-anchored layer `R` is
+**(B̃)-determined at width `k`** if
+
+(i) for every `d ∈ R` with `St(d) ≠ ∅`, the *frozen restriction*
+`({d}, St(d))` — the one-class machine at `d` over its stutter
+letters — is (B)-determined at width `k`, and
+
+(ii) for every `c ∈ R` and any two **anchor-recurring** tails `β, β′`
+confined to `R` from `c` with `Win_k(β) = Win_k(β′)`,
+`V(c, β) = V(c, β′)`.
+
+(B) implies (B̃) at the same width; (B̃) is monotone in `k` like (B),
+`Win_{k+1}` refining `Win_k`.
+
+**Proposition 5.7 (the anchored-park normal form).** Let `R` be
+1-anchored, (B̃)-determined at width `k`, and `c ∈ R` an entry class.
+Let `Ω_d` be Proposition 5.4's window term for the frozen restriction
+`({d}, St(d))` (condition (i)), and let `Ω^rec(R, c)` be
+Proposition 5.4's exact-set disjunction restricted to the
+**recurring-type** realizable sets, whose verdict map is well-defined
+by condition (ii). Then
+
+```
+Ω(R, c)  =  Ω^rec(R, c)
+            ∨  ⋁_{d ∈ R}  F( An(d) ∧ X ( G St(d) ∧ Ω_d ) )     -- anchored parks
+            ∨  ( G St(c) ∧ Ω_c )                               -- park at the entry, no anchor ever
+```
+
+— `An(d)`, `St(d)` standing for their letter disjunctions, an empty
+disjunction being `⊥` — satisfies the window contract:
+`β ⊨ Ω(R, c) ⟺ V(c, β) = 1` for every `β` confined to `R` from `c`.
+The parks add at most `|R| + 1` disjuncts of modal depth
+`depth(Ω_d) + 2`; condition (B̃) is decided by Proposition 5.4(iii)'s
+loop-class closure — for (i) on each frozen restriction's memory
+graph, for (ii) with conflicts on parked-type window sets exempted —
+and its cautions carry over verbatim.
+
+*Proof.* *Parks are sound.* Suppose `β ⊨ F(An(d) ∧ X(G St(d) ∧ Ω_d))`
+at position `i`. The firing is within-layer (`β` is confined), so
+`q_{i+1} = d` whatever the history — Lemma 4.9(i). Every later letter
+lies in `St(d)` and fixes `d`, so the suffix `γ = β_{≥ i+1}` is a tail
+of the frozen restriction, and `γ ⊨ Ω_d` gives `V(d, γ) = 1`; transport
+(Lemma 4.7(ii)) lifts it: `V(c, β) = V(q_{i+1}, γ) = 1`. The entry
+disjunct is the same argument with `i = −1`: `G St(c)` pins the walk at
+`c` from the start. Soundness is unconditional, so no rejecting tail —
+of either regime — satisfies a park disjunct: a tail satisfying the
+pinning `G St(d)` *is* parked, and its verdict is `Ω_d`'s.
+
+*Parks are complete.* Let `β` park at `d` with `V(c, β) = 1`. If a
+change occurs, take the last one, `μ`: `α_μ ∈ An(d)` and
+`β_{≥ μ+1} ⊨ G St(d)` (Lemma 5.5(i)); `V(d, β_{≥ μ+1}) = V(c, β) = 1`
+by transport, so `β_{≥ μ+1} ⊨ Ω_d` and `β` satisfies the park at `d`.
+With no change, `β ⊨ G St(c) ∧ Ω_c` likewise.
+
+*The regimes never cross.* By Lemma 5.5 a parked tail's recurring set
+is parked-type, so it satisfies no exact-set disjunct of `Ω^rec`
+(Proposition 5.4's disjuncts pin `Win_k(β) = S` exactly); an
+anchor-recurring tail never satisfies a park (the pinning argument
+above). On anchor-recurring tails, `Ω^rec` is Proposition 5.4(i)
+verbatim, its verdict map defined exactly on the sets such tails
+realize (condition (ii)). Together: accepting tails of both regimes are
+covered, rejecting tails of both regimes satisfy nothing. ∎
+
+*Remark (what plain (B) misses).* Under condition (i) alone, a
+parked-type set whose letters do meet an anchor set — necessarily of a
+single class `d` — already determines its verdict: its tails park at
+`d` (the parked suffix's anchors lie in `St(d*) ∩ An(d)`, forcing
+`d* = d`), and (i) applies. The blind spot of plain (B) on a
+1-anchored layer is therefore exactly the **anchor-free** recurring
+sets, where the window set cannot name the parking class.
+`G(a → F b)`'s `{!a∧!b}` is the minimal instance. The graded analogue
+of the parks — anchor *windows* naming the class, Lemma 4.6(iv), in
+§4.3's grammar — is expected to lift verbatim and is not developed
+here.
+
+**The witness repaired.** `G(a → F b)`'s five classes are the unit,
+`[!a∧!b]`, `[!a∧b]`, `[a∧!b]`, `[!a∧b · a∧!b]` — indices `0..4` in
+that order — and its final layer is `R = {2, 4}`: terminal, moving
+(`!a∧b` and `a∧b` reset onto `2`, `a∧!b` onto `4`, `!a∧!b` neutral),
+1-anchored, entry class `2`. So `An(2) = {!a∧b, a∧b}` — the
+`b`-letters — `An(4) = {a∧!b}`, `St(2) = Σ_λ ∖ {a∧!b}`,
+`St(4) = {!a∧!b, a∧!b}`. The accepting pairs on the layer are
+`(2, [!a∧!b])`, `(2, [!a∧b])` and `(4, [!a∧b·a∧!b])`, and (B̃) holds
+at width 1 with every verdict constant: both frozen restrictions are
+one-note — every `St(2)`-loop folds to `[!a∧!b]` or `[!a∧b]`, both
+accepting from `2`, so `Ω_2 = ⊤`; every `St(4)`-loop folds to
+`[!a∧!b]` or `[a∧!b]`, both rejecting from `4`, so `Ω_4 = ⊥` — and an
+anchor-recurring tail makes `a∧!b` and a `b`-letter both recur, its
+linked pair `(2, [!a∧b])` or `(4, [!a∧b·a∧!b])`, both accepting.
+Proposition 5.7 emits, from the entry,
+
+```
+Ω(R, 2)  =  ( GF(a∧!b) ∧ GF b )  ∨  F( b ∧ X G(a → b) )  ∨  G(a → b)
+```
+
+— recurring anchors, park at `2` (the park at `4` carries `Ω_4 = ⊥`
+and vanishes), park at the entry — and the layer being terminal with
+`R`-order above it a pure peel, this *is* the language's content:
+`G(a → F b)` moves from the residual stratum into the transcribable
+one, its nesting depth that of the parks, not of a descent.
+
+**The residual floor.** The relaxation is proper, and it is not
+complete: condition (ii) is a real assumption. Let
+
+```
+L  =  GF( a ∧ X( (!a∧!b) U a ) )
+```
+
+— infinitely often, two `a`s with only the silent letter `s = !a∧!b`
+between. Its classes are the unit, `[s]`, and the eight profiles
+`(f, l, φ)` of the `s`-erased content — first non-`s` letter kind,
+last, and whether an `a`-pair with only `s` between has occurred — ten
+classes counting as `GF(aa)`'s six are counted; multiplication
+`(f, l, φ)(f′, l′, φ′) = (f, l′, φ ∨ φ′ ∨ [l = a ∧ f′ = a])`, aperiodic
+(`x² = x³`), prefix-independent, `P` loop-determined: a loop accepts
+iff its idempotent carries the flag `φ`. Every layer is 1-anchored —
+condition (A) holds at width 1 globally — and the final layer
+`R = {(f, a, 1), (f, b, 1)}` is terminal, with `a` resetting onto
+`(f, a, 1)`, the `b`-letter onto `(f, b, 1)`, `s` neutral. Condition
+(i) also holds at width 1: parked at `(f, a, 1)` the verdict is "`a`
+recurs", parked at `(f, b, 1)` it is constantly rejecting. Condition
+(ii) fails at every width: from the entry `(a, a, 1)`, with strictly
+growing gaps `n₁ < n₂ < ⋯`, the two anchor-recurring confined tails
+
+```
+a s^{n₁} b s^{n₂} a s^{n₃} b ⋯        a's and b's alternate      rejected
+a s^{n₁} a s^{n₂} b s^{n₃} a a ⋯      the pair a·s*·a recurs     accepted
+```
+
+share the recurring window set
+`{s^k} ∪ {s^i x s^{k−1−i} : x ∈ {a, !a∧b}, 0 ≤ i ≤ k−1}` at every
+width — a window holding two anchors occurs but never recurs, the gaps
+outgrowing every `k` — and their verdicts differ. What separates them
+is the *order* in which the two recurring anchors succeed one another,
+invisible to windows and parks alike. The residual loop stratum is
+therefore inhabited strictly above the parks, and this witness is its
+floor in the purest form: (A)-clean at width 1 on every layer,
+park-clean, terminal final layer — the entire missing label is the
+`Ω` no window vocabulary reaches.
 
 ### 5.2 Worked examples: the peel alone, then the full engine
 
@@ -2157,7 +2342,7 @@ word's stem class `s` lies in exactly one final layer, so
 — a *disjoint* union, exact by construction, with no surgery of any kind.
 Two properties come with it:
 
-**Proposition 5.5 (decomposition never leaves LTL).** Any language
+**Proposition 5.8 (decomposition never leaves LTL).** Any language
 recognized by `(𝒞, λ, M)` with *any* pair set — every `L_R`, every
 single-pair piece, every Boolean combination — has a syntactic ω-semigroup
 dividing `M`. In particular if `L` is LTL, so is every piece, and every
@@ -2201,13 +2386,13 @@ factorization is
     proper congruence θᵢ,   both factors proper: Val_{Pᵢ} ≠ Val_P.
 ```
 
-**Definition 5.6 (ω-congruence for a pair set).** A monoid congruence
+**Definition 5.9 (ω-congruence for a pair set).** A monoid congruence
 `θ` on `(𝒞, M)` is an **ω-congruence for** a pair set `P′` if `Val_{P′}`
 factors through `θ` in both coordinates: `c θ c′` and `d θ d′` imply
 `Val_{P′}(c, d) = Val_{P′}(c′, d′)`. (Checkable in `O(|𝒞|²)` lookups once
 `Val_{P′}` is tabled.)
 
-**Proposition 5.7 (quotients recognize).** If `θ` is an ω-congruence for
+**Proposition 5.10 (quotients recognize).** If `θ` is an ω-congruence for
 `P′`, the quotient invariant `𝓘/θ = (𝒞/θ, λ/θ, M/θ, P′/θ)` — pair
 verdicts inherited through the factoring — recognizes `L_{P′}`: the
 standard membership rule, evaluated in the quotient, returns `Val_{P′}`
@@ -2223,14 +2408,14 @@ share their unique idempotent, so `(d^j)^π = d^π` and
 looks up the induced pair; by the factoring that lookup equals
 `Val_{P′}([u·v^j], [v^j])`, the verdict of `u·v^j·(v^j)^ω = u·v^ω`,
 which by stability is `Val_{P′}([u], [v])`. (One convention wrinkle: `θ`
-may merge the fresh identity with a neutral word class — Proposition 5.9
+may merge the fresh identity with a neutral word class — Proposition 5.12
 shows that is the *only* extra collapse possible — and the quotient then
 carries its unit inside a word class; re-canonicalization restores the
 freshness convention.) ∎
 
-**Theorem 5.8 (the AND-split).** Given a factorization as displayed,
+**Theorem 5.11 (the AND-split).** Given a factorization as displayed,
 `L = L_{P₁} ∩ L_{P₂}`, each factor recognized by the strictly smaller
-quotient `𝓘/θᵢ` (Proposition 5.7), each factor's own invariant obtained
+quotient `𝓘/θᵢ` (Proposition 5.10), each factor's own invariant obtained
 by re-canonicalization. Moreover the search is complete on
 *saturations*: for a congruence `θ`, let `Val^θ` be the least
 `θ`-factoring verdict map `≥ Val_P` (pointwise `∨` over `θ`-blocks); if
@@ -2240,7 +2425,7 @@ their canonical saturations — coarsest first, the census-sized lattice
 being enumerable — finds a factorization iff one exists, and otherwise
 certifies `P` **irreducible** outright. (Properness has teeth, but fewer
 than one might hope: even `GFa` factors, as `Fa ∧ (GFa ∨ G¬a)`. Both of
-that split's congruences are the one merge Proposition 5.9 permits —
+that split's congruences are the one merge Proposition 5.12 permits —
 the fresh unit with the neutral word class — yet both saturated factors
 are proper, because the stem coordinate of `Val` sees distinctions that
 pure loop verdicts blur, and the merged slack class carries them.
@@ -2253,7 +2438,7 @@ conjoin. Completeness: `Val_P ≤ Val^{θᵢ} ≤ Val_{Pᵢ}` — the middle map
 the least `θᵢ`-factoring map above `Val_P`, and `Val_{Pᵢ}` is such a
 map — so `Val_P ≤ Val^{θ₁} ∧ Val^{θ₂} ≤ Val_{P₁} ∧ Val_{P₂} = Val_P`. ∎
 
-**Proposition 5.9 (subdirectness is automatic).** On the reduced
+**Proposition 5.12 (subdirectness is automatic).** On the reduced
 invariant, an ω-congruence for `P` itself can identify two *word*
 classes never, and the fresh identity `[ε]` only with a neutral word
 class (which is then unique). Consequently, in any factorization,
@@ -2308,7 +2493,7 @@ quotient tables; conformance-check the factorization in the tool
 
 The combinators compose (OR of ANDs, complement flips via `P^c` choosing
 the cheaper side), they all commute with re-canonicalization, and
-Proposition 5.5 makes the whole combinator layer safe: no move ever
+Proposition 5.8 makes the whole combinator layer safe: no move ever
 leaves LTL or grows the algebra. They slot into the architecture as step
 2.5, between the ladder templates and the walk engine.
 
@@ -2326,7 +2511,7 @@ extract(𝓘):
      of the class-defined prefix language + fixed template, stop
   2.5 combinators (§5.3): OR-split P by final layer; AND-split by subdirect
       factorization; re-canonicalize each piece (a divisor — never leaves
-      LTL, Prop 5.5), recurse on pieces whose read-offs improved, combine
+      LTL, Prop 5.8), recurse on pieces whose read-offs improved, combine
       with ∨ / ∧
   3. walk engine (stem side): descend the R-order of Cay(L); per layer:
        (A) at k ≤ cap  ⟹ flat law/leave bricks (width 1 at k = 1, window
@@ -2334,7 +2519,7 @@ extract(𝓘):
                           memoized class children
        (A) fails       ⟹ (a) retry after the step-2.5 combinators — an
                           OR/AND piece re-canonicalizes to its own smaller
-                          table whose layers may anchor (Thm 5.8); (b)
+                          table whose layers may anchor (Thm 5.11); (b)
                           else the scoped fallback (§4.4, Prop 4.14): DG
                           run on the layer action monoid 𝒜_R — a quotient
                           of S(L)₊¹, aperiodic with it (Prop 4.11) — choosing
@@ -2369,7 +2554,7 @@ operator is the same wrapper). Safety is the dual through
 The architecture's correctness is the label contract (§4.2), met on
 every branch and closed under its three compositions:
 
-**Theorem 5.10 (end-to-end exactness).** Let `𝓘(L)` be aperiodic and
+**Theorem 5.13 (end-to-end exactness).** Let `𝓘(L)` be aperiodic and
 let `φ = extract(𝓘)`, with the graded stratum routed per §4.3's
 correction: a committed class takes `true`, and a non-committed layer
 anchoring only at `k ≥ 2` takes the scoped fallback. Then `⟦φ⟧ = L` —
@@ -2388,7 +2573,8 @@ point, every branch of `extract` emits a label exact at its class:
   exact children, its finite-word ingredient [DG08]'s correctness on
   `𝒜_R` and its wrapper the insertion operator's displayed semantics;
 - *the window contract*, wherever a run can stay forever — under (B)
-  at some width, Proposition 5.4; where (B) fails at every affordable
+  at some width, Proposition 5.4; under (B̃) on a 1-anchored layer,
+  Proposition 5.7; where both fail at every affordable
   width, a fallback formula defining `T_c` itself (§5.1) satisfies the
   contract *a fortiori*, being exact on all tails, confined or not;
 - *ladder templates* (step 2) — the paragraph above: an exact
@@ -2396,8 +2582,8 @@ point, every branch of `extract` emits a label exact at its class:
   same wrapper;
 - *combinators* (step 2.5) — an OR-split recombines exact piece labels
   by disjoint union (§5.3(1)), an AND-split by intersection
-  (Theorem 5.8); each piece is recognized by its re-canonicalized
-  invariant (Propositions 5.5, 5.7), and the guard recurses only when
+  (Theorem 5.11); each piece is recognized by its re-canonicalized
+  invariant (Propositions 5.8, 5.10), and the guard recurses only when
   that invariant strictly shrinks, so the outer induction on
   `(|𝒞|, R-order)` remains well-founded.
 
@@ -2522,7 +2708,8 @@ induces a second, finer map, and every coordinate is a read-off:
 | stem-transcribable, k = 1 | (A): identity-or-reset per layer | flat bricks, depth O(R-depth) | step 3 |
 | stem-transcribable, k ≤ K | (A): local k-definiteness mod stutter | graded bricks at width k+1 (Thm 4.13), same depth | step 3 |
 | loop-transcribable | (B) at width k′ ⟨TBD: align with local ω-testability⟩ | `GF`/`FG` window combinations | step 4 |
-| residual | (A) or (B) fails at every affordable width | genuine nesting; until-rank certifies | steps 3–4 fallback, stem side scoped (Prop 4.14) |
+| loop-transcribable, parked | (B̃) at width k′: windows plus last anchor (Prop 5.7) | window combinations + anchored parks `F(An(d) ∧ X G St(d))` | step 4 |
+| residual | (A) or (B̃) fails at every affordable width | genuine nesting; until-rank certifies | steps 3–4 fallback, stem side scoped (Prop 4.14) |
 
 **Table 2.** The inner frontier: which fragment of LTL a language actually
 needs, decided on `𝓘(L)` before any formula is built.
@@ -2533,9 +2720,12 @@ Wagner depth 1, over a single proposition, in an algebra of fifteen
 classes or more. The loop
 half fails nowhere inside the catalogue's own frame — a (B)-failing
 final layer needs two states and two propositions *at once*, a shape
-the frame omits — and its first witness beyond the frame is
-`G(a → F b)` (§5.1). The open hunts that remain: the smallest such
-witness, and the smallest witness of each graded stem stratum beyond
+the frame omits. Beyond the frame, the first plain-(B) failure,
+`G(a → F b)` (§5.1), lands in the parked row — repaired by
+Proposition 5.7 — and the first inhabitant of the loop-residual
+stratum is `GF(a ∧ X((!a∧!b) U a))` (§5.1), ten classes. The open
+hunts that remain: the smallest witness of each of the two loop
+strata, and the smallest witness of each graded stem stratum beyond
 the tester's cap.
 ⟨TBD: align the strata with the known sub-LTL
 hierarchies — definite [PRS63] / locally testable [BS73] / TL[F] of
@@ -2609,10 +2799,12 @@ about the frame, not the world: the catalogue never combines two
 states with two atomic propositions, and the first (B)-failing final
 layer lives exactly there — `G(a → F b)` (§5.1), five classes, whose
 moving, 1-anchored final layer fails (B) at every width on an exact
-witness pair. A (B) failure therefore needs at least two propositions
-*and* at least two states; the `2state2ap` shape is the census-next
-axis, and the smallest witness is an open hunt with a named upper
-bound.
+witness pair — a failure the parks repair (Proposition 5.7), while its
+park-irreparable sharpening `GF(a ∧ X((!a∧!b) U a))` (§5.1) needs the
+same two-by-two shape. A (B) failure therefore needs at least two
+propositions *and* at least two states; the `2state2ap` shape is the
+census-next axis, and the smallest witnesses of both loop strata are
+open hunts with named upper bounds.
 
 **The certificate scan on the non-LTL side.** Every emitted family
 replays against the canonical deterministic acceptor by membership queries
@@ -2744,7 +2936,7 @@ layers walked down the R-order, flat bricks where the layers anchor
 (Proposition 5.4) — Arnold's two context shapes, met for the third time,
 now as the two engines of extraction — nesting only where the
 algebra demands it, and the assembled dispatch exact end to end
-(Theorem 5.10). The deliverable split is part of the result: the
+(Theorem 5.13). The deliverable split is part of the result: the
 DAG is polynomial and canonical, the flat formula's size is the
 language's own, and the definitional format avoids that size exactly
 (§6).
@@ -2756,7 +2948,8 @@ place extraction still pays the generic price (§5.1). Second, the
 (§2.2), which would turn the depth lower bound from conditional to
 certified. Third, the realization questions the census sharpened: a
 layer anchoring at no width over two letters (§4.2), the smallest
-(B)-failing final layer — `G(a → F b)` bounds the hunt from above
+(B)-failing and the smallest park-irreparable final layers —
+`G(a → F b)` and `GF(a ∧ X((!a∧!b) U a))` bound the hunts from above
 (§5.1) — and a sufficient tour cap for deciding (B) (§5.1). The
 formula was always going to be large sometimes; the algebra now says
 exactly when, and exactly why.
