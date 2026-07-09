@@ -33,7 +33,8 @@ decomposition are surgeries too — one `O(n²)` stem-liveness scan — and
 the hulls close the safety-shaped hierarchy exactly: the obligation
 (Staiger–Wagner) class is precisely the Boolean sublattice the closed
 pair sets generate, equivalently the languages whose verdict depends
-only on the stem's R-class — a theorem, and a one-scan test. The
+only on the stem's R-class — a theorem, a one-scan test, and, within
+the band, the Wagner degree as a longest alternating path. The
 exponentials do not disappear — they concentrate, exactly at the ω-rational constructors
 (concatenation by a prefix set, ω-power) and existential projection, where
 a powerset is intrinsic. The resulting picture is a *pay-canonicity-once*
@@ -134,7 +135,9 @@ Contributions:
    table (Proposition 3.5), turning the ladder's first rungs into
    fixpoint equations; and the theorem that the obligation rung is
    *exactly* the Boolean sublattice the hull fixpoints generate
-   (Theorem 3.10), with obligation membership a one-scan read-off.
+   (Theorem 3.10), with obligation membership a one-scan read-off and
+   the band's Wagner degrees longest-path read-offs
+   (Proposition 3.11).
 4. **The ledger** (§4): a side-by-side of the calculus against a
    production toolbox, one row per operation, with the exponential
    frontier located exactly (§3.4). The calculus is implemented as a
@@ -798,12 +801,42 @@ boundary**: the lattice of hulls captures the safety-shaped hierarchy
 *exactly up to* obligation; from the next rungs on (recurrence,
 persistence and above), verdicts are provably loop-sensitive
 (`m ≥ 1`), so no Boolean combination of fixpoints can express them —
-the hull story is complete, not truncated. What we do *not* do here is
-read off the finite Wagner degree *inside* the obligation band: that
-needs the superchain coordinates `n±` [CP97, §5], and stem-level
-alternation along `R`-reachability is not their exact transcription (a
-closed language already shows the mismatch); the fine degree stays
-with the general Wagner read-off of §3.5.
+the hull story is complete, not truncated. And the fine structure
+*inside* the band comes for free — Wagner's superchain coordinates
+`n±`, which stratify the obligation class by its difference level
+`D_n(Σ₁)` and side `σ/π/δ` [Wag79, CP99], transcribe exactly to the
+`θ`-labeled DAG:
+
+**Proposition 3.11 (the Wagner degree of an obligation language, on
+the DAG).** Let `m(L) = 0` and let `θ` be the stem verdict of
+Theorem 3.10. For a polarity `b ∈ {0, 1}`, let `alt_b` be the maximal
+`n` for which there exist linked stems
+`s₀ ≥_R s₁ ≥_R ⋯ ≥_R s_n` (each `s_{i+1} ∈ s_i·𝒞¹`) with
+`θ(s₀) = b` and `θ(s_i) ≠ θ(s_{i+1})` for all `i`. Then
+`n⁺(L) = alt₁` and `n⁻(L) = alt₀`: the superchain coordinates are the
+longest alternating paths in the `θ`-labeled `R`-class DAG, computable
+in `O(n·|Σ|)` after the SCC pass of Theorem 3.10 (condense, then one
+dynamic-programming sweep in reverse topological order per polarity).
+
+*Proof.* (≤) By the superchain normal form [CP97, Thm 7], any
+`X`-superchain of length `n` can be brought to chains
+`C'_i = (s_i, E_i)` with every pair linked and the stems *strictly*
+`R`-decreasing; with `m(L) = 0` each chain is a single linked pair,
+the alternation of the chains' signs is alternation of
+`Val(s_i, e_i) = θ(s_i)` (Theorem 3.10(3)), and a strictly
+`R`-decreasing stem sequence is a path in the DAG of the required
+shape. (≥) Conversely, an alternating path yields a superchain
+directly: take `C_i = ({s_i}, (e_i))` for any loop `e_i` of `s_i` — a
+chain of the required maximal length `0`, of sign `θ(s_i)`;
+accessibility needs `u_i ∈ S₊` with `s_i·u_i = s_{i+1}`, which exists
+because `s_{i+1} ∈ s_i·𝒞¹` while `s_i R s_{i+1}` is impossible —
+`R`-equivalent stems share `θ` (Lemma 3.9) and `θ` alternates. ∎
+
+The specimen is Carton–Perrin's own: `X = a*·b^ω` (not closed — `a^ω`
+lies in its closure) has stems `A >_R B >_R D` (all-`a`'s, reached
+`b`'s, dead) with `θ = 0, 1, 0`, so `n⁻ = 2` and `n⁺ = 1` — exactly
+the values computed by chain-juggling in [CP97, Ex. 10]. On the
+invariant the computation is a two-edge path read-off.
 
 ## 4. The ledger against a production toolbox
 
@@ -891,6 +924,7 @@ One line per move; `n` is the class count of the relevant table,
 | stutter-invariance | `O(|Σ|)` | bit (Prop 3.3) |
 | safety hull / interior / liveness part | `O(n²)` | pair sets, same table (Prop 3.5, Cor 3.6–3.7) |
 | obligation test | `O(|linked| + n·|Σ|)` | bit (Thm 3.10: stem-only verdict) |
+| Wagner degree within the obligation band | `O(n·|Σ|)` after SCCs | `(n⁺, n⁻)` = longest alternating DAG paths (Prop 3.11) |
 | ladder / index / Wagner read-offs | polynomial scans of the table | verdicts [SωS26, §7.2] |
 | `W·L`, `W^ω`, `remove_ap` | exponential (exit + re-entry) | §3.4 |
 
@@ -988,15 +1022,14 @@ The calculus is the operational face of a program whose other faces are
 already drafted: [SωS26] builds the object, [SωSL26] learns it (and its
 teacher consumes this paper's minimal counterexamples), [SωSX26] is its
 most elaborate derived operation, and the census [SωSN26] counts the
-universe it operates on. The hull section closed its own follow-up:
+universe it operates on. The hull section closed its own follow-ups:
 the safety-shaped hierarchy lives on one table as a lattice of
-fixpoints, and it generates *exactly* the obligation class
-(Theorem 3.10) — beyond that rung, loop-sensitivity is intrinsic and
-the general Wagner read-off takes over. What remains here is
-measurement — the V1/V2 ledger against Spot on the census corpus — and
-one bounded piece of theory: transcribing the superchain coordinates
-`n±` to read the finite Wagner degree *inside* the obligation band off
-the `R`-class DAG.
+fixpoints, it generates *exactly* the obligation class (Theorem 3.10),
+and the Wagner degrees inside that band are longest alternating paths
+on the `θ`-labeled `R`-class DAG (Proposition 3.11) — beyond the band,
+loop-sensitivity is intrinsic and the general Wagner read-off takes
+over. What remains here is measurement: the V1/V2 ledger against Spot
+on the census corpus.
 
 ---
 
