@@ -57,7 +57,7 @@ disagreeing cell yields the minimal counterexample over all lassos.
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import Callable, Dict, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, FrozenSet, List, Optional, Sequence, Tuple
 
 from sosl.sos.alphabet import Alphabet, Letter, Word
 from sosl.sos.calculus import Aligned, Cell, PairSet, Table, align, equivalent
@@ -81,7 +81,8 @@ class NotFunctional(Exception):
     different hypothesis classes — the witness pair a firing exists to exhibit."""
 
     def __init__(self, n_nodes: int, n_ref: int, collision: Tuple[Cell, Cell],
-                 witnesses: Tuple[Word, Word]) -> None:
+                 witnesses: Tuple[Word, Word],
+                 partners: Dict[int, Tuple[int, ...]]) -> None:
         super().__init__(
             f"aligned graph not functional: {n_nodes} nodes over {n_ref} reference "
             f"classes; nodes {collision[0]} and {collision[1]} share an R-class"
@@ -90,28 +91,49 @@ class NotFunctional(Exception):
         self.n_ref = n_ref
         self.collision = collision
         self.witnesses = witnesses
+        self.partners = partners
 
     @property
     def ref_class(self) -> int:
         """The reference class both witnesses fold to."""
         return self.collision[0][1]
 
+    @property
+    def split(self) -> FrozenSet[int]:
+        """The reference classes carrying more than one hypothesis partner — the
+        classes on which the fold fails to factor. A cell whose loop orbit and
+        stabilized stem class avoid these is still decided by its keyed lasso."""
+        return frozenset(c for c, hs in self.partners.items() if len(hs) > 1)
+
+
+def partner_map(aligned: Aligned) -> Dict[int, Tuple[int, ...]]:
+    """Per reference class, the hypothesis classes paired with it in the graph.
+    A class with two or more partners is one the hypothesis fold splits."""
+    partners: Dict[int, set] = {}
+    for h, r in aligned.nodes:
+        partners.setdefault(r, set()).add(h)
+    return {r: tuple(sorted(hs)) for r, hs in partners.items()}
+
 
 def _assert_functional(aligned: Aligned, n_ref: int) -> None:
     """Every reference class is named by exactly one aligned node. Raises
-    `NotFunctional` with the first colliding node pair and its witness words
-    otherwise."""
+    `NotFunctional` with the first colliding node pair, its witness words and the
+    whole partner map otherwise."""
     if aligned.n == n_ref:
         return
     seen: Dict[int, int] = {}
+    collision = witnesses = None
     for i, node in enumerate(aligned.nodes):
         j = seen.setdefault(node[1], i)
-        if j != i:
-            raise NotFunctional(aligned.n, n_ref, (aligned.nodes[j], node),
-                                (aligned.keys[j], aligned.keys[i]))
-    raise AssertionError(
-        f"aligned graph has {aligned.n} distinct R-components but {n_ref} classes"
-    )
+        if j != i and collision is None:
+            collision = (aligned.nodes[j], node)
+            witnesses = (aligned.keys[j], aligned.keys[i])
+    if collision is None:
+        raise AssertionError(
+            f"aligned graph has {aligned.n} distinct R-components but {n_ref} classes"
+        )
+    assert witnesses is not None
+    raise NotFunctional(aligned.n, n_ref, collision, witnesses, partner_map(aligned))
 
 
 class HypothesisLanguage:

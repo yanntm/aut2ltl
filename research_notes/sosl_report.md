@@ -1755,3 +1755,68 @@ pointer at §3.2 point (iii).
 Unchanged and still open toward the drop: the completed-sweep tallies with
 `guard_fired_final = 0` on every `SOUND` row, the E2 recount, and the
 item-8 dual-symmetry assertion, all under the persistence floor.
+
+---
+
+## Item 12 instrumented — the residue is not a sliver; recommend not building the localization (2026-07-09)
+
+Per the ask ("instrumentation before construction"), `NotFunctional` now carries
+the whole partner map, and `tests/sosl/exact_ref_residue.py` measures, per fired
+query, `|Split|` against `N_R` and the residue fraction (cells that are not
+quiet, over all `N_R·(N_R−1)` cells). Quietness is implemented as the theorem
+states it: every class of the loop's power orbit `{d^j}` unsplit, the orbit's
+unique-partner sequence stabilizing at some `k`, and `c·d^k` unsplit.
+
+| case | leg | firings | `\|Split\|` / `N_R` | residue (min / median / max) |
+|---|---|--:|---|---|
+| `3state1ap0acc_013908` | default | 1 | 1 / 57 | 26.8% |
+| `2state1ap2acc_parity_2195145216` | ablation | 8 | 1–6 / 17 | 57.7% / 67.6% / 81.6% |
+| `2state1ap2acc_parity_0006272130` | ablation | 5 | 1–2 / 10 | 63.3% / 76.7% / 84.4% |
+
+**The residue is not a sliver, and the shape of the payoff is worse than the
+number.** Two observations, the second decisive:
+
+1. *A single split class poisons a quarter of the cells.* The mildest firing we
+   have — `013908`, one split class out of 57 — still leaves 26.8% residue. A
+   split class is absorbing in the orbit structure: it lies in the power orbit of
+   every loop that reaches it, and in `c·d^k` for every stem `c` that multiplies
+   into it. Split-class *count* is therefore a poor predictor of residue size,
+   which is why 1-of-57 (26.8%) and 1-of-17 (57.7%) sit where they do.
+
+2. *The residue is never empty on a fired query, so the closure gets built
+   anyway.* If `d ∈ Split` then the cell `(c, d)` is residue for every `c` — the
+   loop orbit contains `d` itself. A firing means `Split ≠ ∅`, hence residue
+   `≠ ∅`, hence the closure fallback still runs. And the closure's cost, and its
+   `ExactTooLarge` cap, live in `_loop_elements` — the construction of the
+   transformation monoid — which is **independent of which cells one intends to
+   scan**. Localization shrinks the closure's `configs × elements` scan by
+   18–73%, never its construction. So it lifts **no** `OVERSIZE`, and the ~33 →
+   ~0.9 cases/s collapse is not where it bites.
+
+Recommendation: **do not build the localization** as specified. It is a
+constant-factor win on a phase that is not the bottleneck, bought with a
+correctness-critical quietness predicate that would need its own gate. The
+second option in the ask is the better one and we would take it instead:
+**incremental reuse of the closure across a run's successive queries.** The
+closure's elements are pairs `(D-profile, H-transformation)`; the profile monoid
+is *constant for the whole case* — only the hypothesis side changes between
+queries, and successive hypotheses differ by one split. Building the profile side
+once per case, and extending the transformation side per query, attacks the phase
+that actually costs and that actually caps.
+
+Before either is built, the honest next measurement is a split of the closure's
+wall time into build vs scan on a fired, non-capped query. We have not made it,
+and it decides between "reuse the profile monoid" and "the fallback is simply
+expensive, accept it".
+
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.exact_ref_residue <case_id>
+[--nosat]` — one case per invocation.
+
+### Ask 1 — sweep tallies, still in flight
+
+The guarded both-legs sweep is at ~900 of 7876 runs, all guard-green and
+`SOUND` so far (the small shapes); throughput fell from ~33 to ~0.9 cases/s as
+the fired shapes arrived. Full per-leg tallies (`n_guard_firings`, guard-green
+run count, cap-escape count, `guard_fired_final = 0` across all `SOUND` rows),
+the E2 recount and the item-8 dual-symmetry assertion land with it, under the
+persistence floor.
