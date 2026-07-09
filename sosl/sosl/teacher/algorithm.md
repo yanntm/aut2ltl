@@ -34,11 +34,19 @@ run's determinism depends on this.
   through the product of `D` and the hypothesis step automaton so only
   *distinguishable* candidates are materialized; `B` doubles on demand. Complete
   in the limit.
-- **`exact`** — decide via the product of `D` with the *transformation closure*
-  of the hypothesis: loop words act on hypothesis classes as functions; close
-  the function monoid under the letters; a mismatchable pair
-  (stem-value, loop-transformation) yields a concrete counterexample. Complete;
-  can be expensive; intended for the small campaign instances.
+- **`exact`** — decide against the language's reference invariant `R` in the SoS
+  calculus: `align` the hypothesis's Cayley graph with `R` into the
+  letter-generated node set (`≤ n_H·n_R` nodes), then scan the cells
+  `(stem node, loop node)` for one where `R`'s algebraic verdict and the
+  hypothesis's prediction on the cell's canonical lasso disagree. Complete and
+  polynomial; the automaton's only role was to build `R` once.
+- **`exact`, referenceless fallback** — when no reference invariant exists (the
+  algebra's closure blew its cap), decide via the product of `D` with the
+  *transformation closure* of the hypothesis: loop words act on hypothesis
+  classes as functions; close the function monoid under the letters; a
+  mismatchable pair (stem-value, loop-transformation) yields a concrete
+  counterexample. Complete, but exponential in `D`'s presentation, so it carries
+  a work cap and raises `ExactTooLarge` past it.
 
 The teacher records which strategy certified each `eq`; a run certified only by
 `bounded` is flagged in the stats (it is not a full proof of equivalence).

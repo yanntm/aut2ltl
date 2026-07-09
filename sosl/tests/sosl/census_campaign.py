@@ -3,7 +3,7 @@ language under the default (saturation on) and the ablation (`--no-saturation
 --eq-mode exact`) configs, **streaming one CSV row per run as it goes**.
 
     python3 -m tests.sosl.census_campaign [--config default|ablate|both]
-                                          [--limit N] [--budget S]
+                                          [--limit N] [--budget S] [--out DIR]
 
 The source is the flat catalogue `genaut/corpus/flat_canon` (one file per
 language up to AP relabeling, closed under complement — the project standard);
@@ -12,8 +12,8 @@ E1 cost metrics); `ablate` runs `--no-saturation --eq-mode exact` (E2: with exac
 equivalence every surviving stall is provably permanent).
 
 This driver only *produces* the raw per-run data — it prints progress and appends
-`results.csv` incrementally (genaut style: sweep now, study later). The stats are
-computed a posteriori by `census_e1` (E1 soundness + per-N cost) and
+`<out>/results.csv` incrementally (genaut style: sweep now, study later). The
+stats are computed a posteriori by `census_e1` (E1 soundness + per-N cost) and
 `census_e2_exhibits` (E2 permanent-stall family + exhibits), each reading this
 CSV. The run is **resumable**: `(case, config)` rows already present are skipped.
 """
@@ -46,6 +46,7 @@ def main(argv: List[str]) -> int:
     config_sel = "both"
     limit = 0
     budget = PER_CASE_BUDGET
+    out = OUT
     skip = -1
     for i, a in enumerate(argv):
         if i == skip:
@@ -58,6 +59,9 @@ def main(argv: List[str]) -> int:
             skip = i + 1
         elif a == "--budget":
             budget = int(argv[i + 1])
+            skip = i + 1
+        elif a == "--out":
+            out = Path(argv[i + 1])
             skip = i + 1
 
     cases = flat_canon_cases()
@@ -74,8 +78,8 @@ def main(argv: List[str]) -> int:
     if config_sel in ("ablate", "both"):
         configs.append(Config(**{**NOSAT_EXACT.__dict__, "budget_seconds": budget}))
 
-    OUT.mkdir(parents=True, exist_ok=True)
-    csv_path = OUT / "results.csv"
+    out.mkdir(parents=True, exist_ok=True)
+    csv_path = out / "results.csv"
     done = _done_runs(csv_path)
     total = len(cases) * len(configs)
     print(f"flat_canon: {len(cases)} languages x {len(configs)} config(s) "

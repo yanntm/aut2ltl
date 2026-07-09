@@ -4,6 +4,12 @@ Complete (unlike ``bounded``): decides whether a Cayley `Hypothesis` captures th
 *exact* language of a deterministic complete Emerson-Lei automaton D, returning
 either agreement or the minimal disagreeing lasso.
 
+The **referenceless fallback**. The closure below is exponential in D's
+presentation — that is what `ExactTooLarge` measures — so a language that has a
+reference invariant is decided by `sosl.teacher.exact_ref` instead, which aligns
+the hypothesis with that invariant in polynomial time. This module answers for
+the languages that have none.
+
 The verdict of a lasso ``(u, v)`` depends only on two finite abstractions:
 
   - on **D**: the pair (state reached by ``u``, transition/mark *profile* of

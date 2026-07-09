@@ -20,13 +20,17 @@ exposed to the learner only through queries.
   interface internally.
 
 The equivalence strategies and the reference-key audit lean on `sosl.sos.build`
-(hence on `aut2ltl`/spot); membership does not. The learner sees none of this —
-only `member` and `equiv`.
+(hence on `aut2ltl`/spot); membership does not. `exact` additionally leans on
+`sosl.sos.calculus`, which decides it against the language's reference invariant
+rather than against the automaton. The learner sees none of this — only `member`
+and `equiv`.
 
 ## Orientation map
 
     whitebox    Teacher over an HOA automaton D (member by simulation)
-    equiv       the reps / bounded / exact strategies + cex minimization
+    equiv       the reps / bounded strategies + cex minimization
+    exact_ref   exact by alignment with the reference invariant (polynomial)
+    exact       exact by transformation closure (the referenceless fallback)
     blackbox    the proc: JSON wire client
     selfcheck   two independent membership impls compared (harness layer 1)
 

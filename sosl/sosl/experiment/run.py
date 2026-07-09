@@ -18,7 +18,7 @@ import signal
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from sosl.contract import Counterexample
 from sosl.experiment.stats import RunStats
@@ -32,7 +32,7 @@ from sosl.learn.learner import (
 from sosl.learn.partition import Partition
 from sosl.learn.saturate import saturate
 from sosl.learn.table import Table
-from sosl.sos import Lasso, dump_invariant
+from sosl.sos import Lasso, dump_invariant, load_invariant
 from sosl.sos.alphabet import Word, shortlex_key
 from sosl.sos.build import ReferenceError, reference_of_hoa
 from sosl.sos.hypothesis import Hypothesis, loop_reps
@@ -109,25 +109,20 @@ def _norm(sos_text: str) -> str:
     return "\n".join(line.rstrip() for line in sos_text.rstrip().splitlines())
 
 
-def _reference(hoa_path: str, reference_sos: Optional[str]):
-    """The reference ``(sos_dump, class_count)`` — read from a precomputed `.sos`
+def _reference(hoa_path: str, reference_sos: Optional[str]) -> Tuple[str, Invariant]:
+    """The reference ``(sos_dump, invariant)`` — read from a precomputed `.sos`
     file when given, else built from the HOA. Raises `ReferenceError` if the HOA
-    has no SoS reference."""
+    has no SoS reference.
+
+    The invariant is both the byte-equality yardstick and the decision structure
+    the teacher's exact oracle runs against, so a run that has a `.sos` never
+    rebuilds the algebra from the automaton."""
     if reference_sos is not None:
         with open(reference_sos, encoding="utf-8") as fh:
             text = fh.read()
-        n = _parse_classes(text)
-        return text, n
+        return text, load_invariant(text)
     ref = reference_of_hoa(hoa_path)
-    return dump_invariant(ref), ref.n
-
-
-def _parse_classes(sos_text: str) -> int:
-    """The class count from a `.sos` dump's ``classes: <n>`` line."""
-    for line in sos_text.splitlines():
-        if line.startswith("classes:"):
-            return int(line.split(":", 1)[1].strip())
-    return -1
+    return dump_invariant(ref), ref
 
 
 def _alarm(_sig: int, _frame: object) -> None:
@@ -219,16 +214,17 @@ def run_case(case_id: str, hoa_path: str, config: Config,
     signal.alarm(config.budget_seconds)
     try:
         try:
-            ref_dump, ref_n = _reference(hoa_path, reference_sos)
+            ref_dump, ref_inv = _reference(hoa_path, reference_sos)
         except ReferenceError as exc:
             stats.verdict = "MISMATCH"
             stats.detail = f"NONDEF: {exc}"
             return RunResult(stats)
-        teacher = HoaTeacher.of_hoa(hoa_path, eq_mode=config.eq_mode)
+        teacher = HoaTeacher.of_hoa(hoa_path, eq_mode=config.eq_mode,
+                                    reference=ref_inv)
         teacher.eq_bound = config.eq_bound
         teacher.cex_policy = config.cex_policy
         stats.ap_count = len(teacher.alphabet.aps)
-        stats.ref_classes = ref_n
+        stats.ref_classes = ref_inv.n
 
         result = _drive(teacher, config, stats)
         table, p, inv, ledger, eq_cert = result
