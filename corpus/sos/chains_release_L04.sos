@@ -1,0 +1,14 @@
+SOS v1
+ap: a b
+classes: 3
+0 eps
+1 !a&!b
+2 a&b
+letters: !a&!b->1 !a&b->1 a&!b->1 a&b->2
+mult:
+0: 0 1 2
+1: 1 1 1
+2: 2 2 2
+accept:
+2 1
+2 2
