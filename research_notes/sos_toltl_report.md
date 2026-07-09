@@ -2,9 +2,11 @@
 
 The answer to `research_notes/sos_toltl_experiments.md`: the `aut2ltl/sos2ltl/`
 construction run against the paper's worked traces (`research_notes/sos_toltl.md`)
-and evaluated over the reference bench. Each section answers one experiment id;
-each finding `Fn` is either a refuted prediction (with the paper/spec edit it
-triggers) or a mechanism the census settles.
+and evaluated over the reference bench. Each section answers one experiment id
+and states the results **in force**; each finding `Fn` is a fact the census
+settled (some are verdicts on spec predictions), kept under its id for
+cross-reference. Open work per section sits on explicit *Remaining* lines;
+the todo ledger is the spec's. History lives in git, not here.
 
 ## The bench (§3b frame)
 
@@ -31,7 +33,7 @@ languages) lives in `genaut/SHAPES.md`.
 ## Components (C1–C5, C7)
 
 Present in `aut2ltl/sos2ltl/`: `cayley.py` (C1 — `Cay(L)`, its SCCs and DAG,
-asserting SCCs = R-classes of `M` per input, Lemma 5.3), `anchoring.py`
+asserting SCCs = R-classes of `M` per input, paper Lemma 4.3), `anchoring.py`
 (C2 — condition (A), widths `k ≤ 3` with the layer action monoid `𝒜_R` as a
 by-product), `windows.py` (C3 — condition (B), the three-stage bounded tester,
 F1), `readoffs.py` (C5 — λ-quotient, prefix-independence from the residuals,
@@ -62,11 +64,11 @@ paper's hand-computed predictions ([SωS26, Table 3]):
 | `GF(aa)` aperiodic, 6 classes | aperiodic, 6 classes | ✓ |
 | `Even`/`EvenBlocks` group: carrier `[a]`, index 1, period 2, cycle `{[a],[a·a]}` | identical, both | ✓ |
 | `GF(aa)` layers `{0},{1,3},{2,4},{5}`, R-order `0 → {1,3} \| {2,4} → 5` | identical | ✓ |
-| SCCs of `Cay(L)` = R-classes of `M` (Lemma 5.3), asserted per input | holds on every input | ✓ |
+| SCCs of `Cay(L)` = R-classes of `M` (paper Lemma 4.3), asserted per input | holds on every input | ✓ |
 | `{1,3}`,`{2,4}` pass (A) at `k=1`; letter tables `!a↦reset(1)/reset(4)`, `a↦reset(3)/reset(2)` | identical | ✓ |
 | `{5}` frozen (both letters neutral), `{0}` both exit | identical | ✓ |
 | `Even`/`EvenBlocks` group layers fail (A) at every width | FAIL (mixed swap action never stabilizes) | ✓ |
-| `{5}` fails (B) at `k'=1` on the Lemma-5.2 edge pair | witness `(a·!a)^ω` vs `(aa·!a)^ω`, replayed with opposite verdicts | ✓ |
+| `{5}` fails (B) at `k'=1` on the width-1 conflict pair | witness `(a·!a)^ω` vs `(aa·!a)^ω`, replayed with opposite verdicts | ✓ |
 | `{5}` passes (B) at `k'=2` | PASS width 2 (cap-bounded; F1) | ✓ |
 | `{1,3}`,`{2,4}` as final layers all-rejecting ⟹ (B) trivial | trivial PASS width 1 (exact cycle-class closure) | ✓ |
 | `GF(aa)` prefix-independent (1 residual) | `P` loop-determined: yes | ✓ |
@@ -83,7 +85,7 @@ character-identical formula (19 nodes / arena 1287 / flat 4 357 185).
 Non-degenerate LTL languages (2238), ventilated by `ϕ`. `A@1` anchors at width
 1; `A≤3` within the tester's `k ≤ 3`; `FAIL` layers anchoring at no `k ≤ 3`
 (the (A)-tester tops out at 3, so its gap *is* the scoped-fallback stratum,
-Prop 5.11/5.14); `stemk3` languages every layer of which anchors at `k ≤ 3`;
+paper Props 4.11/4.14); `stemk3` languages every layer of which anchors at `k ≤ 3`;
 `pfxind` prefix-independent. Built by `census_build` → `census_report`.
 
 | `ϕ=(γ,s)` | class | langs | layers | A@1 | A≤3 | FAIL | frozen | stemk3 | pfxind |
@@ -107,20 +109,17 @@ Prefix-independence **climbs with degree** (0% at depth 1, 12% at ω, 31.6% at
 
 ### F6 — the (A)-fallback stratum is exactly Wagner depth 1
 
-Spec E1 predicted "a large majority pass (A) at `k=1`" and left H2 ("first
-(A)-failing hit ⟨TBD⟩") open. The 1432 FAIL layers are located precisely:
+The 1432 FAIL layers are located precisely:
 **every one is at `ϕ = (1,σ)` or `(1,π)`** (guarantee / safety), 716 apiece by
 duality. The clopen islands `(1,δ)`, the `(2,·)` pair, and **all** the higher
 Borel degrees — `(ω,·)` DBA/DCA and `(ω²,·)` parity — anchor with **zero**
-FAIL. So H2's `⟨TBD⟩` is filled by *complexity, not shape*: the scoped DG
+FAIL: the scoped DG
 fallback's raison d'être is entirely the Wagner-degree-1 tier (safety /
 guarantee languages whose entry layers resist finite-width anchoring). This is
-§7's inner-frontier fraction as a measurement. No refutation of a paper claim
-(the stratum is predicted to exist); it fixes the empirical column and pins the
-frontier to a degree. ~~The FAIL floor needs **≥ 2 AP** (no 1-AP language
-fails).~~ — **refuted, see F14**: every (A)-failing language is 1 AP, and the
-floor is `|𝒞| = 15` at 3 states (`3state1ap0acc_004260`). The degree
-localisation above stands.
+§7's inner-frontier fraction as a measurement. The AP axis carries nothing:
+every (A)-failing language is **1 AP**, none at 2 or 3 AP, and the
+floor is `|𝒞| = 15` at 3 states (`3state1ap0acc_004260`, F14) — the (A)
+frontier is algebra size, not alphabet width.
 
 ## E2 — window determinacy, by Wagner degree
 
@@ -138,9 +137,10 @@ never pooled away:
 | (ω²,σ) / (ω²,π) | 217 ea | 126 | 91 | 0 | 58.1% | {1: 123, 2: 3} |
 | **POOLED** | 12516 | 12144 | 372 | 0 | 97.0% | {1: 12108, 2: 36} |
 
-**(B) is clean catalogue-wide: 0 FAIL at every degree** — the H3 hunt (smallest
-(B)-failing final layer) stays empty even at 2 AP; a positive (B)-failure
-witness still awaits, the spec's "≥ 2 AP" necessary but not shown sufficient.
+**(B) is clean catalogue-wide: 0 FAIL at every degree** — a *frame* fact: a
+(B)-failing final layer needs 2 states and 2 AP at once (`G(a → F b)`, F13),
+a shape the catalogue omits; the H3 minimality hunt lives at census-next
+`2state2ap`.
 The only 372 UNDECIDED are the frozen-final-layer node-budget stratum (F1), and
 they sit entirely at `(ω,·)` and `(ω²,·)` — the DBA/parity degrees whose frozen
 loop classes wander the whole algebra (depth ≤ 2 has none). The width-2 PASSes
@@ -173,7 +173,8 @@ vs 5). Two lessons:
    covering walk of H }` ⊆ `𝒞`, computable by a `(node, class, covered-edges)`
    closure; (B) at width `k` holds iff, grouping across subgraphs with one
    window projection, all induced pair verdicts agree. The finiteness lives in
-   `𝒞`, never in the graph. **Paper 5.15(iii) and spec C3 patched.**
+   `𝒞`, never in the graph. (Paper Prop 5.4(iii) and spec C3 carry both
+   points.)
 
 Implementation: stage 2 (trivial pass) is exact and polynomial (the per-class
 cycle-class closure — one verdict across all proves (B) at every width); stage 3
@@ -196,12 +197,13 @@ languages emitted, 0 timeout, 0 crash**, total flat-tree-carrying **DAG
 2078 SIZE** — the SIZE rows are `FLAT_OVERFLOW`, the §3 explosion measured as
 a *distribution* rather than the single `GF(aa)` exemplar (19 nodes / arena
 1287 / flat 1 991 717). Group-bearing (non-LTL) inputs are declined upstream by
-the aperiodicity read-off (1701 declines). The engine column (a) is provisional
-now sound (F8): the engine answers where it is provably exact (width-1 layers
-and committed-accepting classes) and declines the non-committed graded stratum
-to DG, so column (a) is smaller than the full census but **0 FAIL**. Its DAG is
+the aperiodicity read-off (1701 declines). The engine column (a): sound —
+**0 FAIL** (F8) — where it answers (width-1 layers
+and committed-accepting classes), the non-committed graded stratum declining
+to DG. Its DAG is
 ~3× below the baseline where it does answer — the compression the paper's §6
-predicts; the full (a)-vs-(b) ledger awaits the graded engine's return.
+predicts. Remaining: the full (a)-vs-(b) ledger, at M3 with the graded
+engine.
 
 ## E7 — certificate validation: the dual scan and ω-blindness tiers
 
@@ -319,8 +321,8 @@ pumps the very start of the word, exposing a prefix-counting group to ω-power
 contexts; nothing in §4 promised the dual of Proposition 4.2. So the two shapes
 are an **asymmetry**: *prefix-independent ⟹ linear-blind* is a theorem (the 108
 ω-only languages), while the dual blindness (the 100 H5 hits) has no
-multiplicative theorem — F7. **Paper §4.3 corrected** to the confined claim plus
-the asymmetry; the layer-confined (B) statistics still see nothing of `Even`'s
+multiplicative theorem — F7. The paper states the confined claim plus
+the asymmetry (§3); the layer-confined (B) statistics still see nothing of `Even`'s
 group (every within-layer cycle of the group layer `{2,4}` is a pure-`a` cycle
 of even length, all folding to one rejecting class).
 
@@ -364,62 +366,48 @@ around **every** period-`>1` cycle, confirming a column-false H5 is genuinely
 
 ### F3 — classification convention at the diagonal
 
-E0 reports layer `{5}` as "both letters neutral" while Definition 5.4's diagonal
+E0 reports layer `{5}` as "both letters neutral" while Definition 4.4's diagonal
 doctrine makes a `{c↦c}`-only letter an anchor of `A(c)`. The implementation
 does both: the *report kind* is identity-first (`neutral`), while `A(c)`
-membership is constant-action (diagonal included). The paper states the overlap
-(`A(c) ∩ L(c)` = diagonals) but not the reporting convention; harmless, worth
-one sentence in §5.2 if the letter tables become paper material.
+membership is constant-action (diagonal included). The paper fixes this as its
+reporting convention (§4.2). Resolved — no divergence.
 
-## §3 conformance and F8 — engine soundness restored; the graded stratum deferred to DG
+## §3 conformance and F8 — engine status: sound catalogue-wide, the graded stratum declining to DG
 
-Spec §3 mandates a conformance gate: every emitted formula `φ` must have
-`𝓘(L(φ))` byte-equal to the input `𝓘`, a mismatch being *a stop-the-line bug in
-the engine, never a statistic*. Implemented as a Spot round-trip
-(`invariant_of(import_ltl(flat))` — Spot translating the emitted formula string,
-then a fresh algebra closure), that gate was an **unbounded outside step**: it
-exploded on some inputs (15 s survey timeouts) and merely duplicated the survey
-oracle's own equivalence check, so it is removed and the engine formula ships
-directly. The removal **surfaced** what §3's gate had been converting silently
-into declines.
+**Status.** `--use sos2ltl` over the catalogue, verified by the Spot oracle:
+**0 verified-non-equivalent answers** (survey SUCCESS); the certificate side
+and the DG fallback are likewise clean (`sos2ltl_dg`: **0 FAIL**, only
+SIZE-unverified explosions). Conformance is carried by the survey oracle
+itself — an in-pipeline Spot round-trip gate
+(`invariant_of(import_ltl(flat))`) is *not* used: it is an unbounded outside
+step that duplicates the oracle and times out on large flats.
 
-**The measurement.** `--use sos2ltl` over the catalogue, verified by the Spot
-oracle. Removing the gate exposed **842 verified non-equivalent (FAIL)** answers,
-**every one `sos2ltl.engine`** — the walk+window transcription (C4), never the
-certificate side and never the DG fallback (`sos2ltl_dg` has **0 FAIL**, only
-SIZE-unverified explosions). These were two distinct engine defects, **both now
-resolved**: the engine is sound catalogue-wide (**0 FAIL**, survey SUCCESS),
-trading coverage for soundness on one stratum (defect 2). Per §3 the FAILs were
-stop-the-line bugs, not statistics — and are now closed.
+Two engine invariants carry the soundness, each with the stratum where it
+bites (F8):
 
-**Defect 1 — the window term rendered one representative, not the class (fixed,
-−448).** A window word is built from λ-class representatives, and `Ω(R,c)`'s
-`⋁_S ⋀_{w∈S} GF ŵ` rendered each window position as the representative's single
-cube rather than the whole class it names. On `L = GF(a|!b)` (`1state2ap1acc_030`,
-`|𝒞|=3`, degree (ω,σ)) the frozen absorbing accepting layer's window family is
-upward-closed with three minimal singletons `{a&!b}, {!a&!b}, {a&b}` — the three
-concrete letters of the quotient letter `(a|!b)` — so `Ω = GF(a&!b) ∨ GF(!a&!b) ∨
-GF(a&b) = GF(a|!b)`; the engine emitted only `GF(!a&!b)` (the class's shortlex
-key), under-approximating. The construction is sound (no paper edit): every window
-position now renders as the full λ-class letter-set (`engine.py::_Letters`), and
-`Ω` reduces to `L` exactly. This fault needed **≥ 2 AP** (at 1 AP a quotient
-letter is a single literal or `⊤`, so representative and class coincide and the
-truncation is invisible — the 2-AP switch-on of F6) and floored at `|𝒞|=3`; the
-fix clears all 448 such cases.
+**Window terms render the λ-class, never a representative.** `Ω(R,c)`'s
+window positions are letter *classes*; rendering a class as its shortlex
+representative's cube under-approximates. On `L = GF(a|!b)`
+(`1state2ap1acc_030`, `|𝒞|=3`, degree (ω,σ)) the frozen layer's window family
+has the three minimal singletons `{a&!b}, {!a&!b}, {a&b}` — the concrete
+letters of the quotient letter `(a|!b)` — and
+`Ω = GF(a&!b) ∨ GF(!a&!b) ∨ GF(a&b) = GF(a|!b)` exactly
+(`engine.py::_Letters`). The distinction needs **≥ 2 AP** (at 1 AP a quotient
+letter is a single literal or `⊤`) and floors at `|𝒞|=3`; 448 catalogue
+languages sit on it.
 
-**Defect 2 — committed-accepting layers not collapsed to `true` (fixed by §6.3
-short-circuit + a decline guard).** The remaining 394 were uniformly **`|𝒞| ≥ 12`,
-≥ 4 states, degree (1,σ)/(1,π)** — the guarantee/safety stratum, over **1 AP** so
-not a rendering fault. They are **terminal committed-accepting layers**: from
-such a class every continuation is accepted (tail language `T_c = Σ^ω`, i.e.
-every linked pair whose stem is reachable from `c` lies in `P`), so the exact
-`Final(c)` is `true` — but the graded Theorem 5.13 exit-chain
-under-approximates it. Theory has since established this is a **genuine
-incompleteness in the graded construction** (paper §5.3, correction), not a
-simplification failure: a near-entry exit is certified by a `κ`-window that
-straddles the transient seam, which the exit-chain's `U` (rooted past the
-transient) cannot witness. The committed short-circuit is therefore exact and
-the decline guard is *necessary*, not merely prudent.
+**Committed classes short-circuit to `true`; non-committed graded layers
+decline to DG.** A committed-accepting class — every linked pair whose stem is
+reachable from `c` lies in `P`, so `T_c = Σ^ω` — takes `Final(c) = true`
+(the `O(|𝒞|²)` read-off `_committed`), the common case on the
+guarantee/safety stratum (`|𝒞| ≥ 12`, ≥ 4 states, degree (1,·) — 394
+catalogue languages). A `k ≥ 2` layer carrying a non-committed class declines
+(`transcribe` returns `None`, falling to the DG baseline): the Theorem 4.13
+exit-chain **without the seam bricks** under-approximates near the entry — an
+exit within `k` steps of the transient is certified by a `κ`-window straddling
+the transient seam, which `TL_0`'s `U` cannot witness (paper §4.3). The
+committed short-circuit is exact; the decline guard is necessary until the
+seam bricks land.
 
 Smallest exhibit — **`2state1ap0acc_086_c`: `|𝒞| = 12`, 4 states, 1 AP, degree
 (1,σ) (properly open — guarantee).** A reach-the-accepting-sink language.
@@ -496,38 +484,20 @@ multi-layer structure the bricks assemble across):
 On this exhibit `D`'s start reads `a → sink`, so `a⁻¹L = Σ^ω`, and classes
 `2 = [a]`, `5 = [a·!a]`, `8 = [a·!a·!a]` have `T_c = Σ^ω` — committed to
 acceptance, so `Final(c) = true`, whence `Final(0)`'s `a`-arm `= a ∧ X true = a`
-("first letter `a` ⟹ accept", correct: `a·a·a·!a·a·(!a)^ω` accepts). The engine's
-graded `Final(2)` was not `true`, so it rejected that witness — a 2-anchored
-layer (`a` a partial constant onto `2`, `!a` acting `2↦5↦8↦8`: mixed at width 1,
-constant at length ≥ 2) on which the graded Theorem 5.13 exit-chain is
-incomplete for this near-entry exit (paper §5.3, correction).
+("first letter `a` ⟹ accept", correct: `a·a·a·!a·a·(!a)^ω` accepts). The layer
+`{2,5,8}` is 2-anchored (`a` a partial constant onto `2`, `!a` acting
+`2↦5↦8↦8`: mixed at width 1, constant at length ≥ 2), and the word
+`a·a·!a·a·(!a)^ω` is the paper's §4.3 seam witness: its certifying window
+`(a,a,!a) ∈ An_3(5)` opens at the entry. The exhibit declines to DG — a
+correct, SIZE-unverifiable formula.
 
-**The cure (implemented, `engine.py`; the construction had a genuine gap, now
-corrected in paper §5.3).** Two parts, per theory's §6.3 strength-stratification
-reading:
-
-- *Committed short-circuit.* A committed-accepting class — the `O(|𝒞|²)`
-  read-off `_committed`: every linked pair whose stem is reachable from `c` in
-  `Cay(L)` lies in `P` — takes `Final(c) = true` directly, in place of the walk
-  brick. On the guarantee/safety stratum this is the common case.
-- *Decline-to-DG guard.* A `k ≥ 2` (graded) layer carrying any non-committed
-  class **declines** (`transcribe` returns `None`, falling through to the DG
-  baseline) rather than emit the Theorem 5.13 exit-chain, whose exact collapse
-  is not yet proven. The exhibit now declines to DG — a correct,
-  SIZE-unverifiable formula, no longer FAIL.
-
-The result is **0 verified-non-equivalent answers catalogue-wide** (survey
-SUCCESS, E0 green): faithful-or-NOK restored. The cost is coverage — a
-non-committed graded layer now falls to DG instead of the compact engine
-formula.
-
-**Remaining work (construction-level).** The graded exit-chain repair is in the
-paper, not the engine: paper §5.3 (correction) roots the window-leave `U` at the
-layer entry — the disjunct `sojourn(r) ∧ (step_κ U ⋁_{c′}⋁_{w∈An_κ(c′)}(ŵ ∧ X^κ
-leave(c′)))` scanned from `t` — so a window opening at the entry is witnessed
-(it recovers the exhibit). Once its completeness re-proof lands, the engine can
-implement the entry-rooted form and lift the decline guard for non-committed
-graded layers. Until then, decline-to-DG is the sound guard, and the committed
+**Remaining (construction-level, M3).** Implement Theorem 4.13's graded bricks
+**with the seam disjuncts `seam(c)`** (paper §4.3 — the exit-chain is
+incomplete without them) and lift the decline guard for non-committed graded
+layers. Do **not** implement the entry-rooted `U` variant — a disjunct
+`sojourn(r) ∧ (step_κ U ⋯)` scanned from the entry is unsound (paper §4.3,
+the seam remark). Gate: this section's exhibit word must accept via the root
+seam disjunct. Until then, decline-to-DG is the sound guard, and the committed
 short-circuit carries the guarantee/co-safety stratum exactly.
 
 ## E10 — branch factoring: guard synthesis, guard grouping, residual-indexed exits
@@ -535,24 +505,22 @@ short-circuit carries the guarantee/co-safety stratum exactly.
 The three renderings of spec E10, implemented and priced. All three are
 exactness-preserving by the label contract (any exact label for the tail
 language serves), and each is switchable (`engine.Rendering`) so the ledger
-can hold the others fixed. Two structural changes came first.
+can hold the others fixed. Two structural facts underpin the numbers.
 
-**F9 — the engine emitted strings, so the class memo bought nothing.** `Final(c)`
-was a Python `str` spliced into every exit arm, and `translator.py` re-parsed
-the flat string to recover a DAG. The transcription therefore paid *flat-tree*
-cost at construction time — the very explosion §3 measures on the DG baseline —
-and the "class-indexed sharing is the memo" line of the engine docstring was
-false. `engine.py` now builds a hash-consed `spot.formula` end to end; `Final(d)`
-is one node, referenced. No paper edit: the construction always said DAG.
+**F9 — the class memo only pays on a hash-consed AST.** `engine.py` builds a
+hash-consed `spot.formula` end to end; `Final(d)` is one node, referenced at
+every exit arm. A string-spliced rendering (re-parsing flats to recover a
+DAG) pays *flat-tree* cost at construction time — the very explosion §3
+measures on the DG baseline — and defeats the class-indexed sharing the
+construction is about.
 
-**F10 — guard grouping must key on the child, not on the target class.** The
-exit fan was already grouped by target class (`_by_dest`), which is spec E10(1)
-read literally. But then E10(2)'s residual indexing cannot fire *through* it:
-two classes with one residual stay two arms, each carrying the same child. Fans
-now group on the **child key** — the class, or the residual when indexing is on
-— which is what turns the spec's `⊤`-guard arc ("all exits one target") from a
-rarity into the common case. The two sharings do not compose otherwise. Spec
-E10(1) is patched: *group by child, not by class*.
+**F10 — guard grouping keys on the child, not on the target class.** Fans
+group on the **child key** — the class, or the residual when indexing is on
+(spec E10(1)). Keying on the target class blocks E10(2)'s residual indexing
+from firing *through* the grouping: two classes with one residual stay two
+arms carrying the same child. Child-keying is what turns the `⊤`-guard arc
+("all exits one target") from a rarity into the common case; the two sharings
+do not compose otherwise.
 
 ### The triptych of renderings on one language
 
@@ -650,8 +618,8 @@ That is why grouping's advantage grows post-`hi` (1.06× → 1.29×) only where 
 DAG was large enough to defeat Spot's own containment checks
 (`_SIMP_FULL_LIMIT` gates the expensive rules by tree size): the syntactic
 sharings earn their keep by keeping the input *affordable* for the simplifier,
-not by doing the simplifier's job. The paper's §6 should say which size it
-claims, and should claim the post-simplifier one.
+not by doing the simplifier's job. (The paper claims the post-simplifier
+size, per its §8 convention.)
 
 Cost side, unpredicted: guard minimization **never** enlarges the raw tree
 (0 of 1114) but enlarges the raw **DAG** on 82 languages, all 3-AP (exhibit
@@ -721,14 +689,15 @@ layer, and the root's label is never redirected into itself.
 
 ## E9 — worked-example curation, and F13: H3 exists
 
-### F13 — `G(a → F b)` is an H3 hit: a (B)-failing final layer. Two tester bugs found by it.
+### F13 — `G(a → F b)` is an H3 hit: a (B)-failing final layer
 
-E9's *designated first candidate* (spec E9(2), "anchored moving layer, live
-`STAY∞`") is `G(a → F b)`. It **declines**, and the reason is not the engine:
-its final layer genuinely fails condition (B). This is the E6/H3 hunt —
-"smallest LTL specimen with a (B)-failing final layer", the paper's §5.1
-candidate for the *order beyond windows* example — recorded until now as
-**not found**.
+`G(a → F b)` (spec E9(2)'s designated candidate — it cannot serve there)
+**declines**, and the reason is not the engine: its final layer genuinely
+fails condition (B) at every width — the E6/H3 hunt's first hit. Theory
+status: the failure is **parked-type** — the paper's anchored parks
+(Prop 5.7) capture it, expected (B̃) PASS at width 1 under the C3 park split
+(spec H3, to confirm); the paper's *order beyond windows* residual witness is
+H8's formula, not this one.
 
 The specimen is committed: **`samples/fixtures/hoa/anchor/gafb_response.hoa`**
 (the kanchor fixture E9(2) already names) and its canonical invariant
@@ -752,46 +721,33 @@ Both are confined to `R`; both have recurring window set `{!a&!b}` at *every*
 width `k′`. So no window set determines the verdict: the layer is
 (B)-undetermined at every width, and the distinguishing datum is the *class*
 (class 4 owes a `b` to an earlier `a`; class 2 owes nothing) — precisely the
-"order beyond windows" phenomenon. `FAIL` with this witness pair at
-`k′ = 1, 2, 3` is what the tester now reports.
+"order beyond windows" phenomenon. The tester reports `FAIL` with this
+witness pair at `k′ = 1, 2, 3`.
 
-**Why the tester reported `UNDECIDED` instead.** Two defects in `windows.py`,
-both fixed; neither was a soundness bug (both `FAIL` and `UNDECIDED` decline to
-DG), both were *blindness* bugs that hid the H3 stratum:
+**Method notes (load-bearing, spec C3).** A conflict routinely pairs cycles at
+two *different* anchor classes — this one does — so the bounded enumeration is
+breadth-first (shortest cycles first; a conflict needs only short ones) under
+**one node budget per anchor class**: a shared depth-first budget lets one
+anchor starve the others and hides exactly this stratum. And a conflict is a
+**witness pair** — two confined lassos, equal recurring window sets, opposite
+verdicts — refuting (B) at that width exactly, finished search or not; only a
+conflict-*free* width needs completeness to grade as a (cap-bounded) PASS.
+`FAIL` means *conflicted at every tested width*.
 
-1. *The cycle enumeration was depth-first under a budget shared across anchor
-   classes.* Stage 3 enumerates cycle words to length `2·|R|·|𝒞|` (= 20 here) —
-   exponential, so on any layer worth testing the node budget trips long before
-   the enumeration completes, and **what the traversal reaches first is what the
-   tester gets to see**. DFS spent the whole 200 000-node budget inside anchor
-   class 2's deep branches; anchor class 4 was then never enumerated at all. A
-   conflict routinely pairs cycles at two *different* anchors — this one does —
-   so it was structurally invisible. Now: breadth-first (shortest cycles first,
-   and a conflict needs only short ones) with **one budget per anchor class**.
-2. *An all-widths conflict was downgraded to `UNDECIDED` when the enumeration
-   was incomplete.* But a conflict is a **witness pair** — two confined lassos,
-   equal recurring window sets, opposite verdicts — and it refutes (B) at that
-   width exactly, finished search or not. Only a conflict-*free* width needs
-   completeness before it may be called a (cap-bounded) PASS. Spec C3 says this
-   ("a verdict conflict is an exact `FAIL(witness pair of lassos)`"); the code
-   did not. `FAIL` is now exact, and means *conflicted at every tested width*.
-
-**The catalogue is unmoved.** Re-running the census after the fix reproduces
-`E1E2.txt` byte-for-byte: still **0 FAIL and 372 UNDECIDED** at every degree,
-the UNDECIDED still entirely the `(ω,·)`/`(ω²,·)` frozen-final-layer stratum of
-F1. So E2's "(B) is clean catalogue-wide" **survives**, and F1's attribution of
-the UNDECIDED stratum survives with it. `G(a → F b)` is invisible to
+**The catalogue tables are byte-stable** (`E1E2.txt`): **0 FAIL and 372
+UNDECIDED** at every degree, the UNDECIDED entirely the
+`(ω,·)`/`(ω²,·)` frozen-final-layer stratum of
+F1. `G(a → F b)` is invisible to
 `flat_canon` for a *frame* reason, not a tester reason: it needs **2 states and
 2 AP at once**, and the catalogue enumerates `1state2ap`, `2state1ap`,
-`3state1ap` — never `2state2ap`. E2's prediction that a (B) failure "requires
-≥ 2 AP" is confirmed and sharpened: **≥ 2 AP and ≥ 2 states**. The H3 frontier
+`3state1ap` — never `2state2ap`. A (B) failure therefore needs
+**≥ 2 AP and ≥ 2 states** at once. The H3 minimality frontier
 is a census-next axis (`2state2ap`), and the first hit is a named formula, not
 a corpus id.
 
-This is the paper's own §5.1 example arriving as a measurement, and it is a
-`k′ = ∞` failure (constant window at every width), not a marginal one — the
-strongest possible form of the H3 witness. The layer is anchored at width 1
-under (A), so it isolates (B): the scoped fallback it forces is a (B) fallback,
+The failure is `k′ = ∞` (constant window at every width), not marginal. The
+layer is anchored at width 1
+under (A), so it isolates (B): the decline it forces is a (B) decline,
 not an (A) one.
 
 ### The E9 gallery
@@ -802,7 +758,7 @@ bridge builds, so presentation cannot leak in). The label stack is the engine's
 own `SOS2LTL_TRACE` brick dump, captured rather than re-assembled probe-side:
 a probe-side copy would drift from the engine and the figure it feeds would
 stop being checkable (`sos_toltl_figures.md`, FIG-2's blocking requirement).
-The hook lands with this section: `[engine] layer=… brick=… class=… formula=…`,
+The hook: `[engine] layer=… brick=… class=… formula=…`,
 raw formulas, simplification off, emitted child-first down the R-order — which
 *is* the derivation order the label stack reads as. On `GF(aa)` it reproduces
 the paper's §5.2 stack, `Final(5) = GF(a ∧ Xa)` first and `STAY = 0` on both
@@ -852,32 +808,25 @@ graded 952, (A)-failing 258 (192 both), and 108 declining for neither reason —
 those are the (B)-`UNDECIDED` window-term stratum of F1. So the graded engine
 (M3) is not a marginal completion: it is 42.5% of the LTL catalogue.
 
-### F14 — H2 and H4 answered, and the "(A)-FAIL needs ≥ 2 AP" claim is refuted
-
-E6 left "**H2**: smallest LTL specimen with an (A)-failing layer" and "**H4**:
-smallest specimen whose extraction must invoke the DG fallback" open, predicting
-only that they do not exist at 2 states / 1 AP and leaving "first hits appear
-⟨TBD: record where⟩". The scan records them:
+### F14 — H2 and H4: the smallest (A)-failing and fallback-forced specimens
 
 - **H2 = `3state1ap0acc_004260`** (`|𝒞| = 15`, **1 AP**, 3 states, `ϕ = (1,π)`
   safety; complement `_c` at `(1,σ)`). Its layers `{3,8,12}`, `{6,11,14}`,
   `{9,10,13}` are each 3 classes with both letters `mixed` — no width `k ≤ 3`
-  anchors them. 258 languages (A)-fail catalogue-wide.
+  anchors them. 258 languages (A)-fail catalogue-wide; none exists at
+  2 states / 1 AP (the spec's prediction, confirmed).
 - **H4 = H2** on this catalogue: the DG fallback is first forced by an
   (A)-failure at `|𝒞| = 15`, and by a graded layer at `|𝒞| = 12` — so if H4 is
   read as "must invoke the fallback *at all*", the graded stratum reaches it
-  first, at `2state1ap0acc_086` (`|𝒞| = 12`). The prediction "H2 does not exist
-  at 2 states / 1 AP" is **confirmed**: every hit has 3 states.
+  first, at `2state1ap0acc_086` (`|𝒞| = 12`).
 
-**F6 is refuted in its parenthesis.** F6 concluded "The FAIL floor needs **≥ 2
-AP** (no 1-AP language fails)". The opposite holds: **all 258 (A)-failing
-languages are 1 AP**, and *no* 2-AP or 3-AP language in the catalogue has an
+**The AP axis carries nothing on (A).** All 258 (A)-failing
+languages are 1 AP, and *no* 2-AP or 3-AP language in the catalogue has an
 (A)-failing layer. The (A) frontier is driven by **states** (⟹ algebra size,
-`|𝒞| ≥ 15`), not by alphabet width — which is the natural reading of Def 4.4,
+`|𝒞| ≥ 15`), not by alphabet width — the natural reading of Def 4.4,
 since a mixed action needs several classes to be mixed *over*, not several
-letters. F6's degree localisation (every FAIL at `ϕ = (1,σ)/(1,π)`) stands and
-is confirmed by the exhibit's `.cat`. The E1 table is unaffected — it counts
-layers and never claimed the AP floor; only F6's prose did.
+letters. The degree localisation (every FAIL at `ϕ = (1,σ)/(1,π)`, F6) is
+confirmed by the exhibit's `.cat`.
 
 ## Reproduction
 
@@ -921,12 +870,12 @@ the committed reference copies live in `results/reference/flat_canon/`.
     python3 -m tests.sos2ltl.e7_mechanism_probe \
         genaut/corpus/flat_canon/sos/2state1ap1acc_01681.sos   # P-level, |𝒞|=13
 
-**F8 exhibits (0 FAIL after the fixes).**
+**F8 exhibits (0 FAIL).**
 
     python3 -m tests.sos2ltl.engine_fails logs/flat_canon/sos2ltl/survey_*.csv   # 0 FAIL
-    # defect 1 (window class) — now exact, engine answers GF(a|!b):
+    # window-class rendering — engine answers GF(a|!b):
     python3 -m survey --hoa genaut/corpus/flat_canon/det/1state2ap1acc_030.hoa --use sos2ltl
-    # defect 2 (committed-accepting layer) — engine declines, DG answers:
+    # committed classes / graded decline — engine declines, DG answers:
     python3 -m survey --hoa genaut/corpus/flat_canon/det/2state1ap0acc_086_c.hoa --use sos2ltl
     cat genaut/corpus/flat_canon/det/2state1ap0acc_086_c.hoa
     cat genaut/corpus/flat_canon/sos/2state1ap0acc_086_c.sos
