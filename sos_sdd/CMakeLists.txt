@@ -26,14 +26,32 @@ find_package(pybind11 CONFIG REQUIRED)
 pybind11_add_module(_core src/module.cpp)
 target_compile_options(_core PRIVATE -Wall -Wextra)
 
-if(NOT DEFINED LIBDDD_HOME AND DEFINED ENV{LIBDDD_HOME})
-  set(LIBDDD_HOME $ENV{LIBDDD_HOME})
-endif()
+# libDDD: an installed prefix (include/ddd/DDD.h + lib/libDDD.*) or a
+# built source tree (ddd/DDD.h + ddd/.libs/libDDD.*), located through
+# LIBDDD_HOME (cache or environment) with the sibling checkout as a
+# fallback hint.
+set(_libddd_hints)
 if(DEFINED LIBDDD_HOME)
-  target_include_directories(_core PRIVATE ${LIBDDD_HOME}/include)
-  target_link_directories(_core PRIVATE ${LIBDDD_HOME}/lib)
-  # target_link_libraries(_core PRIVATE DDD)
+  list(APPEND _libddd_hints ${LIBDDD_HOME})
 endif()
+if(DEFINED ENV{LIBDDD_HOME})
+  list(APPEND _libddd_hints $ENV{LIBDDD_HOME})
+endif()
+list(APPEND _libddd_hints $ENV{HOME}/git/libDDD /usr/local /usr)
+
+find_path(DDD_INCLUDE_DIR ddd/DDD.h HINTS ${_libddd_hints} PATH_SUFFIXES include)
+find_library(DDD_LIBRARY NAMES DDD HINTS ${_libddd_hints} PATH_SUFFIXES lib ddd/.libs)
+if(NOT DDD_INCLUDE_DIR OR NOT DDD_LIBRARY)
+  message(FATAL_ERROR "libDDD not found (searched: ${_libddd_hints}); set LIBDDD_HOME")
+endif()
+message(STATUS "libDDD headers: ${DDD_INCLUDE_DIR}; library: ${DDD_LIBRARY}")
+
+target_include_directories(_core PRIVATE ${DDD_INCLUDE_DIR})
+target_link_libraries(_core PRIVATE ${DDD_LIBRARY})
+get_filename_component(_ddd_libdir ${DDD_LIBRARY} DIRECTORY)
+set_target_properties(_core PROPERTIES
+  BUILD_RPATH ${_ddd_libdir}
+  INSTALL_RPATH ${_ddd_libdir})
 
 set_target_properties(_core PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
