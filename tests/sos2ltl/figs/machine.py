@@ -86,6 +86,31 @@ def _frozen(cay: Cayley, layer: Sequence[int], inv: Invariant) -> bool:
 # ------------------------------------------------------------------ #
 # The side tag of one layer: the (A) and (B) read-offs, verbatim.
 # ------------------------------------------------------------------ #
+def letter_role(cay: Cayley, layer: Sequence[int], inv: Invariant,
+                a: int) -> str:
+    """The role of letter `a` on `layer`, both halves of it.
+
+    A letter may act inside the layer on some classes and exit from others; a
+    tag naming only the exit would hide the in-layer action that condition (A)
+    reads. The in-layer half is `reset(d)` when every class the letter keeps
+    inside lands on the same `d` (a partial constant — what makes the layer
+    1-anchorable), `moves` otherwise; the exit half names the classes the
+    letter leaves from. A letter that never stays is a bare `exit`."""
+    inside = set(layer)
+    dests = {c: cay.step(c, a) for c in layer}
+    stay = {d for d in dests.values() if d in inside}
+    out = sorted(c for c, d in dests.items() if d not in inside)
+
+    head = rf"\texttt{{{letter_txt(inv, a)}}}"
+    if not stay:
+        return head + ": exit"
+    role = (rf"$\mapsto$ reset({stay.pop()})" if len(stay) == 1
+            else ": moves")
+    if out:
+        role += r", exit@" + ",".join(str(c) for c in out)
+    return f"{head} {role}" if role.startswith("$") else head + role
+
+
 def layer_tag(cay: Cayley, la: anchoring.LayerAnchoring,
               rep: windows.WindowReport, inv: Invariant) -> str:
     lines: List[str] = []
@@ -96,16 +121,8 @@ def layer_tag(cay: Cayley, la: anchoring.LayerAnchoring,
     if frozen:
         lines.append(r"\textit{frozen}: every letter neutral")
     else:
-        for a in range(inv.alphabet.size):
-            name = letter_txt(inv, a)
-            dests = {cay.step(c, a) for c in la.layer}
-            if not dests <= set(la.layer):
-                lines.append(rf"\texttt{{{name}}}: exit")
-            elif len(dests) == 1:
-                lines.append(rf"\texttt{{{name}}} $\mapsto$ "
-                             rf"reset({dests.pop()})")
-            else:
-                lines.append(rf"\texttt{{{name}}}: moves")
+        lines += [letter_role(cay, la.layer, inv, a)
+                  for a in range(inv.alphabet.size)]
 
     if rep.status == windows.TRANSIENT:
         pass                                    # no law owed, no window owed

@@ -10,7 +10,20 @@
 \definecolor{boxfill}{HTML}{F4F5F7}
 \definecolor{frozen}{HTML}{E9EEF6}
 \definecolor{ref}{HTML}{A6ADB4}
+\definecolor{hilite}{HTML}{DCE7F5}
 \definecolor{ink}{HTML}{222629}
+% Spot's LaTeX formula printer (`formula.to_str('latex')`) emits these.
+\newcommand{\ttrue}{\top}
+\newcommand{\ffalse}{\bot}
+\newcommand{\limplies}{\rightarrow}
+\newcommand{\liff}{\leftrightarrow}
+\newcommand{\X}{\mathsf{X}\,}
+\newcommand{\G}{\mathsf{G}\,}
+\newcommand{\F}{\mathsf{F}\,}
+\newcommand{\U}{\mathbin{\mathsf{U}}}
+\newcommand{\W}{\mathbin{\mathsf{W}}}
+\newcommand{\R}{\mathbin{\mathsf{R}}}
+\newcommand{\M}{\mathbin{\mathsf{M}}}
 \tikzset{
   % ---- classes and machines -------------------------------------
   cls/.style        = {circle, draw=ink, line width=.5pt, fill=white,
@@ -37,18 +50,36 @@
                        -{Stealth[length=2mm]}},
   elab/.style       = {font=\scriptsize, inner sep=1.5pt,
                        fill=white, fill opacity=.85, text opacity=1},
-  % ---- recursion panels ------------------------------------------
-  dgnode/.style     = {circle, draw=ink, fill=white, line width=.5pt,
-                       inner sep=0pt, minimum size=6.5mm,
-                       font=\scriptsize},
-  dgleaf/.style     = {dgnode, fill=boxfill, draw=order},
-  treeedge/.style   = {draw=ink, line width=.4pt, opacity=.55},
+  % ---- formula panels --------------------------------------------
+  opnode/.style     = {rounded corners=2pt, draw=ink, fill=white,
+                       line width=.5pt, inner sep=3pt, minimum height=5.5mm,
+                       minimum width=9mm, font=\small, align=center},
+  ophandle/.style   = {opnode, draw=order, fill=boxfill,
+                       font=\footnotesize},
+  opatom/.style     = {opnode, draw=letterA, text=letterA,
+                       font=\small\ttfamily},
   dagedge/.style    = {draw=ink, line width=.6pt, -{Stealth[length=1.6mm]}},
-  refedge/.style    = {draw=ref, line width=.35pt, densely dotted,
+  refedge/.style    = {draw=ref, line width=.5pt, densely dotted,
                        -{Stealth[length=1.4mm]}},
-  emult/.style      = {font=\tiny, text=ref, inner sep=1pt, fill=white},
-  elide/.style      = {font=\scriptsize, text=ink, align=center},
+  slot/.style       = {font=\tiny, text=ref, inner sep=1pt, fill=white,
+                       fill opacity=.85, text opacity=1},
+  badge/.style      = {font=\tiny, text=order, inner sep=1pt},
+  elide/.style      = {font=\scriptsize\itshape, text=order, align=center},
   panelcap/.style   = {font=\scriptsize, text=ink, align=center},
+  % ---- derivation panels ------------------------------------------
+  minicls/.style    = {circle, draw=order, fill=white, line width=.3pt,
+                       inner sep=0pt, minimum size=3.4mm, font=\tiny,
+                       text=ink},
+  minibox/.style    = {rounded corners=1.4pt, draw=boxline, fill=white,
+                       line width=.4pt},
+  minidone/.style   = {minibox, fill=boxfill},
+  minilive/.style   = {minibox, draw=letterA, fill=hilite, line width=.7pt},
+  miniorder/.style  = {draw=order, line width=.9pt,
+                       -{Stealth[length=1.5mm]}, opacity=.6},
+  blockhead/.style  = {font=\small\bfseries, text=ink, anchor=west},
+  blocknote/.style  = {font=\scriptsize\itshape, text=order, anchor=west},
+  brick/.style      = {font=\small, text=ink, anchor=west},
+  rulelab/.style    = {font=\scriptsize\itshape, text=order, anchor=west},
 }
 
 \begin{document}
@@ -80,11 +111,11 @@
   \begin{scope}[on background layer]
     \node[layerbox, fit=(c1) (c3), inner sep=6pt] (L1) {};
   \end{scope}
-  \node[layertag, anchor=east, xshift=-14.0mm] at (L1.west) {\texttt{!a} $\mapsto$ reset(1)\\\texttt{a}: exit\\(A) at $k=1$\\all-rejecting: $\mathrm{STAY}^\infty = \bot$};
+  \node[layertag, anchor=east, xshift=-14.0mm] at (L1.west) {\texttt{!a} $\mapsto$ reset(1)\\\texttt{a} $\mapsto$ reset(3), exit@3\\(A) at $k=1$\\all-rejecting: $\mathrm{STAY}^\infty = \bot$};
   \begin{scope}[on background layer]
     \node[layerbox, fit=(c2) (c4), inner sep=6pt] (L2) {};
   \end{scope}
-  \node[layertag, anchor=west, xshift=14.0mm] at (L2.east) {\texttt{!a} $\mapsto$ reset(4)\\\texttt{a}: exit\\(A) at $k=1$\\all-rejecting: $\mathrm{STAY}^\infty = \bot$};
+  \node[layertag, anchor=west, xshift=14.0mm] at (L2.east) {\texttt{!a} $\mapsto$ reset(4)\\\texttt{a} $\mapsto$ reset(2), exit@2\\(A) at $k=1$\\all-rejecting: $\mathrm{STAY}^\infty = \bot$};
   \begin{scope}[on background layer]
     \node[frozenbox, fit=(c5), inner sep=6pt] (L3) {};
   \end{scope}
