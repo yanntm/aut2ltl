@@ -1855,3 +1855,61 @@ expensive, accept it. Theory has no cheaper exact decision procedure for a
 fired query to offer, and proposes nothing further. The measurement is
 yours to schedule; the remaining opens are unchanged and all land with the
 sweep drop.
+
+---
+
+## Correction — the build/scan measurement refutes my own recommendation (2026-07-09)
+
+Theory endorsed incremental closure reuse "as-is", on the strength of a claim I
+made in the item-12 entry above without measuring it: that the closure's cost
+lives in the build (`_loop_elements`). I then made the measurement theory named
+as the discriminator (`tests/sosl/exact_closure_profile.py`, which times a fired
+query's build and scan phases separately). **The claim is false on every
+non-capped fired query, and the endorsed lever is worthless.** Recorded here
+before it reaches the paper.
+
+| case | leg | fired non-capped queries | build | scan |
+|---|---|--:|--:|--:|
+| `2state1ap2acc_parity_2195145216` | ablation | 8 | 2.1 ms (1%) | 172.1 ms (99%) |
+| `2state1ap2acc_parity_0006272130` | ablation | 5 | 0.9 ms (2%) | 45.1 ms (98%) |
+| `3state1ap0acc_013908` | default | 1 | 0.2 ms (4%) | 3.5 ms (96%) |
+
+Three consequences, and they do not all point the same way:
+
+1. **Incremental profile-monoid reuse is dead.** It attacks the build, which is
+   1–4% of a non-capped fired query. Amdahl caps the win at 4%. My
+   recommendation was wrong and theory's endorsement of it rests on my error, not
+   on theirs.
+2. **Cell-level localization is not "structurally dead" as a scan optimization.**
+   It attacks the phase that *is* 96–99%, and `exact_ref_residue` bounds its win
+   at 18–73% of it. The one thing I said about it that survives is the thing that
+   matters: `Split ≠ ∅` on a firing, so the residue is never empty, the closure
+   is still built, and **no `OVERSIZE` is lifted**.
+3. **Neither lever touches the sweep's collapse, because neither phase is the
+   sweep's cost.** A non-capped fired query costs 3–45 ms per *run*. The sweep's
+   time is in the **capped** queries, where the build runs all the way to the
+   200 000-element cap before raising: `3state1ap0acc_013908` (ablation) burns
+   **10.7 s**, `_075976` **23.5 s** — and on the default leg that cost is paid
+   *and then* `bounded:8` runs as the cap-escape. That is the ~33 → ~0.9 cases/s
+   collapse, and it is 100% build, in the runs that end `OVERSIZE` or `BUDGET`
+   anyway.
+
+So the honest ranking of levers is the reverse of what I proposed. The one that
+addresses the observed cost is neither of the two on the table: **make the cap
+cheap to hit.** A capped query's verdict is already decided — `OVERSIZE` on the
+ablation leg, `bounded:8` on the default leg — so the 10–24 s spent proving the
+closure is large is pure waste. A time-based cap, or a much lower element cap,
+reaches the same verdict in milliseconds. The measurable risk is the middle band:
+languages whose closure exceeds a lowered cap but would have finished under
+200 000, which would change verdict from decided to deferred. That count is
+exactly what a lowered-cap re-run of the fired cases would report, and it is the
+next measurement, not a build.
+
+I am not proposing to implement any of this — the sweep is in flight and its
+tallies come first. The correction is what needed recording: theory's item-12
+close ("cell-level localization is structurally dead") is right about
+`OVERSIZE` and wrong about the scan, and its endorsement of reuse should be
+withdrawn.
+
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.exact_closure_profile
+<case_id> [--nosat]` — one case per invocation.
