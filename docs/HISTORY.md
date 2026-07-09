@@ -2999,3 +2999,11 @@ from changelog into work order: DONE/TODO status table up front, rev
 narratives folded into normative text, learner-spec pins dropped. The
 dropped rev history (rev 2 saturation correction, rev 3 paper fill-in,
 rev 4 protocol) survives in git log of sos_calculus_spec.md.
+
+## 2026-07-09 — hull conjecture settled: safety closure is a pair-set surgery
+
+Paper section 3.6 (Prop 3.5, Cor 3.6-3.7): cl(L) = pairs with live stem,
+one O(n^2) scan; interior dual; Alpern-Schneider decomposition a Boolean
+identity on the table; safety/co-safety exact fixpoint tests; aperiodicity
+survives the split. Open: obligation as the hull-generated sublattice.
+Spec: hulls promoted from non-goal to optional CAL5 with formulas+gates.
