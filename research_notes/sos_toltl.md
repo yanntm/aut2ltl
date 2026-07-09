@@ -193,8 +193,14 @@ operators are the usual `∨`, `F φ = ⊤ U φ` (eventually),
 `GF`/`FG` name the recurrence and persistence shapes. Two conventions
 run through every formula below. A *letter* `σ ∈ Σ` used as a formula
 abbreviates its cube `⋀_{p ∈ σ} p ∧ ⋀_{p ∉ σ} ¬p` — "the current
-letter is `σ`" — and a *set* of letters abbreviates the disjunction of
-their cubes. And satisfaction is **future-only**: `α, i ⊨ φ` depends
+letter is `σ`". A *set* `S ⊆ Σ` used as a formula denotes the Boolean
+formula over `AP` whose satisfying valuations are exactly `S`; the
+disjunction of the cubes is one presentation of it, never the emitted
+one — the renderer synthesizes a minimized form (`b` for the
+`b`-letters, `⊤` for `S = Σ`), and that synthesis is load-bearing:
+it is what lets a full guard collapse so that `S U ψ` reappears as
+`⊤ U ψ = F ψ` over alphabets of any width. And satisfaction is
+**future-only**: `α, i ⊨ φ` depends
 only on the suffix `α_{≥i}` (immediate induction on `φ`), so
 `α, i ⊨ φ ⟺ α_{≥i}, 0 ⊨ φ`. LTLf is the
 same syntax evaluated on non-empty finite words, `X` demanding that a
@@ -341,6 +347,36 @@ construction; recurse on `M'` for the block-sequence language and on the
 smaller alphabet `Σ \ {c}` for each block language; lift back through
 relativized (`µ`-confined) subformulas and a sentinel letter.
 
+**The procedure, operationally.** [DG08, §8] states this as an
+induction; the fallback of §4.4 runs it as a procedure, so we fix it as
+one (the first/last-block bookkeeping and the exact relativization are
+[DG08]'s and elided — nothing below depends on them):
+
+```
+DG(h : Σ* → M, F ⊆ M):            # emits an LTLf formula φ with L(φ) = h⁻¹(F)
+  if F ∈ {∅, M}: return ⊥ / ⊤
+  if h(Σ) ⊆ {1}: return the trivial-image base template
+  pick c ∈ Σ with h(c) ≠ 1        # the separator — any choice is legal
+  Σ' = Σ \ {c}                    # every word factors uniquely as
+                                  #   w₀·c·w₁·c ⋯ c·w_k with wᵢ ∈ Σ'*
+  T  = { t_m : m ∈ h(Σ'*) }       # fresh alphabet: one letter per block image
+  M' = h(c)M ∩ Mh(c)              # local divisor: product xm ∘ my = xmy,
+                                  # neutral h(c); aperiodic, |M'| < |M|
+  φ_seq = DG(h_T : T* → M', F_T)  # sequence side: smaller monoid, inflated
+                                  # alphabet (h_T reads t_m as h(c)·m)
+  φ_m   = DG(h|_{Σ'*}, {m})       # one block side per T-letter: same monoid,
+                                  # smaller alphabet
+  return φ_seq[ t_m ← rel(φ_m) ]  # substitute each occurrence of t_m by φ_m
+                                  # relativized to the c-delimited block
+```
+
+Termination is the lexicographic descent of `(|M|, |Σ|)` — the sequence
+call shrinks the monoid, the block calls shrink the alphabet — and
+aperiodicity enters exactly once, making `|M'| < |M|` strict. For the
+ω-word top level, [DG08] splits `α = u·β` at a last-forever separator
+and combines a finite-word call on `u` with recursion on the tail;
+§4.4's insertion operator is the same wrapper.
+
 Four sources of explosion, each a blindness:
 1. the recursion is two-dimensional and multiplicative — depth up to
    `|M|·|Σ|`, and each level *inflates* the alphabet to `O(|M| + |M|²)`
@@ -353,19 +389,40 @@ Four sources of explosion, each a blindness:
    *syntactic* algebra (the coarsest recognizer, with the smallest block
    alphabets and the smallest J-depth) is available.
 
-One qualification, measured rather than assumed (§8): class-indexed
-memoization localizes the explosion. The DG-style recursion *computes* at scale —
-the formula-DAG is tractable — and what explodes is exclusively the
-*flat* rendering, LTL syntax having no sharing. On the six-class algebra
-of `GF(aa)` the memoized recursion is 19 recursion nodes and a shared
-arena of 1 287 nodes, while the flat tree unfolds to 1 991 717 nodes —
-4.4 MB of rendered formula, Spot-equivalent to `GF(a ∧ Xa)`; and the
-output is canonical: two presentations of the language (a parity and a
-reset automaton) bridge to the byte-identical invariant and the
-character-identical formula. The bottleneck is not computation but the
-deliverable format, which §6 states as a result. The extraction of §4
-attacks what remains — the flat size — by making the formula's shape
-follow the language's.
+The explosion is the substitution line read as arithmetic. Writing
+`f(M, Σ)` for the flat size of a `DG` call: `φ_seq[t_m ← rel(φ_m)]`
+copies a full block formula into *every* occurrence of every `T`-letter,
+so
+
+```
+f(M, Σ)  ≈  f(M', T) · max_m f(M, Σ \ {c})
+```
+
+— multiplicative at every level of a recursion whose depth can reach
+`|M|·|Σ|`, with `T` re-inflating the alphabet to `O(|M|)` letters just
+as the monoid shrinks: blindnesses (1) and (2) as a recurrence. One
+qualification, measured rather than assumed (§8): class-indexed
+memoization localizes the explosion. Keying each call by
+(recursion instance, target) and substituting a *reference* instead of
+a copy makes each distinct sub-call built once — the output is a
+formula-DAG whose flat unfolding is the tree, and the multiplicative
+blow-up is confined entirely to the unfolding step. The number of
+distinct sub-calls is governed by the algebra, not by the tree
+(⟨TBD: FIG-3 of `sos_toltl_figures.md` — the tree-vs-DAG panel,
+delegated⟩): on the
+six-class syntactic algebra of `GF(aa)` the memoized recursion is 19
+recursion nodes and a shared arena of 1 287 nodes, while the flat tree
+unfolds to 1 991 717 nodes — 4.4 MB of rendered formula,
+Spot-equivalent to `GF(a ∧ Xa)`; catalogue-wide the arenas stay in the
+thousands where the trees overflow (§8). And the output is canonical:
+two presentations of the language (a parity and a reset automaton)
+bridge to the byte-identical invariant and the character-identical
+formula. ⟨TBD: a proven polynomial bound on the number of distinct
+sub-calls from `𝓘(L)` — the measured arenas say yes, the recursion
+structure has no proof yet — or a census counterexample.⟩ The
+bottleneck is not computation but the deliverable format, which §6
+states as a result. The extraction of §4 attacks what remains — the
+flat size — by making the formula's shape follow the language's.
 
 ## 3. The non-LTL side: the witness certificate
 
@@ -702,7 +759,7 @@ exactness theorem (§4.2); the graded engine for layers that anchor only
 at a width `k ≥ 2` (§4.3); the scoped fallback for layers that anchor at
 no affordable width (§4.4); and canonicity — anchoring as a property of
 the language, not of any presentation (§4.5). The *loop* side — the
-window engine, the worked example, the combinators, and the assembled
+window engine, the worked examples, the combinators, and the assembled
 extractor — is §5.
 
 ### 4.1 The Cayley walk
@@ -767,8 +824,9 @@ layer, and that is §4.2's brick vocabulary.
 
 Fix a layer `R` — an R-class of `S(L)₊¹`, an SCC of `Cay(L)` by Lemma 4.3 —
 and work over the λ-quotient alphabet `Σ_λ = λ(Σ)` (§2); wherever a set of
-quotient letters appears in a formula it denotes the disjunction of its
-concrete letters, restored last. `Cay(L)` being deterministic and complete,
+quotient letters appears in a formula it denotes the set of its concrete
+letters, restored last as a Boolean formula over `AP` (§2.1's synthesis
+convention — never as a raw cube union). `Cay(L)` being deterministic and complete,
 every letter does exactly one thing at a class `c ∈ R`, and the three sets
 
 ```
@@ -1501,7 +1559,7 @@ keys. ∎
 ## 5. The LTL side, II: the window engine and the assembled extractor
 
 The walk engine of §4 consumed its acceptance terms as a contract; this
-section builds them (§5.1), works the running example end to end (§5.2),
+section builds them (§5.1), works two examples end to end (§5.2),
 adds the decomposition combinators (§5.3), and assembles the extractor
 (§5.4).
 
@@ -1746,8 +1804,55 @@ satisfies `⋁_min ⋀ GF` iff `Win_k(β)` contains some minimal accepted set
 iff `f_c(Win_k(β)) = 1`. On `GF(aa)`, acceptance from the frozen class
 is "the window `aa` recurs" (§5.2): upward-closed, minimum `{aa}`. ∎
 
-### 5.2 Worked example: `GF(aa)` on its own algebra
+### 5.2 Worked examples: the peel alone, then the full engine
 
+Two examples, sized to be checked by hand. The first is the R-order
+peel in its purest form — every layer a singleton, every label a
+`leave` brick or a base case — the second is `GF(aa)`, where both
+engines and both conditions do real work. Each is displayed the same
+way: the machine, the layer read-offs, then the **label stack** — the
+labels in the order the Noetherian induction discharges them, bottom
+of the R-order first, each line one rule of the grammar.
+
+**Example 1: `F a` — a pure peel.** One atomic proposition;
+`L = ⟦F a⟧` = "an `a` eventually occurs". The syntactic classes are
+`[ε]`, `[!a]` ("no `a` yet"), and `[a]` ("an `a` has occurred",
+two-sided absorbing); `P = { ([a], [!a]), ([a], [a]) }` — once `[a]` is
+reached every loop accepts, and `([!a], [!a]) ∉ P`. The class machine
+and its R-order (⟨TBD: FIG-4 candidate, ASCII may suffice⟩):
+
+```
+    [ε] ────a────→ [a] ↺ a, !a        three singleton layers:
+     │              ↑                 {[ε]} → {[!a]} → {[a]}
+     !a             a                 a pure peel — no layer has
+     ↓              │                 two classes, (A) is vacuous
+    [!a] ──────────┘
+     ↺ !a
+```
+
+Read-offs, top to bottom of the R-order: `{[ε]}` is transient (both
+letters exit — no run can stay, no `Ω` owed); `{[!a]}` has
+`St = {!a}`, `Ex = {a}`, and as a final layer it is all-rejecting
+(`([!a],[!a]) ∉ P`), killing its `STAY∞`; `{[a]}` is **committed** —
+every linked pair reachable from `[a]` is in `P`, so `T_{[a]} = Σ^ω`
+(§4.3's base case; this is also the ladder read-off — `F a` is
+co-safety — surfacing per class). The label stack:
+
+```
+Final([a])  = ⊤                                     committed class
+Final([!a]) = !a U (a ∧ X ⊤)                        leave brick; STAY∞ = ⊥
+Final([ε])  = (!a ∧ X Final([!a])) ∨ (a ∧ X ⊤)      exit fan (St([ε]) = ∅)
+            ≡ !a U (a ∧ X ⊤)  ≡  F a
+```
+
+Each line is exact at its class (Theorem 4.10 with trivial window
+contracts), and the root simplification is one `U`-unfolding. In the
+assembled architecture this language never reaches the walk engine —
+the ladder read-off dispatches co-safety at step 2 — but the walk
+engine, run directly, emits the same shape: the committed base case
+*is* the co-safety template, localized per class.
+
+**Example 2: `GF(aa)` on its own algebra.**
 `S(GF(aa))₊¹` has six classes `[ε], [!a], [a], [!a·a], [a·!a], [a·a]`
 (indices `0..5`) and multiplication table (Table 1(a)). Reading the
 Cayley edges `c →^x M(c, λ(x))` off that table:
@@ -1758,7 +1863,9 @@ Cayley edges `c →^x M(c, λ(x))` off that table:
 2: !a → 4    a → 5          5: !a → 5    a → 5
 ```
 
-The SCC decomposition — the R-order — is:
+The SCC decomposition — the R-order — is (ASCII placeholder;
+⟨TBD: FIG-1 of `sos_toltl_figures.md` — the layered Cayley graph,
+delegated⟩):
 
 ```
         {0}                       layer R₀: the start, transient
@@ -1808,6 +1915,39 @@ by contrast, are *rejecting* as final layers — no pair off class `5` is in
 `P` — so their `STAY∞` branches are `false` by the label's own degeneracy
 (an all-rejecting final layer has `Ω(R, ·) = false`; no rejecting-layer test
 exists anywhere), and only their `LEAVE` chains survive.
+
+The label stack, bottom of the R-order first; entry classes are `1`
+(the top's `!a`-exit) and `2` (its `a`-exit); layer `{1,3}` is shown in
+full, `{2,4}` is its mirror (⟨TBD: FIG-2 of `sos_toltl_figures.md`, the
+derivation panel, may replace this block⟩):
+
+```
+-- layer {5}: frozen, terminal ⟹ the law is shed; (B) at k′ = 2
+Final(5)   =  Ω({5}, 5)  =  GF(a ∧ X a)
+
+-- layer {1,3}: An(1) = {!a}, An(3) = {a}; St(1) = {!a}, Mo(1) = {a};
+--              St(3) = ∅, Mo(3) = {!a}; Ex(1) = ∅, Ex(3) = {a}
+sojourn(1) =  !a W a                sojourn(3) =  ⊥ W !a  ≡  !a
+step       =  (!a → X sojourn(1)) ∧ (a → X sojourn(3))
+leave(1)   =  ⊥   (no exit at 1)    leave(3)   =  a ∧ X Final(5)
+Final(1)   =  (!a W a) ∧ ( step U ( a ∧ X ( a ∧ X Final(5) ) ) )
+
+-- layer {2,4}, mirrored; the immediate-exit disjunct is live at 2:
+Final(2)   =  ( a ∧ X Final(5) )
+              ∨  ( !a ∧ ( step′ U ( a ∧ X ( a ∧ X Final(5) ) ) ) )
+
+-- root: no stutter at [ε], a pure exit fan
+Final(0)   =  (!a ∧ X Final(1)) ∨ (a ∧ X Final(2))
+```
+
+Every line is one rule of §4.2's grammar, and the language's two-letter
+content is visible in the syntax: `Final(1)`'s `U`-witness reads *the
+anchor `a` onto class `3` followed by `leave(3)`'s exit `a`* — the
+factor `aa`, reassembled by the bricks from two one-letter rules — and
+`Final(2)`'s first disjunct is the entry `a` and the exit `a`, the same
+factor straddling the layer boundary. `STAY∞` appears nowhere: both
+moving layers are all-rejecting as final layers, so their confinement
+branches are `⊥` and were dropped on sight.
 *Predicted output*, then, for the whole extraction of `GF(aa)`: `LEAVE`
 chains through `{1,3}` / `{2,4}` into the memoized child at `5`, whose
 label is `GF(a ∧ Xa)` — an `F(…)`-shaped reach wrapper around the child —
@@ -1818,6 +1958,55 @@ redundant — Lemma 5.2) would emit it directly.
 The implementation confirms the layer tables, the widths, the
 Lemma-4.2 witness pair, and the emitted label above exactly, from
 either presentation of the language (§8).
+
+**Example 3: `GFa ∧ FGb` — a live `STAY∞`, a frozen window, and the
+prefix-independent collapse.** Two atomic propositions; the same
+language is §5.3's AND-split specimen, so the two treatments can be
+compared on one object. The four classes (§5.3): `[ε]`, `β₀`
+("all-`b`, no `a`"), `β₁` ("all-`b`, with `a`"), `⊥` ("contains a
+`!b`-letter", two-sided absorbing); every word class idempotent;
+`λ(ab) = β₁`, `λ(!ab) = β₀`, `λ(a!b) = λ(!a!b) = ⊥` — the two
+`!b`-letters collapse already at `λ`; `P = {(β₁, β₁), (⊥, β₁)}` (loop
+coordinate `β₁`, any stem). Four singleton layers in a chain with
+skips, another pure peel:
+
+```
+[ε] ──a∧b──→ β₁ ↺ b            β₀ ↺ !a∧b
+ │  \─!a∧b──→ β₀ ──a∧b──→ β₁    all edges into ⊥ carry the
+ !b                             letter-set guard !b
+ ↓
+ ⊥  ↺ ⊤   (frozen)
+```
+
+The label stack — the first line with a live confinement branch in
+these pages:
+
+```
+Final(⊥)  =  Ω({⊥}, ⊥)  =  FG b ∧ GF(a ∧ b)        frozen; (B) at k′ = 1
+Final(β₁) =  ( G b ∧ GF(a ∧ b) )                    STAY∞: sojourn ≡ G b, live
+             ∨ ( b U ( !b ∧ X Final(⊥) ) )          LEAVE into the frozen layer
+Final(β₀) =  (!a ∧ b) U ( (a ∧ b ∧ X Final(β₁))     all-rejecting final layer,
+                        ∨ (!b   ∧ X Final(⊥)) )     STAY∞ = ⊥
+Final([ε]) = (a ∧ b ∧ X Final(β₁)) ∨ (!a ∧ b ∧ X Final(β₀))
+             ∨ (!b ∧ X Final(⊥))
+```
+
+`L` is prefix-independent (one residual), so `T_c = L` at *every*
+class — each stack line already defines the whole language — and the
+extractor emits the cheapest, the frozen window term:
+`FG b ∧ GF(a ∧ b)`. Three things worth reading off. The `STAY∞` of
+`β₁` is genuinely live — `G b ∧ GF(a ∧ b)`, "never spoil, and keep
+proving `a`" — the branch `GF(aa)` never exercised (its moving layers
+are all-rejecting). The exit fans group by target: both `!b`-letters
+share the child `⊥`, so the guard is the letter set `!b` — one arc,
+not two (the sharing §6 systematizes). And the comparison with §5.3:
+the AND-split of the same table factors the language as
+`FG b ∧ GF(a ∨ !b)`, the direct window read-off emits
+`FG b ∧ GF(a ∧ b)` — syntactically different second conjuncts,
+equivalent under `FG b`, both canonical for their route: the algebra
+offers more than one exact dress, and the label contract is
+indifferent between them. ⟨TBD: conformance-check this stack against
+the tool's `.sos` and emitted label — E9.⟩
 
 ### 5.3 Combinators: decomposition on the invariant
 
@@ -2117,6 +2306,39 @@ graded engine lands⟩. Three renderings:
    Proposition 5.4's normal form). Not an LTL formula, but every downstream
    *computation* (model checking the formula against the automaton,
    equivalence tests) can consume it directly.
+
+   Two sharings the class index leaves on the table, both sound by the
+   label contract (§4.2) and both read off `𝓘` for free. *Guard
+   grouping*: an exit fan `⋁_{a ∈ Ex(c)} (a ∧ X φ_{c·a})` rewrites as
+   `⋁_d ( (⋁_{a : c·a = d} a) ∧ X φ_d )` — one disjunct per target,
+   the guard a letter set (a single arc labeled by the set, `⊤` when
+   every exit agrees on its target); the flat form shrinks by the
+   local branching factor and the result reads as the machine does
+   (Example 3's `!b`-arc into `⊥`). *Residual indexing at exits*: an
+   exit child matters only through its tail language `T_d` (transport,
+   Lemma 4.7(ii)), and classes are strictly finer than residuals — two
+   branches that diverge in class can re-merge in future, `T_d =
+   T_{d′}` with `d ≠ d′`, decided for free by the residuals block of
+   `𝓘` (fold the two class keys through the residual automaton). Exit
+   children may therefore be memoized per residual rather than per
+   class: one label per distinct future, any exact label for the
+   residual serving at every exit that reaches it — the contract
+   verbatim. One care point keeps the DAG acyclic: the shared label
+   must be one the R-order induction has already built (an R-minimal
+   representative, or reuse-already-built) — an arbitrary
+   representative can close a cycle, prefix-independence being the
+   extreme case where one residual is shared by every class and its
+   "label" is the whole extraction, §5.1's no-recursion trap; there
+   Lemma 5.2's emit-directly rule applies instead. The within-layer
+   discipline is untouched (laws and
+   anchors speak classes; only the child slots coarsen). Merges that
+   are exact only *after d more steps* — two branches sharing a
+   continuation from some depth on — are common-suffix sharing: free
+   in the DAG and in the definitional rendering (one shared node,
+   several parents), but not flat-factorable in general, the shared
+   tail sitting at different `X`-depths on its branches. ⟨TBD: E10 —
+   implement both sharings, measure DAG/flat deltas and the
+   class-vs-residual child counts over the census.⟩
 2. **Flat LTL** — the standard, and the intrinsically large one: no sharing
    in the syntax, so DAG unfolding multiplies along the R-order antichains.
    Two statements about depth, an upper bound the construction owns and
