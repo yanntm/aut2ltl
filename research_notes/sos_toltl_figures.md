@@ -100,6 +100,34 @@ ids) show only structure; rebuild them so the nodes say what they are:
 DG `Ast` (hash-consed — node identity *is* subtree identity; sizes via
 `Ast.tree_size` / `len(Ast)`).
 
+**Width discipline** (the arena's top is wide — measured on `GF(aa)`,
+a 7-way `∨` of `∧`s with 9–19 conjuncts, 101 arcs into 36 distinct
+children — so the cut is rule-driven, not depth-driven):
+
+- **Budget:** ≈ 40 drawn nodes / ≈ 60 drawn arcs per panel; everything
+  beyond collapses to named handles.
+- **AC relaxation:** `∧`/`∨` are associative-commutative — their in-arcs
+  need no slot labels, and an n-ary node carries a width badge
+  (`∧ ·14`). Only `X`/`U`/`W` arcs carry `φ`/`ψ`.
+- **Arcs are for sharing.** Draw an arc only to (i) a child referenced
+  by ≥ 2 drawn parents and (ii) one representative unshared child per
+  node; every other child appears as a compact handle list inside its
+  parent (`∧ ·14 : ψ₃ ψ₇ … (11 more)`). Every handle everywhere shows
+  its in-degree badge (`ψ₃ ×5` — "referenced by 5 of the 7 disjuncts"),
+  so sharing stays visible where arcs are not drawn.
+- **One open branch.** Of the top disjuncts, draw one in full — the one
+  referencing the most shared children — and collapse the siblings to
+  handles with size badges. The width itself is part of the message
+  (the case split is blindness (4) as syntax); the `∨ ·7` badge carries
+  it without 101 arcs.
+- **Fallback if the measurements defeat even this:** keep the built
+  call-shaped panels for `GF(aa)` (numbers quoted underneath, as now)
+  and produce the readable-formula pair on the *smallest catalogue
+  language whose DG arena top fits the budget* — a ledger query, report
+  which. Do not force `GF(aa)` through a rendering that stops being
+  readable; readability is the requirement, the specimen is a
+  parameter.
+
 ## FIG-4 — the `F a` micro-machine (paper §5.2, Figure 2)
 
 Done. No open items.
