@@ -19,8 +19,9 @@ import statistics
 import sys
 from typing import Dict, List, Optional, Tuple
 
-sys.path.insert(0, os.path.dirname(__file__))            # for `gen.categorize`
-from gen.categorize import (                             # noqa: E402
+sys.path.insert(0, os.path.join(                         # for sosl.sos.classify.io
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "sosl"))
+from sosl.sos.classify.io import (                        # noqa: E402
     parse_cat, degree_sort_key, phi_pretty)
 
 _CORPUS = os.path.normpath(

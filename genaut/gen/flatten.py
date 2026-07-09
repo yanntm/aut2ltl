@@ -303,8 +303,8 @@ def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
 
     # Categorize: one `.cat` sidecar per language (LTL cut + Wagner degree),
     # read off the `.sos` — covers both the sos and the det HOA of that basename.
-    sys.path.insert(0, os.path.dirname(__file__))
-    from categorize import write_cats                      # noqa: E402
+    sys.path.insert(0, os.path.join(_REPO, "sosl"))
+    from sosl.sos.classify.io import write_cats            # noqa: E402
     write_cats(sos_dir)
 
     record = {
