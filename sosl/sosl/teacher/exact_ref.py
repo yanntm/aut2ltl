@@ -76,10 +76,12 @@ class NotFunctional(Exception):
 
     A capability limit on *certification*, never a soundness failure — the caller
     falls back to the closure oracle for that query and records the firing (spec
-    §9 row F10). Carries the two aligned nodes that collide, which is what the
-    theory thread needs."""
+    §9 row F10). Carries the two colliding nodes and the shortlex words that key
+    them: those words are syntactically equivalent (one ``R``-class) yet fold to
+    different hypothesis classes — the witness pair a firing exists to exhibit."""
 
-    def __init__(self, n_nodes: int, n_ref: int, collision: Tuple[Cell, Cell]) -> None:
+    def __init__(self, n_nodes: int, n_ref: int, collision: Tuple[Cell, Cell],
+                 witnesses: Tuple[Word, Word]) -> None:
         super().__init__(
             f"aligned graph not functional: {n_nodes} nodes over {n_ref} reference "
             f"classes; nodes {collision[0]} and {collision[1]} share an R-class"
@@ -87,18 +89,26 @@ class NotFunctional(Exception):
         self.n_nodes = n_nodes
         self.n_ref = n_ref
         self.collision = collision
+        self.witnesses = witnesses
+
+    @property
+    def ref_class(self) -> int:
+        """The reference class both witnesses fold to."""
+        return self.collision[0][1]
 
 
 def _assert_functional(aligned: Aligned, n_ref: int) -> None:
     """Every reference class is named by exactly one aligned node. Raises
-    `NotFunctional` with the first colliding node pair otherwise."""
+    `NotFunctional` with the first colliding node pair and its witness words
+    otherwise."""
     if aligned.n == n_ref:
         return
-    seen: Dict[int, Tuple[int, int]] = {}
-    for node in aligned.nodes:
-        clash = seen.setdefault(node[1], node)
-        if clash is not node:
-            raise NotFunctional(aligned.n, n_ref, (clash, node))
+    seen: Dict[int, int] = {}
+    for i, node in enumerate(aligned.nodes):
+        j = seen.setdefault(node[1], i)
+        if j != i:
+            raise NotFunctional(aligned.n, n_ref, (aligned.nodes[j], node),
+                                (aligned.keys[j], aligned.keys[i]))
     raise AssertionError(
         f"aligned graph has {aligned.n} distinct R-components but {n_ref} classes"
     )

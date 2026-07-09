@@ -57,6 +57,10 @@ class RunStats:
     # the closure oracle decided them (spec §9 row F10). Each is a counterexample
     # to the factoring conjecture.
     n_guard_firings: int = -1
+    # Did the FINAL (certifying) equivalence query fire the guard? On a `SOUND`
+    # run it must not: that table is canonical, so its fold is the syntactic
+    # morphism (spec §9 row F10, the hard edge).
+    guard_fired_final: int = -1
 
     cex_policy: str = "minimal"      # minimal | first | padded:<k>
 

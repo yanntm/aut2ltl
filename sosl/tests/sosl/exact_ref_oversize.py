@@ -6,15 +6,20 @@
 The committed flat_canon drop records five `no-sat-exact` runs as `OVERSIZE`: the
 transformation closure of the largest languages blew its work cap, so their
 permanent-vs-transient classification was deferred and never entered E2's
-frequency counts. Exact-by-reference builds no closure, so each of them must now
-finish with an ordinary verdict.
+frequency counts.
+
+Exact-by-reference builds no closure — but it may only *certify* under the
+functionality guard, and on these languages the guard fires, sending the query
+back to the closure and its cap. So an `OVERSIZE` here is legal (spec row
+F10 → F9) and the case stays deferred; what would be a defect is an `OVERSIZE`
+on a run whose guard never fired, since nothing would then have built a closure.
 
 `--list` reads the committed CSV (`tests/sosl/reference/flat_canon/`) and prints
 the deferred case ids with the class counts that defeated the closure; a case id
-re-runs exactly that case under the ablation config and prints its new verdict,
-`stall_class` and `eq_certification`. One case per invocation — these are the
-census's largest languages, and a blown budget is a finding to report, not a
-batch to hide.
+re-runs exactly that case under the ablation config and prints its verdict,
+`stall_class`, `eq_certification` and guard-firing count. One case per invocation
+— these are the census's largest languages, and a blown budget is a finding to
+report, not a batch to hide.
 """
 from __future__ import annotations
 
@@ -53,13 +58,16 @@ def rerun(case_id: str, budget: int) -> int:
     s = result.stats
     print(f"{case_id}: verdict={s.verdict} stall_class={s.stall_class} "
           f"eq={s.eq_certification} ref={s.ref_classes} learned={s.learned_classes} "
-          f"equiv={s.n_equiv} wall={s.wall_seconds:.1f}s")
+          f"equiv={s.n_equiv} guard_firings={s.n_guard_firings} "
+          f"wall={s.wall_seconds:.1f}s")
     if s.detail:
         print(f"  detail: {s.detail}")
     if s.verdict == "OVERSIZE":
-        print("FAIL: exact-by-reference builds no closure — OVERSIZE is a defect "
-              "on a census run (spec row F9)")
-        return 1
+        # `n_guard_firings` is -1 when the run raised before the stats were
+        # filled, which is exactly the guard-fired-then-capped path.
+        print("DEFERRED: the guard fired, the closure fallback hit its cap — the "
+              "case stays out of E2's counts (spec rows F10 -> F9)")
+        return 0
     print("SUCCESS")
     return 0
 

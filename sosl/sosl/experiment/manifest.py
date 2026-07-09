@@ -58,8 +58,11 @@ NAMED_CASES: List[Case] = [
 ]
 
 
-# Configuration axes the campaign sweeps.
-DEFAULT = Config("default", saturation=True, eq_mode="bounded")
+# Configuration axes the campaign sweeps. The default leg certifies `exact`: a
+# bounded certification is complete only in the limit, so it is kept for
+# black-box teachers, diagnostics, and the cap-escape of a guard-fired query
+# whose closure fallback blows its work cap (spec §3.2 default escalation).
+DEFAULT = Config("default", saturation=True, eq_mode="exact")
 EXACT = Config("exact", saturation=True, eq_mode="exact")
 NOSAT_BOUNDED = Config("no-sat-bounded", saturation=False, eq_mode="bounded")
 NOSAT_EXACT = Config("no-sat-exact", saturation=False, eq_mode="exact")

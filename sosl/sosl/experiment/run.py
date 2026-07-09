@@ -221,6 +221,9 @@ def run_case(case_id: str, hoa_path: str, config: Config,
             return RunResult(stats)
         teacher = HoaTeacher.of_hoa(hoa_path, eq_mode=config.eq_mode,
                                     reference=ref_inv)
+        # A leg that certifies stalls (the ablation) must record OVERSIZE rather
+        # than escape to bounded: a bounded answer cannot certify permanence.
+        teacher.cap_escape = config.saturation
         teacher.eq_bound = config.eq_bound
         teacher.cex_policy = config.cex_policy
         stats.ap_count = len(teacher.alphabet.aps)
@@ -232,6 +235,7 @@ def run_case(case_id: str, hoa_path: str, config: Config,
         stats.learned_classes = inv.n
         stats.eq_certification = eq_cert
         stats.n_guard_firings = len(teacher.guard_firings)
+        stats.guard_fired_final = int(teacher.last_query_fired)
         n_lin = sum(isinstance(c, LinCol) for c in table.columns)
         stats.n_columns_lin = n_lin
         stats.n_columns_om = len(table.columns) - n_lin

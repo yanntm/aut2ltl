@@ -26,7 +26,7 @@ from sosl.sos.hypothesis import Hypothesis, loop_reps
 from sosl.sos.invariant import Invariant
 from sosl.sos.lasso import Lasso
 from sosl.teacher.equiv import bounded_counterexample, resolve_prediction
-from sosl.teacher.exact import exact_counterexample
+from sosl.teacher.exact import ExactTooLarge, exact_counterexample
 from sosl.teacher.exact_ref import (
     NotFunctional,
     exact_ref_counterexample,
@@ -61,11 +61,17 @@ class HoaTeacher:
     on the first exact query and cached; a language whose algebra blows the
     construction's cap has none, and exact mode then falls back to the
     transformation-closure oracle (`sosl.teacher.exact`).
+
+    ``cap_escape`` lets an exact query whose closure fallback exceeds its work cap
+    answer by bounded enumeration instead of raising: the escape of a leg that a
+    later byte-equality still validates. A leg that certifies a *stall* must leave
+    it off — a bounded answer cannot certify permanence.
     """
 
     def __init__(
         self, aut: "spot.twa_graph", eq_bound: int = 8, eq_mode: str = "bounded",
         cex_policy: str = "minimal", reference: Optional[Invariant] = None,
+        cap_escape: bool = False,
     ) -> None:
         self.aut = _prepare(aut)
         self.acc = self.aut.acc()
@@ -76,7 +82,9 @@ class HoaTeacher:
         self._reference: Optional[Invariant] = reference
         self._ref_built = reference is not None
         self._ref_table: Optional[Tuple[Table, PairSet]] = None
+        self.cap_escape = cap_escape
         self.guard_firings: List[NotFunctional] = []
+        self.last_query_fired = False
         # AP name -> buddy variable, registered once before any BDD op.
         self._var: Dict[str, int] = {
             ap.ap_name(): self.aut.register_ap(ap) for ap in self.aut.ap()
@@ -183,9 +191,9 @@ class HoaTeacher:
         transformation-closure oracle (`sosl.teacher.exact`), which may raise
         `ExactTooLarge`."""
         if self.eq_mode == "exact":
-            cx = self._exact(hypothesis)
+            cx, strategy = self._exact(hypothesis)
             if cx is None:
-                return Equivalent(strategy="exact")
+                return Equivalent(strategy=strategy)
             return Counterexample(lasso=self._policy_cex(cx, hypothesis))
         b = self.eq_bound if bound is None else bound
         cx, complete = bounded_counterexample(self.member, self.alphabet, hypothesis, b)
@@ -193,24 +201,38 @@ class HoaTeacher:
             return Equivalent(strategy=f"bounded:{b}" if complete else f"bounded:{b}:capped")
         return Counterexample(lasso=self._policy_cex(cx, hypothesis))
 
-    def _exact(self, hypothesis: Hypothesis) -> Optional[Lasso]:
-        """The exact decision: the minimal counterexample, or ``None`` if the
-        hypothesis is exactly correct.
+    def _exact(self, hypothesis: Hypothesis) -> Tuple[Optional[Lasso], str]:
+        """The exact decision: ``(minimal counterexample, certifying strategy)``,
+        the lasso being ``None`` when the hypothesis is exactly correct.
 
-        Decided against the reference invariant when there is one and its aligned
-        graph passes the functionality guard. Otherwise — a referenceless target,
-        or a guard firing (recorded in ``guard_firings``, spec §9 row F10) — the
-        transformation-closure oracle decides this query instead."""
+        The escalation of spec §3.2. Exact-by-reference decides the query when a
+        reference exists and its aligned graph passes the functionality guard.
+        A firing (recorded in ``guard_firings``, row F10) or a referenceless
+        target sends the query to the transformation-closure oracle. Should that
+        exceed its work cap, `ExactTooLarge` propagates — permanence cannot be
+        certified below the cap — unless ``cap_escape`` is set, when the query
+        falls to ``bounded:<eq_bound>`` instead and says so in its strategy."""
         ref = self.reference()
+        self.last_query_fired = False
         if ref is not None:
             try:
-                return exact_ref_counterexample(
-                    self.member, self.alphabet, hypothesis, *ref)[0]
+                cx, _ = exact_ref_counterexample(
+                    self.member, self.alphabet, hypothesis, *ref)
+                return cx, "exact"
             except NotFunctional as exc:
                 self.guard_firings.append(exc)
-        return exact_counterexample(
-            self.member, self.alphabet, hypothesis,
-            self._dst, self._mark, self.init, self.aut.num_states())[0]
+                self.last_query_fired = True
+        try:
+            cx, _ = exact_counterexample(
+                self.member, self.alphabet, hypothesis,
+                self._dst, self._mark, self.init, self.aut.num_states())
+            return cx, "exact"
+        except ExactTooLarge:
+            if not self.cap_escape:
+                raise
+        b = self.eq_bound
+        cx, complete = bounded_counterexample(self.member, self.alphabet, hypothesis, b)
+        return cx, f"bounded:{b}" if complete else f"bounded:{b}:capped"
 
     def _policy_cex(self, cx: Lasso, hypothesis: Hypothesis) -> Lasso:
         """Apply ``cex_policy`` to the oracle's (minimal) counterexample.
