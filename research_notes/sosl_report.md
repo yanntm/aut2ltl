@@ -1686,3 +1686,72 @@ _Reproduce (from `sosl/`):_ `python3 -m tests.sosl.exact_ref_guard <case_id>
 [--nosat]`; `python3 -m tests.sosl.exact_ref_oversize --list`;
 `python3 -m tests.sosl.campaign_e0`; the sweep is
 `python3 -m tests.sosl.census_campaign --config both --budget 30 --out <dir>`.
+
+---
+
+## Theory-thread feedback — the 74 rows validate the theorem; the fallback localizes (2026-07-09)
+
+**The retraction is accepted, and it is better news than it reads.** The 74
+disagreements (16 + 14 verdict flips, 44 permanent-at-different-counts) are
+the campaign-scale measurement of what unguarded by-reference certification
+does — and since *every one is a guard firing*, the converse holds too:
+**zero disagreements on guard-green rows across 3796 jointly-decided
+cases**. That is the conditional certification theorem passing its first
+mass test: the guard predicate is not merely sufficient in the proof, it is
+empirically exactly where the unsoundness lives. The void sweep is correctly
+void; the committed closure drop never depended on by-reference and stands
+untouched; nothing in the paper moves this round.
+
+The exhibit is banked as asked — on the same shelf as
+`witness_lock_exhibits.md`, which is the right one — the `075976` dual
+landed among the `BUDGET` rows as predicted and both now cap symmetrically,
+and the E0 conformance under the switched default leg closes item 11 b–d
+for good. `guard_fired_final` on `013908`'s default leg is the predicted
+shape realized; keep it as a permanent gate.
+
+**The cost flag is a theory question, and the answer is: localize the
+fallback.** A firing does not poison the whole query — it poisons the cells
+that *touch the split classes*, and the aligned graph already says which
+those are. Let `Split ⊆ 𝒞_R` be the reference classes holding ≥ 2
+H-partners in the built graph. Call a cell `(c, d)` **quiet** when every
+class in the power orbit `{d_R^j}` is unsplit and so is `c_R·d_R^k`, where
+`k` is the stabilization power of the orbit's unique-partner sequence
+(well defined under quietness: `h_j` := the unique H-partner of `d_R^j`;
+`k` := least with `h_{2k} = h_k`, which exists since `{d_R^j}` is
+eventually periodic).
+
+> **Localization.** Every quiet cell is decided by its keyed lasso, even on
+> a fired (non-functional) graph.
+>
+> *Proof.* Take any `(u, v)` in the cell. For each `j` the word `v^j` has
+> an aligned node in the graph with R-component `d_R^j`; that class being
+> unsplit forces `ψ_H(v^j) = h_j`. So the fold orbit — hence the
+> stabilization power `k` — is the same for every `v` in the cell; and
+> `u·v^k`, whose R-class `c_R·d_R^k` is unsplit, folds to *its* unique
+> partner. Predicting pair and P-cache bit are therefore constant on the
+> cell, and equal to the keyed lasso's. ∎
+>
+> (`Split = ∅` recovers the functionality theorem — the guard is the
+> special case.)
+
+Only the **residue** — cells whose loop orbit or stabilized stem class
+touches `Split` — needs the closure, restricted to residue lassos.
+Minimality survives: a wrong lasso in a quiet cell is dominated by its
+keyed lasso, one in a residue cell is found by the closure's own minimal
+scan, so return the smaller of the quiet scan's first flagged keyed lasso
+and the closure's residue-restricted minimum. On the exhibit case the split
+classes are 3 of 17 — if that shape is typical the residue is a sliver, and
+~2.5 cases/s should climb back toward ~33.
+
+**Instrumentation before construction:** measure the residue fraction
+(quiet cells over all cells) on the known firing cases first, and build
+only if it is small; gate by byte-identical counterexamples, ledgers and
+verdicts against the unlocalized fallback on every fired query of the named
+firing cases plus a seeded fired sample. Incremental reuse of the closure
+across a run's successive queries (they differ by one split) is a second,
+independent option — engineering's choice. Spec: section 8 item 12, with a
+pointer at §3.2 point (iii).
+
+Unchanged and still open toward the drop: the completed-sweep tallies with
+`guard_fired_final = 0` on every `SOUND` row, the E2 recount, and the
+item-8 dual-symmetry assertion, all under the persistence floor.

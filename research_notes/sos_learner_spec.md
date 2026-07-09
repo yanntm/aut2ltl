@@ -172,6 +172,21 @@ edge: a firing on the *final* certifying query of a `SOUND` run is a defect
 place with the new sub-asks (per-leg firing tallies; the final-query assert;
 a committed firing exhibit with two witness words).
 
+**Revision 2026-07-09c (retraction accepted; fallback localization
+approved).** The unguarded by-reference ablation sweep disagreed with the
+committed closure drop on 74 of 3796 jointly-decided rows — every one a
+guard firing, so the sweep is void and not banked; conversely, zero
+disagreements on guard-green rows: the conditional certification theorem
+passes its first campaign-scale test, and the committed closure drop stands
+untouched. With the closure fallback now the cost centre (~33 → ~2.5
+cases/s once firings begin), section 8 gains item 12 — the localized
+fallback: quiet cells (loop-power orbit and stabilized stem class avoiding
+the split reference classes) remain decided by their keyed lasso even on a
+fired graph, and only the split-touching residue needs the closure —
+instrumentation-first, gated byte-identical against the unlocalized
+fallback. Item 11's remaining opens (sweep tallies, E2 recount, item-8
+dual-symmetry assertion) land with the completed guarded sweep.
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -392,6 +407,10 @@ for the pair `(fold(stem.loop^k), fold(loop^k))`.
     lasso). A firing assert is NOT a bug: record it, fall back to the
     closure oracle for that query, and hand the graph to the theory
     thread — it is a counterexample to the factoring conjecture (row F10).
+    An approved refinement localizes that fallback (section 8 item 12):
+    cells whose loop-power orbit and stabilized stem class avoid the split
+    reference classes stay decided by their keyed lasso even on a fired
+    graph, and only the split-touching residue needs the closure.
     Referenceless targets (E6) fall back to the previous form —
     the product of `D` with the hypothesis's transformation closure, now
     explored lazily with pointwise subsumption (Ramsey-based inclusion à la
@@ -1100,6 +1119,26 @@ sharpest evidence that a stalled export is not an algebra at all.
        guard-fire and cap — both `OVERSIZE`, the deferred set is
        dual-symmetric. Outstanding: the sweep-wide tallies, which retire
        the paper's two guard ⟨TBD-M4⟩ markers.)*
+    12. **Fallback localization (2026-07-09; performance, optional but
+       approved — instrumentation first).** The closure fallback is the
+       campaign's cost centre once firings begin (~33 → ~2.5 cases/s).
+       Theory supplies the localization (proof in `sosl_report.md`,
+       2026-07-09 reply): on a fired graph let `Split` be the reference
+       classes with ≥ 2 H-partners; a cell `(c, d)` is *quiet* when every
+       class in the power orbit of `d_R` is unsplit and so is
+       `c_R·d_R^k`, `k` the stabilization power of the orbit's
+       unique-partner sequence. Every quiet cell is decided by its keyed
+       lasso even on a fired graph; only the residue (split-touching
+       cells) needs the closure, restricted to residue lassos. Minimality:
+       return the smaller of the quiet scan's first flagged keyed lasso
+       and the closure's residue-restricted minimum. Steps: (a) measure
+       the residue fraction on the known firing cases — build only if it
+       is small (expected: 3 split classes of 17 on the exhibit case);
+       (b) gate by byte-identical counterexamples, ledgers and verdicts vs
+       the unlocalized fallback on every fired query of the named firing
+       cases plus a seeded fired sample; (c) incremental closure reuse
+       across a run's successive queries (one split apart) is a second,
+       independent option — engineering's choice.
     Standing science ask — ANSWERED in the refutation direction
     (2026-07-08f): the flat_canon sweep surfaced two prefix-independent
     permanent stalls (plus complements), and the witness lock (item 7,
