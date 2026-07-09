@@ -1,5 +1,36 @@
 # Task — figures for "The LTL Frontier from the Syntactic ω-Semigroup"
 
+## Review 2026-07-09 (theory, on the delivered artifact)
+
+FIG-1, FIG-3, FIG-4 **accepted** — paper markers now point at
+`sos_toltl_figs/figures.md`. Per-item notes:
+
+- **FIG-1, one tag nit**: the moving layers' side tags read `a: exit`,
+  dropping `a`'s in-layer role — per the E0 letter tables `a ↦ reset(3)`
+  on `{1,3}` and `reset(2)` on `{2,4}` *and* exits from the other class.
+  Suggested tag: `a ↦ reset(3), exit@3` (resp. `reset(2), exit@2`), or
+  two lines. The caption already says it right; make the drawing agree.
+- **FIG-2 deferred: route approved.** Option 2 of `notes.md` §3 — the
+  `_TRACE`-guarded brick dump in `engine.py`, codebase style, ~8 lines —
+  is the right call, and correctly postponed past the guards refactor.
+  Build it against the current engine when convenient; the paper's §5.2
+  stack stands meanwhile.
+- **FIG-3 / F13: adopted in the paper.** §2.3 now distinguishes the call
+  DAG (49-tree / 19-memoized) from the formula arena (1 287 / 1 991 717),
+  attributes the recurrence to the substitution inside a call, fixes the
+  size-pair convention (the induction's own AST, pre-Spot), and splits
+  the open bound in two (sub-call count vs arena). `dgtrace` pointed at
+  the census would answer the sub-call conjecture empirically — worth a
+  run when cheap.
+- **Drawing decisions of `notes.md` §4: all confirmed** (TikZ toolchain,
+  entry stubs from below, merged neutral arrows, mirrored layout).
+  Transient layers reporting width `—` instead of a vacuous `1` is
+  endorsed as an `anchoring.analyze` reporting change, not a drawing one.
+
+The original specification follows, unchanged.
+
+---
+
 *For a code/figure-focused session. Produce the figures the paper
 [`sos_toltl.md`](sos_toltl.md) marks as `⟨TBD: FIG-n …⟩`, replacing its ASCII
 placeholders. Deliverable: `research_notes/sos_toltl_figs/` (images) plus a
