@@ -53,6 +53,11 @@ class RunStats:
     n_classes_initial: int = -1
     stall_class: str = ""            # none | transient | permanent
 
+    # Equivalence queries whose aligned graph failed the functionality guard, so
+    # the closure oracle decided them (spec §9 row F10). Each is a counterexample
+    # to the factoring conjecture.
+    n_guard_firings: int = -1
+
     cex_policy: str = "minimal"      # minimal | first | padded:<k>
 
     max_cex_stem: int = -1

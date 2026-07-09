@@ -231,6 +231,7 @@ def run_case(case_id: str, hoa_path: str, config: Config,
 
         stats.learned_classes = inv.n
         stats.eq_certification = eq_cert
+        stats.n_guard_firings = len(teacher.guard_firings)
         n_lin = sum(isinstance(c, LinCol) for c in table.columns)
         stats.n_columns_lin = n_lin
         stats.n_columns_om = len(table.columns) - n_lin

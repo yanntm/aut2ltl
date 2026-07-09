@@ -27,7 +27,11 @@ from sosl.sos.invariant import Invariant
 from sosl.sos.lasso import Lasso
 from sosl.teacher.equiv import bounded_counterexample, resolve_prediction
 from sosl.teacher.exact import exact_counterexample
-from sosl.teacher.exact_ref import exact_ref_counterexample, reference_table
+from sosl.teacher.exact_ref import (
+    NotFunctional,
+    exact_ref_counterexample,
+    reference_table,
+)
 
 
 def _pump(lasso: Lasso, k: int) -> Lasso:
@@ -72,6 +76,7 @@ class HoaTeacher:
         self._reference: Optional[Invariant] = reference
         self._ref_built = reference is not None
         self._ref_table: Optional[Tuple[Table, PairSet]] = None
+        self.guard_firings: List[NotFunctional] = []
         # AP name -> buddy variable, registered once before any BDD op.
         self._var: Dict[str, int] = {
             ap.ap_name(): self.aut.register_ap(ap) for ap in self.aut.ap()
@@ -178,16 +183,7 @@ class HoaTeacher:
         transformation-closure oracle (`sosl.teacher.exact`), which may raise
         `ExactTooLarge`."""
         if self.eq_mode == "exact":
-            ref = self.reference()
-            if ref is not None:
-                cx, _ = exact_ref_counterexample(
-                    self.member, self.alphabet, hypothesis, *ref,
-                )
-            else:
-                cx, _ = exact_counterexample(
-                    self.member, self.alphabet, hypothesis,
-                    self._dst, self._mark, self.init, self.aut.num_states(),
-                )
+            cx = self._exact(hypothesis)
             if cx is None:
                 return Equivalent(strategy="exact")
             return Counterexample(lasso=self._policy_cex(cx, hypothesis))
@@ -196,6 +192,25 @@ class HoaTeacher:
         if cx is None:
             return Equivalent(strategy=f"bounded:{b}" if complete else f"bounded:{b}:capped")
         return Counterexample(lasso=self._policy_cex(cx, hypothesis))
+
+    def _exact(self, hypothesis: Hypothesis) -> Optional[Lasso]:
+        """The exact decision: the minimal counterexample, or ``None`` if the
+        hypothesis is exactly correct.
+
+        Decided against the reference invariant when there is one and its aligned
+        graph passes the functionality guard. Otherwise — a referenceless target,
+        or a guard firing (recorded in ``guard_firings``, spec §9 row F10) — the
+        transformation-closure oracle decides this query instead."""
+        ref = self.reference()
+        if ref is not None:
+            try:
+                return exact_ref_counterexample(
+                    self.member, self.alphabet, hypothesis, *ref)[0]
+            except NotFunctional as exc:
+                self.guard_firings.append(exc)
+        return exact_counterexample(
+            self.member, self.alphabet, hypothesis,
+            self._dst, self._mark, self.init, self.aut.num_states())[0]
 
     def _policy_cex(self, cx: Lasso, hypothesis: Hypothesis) -> Lasso:
         """Apply ``cex_policy`` to the oracle's (minimal) counterexample.

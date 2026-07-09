@@ -28,17 +28,31 @@ own: the P-cache is indexed by *stabilized* pairs, and stabilizing a loop means
 iterating the loop word, which the pair has forgotten. The prediction on the
 node's key does that iteration.
 
-**Why one word per node suffices.** An equivalence query is issued at a closed,
-consistent table, so ``step`` is a right action and each hypothesis class is a
-union of syntactic classes of ``L`` (every split carries a witness, so the
-hypothesis never separates two ``L``-equivalent words). Take two words ``y, y'``
-of one node: they share an ``R``-class, hence so do ``y^j`` and ``y'^j`` for
-every ``j``, hence they share a hypothesis class too — so both stabilize to the
-same pair, and prediction is constant on the node. The same holds of the stem.
-The scan therefore decides every lasso, not only the keyed ones, and — since
-keys are shortlex-least and cells are scanned in the discipline order (shortest
-stem, then shortest loop, then shortlex) — the first disagreeing cell yields the
-minimal counterexample over all lassos.
+**The functionality guard.** One keyed lasso decides a whole cell only if the
+hypothesis's prediction is constant on that cell, which holds exactly when the
+aligned graph is *functional*: no two nodes share their ``R``-component. Since
+the graph is the full image ``{(fold_H(w), psi_R(w)) : w in Sigma*}``,
+functionality says ``fold_H`` factors as ``f . psi_R`` on **every** word, so a
+cell's loop orbit ``fold_H(v^j) = f(d_R^j)``, its stabilization power and its
+stabilized pair are all cell-determined — and so is the prediction. Every
+``R``-class is reached, so the check is the node count: ``n_nodes == n_R``.
+
+The guard is not decoration. The hypothesis's classes are unions of syntactic
+classes of ``L`` only for the *table* words (that is what a witnessed split
+buys); a loop power ``v^j`` lies far outside the table, where the fold computes
+whatever ``step`` composes. Closedness and consistency constrain rows, not
+fold-intermediates, so factoring is a conjecture about the tables a learner
+reaches, not a theorem — and the saturated leg cannot rescue it without
+circularity. Hence: a **returned counterexample is sound unconditionally** (both
+verdicts are read on the concrete keyed lasso), while **certification and
+minimality are conditional on the guard**. When it fires, `NotFunctional` is
+raised, the caller falls back to the closure oracle for that query, and the
+graph is a counterexample to the factoring conjecture — a recorded finding, not
+a bug.
+
+Under the guard, keys are shortlex-least and cells are scanned in the discipline
+order (shortest stem, then shortest loop, then shortlex), so the first
+disagreeing cell yields the minimal counterexample over all lassos.
 """
 from __future__ import annotations
 
@@ -46,13 +60,48 @@ from dataclasses import replace
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
 from sosl.sos.alphabet import Alphabet, Letter, Word
-from sosl.sos.calculus import PairSet, Table, align, equivalent
+from sosl.sos.calculus import Aligned, Cell, PairSet, Table, align, equivalent
 from sosl.sos.hypothesis import Hypothesis, loop_reps
 from sosl.sos.invariant import Invariant
 from sosl.sos.lasso import Lasso
 from sosl.teacher.equiv import resolve_prediction
 
 Member = Callable[[Lasso], bool]
+
+
+class NotFunctional(Exception):
+    """The aligned graph is not functional: two nodes share an ``R``-component, so
+    the hypothesis's fold does not factor through the reference's classes and a
+    cell's keyed lasso no longer speaks for the cell.
+
+    A capability limit on *certification*, never a soundness failure — the caller
+    falls back to the closure oracle for that query and records the firing (spec
+    §9 row F10). Carries the two aligned nodes that collide, which is what the
+    theory thread needs."""
+
+    def __init__(self, n_nodes: int, n_ref: int, collision: Tuple[Cell, Cell]) -> None:
+        super().__init__(
+            f"aligned graph not functional: {n_nodes} nodes over {n_ref} reference "
+            f"classes; nodes {collision[0]} and {collision[1]} share an R-class"
+        )
+        self.n_nodes = n_nodes
+        self.n_ref = n_ref
+        self.collision = collision
+
+
+def _assert_functional(aligned: Aligned, n_ref: int) -> None:
+    """Every reference class is named by exactly one aligned node. Raises
+    `NotFunctional` with the first colliding node pair otherwise."""
+    if aligned.n == n_ref:
+        return
+    seen: Dict[int, Tuple[int, int]] = {}
+    for node in aligned.nodes:
+        clash = seen.setdefault(node[1], node)
+        if clash is not node:
+            raise NotFunctional(aligned.n, n_ref, (clash, node))
+    raise AssertionError(
+        f"aligned graph has {aligned.n} distinct R-components but {n_ref} classes"
+    )
 
 
 class HypothesisLanguage:
@@ -126,11 +175,13 @@ def exact_ref_counterexample(
 
     Returns ``(lasso, True)`` with the minimal counterexample, or ``(None, True)``
     when the hypothesis is exactly correct. ``O(n_H * n_R * |Sigma|)`` alignment
-    steps and ``O((n_H * n_R)^2)`` cell verdicts."""
+    steps and ``O(n_R^2)`` cell verdicts. Raises `NotFunctional` when the aligned
+    graph cannot certify (see the module docstring)."""
     assert h.alphabet.aps == alphabet.aps, "hypothesis/teacher alphabet mismatch"
     assert ref_table.alphabet.aps == alphabet.aps, "reference/teacher alphabet mismatch"
     hyp = HypothesisLanguage(h, member)
     aligned = align(hyp, ref_table.language(ref_pairs))
+    _assert_functional(aligned, ref_table.n)
     scan = replace(
         aligned,
         verdict_a=lambda c, d: hyp.predicted_verdict(aligned.cell_lasso((c, d))),
