@@ -40,7 +40,9 @@ endif()
 list(APPEND _libddd_hints $ENV{HOME}/git/libDDD /usr/local /usr)
 
 find_path(DDD_INCLUDE_DIR ddd/DDD.h HINTS ${_libddd_hints} PATH_SUFFIXES include)
-find_library(DDD_LIBRARY NAMES DDD HINTS ${_libddd_hints} PATH_SUFFIXES lib ddd/.libs)
+# The static archive is the library's supported linking mode (its shared
+# build exports almost no symbols); prefer libDDD.a explicitly.
+find_library(DDD_LIBRARY NAMES libDDD.a DDD HINTS ${_libddd_hints} PATH_SUFFIXES lib ddd/.libs)
 if(NOT DDD_INCLUDE_DIR OR NOT DDD_LIBRARY)
   message(FATAL_ERROR "libDDD not found (searched: ${_libddd_hints}); set LIBDDD_HOME")
 endif()
