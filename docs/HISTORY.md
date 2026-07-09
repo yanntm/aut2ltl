@@ -2973,3 +2973,13 @@ discipline), Prop 3.3 fully proved, ledger + related work cited against the
 newly added library papers (DL+16, DL+22, MD15, EL87). Spec bumped to rev 3:
 is_stutter_invariant specced into table.py for V2. Remaining TBDs are CAL4
 measurements, one blow-up example, the hull conjecture.
+
+## 2026-07-09 — toltl paper whipped into standard outline (c52fc8330)
+
+Why: paper-shaping session; the draft mixed background and contributions
+and leaned on a "companion" census paper. Now: section 2 holds all
+non-original material (incl. DG route + triptych tables copied from
+SoS26 with citation), contributions start at section 3, SoSN26 removed,
+report findings (E4-interim DG ledger, F8 engine soundness) folded into
+the evaluation. Full renumbering sweep 4-11 -> 3-10 — note the
+engineering report/spec still cite the old numbering.
