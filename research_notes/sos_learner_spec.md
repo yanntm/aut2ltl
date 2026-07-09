@@ -153,6 +153,25 @@ default escalation drops `bounded`: now `reps`, then `exact` —
 black-box teachers and diagnostics only. New section 8 item 11 (guard,
 re-runs, default-leg switch, the `075976` dual).
 
+**Revision 2026-07-09b (the guard fires; conjecture refuted; retraction).**
+The functionality guard is implemented (item 11a) and **fires on
+learner-reachable tables** — the factoring conjecture is refuted
+(`2state1ap2acc_parity_2195145216`, ablation leg: 8 firings, 20–24 aligned
+nodes over 17 reference classes, every fired query decided by the closure
+fallback), and sweep-clean tables fire too, so left-saturation does not buy
+functionality and the guard is irreducible. Consequence adopted: `013908`
+and `075976` guard-fire and their closure fallback hits the cap, so the
+**five `OVERSIZE` cases stay deferred** — the 2026-07-09 instruction to bank
+them into E2 is void, and the paper's counts are reverted (1180). The
+default escalation gains a cap-escape (section 3.2): a guard-fired query
+goes to the closure; a capped closure falls to `bounded:8` on the default
+leg (recorded; byte-equality still validates) and records `OVERSIZE` on the
+ablation leg. Row F10 rewritten to the observed reality, with one new hard
+edge: a firing on the *final* certifying query of a `SOUND` run is a defect
+(a canonical table's fold is the syntactic morphism). Item 11 updated in
+place with the new sub-asks (per-leg firing tallies; the final-query assert;
+a committed firing exhibit with two witness words).
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -378,9 +397,15 @@ for the pair `(fold(stem.loop^k), fold(loop^k))`.
     explored lazily with pointwise subsumption (Ramsey-based inclusion à la
     Fogarty–Vardi / Abdulla et al.; `D` deterministic makes domination a
     cheap pointwise test) — where `ExactTooLarge`/`OVERSIZE` remains the
-    honest verdict. Default (2026-07-09): `reps`, then `exact` — `bounded`
-    is retired from the campaign legs (black-box teachers and diagnostics
-    keep it; no campaign row uses it).
+    honest verdict. Default (2026-07-09; amended 09b now that the guard is
+    known to fire): `reps`, then `exact` under the guard; a guard-fired
+    query is decided by the closure; if the closure exceeds its cap, the
+    default leg falls back to `bounded:8` (recorded in `eq_certification`;
+    byte-equality still validates the run end-to-end) while the ablation
+    leg records `OVERSIZE` (permanence is undecidable below the cap —
+    a bounded answer cannot certify a stall). `bounded` survives as that
+    cap-escape, for black-box teachers, and for diagnostics; no campaign
+    row certifies by it except recorded cap-escapes.
   - Whatever strategy fires, the returned counterexample is minimized
     (shortest stem, then shortest loop, then shortlex) before being returned —
     determinism of the whole run depends on this.
@@ -827,8 +852,9 @@ census ablation leg never builds the closure, so `OVERSIZE` can arise only
 on the referenceless fallback path (E6); once section 8 item 10 lands, an
 `OVERSIZE` on a census run is a defect, not a recorded outcome. Rescoped
 again 2026-07-09: also legal on a census query whose functionality guard
-fired and whose closure fallback then hit the cap (row F10 → F9); expected
-census count zero.*
+fired and whose closure fallback then hit the cap (row F10 → F9) — observed
+(2026-07-09b): the guard fires in practice, and the five formerly-deferred
+cases stay deferred by exactly this path.*
 
 `export_associative` is computed on the exported multiplication table
 (`n/a` when no export was produced): brute-force check of
@@ -1035,7 +1061,25 @@ sharpest evidence that a stalled export is not an algebra at all.
        switch the default leg to `--eq-mode exact` (section 3.2 default),
        re-run the default sweep, confirm the Even / EvenBlocks ledgers stay
        byte-stable (row P5) and `eq_certification = exact` on every row
-       (section 7). — ANSWERED in the refutation direction
+       (section 7). *(Updated 2026-07-09b — (a) DONE and the guard FIRES:
+       the factoring conjecture is refuted on learner-reachable tables
+       (`2state1ap2acc_parity_2195145216`, ablation leg, 8 firings, 20–24
+       aligned nodes over 17 reference classes), and even sweep-clean
+       tables fire, so the guard is irreducible. (b) answered NO:
+       `013908` and `075976` guard-fire and their closure fallback hits
+       the cap — the five `OVERSIZE` cases remain deferred and are NOT
+       banked. (c) now expects the dual partner `OVERSIZE` as well.
+       (d) proceeds under the amended escalation of section 3.2:
+       guard-fired queries go to the closure; a capped closure falls to
+       `bounded:8` on the default leg (recorded in `eq_certification`;
+       byte-equality still validates end-to-end) and records `OVERSIZE`
+       on the ablation leg. New sub-asks: sweep-wide `n_guard_firings`
+       tallies per leg; an assert that no `SOUND` run fires on its FINAL
+       certifying query (a canonical table's fold is the syntactic
+       morphism, so a final-query firing convicts the run); a committed
+       exhibit of one firing with two concrete witness words `y ≈_L y'`,
+       `ψ(y) ≠ ψ(y')`.)*
+    Standing science ask — ANSWERED in the refutation direction
     (2026-07-08f): the flat_canon sweep surfaced two prefix-independent
     permanent stalls (plus complements), and the witness lock (item 7,
     DELIVERED) certifies them; the necessity conjecture is dead. The
@@ -1080,7 +1124,7 @@ recorded outcome, not a defect.
 | F8 | exported `M` is associative | `--no-saturation` runs | MAY be red; on `a_implies_xa` MUST be red with witness triple `([a],[a],[a])` | record the witness triple, never "fix" it — it anchors the paper's §4.2 display (a green here on `a_implies_xa` means the export or the check is wrong) |
 | P8 | ω-sort discipline on prefix-independent cases: every column ever minted in a default-config run is of the ω-sort (paper Cor. 4.7(b)) | any prefix-independent case (`GF(aa)`, `EvenBlocks`, the E2 witnesses) | always green | a linear mint means the prefix-independence predicate or the sweep is wrong — build-stopping either way; the corollary's proof leaves no third option |
 | F9 | exact oracle raises `ExactTooLarge` | referenceless fallback (E6), or the closure fallback of a guard-failed census query (F10) | allowed there; on any other census run it is a defect (exact-by-reference builds no closure) | record `OVERSIZE` (section 7); permanence classification deferred, default-leg soundness stands — never `MISMATCH` |
-| F10 | functionality guard on the aligned graph (section 3.2 point (iii): non-identity node count `= N_R`) fires | any exact-by-reference query | expected NEVER red (predicted count 0 across the census) — but a red is a recorded outcome, not a bug | record it, fall back to the closure oracle for that query, and hand the graph to the theory thread: it is a counterexample to the factoring conjecture (the hypothesis fold factoring through `≈_L` beyond the table words) and a first-class finding; certification/minimality claims for that query then rest on the fallback |
+| F10 | functionality guard on the aligned graph (section 3.2 point (iii): non-identity node count `= N_R`) fires | any exact-by-reference query | MAY be red — it IS red in practice (2026-07-09b: the factoring conjecture is refuted; mid-run tables, sweep-clean ones included, split syntactic classes beyond their table words); a red is a recorded outcome, not a bug. Exception: a firing on the FINAL certifying query of a `SOUND` run is a defect — a canonical table's fold is the syntactic morphism | record it and fall back to the closure oracle for that query; certification/minimality claims for that query then rest on the fallback (cap-escape per section 3.2 default) |
 
 Two "surprising green" notes, so nobody distrusts a passing run:
 

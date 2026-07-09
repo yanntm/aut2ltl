@@ -1499,3 +1499,68 @@ exactly the unbacked case above, and the re-run is seconds.
    `--eq-mode exact`, re-run the default sweep, and confirm the Even /
    EvenBlocks ledgers stay byte-stable (row P5) with
    `eq_certification = exact` on every row.
+
+---
+
+## Theory-thread feedback — the guard fires: conjecture refuted, retraction banked, escalation amended (2026-07-09)
+
+The guard did exactly what it was built for, and the finding is yours: the
+**factoring conjecture is refuted on learner-reachable tables** (commit
+`5e83cfae8`; theory predicted zero firings and was wrong). On
+`2state1ap2acc_parity_2195145216`'s ablation leg the fold of a closed,
+consistent table splits three syntactic classes beyond its table words —
+R-classes 8, 12 and 14 each spread over two or three fold values, 20–24
+aligned nodes over 17 — on eight equivalence queries, every one decided
+soundly by the closure fallback, final stall 16-vs-17 as before. Two
+readings worth recording:
+
+- **The conditional theorem was the right shape.** Nothing in the delivered
+  oracle is invalidated — certification was never claimed beyond the guard —
+  and the fallback is load-bearing, not ceremonial. Had the constancy
+  argument been taken at face value, eight certifications on this one case
+  would have been unsound.
+- **Left-saturation does not buy functionality.** Your note that saturated
+  runs fire mid-run too is sharper than it looks: every default-leg
+  equivalence query is posed at a *sweep-clean* table, so the sweep's fold
+  coherence (the claim inside Theorem 5.1) does not imply factoring — the
+  guard is irreducible. One structural expectation survives, downgraded
+  from conjecture to assert-worthy: on a run whose export is byte-equal,
+  the **final** certifying query sits on a canonical table, whose fold *is*
+  the syntactic morphism — so a firing on a final default-leg query should
+  never happen (it would convict the run before byte-equality does). Worth
+  a per-run assert: `n_guard_firings` on the certifying query itself must
+  be 0 whenever the run ends `SOUND`.
+
+**The retraction is adopted.** The five `OVERSIZE` cases are *not* decided:
+`013908` (pair) and `075976` guard-fire and their closure fallback hits the
+cap, so they return to deferred and never entered E2's published counts. The
+paper is reverted in the same pass (1182 → 1180; §6.3's deferred-cases note
+restored; §2.3/§6.1 now state that the guard fires and what happens then).
+Theory's earlier instruction to bank-after-re-run is void — the re-run
+answered *no*.
+
+**Escalation policy, amended (spec §3.2).** With the guard firing in
+practice, "retire `bounded`" needs one more rung than the last reply gave
+it. Normative order per equivalence query: `reps`, then exact-by-reference
+under the guard; on a firing, the closure product decides; if the closure
+exceeds its cap, the two legs part ways — the **default leg** falls back to
+`bounded:8` (recorded in `eq_certification`; byte-equality still validates
+the run end-to-end, so nothing is lost but the "exact everywhere" headline),
+while the **ablation leg** records `OVERSIZE` (permanence is genuinely
+undecided below the cap; a bounded answer cannot certify a stall). So
+`bounded` survives as the cap-escape of guard-fired default-leg queries and
+nowhere else.
+
+**Asks** (spec item 11, updated in place):
+
+1. Sweep-wide tallies: `n_guard_firings` per leg, how many runs are entirely
+   guard-green, and — separately — whether any `SOUND` run fired on its
+   *final* query (expected 0, per the assert above).
+2. A committed exhibit for one firing: the colliding nodes *with two
+   concrete witness words* `y ≈_L y'`, `ψ(y) ≠ ψ(y')` (the probe prints node
+   ids; the words are the display — a mid-run table is not merely coarser
+   than the algebra (§4.2), its fold is *incomparable* with it, and that
+   deserves the same first-class treatment as the non-associative export).
+3. Still owed from last round: `075976`'s dual partner — now expected
+   `OVERSIZE` too, which would restore dual symmetry among the deferred.
+4. The default-leg switch (item 11d) proceeds under the amended escalation.

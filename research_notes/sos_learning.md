@@ -384,11 +384,14 @@ on cells: the invariant's is, since membership factors through `ψ_L` of stem
 and loop; the hypothesis's is *provided the aligned graph is functional* —
 no two nodes share their `𝓘(L)`-component, i.e. the fold never splits a
 syntactic class — for then the loop orbit, the stabilization power, and the
-predicting pair are all determined by the cell. Functionality is not assumed:
-the oracle asserts it on the built graph at every query ⟨TBD-M4: the
-sweep-wide assert count — predicted zero firings⟩, and a failure falls back
-to the product of the automaton with the hypothesis's transformation
-closure, which needs no such hypothesis. Keys being shortlex-least and
+predicting pair are all determined by the cell. Functionality is not
+assumed, and it genuinely fails mid-run — the fold of a closed, consistent
+table can *split* a syntactic class beyond its table words, so a mid-run
+hypothesis is not merely coarser than the algebra (§4.2) but incomparable
+with it: the oracle asserts functionality on the built graph at every query
+⟨TBD-M4: the sweep-wide firing tally⟩, and a firing hands the query to the
+product of the automaton with the hypothesis's transformation closure,
+which needs no such hypothesis. Keys being shortlex-least and
 cells scanned in lasso order, the returned counterexample is the globally
 *minimal* one (shortest stem, then shortest loop, then shortlex) — which
 makes runs deterministic and the worked examples reproducible; §6 measures
@@ -1350,8 +1353,12 @@ does.
 
 **Teacher.** As fixed in §2.3: membership is one deterministic run,
 `O(|u| + |Q|·|v|)`; equivalence is a cheap representative audit followed by
-the exact align-and-scan of §2.3, so every run is certified exactly, the
-functionality guard asserted at each query. The ablation leg of §6.3 leans
+the exact align-and-scan of §2.3, the functionality guard asserted at each
+query and guard-fired queries decided by the fallback product — so
+certification stays exact except on the handful of runs where the fallback
+exceeds its work cap ⟨TBD-M4: the guard and cap tallies⟩: those certify by
+bounded enumeration on the default leg, standing on byte-equality, and are
+recorded as deferred on the ablation leg. The ablation leg of §6.3 leans
 hardest on that exactness — a permanence verdict certifies a *non-canonical*
 fixpoint, the one claim byte-equality cannot re-validate — while every other
 reported run is additionally validated end-to-end by byte-equality of the
@@ -1458,7 +1465,7 @@ learner exports a strict coarsening of the algebra's classes — which, §4.2
 showed, need not even be a semigroup.
 
 Permanent stalls are not rare. Of the 2492 languages the census sweep has
-reached, **1182 stall permanently** ⟨TBD-M4: final counts — the unfinished
+reached, **1180 stall permanently** ⟨TBD-M4: final counts — the unfinished
 largest shape supplies the large-gap tail⟩; the gap between the stalled
 right congruence and the syntactic algebra reaches **53** classes (`N = 68`
 stalled at 15, recovered by 3 counterexamples and 12 saturation
@@ -1482,8 +1489,7 @@ census every count above must pair off exactly — a standing consistency
 check the completed sweep must pass.
 
 Two structural facts. Permanence **cuts across the LTL boundary** — 582 of
-the 1182 are LTL-definable ⟨TBD-M4: split refreshed at the completed
-sweep⟩: the permanent stall measures the gap between the
+the 1180 are LTL-definable: the permanent stall measures the gap between the
 right and the two-sided congruence, not ω-counting power; aperiodic
 languages stall as readily as group-bearing ones. And prefix-dependence is
 **not necessary**. At the smallest shape all 44 permanent stalls are
@@ -1513,6 +1519,12 @@ Lemma 4.8's floor and the witnesses' three-priority degree the territory
 stays open: no witness has appeared at deterministic-Büchi, co-Büchi, or
 single-Rabin-pair power. ⟨TBD-M4: the completed sweep's per-shape
 confirmation of the exhaustive negative.⟩
+
+At the top of the range a handful of languages exceed the exact oracle's
+reach — their aligned graphs are non-functional and the fallback product
+exceeds its work cap — so their permanent-vs-transient classification is
+recorded as deferred and never folded into the counts, while their saturated
+runs remain byte-exact.
 
 ### 6.4 The FDFA baseline (Q3)
 
