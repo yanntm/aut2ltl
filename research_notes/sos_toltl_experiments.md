@@ -13,12 +13,16 @@ reproduce, and results come back as findings in `sos_toltl_report.md`
   dual scan and mechanism tiers (H5 settled: ω-blind languages exist,
   linear-only certificates — the two-shape scan is load-bearing); E10
   (guard synthesis, grouping, residual indexing — measured); the F8
-  soundness campaign (engine 0 FAIL, graded stratum declined to DG).
-- **Todo:** E9 (worked-example curation); E3 (presentation cross-test,
-  early pass); full E4 and E8; E5 (blocked on C6, itself blocked on the
-  paper's Thérien–Wilke freeze); the E6 hunts H2/H3/H4/H6; the graded
-  engine (M3) once the paper's §4.3 entry-rooted repair carries its
-  completeness re-proof.
+  soundness campaign (engine 0 FAIL, graded stratum declined to DG);
+  E9 opened (`e9_profile`, the FIG-2 trace hook; F13: H3 is found —
+  `G(a → F b)` is a (B)-failing final layer, and the (B) tester's
+  blindness bugs it exposed are fixed).
+- **Todo:** the E9 gallery (candidates 1, 2 re-designated, 3–5); E3
+  (presentation cross-test, early pass); full E4 and E8; E5 (blocked
+  on C6, itself blocked on the paper's Thérien–Wilke freeze); the E6
+  hunts H2 (an E1-ledger query), H6, and smallest-H3 (census-next
+  `2state2ap`); the graded engine (M3) once the paper's §4.3
+  entry-rooted repair carries its completeness re-proof.
 
 **One-line goal.** Provide the data for `sos_toltl.md`: per-layer anchoring
 and window-determinacy statistics over the census, the size ledgers against
@@ -217,11 +221,14 @@ alongside, degenerate line separated.
 
 C3 over all final-candidate layers of census LTL specimens. **Paper
 deliverable:** fraction (B)-determined at `k' ∈ {1,2,3}`; the witness pairs
-for failures. **Prediction:** (B) holds at `k' ≤ 2` on all 1-AP census
-specimens; failures require either ≥ 2 AP or larger monoids (order/
-betweenness structure — see E6). Tables per §3b. Grades are three-valued
+for failures. Tables per §3b. Grades are three-valued
 and never pooled: exact PASS (trivial-stage closure), cap-bounded PASS (no
 sufficiency theorem until report-F1's open item is frozen), UNDECIDED.
+**Status:** done catalogue-wide — 0 FAIL, 372 budget-UNDECIDED, all at
+`(ω,·)`/`(ω²,·)` frozen final layers. The clean sweep is a *frame*
+fact: a (B) failure needs ≥ 2 AP and ≥ 2 states at once (report F13,
+`G(a → F b)`), and the catalogue holds no `2state2ap` shape. Re-runs
+on census-next when that axis lands.
 
 ### E3 — presentation cross-test *(internal diagnostics, not paper material)*
 
@@ -290,11 +297,21 @@ notch at a time, smallest-first):
 - **H1**: smallest non-LTL specimen *(known — reconfirm against the
   certificate extractor, E7)*.
 - **H2**: smallest LTL specimen with an (A)-failing layer at `k ≤ 3`.
-- **H3**: smallest LTL specimen with a (B)-failing final layer at
-  `k' ≤ 3` — the paper's candidate for the "order beyond windows" example
-  (§5.1); the witness lasso pair is a paper figure.
+  The stratum is populated (E1: 1 432 layers, all `(1,σ)`/`(1,π)`,
+  ≥ 2 AP); the smallest specimen is a *query on the E1 ledger*, not a
+  new run.
+- **H3** *(found — report F13; remaining: the smallest witness)*: an
+  LTL specimen with a (B)-failing final layer — the paper's "order
+  beyond windows" example (§5.1). First witness `G(a → F b)`: 5
+  classes, 2 AP, degree (ω,σ), 2 residuals; its final layer is moving,
+  1-anchored, and fails (B) at *every* width on an exact witness pair
+  (equal recurring window sets, opposite verdicts, the idle letter
+  `!a&!b`). A (B) failure needs ≥ 2 AP *and* ≥ 2 states at once — a
+  shape the catalogue omits; `2state2ap` is the census-next axis and
+  minimality is decided there.
 - **H4**: smallest LTL specimen whose extraction must invoke the DG
-  fallback at all (= H2 ∪ H3 minimum).
+  fallback at all (= H2 ∪ H3 minimum; both sides now carry witnesses,
+  so H4 is a comparison, not a hunt).
 - **H5** *(done — report F5/F7; remaining: re-run on census-next)*: a
   non-LTL specimen whose ω-power patterns are *all constant*
   (certificate exists in linear shape only) — the dual of the paper's
@@ -387,25 +404,20 @@ Spot-simplified formula)`:
    not prefix-independent (so `leave` chains and reach shape survive);
    the `F a` of paper §5.2 is the depth-2 instance — find depth 3–4
    with the formula still one line.
-2. **Anchored moving layer, ≥ 2 classes, non-prefix-independent.** A
-   width-1 layer whose `LEAVE` chain and a *live* `STAY∞` both appear
-   (i.e. an accepting final layer that is not frozen) — the stratum
-   `GF(aa)` misses (its moving layers are all-rejecting). Designated
-   first candidate: **`G(a → F b)`** — not prefix-independent, its
-   final component accepting and moving. The automaton-level kanchor
-   trace exists (kanchor doc §9.1, fixture
-   `samples/fixtures/hoa/anchor/gafb_response.hoa`): total automaton ⟹
-   every sojourn/law conjunct collapses to `⊤` and the label is the
-   bare fairness `GF b ∨ G(!a&!b) ∨ F(b ∧ XG(!a&!b))`, park terms
-   surviving (the shared idle letter `!a&!b`). Build `𝓘(L)`, run the
-   engine, and report the SoS label beside the kanchor one. **No
-   outcome is presumed**: the automaton path exploits its
-   presentation, while the SoS path is fully deterministic and
-   sensitive to the extended alphabet — the labels may differ in size
-   and shape, and a large gap in either direction is a finding to
-   bring back, not a failure. The algebra-side analogue of the
-   kanchor collapse, if it appears, is the paper's `Ex(c) = ∅ ⟹
-   sojourn ≡ ⊤` degeneracy.
+2. **Anchored moving layer, ≥ 2 classes, non-prefix-independent, with
+   a live `STAY∞`.** A width-1 layer whose `LEAVE` chain and a live
+   `STAY∞` both appear — an accepting final layer that is not frozen
+   *and is (B)-determined* — the stratum `GF(aa)` misses (its moving
+   layers are all-rejecting). `G(a → F b)` cannot serve: its final
+   layer fails (B) at every width (report F13 / E6-H3), so the engine
+   rightly declines it. Select instead by *query on the E1/E2
+   ledgers*: smallest `|𝒞|` with a final layer that is moving,
+   accepting, (B)-PASS, and ≥ 2 residuals; profile the top candidates
+   with `e9_profile`. Side note kept for theory: the exact label of
+   `G(a → F b)` is `GF b ∨ G(!a∧!b) ∨ F(b ∧ X G(!a∧!b))` — flat LTL —
+   so the obstruction of F13 is the (B) *vocabulary* (recurring window
+   sets), not LTL-expressibility; see the paper's §5.1 ⟨TBD⟩ on
+   anchored parks.
 3. **The named 2-AP builds:** `a U G b`, `a W G b`, `(GF a) U (G b)` —
    build `𝓘(L)` for each, report the read-offs; expected to exercise
    the anchored-transient-then-safety peel and the strength
