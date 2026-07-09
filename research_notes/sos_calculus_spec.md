@@ -6,7 +6,7 @@
 |---|---|
 | CAL1–CAL3: the package `sosl/sosl/sos/calculus/` (§2–§3) | **DONE** — implemented, harness 1–8 green, gates in `sosl/tests/calculus/` |
 | soundness harness (§4) | **DONE** — green corpus-wide |
-| `is_stutter_invariant` in `table.py` (§3.1, §8.6) | **DONE** — read-off + `tests/calculus/stutter.py` gate (algebraic vs exact §8.6 search) |
+| stutter read-off (§8.6) | **DONE** — `is_stutter_invariant` lives in `sosl.sos.classify` (a classification, not a calculus op) and rides the `.cat` sidecar; `tests/calculus/stutter.py` cross-checks it against the exact §8.6 search |
 | CAL4: the experimental campaign (§8; sub-milestones §8.10) | **TODO** — nothing run yet; §8 is the work order |
 | hull surgeries + ladder read-offs (safety closure / interior / liveness part / `is_obligation`) | **OPTIONAL TODO** — theory delivered (paper §3.6, Prop 3.5 + Thm 3.10); milestone CAL5 in §6 |
 | exponential frontier (`W·L`, `W^ω`, `remove_ap`), NBA exits, CLI, learner integration | **NON-GOALS** here (see §6) |
@@ -116,14 +116,15 @@ require a genuine `Invariant`.
 
 ## 2. Package shape
 
-All files below exist and are harness-green; the one missing function is
-`is_stutter_invariant` in `table.py` (TODO, §8.6).
+All files below exist and are harness-green. The stutter read-off (§8.6)
+lives in `sosl.sos.classify`, not here — it is a classification of the
+language, not a calculus operation (see §8.6).
 
 ```
 sosl/sosl/sos/calculus/
     table.py     Table: one (𝒞, λ, M) + memoized idem/linked/keys + Val
                  factory (a Table carries MANY pair sets; pair sets are
-                 values, tables are shared); is_stutter_invariant [TODO]
+                 values, tables are shared)
     align.py     align(A, B) -> Aligned: the generated product, lazy mult
     surgery.py   the free fragment: Boolean ops, complement, rooting,
                  pair languages + saturate(), inverse substitution
@@ -616,13 +617,16 @@ against trap #14.
 
 ### 8.6 V2 — the stutter read-off vs Spot (fills the §4 V2 TBD)
 
-**Package addition first (DONE):**
-`Table.is_stutter_invariant() -> bool` in `table.py` —
-`all(M(λ(a), λ(a)) == λ(a) for a in Σ)`, docstring citing Prop 3.3 of
-the paper. Gate `tests/calculus/stutter.py` replays the read-off against
-the exact §8.6 divergence search (they must agree on any canonical
-invariant; each "sensitive" verdict carries two stutter-equivalent
-lassos that `member` confirms disagree).
+**Package addition first (DONE — landed in `classify`, not `calculus`):**
+`is_stutter_invariant(inv) -> bool` in `sosl.sos.classify` —
+`all(M(λ(a), λ(a)) == λ(a) for a in Σ)`, Prop 3.3 of the calculus paper —
+the X-free refinement of the LTL cut, carried on `Record` and the `.cat`
+sidecar (`stutter: invariant|sensitive`) beside the LTL bit. V2 therefore
+*consumes* the tag from `.cat` rather than recomputing it. Gate
+`tests/calculus/stutter.py` cross-checks the read-off against the exact
+§8.6 divergence search (they must agree on any canonical invariant; each
+"sensitive" verdict carries two stutter-equivalent lassos that `member`
+confirms disagree).
 
 **Sweep.** All 3 938 corpus languages: our verdict (the scan) vs Spot's
 verdict on the paired det HOA. Spot route: the [MD15] entry points —
