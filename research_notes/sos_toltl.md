@@ -1712,14 +1712,41 @@ are the ladder's:
 - **(B) fails at every affordable width** — the genuine nesting case: the
   recurring windows do not determine the verdict, because acceptance hangs
   on *order* among recurring factors, the classical separator between
-  `FO[<]` and locally testable (`FO[+1]`, Thérien–Weiss; cite-TBD). Here
-  and only here does a DG-style descent survive, demoted to "the engine
-  inside one frozen layer" and scoped to that layer's tail algebra — which
+  `FO[<]` and locally testable (`FO[+1]`, Thérien–Weiss; cite-TBD). The
+  stratum is real, and its first witness is a household formula:
+  `G(a → F b)`, five classes over two propositions. Its final layer is
+  moving and 1-anchored — condition (A) is not the obstacle — and carries
+  the idle letter `!a ∧ !b`, neutral on the layer. The two confined lassos
+
+  ```
+  (!a∧b) · (!a∧!b)^ω             no a is ever owed a b     accepted
+  (!a∧b · a∧!b) · (!a∧!b)^ω      the a is never repaid     rejected
+  ```
+
+  have the same recurring window set `{!a∧!b}` at *every* width: no
+  window set determines the verdict at any `k′`. What separates them is
+  the class the walk holds when the idling begins — one owes a `b`, the
+  other owes nothing — an *obligation carried by the stem*, invisible to
+  every recurrence of factors: order beyond windows, in the strongest
+  form. On this stratum, and only here, a DG-style descent survives,
+  demoted to the engine inside one final layer and scoped to that layer's
+  tail algebra — which
   is not smaller in general (`T_c = L` whenever `L` is prefix-independent,
   Lemma 5.2(ii)). The plain statement, then: this stratum is where
-  extraction still pays DG's price, and the census measures how rare it is
+  extraction still pays DG's price; the census finds it nowhere inside
+  its own frame, and its first witness one shape beyond it
   (§8). An ω-specific descent that beats DG on this stratum is the paper's
-  main open problem.
+  main open problem — and now has a concrete instance to beat it on.
+  ⟨TBD: the witness also points at the repair. On a 1-anchored layer
+  every phase change reads an anchor (Lemma 4.9(i)), so an
+  ultimately-idle confined tail parks on the class its *last anchor*
+  named — and the witness's exact label has precisely that shape:
+  `G(a → F b) ≡ GF b ∨ G(!a∧!b) ∨ F(b ∧ X G(!a∧!b))` — recurring
+  anchor, park at the entry class, park after the anchor `b`. A loop
+  vocabulary of *anchored parks* `F(An(c) ∧ X G(idle))` beside the
+  `GF` windows — condition (B) relaxed to
+  windows-plus-last-anchor on (A)-passing layers — may recover
+  exactness on exactly this stratum. To be developed.⟩
 
 The first bullet's read-off, in full:
 
@@ -2434,9 +2461,12 @@ needs, decided on `𝓘(L)` before any formula is built.
 The census maps the strata empirically (§8). The stem half of the
 residual row is real but confined: every (A)-fallback layer sits at
 Wagner depth 1 and needs at least two atomic propositions. The loop
-half is unwitnessed — (B) fails nowhere in the catalogue — so the
-order-beyond-windows specimen remains an open hunt, as does the
-smallest witness of each graded stem stratum beyond the tester's cap.
+half fails nowhere inside the catalogue's own frame — a (B)-failing
+final layer needs two states and two propositions *at once*, a shape
+the frame omits — and its first witness beyond the frame is
+`G(a → F b)` (§5.1). The open hunts that remain: the smallest such
+witness, and the smallest witness of each graded stem stratum beyond
+the tester's cap.
 ⟨TBD: align the strata with the known sub-LTL
 hierarchies — definite [PRS63] / locally testable [BS73] / TL[F] of
 Cohen–Perrin–Pin [CPP93] / until hierarchy [TW96, Wil99, PW13] — so
@@ -2496,10 +2526,18 @@ at `k = 3`, so a layer "beyond the ladder" may still anchor at a larger
 width (the uncapped fixpoint of Lemma 4.6(v) decides), and the 372
 (B)-undecided layers are enumeration-budget gaps — frozen-final-layer, at
 `(ω,·)` / `(ω²,·)`, with no verdict conflict — decided by
-Proposition 5.4(iii)'s closure. The asymmetry is intrinsic: the stem side
-carries the whole fallback while condition (B) fails nowhere, all 12 516
-final-candidate layers passing. The walk's flat ladder is the binding
-constraint.
+Proposition 5.4(iii)'s closure. Within the frame the asymmetry is
+stark: the stem side carries the whole fallback while condition (B)
+fails nowhere, all 12 516 final-candidate layers passing — the walk's
+flat ladder is the binding constraint. But "nowhere" is a statement
+about the frame, not the world: the catalogue never combines two
+states with two atomic propositions, and the first (B)-failing final
+layer lives exactly there — `G(a → F b)` (§5.1), five classes, whose
+moving, 1-anchored final layer fails (B) at every width on an exact
+witness pair. A (B) failure therefore needs at least two propositions
+*and* at least two states; the `2state2ap` shape is the census-next
+axis, and the smallest witness is an open hunt with a named upper
+bound.
 
 **The certificate scan on the non-LTL side.** Every emitted family
 replays against the canonical deterministic acceptor by membership queries
@@ -2638,11 +2676,11 @@ place extraction still pays the generic price (§5.1). Second, the
 ω-word transfer of the Thérien–Wilke until-rank characterization
 (§2.2), which would turn the depth lower bound from conditional to
 certified. Third, the realization questions the census sharpened: a
-layer anchoring at no width over two letters (§4.2), a (B)-failing
-final layer at any width — the order-beyond-windows specimen the
-census leaves unwitnessed (§5.1, §8) — and a sufficient tour cap for
-deciding (B) (§5.1). The formula was always going to be large
-sometimes; the algebra now says exactly when, and exactly why.
+layer anchoring at no width over two letters (§4.2), the smallest
+(B)-failing final layer — `G(a → F b)` bounds the hunt from above
+(§5.1) — and a sufficient tour cap for deciding (B) (§5.1). The
+formula was always going to be large sometimes; the algebra now says
+exactly when, and exactly why.
 
 ---
 
