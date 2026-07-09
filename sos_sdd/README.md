@@ -166,6 +166,36 @@ bound on the true peak, stated as such in the ledgers). Calculus moves emit
 `op` records too, so E9's per-operation pricing is a reading of the same
 stream.
 
+## Backend decisions (recorded, per spec §1)
+
+- **libDDD, used directly** — not as an ITS type: the ITS contract
+  standardizes what a reachability checker consumes, while this engine's
+  substance (crossing, residual gfp, refinement, quotient, extraction,
+  calculus) lives outside it. The slot-space and relation construction is
+  isolated in one module with an ITS-shaped seam, so wrapping later is a
+  bounded refactor. Parts general enough may be pushed back to the library.
+- **Pure multi-valued DDD now; hierarchy (SDD) is an extension**, targeted
+  at factored product coordinates when the scaling families land.
+- **Relations follow the ETF pattern, restructured to modern C++**: a
+  projection (the slots a relation touches) plus an interleaved 2k-level
+  diagram, applied via `apply2k`; slot-local projections are what the
+  saturation discipline rewards. The legacy code is inspiration, never a
+  dependency.
+- **Guard**: DDD edge values are `val_t` (`short` in stock libDDD); the
+  packed slot encoding caps at `|Q × 2^C| ≤ 32767`; the engine rejects a
+  digest that exceeds it (reachable in flat coordinates on scaling
+  families) instead of silently wrapping. Escape hatches, in order: a
+  split encoding, or recompiling libDDD with a wider `val_t`.
+- **Canonical keying**: normative constraints in
+  `sosl/sosl/sos/io/sos_format.md` — AP order lexicographic by name,
+  letter order = characteristic tuple over the APs with `0 < 1`
+  (`!a < a`), shortlex keys, class ids in key order, linked pairs lex by
+  `(s, e)`, `accept` **saturated**. The doc fixes constraints, not bytes:
+  byte-level parity is against `sosl/sosl/sos/io/serialize.py`'s actual
+  layout (the fixtures' `0 eps` / `N: row` shape). The least-letter
+  choice in extraction walks is therefore lex on the α-bit vector in AP
+  order — exactly the α-carrying diagram read top-down.
+
 ## Deviations from the experiments spec (recorded)
 
 - Spec C8 says the generators "emit each in both slot coordinates"; here the
