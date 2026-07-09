@@ -20,8 +20,9 @@ def main() -> None:
         acceptance="Inf(0)&Inf(1)",
         trans=(
             (0, "a", 1, {0}),  # tuple form coerces to Transition
+            (0, "!a", 0, set()),
             Transition(1, "!a", 0, frozenset({1})),
-            Transition(1, "1", 1),
+            Transition(1, "a", 1),
         ),
     )
     aut.validate()
@@ -41,10 +42,13 @@ def main() -> None:
     except ValueError:
         pass
 
+    # With the extension built, phase 1 runs; without it, the façade
+    # fails with a clear message — both are healthy states for this test.
     try:
-        Engine().build(aut, until_phase=1)
-        raise AssertionError("build succeeded before the pipeline exists")
-    except (RuntimeError, NotImplementedError) as exc:
+        s = Engine().build(aut, until_phase=1)
+        assert s.em1_count() >= 1.0, s.em1_count()
+        assert s.depth >= 0
+    except RuntimeError as exc:
         assert "_core" in str(exc)
 
     print("SUCCESS")
