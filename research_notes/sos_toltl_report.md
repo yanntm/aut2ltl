@@ -716,6 +716,94 @@ the spec warns about — prefix-independence, one residual shared by every class
 is safe for the same reason: the single representative sits in the deepest
 layer, and the root's label is never redirected into itself.
 
+## E9 — worked-example curation, and F13: H3 exists
+
+### F13 — `G(a → F b)` is an H3 hit: a (B)-failing final layer. Two tester bugs found by it.
+
+E9's *designated first candidate* (spec E9(2), "anchored moving layer, live
+`STAY∞`") is `G(a → F b)`. It **declines**, and the reason is not the engine:
+its final layer genuinely fails condition (B). This is the E6/H3 hunt —
+"smallest LTL specimen with a (B)-failing final layer", the paper's §5.1
+candidate for the *order beyond windows* example — recorded until now as
+**not found**.
+
+`𝓘(L)` has 5 classes, `|AP| = 2`, `ϕ = (ω,σ)` (DBA-proper), 2 residuals, not
+prefix-independent. Its final layer is `R = {2, 4}` — strongly connected,
+accepting, *moving* (not frozen: `!a&b ↦ reset(2)`, `a&!b ↦ reset(4)`), which
+is exactly the stratum E9(2) wants. Take the idle letter `!a&!b` (neutral on
+`R`) and the two confined lassos it carries:
+
+| lasso | anchor class | `(d·e, e)` | verdict |
+|---|---|---|:--:|
+| `(!a&b) · (!a&!b)^ω` | `2 = [!a&b]` | `(2, 1) ∈ P` | **accept** |
+| `(!a&b · a&!b) · (!a&!b)^ω` | `4 = [!a&b·a&!b]` | `(4, 1) ∉ P` | **reject** |
+
+Both are confined to `R`; both have recurring window set `{!a&!b}` at *every*
+width `k′`. So no window set determines the verdict: the layer is
+(B)-undetermined at every width, and the distinguishing datum is the *class*
+(class 4 owes a `b` to an earlier `a`; class 2 owes nothing) — precisely the
+"order beyond windows" phenomenon. `FAIL` with this witness pair at
+`k′ = 1, 2, 3` is what the tester now reports.
+
+**Why the tester reported `UNDECIDED` instead.** Two defects in `windows.py`,
+both fixed; neither was a soundness bug (both `FAIL` and `UNDECIDED` decline to
+DG), both were *blindness* bugs that hid the H3 stratum:
+
+1. *The cycle enumeration was depth-first under a budget shared across anchor
+   classes.* Stage 3 enumerates cycle words to length `2·|R|·|𝒞|` (= 20 here) —
+   exponential, so on any layer worth testing the node budget trips long before
+   the enumeration completes, and **what the traversal reaches first is what the
+   tester gets to see**. DFS spent the whole 200 000-node budget inside anchor
+   class 2's deep branches; anchor class 4 was then never enumerated at all. A
+   conflict routinely pairs cycles at two *different* anchors — this one does —
+   so it was structurally invisible. Now: breadth-first (shortest cycles first,
+   and a conflict needs only short ones) with **one budget per anchor class**.
+2. *An all-widths conflict was downgraded to `UNDECIDED` when the enumeration
+   was incomplete.* But a conflict is a **witness pair** — two confined lassos,
+   equal recurring window sets, opposite verdicts — and it refutes (B) at that
+   width exactly, finished search or not. Only a conflict-*free* width needs
+   completeness before it may be called a (cap-bounded) PASS. Spec C3 says this
+   ("a verdict conflict is an exact `FAIL(witness pair of lassos)`"); the code
+   did not. `FAIL` is now exact, and means *conflicted at every tested width*.
+
+**The catalogue is unmoved.** Re-running the census after the fix reproduces
+`E1E2.txt` byte-for-byte: still **0 FAIL and 372 UNDECIDED** at every degree,
+the UNDECIDED still entirely the `(ω,·)`/`(ω²,·)` frozen-final-layer stratum of
+F1. So E2's "(B) is clean catalogue-wide" **survives**, and F1's attribution of
+the UNDECIDED stratum survives with it. `G(a → F b)` is invisible to
+`flat_canon` for a *frame* reason, not a tester reason: it needs **2 states and
+2 AP at once**, and the catalogue enumerates `1state2ap`, `2state1ap`,
+`3state1ap` — never `2state2ap`. E2's prediction that a (B) failure "requires
+≥ 2 AP" is confirmed and sharpened: **≥ 2 AP and ≥ 2 states**. The H3 frontier
+is a census-next axis (`2state2ap`), and the first hit is a named formula, not
+a corpus id.
+
+This is the paper's own §5.1 example arriving as a measurement, and it is a
+`k′ = ∞` failure (constant window at every width), not a marginal one — the
+strongest possible form of the H3 witness. The layer is anchored at width 1
+under (A), so it isolates (B): the scoped fallback it forces is a (B) fallback,
+not an (A) one.
+
+### The E9 gallery
+
+`e9_profile` returns the spec's per-candidate tuple for any specimen — a `.sos`
+id, an automaton, or an LTL formula (all keyed by the canonical invariant the
+bridge builds, so presentation cannot leak in). The label stack is the engine's
+own `SOS2LTL_TRACE` brick dump, captured rather than re-assembled probe-side:
+a probe-side copy would drift from the engine and the figure it feeds would
+stop being checkable (`sos_toltl_figures.md`, FIG-2's blocking requirement).
+The hook lands with this section: `[engine] layer=… brick=… class=… formula=…`,
+raw formulas, simplification off, emitted child-first down the R-order — which
+*is* the derivation order the label stack reads as. On `GF(aa)` it reproduces
+the paper's §5.2 stack, `Final(5) = GF(a ∧ Xa)` first and `STAY = 0` on both
+all-rejecting moving layers.
+
+⟨candidates 1, 3, 3a, 3b, 4, 5 — pending; candidate 2 is F13 above, and it
+declines rather than illustrating a live `STAY∞`, so E9(2) needs a *different*
+specimen: the wanted stratum is an accepting moving final layer that is also
+(B)-determined. Theory to note that `G(a → F b)` cannot serve as the §5.2
+worked example it was designated for.⟩
+
 ## Reproduction
 
 Every table above is machine-built and audited against a committed output under
@@ -776,4 +864,15 @@ the committed reference copies live in `results/reference/flat_canon/`.
     # the triptych-of-renderings exhibit, one language:
     python3 -m tests.sos2ltl.e10_ledger genaut/corpus/flat_canon/sos/1state2ap1acc_030.sos
     python3 -m tests.sos2ltl.e0_engine genaut/corpus/flat_canon/sos/1state2ap1acc_030.sos
+
+**E9 profiles, and the F13 / H3 exhibit.**
+
+    python3 -m tests.sos2ltl.e9_profile samples/fixtures/hoa/sos/gf_aa.sos
+    python3 -m tests.sos2ltl.e9_profile --ltl "G(a -> F b)" \
+        --dump-sos tests/sos2ltl/logs/e9_gafb.sos
+    python3 -m tests.sos2ltl.e0_windows tests/sos2ltl/logs/e9_gafb.sos  # FAIL + witnesses
+    # the (B) fix leaves the catalogue tables byte-identical:
+    python3 -m tests.sos2ltl.census_build genaut/corpus/flat_canon/sos \
+        --out tests/sos2ltl/logs/e12_flat_canon.jsonl
+    python3 -m tests.sos2ltl.census_report tests/sos2ltl/logs/e12_flat_canon.jsonl
 
