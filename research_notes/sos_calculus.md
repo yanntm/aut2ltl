@@ -6,8 +6,8 @@ With significant inputs from
 **Claude (Anthropic)**
 
 *Working draft — 2026-07-09 — remaining `⟨TBD: …⟩` placeholders are the
-V1/V2 measurements (spec milestone CAL4), one sharp blow-up example
-(§3.4), and the hull conjecture (§3.5).*
+V1/V2 measurements (spec milestone CAL4) and the hull conjecture
+(§3.5).*
 
 ## Abstract
 
@@ -410,17 +410,49 @@ The calculus is honest about where powersets are intrinsic:
   `α ∈ W·L` asks for *some* factorization `α = w·β` with `w ∈ W`,
   `β ∈ L`. A `Val`-scan over a fixed table evaluates one factorization
   type per cell; no surgery on an aligned table expresses an existential
-  over factorizations, and the syntactic object of the result can be
-  genuinely larger than any product of the operands' — already on finite
-  words, the syntactic monoid of a concatenation can blow up
-  exponentially relative to the factors', for the same reason
-  (deterministic devices must track the set of live split positions).
-  This is where the nondeterminism that automata carry natively
-  re-enters; constructions exist on the algebraic side [PP04] but cost
-  what determinization costs: the honest route is exit to an acceptor,
-  apply the constructor, re-enter through the gate. ⟨TBD: a sharp
-  blow-up example on the invariant; whether the census [SωSN26] shows
-  the blowup is rare at small sizes.⟩
+  over factorizations — and none could, because the result's algebra can
+  be exponentially larger than both operands':
+
+  **Proposition 3.4 (concatenation blows up).** Over `Σ = {a, b, #}`,
+  let `W = Σ*·#` (a three-element syntactic monoid: the last letter is
+  `#` or it is not) and
+  `L_n = { α : α contains a b, and the number of a's before the first b
+  is ≡ 0 mod n }`, whose invariant has at most `2n + 1` classes (a phase
+  counter mod `n` that freezes at the first `b`: `n` `b`-free classes,
+  `n` frozen ones, `[ε]`). Then `𝓘(W·L_n)` has at least `2^n − 1`
+  classes.
+
+  *Proof.* `α ∈ W·L_n` iff some `#` of `α` is followed by a `b`, with
+  the a-count strictly between that `#` and the first subsequent `b`
+  divisible by `n` — each `#` opens a *thread* carrying the phase "a's
+  seen since this `#`", and all live threads resolve together at the
+  next `b`. For a nonempty `S = {s₁ < ⋯ < s_m} ⊆ {0, …, n−1}` let
+
+  ```
+  u_S  =  #·a^{s_m − s_{m−1}}·#·a^{s_{m−1} − s_{m−2}}·#·⋯·#·a^{s₁}
+  ```
+
+  a `b`-free word whose `j`-th `#` is followed by exactly `s_{m−j+1}`
+  letters `a`: the live phases of `u_S` are exactly `S`. For any phase
+  `φ`, the suffix `v_φ = a^{(n−φ) mod n}·b^ω` opens no thread
+  (`#`-free) and resolves every live phase `ψ` at its `b` with total
+  count `ψ + (n−φ) ≡ ψ − φ (mod n)`; hence
+  `u_S·v_φ ∈ W·L_n ⟺ φ ∈ S`. The residuals `u_S⁻¹(W·L_n)` are
+  therefore pairwise distinct, and distinct residuals are distinct
+  rootings, which are indexed by classes (§3.2):
+  `|𝒞(W·L_n)| ≥ 2^n − 1`. ∎
+
+  The residuals in the proof are the subset-tracking of `L_n`'s phase
+  counter — the subset construction, resurfacing in the algebra: this
+  is where the nondeterminism that automata carry natively re-enters
+  (an NBA for `W·L_n` guesses the split and stays linear in `n`).
+  ω-power hides the same existential — a factorization into infinitely
+  many `W`-blocks — and is expected to behave alike, though we exhibit
+  only the concatenation half. Constructions exist on the algebraic
+  side [PP04] but cost what determinization costs: the honest route is
+  exit to an acceptor, apply the constructor, re-enter through the
+  gate. ⟨TBD: whether the census [SωSN26] shows the blowup is rare at
+  small sizes — V1's scope.⟩
 - **Existential projection (`remove_ap`).** Quantifying an atomic
   proposition away is the QPTL wall met in [SωSX26, §6]: a deterministic
   definitional extension is free (it is an inverse substitution, §3.2 —
