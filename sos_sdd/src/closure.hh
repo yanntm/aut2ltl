@@ -2,12 +2,13 @@
 // layered closure of EM1 from the identity element, layers kept — they
 // are the length half of shortlex keying and the extraction path.
 //
-// A letter class acts on one slot as a total function on packed values:
-//   (q', S) -> (dst[q'], S | marks[q'])
-// realized as a sum over values of Hom_Basic bricks
-// (setVarConst & varEqState), composed commutatively across slots (all
-// slots step together; the factors touch disjoint variables). The full
-// step is the union over classes; the alphabet itself never appears.
+// A letter class acts on each slot as a total function on its values,
+// given extensionally (`maps[slot][v] = w` — the packing that produced
+// the values is the Python side's business). Per slot it is a sum over
+// values of Hom_Basic bricks (setVarConst & varEqState), composed
+// commutatively across slots (all slots step together; the factors touch
+// disjoint variables). The full step is the union over classes; the
+// alphabet itself never appears.
 
 #pragma once
 
@@ -27,10 +28,9 @@
 namespace sossdd {
 
 struct LetterClassRow {
-  std::string least;        // lex-least letter of the class (a cube string)
-  long long count = 0;      // number of letters in the class
-  std::vector<int> dst;     // per-state destination
-  std::vector<int> marks;   // per-state mark mask
+  std::string least;                   // lex-least letter of the class
+  long long count = 0;                 // number of letters in the class
+  std::vector<std::vector<int>> maps;  // per slot: value -> value
 };
 
 struct LayerRow {
@@ -51,18 +51,20 @@ class SoSCore {
 public:
   SoSCore(std::string name, SlotSpace space,
           const std::vector<LetterClassRow> &classes)
-      : name_(std::move(name)), space_(space), classes_(classes) {
+      : name_(std::move(name)), space_(std::move(space)), classes_(classes) {
     space_.check(name_);
+    for (const auto &c : classes_)
+      check_class(c);
     d3::set<GHom>::type step_parts;
     d3::set<GHom>::type rev_parts;
     for (const auto &c : classes_) {
       d3::set<GHom>::type slots;
       d3::set<GHom>::type rev_slots;
-      for (int i = 0; i < space_.n_states; ++i) {
+      for (int i = 0; i < space_.n_slots(); ++i) {
         d3::set<GHom>::type cases;
         d3::set<GHom>::type rev_cases;
-        for (int v = 0; v < space_.dom(); ++v) {
-          const int w = class_step(c, v);
+        for (int v = 0; v < space_.doms[i]; ++v) {
+          const int w = c.maps[i][v];
           cases.insert(setVarConst(i, w) & varEqState(i, v));
           // The reverse relation is multi-valued (a value may have many
           // preimages); the same brick shape handles it as a union.
@@ -144,14 +146,13 @@ public:
     for (int j = k; j > 0; --j)
       reach[j - 1] = DDD(rev_step_(reach[j]));
     std::vector<int> word;
-    std::vector<int> cur(space_.n_states);
-    for (int i = 0; i < space_.n_states; ++i) cur[i] = space_.pack(i, 0);
+    std::vector<int> cur = space_.identity_vals;
     for (int j = 0; j < k; ++j) {
       bool advanced = false;
       for (size_t c = 0; c < classes_.size(); ++c) {
         std::vector<int> nxt(cur.size());
         for (size_t i = 0; i < cur.size(); ++i)
-          nxt[i] = class_step(classes_[c], cur[i]);
+          nxt[i] = classes_[c].maps[i][cur[i]];
         if (!(DDD(singleton(nxt) * reach[j + 1]) == DDD())) {
           word.push_back(static_cast<int>(c));
           cur = std::move(nxt);
@@ -166,12 +167,10 @@ public:
   }
 
   const std::vector<LetterClassRow> &classes() const { return classes_; }
-  const SlotSpace &space() const { return space_; }
 
-  // Explicit enumeration of EM1 with the shortlex word of every element —
-  // a test/debug reading (quotient-time extraction is per-representative).
-  std::vector<std::pair<std::vector<int>, std::vector<int>>>
-  shortlex_words(size_t limit) const {
+  // Explicit enumeration of EM1 (raw slot values, natural order) — a
+  // test/debug reading; symbolic consumers never enumerate.
+  std::vector<std::vector<int>> elements(size_t limit) const {
     require();
     if (em1_count() > static_cast<double>(limit))
       throw std::invalid_argument(name_ + ": EM1 larger than the explicit cap");
@@ -180,8 +179,15 @@ public:
       elems.emplace_back(path.begin(), path.end());
     };
     iterate(static_cast<const GDDD &>(em1_), &cb);
+    return elems;
+  }
+
+  // Every element with its shortlex word (test/debug reading —
+  // quotient-time extraction is per-representative).
+  std::vector<std::pair<std::vector<int>, std::vector<int>>>
+  shortlex_words(size_t limit) const {
     std::vector<std::pair<std::vector<int>, std::vector<int>>> out;
-    for (const auto &e : elems)
+    for (const auto &e : elements(limit))
       out.emplace_back(e, shortlex_of(e));
     return out;
   }
@@ -204,15 +210,25 @@ private:
       throw std::logic_error(name_ + ": phase 1 has not been run");
   }
 
-  // One slot value under one letter class: (q', S) -> (dst[q'], S|marks[q']).
-  int class_step(const LetterClassRow &c, int v) const {
-    const int q = space_.state_of(v);
-    return space_.pack(c.dst[q], space_.marks_of(v) | c.marks[q]);
+  void check_class(const LetterClassRow &c) const {
+    if (static_cast<int>(c.maps.size()) != space_.n_slots())
+      throw std::invalid_argument(name_ + ": class " + c.least +
+                                  " has wrong slot count");
+    for (int i = 0; i < space_.n_slots(); ++i) {
+      if (static_cast<int>(c.maps[i].size()) != space_.doms[i])
+        throw std::invalid_argument(name_ + ": class " + c.least +
+                                    " map size mismatch at slot " +
+                                    std::to_string(i));
+      for (int w : c.maps[i])
+        if (w < 0 || w >= space_.doms[i])
+          throw std::invalid_argument(name_ + ": class " + c.least +
+                                      " maps outside the domain");
+    }
   }
 
   DDD singleton(const std::vector<int> &elem) const {
     GDDD d = GDDD::one;
-    for (int i = space_.n_states - 1; i >= 0; --i)
+    for (int i = space_.n_slots() - 1; i >= 0; --i)
       d = GDDD(i, static_cast<GDDD::val_t>(elem[i]), d);
     return DDD(d);
   }
