@@ -1234,3 +1234,138 @@ classifications — the `ref 57/93` stragglers enter E2's counts, and
 `OVERSIZE` becomes fallback-only (row F9 rescoped; the closure survives
 solely for referenceless E6 targets, there with lazy exploration +
 subsumption à la Fogarty–Vardi / Abdulla et al.).
+
+---
+
+## Exact-by-reference delivered — spec item 10, and three spec defects it exposed (2026-07-09)
+
+`--eq-mode exact` no longer products the automaton with the hypothesis's
+transformation closure. It decides against the reference invariant
+`R = 𝓘(L)` in the SoS calculus, exactly as spec §3.2 (rev 2026-07-08h) asks:
+`align` the hypothesis's Cayley graph with `R` into the letter-generated node
+set (`≤ n_H·n_R` nodes, memoized, keyed by shortlex BFS), scan the cells
+`(stem node, loop node)` in the counterexample discipline, and return the first
+disagreeing cell's canonical lasso. Polynomial throughout; `D` has left the
+equivalence loop, its one remaining job being to have built `R` once.
+
+New module `sosl/sosl/teacher/exact_ref.py`, a client of the calculus package
+(`align`, `Table.language`, `equivalent`, `Witness`). The closure oracle
+(`sosl/sosl/teacher/exact.py`) survives as the **referenceless fallback** — the
+E6 path — and is the only place `ExactTooLarge` can still fire.
+
+### Three places the spec was wrong, and what they cost
+
+**(1) The hypothesis side cannot be read on a bare class pair.** Spec §3.2 says
+`H`'s per-cell verdict is "read through its own P-cache / representative-lasso
+discipline". Taken literally — the cache bit of the class pair `(s, e)`, or a
+membership query on `key(s)·loop(e)^ω` — it is *wrong*, and the item-10 gate
+caught it on the first non-trivial case: `gf_aa_parity` under
+`--no-saturation`, third counterexample, exact-by-reference returned
+`loop = a;!a;a;!a` where the closure returned `loop = a;!a`.
+
+The reason is that a class pair has forgotten the loop **word**, and
+stabilizing a loop means iterating that word: the P-cache is indexed by
+*stabilized* pairs `(fold(u·v^k), fold(v^k))`, never by the raw
+`(fold(u), fold(v))`. Absorbing the loop into the stem is a multiplication, and
+a mid-run Cayley form has none — which is the very reason the spec forbids
+applying linked-pair laws to `H`. The pair-level read-off therefore answers a
+different question, and a cell it flags need not be a lasso the hypothesis
+predicts wrongly at all — a silent §9 F3 violation, i.e. the learner would be
+handed a "counterexample" whose chains have equal endpoints.
+
+Correction, now normative in the module: `H`'s verdict on a cell is its
+**prediction on that cell's canonical lasso** `key(c)·key(d)^ω`
+(`resolve_prediction`, which stabilizes the actual word). One word per node
+suffices, and here is why — the argument the spec owes:
+
+> An equivalence query is issued at a closed, consistent table, so `step` is a
+> right action and every hypothesis class is a union of syntactic classes of
+> `L` (every split carries a witness, so the hypothesis never separates two
+> `≈_L`-equivalent words). Take two words `y, y'` of one aligned node: they
+> share an `R`-class, hence so do `y^j` and `y'^j` for every `j`, hence they
+> share a hypothesis class too. Both therefore stabilize to the same pair, and
+> prediction is constant on the node. Same for the stem. So the scan decides
+> every lasso, not merely the keyed ones — and since keys are shortlex-least
+> and cells are scanned in the discipline order, the first disagreeing cell
+> yields the globally minimal counterexample.
+
+With this reading the two oracles agree byte-for-byte. With the spec's reading
+they do not, and the spec's own minimality claim ("the disagreeing cell's
+canonical witness lasso is the shortlex-least counterexample") is false.
+
+**(2) The teacher did not, in fact, "already hold" `R`.** Spec §3.2 asserts the
+teacher holds the reference invariant. `HoaTeacher` held only `D`. Wired:
+`HoaTeacher(..., reference=...)` takes it, the experiment driver feeds the
+corpus `.sos` (`run.py::_reference` now returns the parsed `Invariant`, not a
+regex-scraped class count), and a teacher constructed without one builds it
+once from `D` and caches it. A language whose algebra blows the construction's
+cap has no reference, and exact mode then takes the closure fallback — which is
+precisely the E6 scoping row F9 asks for.
+
+**(3) `OVERSIZE` on a census run is now a defect, as row F9 (rescoped) says.**
+Because `run_case` always has a reference, the closure is unreachable on the
+census. The five deferred cases decide, and fast:
+
+| case | `ref_classes` | closure oracle | exact-by-reference |
+|---|--:|---|---|
+| `3state1ap0acc_013908` (+ `_c`) | 57 | `OVERSIZE` after 11.0 s | `permanent`, 0.1 s |
+| `3state1ap0acc_013892` (+ `_c`) | 93 | `OVERSIZE` after 23.4 s | `transient`, 0.4 s |
+| `3state1ap0acc_075976` | 121 | `OVERSIZE` after 23.9 s | `transient`, 0.9 s |
+
+Two permanent, three transient. They enter E2's frequency counts; `OVERSIZE`
+leaves the census vocabulary. (Dual symmetry holds on the two pairs present.)
+
+### Gates
+
+- **Item-10 gate** (`tests/sosl/exact_ref_gate.py`): on the six E0 named cases,
+  under **both** saturation settings, the two oracles must agree byte-for-byte
+  on the counterexample sequence, the run ledger (per-phase counters, splits,
+  equivalence rounds) and the exported invariant. Green. The demanding half is
+  `a_implies_xa` / `a_once` under `--no-saturation`, where the oracle must
+  *certify* the proven-permanent stalls (4 and 3 classes, row P4) — certification
+  is where an incomplete scan would silently succeed.
+- **Census consistency** (`tests/sosl/exact_ref_census_check.py`): a seeded
+  25-case replay of the committed drop's decided `no-sat-exact` rows reproduces
+  `verdict`, `stall_class` and `learned_classes` on every one. The published E2
+  table is not invalidated.
+- **Deferred cases** (`tests/sosl/exact_ref_oversize.py`): `--list` reads the
+  committed drop; a case id re-runs it.
+- Unchanged and green: `exact_fixtures`, `even_conformance`,
+  `evenblocks_conformance`, `saturation_gate`, `witness_lock`, and the E0
+  campaign (Even / EvenBlocks ledgers byte-stable, row P5).
+
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.exact_ref_gate [case]` (one
+case per invocation); `python3 -m tests.sosl.exact_ref_oversize --list` then
+`... <case_id>`; `python3 -m tests.sosl.exact_ref_census_check [COUNT] [SEED]`.
+`census_campaign` grows an `--out DIR` flag (its output directory was hardcoded,
+so a fresh sweep could not escape the resume-skip on the previous CSV).
+
+### Proposal — retire `bounded` from the default leg
+
+The default config still certifies with `bounded:8`, at roughly **3.5 s per
+case** on the catalogue (≈ 4 h for a full default sweep) against the ablation
+leg's **~33 cases/s**. That gap is now pure waste, and the case for switching
+the default leg to `--eq-mode exact` is stronger than speed:
+
+- **It is a certification upgrade, not a trade.** `bounded:B` is complete only
+  in the limit; a run it certifies is *flagged* in the stats
+  (`bounded:8:capped` when the lasso work cap fires first), and the paper has to
+  say default runs certify `bounded:8` backed by byte-equality. Exact-by-
+  reference certifies exactly, so `eq_certification = exact` everywhere and the
+  caveat disappears from §6.
+- **It changes no cost number.** The oracle's own membership queries never
+  entered the learner's counters (the counting wrapper sits on the learner's
+  side of the teacher), and both oracles return the shortlex-least
+  counterexample — so the same cexes, the same splits, the same ledgers. The E0
+  table already shows it: the `default` and `exact` rows of `a_implies_xa` and
+  `a_once` are identical, `43 (32/0/2/9)` and `35 (26/3/2/4)`.
+- **It should clear the 137 `BUDGET` rows** of the ablation leg, and would make
+  a full both-legs sweep a minutes-scale job instead of an overnight one.
+
+What it costs: `bounded` stays in the tree for the black-box teacher and as the
+cheap first pass, but no campaign row would use it. This is a spec-level change
+(§3.2's default escalation `reps` → `bounded:8` → `exact`, and §7's
+`eq_certification` semantics), so it is **not done** — flagging it for the
+theory thread. A full ablation-leg sweep under the new oracle is in flight; its
+verdict tally and the dual-symmetry assertion (spec item 8) land in the next
+drop, under the `reference/` persistence floor.
