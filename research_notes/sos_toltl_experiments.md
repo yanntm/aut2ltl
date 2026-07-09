@@ -428,7 +428,12 @@ Spot-simplified formula)`:
    moving, accepting, (B)-determined, with exits — `STAY∞` and `LEAVE`
    live in one layer; 219 such languages, this the smallest)*.
    `G(a → F b)` cannot serve: its final layer fails (B) at every width
-   (report F13 / E6-H3). Side note kept for theory: the exact label of
+   (report F13 / E6-H3). Refinement (paper §5.2, Example 4): in the
+   `|𝒞| = 6` specimen the `LEAVE` chain is semantically `⊥` — every
+   exit lands on the empty-tail zero. For a specimen where *both*
+   branches carry weight, re-query with the extra filter: accepting
+   final layer *and* an exit child with `T ≠ ∅`. Side note kept for
+   theory: the exact label of
    `G(a → F b)` is `GF b ∨ G(!a∧!b) ∨ F(b ∧ X G(!a∧!b))` — flat LTL —
    so F13's obstruction is the (B) *vocabulary* (recurring window
    sets), not LTL-expressibility; see the paper's §5.1 ⟨TBD⟩ on
