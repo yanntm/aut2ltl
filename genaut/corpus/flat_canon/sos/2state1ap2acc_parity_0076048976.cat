@@ -1,5 +1,6 @@
 CAT v1
 ltl: no
+stutter: sensitive
 phi: omega*2,pi
 coords: 1 1 1 0
 class: one Rabin pair — π side

@@ -1,5 +1,6 @@
 CAT v1
 ltl: yes
+stutter: invariant
 phi: 2,pi
 coords: 0 0 2 1
 class: properly Π₂

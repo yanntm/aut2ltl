@@ -1,5 +1,6 @@
 CAT v1
 ltl: yes
+stutter: sensitive
 phi: omega^2,pi
 coords: 2 1 0 -1
 class: co-parity {0,1,2} — proper

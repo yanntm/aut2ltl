@@ -1,5 +1,6 @@
 CAT v1
 ltl: yes
+stutter: sensitive
 phi: 1,sigma
 coords: 0 0 0 1
 class: properly open — guarantee
