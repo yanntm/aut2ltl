@@ -1,22 +1,35 @@
 # SoS Symbolic Engine — Experimentation Specification
 
-**Status:** specification / declaration of intent. Everything below is
-to be implemented; nothing below exists yet except where explicitly
-marked *(exists in-repo)*. This document is the interface between the
-paper (`sos_symbolic.md`) and the implementation sessions: the paper's
-§8 evaluation plan and its ⟨TBD⟩ measurements cite the experiment ids
-below, per the family discipline (`sosl_report.md` ledger style).
+**Status:** specification / declaration of intent. This document is the
+interface between the paper (`sos_symbolic.md`) and the implementation
+sessions: the paper's §8 evaluation plan and its ⟨TBD⟩ measurements are
+fed by the experiment ids below, per the family discipline
+(`sosl_report.md` ledger style).
 Companion specs: `sos_census_experiments.md` (the measurement corpus and
 the derived-census driver, the engine's first consumer at scale),
 `sos_toltl_experiments.md` (downstream consumer of the emitted quotient).
 
+**State of play.**
+- **DONE (exists in-repo, consumed as-is):** the explicit reference
+  construction emitting `.sos` (the conformance oracle); the HOA parser
+  side of C2; the triptych automata.
+- **DONE (paper-side, settles questions this spec used to leave open):**
+  the flat-order lower bound is *stated and proved* for row-major-style
+  orders (paper Lemma 4.2), with the any-order question posed as
+  Conjecture 4.3 — E3 now probes the conjecture, it no longer decides a
+  lemma; the shortlex/witness extraction mechanism is pinned (backward
+  preimage sets + *forward* least-letter walk — see C7, C10); the
+  calculus is specified with its correctness propositions (paper §6,
+  Props 6.0–6.2) — covered by C10 + E9.
+- **TODO: everything else.** C1–C10, E0–E9, M1–M5: none started.
+
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat
-scaling lines on product families (the §4.2 proposition measured), the
+scaling lines on product families (Proposition 4.1 measured), the
 phase cost profile, the fixpoint-discipline and variable-order studies,
-and the bottom line against the explicit construction's closure cap —
-under a conformance gate that the engine's output invariant is
-byte-identical to the reference's.
+the calculus in motion, and the bottom line against the explicit
+construction's closure cap — under a conformance gate that the engine's
+output invariant is byte-identical to the reference's.
 
 ---
 
@@ -29,8 +42,9 @@ byte-identical to the reference's.
   once `sos_census_experiments.md` M3 lands — the compression scatter's
   x-axis population.
 - **The triptych**, `EvenBlocks` in particular: `|Q| = 2`, `C = {0,1}`,
-  slot domain of 8 values, `|EM¹| = 17` — the paper's §3.1 worked
-  specimen *(exists)*.
+  slot domain of 8 values, `|EM¹| = 16` identity included
+  (`⟦aa⟧ = ⟦ε⟧` merges into it, [SωS26, Table 2(c)]) — the paper's
+  §3.1 worked specimen *(exists)*.
 - **HOA inputs as Boolean relations**: transition relation
   `Δ(q, α, q′)` with AP-guards, mark predicates `Mk_c(q, α)` — the
   paper's §2.3 input contract; the parser side exists in-repo, the
@@ -83,8 +97,14 @@ slot-local letter relations only — assert statically that no
 lemma as a code invariant, §4.1 of the paper).
 
 **C7 — quotient and exports (Phase 6).** Quotient, shortlex
-representative extraction backward through the kept layers, the
-multiplication table, λ-quotient with symbolic guards, accepting pairs
+representative extraction through the kept layers — the mechanism the
+paper pins in Phase 6: the minimal layer gives the length, a backward
+preimage pass builds the layer-indexed can-still-reach sets, and a
+*forward* walk through them choosing the least letter gives the
+lex-least word (a backward letter choice minimizes the wrong end,
+yielding reverse-lex — do not implement that) — the multiplication
+table (`M(κ, a)` by `R_a` images, `M(κ, κ′)` by folding representative
+words, never `Comp`), λ-quotient with symbolic guards, accepting pairs
 via `Val` on representatives, residuals block; serialize to `.sos`.
 
 **C8 — product family generators.** From a fixed component `D`: the
@@ -92,13 +112,38 @@ via `Val` on representatives, residuals block; serialize to `.sos`.
 and synchronous (shared-alphabet) variants; emit each in **both slot
 coordinates** — factored (component-grouped variables) and flat (one
 slot per global state) — as inputs to E2/E3. `EvenBlocks^{⊗n}` is the
-canonical family (`|EM| = 17ⁿ`).
+canonical family (`|EM| = 16ⁿ`, by Proposition 4.1 of the paper).
 
 **C9 — order and discipline switches.** Variable-order control
 (slot grouping; state-above-marks vs interleaved within slot) and
 fixpoint-discipline control (layered BFS vs chaining vs
 saturation-style where the backend offers it) — E7/E8 are sweeps over
 these switches, so they must be switches, not forks.
+
+**C10 — the calculus (paper §6).** Moves on tables built by C2–C4;
+each item names its paper anchor and its built-in assertion:
+
+- **Lasso membership, closure-free (§6.1):** fold `u`, `v` through `R`
+  with `α` fixed on singleton sets; `d^π` by concrete power iteration
+  (squaring on the aperiodic side); verdict `Val(c, d)`. *Assert Phase
+  1 never runs on a membership query.*
+- **Same-table Boolean algebra (§6.2):** complement / `∪ / ∩ / \` as
+  predicate combinations over one table — no diagram moves to build,
+  only the plumbing that keeps several `Acc` predicates per table.
+- **Alignment (§6.3):** block-concatenated slot spaces, letter
+  relations conjoined on the shared `α`-block (AP-set union free),
+  Phase 1 lfp on the aligned space; the aligned π-map assembled
+  per block (Prop 6.1). *Assert `Comp` is never applied on the aligned
+  space.*
+- **Inclusion / equivalence / emptiness (§6.4):** the `S` projection
+  onto `Q₁ × Q₂`, the `Bad` intersection, the degenerate same-`D` and
+  emptiness forms.
+- **Witness extraction (§6.4, Prop 6.2):** the layer-driven selection
+  — least stem layer `i*`, least loop layer `j*`, then the coupled
+  lex-least forward walks (C7's mechanism, reused verbatim).
+- **Rootings and inverse substitutions (§6.5):** `ι`
+  re-parameterization; generator substitution + constrained re-closure
+  inside the existing `EM¹`.
 
 ## 3. The conformance gate (mandatory, every experiment)
 
@@ -140,27 +185,31 @@ scatter and its correlates — which structure predicts compression.
 rows, with compression strongest on sparse-mark, letter-symmetric
 inputs.
 
-### E2 — asynchronous scaling (the §4.2 proposition, measured)
+### E2 — asynchronous scaling (Proposition 4.1, measured)
 
 `EvenBlocks^{⊗n}` (and one second component family for robustness),
-factored coordinates, `n` ascending. Record cardinality `|EM¹| = 17ⁿ`
+factored coordinates, `n` ascending. Record cardinality `|EM¹| = 16ⁿ`
 (model count — also a *test* of the interleaving-factorization
-proposition: assert the count and the per-component projections) vs
-diagram nodes. **Paper deliverable:** the measured line — additive
+Proposition 4.1: assert the count and the per-component projections)
+vs diagram nodes. **Paper deliverable:** the measured line — additive
 diagram size against multiplicative cardinality. **Prediction:**
 factored diagram grows `O(n · component)`; the proposition's
 isomorphism verified exactly at every `n` the budget allows.
 
-### E3 — flat vs factored (the lower-bound picture)
+### E3 — flat vs factored (Lemma 4.2 illustrated, Conjecture 4.3 probed)
 
 The same `D^{⊗n}` inputs in flat slot coordinates, best flat order the
-sweep finds (C9). **Paper deliverable:** the divergence plot — flat
-width against `n`, the §4.2 long-range-correlation story empirically;
-input to the paper's ⟨TBD⟩ decision whether to state the flat-order
-lower bound as a lemma or a conjecture. **Prediction:** flat blows
-exponentially under every order tried while factored stays linear —
-low-confidence on "every order": a flat order that stays small is a
-research finding that weakens the lemma candidate to order-dependence.
+sweep finds (C9). The paper has *decided* this question's shape: the
+row-major flat orders are provably exponential (Lemma 4.2), and
+whether some order escapes is Conjecture 4.3. E3 therefore does not
+arbitrate a lemma; it illustrates the proved half and probes the
+conjecture. **Paper deliverable:** the divergence plot — flat width
+against `n` per order tried, against the factored line. **Prediction:**
+every order the sweep tries blows exponentially while factored stays
+linear. A flat order that stays small would contradict nothing proved
+— Lemma 4.2 only covers row-major-style boundaries — but it is a
+research finding against Conjecture 4.3 and a paper edit; report it
+prominently, not as a failure.
 
 ### E4 — synchronous products
 
@@ -212,6 +261,32 @@ non-layered discipline must reconstruct lengths (cost it honestly).
 **Prediction:** saturation-style wins on peak nodes for Phase 1;
 Phase 5 stabilizes far below its bound.
 
+### E9 — the calculus in motion (paper §8(vii))
+
+C10 on census pairs plus one scaling pair: a worked multi-operation
+pipeline — complement, conjoin, inclusion check with witness, edit,
+re-check — measured against per-operation automata constructions
+(Spot as the baseline where formats allow; honest attribution per the
+working rules — a baseline failing on >32 acceptance sets is its
+limit, not ours). Three deliverables, two of them gates:
+
+- **Commutation gate (Prop 6.0), mandatory:** for every conformance
+  instance and every move, op-then-reduce must be byte-identical to
+  reduce-then-op (the invariant-level operation of [SωS26, §7.2]).
+  A mismatch is a stop-the-line bug in the move's implementation.
+- **Witness gate (Prop 6.2):** on small instances, cross-check the
+  extracted lasso against brute-force enumeration of lassos in
+  (stem length, loop length, lex) order — the extracted one must be
+  the least separating presentation, exactly.
+- **Deferred reduce, priced:** the same operation sequence run
+  reduce-at-the-end vs reduce-after-every-op — the "pay canonicity
+  only when consumed" slogan as a measured column.
+
+**Prediction:** same-table operations are free; aligned operations
+cost one closure each and dominate; witness extraction is cheap
+against the closure that enabled it (its backward sets are `O(depth)`
+small-space passes).
+
 ## 5. Expected failures (read before filing bugs)
 
 - **`DIAGRAM_BUDGET` on unstructured inputs is a datum** — the honest
@@ -220,8 +295,8 @@ Phase 5 stabilizes far below its bound.
   suspicious.
 - **Flat-coordinate blowups in E3 are the predicted result**, not a
   regression; only *factored* blowups on asynchronous products
-  contradict the paper (stop-the-line: they refute the §4.2
-  proposition's corollary, which is proved — so they mean a bug).
+  contradict the paper (stop-the-line: they refute Proposition 4.1's
+  corollary, which is proved — so they mean a bug).
 - **`UNVERIFIED` is not verified**: beyond the explicit cap the
   conformance gate is one-sided; never promote an `UNVERIFIED` run to a
   correctness claim in the paper's tables.
@@ -234,16 +309,20 @@ Phase 5 stabilizes far below its bound.
   acceptable (the quotient is small by then) — record it, it does not
   taint the symbolic claims about Phases 1–5.
 
-## 6. Milestones
+## 6. Milestones (all TODO — none started)
 
 - **M1** — C1–C3 + E0 closure (cardinalities and depths green on the
   triptych); instrumentation proven out.
 - **M2** — C4–C7 full pipeline; conformance gate green on triptych +
   census subset; E1 scatter; E5 first profile.
 - **M3** — C8 + E2/E3/E4 (the scaling story — the paper's headline
-  measurements); the §4.2 proposition verified at every affordable `n`.
+  measurements); Proposition 4.1 verified at every affordable `n`.
 - **M4** — C9 + E7/E8 studies; E6 bottom line; hand the derived-census
   driver to `sos_census_experiments.md` C6 as its at-scale backend.
+- **M5** — C10 + E9 (the calculus): commutation and witness gates
+  green, the deferred-reduce column measured. Depends on M2 (the
+  pipeline) and C8 (aligned pairs at scale); independent of M4's
+  sweeps.
 
 Every milestone ends with a report appended to `sos_symbolic_report.md`
 (ledger style, one row per finding, predictions checked off or refuted —
