@@ -359,7 +359,7 @@ The experiments are specified in full in §8; this is the index.
 | V1a | alignment-ratio distribution (uniform / large / related populations) | §8.3 | TODO |
 | V1b | operation costs, calculus vs Spot, counts + warm timings | §8.4 | TODO |
 | V1c | pipeline demo: normal-form economy + entry price | §8.5 | TODO |
-| V2 | stutter read-off vs Spot over the census (needs `is_stutter_invariant`, §8.6) | §8.6 | TODO |
+| V2 | stutter read-off vs Spot over the census | §8.6 | **DONE** — `reference/calculus/v2_stutter.md`, 3938/3938 agree, 0 disagreements |
 | V3 | Prop 3.4 blow-up check, `W·L_n` for n = 2..5 | §8.7 | TODO |
 
 Reproducibility floor (house rule): validated V-outputs are copied into
@@ -777,10 +777,11 @@ it stays a theory item.
 
 ### 8.10 Milestone restated
 
-- **CAL4a** — V1a + V1b delivered (items 1–2, 6 of §8.9).
-- **CAL4b** — V1c delivered (item 3).
+- **CAL4a** — V1a + V1b delivered (items 1–2, 6 of §8.9). TODO.
+- **CAL4b** — V1c delivered (item 3). TODO.
 - **CAL4c** — V2 delivered, zero unexplained disagreements (item 4).
-- **CAL4d** — V3 delivered (item 5); paper TBDs patched.
+  **DONE** — `reference/calculus/v2_stutter.md`, 3938/3938 agree.
+- **CAL4d** — V3 delivered (item 5); paper TBDs patched. TODO.
 
 Acceptance for the whole of CAL4: the five reference files committed,
 the paper carrying their numbers, and every F1/F2 row in the files
