@@ -3007,3 +3007,14 @@ one O(n^2) scan; interior dual; Alpern-Schneider decomposition a Boolean
 identity on the table; safety/co-safety exact fixpoint tests; aperiodicity
 survives the split. Open: obligation as the hull-generated sublattice.
 Spec: hulls promoted from non-goal to optional CAL5 with formulas+gates.
+
+## 2026-07-09 — obligation rung closed: exactly the hull-generated sublattice
+
+Paper Thm 3.10 (with Lemmas 3.8/3.9): obligation iff m=0 iff verdict
+depends only on the stem R-class iff P is Boolean over the closed pair
+sets. Key steps: kernel descent under m=0, conjugacy of kernel
+idempotents kept inside <e,f> by explicit Rees computation, saturation
+transports across R. One-scan is_obligation read-off; hull lattice =
+ladder up to obligation exactly. Naive R-DAG Wagner-degree transcription
+refuted by a*b^omega; superchain transcription left as bounded theory.
+Spec: is_obligation added to CAL5 with the .cat corpus gate.
