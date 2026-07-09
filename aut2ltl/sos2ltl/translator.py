@@ -118,9 +118,9 @@ def sos2ltl(lang: "Language") -> LTLResult:
             "sos2ltl: counting family failed replay against the input "
             "(internal inconsistency)", TAG)
 
-    flat: Optional[str] = transcribe(inv)
-    if flat is not None:
-        return LTLResult.success(spot.formula(flat), TAG, TAG_ENGINE)
+    phi: Optional["spot.formula"] = transcribe(inv)
+    if phi is not None:
+        return LTLResult.success(phi, TAG, TAG_ENGINE)
 
     try:
         ast, phi, _ = synthesize(inv)
