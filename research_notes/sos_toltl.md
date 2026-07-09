@@ -1009,11 +1009,13 @@ alternates, and smaller-domain actions stabilize at once — so
 aperiodicity does not exclude the scheme, but whether it is *realized*
 as a layer of an actual syntactic invariant is open; until a specimen is
 exhibited, Lemma 4.6(iii) is a statement about the definition, not yet
-about a language. Its budget: the scheme spends four letters, and
-whether a layer over a *two-letter* alphabet can anchor at no width — or
-even demand width 3 — is open; a negative proof would turn the census
-column into a theorem and start the (A)-failure hunt at two
-propositions (§8).
+about a language. Its budget: the scheme spends four letters, but two
+letters already defeat every affordable width — the census holds 258
+languages, all over a single proposition, whose layers anchor at no
+`k ≤ 3`, the smallest at fifteen classes (§8). Whether one of them
+anchors at *no* width is decided by the uncapped fixpoint of
+Lemma 4.6(v) ⟨TBD: run it on the stratum — a no-width two-letter layer
+would realize the scheme's semantics at half its alphabet budget⟩.
 
 The loop side speaks of verdicts of ω-tails read *from a class* — the
 ω-word generalization of the membership fold, fixed once now. For
@@ -2460,7 +2462,8 @@ needs, decided on `𝓘(L)` before any formula is built.
 
 The census maps the strata empirically (§8). The stem half of the
 residual row is real but confined: every (A)-fallback layer sits at
-Wagner depth 1 and needs at least two atomic propositions. The loop
+Wagner depth 1, over a single proposition, in an algebra of fifteen
+classes or more. The loop
 half fails nowhere inside the catalogue's own frame — a (B)-failing
 final layer needs two states and two propositions *at once*, a shape
 the frame omits — and its first witness beyond the frame is
@@ -2517,11 +2520,16 @@ languages (19 082 layers):
 
 **Table 3.** Census read-offs for conditions (A) and (B).
 
-The (A)-fallback stratum is 1 432 layers, all at Wagner degree `(1,σ)` /
-`(1,π)` (guarantee / safety, 716 apiece by duality) and all at two or more
-atomic propositions; the clopen, `(2,·)`, `(ω,·)` and `(ω²,·)` degrees
-have none. The stem-side residual row of §7 is a Wagner-depth-1
-phenomenon, not a shape one. Two figures are conservative: the tester caps
+The (A)-fallback stratum is 1 432 layers over 258 languages, all at
+Wagner degree `(1,σ)` / `(1,π)` (guarantee / safety, by duality); the
+clopen, `(2,·)`, `(ω,·)` and `(ω²,·)` degrees have none. The stem-side
+residual row of §7 is a Wagner-depth-1 phenomenon, not a shape one —
+and not an alphabet one: every (A)-failing language is over a *single*
+proposition, none over two or three, and the floor is `|𝒞| = 15` at
+three states (three 3-class layers, both letters mixed on each). The
+(A) frontier is driven by algebra size, not alphabet width — the
+natural reading of Definition 4.4, a mixed action needing several
+classes to be mixed *over*, not several letters. Two figures are conservative: the tester caps
 at `k = 3`, so a layer "beyond the ladder" may still anchor at a larger
 width (the uncapped fixpoint of Lemma 4.6(v) decides), and the 372
 (B)-undecided layers are enumeration-budget gaps — frozen-final-layer, at
@@ -2582,7 +2590,11 @@ never failed). Within the LTL side the walk+window engine renders
 layers, Theorem 4.10; committed classes and window terms, §4.3 and
 Proposition 5.4) — and the other 1 126 fall to the DG fallback until
 the entry-rooted repair of §4.3's correction carries its completeness
-re-proof. Canonicity holds end to end: two presentations of `GF(aa)`
+re-proof. The declines decompose exactly: 952 languages carry a graded
+layer (`k ≥ 2`), 258 an (A)-failing one (192 both), 108 only a
+window-term budget gap — so the graded stratum alone is 42.5% of the
+LTL catalogue, and the §4.3 re-proof is the coverage frontier, not a
+refinement. Canonicity holds end to end: two presentations of `GF(aa)`
 (the parity and the reset automata) bridge to the byte-identical
 invariant and the character-identical formula.
 
