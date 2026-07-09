@@ -30,6 +30,7 @@ python3 -m tests.calculus.corpus_oracle $CORPUS 40 0
 | `duality.py` | 6 | `complement` is an involution, and `reduce(complement(P))` is **byte-identical** to the corpus's stored complement (`X.sos` ↔ `X_c.sos`) — the free operation landing exactly on the canonical form an independent automaton-side construction produced. Without a companion file, the involution law alone. |
 | `corpus_oracle.py` | 7 | language equality *is* filename equality in `flat_canon/`, an answer key the calculus never sees. Over a sample: same-file pairs are `equivalent` (and byte-equal reduced), cross-file pairs are separated by a witness that replays against both sides. Accumulates the alignment-ratio distribution — the V1 ledger's raw material. |
 | `witness_min.py` | 8 | Proposition W: the cell scan returns the *globally* minimal witness. Brute-force every lasso up to a bound in the same discipline order and demand the same lasso. A second file adds the cross-language scans, where the minimal separator is long enough for the claim to bite. |
+| `stutter.py` | V2 prereq | `Table.is_stutter_invariant` (paper Prop 3.3, the algebraic read-off) against the exact §8.6 divergence search over class triples/pairs: on a canonical invariant they must agree, and every "sensitive" verdict comes with two stutter-equivalent lassos that `member` confirms disagree. |
 
 ## Scope and budget
 

@@ -6,7 +6,7 @@
 |---|---|
 | CAL1–CAL3: the package `sosl/sosl/sos/calculus/` (§2–§3) | **DONE** — implemented, harness 1–8 green, gates in `sosl/tests/calculus/` |
 | soundness harness (§4) | **DONE** — green corpus-wide |
-| `is_stutter_invariant` in `table.py` (§3.1, §8.6) | **TODO** — five lines + gate, prerequisite of V2 |
+| `is_stutter_invariant` in `table.py` (§3.1, §8.6) | **DONE** — read-off + `tests/calculus/stutter.py` gate (algebraic vs exact §8.6 search) |
 | CAL4: the experimental campaign (§8; sub-milestones §8.10) | **TODO** — nothing run yet; §8 is the work order |
 | hull surgeries + ladder read-offs (safety closure / interior / liveness part / `is_obligation`) | **OPTIONAL TODO** — theory delivered (paper §3.6, Prop 3.5 + Thm 3.10); milestone CAL5 in §6 |
 | exponential frontier (`W·L`, `W^ω`, `remove_ap`), NBA exits, CLI, learner integration | **NON-GOALS** here (see §6) |
@@ -616,11 +616,13 @@ against trap #14.
 
 ### 8.6 V2 — the stutter read-off vs Spot (fills the §4 V2 TBD)
 
-**Package addition first (TODO — not yet in the package):**
-`is_stutter_invariant(table) -> bool` in `table.py` —
+**Package addition first (DONE):**
+`Table.is_stutter_invariant() -> bool` in `table.py` —
 `all(M(λ(a), λ(a)) == λ(a) for a in Σ)`, docstring citing Prop 3.3 of
-the paper. Five lines; add a gate replaying it against brute-force
-stutter checks on the triptych.
+the paper. Gate `tests/calculus/stutter.py` replays the read-off against
+the exact §8.6 divergence search (they must agree on any canonical
+invariant; each "sensitive" verdict carries two stutter-equivalent
+lassos that `member` confirms disagree).
 
 **Sweep.** All 3 938 corpus languages: our verdict (the scan) vs Spot's
 verdict on the paired det HOA. Spot route: the [MD15] entry points —
