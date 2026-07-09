@@ -127,6 +127,32 @@ section 8 item 10: implement, cross-check against the closure oracle on the
 named cases, re-run the deferred `OVERSIZE` classifications; after that,
 `OVERSIZE` on the census is a defect (row F9 rescoped).
 
+**Revision 2026-07-09 (item 10 delivered; three corrections adopted; the
+functionality guard; `bounded` retired from the campaign legs).** Item 10 is
+delivered (`sosl_report.md` 2026-07-09) and its three corrections are
+adopted: (1) section 3.2 `exact`, per-cell verdicts — the hypothesis side is
+its **prediction on the cell's canonical lasso**, never a bare class-pair
+read (which forgets the loop word stabilization iterates; F3-violating —
+the `gf_aa_parity` finding); (2) the teacher *holds* the reference
+(constructor parameter; built once from `D` and cached when absent;
+referenceless targets take the closure fallback); (3) the five deferred
+`OVERSIZE` cases are decided (2 permanent / 3 transient) and enter E2's
+counts. One theory addition is **normative**: certification and
+counterexample-minimality of exact-by-reference are theorems *conditional on
+the aligned graph being functional* — no two nodes share their `R`-component;
+equivalently, non-identity node count `= N_R` — because the one-word-per-node
+argument needs the hypothesis fold to factor through `≈_L` on all words,
+which witnessed splits guarantee only on table words. The oracle asserts
+functionality on the built graph at every query; a firing assert is a
+recorded outcome and a first-class theory finding, not a bug (fall back to
+the closure oracle; new section 9 row F10; F9 rescoped accordingly). A
+returned counterexample is sound without the guard (both verdicts are
+evaluated on the concrete keyed lasso). With the guard in place the
+default escalation drops `bounded`: now `reps`, then `exact` —
+`eq_certification = exact` on every campaign row; `bounded` survives for
+black-box teachers and diagnostics only. New section 8 item 11 (guard,
+re-runs, default-leg switch, the `075976` dual).
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -317,25 +343,44 @@ for the pair `(fold(stem.loop^k), fold(loop^k))`.
     then scan the (stem cell, loop cell) grid for a cell where the two
     verdicts differ; that cell's canonical witness lasso, built from the
     shortlex keys, is the counterexample, and an all-agree scan is the
-    certificate. Per-cell verdicts: `H`'s is read through its own
-    P-cache / representative-lasso discipline — the mid-run Cayley form
-    need not be a lawful algebra (§4.2 non-associative exports), so no
-    linked-pair law is ever applied on the `H` side; `R`'s is algebraic,
+    certificate. Per-cell verdicts (corrected 2026-07-09): `H`'s is its
+    **prediction on the cell's canonical lasso** `key(c)·key(d)^ω`,
+    stabilizing the literal keyed word exactly as any prediction does —
+    NEVER the P-cache bit of the bare class pair, which has forgotten the
+    loop word that stabilization iterates and answers a different question
+    (F3-violating counterexamples; the mid-run Cayley form has no
+    multiplication to absorb a loop into a stem with, which is also why no
+    linked-pair law is ever applied on the `H` side); `R`'s is algebraic,
     `(s·e^π, e^π) ∈ P_R` with `e^π` the idempotent power. Polynomial
     throughout; the exponential transformation closure of `D` never enters.
-    Two normative points: (i) aligned keys are shortlex-least, so the least
+    Three normative points: (i) aligned keys are shortlex-least, so the least
     disagreeing cell yields the shortlex-least counterexample — the
     minimal-order guarantee that E5 and run determinism depend on is a
     stated requirement, not an accident of the closure; (ii) certification
     base: the trust anchor is `R` (the construction's output, independently
     cross-checked by the census byte-equality gate), not a product with
     `D` — same certification level, different mechanism (the F6/RABIT
-    precedent). Referenceless targets (E6) fall back to the previous form —
+    precedent); (iii) the **functionality guard** (2026-07-09) — one keyed
+    lasso decides a cell only if prediction is constant on the cell, which
+    holds iff the aligned graph is *functional*: no two nodes share their
+    `R`-component (equivalently, non-identity node count `= N_R`'s
+    non-identity class count; the graph is the full image
+    `{(fold_H(w), ψ_R(w)) : w ∈ Σ*}`, so the check verifies the needed
+    factoring on ALL words, not a sample). The oracle asserts this on the
+    built graph at every query. Certification and minimality (i) are
+    theorems *conditional on the assert*; a returned counterexample is
+    sound without it (both verdicts are evaluated on the concrete keyed
+    lasso). A firing assert is NOT a bug: record it, fall back to the
+    closure oracle for that query, and hand the graph to the theory
+    thread — it is a counterexample to the factoring conjecture (row F10).
+    Referenceless targets (E6) fall back to the previous form —
     the product of `D` with the hypothesis's transformation closure, now
     explored lazily with pointwise subsumption (Ramsey-based inclusion à la
     Fogarty–Vardi / Abdulla et al.; `D` deterministic makes domination a
     cheap pointwise test) — where `ExactTooLarge`/`OVERSIZE` remains the
-    honest verdict. Default: `reps`, then `bounded:8`, then `exact`.
+    honest verdict. Default (2026-07-09): `reps`, then `exact` — `bounded`
+    is retired from the campaign legs (black-box teachers and diagnostics
+    keep it; no campaign row uses it).
   - Whatever strategy fires, the returned counterexample is minimized
     (shortest stem, then shortest loop, then shortlex) before being returned —
     determinism of the whole run depends on this.
@@ -751,6 +796,12 @@ wall_seconds, verdict (SOUND|MISMATCH|BUDGET|ACCEPTOR_ONLY|OVERSIZE)
 `n_classes_initial` is the class count of the first stabilized table (the
 ledgers' starting point); `cex_policy` is `minimal` everywhere except E5.
 
+`eq_certification` (revised 2026-07-09): every campaign row must read
+`exact` — `bounded` is retired from the campaign legs (section 3.2 default),
+so a `bounded:<B>` certification on a campaign row is a driver defect, not a
+recorded outcome. The field keeps its enum for black-box and diagnostic
+runs.
+
 `stall_class` is the E2 classification (section 6): a **per-language**
 property determined **solely by the no-saturation + exact leg** — `permanent`
 if that leg certifies a non-canonical fixpoint, else `transient` if a
@@ -774,7 +825,10 @@ frequency counts; `MISMATCH` stays reserved for a genuine byte mismatch
 (row F9). *Rescoped 2026-07-08h: with exact-by-reference (section 3.2) the
 census ablation leg never builds the closure, so `OVERSIZE` can arise only
 on the referenceless fallback path (E6); once section 8 item 10 lands, an
-`OVERSIZE` on a census run is a defect, not a recorded outcome.*
+`OVERSIZE` on a census run is a defect, not a recorded outcome. Rescoped
+again 2026-07-09: also legal on a census query whose functionality guard
+fired and whose closure fallback then hit the cap (row F10 → F9); expected
+census count zero.*
 
 `export_associative` is computed on the exported multiplication table
 (`n/a` when no export was produced): brute-force check of
@@ -953,7 +1007,9 @@ sharpest evidence that a stalled export is not an algebra at all.
        immutable per drop. The report cites the committed path next to
        each table it reads off. A number that traces only to a
        build-machine file does not enter the paper.
-    10. **Exact-by-reference (2026-07-08h).** Re-base `--eq-mode exact` on
+    10. **Exact-by-reference (2026-07-08h; DELIVERED 2026-07-09 —
+       `sosl_report.md`, gates green; three corrections adopted, see the
+       revision-2026-07-09 block).** Re-base `--eq-mode exact` on
        the calculus form (section 3.2): align the hypothesis Cayley graph
        with the reference invariant, scan the symmetric difference, return
        the canonical-witness counterexample. Gate: on the E0 named cases,
@@ -964,7 +1020,22 @@ sharpest evidence that a stalled export is not an algebra at all.
        permanent-vs-transient classification enters E2's frequency counts,
        and `OVERSIZE` disappears from the census (row F9 rescoped to the
        referenceless fallback).
-    Standing science ask — ANSWERED in the refutation direction
+    11. **Functionality guard + default-leg switch (2026-07-09).**
+       (a) Implement the guard of section 3.2 point (iii) in `exact_ref`
+       (non-identity aligned-node count `= N_R`'s non-identity class
+       count), wired as row F10; assert it on every query of the in-flight
+       ablation sweep and report the firing count (predicted 0, node count
+       exactly `N_R` on every run). (b) Re-run the two newly-permanent
+       cases (`3state1ap0acc_013908` + complement) under the guard BEFORE
+       E2 banks them — a permanence certification is the one verdict
+       byte-equality cannot re-validate. (c) Locate `075976`'s dual partner
+       and record where it classified (expected `transient`; under the old
+       oracle it presumably sat in the `BUDGET` rows — the item-8
+       dual-symmetry assert must ultimately agree). (d) With (a)–(b) green:
+       switch the default leg to `--eq-mode exact` (section 3.2 default),
+       re-run the default sweep, confirm the Even / EvenBlocks ledgers stay
+       byte-stable (row P5) and `eq_certification = exact` on every row
+       (section 7). — ANSWERED in the refutation direction
     (2026-07-08f): the flat_canon sweep surfaced two prefix-independent
     permanent stalls (plus complements), and the witness lock (item 7,
     DELIVERED) certifies them; the necessity conjecture is dead. The
@@ -1008,7 +1079,8 @@ recorded outcome, not a defect.
 | P7 | exported `M` is associative (`export_associative = true`) | any **saturated** run | always green | the sweep failed to deliver a two-sided congruence — learner bug; a two-sided quotient's table is associative by construction |
 | F8 | exported `M` is associative | `--no-saturation` runs | MAY be red; on `a_implies_xa` MUST be red with witness triple `([a],[a],[a])` | record the witness triple, never "fix" it — it anchors the paper's §4.2 display (a green here on `a_implies_xa` means the export or the check is wrong) |
 | P8 | ω-sort discipline on prefix-independent cases: every column ever minted in a default-config run is of the ω-sort (paper Cor. 4.7(b)) | any prefix-independent case (`GF(aa)`, `EvenBlocks`, the E2 witnesses) | always green | a linear mint means the prefix-independence predicate or the sweep is wrong — build-stopping either way; the corollary's proof leaves no third option |
-| F9 | exact oracle raises `ExactTooLarge` | referenceless fallback (E6) only, once item 10 lands | allowed there; on a census run it is a defect (exact-by-reference builds no closure) | record `OVERSIZE` (section 7); permanence classification deferred, default-leg soundness stands — never `MISMATCH` |
+| F9 | exact oracle raises `ExactTooLarge` | referenceless fallback (E6), or the closure fallback of a guard-failed census query (F10) | allowed there; on any other census run it is a defect (exact-by-reference builds no closure) | record `OVERSIZE` (section 7); permanence classification deferred, default-leg soundness stands — never `MISMATCH` |
+| F10 | functionality guard on the aligned graph (section 3.2 point (iii): non-identity node count `= N_R`) fires | any exact-by-reference query | expected NEVER red (predicted count 0 across the census) — but a red is a recorded outcome, not a bug | record it, fall back to the closure oracle for that query, and hand the graph to the theory thread: it is a counterexample to the factoring conjecture (the hypothesis fold factoring through `≈_L` beyond the table words) and a first-class finding; certification/minimality claims for that query then rest on the fallback |
 
 Two "surprising green" notes, so nobody distrusts a passing run:
 

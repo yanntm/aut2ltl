@@ -5,22 +5,8 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Shadow draft — 2026-07-05, rev. 2026-07-07 (M3 results integrated from
-`sosl_report.md`; remaining `⟨TBD: …⟩` placeholders await the M4 campaign),
-rev. 2026-07-08 (theory review pass: CEGAR framing of the §4.2 impossibility,
-stalled-export algebra displayed at Proposition 4.4, Proposition 4.6 added,
-corpus shapes described, refs [Sta83]/[CNP93] added; consistency pass against
-the campaign data — E0 named-case rows imported into §6.2, the teacher's
-certification ladder stated, the census fill-envelope claim scoped),
-rev. 2026-07-08b (§6 re-based on the flat, complement-closed `flat_canon`
-catalogue — 3938 languages, `N` to 121, the permanent family in the
-thousands and crossing the LTL cut; Corollary 4.7 added, and the
-prefix-dependence necessity conjecture refuted by census witnesses (§6.3);
-figures preliminary until the sweep completes),
-rev. 2026-07-08c (Lemma 4.8 — prefix-independence needs depth; §6.3 closes
-the witness-provenance question: the sampled-tier witnesses stand on their
-per-language certificates, and an exhaustive-shape witness is proved
-impossible below the census's enumeration wall)*
+*Shadow draft — rev. 2026-07-09. Remaining `⟨TBD: …⟩` placeholders await the
+M4 campaign's completed sweep.*
 
 ## Abstract
 
@@ -383,17 +369,31 @@ poses is one.
 
 In our experiments the teacher is built on the construction of [SωS26]:
 membership is one deterministic run, and an equivalence query is decided
-*exactly*, by the product of the teacher automaton's reachable configurations
-with the transformation closure of the hypothesis — each loop word acts on the
-hypothesis's classes as a function, so one representative lasso per
-(configuration, loop-action) cell fixes both verdicts, and the shortlex-least
-disagreeing cell is the counterexample. (The experiments ascend to this exact
-product through cheaper passes — a representative audit, then bounded
-enumeration; §6.1 records which rung certifies each run.) Our teacher returns
-*minimal* counterexamples (shortest stem, then shortest loop, then shortlex),
-which makes runs deterministic and the worked examples reproducible; §6 measures
-what non-minimal policies cost. Nothing in the learner's correctness depends on
-this realization.
+*exactly*, against the language's own invariant `𝓘(L)` — constructed once,
+after which the automaton leaves the equivalence loop. The hypothesis's fold
+automaton is *aligned* with `𝓘(L)`: the letter-generated graph of pairs
+`(ψ(w), ψ_L(w))` — hypothesis fold against syntactic morphism — is built
+lazily (the generated-product move of the companion calculus [SωSC26]), and
+on every cell (stem node, loop node) two verdicts are compared: the
+hypothesis's prediction on the cell's keyed lasso, and the invariant's
+algebraic verdict `(s·e^π, e^π) ∈ P`. A flagged cell's keyed lasso is a
+genuine counterexample outright — both verdicts are evaluated on that
+concrete lasso. That one keyed lasso per cell also *decides* the cell —
+the certification and minimality claims — because both verdicts are constant
+on cells: the invariant's is, since membership factors through `ψ_L` of stem
+and loop; the hypothesis's is *provided the aligned graph is functional* —
+no two nodes share their `𝓘(L)`-component, i.e. the fold never splits a
+syntactic class — for then the loop orbit, the stabilization power, and the
+predicting pair are all determined by the cell. Functionality is not assumed:
+the oracle asserts it on the built graph at every query ⟨TBD-M4: the
+sweep-wide assert count — predicted zero firings⟩, and a failure falls back
+to the product of the automaton with the hypothesis's transformation
+closure, which needs no such hypothesis. Keys being shortlex-least and
+cells scanned in lasso order, the returned counterexample is the globally
+*minimal* one (shortest stem, then shortest loop, then shortlex) — which
+makes runs deterministic and the worked examples reproducible; §6 measures
+what non-minimal policies cost. Nothing in the learner's correctness depends
+on this realization.
 
 ## 3. The observation table
 
@@ -1349,15 +1349,19 @@ does.
 ### 6.1 Protocol
 
 **Teacher.** As fixed in §2.3: membership is one deterministic run,
-`O(|u| + |Q|·|v|)`. Equivalence ascends a ladder — representative audit,
-bounded product enumeration, the exact transformation-closure product of
-§2.3 — and each run records the rung that certified it; the ablation leg of
-§6.3 runs the exact oracle throughout, since its permanence verdicts depend
-on it, and *every* reported run is additionally validated end-to-end by
-byte-equality of the exported invariant against the constructed reference — a
-certificate stronger than any oracle. Counterexamples are minimal (shortest
-stem, then shortest loop, then shortlex). One lasso membership is one query;
-equivalence queries are counted separately (§2.1).
+`O(|u| + |Q|·|v|)`; equivalence is a cheap representative audit followed by
+the exact align-and-scan of §2.3, so every run is certified exactly, the
+functionality guard asserted at each query. The ablation leg of §6.3 leans
+hardest on that exactness — a permanence verdict certifies a *non-canonical*
+fixpoint, the one claim byte-equality cannot re-validate — while every other
+reported run is additionally validated end-to-end by byte-equality of the
+exported invariant against the constructed reference. One honesty note: the
+oracle and the byte-equality validation now share their trust anchor, the
+constructed `𝓘(L)`; independence from the automaton is retained through the
+teacher self-check, which cross-checks `D`-simulation against the invariant
+read-off on 10⁴ random lassos per case. Counterexamples are minimal
+(shortest stem, then shortest loop, then shortlex). One lasso membership is
+one query; equivalence queries are counted separately (§2.1).
 
 **Corpus.** The census is a flat, complement-closed catalogue: **3938**
 ω-regular languages up to atomic-proposition relabeling, one representative
@@ -1454,7 +1458,7 @@ learner exports a strict coarsening of the algebra's classes — which, §4.2
 showed, need not even be a semigroup.
 
 Permanent stalls are not rare. Of the 2492 languages the census sweep has
-reached, **1180 stall permanently** ⟨TBD-M4: final counts — the unfinished
+reached, **1182 stall permanently** ⟨TBD-M4: final counts — the unfinished
 largest shape supplies the large-gap tail⟩; the gap between the stalled
 right congruence and the syntactic algebra reaches **53** classes (`N = 68`
 stalled at 15, recovered by 3 counterexamples and 12 saturation
@@ -1478,7 +1482,8 @@ census every count above must pair off exactly — a standing consistency
 check the completed sweep must pass.
 
 Two structural facts. Permanence **cuts across the LTL boundary** — 582 of
-the 1180 are LTL-definable: the permanent stall measures the gap between the
+the 1182 are LTL-definable ⟨TBD-M4: split refreshed at the completed
+sweep⟩: the permanent stall measures the gap between the
 right and the two-sided congruence, not ω-counting power; aperiodic
 languages stall as readily as group-bearing ones. And prefix-dependence is
 **not necessary**. At the smallest shape all 44 permanent stalls are
@@ -1509,11 +1514,6 @@ stays open: no witness has appeared at deterministic-Büchi, co-Büchi, or
 single-Rabin-pair power. ⟨TBD-M4: the completed sweep's per-shape
 confirmation of the exhaustive negative.⟩
 
-At the top of the range a handful of languages exceed the exact oracle's
-work cap: their permanent-vs-transient classification is recorded as
-deferred and never folded into the counts, while their saturated runs remain
-byte-exact.
-
 ### 6.4 The FDFA baseline (Q3)
 
 The baseline is ROLL [LCZL21, LSTCX19], the classification-tree FDFA learner,
@@ -1524,9 +1524,9 @@ it receives a state-based Büchi presentation of each language (Spot's `SBAcc` �
 ROLL misreads a transition-based Büchi input as a trivial language): the language is the same, the
 presentation ROLL's, so membership counts are presentation-sensitive and the
 comparison rests on output size and capability. And the two learners certify
-equivalence by different but both exact mechanisms — ours the
-transformation-closure product on the Cayley hypothesis (§2.3), ROLL's its
-native automaton equivalence (RABIT).
+equivalence by different but both exact mechanisms — ours the align-and-scan
+against the language's invariant (§2.3), ROLL's its native automaton
+equivalence (RABIT).
 
 The named-case paired table (ROLL's size is the summed states of its FDFA,
 leading plus progress DFAs):
@@ -1686,6 +1686,8 @@ algebra is reached only by the saturation sweep, the two-example finding of
 - **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing the
   syntactic ω-semigroup from a deterministic Emerson–Lei automaton.* Working
   draft, 2026.
+- **[SωSC26]** Y. Thierry-Mieg, with Claude (Anthropic). *A calculus on the
+  syntactic ω-semigroup: align, operate, reduce.* Working draft, 2026.
 - **[US20]** H. Urbat, L. Schröder. *Automata learning: an algebraic approach.*
   LICS 2020.
 - **[Vaa17]** F. Vaandrager. *Model learning.* Commun. ACM 60(2) (2017)

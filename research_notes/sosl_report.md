@@ -1369,3 +1369,133 @@ cheap first pass, but no campaign row would use it. This is a spec-level change
 theory thread. A full ablation-leg sweep under the new oracle is in flight; its
 verdict tally and the dual-symmetry assertion (spec item 8) land in the next
 drop, under the `reference/` persistence floor.
+
+---
+
+## Theory-thread feedback — exact-by-reference accepted; one hole in the constancy argument, plugged by a guard the oracle can run on itself (2026-07-09)
+
+**All three corrections are adopted** (spec revision 2026-07-09; the paper is
+updated in the same pass, rev. 2026-07-09 — §2.3, §6.1, §6.3, §6.4). In
+particular: the bare-pair read was indeed wrong, and for exactly the reason
+you state — a class pair has forgotten the loop *word*, prediction is defined
+by stabilizing the literal word, and the mid-run Cayley form has no
+multiplication to absorb a loop into a stem with. `resolve_prediction` on the
+cell's canonical lasso is the right and unique reading; it is now the spec's
+text. The teacher holding `R` is what rev 08h asserted and should have said
+in wiring terms; done. And the five decided `OVERSIZE` cases enter E2 —
+subject to one re-run noted below.
+
+**But the constancy argument you supply has a real hole, and E2's new
+`permanent` verdicts stand on it.** The chain is: two words of one aligned
+node share an `R`-class, hence so do their powers `y^j, y'^j`, *"hence they
+share a hypothesis class too."* That last step invokes "every hypothesis
+class is a union of syntactic classes of `L`, because every split carries a
+witness" — and the witness invariant delivers this **for table words only**:
+distinct classes have representatives separated by a column, so two
+`≈_L`-equivalent *table* words are never split. `y^j` for `j ≥ 2` is far
+outside the table, and there the hypothesis class of a word is whatever the
+fold computes. That the fold's kernel on all of `Σ*` coarsens `≈_L` — call it
+**factoring** — does not follow from closed + consistent + witnessed splits:
+consistency constrains *rows*, not fold-intermediates, so the fold can in
+principle be signature-incoherent one step beyond the frontier. This is
+precisely the coherence gap the paper flags after Lemma 3.3 ("nothing yet
+says `fold(d, u)` and `fold(d, w_{ψ(u)})` agree, and §4.2 turns exactly on
+that gap"). Note also that your argument never uses the H-component of the
+node: were it sound as stated, it would prove `fold_H` factors through `ψ_R`
+outright — forcing the aligned graph to have **exactly `N_R` nodes, always**,
+the `≤ N_H·N_R` bound never tight. An argument that proves that much from a
+table-word invariant is leaning on something unstated.
+
+Three sharpenings of where this bites:
+
+- **The closure oracle never needed the claim.** It tracked each loop word's
+  full action `d ↦ fold(d, v)` on the hypothesis classes; the aligned node
+  `(fold_H(v), ψ_R(v))` is a *coarsening* of that action, and the new oracle
+  is sound exactly when the coarsening is lossless.
+- **The saturated leg does not rescue it.** Theorem 5.1 does prove
+  `u ≈_L w_{ψ(u)}` for all words — which yields factoring — but that step of
+  the proof consumes *equivalence granted*. Using it to prove the equivalence
+  oracle sound is circular.
+- **The unbacked exposure is the ablation leg's `permanent` verdicts.** A
+  permanence certification blesses a *non-canonical* fixpoint as
+  language-equivalent; byte-equality cannot re-validate it (it is supposed to
+  fail byte-equality). Everywhere else the certificate ladder still ends at
+  byte-equality against the reference.
+
+**The repair costs nothing, because the oracle has already built the
+universally-quantified object.** The aligned graph *is*
+`{(fold_H(w), ψ_R(w)) : w ∈ Σ*}` — the memoized letter-generated closure. So
+the property the argument needs is decidable by inspection of the graph the
+scan walks anyway:
+
+> **Functionality guard (normative, spec §3.2).** At every exact-by-reference
+> query, assert that no two aligned nodes share their `R`-component —
+> equivalently, that the non-identity node count equals `R`'s non-identity
+> class count (every `R`-class is reached, so functionality is exactly
+> `node count = N_R`).
+
+With the guard green the certification theorem is airtight; we checked it end
+to end. Write `f : 𝒞_R → 𝒞_H` for the function the guard certifies
+(`fold_H = f ∘ ψ_R` on **all** words, since the graph contains every word's
+image). For any lasso `(u, v)` in cell `(c, d)`: the loop orbit
+`ψ_H(v^j) = f(d_R^j)` is determined by the cell, hence so are the
+stabilization power `k`, the pair
+`(s, e) = (f(c_R·d_R^k), f(d_R^k))`, and the prediction — a teacher truth on
+`(w_s, w_e)`. So the hypothesis's prediction is constant on every cell and
+equals its prediction on the cell's keyed lasso; the `R`-side verdict is
+constant on cells unconditionally (membership factors through
+`(ψ_R(stem), ψ_R(loop))`). An all-agree scan therefore certifies the
+hypothesis's prediction function against `L` on *every* lasso; and global
+minimality of the returned counterexample follows as in the calculus's
+Proposition 3.2 — every wrongly-predicted lasso is dominated componentwise by
+its own cell's keyed lasso, which is itself wrong. Two scopes worth keeping
+straight: a **returned counterexample is sound unconditionally** (both
+verdicts are evaluated on the concrete keyed lasso — no guard needed), while
+**certification and minimality are conditional on the guard**.
+
+If the guard ever fires, that is *not a bug* (new §9 row F10): record it,
+fall back to the closure oracle for that query, and hand the graph to the
+theory thread — a firing is a **counterexample to the factoring conjecture**
+(that the fold factors through `≈_L` at every closed, consistent table the
+learner reaches at equivalence time) and a first-class finding. We could
+neither prove the conjecture nor refute it: our suspicion is that it fails
+for adversarially built closed/consistent tables and may hold on
+learner-reachable ones. The census is now the experiment. Row F9 rescopes
+once more: `OVERSIZE` is legal on the referenceless fallback (E6) *and* on a
+guard-failed census query's fallback; expected census count zero.
+
+**The `bounded` retirement is approved**, with two riders. (i) The guard is a
+precondition: `eq_certification = exact` everywhere may not rest on an
+unproved lemma. (ii) The trust-anchor note moves into the paper honestly:
+with exact-by-reference, the teacher's equivalence *and* the final
+byte-equality validation share the anchor `R`. Not circular in practice —
+harness layer 1 independently cross-checks `D`-simulation against the `R`
+read-off on 10⁴ random lassos per case, so `D` still validates `R` through
+membership — but §6.1 may no longer imply the oracle and the certificate are
+independent evidence. Spec: default escalation is now `reps` → `exact`;
+`bounded` survives for black-box teachers and diagnostics; no campaign row
+uses it.
+
+**Census bookkeeping.** The five decided cases move the permanent family
+1180 → **1182** on the reached set; the paper's §6.3 deferred-cases paragraph
+is deleted and the count updated (still ⟨TBD-M4⟩ until the sweep completes).
+Bank the two new `permanent` entries (`3state1ap0acc_013908` + complement)
+only after re-running them **under the guard** — a permanence verdict is
+exactly the unbacked case above, and the re-run is seconds.
+
+**Asks back** (spec section 8, item 11):
+
+1. Implement the guard in `exact_ref` and assert it on every query of the
+   in-flight sweep; report the firing count (predicted: 0, with node count
+   exactly `N_R` on every run).
+2. Re-run the `013908` pair under the guard before E2 banks them.
+3. Locate `075976`'s dual partner and say where it classified: a run on `¬L`
+   is the bit-flip of the run on `L`, so under the old oracle the partner
+   should have been `OVERSIZE` too — presumably it sat among the 137 `BUDGET`
+   rows instead. Confirm it lands `transient` (the item-8 dual-symmetry
+   assert would catch a mismatch anyway, but the report should say where the
+   partner went).
+4. After the guard is green on the named cases: switch the default leg to
+   `--eq-mode exact`, re-run the default sweep, and confirm the Even /
+   EvenBlocks ledgers stay byte-stable (row P5) with
+   `eq_certification = exact` on every row.
