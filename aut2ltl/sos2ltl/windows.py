@@ -19,18 +19,30 @@ cyclic `k'`-factors of `z` (over the λ-quotient alphabet). Three stages:
      reachable cycle verdict is the same, the verdict function is constant
      and (B) holds at every width;
   3. *the bounded test* — enumerate cycle words up to length `2·|R|·|𝒞|`
-     (with a node-count guard), group by recurring window set per width,
-     and compare verdicts: a conflict is a FAIL with a replayable witness
-     pair of lassos; a conflict-free width is a cap-bounded PASS when the
-     enumeration completed, and UNDECIDED when the guard tripped. The cap
-     must scale with `|𝒞|`, not with `|Σ_λ|`: a cycle's verdict folds its
-     word through the whole algebra, so conflicting loops can be longer
-     than any bound local to the layer.
+     (breadth-first, shortest cycles first, one node-count guard per anchor
+     class), group by recurring window set per width, and compare verdicts:
+     a conflict is a FAIL with a replayable witness pair of lassos; a
+     conflict-free width is a cap-bounded PASS when the enumeration
+     completed, and UNDECIDED when the guard tripped. The cap must scale
+     with `|𝒞|`, not with `|Σ_λ|`: a cycle's verdict folds its word through
+     the whole algebra, so conflicting loops can be longer than any bound
+     local to the layer.
+
+The two asymmetries of stage 3 are what make it usable. A *conflict* is exact
+evidence — two confined lassos, equal recurring window sets, opposite verdicts —
+so it refutes (B) at that width even from a truncated enumeration; only a
+*conflict-free* width needs the enumeration to have completed before it may be
+called a PASS. And the enumeration, being exponential in the cap, is almost
+always truncated, so what it reaches first decides what the tester can see:
+breadth-first with a per-anchor budget, since a conflict routinely pairs cycles
+at two *different* anchor classes and a shared budget lets the first anchor
+starve the rest.
 """
 from __future__ import annotations
 
+from collections import deque
 from dataclasses import dataclass
-from typing import Dict, FrozenSet, List, Optional, Set, Tuple
+from typing import Deque, Dict, FrozenSet, List, Optional, Set, Tuple
 
 from sosl.sos import Invariant, Lasso, Letter, Word
 
@@ -116,13 +128,20 @@ def _recurring_windows(z: Word, k: int) -> FrozenSet[Word]:
 def _cycles(inv: Invariant, member: FrozenSet[int], reps: List[Letter],
             d: int, cap: int, budget: List[int]) -> Tuple[List[Word], bool]:
     """All words of length ≤ `cap` labeling within-layer walks `d → d`,
-    by DFS; decrements `budget[0]` per visited node and reports whether the
-    guard tripped (True = enumeration incomplete)."""
+    shortest first; decrements `budget[0]` per visited node and reports whether
+    the guard tripped (True = enumeration incomplete).
+
+    Breadth-first, not depth-first: the enumeration is exponential in `cap`, so
+    on any layer worth testing the guard trips long before it completes, and
+    what survives in `out` is whatever the traversal reached first. Shortest
+    cycles are the ones a verdict conflict is likeliest to sit on (a conflict
+    needs only two cycles with the same window set), so the truncation must
+    keep them — a DFS keeps one deep branch instead and can miss a length-1
+    conflict entirely."""
     out: List[Word] = []
-    tripped = False
-    stack: List[Tuple[int, Word]] = [(d, ())]
-    while stack:
-        c, w = stack.pop()
+    queue: Deque[Tuple[int, Word]] = deque([(d, ())])
+    while queue:
+        c, w = queue.popleft()
         for a in reps:
             c2 = inv.mult[c][inv.letter_class[a]]
             if c2 not in member:
@@ -134,8 +153,8 @@ def _cycles(inv: Invariant, member: FrozenSet[int], reps: List[Letter],
             if c2 == d:
                 out.append(w2)
             if len(w2) < cap:
-                stack.append((c2, w2))
-    return out, tripped
+                queue.append((c2, w2))
+    return out, False
 
 
 def analyze_layer(cay: Cayley, layer_id: int, k_max: int = 3,
@@ -161,13 +180,15 @@ def analyze_layer(cay: Cayley, layer_id: int, k_max: int = 3,
         return WindowReport(layer=layer, status=PASS, width=1, trivial=True,
                             verdict=next(iter(verdicts)), fail_witness={})
 
-    # Stage 3 — bounded test on enumerated cycle words.
+    # Stage 3 — bounded test on enumerated cycle words. Each anchor class gets
+    # its own budget: a conflict is a pair of cycles at *different* anchors as
+    # often as at one, so a budget shared across the loop would let the first
+    # anchor starve the rest and hide the conflict behind an UNDECIDED.
     cap = 2 * len(layer) * inv.n
-    budget = [node_budget]
     samples: List[Tuple[int, Word]] = []
     incomplete = False
     for d in layer:
-        words, tripped = _cycles(inv, member, reps, d, cap, budget)
+        words, tripped = _cycles(inv, member, reps, d, cap, [node_budget])
         incomplete = incomplete or tripped
         samples.extend((d, z) for z in words)
 
@@ -193,9 +214,15 @@ def analyze_layer(cay: Cayley, layer_id: int, k_max: int = 3,
             break
 
     if width is not None:
+        # Conflict-free at `width`, but only over the cycles enumerated: a
+        # cap-bounded PASS when the enumeration completed, otherwise no verdict.
         status = UNDECIDED if incomplete else PASS
     else:
-        status = FAIL if not incomplete else UNDECIDED
+        # A conflict is a *witness pair* — two confined lassos with equal
+        # recurring window sets and opposite verdicts — so it refutes (B) at
+        # that width exactly, whether or not the enumeration finished. FAIL
+        # here means: conflicted at every tested width.
+        status = FAIL
     return WindowReport(layer=layer, status=status, width=width,
                         trivial=False, verdict=None,
                         fail_witness=fail_witness)
@@ -214,10 +241,9 @@ def realizable_verdicts(cay: Cayley, layer_id: int, k: int,
     member = frozenset(layer)
     reps = _rep_letters(inv)
     cap = 2 * len(layer) * inv.n
-    budget = [node_budget]
     table: Dict[FrozenSet[Word], bool] = {}
     for d in layer:
-        words, tripped = _cycles(inv, member, reps, d, cap, budget)
+        words, tripped = _cycles(inv, member, reps, d, cap, [node_budget])
         if tripped:
             return None
         for z in words:
