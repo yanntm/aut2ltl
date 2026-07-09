@@ -67,9 +67,17 @@ switchable through `Rendering` so its contribution can be measured:
     induction has already built (exits point strictly down the R-order, and
     a residual's representative is the class of its deepest layer), which is
     what keeps the memo acyclic.
+
+`transcribe` returns only the root label. Setting `SOS2LTL_TRACE` (or the
+global `TRANSLATOR_TRACE_ON`) dumps every brick as one structured line —
+`[engine] layer=… brick=… class=… formula=…` — in the order the R-order
+descent builds them, child-first, which is the derivation the paper's §5.2
+label stack reads as. `formula=` is the raw brick, simplification off.
 """
 from __future__ import annotations
 
+import os
+import sys
 from dataclasses import dataclass
 from typing import Callable, Dict, FrozenSet, List, Optional, Sequence, Tuple
 
@@ -81,6 +89,21 @@ from . import anchoring, windows
 from .cayley import Cayley, build
 from .guards import Guards
 from .readoffs import residual_partition
+
+# On when either SOS2LTL_TRACE or the global TRANSLATOR_TRACE_ON is set (presence;
+# value ignored), or when a caller flips it. Every message is built inside
+# `if _TRACE:`, so a disabled trace costs nothing — `str(formula)` on a shared DAG
+# is O(unfolded tree). One structured line per brick, child-first in the R-order
+# descent: that order *is* the derivation the label stack reads as.
+_TRACE = "SOS2LTL_TRACE" in os.environ or "TRANSLATOR_TRACE_ON" in os.environ
+
+
+def _trace(layer_id: int, brick: str, cls: Optional[int],
+           f: "spot.formula") -> None:
+    if _TRACE:
+        where = "" if cls is None else f" class={cls}"
+        print(f"[engine] layer={layer_id} brick={brick}{where} formula={f}",
+              file=sys.stderr)
 
 
 @dataclass(frozen=True)
@@ -336,9 +359,10 @@ def _leave(cay: Cayley, la: anchoring.LayerAnchoring, lets: _Letters,
                    rend.group))
 
 
-def _layer_flat(cay: Cayley, la: anchoring.LayerAnchoring, lets: _Letters,
-                final: Dict[int, "spot.formula"], exit_: "_Exits",
-                rend: Rendering, wterm: "spot.formula") -> None:
+def _layer_flat(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
+                lets: _Letters, final: Dict[int, "spot.formula"],
+                exit_: "_Exits", rend: Rendering,
+                wterm: "spot.formula") -> None:
     """The width-1 bricks of Theorem 5.10 (§5.2)."""
     layer = la.layer
     sojourn = {c: _sojourn(la, lets, c) for c in layer}
@@ -346,6 +370,12 @@ def _layer_flat(cay: Cayley, la: anchoring.LayerAnchoring, lets: _Letters,
         _implies(lets.set_(la.anchors[c]), _x(sojourn[c]))
         for c in layer if la.anchors[c]])
     leave = {c: _leave(cay, la, lets, exit_, rend, c) for c in layer}
+    if _TRACE:
+        for c in layer:
+            _trace(layer_id, "sojourn", c, sojourn[c])
+        _trace(layer_id, "step", None, step)
+        for c in layer:
+            _trace(layer_id, "leave", c, leave[c])
     for c in layer:
         relay = _or([
             _and([lets.set_(la.anchors[c2]), _x(leave[c2])])
@@ -353,6 +383,10 @@ def _layer_flat(cay: Cayley, la: anchoring.LayerAnchoring, lets: _Letters,
         big_leave = _or([leave[c], _and([sojourn[c], _u(step, relay)])])
         stay = _and([sojourn[c], _g(step), wterm])
         final[c] = _or([stay, big_leave])
+        if _TRACE:
+            _trace(layer_id, "STAY", c, stay)
+            _trace(layer_id, "LEAVE", c, big_leave)
+            _trace(layer_id, "Final", c, final[c])
 
 
 def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
@@ -396,9 +430,18 @@ def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
                            rend.group)])
               for c in layer}
 
+    if _TRACE:
+        for c in layer:
+            _trace(layer_id, "sojourn", c, sojourn[c])
+            _trace(layer_id, "leave", c, leave[c])
+        _trace(layer_id, "step_kappa", None, step)
     for c in layer:
         stay = _and([tr[c], _g(step), wterm])                # STAY∞_κ(R, c)
         final[c] = _or([stay, tl[c]])                        # Final(c)
+        if _TRACE:
+            _trace(layer_id, f"TR_{k}", c, tr[c])
+            _trace(layer_id, f"TL_{k}", c, tl[c])
+            _trace(layer_id, "Final", c, final[c])
 
 
 # ------------------------------------------------------------------ #
@@ -457,9 +500,10 @@ def transcribe(inv: Invariant, k_b_max: int = 3,
         assert la.width is not None  # guarded above
         term = wterm[layer_id]
         assert term is not None
+        _trace(layer_id, "window", None, term)
         committed = [c for c in la.layer if _committed(cay, c)]
         if la.width == 1:
-            _layer_flat(cay, la, lets, final, exit_, rend, term)
+            _layer_flat(cay, la, layer_id, lets, final, exit_, rend, term)
         elif len(committed) < len(la.layer):
             # A k≥2 (graded) layer with a non-committed class: the graded
             # exit-chain collapse (Theorem 5.23) is not proven exact, so
@@ -471,6 +515,7 @@ def transcribe(inv: Invariant, k_b_max: int = 3,
         # reachable region being entirely in P (co-safety template).
         for c in committed:
             final[c] = _TT
+            _trace(layer_id, "committed", c, _TT)
         exit_.built(la.layer)
 
     return final[inv.identity]
