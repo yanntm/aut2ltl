@@ -5,7 +5,7 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Working draft — 2026-07-07 — placeholders marked `⟨TBD: …⟩`*
+*Working draft — 2026-07-09 — placeholders marked `⟨TBD: …⟩`*
 
 ## Abstract
 
@@ -34,14 +34,23 @@ object anyone keeps — is small and explicit, shortlex keys and the
 abstract engine offering set union/intersection, comparison,
 `2k`-variable relations applied to `k`-variable sets, constrained
 fixpoints, and quotient by an equivalence, the whole pipeline is native.
+And construction is only the entry: the table built by the early
+phases depends only on the marked semiautomaton, so one diagram serves
+the entire Boolean algebra of acceptance conditions over it, and a
+calculus of language operations rides the same diagrams — lasso
+membership without ever closing the monoid, complement as a predicate
+flip, intersection/union/difference of two languages over an alignment
+that is variable-block concatenation, inclusion as a single relational
+query with a canonical minimal witness, and the quotient deferred
+until canonicity is actually consumed.
 The exponential does not disappear; it is *represented*, and the encoding
 must inherit the input's shape: for asynchronous products the enriched
 monoid factors exactly (`EM(D₁ ⊗ D₂) ≅ EM(D₁) × EM(D₂)`), so factored
 slot coordinates give additive diagrams where the flat state-space vector
 is itself the explosion. The compactness bet is that of symbolic model
 checking, made on the same grounds: engineered inputs are products.
-⟨TBD: experimental headline — diagram size vs `|EM|` on the census corpus
-and on scaling product families.⟩
+⟨TBD: experimental headline — diagram size vs `|EM|` on the evaluation
+corpus and on scaling product families.⟩
 
 ---
 
@@ -67,7 +76,7 @@ symbolic thesis is the model checker's: do not enumerate the set,
 structure of engineered inputs — which are products, sparse in marks,
 symmetric in letters — collapse what adversarial inputs cannot.
 
-Three claims organize the paper:
+Four claims organize the paper:
 
 1. **The construction factors through five primitives** (§2), all
    standard in symbolic model checking, with the whole pipeline written
@@ -93,12 +102,24 @@ Three claims organize the paper:
    monoid can be exponential. The encoding must inherit the system's
    shape; hierarchically structured diagrams are not an optimization
    here but the difference between additive and exponential.
+4. **The engine is not construction-only: it is a calculus** (§6).
+   Because Phases 0–2 consume no acceptance condition, the expensive
+   object is a *table* shared by every language over the same marked
+   semiautomaton, and the everyday operations of an ω-automata toolbox
+   become moves on that table: lasso membership is a closure-free fold,
+   complement is a predicate flip, cross-language products align by
+   concatenating variable blocks, inclusion and emptiness are single
+   relational queries whose counterexamples are canonical minimal
+   lassos extracted through the kept fixpoint layers — and the quotient
+   itself becomes an *on-demand* normal form rather than a mandatory
+   final phase.
 
-Position in the family: this engine is the *entry gate*. The calculus
-[SωSC26] amortizes what is paid here once; the extraction [SωSX26] and
-every read-off run on the small quotient the gate emits; the census
-[SωSN26] supplies the measurement corpus and the structured scaling
-families.
+Position: this engine is the entry gate to everything [SωS26] enables —
+its §7 read-offs (aperiodicity, the safety–progress ladder, the Wagner
+degree) all run on the small quotient the gate emits — and §6 shows the
+gate is also a workshop: a pipeline that complements, conjoins,
+quotients, checks and re-checks a specification can stay symbolic
+throughout and reduce once at the end.
 
 ## 2. Background, the engine, and the symbolic input
 
@@ -111,7 +132,18 @@ deterministic complete Emerson–Lei; the enriched element
 by letter elements over the identity `⟦ε⟧ : q ↦ (q, ∅)`; the collapse
 lemma `Acc(x, c) = A(st_x(ι), c)`; the seed = (pointwise residual
 classes, profile `Aprof`); Moore refinement to the syntactic congruence
-(Theorem 4.5 there); the exported invariant `𝓘(L) = (𝒞, λ, M, P)`.⟩
+(Theorem 4.5 there); the exported invariant `𝓘(L) = (𝒞, λ, M, P)`.
+
+What §6 needs, additionally: the idempotent power `x^π` (the unique
+idempotent among the powers of `x`); *linked pairs* `(s, e)` — `e`
+idempotent, `s·e = s`; the **membership oracle**
+`Val(c, d) = A(st_c(ι), d)`, deciding `u·v^ω ∈ L` for any `u, v` with
+`⟦u⟧ = c`, `⟦v⟧ = d` [SωS26, Lemma 4.1] — well-defined on classes
+[SωS26, Lemma 3.2]; and the two classical facts the decision procedures
+lean on: an ω-regular language is determined by its ultimately periodic
+words, so language equality and inclusion are equalities/implications
+of `Val` over all element pairs [PP04]; and every nonempty difference
+of ω-regular languages contains an ultimately periodic witness.⟩
 
 ### 2.2 The abstract engine
 
@@ -188,7 +220,7 @@ the layers *is* the length half of shortlex keying, and Phase 6's
 representative extraction walks them backward. The closure cap of the
 explicit implementation (an `INCONCLUSIVE` exit) becomes a diagram-size
 budget — a different resource, and the paper's central empirical
-question (§7). The slogan: **closing a monoid under generators is not
+question (§8). The slogan: **closing a monoid under generators is not
 like model checking; it is model checking** — states are the elements,
 transitions are right multiplications, the initial state is the
 identity.
@@ -210,8 +242,8 @@ functional relation on the element space:
   longest power-orbit — then select per `x` the unique idempotent in its
   orbit (`Idem(y) = [Comp(y, y, y)]`, a diagram test).
 - *Aperiodic shortcut*: when every element's orbit has period 1 — the
-  entire LTL side of the frontier, i.e. every input the extraction
-  [SωSX26] will consume — repeated **squaring** converges:
+  entire LTL-definable side of the frontier [SωS26, §7] — repeated
+  **squaring** converges:
   `x^{2^j} = x^π` as soon as `2^j` passes the index, so `O(log ℓ)`
   applications of `Sq(x, z) = Comp(x, x, z)` compute `π` outright.
   (Squaring also converges on period-2 groups — it detects powers of
@@ -282,7 +314,7 @@ most `|EM|` rounds; each round is two relation applications and an
 intersection.
 
 **Phase 6 — quotient and exports.** Primitive 5 quotients `EM¹/~`;
-everything the family consumes falls out of objects already present:
+everything a consumer needs falls out of objects already present:
 
 - **Class table**: representatives `x_κ` per class (least element per
   class under the variable order, or shortlex-faithful extraction:
@@ -295,9 +327,9 @@ everything the family consumes falls out of objects already present:
 - **Letter map and λ-quotient**: `λ` classifies letters by the class of
   `Lett(α; ·)` — and since `α` is symbolic, the *guard* of each letter
   class (the BDD over `AP` collecting the letters mapping to class `κ`)
-  is one relational image: the λ-quotient alphabet of [SωSX26], with its
-  rendering guards, is a Phase-6 byproduct rather than a post-processing
-  step.
+  is one relational image: the quotient alphabet (letters the language
+  never distinguishes, merged, each class carrying its guard) is a
+  Phase-6 byproduct rather than a post-processing step.
 - **Accepting pairs**: on the small quotient, enumerate linked pairs
   `(s, e)` by table arithmetic and evaluate each verdict as
   `Val(s, e) = A( st_{x_s}(ι), x_e )` — Phase 3's predicate applied to
@@ -400,10 +432,10 @@ the difference between linear and exponential.
 For **synchronous** products (shared alphabet) the map
 `x ↦ (x↾₁, x↾₂)` is still an injective morphism, so
 `EM(D) ↪ EM(D₁) × EM(D₂)` — the image is the submonoid generated by the
-diagonal letter pairs, precisely the *generated alignment product* `⊗`
-of the calculus [SωSC26, §3.1], met here at the entry gate. The
+diagonal letter pairs: the *generated alignment product* on which the
+calculus of §6 puts two languages side by side. The
 relations still factor; how close the reachable set stays to
-product-form is an empirical column (§7). Two further compression
+product-form is an empirical column (§8). Two further compression
 sources are unconditional:
 
 - **Constant and shared slots.** The completion sink is the same slot
@@ -411,7 +443,7 @@ sources are unconditional:
   reached alike shared across elements likewise.
 - **Monotone marks.** Per slot, the mark set only grows along right
   extensions, so mark components populate upward-closed families —
-  a classically diagram-friendly shape ⟨TBD: quantify on the census⟩.
+  a classically diagram-friendly shape ⟨TBD: quantify on the corpus⟩.
 - **Letter symmetry.** Letters the language never distinguishes are
   guard-equal in `Lett` before anything is built: the λ-quotient
   operates at the entry, symbolically.
@@ -426,9 +458,9 @@ leave as a stated conjecture with the flat-order lemma of §4.2 as
 partial evidence⟩. The claim is the symbolic model checker's claim, no
 more and no less: worst cases stand; structured cases — products,
 sparse marks, few residuals, small λ-quotients — collapse; and the
-inputs that occur are engineered, hence structured. The census corpus
-[SωSN26] and the scaling product families of §3.1 measure which world
-the practical inputs inhabit, and §7's headline question is whether the
+inputs that occur are engineered, hence structured. The evaluation
+corpus and the scaling product families of §3.1 measure which world
+the practical inputs inhabit, and §8's headline question is whether the
 `|Q|` exponent *moved* — from cardinality, where it provably lives, to
 diagram width, where structure fights it.
 
@@ -445,7 +477,7 @@ diagram width, where structure fights it.
 | 6 | `𝓘(L)` | quotient + extraction | small, explicit | `\|𝒞\|` extractions |
 
 Every round is polynomial in the *diagram sizes* of its operands — the
-symbolic contract; the open quantity is the diagrams themselves (§7).
+symbolic contract; the open quantity is the diagrams themselves (§8).
 Two structural notes. The closure depth of Phase 1 equals the length of
 the longest shortlex-minimal representative, `< |𝒞|` *after* quotient
 collapse but up to `|EM|` before it ⟨TBD: is the pre-quotient depth
@@ -454,43 +486,233 @@ small in practice? measure⟩. And Phase 5's split count is bounded by
 same early-stabilization phenomenon symbolic bisimulation minimization
 exploits ⟨TBD: cite after sweep⟩.
 
-A remark on the learner: the observation table of [SωSL26] is also a
-vector set (rows = words, columns = experiments), and its two column
-sorts are the seed of Phase 5 in disguise; a symbolic learner sharing
-this engine is left as a prospect ⟨TBD: one paragraph once the learner's
-data structures freeze⟩.
+A remark on learning: an active-learning observation table for
+ω-regular languages (rows = words, columns = experiments) is also a
+vector set over a small local domain, and its column sorts are the seed
+of Phase 5 in disguise; a symbolic learner sharing this engine is left
+as a prospect ⟨TBD: one paragraph, or cut⟩.
 
-## 6. Consumers and scope
+## 6. The calculus: operating without leaving the diagram
 
-The engine is the family's entry gate, and its scope ends at the
-quotient:
+Everything so far builds one language's invariant. The pipeline's own
+bookkeeping proves something stronger: **Phases 0–2 never read `Acc`**.
+The letter relations, the closure `EM¹` with its layers, and the
+`π`-map depend only on the *marked semiautomaton* `(Q, ι, δ, C, Mk)`;
+the acceptance formula enters at Phase 3, as a small predicate on one
+slot's mark bits. Call the acceptance-free part the **symbolic table**
 
-- **Construction & classification** [SωS26]: the invariant and every §7
-  read-off — aperiodicity, ladder, index, Wagner — are scans of the
-  small explicit quotient; nothing downstream of Phase 6 is symbolic.
-- **Certificates** [SωSX26, §4]: the group scan, context scans, and
-  family assembly run on the quotient table; the engine's only
-  contribution is having built it.
-- **Extraction** [SωSX26, §5]: `Cay(L)`, the layers, (A)/(B), the brick
-  emission — all on the quotient. One exception cuts back in: the
-  *re-canonicalization* of combinator pieces (Thm 5.19 there) is a
-  Phase-5 refinement on an already-small table — the symbolic machinery
-  applies but is not needed.
-- **Calculus** [SωSC26]: the align–operate–reduce economy prices its
-  entry gate as "what determinization always cost"; this paper is the
-  bill itemized — and the alignment product `⊗` is §4.2's synchronous
-  embedding, so a symbolic *aligner* for large same-alphabet pairs is a
-  natural extension ⟨TBD: is cross-table alignment ever large enough to
-  want the engine? census will say⟩.
-- **Census** [SωSN26]: the intrinsic census enumerates small tables and
-  never needs the engine; the *derived* census (pushing machine corpora
-  through the construction) is exactly repeated entry-gating and is the
-  engine's first consumer at scale.
+```
+T(D)  =  ( Lett, R,  EM¹ + layers,  π-map )
+```
 
-## 7. Evaluation
+so that a *language over the table* is nothing but a Boolean predicate
+`Acc` on mark-sets, carried through Phase 3 into the verdict oracle
+`Val(c, d) = A(st_c(ι), d)` of §2.1. This section develops the
+consequence: the everyday operations of an ω-automata toolbox —
+membership, complement, Boolean combinations, product, inclusion,
+emptiness — are *moves on the table*, performed on diagrams the
+construction already keeps; and the quotient (Phases 4–6) is demoted
+from mandatory final phase to **on-demand normal form**: none of the
+moves below needs it, and each commutes with it ⟨TBD: one proposition —
+operating then reducing yields the same invariant as reducing then
+performing the quotient-side operation; a short diagram-chase per
+move⟩. The economic slogan this earns: not *pay canonicity once*, but
+*pay canonicity only when canonicity is consumed*.
+
+### 6.1 Lasso membership, closure-free
+
+`u·v^ω ∈ L(D)?` Fold both words: `|u| + |v|` applications of the
+letter relations to singleton sets starting at `{⟦ε⟧}` — on a
+singleton every relation is a concrete function, each image a
+singleton — giving `c = ⟦u⟧`, `d = ⟦v⟧` as explicit slot vectors; then
+`d^π` by concrete power iteration (at most `ℓ` compositions, `O(log ℓ)`
+by squaring in the aperiodic case), one slot read, one `Acc`
+evaluation. The verdict is `Val(c, d)` — and **Phase 1 never ran**: a
+membership query builds no monoid, touches no fixpoint.
+
+Honesty requires the comparison: on a *deterministic* input a single
+membership is answered by just running the automaton around the lasso,
+at the same cost. What the fold buys is not the bit but the *elements*
+`c, d` — the same `|u|+|v|`-step computation is the oracle every
+operation below composes with, its output lands in the algebra (ready
+to be rooted, compared, canonicalized), where the automaton-side run
+composes with nothing.
+
+### 6.2 Complement and the same-table Boolean algebra
+
+`L(D, Acc)^c = L(D, ¬Acc)`: complement is one predicate negation;
+no diagram moves. More generally the Emerson–Lei languages over one
+marked semiautomaton form a Boolean algebra mirrored by their
+acceptance formulas — `L(D, Acc₁) ∪ L(D, Acc₂) = L(D, Acc₁ ∨ Acc₂)`
+and likewise for `∧` and `∧¬` — so union, intersection and difference
+of same-table languages are Boolean operations on small predicates
+under one shared (and untouched) exponential table. Again the honest
+baseline: negating a deterministic automaton's acceptance formula is
+free on the automaton side too. The difference is what comes *after*:
+the automaton-side result is a new automaton to be re-simplified and
+re-classified per operation, while here every result is one Phase-3
+predicate away from its verdicts and one on-demand reduce away from
+its canonical form — with all the classification read-offs of
+[SωS26, §7] waiting on the other side.
+
+### 6.3 Alignment is variable-block concatenation
+
+Cross-table operations — `L₁ = L(D₁, Acc₁)`, `L₂ = L(D₂, Acc₂)` over
+the same `AP` set — need the two languages on one table, and §4.2 has
+already drawn it: concatenate the slot blocks (`|Q₁|` slots of type
+`V₁`, then `|Q₂|` of type `V₂`), conjoin the letter relations on the
+shared `α`-block, and run Phase 1's lfp. The reachable set is exactly
+the submonoid of `EM(D₁) × EM(D₂)` generated by the diagonal letter
+pairs — the *generated alignment product*, computed on-the-fly:
+elements outside the generated part never exist, and the factored
+coordinates keep the aligned diagram near-additive when the components
+interact weakly (§4.2, §8). Verdicts lift blockwise:
+
+**Proposition 6.1 (idempotent powers factor through blocks).** For an
+aligned element `x = (x₁, x₂)`, `x^π = (x₁^π, x₂^π)`. *Proof sketch*:
+powers act blockwise, so `x^π = (x₁^k, x₂^k)` for its exponent `k`;
+each block is then an idempotent power of `xᵢ`, and the cyclic
+subsemigroup generated by `xᵢ` has a unique idempotent. ∎
+
+Hence `Valᵢ` on the aligned table reads block `i` alone — Phase 3 per
+component, no cross-block work — and cross-table union, intersection
+and difference are pointwise `∨ / ∧ / ∧¬` of per-block verdict
+predicates. Note what is *absent*: no acceptance-condition surgery.
+Automata products under heterogeneous Emerson–Lei conditions need
+degeneralization counters or Zielonka-style bookkeeping; here
+acceptance never left predicate form, and the Boolean combination of
+two conditions is the Boolean combination of two predicates.
+
+### 6.4 Inclusion, equivalence, emptiness: one query, minimal witness
+
+Since ω-regular languages are determined by their ultimately periodic
+words (§2.1), on the aligned table
+
+```
+L₁ ⊆ L₂   ⟺   ∀ c, d ∈ EM_⊗ :  Val₁(c, d) → Val₂(c, d)
+```
+
+and the check factors into two reads the engine already knows. First
+project the closure onto two slots: the set
+`S = { (st_c(ι₁), st_c(ι₂)) : c ∈ EM_⊗ }` over the small space
+`Q₁ × Q₂` — one image of the closure diagram, and recognizably the
+classical reachable product state space, recovered as a *projection of
+the monoid*. Then one intersection:
+
+```
+Bad  =  S(q₁, q₂)  ∧  ProfR₁(q₁, d)  ∧  ¬ProfR₂(q₂, d)
+```
+
+with both `ProfR`s Phase-3 objects of the aligned table; `L₁ ⊆ L₂` iff
+`Bad = ∅`. The query composes relations already built, introduces no
+new relational shape, and is never iterated. Equivalence is two
+inclusions (one `Bad` with the verdict xor), or byte equality after
+reduce; emptiness and universality are the single-table degenerate
+cases (`Val ≡` false / true on one side), `∃ c, d : Val(c, d)` being
+one quantification of the closure diagram.
+
+**Witnesses, canonical and minimal.** A nonempty `Bad` carries its own
+counterexample: take its least element `(q₁, q₂, d)` under the variable
+order, extract the shortlex key of `d` backward through the kept
+layers (Phase 6's mechanism) for the loop word, and the key of the
+least `c` reaching `(q₁, q₂)` for the stem. Ordering lassos by stem
+length, then loop length, then lexicographically, the extracted lasso
+is least among *all* ultimately periodic separating words — a
+satisfying `(u, v)` lives at the element pair `(fold(u), fold(v))`,
+whose keys dominate it componentwise ⟨TBD: state as a proposition with
+the two-line proof; requires the layer-faithful extraction of Phase 6,
+not the plain least-element read⟩. Every decision procedure of this
+section therefore emits the *minimal* certificate, deterministically —
+a discipline automata-side counterexample extraction does not have.
+
+Honesty once more: with deterministic inputs, automata-side inclusion
+is also polynomial (negate one acceptance formula, product, emptiness).
+The claims here are different ones: (i) the query runs on the factored
+diagram in cases where the flat product state space is itself the
+explosion (§4.2); (ii) acceptance stays a predicate — emptiness under
+an arbitrary Boolean combination of Emerson–Lei conditions needs no
+accepting-cycle search because idempotency dissolved the cycle into a
+slot read (Phase 3); (iii) the witness is canonical-minimal by
+construction; (iv) the same aligned table then serves every further
+operation on the pair.
+
+### 6.5 Rootings and relabelings
+
+**Left quotients.** For `u⁻¹L`: fold `u` (§6.1) and read
+`q_u = st_{⟦u⟧}(ι)`; the rooted language is the same table, the same
+predicate, with the initial slot moved to `q_u` — not even surgery, a
+re-parameterization. Quotients compose as they must
+(`(uv)⁻¹L = v⁻¹(u⁻¹L)` is `st` composition), the distinct rootings are
+Phase 4's `≃`-classes — the residual automaton, internalized — and a
+rooting followed by any §6 operation costs nothing extra.
+
+**Inverse substitutions.** For a relabeling `σ : Σ' → Σ` (letter
+renaming or merging), substitute the `α`-block: compose `Lett` and `R`
+with the relation `⟦α = σ(α′)⟧` over the `AP` variables. The new
+generators are elements of the old monoid, so the re-closure lfp runs
+*constrained inside the existing diagram* — Phase 1 with the new
+letter relation, intersected with `EM¹` at every step.
+
+### 6.6 The frontier, unchanged
+
+The ω-rational constructors — concatenation `W·L` by a prefix set,
+ω-power `W^ω` — and existential projection (`remove_ap`) quantify over
+a split position or a hidden run, and no move on a fixed table
+expresses that; the syntactic object of the result can be exponentially
+larger (already so for syntactic monoids of concatenations on finite
+words). Symbolically the projection case is sharp: quantifying an `AP`
+variable out of `Δ` is one line — `∃α_p. Δ` — and yields a relation
+that is no longer functional per slot; every phase above assumed
+deterministic slot values. The wall re-enters exactly where the input
+leaves determinism, and the symbolic subset construction that would
+restore it is the entry price again — relocated, not evaded.
+
+### 6.7 The ledger
+
+| operation | on automata (det. EL input) | on the table | diagram work |
+|---|---|---|---|
+| lasso membership | run the lasso | fold + power + slot read (§6.1) | none — no closure |
+| complement | negate `Acc` | negate `Acc` | none |
+| same-`D` `∪ / ∩ / \` | combine `Acc`s | combine `Acc`s | none |
+| cross-`D` `∪ / ∩ / \` | build the product | block-concat + re-close (§6.3) | the aligned closure |
+| inclusion / equivalence | product + EL emptiness | `Bad = ∅?` (§6.4) | one projection + one intersection |
+| emptiness + witness | accepting-cycle search | `∃c,d. Val` + layer extraction | one query |
+| left quotient | move the initial state | move `ι` | none |
+| relabel / inverse subst. | rebuild | substitute `α`-block (§6.5) | constrained re-close |
+| canonical form, byte equality | *does not exist* | reduce = Phases 4–6, on demand | the §5 costs |
+| `W·L`, `W^ω`, `∃`-projection | native nondeterminism | exponential (§6.6) | entry gate again |
+
+Rows one through eight cost parity or better against deterministic
+automata — the table's real dividends are the last two columns'
+qualitative entries: canonicity exists and is optional, witnesses are
+minimal, acceptance surgery is dissolved, and everything runs factored
+where the flat product is unbuildable.
+
+## 7. Scope
+
+The engine's boundaries, stated once:
+
+- **Downstream of Phase 6** the quotient is small and explicit, and
+  every classification read-off of [SωS26, §7] — aperiodicity, the
+  safety–progress ladder, the acceptance index, the Wagner degree — is
+  a scan of that explicit table; nothing there is symbolic, and this
+  paper adds nothing to it.
+- **Exits.** A pipeline that must hand an automaton back exits through
+  the classical `⋃ L_s·(L_e)^ω` decomposition over accepting pairs
+  [PP04], polynomial in `|𝒞|` from the reduced table ⟨TBD: exact size;
+  determinized exits⟩; extraction of a defining LTL formula on the
+  aperiodic side is beyond this paper's scope.
+- **Not simulated.** Branching semantics — games, synthesis — are out:
+  the invariant is a linear-time object. And canonicity has a price
+  ceiling: `𝓘(L)` can be exponentially larger than a good
+  nondeterministic presentation, so the calculus is not a back-end for
+  one-shot translations; it is the substrate for pipelines that *keep*
+  a language and work on it.
+
+## 8. Evaluation
 
 ⟨TBD: after implementation. The planned columns: (i) diagram size vs
-`|EM|` across the census corpus — the compression scatter; (ii) scaling
+`|EM|` across the evaluation corpus — the compression scatter; (ii) scaling
 on asynchronous product families (`n` copies of a fixed component:
 cardinality `|EM|ⁿ`, factored diagram size expected `O(n·|EM-diagram|)` —
 the §4.2 proposition as a measured line); (iii) synchronous products —
@@ -500,9 +722,12 @@ quantification the predicted peaks; (v) variable-order sensitivity, flat
 vs factored on the same inputs — the §4.2 lower-bound picture
 empirically; (vi) the bottom line against the explicit implementation's
 closure cap: instances the cap kills that the diagram carries, and the
-converse.⟩
+converse; (vii) the calculus in motion — a worked multi-operation
+pipeline (complement, conjoin, check, re-check) measured against
+per-operation automata constructions, and deferred-reduce vs
+reduce-then-operate on the same sequence.⟩
 
-## 8. Related work
+## 9. Related work
 
 ⟨TBD: full pass, after the biblio sweep. The slots: symbolic model
 checking and reachability — the engine lineage and the origin of the
@@ -513,13 +738,16 @@ relatives of Phases 4–5; multi-valued, list, and hierarchical decision
 diagram variants — the data structures §4.2's factored coordinates
 want; explicit transition-monoid computation (AMoRE lineage) — the
 baseline that motivated [SωS26, §8]'s note; and the finite-word
-syntactic-monoid tools, none of which, to our knowledge, is symbolic.
+syntactic-monoid tools, none of which, to our knowledge, is symbolic;
+the ω-automata toolbox tradition (Spot and kin — tool paper to be
+added to the library) as the per-operation baseline §6's ledger is
+drawn against.
 Position claim: symbolic techniques have computed transition *systems*
 for forty years and transition *monoids* apparently never — yet the
 monoid is the better-shaped object, its generators acting slot-locally
 by the very lemma that makes the syntactic quotient computable.⟩
 
-## 9. Conclusion
+## 10. Conclusion
 
 ⟨TBD: the arc — the syntactic ω-semigroup's construction was born
 symbolic and nobody noticed: its one deep algebraic lemma is a locality
@@ -529,9 +757,13 @@ output small. The engine relocates the PSPACE wall from "the object
 cannot be built" to "the object is built whenever the input has the
 structure engineered systems have" — the relocation symbolic model
 checking performed on state spaces, applied to the canonical algebra of
-ω-regular languages; and the encoding lesson is the hierarchical one:
+ω-regular languages; the encoding lesson is the hierarchical one:
 the diagram must inherit the shape of the system, factored coordinates
-turning product cardinality into additive representation.⟩
+turning product cardinality into additive representation; and the
+object built is a substrate, not an endpoint — the table outlives any
+one language, the calculus of §6 running an ω-toolbox's everyday
+operations on it without leaving the diagram, canonicity paid only
+when consumed.⟩
 
 ---
 
@@ -541,17 +773,9 @@ turning product cardinality into additive representation.⟩
   PSPACE-complete.* TCS 88 (1991) 99–116.
 - **[PP04]** D. Perrin, J.-É. Pin. *Infinite Words: Automata, Semigroups,
   Logic and Games.* Elsevier, 2004.
-- **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing the
-  syntactic ω-semigroup from a deterministic Emerson–Lei automaton.*
-  Working draft, 2026.
-- **[SωSL26]** Y. Thierry-Mieg, with Claude (Anthropic). *Learning the
-  syntactic ω-semigroup.* Working draft, 2026.
-- **[SωSX26]** Y. Thierry-Mieg, with Claude (Anthropic). *The LTL
-  frontier from the syntactic ω-semigroup.* Working draft, 2026.
-- **[SωSC26]** Y. Thierry-Mieg, with Claude (Anthropic). *A calculus on
-  the syntactic ω-semigroup.* Working draft, 2026.
-- **[SωSN26]** Y. Thierry-Mieg, with Claude (Anthropic). *A census of
-  syntactic ω-semigroups.* Working draft, 2026.
+- **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing
+  the syntactic ω-semigroup from a deterministic Emerson–Lei automaton.*
+  To appear, 2026.
 - ⟨TBD: the symbolic lineage — BDDs; symbolic model checking;
   saturation/event locality; symbolic bisimulation minimization;
   MDD/SDD/hierarchical variants; AMoRE for the explicit
