@@ -29,9 +29,15 @@ the derived-census driver, the engine's first consumer at scale),
   resolved: homomorphism bricks, not 2k-diagram relations), C3 (layered
   closure, layers kept, budgets as findings), E0 green (10/7/16,
   dual-verified; the §3.1 node-vs-cells figure measured: 10 < 32).
-- **TODO: everything else.** C4–C10, E1–E9, M2–M5. Phase 2 (`Comp`)
-  is pinned on libITS-gal `ExprHom`; Comp-free parts of C7 (shortlex
-  extraction over kept layers) and C8 (async generators) proceed first.
+- **DONE (engine-side, Comp-free advance):** C7's extraction mechanism
+  (shortlex over kept layers, exact vs ground truth); C8 async
+  generators in both coordinates; E2's factored line measured to `n = 6`
+  (`16ⁿ` exact, additive nodes `9n+1`, Prop 4.1 element-exact to
+  `n = 4`) with the flat `n = 3` `TIME_BUDGET` finding previewing E3 —
+  ledger rows F5–F7 in `sos_symbolic_report.md`.
+- **TODO: everything else.** C4–C6 (Phase 2 pins on libITS-gal
+  `ExprHom`), C9–C10, E1/E3–E9, M2–M5 proper (E2 still owes the second
+  component family and per-point budget sweeps at scale).
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat
