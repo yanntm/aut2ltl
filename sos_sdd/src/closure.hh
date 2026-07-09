@@ -51,25 +51,33 @@ class SoSCore {
 public:
   SoSCore(std::string name, SlotSpace space,
           const std::vector<LetterClassRow> &classes)
-      : name_(std::move(name)), space_(space) {
+      : name_(std::move(name)), space_(space), classes_(classes) {
     space_.check(name_);
     d3::set<GHom>::type step_parts;
-    for (const auto &c : classes) {
+    d3::set<GHom>::type rev_parts;
+    for (const auto &c : classes_) {
       d3::set<GHom>::type slots;
+      d3::set<GHom>::type rev_slots;
       for (int i = 0; i < space_.n_states; ++i) {
         d3::set<GHom>::type cases;
+        d3::set<GHom>::type rev_cases;
         for (int v = 0; v < space_.dom(); ++v) {
-          const int q = space_.state_of(v);
-          const int w = space_.pack(c.dst[q], space_.marks_of(v) | c.marks[q]);
+          const int w = class_step(c, v);
           cases.insert(setVarConst(i, w) & varEqState(i, v));
+          // The reverse relation is multi-valued (a value may have many
+          // preimages); the same brick shape handles it as a union.
+          rev_cases.insert(setVarConst(i, v) & varEqState(i, w));
         }
         slots.insert(GHom::add(cases));
+        rev_slots.insert(GHom::add(rev_cases));
       }
       Hom h = GHom::ccompose(slots);
       class_homs_.push_back(h);
       step_parts.insert(h);
+      rev_parts.insert(GHom::ccompose(rev_slots));
     }
     step_ = GHom::add(step_parts);
+    rev_step_ = GHom::add(rev_parts);
     identity_ = DDD(space_.identity());
   }
 
@@ -118,6 +126,66 @@ public:
                 .add("nodes_final", node_count(em1_)));
   }
 
+  // -- shortlex extraction (the C7 mechanism, reused by witnesses) ----
+  // The minimal layer gives the length; a backward preimage pass builds
+  // the can-still-reach sets; a forward walk chooses at each step the
+  // least class whose (deterministic) image stays inside the next set.
+  // A backward letter choice would minimize the wrong end (reverse-lex).
+  std::vector<int> shortlex_of(const std::vector<int> &elem) const {
+    require();
+    DDD target = singleton(elem);
+    int k = -1;
+    for (size_t j = 0; j < layers_.size(); ++j)
+      if (!(DDD(target * layers_[j]) == DDD())) { k = static_cast<int>(j); break; }
+    if (k < 0)
+      throw std::invalid_argument(name_ + ": element is not in EM1");
+    std::vector<DDD> reach(static_cast<size_t>(k) + 1);
+    reach[k] = target;
+    for (int j = k; j > 0; --j)
+      reach[j - 1] = DDD(rev_step_(reach[j]));
+    std::vector<int> word;
+    std::vector<int> cur(space_.n_states);
+    for (int i = 0; i < space_.n_states; ++i) cur[i] = space_.pack(i, 0);
+    for (int j = 0; j < k; ++j) {
+      bool advanced = false;
+      for (size_t c = 0; c < classes_.size(); ++c) {
+        std::vector<int> nxt(cur.size());
+        for (size_t i = 0; i < cur.size(); ++i)
+          nxt[i] = class_step(classes_[c], cur[i]);
+        if (!(DDD(singleton(nxt) * reach[j + 1]) == DDD())) {
+          word.push_back(static_cast<int>(c));
+          cur = std::move(nxt);
+          advanced = true;
+          break;
+        }
+      }
+      if (!advanced)
+        throw std::logic_error(name_ + ": extraction walk stuck (bug)");
+    }
+    return word;
+  }
+
+  const std::vector<LetterClassRow> &classes() const { return classes_; }
+  const SlotSpace &space() const { return space_; }
+
+  // Explicit enumeration of EM1 with the shortlex word of every element —
+  // a test/debug reading (quotient-time extraction is per-representative).
+  std::vector<std::pair<std::vector<int>, std::vector<int>>>
+  shortlex_words(size_t limit) const {
+    require();
+    if (em1_count() > static_cast<double>(limit))
+      throw std::invalid_argument(name_ + ": EM1 larger than the explicit cap");
+    std::vector<std::vector<int>> elems;
+    callback_t cb = [&elems](state_t &path) {
+      elems.emplace_back(path.begin(), path.end());
+    };
+    iterate(static_cast<const GDDD &>(em1_), &cb);
+    std::vector<std::pair<std::vector<int>, std::vector<int>>> out;
+    for (const auto &e : elems)
+      out.emplace_back(e, shortlex_of(e));
+    return out;
+  }
+
   // -- readings ------------------------------------------------------
   const std::string &name() const { return name_; }
   double em1_count() const { require(); return model_count(em1_); }
@@ -136,10 +204,25 @@ private:
       throw std::logic_error(name_ + ": phase 1 has not been run");
   }
 
+  // One slot value under one letter class: (q', S) -> (dst[q'], S|marks[q']).
+  int class_step(const LetterClassRow &c, int v) const {
+    const int q = space_.state_of(v);
+    return space_.pack(c.dst[q], space_.marks_of(v) | c.marks[q]);
+  }
+
+  DDD singleton(const std::vector<int> &elem) const {
+    GDDD d = GDDD::one;
+    for (int i = space_.n_states - 1; i >= 0; --i)
+      d = GDDD(i, static_cast<GDDD::val_t>(elem[i]), d);
+    return DDD(d);
+  }
+
   std::string name_;
   SlotSpace space_;
+  std::vector<LetterClassRow> classes_;
   std::vector<Hom> class_homs_;
   Hom step_;
+  Hom rev_step_;
   DDD identity_;
   DDD em1_;
   std::vector<DDD> layers_;
