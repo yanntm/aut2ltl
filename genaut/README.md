@@ -161,7 +161,7 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
        # from sosl/: the Wagner-degree profile of a shape's languages
        python3 -m tests.sosl.classify_census ../genaut/corpus/sos/2state1ap1acc \
            --logs tests/sosl/logs/<tag>
-       python3 -m tests.sosl.classify_profile tests/sosl/logs/<tag>/records.jsonl
+       python3 -m tests.sosl.classify_profile tests/sosl/logs/<tag>/records.csv
 
 5. **Analyse** a survey run into a frontier report (pure CSV, no re-run):
 

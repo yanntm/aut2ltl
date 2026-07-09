@@ -248,7 +248,7 @@ python3 genaut/flat_study.py                       # -> corpus/flat_canon/STUDY.
 #    det/ HOAs, which .sos-only .cat cannot supply — the independent Spot oracle
 python3 -m tests.sosl.classify_census genaut/corpus/flat_canon/det \
     --logs sosl/tests/sosl/logs/flat_canon
-python3 -m tests.sosl.classify_profile sosl/tests/sosl/logs/flat_canon/records.jsonl
+python3 -m tests.sosl.classify_profile sosl/tests/sosl/logs/flat_canon/records.csv
 ```
 
 The `.cat` sidecars are git-tracked corpus artifacts, so step 2 (and any consumer

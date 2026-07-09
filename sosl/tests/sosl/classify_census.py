@@ -8,12 +8,13 @@ canonical `genaut/corpus/det/<tag>/`, or a named triptych / stall / `Fork`
 specimen) or an `.sos` file (`genaut/corpus/sos/<tag>/`, a canonical,
 `𝓘`-deduplicated language consumed directly) — this builds the reference
 invariant, classifies it (`sosl.sos.classify.classify`), and runs the gates. It
-writes one JSON line per input carrying everything the profile aggregator
-(`classify_profile`) needs: the language identity `ihash` (SHA-1 of the
-canonical `𝓘` dump — [SωS26 Thm. 5.1] equality, the dedup key), the
-`shape_family` (the enumeration tag), the `acceptance_family` read off the
-*canonical* deterministic-complete presentation (not the tag), the algebra
-sizes, the four chain/superchain integers, the Wagner degree `phi`, and the
+writes one CSV row per input (`records.csv`) carrying everything the profile
+aggregator (`classify_profile`) needs — in the `.cat` classification vocabulary
+(`ltl`, `stutter`, `phi_gamma`/`phi_sign`, `class`) plus the campaign columns:
+the language identity `ihash` (SHA-1 of the canonical `𝓘` dump — [SωS26
+Thm. 5.1] equality, the dedup key), the `shape_family` (the enumeration tag), the
+`acceptance_family` read off the *canonical* deterministic-complete presentation
+(not the tag), the algebra sizes, the four chain/superchain integers, and the
 build-vs-classify wall split.
 
 Two gates run inline. The **duality gate** classifies the complement and asserts
@@ -35,8 +36,8 @@ buckets in the background, then aggregate with `classify_profile`.
 """
 from __future__ import annotations
 
+import csv
 import hashlib
-import json
 import os
 import signal
 import sys
@@ -51,11 +52,37 @@ from sosl.sos.build import ReferenceError
 from sosl.sos.build.importer import canonical
 from sosl.sos.core.quotient import invariant_of
 from sosl.sos.classify import classify
+from sosl.sos.classify.io import class_reading
 from sosl.sos.classify.primitives import idempotents
 from sosl.sos.classify.readoff import in_gen_buchi_spectrum
 
 _LOGS = os.path.join(os.path.dirname(__file__), "logs", "classify_census")
 _FLIP = {"sigma": "pi", "pi": "sigma", "delta": "delta", "PARTIAL": "PARTIAL"}
+
+# The census ledger is one CSV row per input (no JSON): the `.cat` classification
+# fields (ltl / stutter / phi / class) alongside the campaign columns the profile
+# aggregator dedups and reports.
+_FIELDS = [
+    "case", "presentation", "shape_family", "acceptance_family", "gate_gba",
+    "raw_deterministic", "raw_complete", "ihash", "classes", "n_idempotents",
+    "n_linked_pairs", "ltl", "stutter", "m_plus", "m_minus", "n_plus", "n_minus",
+    "phi_gamma", "phi_sign", "class", "rungs", "gamma_partial", "boolean_level",
+    "parity_length", "co_parity_length", "build_wall", "classify_wall", "wall",
+    "verdict", "error",
+]
+
+
+def _yn(b: bool) -> str:
+    return "yes" if b else "no"
+
+
+def _rungs_str(rungs) -> str:
+    """The lit topological rungs as a compact name list (`.cat`/`render_text`
+    style), or ``-`` when none is lit."""
+    lit = [name for name, on in
+           [("open", rungs.open), ("closed", rungs.closed), ("weak", rungs.weak),
+            ("dba", rungs.dba), ("dca", rungs.dca)] if on]
+    return ",".join(lit) or "-"
 
 
 def _acc_family(acc: "spot.acc_cond") -> str:
@@ -161,23 +188,27 @@ def _one(tag: str, path: str, budget: int) -> Dict:
         else:
             verdict, err = "SOUND", None
         rec.update(flags)
+        for k in ("raw_deterministic", "raw_complete"):
+            if k in rec:
+                rec[k] = _yn(rec[k])
+        g, s = r.phi
         rec.update(
-            acceptance_family=acc_family, gate_gba=gate_gba,
+            acceptance_family=acc_family, gate_gba=_yn(gate_gba),
             ihash=_ihash(inv), classes=inv.n,
             n_idempotents=len(idempotents(inv)),
             n_linked_pairs=len(inv.linked_pairs()),
-            aperiodic=r.aperiodic, stutter_invariant=r.stutter_invariant,
+            ltl=_yn(r.aperiodic),
+            stutter="invariant" if r.stutter_invariant else "sensitive",
             m_plus=r.m_plus, m_minus=r.m_minus,
             n_plus=r.n_plus, n_minus=r.n_minus,
-            rungs={"open": r.rungs.open, "closed": r.rungs.closed,
-                   "weak": r.rungs.weak, "dba": r.rungs.dba, "dca": r.rungs.dca},
-            phi=list(r.phi), gamma_partial=r.gamma_partial,
-            boolean_level=r.boolean_level,
+            phi_gamma=g, phi_sign=s, gamma_partial=_yn(r.gamma_partial),
+            rungs=_rungs_str(r.rungs), boolean_level=r.boolean_level,
             parity_length=r.parity_length, co_parity_length=r.co_parity_length,
             build_wall=round(t_built - t0, 4),
             classify_wall=round(t_classified - t_built, 4),
             verdict=verdict,
         )
+        rec["class"] = class_reading(r.phi)
         if err:
             rec["error"] = err
     except _Budget:
@@ -238,19 +269,22 @@ def run(argv: List[str]) -> int:
         return 1
 
     os.makedirs(logs, exist_ok=True)
-    out = os.path.join(logs, "records.jsonl")
+    out = os.path.join(logs, "records.csv")
     verdicts: Counter = Counter()
-    languages: Dict[str, str] = {}
+    languages: Dict[str, Tuple[str, str]] = {}
     phis: Counter = Counter()
 
-    with open(out, "w") as fh:
+    with open(out, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=_FIELDS, extrasaction="ignore")
+        w.writeheader()
         for tag, path in files:
             rec = _one(tag, path, budget)
-            fh.write(json.dumps(rec) + "\n")
+            w.writerow(rec)
             verdicts[rec["verdict"]] += 1
             if rec["verdict"] in ("SOUND", "PARTIAL"):
-                languages[rec["ihash"]] = rec["phi"] and tuple(rec["phi"])
-                phis[tuple(rec["phi"])] += 1
+                phi = (rec["phi_gamma"], rec["phi_sign"])
+                languages[rec["ihash"]] = phi
+                phis[phi] += 1
 
     n = len(files)
     print(f"=== census: {n} inputs -> {out} ===")
