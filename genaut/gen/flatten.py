@@ -222,18 +222,8 @@ def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
     import spot                                            # noqa: E402
     from sosl.sos.build.importer import canonical          # noqa: E402
     from sosl.sos.core.quotient import invariant_of        # noqa: E402
-    from sosl.sos.invariant import Invariant               # noqa: E402
     from sosl.sos.io.serialize import dump_invariant, load_invariant  # noqa: E402
     from sosl.sos.relabel import canonical_relabeling      # noqa: E402
-
-    def _complement(inv: "Invariant") -> "Invariant":
-        """The SoS complement: flip P against the linked pairs ([SωS26 §5]). The
-        result is already `B_k`-canonical when `inv` is, since σ* is chosen on the
-        (complement-invariant) semigroup core."""
-        return Invariant(alphabet=inv.alphabet, keys=inv.keys,
-                         letter_class=inv.letter_class, mult=inv.mult,
-                         accept=frozenset(inv.linked_pairs() - inv.accept),
-                         identity=inv.identity)
 
     det_dir = os.path.join(corpus, "flat_canon", "det")
     sos_dir = os.path.join(corpus, "flat_canon", "sos")
@@ -294,7 +284,10 @@ def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
     dual = 0
     for ident in primal_idents:
         inv = load_invariant(open(os.path.join(sos_dir, ident + ".sos")).read())
-        comp_sos = dump_invariant(_complement(inv))
+        # `Invariant.complement` flips P and keeps the algebra, so the dual of a
+        # `B_k`-canonical invariant is `B_k`-canonical too: σ* is chosen on the
+        # (complement-invariant) semigroup core.
+        comp_sos = dump_invariant(inv.complement())
         if comp_sos in seen:
             continue                          # the dual is itself a catalogued primal
         Dc = canonical(spot.dualize(spot.automaton(
