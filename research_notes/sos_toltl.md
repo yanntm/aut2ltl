@@ -404,7 +404,7 @@ recurrence. One distinction keeps the recurrence honest: it is a
 recurrence on *formula* size, not on the recursion — every one of its
 levels is the substitution *inside* one call, and the call tree itself
 stays small. Measured on the six-class algebra of `GF(aa)`
-(Figure 1 draws both objects): the
+(Figure 1 draws the formula both ways, copied and shared): the
 recursion makes 34 call sites, 26 distinct — a 49-node tree over 4
 depths, 19 nodes memoized — so memoizing the *calls* saves a factor of
 ≈ 2.6 and is not the story. The story is the formula: hash-consing the
@@ -432,14 +432,21 @@ flat size — by making the formula's shape follow the language's.
 </tr>
 </table>
 
-**Figure 1.** The DG recursion on the six-class algebra of `GF(aa)`,
-drawn twice. Left, the substituting recursion: one node per call site,
-so a call four parents make is copied four times — 49 tree nodes over 4
-depths. Right, the same recursion memoized: 19 distinct nodes, a dotted
-reference (annotated `n×`) wherever the left panel copies; shaded nodes
-are base cases. The violence is not here — 49 against 19 — but in what
-each node's substitution does to the *formula*: the shared arena of
-1 287 nodes unfolds flat to 1 991 717.
+**Figure 1.** The DG formula for `GF(aa)`, drawn twice — nodes are
+operators (`⋁`, `⋀`, `φ U ψ`, `X φ`, atoms verbatim), never ids.
+Right, the hash-consed arena: a subterm used twice is one box with two
+in-arcs, every arc past the first a thin dotted *reference* — 10 boxes
+carry 22 in-arcs in the drawn slice. Left, the same slice as a
+substituting recursion writes it: one copy per occurrence, 22 copies
+of those 10 subterms. The arena's top is wide, not deep — a seven-way
+`⋁` of `⋀`s of 9–19 conjuncts, 94 arcs onto 36 distinct children — so
+the three cheapest disjuncts are drawn and every elision is stated in
+place: `⋀`/`⋁` are associative-commutative, carrying an arity badge
+instead of slot labels, and each handle `ψᵢ` states its in-degree over
+all seven disjuncts and its `arena / flat` sizes (`ψ₆` alone: 114
+shared nodes, 430 508 flat). The recursion behind the formula stays
+small — 34 call sites, 26 distinct, 19 memoized — while the full arena
+of 1 287 nodes unfolds flat to 1 991 717.
 
 ## 3. The non-LTL side: the witness certificate
 
@@ -1883,9 +1890,11 @@ Figure 3: solid blue = a Cayley step under `a`, dashed amber = under
 `!a`, black = a step both letters agree on; rounded grey box = one
 layer (an SCC of `Cay(L)`, an R-class); thick grey arrow = the
 R-order; a short black stub marks a layer's entry class; a double
-circle marks a committed class (`T_c = Σ^ω`). Here the committed sink
-`[a]` takes label `⊤`, and the middle layer is all-rejecting as a
-final layer — its `STAY∞` is `⊥`, only the `leave` brick survives.
+circle marks a committed class (`T_c = Σ^ω`). Each box's side tag is
+its layer's read-off, in the format Figure 3 uses in full. Here the
+committed sink `[a]` takes label `⊤`, and the middle layer is
+all-rejecting as a final layer — its `STAY∞` is `⊥`, only the `leave`
+brick survives.
 
 Read-offs, top to bottom of the R-order: `{[ε]}` is transient (both
 letters exit — no run can stay, no `Ω` owed); `{[!a]}` has
@@ -1934,8 +1943,10 @@ one another; and the absorbing frozen layer `{5}` = "contains `aa`".
 **Figure 3.** The layered Cayley graph of `GF(aa)`: the six classes of
 `S(GF(aa))₊¹`, their Cayley steps, the four layers, and the R-order
 diamond (conventions as in Figure 2). Each box's side tag is the
-layer's read-off — letter kinds, condition-(A) width, and for the
-frozen layer the condition-(B) width.
+layer's read-off: every letter's within-layer role — both halves where
+it has two, as in `a ↦ reset(3), exit@3` — the condition-(A) width,
+the layer's fate as a final layer (`all-rejecting: STAY∞ = ⊥`), and
+for the frozen layer the condition-(B) width.
 
 Per-layer letter actions, and the k = 1 test:
 
@@ -1978,36 +1989,44 @@ by contrast, are *rejecting* as final layers — no pair off class `5` is in
 (an all-rejecting final layer has `Ω(R, ·) = false`; no rejecting-layer test
 exists anywhere), and only their `LEAVE` chains survive.
 
-The label stack, bottom of the R-order first; entry classes are `1`
-(the top's `!a`-exit) and `2` (its `a`-exit); layer `{1,3}` is shown in
-full, `{2,4}` is its mirror (⟨TBD: a derivation-panel figure may
-replace this block⟩):
+The label stack is Figure 4 — one block per layer, in the order the
+descent builds them, the frozen `{5}` first and the root last; entry
+classes are `1` (the top's `!a`-exit) and `2` (its `a`-exit).
 
-```
--- layer {5}: frozen, terminal ⟹ the law is shed; (B) at k′ = 2
-Final(5)   =  Ω({5}, 5)  =  GF(a ∧ X a)
+<table>
+<tr>
+<td align="center"><img src="sos_toltl_figs/img/fig2_stack.png" alt="the label stack of GF(aa), as a derivation" width="850"></td>
+</tr>
+</table>
 
--- layer {1,3}: An(1) = {!a}, An(3) = {a}; St(1) = {!a}, Mo(1) = {a};
---              St(3) = ∅, Mo(3) = {!a}; Ex(1) = ∅, Ex(3) = {a}
-sojourn(1) =  !a W a                sojourn(3) =  ⊥ W !a  ≡  !a
-step       =  (!a → X sojourn(1)) ∧ (a → X sojourn(3))
-leave(1)   =  ⊥   (no exit at 1)    leave(3)   =  a ∧ X Final(5)
-Final(1)   =  (!a W a) ∧ ( step U ( a ∧ X ( a ∧ X Final(5) ) ) )
-
--- layer {2,4}, mirrored; the immediate-exit disjunct is live at 2:
-Final(2)   =  ( a ∧ X Final(5) )
-              ∨  ( !a ∧ ( step′ U ( a ∧ X ( a ∧ X Final(5) ) ) ) )
-
--- root: no stutter at [ε], a pure exit fan
-Final(0)   =  (!a ∧ X Final(1)) ∨ (a ∧ X Final(2))
-```
+**Figure 4.** The label of `GF(aa)`, assembled child-first: one block
+per layer in descent order, the miniature left of each block lighting
+the layer being labelled over the layers already labelled. Each brick
+carries the rule that produced it, and a brick that repeats a formula
+already introduced prints that formula's *name* (`leave(3)` names
+`Final(5)`, `Final(3)` names `leave(3)` twice), so the panel is the
+label DAG rather than its unfolding. The formulas are the
+construction's own, unsimplified except for the `⊤`/`⊥` collapses the
+brick constructors apply: `St(1) ∪ Mo(1)` covers the alphabet, so
+`sojourn(1) = !a W a` prints as `⊤` and `step` keeps one live
+conjunct. `STAY∞` and `LEAVE` get no rows of their own — they are the
+two disjuncts of `Final`, and the one fact they carry that `Final`
+hides, whether the confinement branch survived, is each block's side
+note. The stack is drawn in the plain rendering; under the
+residual-keyed rendering of §6, prefix-independence collapses the
+root's whole fan to `X Final(5)` — correct and cheaper, but it would
+leave the derivation's last step with nothing to show (the collapse
+is §6's subject).
 
 Every line is one rule of §4.2's grammar, and the language's two-letter
 content is visible in the syntax: `Final(1)`'s `U`-witness reads *the
 anchor `a` onto class `3` followed by `leave(3)`'s exit `a`* — the
 factor `aa`, reassembled by the bricks from two one-letter rules — and
-`Final(2)`'s first disjunct is the entry `a` and the exit `a`, the same
-factor straddling the layer boundary. `STAY∞` appears nowhere: both
+`Final(2)`'s first disjunct `leave(2)` reads the exit `a` immediately,
+which with the entry `a` that reached class `2` is the same factor
+straddling the layer boundary. The mirror symmetry of Figure 3 is
+literal in the labels: `Final(4)` and `Final(1)` are the same formula,
+as are `Final(3)` and `Final(2)`. `STAY∞` survives nowhere: both
 moving layers are all-rejecting as final layers, so their confinement
 branches are `⊥` and were dropped on sight.
 *Predicted output*, then, for the whole extraction of `GF(aa)`: `LEAVE`
