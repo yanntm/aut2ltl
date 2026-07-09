@@ -10,12 +10,15 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "ddd/DDD.h"
 #include "ddd/Hom.h"
 
+#include "closure.hh"
 #include "primitives.hh"
 #include "stats.hh"
 
@@ -118,14 +121,106 @@ py::dict selftest(const py::object &stats_obj) {
   return res;
 }
 
+[[noreturn]] void not_implemented(const std::string &msg) {
+  PyErr_SetString(PyExc_NotImplementedError, msg.c_str());
+  throw py::error_already_set();
+}
+
+// The engine consumes the switches it implements and refuses the rest
+// loudly — switches are contract, silent ignoring would fake a sweep.
+void check_config(const py::dict &config) {
+  const auto want = [&](const char *key, const char *only) {
+    if (config.contains(key)) {
+      const auto v = py::cast<std::string>(py::str(config[key]));
+      if (v != only)
+        not_implemented(std::string(key) + "=" + v + " (only " + only +
+                        " is implemented)");
+    }
+  };
+  want("slot_perm", "natural");
+  want("slot_encoding", "packed");
+  want("alpha", "top");
+  want("fp1", "layered");
+}
+
+SoSCore build(const py::dict &payload, const py::dict &config,
+              int until_phase) {
+  if (until_phase != 1)
+    not_implemented("until_phase=" + std::to_string(until_phase) +
+                    " (only phase 1 is implemented)");
+  check_config(config);
+
+  SlotSpace space{py::cast<int>(payload["n_states"]),
+                  py::cast<int>(payload["n_marks"])};
+  std::vector<LetterClassRow> classes;
+  for (const auto &item : payload["classes"]) {
+    const auto d = py::cast<py::dict>(item);
+    LetterClassRow row;
+    row.least = py::cast<std::string>(d["least"]);
+    row.count = py::cast<long long>(d["count"]);
+    row.dst = py::cast<std::vector<int>>(d["dst"]);
+    row.marks = py::cast<std::vector<int>>(d["marks"]);
+    classes.push_back(std::move(row));
+  }
+
+  SoSCore core(py::cast<std::string>(payload["name"]), space, classes);
+  const py::object stats_obj = config.contains("stats")
+                                   ? py::object(config["stats"])
+                                   : py::object(py::none());
+  Stats st = make_stats(stats_obj);
+  st.emit(Record("config").add("name", core.name())
+              .add("until_phase", static_cast<long long>(until_phase)));
+  const long long node_budget =
+      config.contains("node_budget") ? py::cast<long long>(config["node_budget"]) : 0;
+  const double time_budget =
+      config.contains("time_budget") ? py::cast<double>(config["time_budget"]) : 0.0;
+  core.close(st, node_budget, time_budget);
+  return core;
+}
+
+py::list profile_to_py(const std::vector<LayerRow> &profile) {
+  py::list rows;
+  for (const auto &r : profile)
+    rows.append(py::make_tuple(r.k, r.card, r.nodes));
+  return rows;
+}
+
 }  // namespace
 
 PYBIND11_MODULE(_core, m) {
   m.doc() = "sos_sdd symbolic engine core (libDDD)";
   m.attr("__version__") = "0.0.1";
+
   m.def("selftest", &selftest, py::arg("stats") = py::none(),
         "Exercise the primitive layer and instrumentation hooks (C1).");
-  // TODO: bind build(input, config, until_phase) -> SoS
-  // TODO: bind align(SoS, SoS) -> SoS
-  // TODO: register exception translation onto sos_sdd.errors classes
+
+  py::class_<SoSCore>(m, "SoS")
+      .def_property_readonly("name", &SoSCore::name)
+      .def("em1_count", &SoSCore::em1_count)
+      .def_property_readonly("depth", &SoSCore::depth)
+      .def_property_readonly(
+          "layers", [](const SoSCore &s) { return profile_to_py(s.profile()); })
+      .def_property_readonly("nodes", [](const SoSCore &s) {
+        const auto n = s.nodes();
+        return py::make_tuple(n.first, n.second);
+      });
+
+  m.def("build", &build, py::arg("payload"), py::arg("config"),
+        py::arg("until_phase"),
+        "Run phases 0..until_phase on a numeric digest payload.");
+
+  // Budget findings surface as the Python-side Finding classes.
+  py::register_exception_translator([](std::exception_ptr p) {
+    try {
+      if (p) std::rethrow_exception(p);
+    } catch (const BudgetExhausted &e) {
+      const py::object cls =
+          py::module_::import("sos_sdd.errors")
+              .attr(e.is_time ? "TimeBudget" : "DiagramBudget");
+      py::list profile;
+      for (const auto &r : e.profile)
+        profile.append(py::make_tuple(r.k, r.card, r.nodes));
+      PyErr_SetObject(cls.ptr(), cls(e.phase, profile).ptr());
+    }
+  });
 }
