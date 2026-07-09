@@ -35,8 +35,14 @@ Language ──bridge──► Invariant 𝓘(L) ──classify.aperiodic──�
   construction (`sosl.sos.build`). The only Spot-adjacent module; a blown
   resource cap is a decline, never a verdict.
 - **`readoffs.py`** (C5) — pure table scans: the λ-quotient of the alphabet,
-  prefix-independence (`P` loop-determined), absorbing classes. The
-  aperiodicity verdict comes from `sosl.sos.classify.aperiodic`.
+  the residual (right-congruence) partition of the classes, prefix-independence
+  (`P` loop-determined), absorbing classes. The aperiodicity verdict comes from
+  `sosl.sos.classify.aperiodic`.
+- **`guards.py`** — a letter set `S ⊆ Σ` as a minimized Boolean formula over
+  `AP` (BDD + Minato ISOP, via `aut2ltl.ltl.builders.fuse_or`), memoized per
+  set. The set-as-formula convention of the paper's §2.1: every guard position
+  of every brick goes through it, so `{a&b, a&!b}` prints `a` and a set that
+  is all of `Σ` prints `⊤`.
 - **`cayley.py`** (C1) — `Cay(L)`: states `𝒞`, edges `c →^a M(c, λ(a))`; SCC
   decomposition and DAG; asserts SCCs = R-classes of `M` on every input
   (the Lemma 5.3 test).
@@ -54,7 +60,10 @@ Language ──bridge──► Invariant 𝓘(L) ──classify.aperiodic──�
   terms from the Prop 5.15 normal form (minimal-set `GF` collapse on
   upward-closed families). Operates on the flat-brick stratum — every
   layer 1-anchored, every final-candidate layer window-determined —
-  and returns None outside it.
+  and returns None outside it. Emits a hash-consed `spot.formula` DAG, never
+  a string. `Rendering` switches the three §6 branch-factoring renderings
+  (minimized guards, exit fans grouped by child, exit children keyed by
+  residual); all on is normal operation, the flags exist to price each.
 - **`dg/`** — the Diekert–Gastin local-divisor synthesis, consuming the
   invariant natively; the baseline and the fallback below the engine.
   See `dg/algorithm.md`.
