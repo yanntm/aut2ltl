@@ -1,24 +1,24 @@
 # SoS → LTL — Experimentation Specification
 
-**Status:** specification / declaration of intent. Everything below is to be
-implemented; nothing below exists yet except where explicitly marked
-*(exists in-repo)*. This document is the interface between the paper
-(`sos_toltl.md`) and the implementation sessions: the paper's ⟨TBD⟩ tables
-cite the experiment ids below, and every trace printed in the paper is a
-*prediction* the tool must reproduce, per the family discipline
-(`sosl_report.md` ledger style).
+This document is the interface between the paper (`sos_toltl.md`) and the
+implementation sessions: the paper's ⟨TBD⟩ tables cite the experiment ids
+below, every trace printed in the paper is a *prediction* the tool must
+reproduce, and results come back as findings in `sos_toltl_report.md`
+(ledger style — a refuted prediction is a paper edit, not a footnote).
 
-**Revision 2026-07-07** (theory review of the M1 report, appended to
-`sos_toltl_report.md`): added §3b census reporting discipline; E1/E2 table
-requirements; E4-interim (DG ledger, runnable at M1); E7 dual scan and
-pull-forward to M1.5; E3 directed questions; E8 (C7's experiment) and C7's
-milestone assignment; milestone M1.5.
+**Where things stand** (details per section; the report is the ledger):
 
-**Revision 2026-07-08** (theory adjudication of F5, appended to
-`sos_toltl_report.md`): H5 settled negatively — ω-blind languages exist
-(26 across the bench, min `|𝒞| = 4`, exhibit `L₄`, paper §4.3 /
-Proposition 4.5); H5 re-scoped from hunt to mechanism map; E7 gains the
-Proposition 4.5 right-ideal column.
+- **Done, results in the report:** C1–C5 and C7; E0 (gate green); E1/E2
+  (census tables by Wagner degree); E4-interim (DG ledger); E7 with the
+  dual scan and mechanism tiers (H5 settled: ω-blind languages exist,
+  linear-only certificates — the two-shape scan is load-bearing); E10
+  (guard synthesis, grouping, residual indexing — measured); the F8
+  soundness campaign (engine 0 FAIL, graded stratum declined to DG).
+- **Todo:** E9 (worked-example curation); E3 (presentation cross-test,
+  early pass); full E4 and E8; E5 (blocked on C6, itself blocked on the
+  paper's Thérien–Wilke freeze); the E6 hunts H2/H3/H4/H6; the graded
+  engine (M3) once the paper's §4.3 entry-rooted repair carries its
+  completeness re-proof.
 
 **One-line goal.** Provide the data for `sos_toltl.md`: per-layer anchoring
 and window-determinacy statistics over the census, the size ledgers against
@@ -50,20 +50,20 @@ gate that every emitted formula defines the input language exactly.
 **C1 — Cayley builder.** From `.sos`: the deterministic automaton `Cay(L)`
 (states `𝒞`, edges `c →^a M(c, λ(a))`), its SCC decomposition, and the
 SCC DAG. Assert: SCCs coincide with the R-classes computed independently
-from `M` (mutual right-divisibility) — this is a *test of Lemma 5.3*, run on
+from `M` (mutual right-divisibility) — this is a *test of Lemma 4.3*, run on
 every input, not a one-off.
 
 **C2 — condition (A) tester.** Per layer `R`, per width `k = 1, 2, 3`:
 - `k = 1`: each letter's within-layer action is a partial identity or a
-  partial constant (paper Def 5.4). Report per letter: `neutral | reset(t) |
+  partial constant (paper Def 4.4). Report per letter: `neutral | reset(t) |
   mixed`.
-- `k = 2, 3`: Definition 5.5 via Lemma 5.6(v)'s fixpoint — the sets `𝒜_j`
+- `k = 2, 3`: Definition 4.5 via Lemma 4.6(v)'s fixpoint — the sets `𝒜_j`
   of within-layer actions of readable length-`j` words, extended letter by
   letter to the closing cycle; smallest `k` with every tail action
-  identity-or-constant, else `FAIL`. (Theory frozen 2026-07-07: the engine
-  consumes a passing `k` at window width `k+1`, paper §5.7 / Thm 5.23.
+  identity-or-constant, else `FAIL`. (The engine
+  consumes a passing `k` at window width `k+1`, paper §4.3 / Thm 4.13.
   Build the layer action monoid `𝒜_R` as a by-product — the (A)-fail
-  fallback runs on it, Prop 5.21/5.24.)
+  fallback runs on it, paper Prop 4.11/4.14.)
 Output per language: list of layers with `|R|`, smallest passing `k` or
 `FAIL`, letter classification table.
 
@@ -71,7 +71,7 @@ Output per language: list of layers with `|R|`, smallest passing `k` or
 (any layer some run can remain in forever — every layer with an internal
 cycle), per width `k' = 1, 2, 3`: decide whether two lassos confined to
 `R` with equal recurring `k'`-window sets can have different `P`-verdicts.
-(The per-stem quantification of Definition 5.7 collapses per layer: `R` is
+(The per-stem quantification of Definition 4.8 collapses per layer: `R` is
 strongly connected, so every cycle is reachable from every class of `R`.)
 Three stages, verdicts computed as `(d·e, e) ∈ P` with `d` the cycle's
 anchor class and `e` the idempotent power of the loop class:
@@ -85,13 +85,13 @@ anchor class and `e` the idempotent power of the loop class:
   the enumeration complete is a cap-bounded `PASS`; a tripped budget is
   `UNDECIDED(k')`. The cap must scale with `|𝒞|`, not with `|Σ_λ|`: the
   loop class folds through the whole algebra even where the walk is
-  frozen (paper Prop 5.15(iii); the cap `2·|R|·|Σ_λ|` is refuted by
+  frozen (paper Prop 5.4(iii); the cap `2·|R|·|Σ_λ|` is refuted by
   `EvenBlocks`' layer `{6}` — conflicting loops `(a⁴·!a)^ω`/`(a⁵·!a)^ω`
   of length 5 against a cap of 4, yielding a false PASS at `k' = 3`).
 - *exact procedure (normative once priced)*: per strongly connected
   subgraph `H` of the memory graph, the loop-class closure of covering
   tours via `(node, class, covered-edges)` states, grouped across
-  subgraphs sharing a window projection (paper Prop 5.15(iii)). A
+  subgraphs sharing a window projection (paper Prop 5.4(iii)). A
   cap-bounded `PASS` is not a theorem until either this replaces the
   enumeration or a sufficiency proof for the cap is frozen
   (`sos_toltl_report.md` F1).
@@ -111,28 +111,27 @@ count from the `.sos` residuals block); complement flip. Each is a pure
 **C6 — until-rank.** ⟨theory TBD — implement only after the paper freezes
 the Wilke-condition statement; E5 is blocked on this and on nothing else.⟩
 
-**C7 — combinator layer (paper §5.6).** Three pure-`.sos` operations:
+**C7 — combinator layer (paper §5.3).** Three pure-`.sos` operations:
 - *re-canonicalizer*: given `(𝒞, λ, M, P')` with any pair set `P'`, re-run
   the reference construction's quotient to the piece's own syntactic
   invariant *(the refinement machinery exists in the construction tool;
   wrap, don't rewrite)*;
 - *OR-split*: restrict `P` per final layer, re-canonicalize each piece,
   report per-piece read-offs (`|𝒞'|`, rung, (A)/(B) widths);
-- *AND-split* (per paper Thm 5.19 / Prop 5.20): enumerate *pairs* of
+- *AND-split* (per paper Thm 5.8 / Prop 5.9): enumerate *pairs* of
   congruences of `(𝒞, M)` (census-sized — brute force over principal
   congruences and joins is acceptable), coarsest first; for each `θ`
   compute the canonical saturation `Val^θ` (pointwise `∨` of `Val_P` over
   `θ`-blocks) and test `Val^{θ₁} ∧ Val^{θ₂} = Val_P` with both factors
-  proper (`Val^{θᵢ} ≠ Val_P`) — this search is complete (Thm 5.19); the
-  `θ₁ ∩ θ₂ = Δ` condition is a theorem (Prop 5.20), assert it, don't test
+  proper (`Val^{θᵢ} ≠ Val_P`) — this search is complete (Thm 5.8); the
+  `θ₁ ∩ θ₂ = Δ` condition is a theorem (Prop 5.9), assert it, don't test
   for it. Report the factor invariants (re-canonicalized), or
   `IRREDUCIBLE`. **Test vectors:** `GFa` must *factor* — as
   `Fa ∧ (GFa ∨ G¬a)`, both congruences the neutral-unit merge (the
-  paper's properness caveat in Thm 5.19; an earlier version of this spec
-  wrongly predicted `IRREDUCIBLE`); `GFa ∧ FGb` must factor as
+  paper's properness caveat in Thm 5.8); `GFa ∧ FGb` must factor as
   `FGb ∧ GF(a ∨ !b)` — *not* as `GFa ∧ FGb`, `GFa` not being recognized
-  on its table (paper §5.6(3), the corrected specimen). Whether a found
-  split is *adopted* is the §5.6(1) guard's read-off decision — report
+  on its table (paper §5.3(3)). Whether a found
+  split is *adopted* is the §5.3(1) guard's read-off decision — report
   factorizations and adoption separately.
 
 ## 3. The conformance gate (mandatory, every experiment)
@@ -293,24 +292,23 @@ notch at a time, smallest-first):
 - **H2**: smallest LTL specimen with an (A)-failing layer at `k ≤ 3`.
 - **H3**: smallest LTL specimen with a (B)-failing final layer at
   `k' ≤ 3` — the paper's candidate for the "order beyond windows" example
-  (§5.5); the witness lasso pair is a paper figure.
+  (§5.1); the witness lasso pair is a paper figure.
 - **H4**: smallest LTL specimen whose extraction must invoke the DG
   fallback at all (= H2 ∪ H3 minimum).
-- **H5** *(settled 2026-07-08, report F5 — hits exist; re-scoped from
-  hunt to mechanism map)*: a non-LTL specimen whose ω-power patterns are
-  *all constant* (certificate exists in linear shape only) — the dual of
-  the paper's Proposition 4.2 blindness. The census found 26 (min
-  `|𝒞| = 4`, exhibit `L₄`, paper §4.3): "F₂ always available" is refuted
-  and the two-shape scan is necessary. The surviving hunt is the
-  *mechanism map*: per hit, the Proposition 4.5 read-off — is every
-  period-`>1` cycle a right ideal (`C·λ(Σ) ⊆ C` suffices)? An ω-blind
-  specimen *failing* the read-off exhibits a second blindness mechanism
-  and is a paper figure; re-run on census-next.
+- **H5** *(done — report F5/F7; remaining: re-run on census-next)*: a
+  non-LTL specimen whose ω-power patterns are *all constant*
+  (certificate exists in linear shape only) — the dual of the paper's
+  Proposition 3.2 blindness. 100 exist (min `|𝒞| = 4`, exhibit `L₄`,
+  paper §3.3): "F₂ always available" is refuted and the two-shape scan
+  is necessary. The mechanism map is measured: right-ideal 8 /
+  phase-collapse 10 / `P`-level 82 — the exact ω-blindness condition is
+  acceptance-level, no condition on `(𝒞, ·)` alone is necessary
+  (paper §3.3, Prop 3.5 sufficient only).
 - **H6**: smallest specimen with a `k`-anchored layer (`k ≥ 2`) whose
   walk moves phase under a *neutral* `k`-window (an excursion completed
   at the window's last step) — the witness that the engine's operating
-  width `k+1` is tight, not merely sufficient (paper §5.7, the remark
-  after Lemma 5.22).
+  width `k+1` is tight, not merely sufficient (paper §4.3, the remark
+  after Lemma 4.12).
 **Prediction:** H2/H3 do not exist at 2 states / 1 AP; first hits appear
 ⟨TBD: record where⟩. Each hit's `.sos`, layers, and witness go into
 `tests/**/logs/` and the paper's §7 empirical map.
@@ -318,9 +316,9 @@ notch at a time, smallest-first):
 ### E7 — certificate validation (non-LTL side)
 
 For every non-LTL census specimen: extract the certificate (group orbit,
-witness words, context shape, period `p′`); verify by the paper §4.4
+witness words, context shape, period `p′`); verify by the paper §3.4
 toggle check — `2p′ + 1` lasso membership tests (`n = 0 … 2p′`) — against
-the reference automaton *only* (no algebra on the verifier side); record word lengths against the paper's Theorem-4.4 bounds (each
+the reference automaton *only* (no algebra on the verifier side); record word lengths against the paper's Theorem-3.4 bounds (each
 component `< |𝒞|`, the absorbed index power quadratic). **Prediction:** all
 verify; `Even` emits `F₁(u=a, v=a, x=(!a)^ω, p′=2)` (samples
 `a^{n+1}·(!a)^ω`, accept iff `n` odd) and `EvenBlocks` emits
@@ -332,24 +330,23 @@ shape fired *first* under the scan order, which is not the H5 datum. For
 every non-LTL specimen run both scans to completion and record two
 columns: first separating linear context (or `all-constant`), first
 separating ω-power context (or `all-constant`). A specimen with ω-power
-all-constant is an H5 hit (linear-only certificate); the census found 26
-(report F5) — H5 is settled, its surviving map lives in E6/H5. Triptych
-vectors (run 2026-07-08, report F4): `Even` — linear ✓ *and* ω-power ✓,
+all-constant is an H5 hit (linear-only certificate); 100 exist
+(report F5), the map lives in E6/H5. Triptych
+vectors (report F4): `Even` — linear ✓ *and* ω-power ✓,
 the ω-power family being `F₂(u=ε, v=a, y=a·!a, p′=2)`, the same family
 that certifies `EvenBlocks`; `EvenBlocks` — linear `all-constant`,
 ω-power ✓. Neither is an H5 hit. **Sizes.** Tabulate component lengths
-(`|u|`, `|v|`, `|x|`/`|y|`, `p′`) against the Theorem-4.4 bounds, per
-shape and per `|𝒞|` (§3b). **Mechanism column (Prop 4.5).** Per non-LTL
+(`|u|`, `|v|`, `|x|`/`|y|`, `p′`) against the Theorem-3.4 bounds, per
+shape and per `|𝒞|` (§3b). **Mechanism column (Prop 3.5).** Per non-LTL
 language: does every period-`>1` cycle absorb right multiplication
 (right ideal; checking `C·λ(Σ) ⊆ C` suffices)? The read-off *implies*
-ω-blindness (paper Prop 4.5(ii)), so column-true must be a subset of the
+ω-blindness (paper Prop 3.5(ii)), so column-true must be a subset of the
 H5 hits — a column-true non-H5 language is a stop-the-line bug in one of
 the two computations, never a statistic; an H5 hit that is column-false
 is the real finding (a second blindness mechanism, paper figure).
-**Scheduling.** E7 consumes only M1 components (`witness/` + the
-reference automata): the dual-scan ledger ran 2026-07-08 over the full
-regenerated bench (report F5); the mechanism column is the outstanding
-ask, runnable now; the full ledger re-runs at M4 on census-next.
+**Status.** Done catalogue-wide, dual scan and mechanism tiers included
+(report F5/F7). Remaining: the full ledger re-runs at M4 on
+census-next.
 
 ### E8 — decomposition census (C7)
 
@@ -358,16 +355,16 @@ re-canonicalize each piece, record per-piece read-offs (`|𝒞'|`, ladder
 rung, (A)/(B) widths); (ii) the **pair split** — restrict `P` to each
 single accepting pair, re-canonicalize, same read-offs, plus the piece's
 rung against `L`'s: the incidence of Wagner-ladder climb is the paper's
-§5.6(1) guard turned into a measurement (rung read-off via the classifier
+§5.3(1) guard turned into a measurement (rung read-off via the classifier
 subproject — a dependency, note it in the run log); (iii) the **AND-split
 search** of C7, reporting factored-vs-`IRREDUCIBLE` fractions and the
-factor read-offs (the Thm 5.19 census query). Tables per §3b.
+factor read-offs (the Thm 5.8 census query). Tables per §3b.
 **Prediction:** final-layer pieces never climb the ladder and usually
 shrink; pair pieces climb on a measurable fraction (the guard's raison
 d'être) — if no pair piece climbs anywhere on the census, the guard is
-over-cautious at these sizes and §5.6(1) earns a remark.
+over-cautious at these sizes and §5.3(1) earns a remark.
 
-### E9 — worked-example curation for the paper (added 2026-07-09)
+### E9 — worked-example curation for the paper
 
 The paper (§5.2 and the figures task `sos_toltl_figures.md`) needs a
 small gallery of specimens, each exercising one stratum of the engine
@@ -414,8 +411,8 @@ Spot-simplified formula)`:
    the anchored-transient-then-safety peel and the strength
    stratification; whichever is smallest and cleanest becomes a paper
    candidate.
-3a. **`GFa ∧ FGb` — the paper's Example 3 and §5.6 specimen, one
-   object, two treatments.** The paper now hand-works its full stack
+3a. **`GFa ∧ FGb` — the paper's Example 3 and §5.3 specimen, one
+   object, two treatments.** The paper hand-works its full stack
    (four classes `[ε], β₀, β₁, ⊥`; singleton peel; live `STAY∞` at
    `β₁` = `Gb ∧ GF(a∧b)`; frozen `⊥` with (B) at `k′ = 1`; the
    prefix-independent collapse to `FGb ∧ GF(a∧b)`). Provide the
@@ -449,7 +446,7 @@ Constraint reminders: per-example probes single-input ≤ 15 s; ledger to
 source).
 
 ### E10 — branch factoring: guard grouping and residual-indexed exits
-(added 2026-07-09; paper §6, rendering 1)
+(paper §6, rendering 1)
 
 Two sharings on the engine's output, both exactness-preserving by the
 paper's label contract (any exact label for the tail language serves),
@@ -470,9 +467,8 @@ to implement and measure:
    `⋁_{a ∈ Ex(c)} (a ∧ X φ_{c·a})` renders grouped **by child key** —
    the target class, or its residual when item 2 is on — one disjunct
    per distinct child, the guard a letter set rendered by item 0 (`⊤`
-   when all letters agree). *(Patched per report F10: grouping by
-   target class, as this item first read, blocks composition with
-   item 2 — two classes sharing one residual kept two arms.)* Same
+   when all letters agree). (Keying on the target class instead blocks composition with
+   item 2: two classes sharing one residual keep two arms.) Same
    grouping inside `leave`'s disjunction and the `TL` trees. Purely a
    printer/DAG-shape change; conformance identical.
 2. **Residual-indexed exit children (memo-level).** Key exit children
@@ -515,25 +511,27 @@ residual-sharing wins.
   the sanctioned fallback.
 - **Spot simplification stalls** are bounded-or-skipped; raw sizes are the
   primary metric, simplified sizes a bonus column.
-- **`FLAT_OVERFLOW` on the DG baseline is a datum** (the paper's §3 point),
+- **`FLAT_OVERFLOW` on the DG baseline is a datum** (the paper's §2.3 point),
   expected already on mid-census instances.
 
 ## 6. Milestones
 
-- **M1** — C1+C2+C3+C5, E0 gate green, E1+E2 tables produced. *(Done —
-  `sos_toltl_report.md`.)*
-- **M1.5** — census hygiene and the no-engine ledgers: E1/E2 re-issued
-  per §3b (frame declared, per-shape rows, both weightings, degenerate
-  line; parity corpora added to the bench); E4-interim; E7 on the 1-AP
-  census (dual scan); early E3 pass.
+- **M1** — C1+C2+C3+C5, E0 gate green, E1+E2 tables produced. *(Done.)*
+- **M1.5** — census hygiene and the no-engine ledgers: E1/E2 per §3b
+  (frame declared, per-shape rows, both weightings, degenerate line);
+  E4-interim; E7 dual scan. *(Done except the early E3 pass — still
+  todo.)*
 - **M2** — C4 walk+window engine on the (A,k=1)/(B,k'≤2) strata, E0
   formula prediction green, E4(a) vs (b) ledger on the census subset the
-  engine covers; conformance gate wired.
-- **M3** — graded engine at window width `k+1` (paper §5.7, Thm 5.23:
+  engine covers; conformance via the survey oracle. *(Done, plus E10
+  beyond plan; the graded stratum declines to DG per report F8.)*
+- **M3** — graded engine at window width `k+1` (paper §4.3, Thm 4.13:
   transient fold trees `TR`/`TL`, `step_κ`), scoped DG fallback on the
-  layer action monoid `𝒜_R` (Prop 5.24) — full-coverage engine; full E4,
-  E3; C7 + E8.
-- **M4** — C6 + E5; E6 sweeps; E7 re-run on census-next.
+  layer action monoid `𝒜_R` (paper Prop 4.14) — full-coverage engine;
+  full E4, E3; E8. *(Todo; the graded engine is gated on the paper's
+  §4.3 completeness re-proof; C7 is done.)*
+- **M4** — C6 + E5; E6 sweeps; E7 re-run on census-next. *(Todo; C6
+  blocked on the paper's Thérien–Wilke freeze.)*
 
 Every milestone ends with a report appended to `sos_toltl_report.md`
 (ledger style, one row per finding, predictions checked off or refuted —
