@@ -3018,3 +3018,13 @@ transports across R. One-scan is_obligation read-off; hull lattice =
 ladder up to obligation exactly. Naive R-DAG Wagner-degree transcription
 refuted by a*b^omega; superchain transcription left as bounded theory.
 Spec: is_obligation added to CAL5 with the .cat corpus gate.
+
+## 2026-07-09 — obligation-band Wagner degrees read off the R-DAG (Prop 3.11)
+
+CORRECTION of the previous entry: the "naive R-DAG transcription refuted
+by a*b^omega" claim was itself wrong — a*b^omega is not closed (a^omega
+is in its closure); it is CP97 Example 10 with n-=2, n+=1, which MATCHES
+the DAG transcription. Prop 3.11 proves it for the whole m=0 band via
+CP97 Thm 7 superchain normal form + Thm 3.10/Lemma 3.9. Spec CAL5 gains
+obligation_degree with the .cat gate. Paper theory now measurement-gated
+only.
