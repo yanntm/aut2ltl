@@ -144,13 +144,12 @@ resurface in extraction as two engines.**
    available — including the ω-blind languages, whose groups only linear
    contexts can see (§3.3, §8).
 
-**Outline.** §2 collects everything the paper relies on but does not
-own: notation and classical notions (§2.1), the syntactic ω-semigroup,
-its invariant and the running examples, reproduced from [SωS26] so the
-paper is self-contained (§2.2), and the Diekert–Gastin route (§2.3).
-The contributions follow the title's three nouns. *Certificates*: the
-non-LTL witness family, its extraction and its verification contract
-(§3). *Formulas*: the walk engine (§4) and the window engine with the
+**Outline.** §2 fixes notation (§2.1), recalls the syntactic
+ω-semigroup, its invariant, and the running examples of [SωS26]
+(§2.2), and recalls the Diekert–Gastin extraction (§2.3). The rest of
+the paper follows the title's three nouns. *Certificates*: the non-LTL
+witness family, its extraction and its verification contract (§3).
+*Formulas*: the walk engine (§4) and the window engine with the
 combinators and the assembled extractor (§5), then the deliverable
 formats and the size results (§6). *The shape of the cut*: the inner
 frontier the two preconditions grade inside LTL (§7). §8 evaluates
@@ -159,12 +158,10 @@ problems.
 
 ## 2. Background: the object and its read-offs
 
-This section is deliberately unoriginal — it holds what the paper
-consumes without claiming it. §2.1 fixes notation
-and the classical notions; §2.2 recalls, from [SωS26], the syntactic
-ω-semigroup, its reified invariant — the paper's sole input — and the
-running examples, whose tables are reproduced here so that every
-derivation below can be checked against them; §2.3 recalls the one prior
+§2.1 fixes notation and the classical notions. §2.2 recalls, from
+[SωS26], the syntactic ω-semigroup and its reified invariant — the
+paper's sole input — with the running examples, whose tables every
+derivation below can be checked against. §2.3 recalls the one prior
 route from an aperiodic algebra to a formula, which the extraction of
 §4–§5 is designed against.
 
@@ -332,9 +329,8 @@ Four sources of explosion, each a blindness:
    *syntactic* algebra (the coarsest recognizer, with the smallest block
    alphabets and the smallest J-depth) is available.
 
-One qualification, measured rather than assumed (the implementation and
-the census-wide distribution are ours, §8): class-indexed memoization
-localizes the explosion. The DG-style recursion *computes* at scale —
+One qualification, measured rather than assumed (§8): class-indexed
+memoization localizes the explosion. The DG-style recursion *computes* at scale —
 the formula-DAG is tractable — and what explodes is exclusively the
 *flat* rendering, LTL syntax having no sharing. On the six-class algebra
 of `GF(aa)` the memoized recursion is 19 recursion nodes and a shared
@@ -2007,11 +2003,10 @@ operator is the same wrapper). Safety is the dual through
 ## 6. The deliverable: DAG, flat, and definitional forms
 
 Extraction as computed is a **class-indexed DAG**: one node per
-(class, engine-context) pair, children memoized — and the format is no
-conjecture: both implementations compute it at scale, the DG baseline
-over the whole catalogue and the engine wherever it answers (§8)
-⟨TBD: the DAG-vs-|𝒞| scatter once the graded engine lands⟩. Three
-renderings:
+(class, engine-context) pair, children memoized — both implementations
+compute it at scale, the DG baseline over the whole catalogue and the
+engine wherever it answers (§8) ⟨TBD: the DAG-vs-|𝒞| scatter once the
+graded engine lands⟩. Three renderings:
 
 1. **The DAG itself** — the working format, and polynomial on the
    anchored+ladder fragment: the walk side has one label per layer and one
