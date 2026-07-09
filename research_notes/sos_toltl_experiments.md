@@ -324,6 +324,13 @@ census: per instance the DAG node count and flat tree size (or
 size-bucket histograms (flat and DAG) and the DAG-vs-`|𝒞|` scatter. This
 is §3/§6's explosion measured as a *distribution* instead of the single
 `GF(aa)` exemplar, and it freezes the (b) column before (a) exists.
+**Addendum (split-conjecture measurement):** add the recursion tallies
+per instance — `dgtrace`'s call sites and distinct `(frame, target)`
+sub-calls — and the sub-calls-vs-`|𝒞|` scatter. This feeds the paper's
+§2.3 split conjecture: the sub-call count is plausibly polynomial in
+`|𝒞|` (measured 26 on `GF(aa)`'s six classes), and the scatter decides
+whether the bound is worth proving; the arena bound is the open half
+regardless.
 
 ### E5 — until-rank vs emitted depth *(unblocked — C6 is specified)*
 

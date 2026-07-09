@@ -2013,10 +2013,26 @@ single class `d` — already determines its verdict: its tails park at
 `d* = d`), and (i) applies. The blind spot of plain (B) on a
 1-anchored layer is therefore exactly the **anchor-free** recurring
 sets, where the window set cannot name the parking class.
-`G(a → F b)`'s `{!a∧!b}` is the minimal instance. The graded analogue
-of the parks — anchor *windows* naming the class, Lemma 4.6(iv), in
-§4.3's grammar — is expected to lift verbatim and is not developed
-here.
+`G(a → F b)`'s `{!a∧!b}` is the minimal instance.
+
+*Remark (the graded lift).* The parks lift to a `k`-anchored layer
+with Lemma 4.12 in the role of Lemma 4.9(i), plus one addition. The
+dichotomy survives verbatim: a parked tail eventually reads only
+`St(d)` — the class-fixing sets are width-free — and its recurring
+`κ`-windows, lying in `St(d)^κ`, have `d` as a fixed point of their
+within-layer action, so they are anchor windows of `d` at most; an
+anchor-recurring tail makes anchor windows of two distinct classes
+recur. The park brick becomes
+`F( ŵ ∧ X^κ ( G St(d) ∧ Ω_d ) )` over `w ∈ An_κ(d)` — sound by
+Lemma 4.12(i)'s any-history pin, complete with the window covering
+the last change as witness — *provided that change falls at least `k`
+steps past the entry*. A tail parking earlier has its certifying
+window straddling the entry: the transient seam of §4.3, closed the
+same way, by threading — one brick
+`û ∧ X^{|u|} ( G St(c·u) ∧ Ω_{c·u} )` per word `u` of length `≤ k`
+readable in `R` from the entry `c`, the prefix explicit so nothing is
+guessed. Conditions (i) and (ii) of Definition 5.6 are unchanged, and
+the exactness proof is Proposition 5.7's with these substitutions.
 
 **The witness repaired.** `G(a → F b)`'s five classes are the unit,
 `[!a∧!b]`, `[!a∧b]`, `[a∧!b]`, `[!a∧b · a∧!b]` — indices `0..4` in
