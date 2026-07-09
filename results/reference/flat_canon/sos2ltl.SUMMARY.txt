@@ -1,6 +1,6 @@
-CSV: logs/flat_canon/sos2ltl/survey_20260708_204103.csv
+CSV: logs/flat_canon/sos2ltl/survey_20260709_162805.csv
 survey: 3938 inputs  (--use sos2ltl)
 aut2ltl: 2237 LTL, 1698 not-LTL  |  declined 3, timeout 0, crash 0
 validation: 2856 TRUE, 0 FAIL, 1079 not checked (size/timeout/error)
-totals: DAG=1862441 temporals=274525 build=700.855s
+totals: DAG=1856896 temporals=273756 build=684.769s
 SUCCESS

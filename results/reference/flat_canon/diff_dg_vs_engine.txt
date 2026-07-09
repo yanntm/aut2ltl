@@ -1,10 +1,10 @@
 === survey diff (keyed on source) ===
-left  = results/reference/flat_canon/sos2ltl_dg.csv   (3938 inputs)
+left  = sos2ltl_dg.csv   (3938 inputs)
   resolved : 2237 LTL, 0 not-LTL  |  no-answer 1701  (decl 1701, timeout 0, crash 0)
   validated: 159 TRUE, 0 FAIL, 2078 not-checked  (of 2237 LTL)   build 507.4s
-right = results/reference/flat_canon/sos2ltl.csv   (3938 inputs)
+right = sos2ltl.csv   (3938 inputs)
   resolved : 2237 LTL, 1698 not-LTL  |  no-answer 3  (decl 3, timeout 0, crash 0)
-  validated: 2856 TRUE, 0 FAIL, 1079 not-checked  (of 2237 LTL)   build 700.9s
+  validated: 2856 TRUE, 0 FAIL, 1079 not-checked  (of 2237 LTL)   build 684.8s
 key sets: 3938 common | 0 absent-from-right | 0 absent-from-left
 
 CONSISTENCY: OK   (no FAIL, no LTL/NOT_LTL clash)
@@ -31,6 +31,6 @@ on 3938 common:  LTL 2237->2237  not-LTL 0->1698  no-answer 1701->3  |  TRUE 159
       0 -> 1698  (+1698)  sos2ltl
       0 -> 1123  (+1123)  sos2ltl+sos2ltl.dg
       0 -> 1114  (+1114)  sos2ltl+sos2ltl.engine
-  runtime  build 507.4s -> 700.9s (+38.1%)   DAG 3829657->1862441 (-51.4%)  tree 650721580785633121083969646953086227695300432169964557246914048608193156148512904901623736696832->226819398122137230439221892663589395596058119621444150473570794612635131737862802307701687713792 (-65.1%)
+  runtime  build 507.4s -> 684.8s (+35.0%)   DAG 3829657->1856896 (-51.5%)  tree 650721580785633121083969646953086227695300432169964557246914048608193156148512904901623736696832->226819398122137230439221892663589395596058119621444150473570794612635131737862802307701687713792 (-65.1%)
 
-consistent: 0 FAIL, 0 CLASH | LTL 2237->2237, not-LTL 0->1698, no-answer 1701->3, build +38.1%, DAG -51.4%
+consistent: 0 FAIL, 0 CLASH | LTL 2237->2237, not-LTL 0->1698, no-answer 1701->3, build +35.0%, DAG -51.5%
