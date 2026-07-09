@@ -10,15 +10,14 @@ reproduce, and results come back as findings in `sos_toltl_report.md`
 
 - **Done, results in the report:** C1–C5 and C7; E0 (gate green); E1/E2
   (census tables by Wagner degree); E4-interim (DG ledger); E7 with the
-  dual scan and mechanism tiers (H5 settled: ω-blind languages exist,
+  dual scan and mechanism tiers (H5: ω-blind languages exist,
   linear-only certificates — the two-shape scan is load-bearing); E10
-  (guard synthesis, grouping, residual indexing — measured); the F8
-  soundness campaign (engine 0 FAIL, graded stratum declined to DG);
-  E9 opened and its gallery sorted (`e9_scan`/`e9_profile`, the FIG-2
-  trace hook; F13: H3 found — `G(a → F b)`, the (B) tester's blindness
-  bugs fixed; F14: H2/H4 answered, the "≥ 2 AP" (A)-floor refuted —
-  all 258 (A)-failing languages are 1 AP, floor `|𝒞| = 15`; E9
-  candidates 1, 2, 4 have their smallest specimens).
+  (guard synthesis, grouping, residual indexing — measured); engine
+  soundness (0 FAIL catalogue-wide, graded stratum declining to DG —
+  F8); the E9 gallery sorted (`e9_scan`/`e9_profile`, the FIG-2
+  trace hook); H3's first hit (`G(a → F b)`, F13); H2/H4 (all 258
+  (A)-failing languages are 1 AP, floor `|𝒞| = 15` — F14); E9
+  candidates 1, 2, 4 have their smallest specimens.
 - **Todo:** E9 candidates 3, 3a, 3b, 5 (the named 2-AP builds, the
   `GFa ∧ FGb` conformance, the width exemplar, the showpieces); H7
   (uncapped (A) fixpoint over the 258); E3 (presentation cross-test,
@@ -48,7 +47,7 @@ gate that every emitted formula defines the input language exactly.
   fixtures (`samples/fixtures/hoa/anchor/`, `…/kanchor/`) *(exist)*.
 - **The automaton portfolio** (aut2ltl recipes, incl. `kanchor`, `daisy`)
   *(exists)* — internal baseline and cross-test comparator (E3, E4c). Note:
-  the paper no longer speaks of any automaton-level transcription — these
+  the paper speaks of no automaton-level transcription — these
   runs are diagnostics for us, not paper material.
 - **The DG-style engine with DAG/memoization** *(exists per project notes)* —
   the naive baseline; if its output cannot be flattened on an instance, that
@@ -236,8 +235,8 @@ paper, computed by hand from [SωS26, Table 3]):
   `0 → {1,3} | {2,4} → 5`; layers `{1,3}`, `{2,4}` pass (A) at `k = 1`
   (letter table: `!a ↦ reset(1)` resp. `reset(4)`, `a ↦ reset(3)` resp.
   `reset(2)`); layer `{5}` is frozen (both letters neutral) and passes (B)
-  at `k' = 2` with witness window `aa`, failing at `k' = 1` (the
-  Lemma-5.2 edge pair: `(a·!a)^ω` vs `(aa·!a)^ω`); layers `{1,3}`, `{2,4}`
+  at `k' = 2` with witness window `aa`, failing at `k' = 1` (witness
+  pair `(a·!a)^ω` vs `(aa·!a)^ω`); layers `{1,3}`, `{2,4}`
   as final layers are all-rejecting (every pair off `5` is out of `P`).
   Prefix-independence: 1 residual. With C4: emitted DAG simplifies to
   `GF(a ∧ Xa)`.
@@ -348,9 +347,8 @@ notch at a time, smallest-first):
 - **H2** *(found — report F14)*: smallest LTL specimen with an
   (A)-failing layer at `k ≤ 3` is `3state1ap0acc_004260` — `|𝒞| = 15`,
   **1 AP**, 3 states, `ϕ = (1,π)`; three 3-class layers, both letters
-  mixed on each. 258 languages (A)-fail catalogue-wide, *all* 1 AP
-  (F6's "≥ 2 AP floor" is refuted — the frontier is algebra size, not
-  alphabet width).
+  mixed on each. 258 languages (A)-fail catalogue-wide, *all* 1 AP —
+  the (A) frontier is algebra size, not alphabet width (F14).
 - **H7** *(new)*: run the **uncapped** Lemma 4.6(v) fixpoint over the
   258 (A)-failing languages — per layer, the exact anchoring width or
   a *no-width* verdict. A no-width two-letter layer settles the
@@ -358,8 +356,7 @@ notch at a time, smallest-first):
   half its alphabet budget; either way the `k`-distribution beyond the
   cap is the paper's §4.2 ⟨TBD⟩.
 - **H3** *(found — report F13; remaining: the smallest witness)*: an
-  LTL specimen with a (B)-failing final layer — the paper's "order
-  beyond windows" example (§5.1). First witness `G(a → F b)`: 5
+  LTL specimen with a (B)-failing final layer. First witness `G(a → F b)`: 5
   classes, 2 AP, degree (ω,σ), 2 residuals; its final layer is moving,
   1-anchored, and fails (B) at *every* width on an exact witness pair
   (equal recurring window sets, opposite verdicts, the idle letter
@@ -393,7 +390,7 @@ notch at a time, smallest-first):
   non-LTL specimen whose ω-power patterns are *all constant*
   (certificate exists in linear shape only) — the dual of the paper's
   Proposition 3.2 blindness. 100 exist (min `|𝒞| = 4`, exhibit `L₄`,
-  paper §3.3): "F₂ always available" is refuted and the two-shape scan
+  paper §3.3): F₂ is not always available, so the two-shape scan
   is necessary. The mechanism map is measured: right-ideal 8 /
   phase-collapse 10 / `P`-level 82 — the exact ω-blindness condition is
   acceptance-level, no condition on `(𝒞, ·)` alone is necessary
@@ -493,9 +490,9 @@ Spot-simplified formula)`:
    final layer *and* an exit child with `T ≠ ∅`. Side note kept for
    theory: the exact label of
    `G(a → F b)` is `GF b ∨ G(!a∧!b) ∨ F(b ∧ X G(!a∧!b))` — flat LTL —
-   so F13's obstruction is the (B) *vocabulary* (recurring window
-   sets), not LTL-expressibility; see the paper's §5.1 ⟨TBD⟩ on
-   anchored parks.
+   so F13's obstruction is the plain-(B) *vocabulary* (recurring window
+   sets), not LTL-expressibility; the paper's anchored parks capture
+   it (Prop 5.7, §5.1).
 3. **The named 2-AP builds:** `a U G b`, `a W G b`, `(GF a) U (G b)` —
    build `𝓘(L)` for each, report the read-offs; expected to exercise
    the anchored-transient-then-safety peel and the strength
@@ -619,7 +616,7 @@ residual-sharing wins.
   transient fold trees `TR`/`TL`, `step_κ`, and the **seam bricks
   `seam(c)` — mandatory, the exit-chain is incomplete without them**),
   scoped DG fallback on the
-  layer action monoid `𝒜_R` (paper Prop 4.14), now needed only on
+  layer action monoid `𝒜_R` (paper Prop 4.14), needed only on
   no-width layers — full-coverage engine;
   full E4, E3; E8. *(Todo; unblocked — Thm 4.13 is complete; C7 is
   done. Do NOT implement the older entry-rooted-`U` sketch: it is
@@ -631,6 +628,8 @@ residual-sharing wins.
   unblocked — C6 carries the frozen procedure and its budget
   discipline.)*
 
-Every milestone ends with a report appended to `sos_toltl_report.md`
-(ledger style, one row per finding, predictions checked off or refuted —
-a refuted prediction is a paper edit, not a footnote).
+Every milestone lands its results in `sos_toltl_report.md` — which holds
+**current state only**: results in force per experiment id, findings `Fn`
+as settled facts, open work on explicit *Remaining* lines; superseded
+content is replaced, not annotated (git holds the history). A refuted
+prediction is a paper edit, not a footnote.
