@@ -6,8 +6,7 @@ With significant inputs from
 **Claude (Anthropic)**
 
 *Working draft — 2026-07-09 — remaining `⟨TBD: …⟩` placeholders are the
-V1/V2 measurements (spec milestone CAL4) and the hull conjecture
-(§3.5).*
+V1/V2 measurements (spec milestone CAL4).*
 
 ## Abstract
 
@@ -28,7 +27,10 @@ scans, each returning the *minimal* witness lasso. Left quotients,
 rootings, pair languages, inverse substitutions: free surgeries.
 Classification checks that Spot implements as constructions
 (stutter-invariance, safety/co-safety, obligation, the acceptance strength
-actually needed) are equations on the table, read off. The exponentials do
+actually needed) are equations on the table, read off. The safety
+closure, the interior, and the Alpern–Schneider safety/liveness
+decomposition are surgeries too: one `O(n²)` stem-liveness scan settles
+what the draft first held as a conjecture. The exponentials do
 not disappear — they concentrate, exactly at the ω-rational constructors
 (concatenation by a prefix set, ω-power) and existential projection, where
 a powerset is intrinsic. The resulting picture is a *pay-canonicity-once*
@@ -120,11 +122,14 @@ Contributions:
    calculus renders is accompanied by the *globally minimal* witness
    lasso, obtained from the scan order alone — no separate
    counterexample-extraction machinery.
-3. **Read-offs replacing constructions** (§3.5): classification queries
-   answered by equations on the table, including a one-scan
+3. **Read-offs replacing constructions** (§3.5–§3.6): classification
+   queries answered by equations on the table, including a one-scan
    stutter-invariance test (Proposition 3.3, with full proof) where the
    automata-side check builds closure automata and tests product
-   emptiness.
+   emptiness; and the hulls — safety closure, interior, and the
+   Alpern–Schneider decomposition — as `O(n²)` surgeries on the same
+   table (Proposition 3.5), turning the ladder's first rungs into
+   fixpoint equations.
 4. **The ledger** (§4): a side-by-side of the calculus against a
    production toolbox, one row per operation, with the exponential
    frontier located exactly (§3.4). The calculus is implemented as a
@@ -547,7 +552,9 @@ a construction on automata, an equation on the table:
   closure condition on the accepting set `P` over the linked-pair
   structure [SωS26, §7.2; Lan69, MP92, PW13] — Spot's `is_safety`,
   `is_obligation`, … as scans, uniform over one object where the
-  automata-side answers are model-specific checks.
+  automata-side answers are model-specific checks. The first two rungs
+  become exact fixpoint equations once the hulls of §3.6 are in hand:
+  `L` is safety iff `P = P̄`, co-safety iff `P = P̊` (Corollary 3.6).
 - **Acceptance strength needed** (Spot's parity/Rabin-index style
   queries): the acceptance index — the minimal deterministic condition
   the *language* needs — is the maximal alternating chain in the
@@ -560,13 +567,103 @@ a construction on automata, an equation on the table:
 - **LTL-definability and extraction**: the aperiodicity scan on `M`,
   then [SωSX26] for the defining formula or the counting-family
   certificate. (Spot has no automaton→LTL path.)
-- **Hulls, conjecturally.** The safety closure of `L`, its liveness
-  part, and the decomposition `L = safety ∩ liveness` look like
-  `P`-completions along the ladder characterizations — surgery plus
-  reduction, plausibly polynomial. ⟨TBD: work out the safety-hull pair
-  set; prove or refute polynomiality; this may deserve its own
-  section — the temporal hierarchy as a lattice of hulls on one
-  table.⟩
+- **Hulls.** The safety closure of `L`, its interior, and the
+  Alpern–Schneider decomposition `L = safety ∩ liveness` are pair-set
+  surgeries on the same table, computable in `O(n²)` — §3.6 proves it.
+
+### 3.6 Hulls: the safety closure as surgery
+
+Equip `Σ^ω` with the Cantor topology; a *safety* property is a closed
+set, a *co-safety* (guarantee) property an open one, and the safety
+closure `cl(L)` — the smallest closed superset — is the "safety part"
+of `L` in the sense of Alpern–Schneider [AS85, MP92]. On automata,
+computing `cl` is a construction (prune dead states, weaken
+acceptance); the earlier draft of this paper conjectured it was a
+surgery. It is, and the key is a one-scan notion of class liveness.
+
+Say a class `c ∈ 𝒞` is **live** if its residual is nonempty — a class
+property, because the syntactic congruence refines residual equality
+(take `x = ε` in the linear context shape). Liveness is read off the
+table:
+
+```
+Live  :=  { c ∈ 𝒞 : (c·𝒞¹) ∩ stems(P) ≠ ∅ },     stems(P) = { s : (s,e) ∈ P }
+```
+
+— if `c·x = s` is an accepting stem, `key(x)·key(e)^ω` continues `c`
+into `L`; conversely a nonempty residual contains a lasso, and folding
+it lands `c·fold(u')` on the stem of an accepting pair. One pass over
+the rows of `M` against a `stems(P)` bitmask: `O(n²)`.
+
+Two monotonicity facts drive everything: deadness propagates to
+*extensions* (`c` dead ⟹ `c·x` dead), and liveness propagates to
+*prefixes* (a prefix of a live word is live, by composing
+continuations).
+
+**Proposition 3.5 (the safety hull is a surgery).**
+`cl(L) = L(P̄)` where `P̄ := { (s, e) ∈ linked : s ∈ Live }`.
+
+*Proof.* Let `C := { α : every finite prefix of α is live }`.
+
+*`C` is pair-determined, with pair set `P̄`.* Take any ω-word `α` and
+any Ramsey factorization `α = w₀·w₁·w₂⋯` with idempotent block image
+`e`; its associated linked pair is `(s, e)` with `s = fold(w₀)·e`, and
+every block-boundary prefix `w₀⋯w_k` (`k ≥ 1`) folds exactly to `s`.
+If `α ∈ C`, the boundary prefixes are live, so `s ∈ Live`. If
+`s ∈ Live`, the boundary prefixes are live, and an arbitrary prefix is
+a prefix of some boundary prefix, hence live — so `α ∈ C`. Membership
+in `C` thus depends only on the associated pair and holds exactly on
+`P̄`: `C = L(P̄)` (and `P̄` is saturated for free, membership being
+word-semantic).
+
+*`C = cl(L)`.* `C` is closed: if `α ∉ C` it has a dead prefix `p`, and
+the whole cylinder `p·Σ^ω` misses `C`. `L ⊆ C`: a member's prefixes
+are live by its own suffixes. Minimality: let `L' ⊇ L` be closed and
+`α ∈ C`; if `α ∉ L'`, openness of the complement gives a prefix `p` of
+`α` with `p·Σ^ω ∩ L' = ∅`, yet `p` is live, so some `p·γ ∈ L ⊆ L'` —
+contradiction. Hence `C ⊆ L'`, and `C` is the least closed superset. ∎
+
+An algebraic sanity check, tying into Proposition 3.1: a conjugate
+presentation of the same lasso renormalizes its stem from `s` to
+`(s·x)·(y·x)^π` (`e = x·y`), and stem-liveness must not notice. It
+does not: `x·(yx)^π·y = (xy)^{π+1} = e`, so `s` and `(s·x)·(y·x)^π`
+divide each other on the right — they share a right ideal, and `Live`
+is a union of R-classes.
+
+**Corollary 3.6 (interior, and the ladder's first rungs as
+fixpoints).** The interior (largest open subset) is the dual surgery
+`int(L) = ¬cl(¬L)`, with pair set
+`P̊ := { (s, e) ∈ linked : s ∉ Live_{P^c} }` — the stems all of whose
+continuations stay in `L`. Consequently, on the reduced invariant: `L`
+is a safety property iff `P = P̄`; a co-safety property iff `P = P̊`;
+clopen iff both. (Saturated pair sets on one table are in bijection
+with their languages, so the fixpoint equations are exact tests.)
+
+**Corollary 3.7 (Alpern–Schneider on one table).** With
+`Q := P ∪ P̄^c`: `L(P̄)` is a safety property, `L(Q)` is a liveness
+property, and `L = L(P̄) ∩ L(Q)`. The intersection is the Boolean
+identity `P = P̄ ∩ (P ∪ P̄^c)`, valid because `P ⊆ P̄` (an accepting
+pair's stem is its own continuation). Liveness of `L(Q)`: *every*
+class is live for `Q` — a `P`-live class reaches an accepting stem of
+`P ⊆ Q`; a `P`-dead class `c` has every continuation stem
+`(c·x)·e'` dead, so every one of its cells lands in `P̄^c ⊆ Q` — and a
+pair set whose classes are all live has hull `linked`, i.e.
+`cl(L(Q)) = Σ^ω`. ∎
+
+Both factors live on `L`'s own table; one `reduce` each yields their
+canonical invariants. Two consequences are worth a line. Since the
+factors' algebras divide `M`, the safety closure and the canonical
+liveness part of an LTL-definable language are LTL-definable —
+aperiodicity survives the split, consistent with the known closure
+properties of the safety fragment. And the hull is a closure operator
+in the lattice sense on the saturated pair sets of a fixed table
+(extensive, monotone, idempotent — idempotence because
+`Live_{P̄} = Live_P`), so the safety-shaped part of the temporal
+hierarchy sits inside the calculus as a lattice of fixpoints. What we
+leave open is the next rung: whether *obligation* is exactly the
+Boolean sublattice generated by the closed pair sets of the fixed
+table — the chain characterizations [CP97, SW08] say what obligation
+is; the open question is whether it is hull-generated.
 
 ## 4. The ledger against a production toolbox
 
@@ -591,7 +688,8 @@ returns pair sets one `reduce` away from canonical.
 | degeneralize / to-parity / acc transforms | bespoke constructions | *dissolved* — acceptance is `P`; the needed strength is a read-off |
 | minimize / simulation reductions | heuristic, model-bound (NP-c for DBA [Sch10]) | reduce: the normal form, always, uniquely |
 | stutter-invariance | `cl`/`sl` closures + product emptiness [MD15] | `λ(a)² = λ(a)` scan (Prop 3.3) |
-| safety/obligation/… tests | model-specific checks | ladder scans on `P` |
+| safety/obligation/… tests | model-specific checks | ladder scans on `P`; safety/co-safety are `P = P̄` / `P = P̊` (Cor 3.6) |
+| safety closure / liveness split | closure construction (`cl`) | stem-liveness surgery `P̄`, `O(n²)` (Prop 3.5, Cor 3.7) |
 | acceptance index / Rabin index | condition transforms + tests | alternating-chain read-off [CP97] |
 | concatenation `W·L`, `W^ω` | native (nondeterminism) | exponential — intrinsic (§3.4) |
 | projection `remove_ap` | subset-flavored | exponential — the QPTL wall (§3.4) |
@@ -651,6 +749,7 @@ One line per move; `n` is the class count of the relevant table,
 | equivalence of reduced objects | byte comparison | bit |
 | reduce | `O(n²)` `Val` + `≤ n` rounds × `O(n·|Σ|)` | *the* canonical invariant |
 | stutter-invariance | `O(|Σ|)` | bit (Prop 3.3) |
+| safety hull / interior / liveness part | `O(n²)` | pair sets, same table (Prop 3.5, Cor 3.6–3.7) |
 | ladder / index / Wagner read-offs | polynomial scans of the table | verdicts [SωS26, §7.2] |
 | `W·L`, `W^ω`, `remove_ap` | exponential (exit + re-entry) | §3.4 |
 
@@ -749,9 +848,11 @@ already drafted: [SωS26] builds the object, [SωSL26] learns it (and its
 teacher consumes this paper's minimal counterexamples), [SωSX26] is its
 most elaborate derived operation, and the census [SωSN26] counts the
 universe it operates on. What remains here is measurement — the V1/V2
-ledger against Spot on the census corpus — and one piece of theory the
-draft marks in place: the hull conjecture of §3.5, the temporal
-hierarchy as a lattice of `P`-completions on one table.
+ledger against Spot on the census corpus — and one open question the
+hull section leaves sharpened: the safety-shaped rungs of the temporal
+hierarchy are now fixpoints of a closure operator on one table (§3.6);
+whether the obligation rung is exactly the Boolean sublattice those
+fixpoints generate is the next piece of theory.
 
 ---
 
@@ -765,6 +866,8 @@ hierarchy as a lattice of `P`-completions on one table.
   informative right congruence.* Inf. Comput. 278 (2021).
 - **[Arn85]** A. Arnold. *A syntactic congruence for rational
   ω-languages.* TCS 39 (1985) 333–335.
+- **[AS85]** B. Alpern, F. B. Schneider. *Defining liveness.* Inf.
+  Process. Lett. 21(4) (1985) 181–185.
 - **[CH91]** S. Cho, D. T. Huynh. *Finite-automaton aperiodicity is
   PSPACE-complete.* TCS 88 (1991) 99–116.
 - **[CM03]** O. Carton, M. Michel. *Unambiguous Büchi automata.* TCS 297
