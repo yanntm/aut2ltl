@@ -400,6 +400,14 @@ the paper.
     strongly connected components of the right-Cayley graph
     `c → M(c, λ(a))`, one Tarjan/Kosaraju pass, `O(n·|Σ|)`); true iff
     both hold. Cost `O(|linked| + n·|Σ|)`.
+  - `obligation_degree(table, P) -> Tuple[int, int]` (paper Prop 3.11;
+    precondition `is_obligation`, assert it): condense the right-Cayley
+    graph by its SCCs, label each SCC containing a linked stem with its
+    `θ`; `(n⁺, n⁻)` = longest `θ`-alternating path starting at a
+    `θ = 1` (resp. `θ = 0`) node — one reverse-topological DP per
+    polarity, `O(n·|Σ|)`. Convention: a lone node is a path of length
+    0; return `-1` for a polarity with no starting node (matches the
+    `.cat` convention for the empty/universal rows).
   Gates: hull is extensive / monotone / idempotent on random pair sets;
   outputs satisfy the saturation law (harness 2); duality
   `interior(P) == complement(safety_closure(complement(P)))`;
@@ -412,6 +420,9 @@ the paper.
   corpus is its own oracle: the `.cat` sidecars carry the Wagner
   coordinates, and `is_obligation` must return true exactly when
   `m⁺ = m⁻ = 0` — a corpus-wide equality gate, no Spot involved.
+  Likewise `obligation_degree` must equal the sidecar `(n⁺, n⁻)` on
+  every corpus row with `m⁺ = m⁻ = 0` (worked reference case:
+  `a*·b^ω` gives `(1, 2)`, per [CP97, Ex. 10] and paper Prop 3.11).
 
 Non-goals for this iteration: the exponential frontier (`W·L`, `W^ω`,
 `remove_ap` — §3.4 of the paper; do not implement, do not stub); exit
