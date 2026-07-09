@@ -3,13 +3,17 @@
 #
 # Only committed, pushed artefacts run on the cluster. The cluster is checked
 # out at the exact local HEAD commit rather than at the remote's tip, so a run's
-# recorded git_rev names the code that ran. Refuses to proceed otherwise: a
-# dirty tree or an unpushed commit would silently run something else.
+# recorded git_rev names the code that ran.
+#
+# The local working tree is irrelevant: only what is pushed can run. An unpushed
+# HEAD is therefore fatal — the cluster fetches from origin and could not reach
+# it — while uncommitted changes are ignored entirely, since they do not travel.
+# Pushing to get a cluster run is the point: it means it was tested locally first.
 #
 # Pushing is never done here. If HEAD is not on the remote, this says so and
 # stops; running `git push` is the user's call.
 #
-# Usage: cluster/sync_cluster.sh [--allow-untracked]
+# Usage: cluster/sync_cluster.sh
 
 set -euo pipefail
 
@@ -17,22 +21,10 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=config.sh
 source "$HERE/config.sh"
 
-ALLOW_UNTRACKED=0
-[ "${1:-}" = "--allow-untracked" ] && ALLOW_UNTRACKED=1
-
 ROOT="$(git -C "$HERE" rev-parse --show-toplevel)"
 cd "$ROOT"
 
 die() { echo "sync_cluster: $*" >&2; exit 1; }
-
-git diff --quiet || die "working tree has unstaged changes; commit them first"
-git diff --cached --quiet || die "index has staged changes; commit them first"
-
-if [ "$ALLOW_UNTRACKED" -eq 0 ] && [ -n "$(git ls-files --others --exclude-standard)" ]; then
-    echo "sync_cluster: untracked files present (they will NOT be sent):" >&2
-    git ls-files --others --exclude-standard | sed 's/^/  /' >&2
-    die "commit them, add them to .gitignore, or pass --allow-untracked"
-fi
 
 REV="$(git rev-parse HEAD)"
 URL="$(git remote get-url origin)" || die "no 'origin' remote to clone from"
