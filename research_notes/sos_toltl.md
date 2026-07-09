@@ -23,7 +23,8 @@ invariant's own deterministic machine — the right Cayley graph of
 induction of Diekert and Gastin [DG08]. Two decidable equations on the
 table — *anchoring* and *window-determinacy*, governing the stem and loop
 coordinates of the accepting pair — yield an exactness theorem: under them
-the flat transcription defines `L`, with no equivalence oracle. The two
+the width-1 transcription defines `L`, with no equivalence oracle, and a
+graded extension covers higher widths. The two
 engines are Arnold's two context shapes. Extraction is output-polynomial as a
 class-indexed DAG; flattening it is the language's own intrinsic cost,
 which we measure, bound, and, in a definitional output format, avoid. An
@@ -135,7 +136,7 @@ resurface in extraction as two engines.**
    flat transcription and which demand nesting, with the until-rank as a
    per-language lower-bound certificate on formula depth (§7; the
    lower-bound leg is conditional on an ω-word transfer of the
-   Thérien–Wilke characterization, an obligation §2 states explicitly).
+   Thérien–Wilke characterization, an obligation §2.2 states explicitly).
 5. An exhaustive census of small ω-regular languages — 3 938
    canonical invariants, language-keyed — mapping both frontiers
    empirically: where each precondition holds and at which width, where
@@ -158,7 +159,8 @@ problems.
 
 ## 2. Background: the object and its read-offs
 
-Nothing in this section is original to this paper. §2.1 fixes notation
+This section is deliberately unoriginal — it holds what the paper
+consumes without claiming it. §2.1 fixes notation
 and the classical notions; §2.2 recalls, from [SωS26], the syntactic
 ω-semigroup, its reified invariant — the paper's sole input — and the
 running examples, whose tables are reproduced here so that every
@@ -2005,9 +2007,11 @@ operator is the same wrapper). Safety is the dual through
 ## 6. The deliverable: DAG, flat, and definitional forms
 
 Extraction as computed is a **class-indexed DAG**: one node per
-(class, engine-context) pair, children memoized — the implementation
-computes it at scale (§8 ⟨TBD: the DAG-vs-|𝒞| ledger once the engine
-emits⟩). Three renderings:
+(class, engine-context) pair, children memoized — and the format is no
+conjecture: both implementations compute it at scale, the DG baseline
+over the whole catalogue and the engine wherever it answers (§8)
+⟨TBD: the DAG-vs-|𝒞| scatter once the graded engine lands⟩. Three
+renderings:
 
 1. **The DAG itself** — the working format, and polynomial on the
    anchored+ladder fragment: the walk side has one label per layer and one
@@ -2068,10 +2072,13 @@ induces a second, finer map, and every coordinate is a read-off:
 **Table 2.** The inner frontier: which fragment of LTL a language actually
 needs, decided on `𝓘(L)` before any formula is built.
 
-The census maps the strata empirically (§8): at 1 AP / ≤ 2 states the
-residual row is unwitnessed, and width 2 covers both (A) and (B)
-everywhere the tests decide; the smallest specimen of each lower row is
-an open hunt. ⟨TBD: align the strata with the known sub-LTL
+The census maps the strata empirically (§8). The stem half of the
+residual row is real but confined: every (A)-fallback layer sits at
+Wagner depth 1 and needs at least two atomic propositions. The loop
+half is unwitnessed — (B) fails nowhere in the catalogue — so the
+order-beyond-windows specimen remains an open hunt, as does the
+smallest witness of each graded stem stratum beyond the tester's cap.
+⟨TBD: align the strata with the known sub-LTL
 hierarchies — definite [PRS63] / locally testable [BS73] / TL[F] of
 Cohen–Perrin–Pin [CPP93] / until hierarchy [TW96, Wil99, PW13] — so
 each row is a known variety with our operational reading.⟩
@@ -2161,8 +2168,8 @@ splitting into a phase-collapse tier (10) and an acceptance-level
 is load-bearing in both directions.
 
 **The DG baseline, measured.** The route of §2.3, memoized and run over
-the catalogue's 2 237 non-degenerate LTL languages: every instance
-emits — no timeout, no crash, a cumulative DAG of 3 829 657 nodes — and
+the catalogue's LTL languages: 2 237 instances
+emit — no timeout, no crash, a cumulative DAG of 3 829 657 nodes — and
 where Spot terminates within the cap, verification returns 159
 equivalent, 0 non-equivalent, and 2 078 flat-rendering overflows: §2.3's
 explosion as a catalogue-wide distribution rather than the single
@@ -2243,13 +2250,14 @@ language's own, and the definitional format avoids that size exactly
 Three open problems mark where the paper stops. The main one: an
 ω-specific descent that beats DG on the residual stratum — the one
 place extraction still pays the generic price (§5.1). Second, the
-ω-word transfer of the Thérien–Wilke until-rank characterization (§2),
-which would turn the depth lower bound from conditional to certified.
-Third, the realization questions the census sharpened: a layer
-anchoring at no width over two letters (§4.2), an ω-blind language
-without a right-ideal group (§3.3), a sufficient tour cap for deciding
-(B) (§5.1). The formula was always going to be large sometimes; the
-algebra now says exactly when, and exactly why.
+ω-word transfer of the Thérien–Wilke until-rank characterization
+(§2.2), which would turn the depth lower bound from conditional to
+certified. Third, the realization questions the census sharpened: a
+layer anchoring at no width over two letters (§4.2), a (B)-failing
+final layer at any width — the order-beyond-windows specimen the
+census leaves unwitnessed (§5.1, §8) — and a sufficient tour cap for
+deciding (B) (§5.1). The formula was always going to be large
+sometimes; the algebra now says exactly when, and exactly why.
 
 ---
 
