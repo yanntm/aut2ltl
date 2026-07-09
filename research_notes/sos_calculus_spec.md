@@ -8,7 +8,7 @@
 | soundness harness (§4) | **DONE** — green corpus-wide |
 | `is_stutter_invariant` in `table.py` (§3.1, §8.6) | **TODO** — five lines + gate, prerequisite of V2 |
 | CAL4: the experimental campaign (§8; sub-milestones §8.10) | **TODO** — nothing run yet; §8 is the work order |
-| hull surgeries (safety closure / interior / liveness part) | **OPTIONAL TODO** — theory delivered (paper §3.6, Prop 3.5); milestone CAL5 in §6 |
+| hull surgeries + ladder read-offs (safety closure / interior / liveness part / `is_obligation`) | **OPTIONAL TODO** — theory delivered (paper §3.6, Prop 3.5 + Thm 3.10); milestone CAL5 in §6 |
 | exponential frontier (`W·L`, `W^ω`, `remove_ap`), NBA exits, CLI, learner integration | **NON-GOALS** here (see §6) |
 
 An implementer starting cold reads, in order: this header, §1–§2, the
@@ -393,7 +393,13 @@ the paper.
   - `liveness_part(table, P) = union(P, complement(safety_closure(P)))`;
   - read-offs `is_safety(P) := P == safety_closure(P)` and
     `is_cosafety(P) := P == interior(P)` (exact tests — fixpoint
-    equations, not approximations).
+    equations, not approximations);
+  - `is_obligation(table, P) -> bool` (paper Thm 3.10): bucket linked
+    pairs by stem and check each bucket's verdict constant; then check
+    the stem verdict constant on each `R`-class (`R`-classes = the
+    strongly connected components of the right-Cayley graph
+    `c → M(c, λ(a))`, one Tarjan/Kosaraju pass, `O(n·|Σ|)`); true iff
+    both hold. Cost `O(|linked| + n·|Σ|)`.
   Gates: hull is extensive / monotone / idempotent on random pair sets;
   outputs satisfy the saturation law (harness 2); duality
   `interior(P) == complement(safety_closure(complement(P)))`;
@@ -402,7 +408,10 @@ the paper.
   is `live` for `liveness_part(P)` (its closure is `linked`);
   metamorphic replay against the paired det HOA — prefix-liveness of a
   lasso's prefixes checked by bounded per-state emptiness on the
-  automaton, over all lassos `|u|, |v| ≤ 3`.
+  automaton, over all lassos `|u|, |v| ≤ 3`. For `is_obligation`, the
+  corpus is its own oracle: the `.cat` sidecars carry the Wagner
+  coordinates, and `is_obligation` must return true exactly when
+  `m⁺ = m⁻ = 0` — a corpus-wide equality gate, no Spot involved.
 
 Non-goals for this iteration: the exponential frontier (`W·L`, `W^ω`,
 `remove_ap` — §3.4 of the paper; do not implement, do not stub); exit
