@@ -126,3 +126,16 @@ GitHub Actions (that is the real distro test); nothing is committed in
 - When done: both smoke tests SUCCESS, work committed, and a short
   summary of root cause + what changed appended to this file under a
   "## Resolution" heading (part of the final commit).
+
+## Resolution (fixed in-session; no delegation needed)
+
+Hypothesis 1, confirmed by the library author: bare `GDDD`/`GHom` locals
+(`rel`, `step`, `next`) were swept by `MemoryManager::garbage()` fired
+from the per-op stats bracket; the next application dereferenced a
+deleted `_GHom`. Fix: counted `DDD`/`Hom` handles for everything that
+outlives a step, and the instrumentation no longer triggers collection
+at all — memory management is libDDD's alone (author guidance; it
+collects when useful). `table_peak` now reads the library's own
+high-water mark, possibly stale between its GCs; stats are advisory.
+Static `libDDD.a` is the linking mode (the `.so` exports nothing and is
+unused upstream). Both smoke tests SUCCESS.

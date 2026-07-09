@@ -43,8 +43,8 @@ def main() -> None:
 
     try:
         Engine().build(aut, until_phase=1)
-        raise AssertionError("build succeeded without the extension")
-    except RuntimeError as exc:
+        raise AssertionError("build succeeded before the pipeline exists")
+    except (RuntimeError, NotImplementedError) as exc:
         assert "_core" in str(exc)
 
     print("SUCCESS")

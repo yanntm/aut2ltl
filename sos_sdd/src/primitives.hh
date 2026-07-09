@@ -17,16 +17,15 @@
 //   5. quotient         — not native; small-side fallback at quotient
 //                         time (recorded in the stats stream).
 //
-// Working sets must be held as DDD (reference-counted), never bare GDDD,
-// or garbage collection at instrumentation points would sweep them.
+// Objects that live across engine steps must be held through the
+// reference-counted wrappers (DDD, Hom), never bare GDDD/GHom: the
+// library garbage-collects unreferenced nodes whenever it sees fit —
+// memory management is libDDD's alone, this engine never triggers it.
 
 #pragma once
 
-#include <cstddef>
-
 #include "ddd/DDD.h"
 #include "ddd/Hom.h"
-#include "ddd/MemoryManager.h"
 
 namespace sossdd {
 
@@ -39,9 +38,5 @@ inline double model_count(const GDDD &d) { return static_cast<double>(d.nbStates
 inline unsigned long long node_count(const GDDD &d) {
   return static_cast<unsigned long long>(d.size());
 }
-
-// Collect dead nodes now; refreshes the unique-table high-water mark read
-// by the instrumentation.
-inline void collect() { MemoryManager::garbage(); }
 
 }  // namespace sossdd

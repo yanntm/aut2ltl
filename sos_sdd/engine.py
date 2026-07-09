@@ -42,7 +42,10 @@ class Engine:
         aut.validate()
         if not (1 <= until_phase <= 6):
             raise ValueError(f"until_phase {until_phase} out of range 1..6")
-        return _core().build(aut, self._config(), until_phase)
+        core = _core()
+        if not hasattr(core, "build"):
+            raise NotImplementedError("sos_sdd._core does not carry the pipeline yet")
+        return core.build(aut, self._config(), until_phase)
 
     def _config(self) -> Dict[str, Any]:
         cfg = asdict(self)

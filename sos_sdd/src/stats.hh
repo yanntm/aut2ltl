@@ -3,8 +3,9 @@
 // emitted as they are produced, so an aborted run keeps its prefix.
 //
 // Node figures are unique-table-wide (they include relation diagrams and
-// cache survivors), sampled at operation close after an optional garbage
-// collection — `table_peak` is libDDD's high-water mark, refreshed on GC.
+// cache survivors), sampled at operation close. Memory management stays
+// entirely libDDD's: no collection is ever triggered from here, so
+// `table_peak` is the library's high-water mark as of its own last GC.
 // Per-set figures (a working set's own node count) are the caller's to
 // add via Op::rec() before close.
 
@@ -18,7 +19,6 @@
 #include <vector>
 
 #include "ddd/DDD.h"
-#include "ddd/MemoryManager.h"
 
 namespace sossdd {
 
@@ -74,17 +74,15 @@ private:
 };
 
 // The record sink. A default-constructed Stats is disabled: brackets and
-// emits cost near nothing. `gc_per_op` trades time for exact table peaks
-// (collection refreshes the high-water mark at every operation close).
+// emits cost near nothing.
 class Stats {
 public:
   using Sink = std::function<void(const std::string &)>;
 
   Stats() = default;
-  Stats(Sink sink, bool gc_per_op) : sink_(std::move(sink)), gc_per_op_(gc_per_op) {}
+  explicit Stats(Sink sink) : sink_(std::move(sink)) {}
 
   bool enabled() const { return static_cast<bool>(sink_); }
-  bool gc_per_op() const { return gc_per_op_; }
 
   void emit(const Record &r) {
     if (sink_) sink_(r.json());
@@ -111,7 +109,6 @@ public:
       if (closed_) return;
       closed_ = true;
       if (!stats_->enabled()) return;
-      if (stats_->gc_per_op()) MemoryManager::garbage();
       std::chrono::duration<double, std::milli> dt =
           std::chrono::steady_clock::now() - t0_;
       rec_.add("ms", dt.count())
@@ -133,7 +130,6 @@ public:
 
 private:
   Sink sink_;
-  bool gc_per_op_ = false;
 };
 
 }  // namespace sossdd

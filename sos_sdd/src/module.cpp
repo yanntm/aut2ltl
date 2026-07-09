@@ -31,15 +31,13 @@ Stats make_stats(const py::object &stats) {
   if (stats.is_none()) return Stats();
   if (py::isinstance<py::str>(stats)) {
     auto out = std::make_shared<std::ofstream>(stats.cast<std::string>());
-    return Stats(
-        [out](const std::string &line) {
-          *out << line << '\n';
-          out->flush();
-        },
-        /*gc_per_op=*/true);
+    return Stats([out](const std::string &line) {
+      *out << line << '\n';
+      out->flush();
+    });
   }
   py::function fn = stats.cast<py::function>();
-  return Stats([fn](const std::string &line) { fn(line); }, /*gc_per_op=*/true);
+  return Stats([fn](const std::string &line) { fn(line); });
 }
 
 py::dict selftest(const py::object &stats_obj) {
@@ -69,10 +67,10 @@ py::dict selftest(const py::object &stats_obj) {
 
   // Single-variable relation on the top variable: src i -> dst (i+1)%kDom,
   // as the strictly-2-level diagram apply2k expects.
-  GDDD rel = GDDD::null;
+  DDD rel;
   for (GDDD::val_t i = 0; i < kDom; ++i)
     rel = rel + GDDD(0, i, GDDD(0, static_cast<GDDD::val_t>((i + 1) % kDom)));
-  GHom step = apply2k(rel);
+  Hom step = apply2k(rel);
 
   // Layered fixpoint from a single seed, rounds counted and reported.
   DDD seed(GDDD(0, 0, GDDD(1, 0, GDDD(2, 0))));
@@ -82,7 +80,7 @@ py::dict selftest(const py::object &stats_obj) {
     Stats::Op op = st.op(1, "layered-closure");
     for (;;) {
       Stats::Op round_op = st.op(1, "closure-step");
-      GDDD next = layered + step(layered);
+      DDD next = layered + step(layered);
       ++rounds;
       round_op.rec()
           .add("round", rounds)
@@ -104,7 +102,6 @@ py::dict selftest(const py::object &stats_obj) {
   }
   bool disciplines_agree = (saturated == layered);
 
-  collect();
   st.emit(Record("verdict")
               .add("status", "OK")
               .add("card_A", model_count(A))
