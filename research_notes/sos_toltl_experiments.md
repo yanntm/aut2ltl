@@ -367,6 +367,141 @@ shrink; pair pieces climb on a measurable fraction (the guard's raison
 d'être) — if no pair piece climbs anywhere on the census, the guard is
 over-cautious at these sizes and §5.6(1) earns a remark.
 
+### E9 — worked-example curation for the paper (added 2026-07-09)
+
+The paper (§5.2 and the figures task `sos_toltl_figures.md`) needs a
+small gallery of specimens, each exercising one stratum of the engine
+visibly, each small enough to print its label stack. This is a
+*selection* task over material that already exists — the flat-canon
+catalogue, the triptych fixtures, and the pre-SoS automaton test set
+(the aut2ltl portfolio fixtures, incl. `samples/fixtures/hoa/anchor/`,
+`…/kanchor/`, and the large-automaton/small-formula showpieces where
+kanchor/daisy peeling solves naturally) — plus a handful of named
+builds. Theory picks from the returned ledger; do not paste anything
+into the paper.
+
+Wanted, one to three candidates each, with per-candidate deliverable
+`(.sos id or fixture path, |𝒞|, layer list with |R| and entry classes,
+letter-kind tables, (A)/(B) widths per layer, ladder rung,
+prefix-independence, emitted DAG size, emitted label stack raw +
+Spot-simplified formula)`:
+
+1. **Pure peel, longer chain.** Every layer a singleton, R-depth ≥ 3,
+   not prefix-independent (so `leave` chains and reach shape survive);
+   the `F a` of paper §5.2 is the depth-2 instance — find depth 3–4
+   with the formula still one line.
+2. **Anchored moving layer, ≥ 2 classes, non-prefix-independent.** A
+   width-1 layer whose `LEAVE` chain and a *live* `STAY∞` both appear
+   (i.e. an accepting final layer that is not frozen) — the stratum
+   `GF(aa)` misses (its moving layers are all-rejecting). Designated
+   first candidate: **`G(a → F b)`** — not prefix-independent, its
+   final component accepting and moving. The automaton-level kanchor
+   trace exists (kanchor doc §9.1, fixture
+   `samples/fixtures/hoa/anchor/gafb_response.hoa`): total automaton ⟹
+   every sojourn/law conjunct collapses to `⊤` and the label is the
+   bare fairness `GF b ∨ G(!a&!b) ∨ F(b ∧ XG(!a&!b))`, park terms
+   surviving (the shared idle letter `!a&!b`). Build `𝓘(L)`, run the
+   engine, and report the SoS label beside the kanchor one. **No
+   outcome is presumed**: the automaton path exploits its
+   presentation, while the SoS path is fully deterministic and
+   sensitive to the extended alphabet — the labels may differ in size
+   and shape, and a large gap in either direction is a finding to
+   bring back, not a failure. The algebra-side analogue of the
+   kanchor collapse, if it appears, is the paper's `Ex(c) = ∅ ⟹
+   sojourn ≡ ⊤` degeneracy.
+3. **The named 2-AP builds:** `a U G b`, `a W G b`, `(GF a) U (G b)` —
+   build `𝓘(L)` for each, report the read-offs; expected to exercise
+   the anchored-transient-then-safety peel and the strength
+   stratification; whichever is smallest and cleanest becomes a paper
+   candidate.
+3a. **`GFa ∧ FGb` — the paper's Example 3 and §5.6 specimen, one
+   object, two treatments.** The paper now hand-works its full stack
+   (four classes `[ε], β₀, β₁, ⊥`; singleton peel; live `STAY∞` at
+   `β₁` = `Gb ∧ GF(a∧b)`; frozen `⊥` with (B) at `k′ = 1`; the
+   prefix-independent collapse to `FGb ∧ GF(a∧b)`). Provide the
+   `.sos`, conformance-check every line of the paper's stack (classes,
+   `λ`, `P`, layers, widths, emitted label), and produce the two
+   AND-split quotient tables (`FGb`, `GF(a ∨ !b)`) the paper's §5.3
+   ⟨TBD⟩ displays. A divergence from the paper's hand stack is
+   stop-the-line for the paper text (theory to adjudicate which side
+   erred).
+3b. **The width-comparison exemplar, both paths.** `GF(a ∧ Xa)` on the
+   kanchor side needs `k = 2` pairs on the minimal DBA (kanchor doc
+   §9.2, fixture `samples/fixtures/hoa/kanchor/gf_a_xa.hoa`, label
+   `GF(a ∧ Xa)` exact with no simplifier); the SoS side anchors its
+   moving layers at width 1 and pays width 2 only in the frozen
+   window (paper §5.2). Confirm the pair `(form width 2, algebra
+   width 1)` lands in the E3 table as its exemplar row.
+4. **Graded exhibit, smallest available.** A `k = 2`-anchored layer
+   with the smallest `|𝒞|` in the catalogue (the F8 exhibit
+   `2state1ap0acc_086_c` at 12 classes is the current holder — is
+   there smaller?), for the §4.3 correction's discussion.
+5. **Kanchor/daisy showpieces.** From the automaton portfolio's test
+   set: two or three large-automaton inputs whose portfolio formula is
+   tiny; run them through the SoS path (`𝓘(L)`, layers, engine) and
+   report both formulas side by side — paper material for §8's
+   readability yardstick if the SoS label matches or beats the
+   portfolio's.
+
+Constraint reminders: per-example probes single-input ≤ 15 s; ledger to
+`tests/sos2ltl/logs/`; every candidate keyed by its canonical `.sos`
+(presentation multiplicity noted where a fixture automaton is the
+source).
+
+### E10 — branch factoring: guard grouping and residual-indexed exits
+(added 2026-07-09; paper §6, rendering 1)
+
+Two sharings on the engine's output, both exactness-preserving by the
+paper's label contract (any exact label for the tail language serves),
+to implement and measure:
+
+0. **Guard synthesis (prerequisite, needed independently).** A
+   renderer taking any letter set `S ⊆ Σ` to a *minimized Boolean
+   formula over AP* whose satisfying valuations are exactly `S`
+   (BDD-backed; deterministic output so canonicity survives). The
+   current renderer ORs concrete letters only where the labeling is
+   injective; on ≥ 2 AP that emits cube unions and can never produce
+   `⊤` — so no brick's `S U ψ` ever collapses to `F ψ`, and guards
+   like `b` or `!b` (paper §5.2, Example 3) print as two-cube
+   disjunctions. Every guard position of every brick (St/Mo/Ex sets,
+   anchors, window letters after λ-restore) goes through this
+   component. Paper reference: §2.1's set-as-formula convention.
+1. **Guard grouping (rendering-level).** Every exit fan
+   `⋁_{a ∈ Ex(c)} (a ∧ X φ_{c·a})` renders grouped by target:
+   `⋁_d ((⋁_{a: c·a = d} a) ∧ X φ_d)` — one disjunct per target class,
+   the guard a letter set rendered by item 0 (`⊤` when all letters
+   agree on the target). Same
+   grouping inside `leave`'s disjunction and the `TL` trees. Purely a
+   printer/DAG-shape change; conformance identical.
+2. **Residual-indexed exit children (memo-level).** Key exit children
+   by the *residual* of the target class (fold the class key through
+   the `.sos` residuals block), not by the class: branches that
+   diverge in class but re-merge in future share one child label. The
+   within-layer machinery (laws, anchors, windows) stays class-keyed;
+   only the `X φ_target` slots coarsen. **Acyclicity care point:** the
+   shared label must be one the R-order induction has *already built*
+   (reuse-already-built, or equivalently an R-minimal representative);
+   an arbitrary representative (e.g. shortlex-least) can close a
+   cycle — prefix-independence is the extreme case, one residual
+   shared by every class, whose "label" is the whole extraction (the
+   paper's §5.1 no-recursion trap).
+
+**Measurements, over the census (§3b discipline):** per language, the
+class-vs-residual distinct-child counts; DAG and flat sizes before /
+after each sharing (separately and combined); the count of `⊤`-guard
+arcs (all-exits-one-target); no conformance regression (the survey
+gate stays SUCCESS — any verified non-equivalence is stop-the-line, it
+would mean the residual fold or the grouping is wrong, not a
+statistic). **Prediction:** grouping is pure win on flat size, largest
+at ≥ 2 AP (letter fans); residual indexing fires on a measurable
+minority of languages (classes strictly finer than residuals is
+common — every non-prefix-independent language with a group-free
+algebra has candidates) with modest DAG wins. On prefix-independent
+languages residual indexing degenerates (one residual) and the correct
+mechanism is the paper's Lemma 5.2 emit-directly rule, not the memo —
+report those languages under the emit-directly column, not as
+residual-sharing wins.
+
 ## 5. Expected failures (read before filing bugs)
 
 - **C3 blow-up on large layers.** The exact (B) test is combinatorial;
