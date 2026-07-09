@@ -2983,3 +2983,10 @@ SoS26 with citation), contributions start at section 3, SoSN26 removed,
 report findings (E4-interim DG ledger, F8 engine soundness) folded into
 the evaluation. Full renumbering sweep 4-11 -> 3-10 — note the
 engineering report/spec still cite the old numbering.
+
+## 2026-07-09 — calculus paper: Prop 3.4 closes the blow-up TBD
+
+Concatenation blow-up example written and proved on the invariant:
+W = Sigma*# times a mod-n counter language gives 2^n - 1 classes from
+O(n) operands, via residual counting through the rooting read-off.
+Empirical small-n check deferred to the V1 session.
