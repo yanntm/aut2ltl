@@ -22,6 +22,7 @@ from ..invariant import Invariant
 from .aperiodic import first_group
 from .chains import ChainResult, chains
 from .readoff import Ordinal, ReadOff, Rungs, read_off
+from .stutter import is_stutter_invariant
 from .superchains import SuperchainResult, superchains
 from .witness import chain_lassos, chain_witness, group_witness, superchain_witness
 
@@ -30,9 +31,12 @@ from .witness import chain_lassos, chain_witness, group_witness, superchain_witn
 class Record:
     """The complete classification of one language's invariant. ``gamma`` is
     ``None`` exactly when ``gamma_partial`` (the derivative case, unresolved);
-    ``phi`` pairs the degree with the sign."""
+    ``phi`` pairs the degree with the sign. ``aperiodic`` (the LTL cut) and
+    ``stutter_invariant`` are the two equational read-offs of the syntactic
+    monoid — orthogonal, cross-tabulated by the corpus study."""
 
     aperiodic: bool
+    stutter_invariant: bool
     m_plus: int
     m_minus: int
     n_plus: int
@@ -99,6 +103,7 @@ def classify(inv: Invariant) -> Record:
 
     return Record(
         aperiodic=(orbit is None),
+        stutter_invariant=is_stutter_invariant(inv),
         m_plus=cr.m_plus, m_minus=cr.m_minus,
         n_plus=sr.n_plus, n_minus=sr.n_minus,
         rungs=ro.rungs, boolean_level=ro.boolean_level,
