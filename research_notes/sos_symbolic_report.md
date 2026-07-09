@@ -40,3 +40,28 @@ Phases ≥ 2 not started; unimplemented switches are refused, not ignored.
 
 M1 exit: instrumentation proven out (per-round `op`/`layer` records,
 config echo, budget findings carrying the layer profile). Gate green.
+
+## Comp-free advance (C7 mechanism + C8/E2 first points)
+
+Engine state added: shortlex extraction over the kept layers (C7's
+pinned mechanism — backward can-reach sets, forward least-class walk);
+heterogeneous slot spaces (per-slot domains, packing entirely
+Python-side in `slotmodel.py`); C8 async generators in both coordinate
+systems. Phase 2 (`Comp`/ExprHom) still not started.
+
+- **F5 — shortlex extraction exact.** Engine words equal a
+  shortlex-ordered-BFS ground truth on **every** element of the triptych
+  (33/33), longest word = closure depth on each instance
+  (`tests/sos_sdd/shortlex_test.py`).
+- **F6 — E2's factored line, measured early.** `EvenBlocks^{⊗n}`,
+  factored coordinates: `|EM¹| = 16ⁿ` by model count at every `n ≤ 6`,
+  Proposition 4.1's isomorphism **element-exact** through `n = 4`
+  (65 536 elements), and the diagram is *literally additive*: **9n+1
+  nodes** (10/19/28/37/46/55), all points under 60 ms. Prediction
+  "`O(n · component)`" confirmed as equality, not just order.
+- **F7 — the flat wall is where Lemma 4.2 says it is.** Flat coordinates:
+  `n = 2` needs 258 nodes against factored's 19; `n = 3` exhausts an 8 s
+  per-point budget at layer 9 (card 646, 2954 nodes — profile in
+  `tests/sos_sdd/logs/e2_flat_3.jsonl`). Recorded as the `TIME_BUDGET`
+  finding it is; the proper divergence plot is E3's, with C9's order
+  sweep still to come.
