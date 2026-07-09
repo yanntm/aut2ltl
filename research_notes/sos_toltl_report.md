@@ -78,7 +78,8 @@ paper's hand-computed predictions ([SωS26, Table 3]):
 
 Canonicity is observed end-to-end: two presentations of `GF(aa)` (the parity
 and the reset automata) bridge to the byte-identical `.sos` and synthesize the
-character-identical formula (19 nodes / arena 1287 / flat 4 357 185).
+character-identical formula (19 nodes / arena 1287 / flat 1 991 717 —
+`e0_dg`).
 
 ## E1 — anchoring, by Wagner degree
 
