@@ -1,20 +1,39 @@
 # In-job environment. Sourced by oar_worker.sh on a compute node, never on the
-# submit host: that host is provisioned for submission only and cannot import
-# the scientific stack. Anything needing a build belongs in an interactive job
-# (`oarsub -I`), not here.
+# submit host: that host is provisioned for submission only and cannot build or
+# import the scientific stack.
 #
-# Edit the activation line below to match whatever provides python3 + spot.
+# Everything resolves from the repo root, located from this file rather than
+# from $PWD or $HOME, so a checkout anywhere works. Spot is our own build under
+# opt/, produced by cluster/build_spot.sh; no system-wide install is assumed.
 
-: "${OARRUN_REPO:=$HOME/git/BuchiToLTL}"
-export OARRUN_REPO
+OARRUN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export OARRUN_ROOT
 
-# Make python3 and spot importable. Replace with the site's incantation, e.g.
-#   module load python/3.11
-#   source "$OARRUN_REPO/.venv/bin/activate"
-#   source "$HOME/opt/spot/setup.sh"
-# Left as a no-op so a bare `import spot` failure is reported by the smoke run
-# rather than masked by a broken activation.
-:
+# Highest-versioned prefix under opt/, if one has been built. Version sort, so
+# spot-2.14.5 wins over spot-2.9.6 where a lexical sort would not.
+_spot_prefix="$(find "$OARRUN_ROOT/opt" -maxdepth 1 -type d -name 'spot-*' 2>/dev/null \
+                | sort -V | tail -1)"
+if [ -n "$_spot_prefix" ]; then
+    export PATH="$_spot_prefix/bin:$PATH"
+    export LD_LIBRARY_PATH="$_spot_prefix/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    # Where `make install` put the python bindings; the version segment depends
+    # on the interpreter the build found.
+    for _sp in "$_spot_prefix"/lib/python*/site-packages; do
+        [ -d "$_sp" ] && export PYTHONPATH="$_sp${PYTHONPATH:+:$PYTHONPATH}"
+    done
+fi
+unset _sp _spot_prefix
+
+# GAP, installed by install_gap.sh into opt/gap. The bin/ holds a wrapper that
+# adds that prefix as a GAP root, so pkg/sgpdec loads; the code spawns a bare
+# `gap` and finds it here.
+if [ -x "$OARRUN_ROOT/opt/gap/bin/gap" ]; then
+    export PATH="$OARRUN_ROOT/opt/gap/bin:$PATH"
+fi
+
+# So that `python3 -m aut2ltl ...` resolves the package from the root whatever
+# the command's own working directory.
+export PYTHONPATH="$OARRUN_ROOT${PYTHONPATH:+:$PYTHONPATH}"
 
 # Line-buffer whatever the commands write, so a job killed at walltime still
 # leaves complete lines behind. Tools that manage their own output files must

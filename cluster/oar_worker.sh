@@ -19,11 +19,21 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=env.sh
 source "$HERE/env.sh"
 
-# The fleet is heterogeneous and a job holds a whole node, so the width is read
-# from the machine we actually landed on rather than requested up front.
-[ "$CORES" = auto ] && CORES="$(nproc)"
+# The fleet is heterogeneous, so the width is discovered rather than requested up
+# front. Asked of OAR, not of the machine: $OAR_NODEFILE holds one line per core
+# actually allocated to this job, whereas nproc reports the whole node and would
+# oversubscribe whatever else is running on it.
+if [ "$CORES" = auto ]; then
+    if [ -n "${OAR_NODEFILE:-}" ] && [ -s "$OAR_NODEFILE" ]; then
+        CORES="$(grep -c '' "$OAR_NODEFILE")"
+    else
+        CORES=1   # not under OAR: no allocation to read, so take one lane
+    fi
+fi
 
-cd "$OARRUN_REPO" || exit 1
+# Commands run with the repo root as working directory; every path they use, and
+# every path in this tree, resolves from there.
+cd "$OARRUN_ROOT" || exit 1
 
 N="$(grep -c '' "$RUNDIR/cmds.txt")"
 echo "shard $SHARD/$SPLIT of $N commands on $(hostname -s), $CORES wide, cap ${TIMEOUT}s"

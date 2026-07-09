@@ -9,9 +9,24 @@
 # visible from every compute node, so the path is valid inside jobs.
 : "${REMOTE_REPO:=git/BuchiToLTL}"
 
-# Run directories, kept outside REMOTE_REPO so sync_cluster.sh --delete can
-# never reach them.
-: "${REMOTE_RUNS:=oarrun}"
+# Run directories, under the repo root and root-anchored in .gitignore. Safe
+# there because sync_cluster.sh checks out a commit and never removes untracked
+# files.
+: "${REMOTE_RUNS:=$REMOTE_REPO/oarrun}"
+
+# Source of truth for which Spot release we track. cluster/build_spot.sh clones
+# it to read the version and the tarball URL, then applies its own configure
+# flags; that repo's own recipe targets ITS-Tools and builds no Python bindings.
+: "${SPOT_SRC_REPO:=https://github.com/yanntm/Spot-BinaryBuilds}"
+
+# Walltime for the one-off provisioning job. Long by design and by exception:
+# a compile is not a sweep, and this runs when Spot moves, not per experiment.
+: "${SPOT_BUILD_WALLTIME:=3:00:00}"
+
+# make -j for the provisioning builds. A fixed width, never nproc: under a
+# scheduler's cpuset nproc reports the whole machine rather than the allocation,
+# and Spot's heavier translation units want memory more than they want lanes.
+: "${BUILD_JOBS:=10}"
 
 # Where reap.sh deposits a fetched run, relative to the local repo root.
 : "${LOCAL_RESULTS:=results/cluster}"
@@ -23,8 +38,8 @@
 # Default number of whole nodes to spread the command list across.
 : "${OARRUN_SPLIT:=1}"
 
-# Default commands in flight per node. "auto" means nproc, measured inside the
-# job on whichever machine it lands.
+# Default commands in flight per node. "auto" means: ask OAR how many cores it
+# actually gave us ($OAR_NODEFILE), inside the job.
 : "${OARRUN_CORES:=auto}"
 
 # Default OAR walltime per job. Deliberately small: a job holds a whole node,
@@ -34,13 +49,13 @@
 : "${OARRUN_WALLTIME:=0:05:00}"
 
 # Cores assumed per node when oarrun.sh checks a shard against the walltime
-# before submitting. Only an estimate: the worker uses the real nproc.
+# before submitting. Only an estimate: the worker uses the real allocation.
 : "${OARRUN_ASSUMED_CORES:=32}"
 
 # OAR resource string, minus the walltime that oarrun.sh appends. A whole node
 # with no machine-class property: the fleet is heterogeneous and the worker
-# sizes itself with nproc. Pin a class here when a run needs comparable
-# timings, e.g. '{(host like "tall%")}/nodes=1'.
+# sizes itself from the allocation. Pin a class here when a run needs
+# comparable timings, e.g. '{(host like "tall%")}/nodes=1'.
 : "${OARRUN_RESOURCES:=/nodes=1}"
 
 # Extra oarsub options (queue, project, --besteffort, ...).
