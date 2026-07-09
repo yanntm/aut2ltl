@@ -14,6 +14,7 @@ from __future__ import annotations
 import sys
 from typing import List, Optional
 
+from aut2ltl.ltl.metrics import dag_metrics
 from aut2ltl.sos2ltl.engine import transcribe
 from sosl.sos import dump_invariant, load_invariant
 from sosl.sos.build.importer import import_ltl
@@ -26,7 +27,7 @@ def main(argv: List[str]) -> int:
     with open(path) as f:
         inv = load_invariant(f.read())
 
-    phi: Optional[str] = transcribe(inv)
+    phi: Optional["spot.formula"] = transcribe(inv)
     if phi is None:
         print(f"{path}: DECLINE (outside the flat-brick stratum)")
         assert expect in (None, "decline"), expect
@@ -34,10 +35,12 @@ def main(argv: List[str]) -> int:
         return 0
     assert expect != "decline", f"expected decline, got a formula: {phi}"
 
-    print(f"{path}: {len(phi)} chars")
-    print(f"  formula: {phi if len(phi) < 500 else phi[:500] + '...'}")
+    m = dag_metrics(phi)
+    print(f"{path}: DAG {m.dag_nodes} / tree {m.tree_nodes}")
+    flat = str(phi)
+    print(f"  formula: {flat if len(flat) < 500 else flat[:500] + '...'}")
 
-    conf = invariant_of(import_ltl(phi))
+    conf = invariant_of(import_ltl(flat))
     assert conf is not None, "conformance rebuild blew its cap"
     assert dump_invariant(conf) == dump_invariant(inv), \
         "CONFORMANCE FAILURE: I(L(phi)) differs from the input invariant"
@@ -45,7 +48,7 @@ def main(argv: List[str]) -> int:
 
     if expect is not None:
         import spot
-        eq = spot.are_equivalent(spot.formula(phi), spot.formula(expect))
+        eq = spot.are_equivalent(phi, spot.formula(expect))
         print(f"  equivalent to {expect}: {eq}")
         assert eq
     print("OK")
