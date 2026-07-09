@@ -17,7 +17,7 @@ This paper proposes it as something more mundane and more consequential: a
 *computational substrate* — the object on which the everyday operations of
 an ω-automata toolbox (Spot's, say) are performed, instead of on automata.
 The calculus has three primitive moves: **align** two invariants on a
-common table (a generated product, the only polynomial-priced move),
+common table (a generated product, the only product-priced move),
 **operate** by surgery on the pair set `P` (where almost every operation
 lives, almost always for free), and **reduce** to the canonical object
 (re-quotient, polynomial). Complement — `2^{Θ(n log n)}` on
@@ -44,8 +44,9 @@ milestone CAL4/V1–V2).⟩
 ## 1. Introduction
 
 An ω-automata toolbox — Spot [DL+16, DL+22] is the exemplar throughout —
-pays for language operations with automaton constructions. Intersection and union are products, decorated with
-acceptance bookkeeping — degeneralization counters, condition rewrites.
+pays for language operations with automaton constructions. Intersection
+and union are products, decorated with acceptance bookkeeping —
+degeneralization counters, condition rewrites.
 Complementation of a nondeterministic Büchi automaton is the hard currency
 of the trade: `2^{Θ(n log n)}` states, through Safra trees, rank
 functions, slices, or one of their descendants [Saf88, TFVT10]. Language
@@ -122,7 +123,8 @@ Contributions:
 3. **Read-offs replacing constructions** (§3.5): classification queries
    answered by equations on the table, including a one-scan
    stutter-invariance test (Proposition 3.3, with full proof) where the
-   automata-side check builds and compares closure automata.
+   automata-side check builds closure automata and tests product
+   emptiness.
 4. **The ledger** (§4): a side-by-side of the calculus against a
    production toolbox, one row per operation, with the exponential
    frontier located exactly (§3.4). The calculus is implemented as a
@@ -178,6 +180,14 @@ construction gives, for every lasso,
 ```
 u·v^ω ∈ L   ⟺   Val_P(fold(u), fold(v)).
 ```
+
+The theorem has a stronger form the proofs below use: for *any* ω-word
+`α` and any factorization `α = w₀·w₁·w₂·⋯` whose blocks `w_{j≥1}` all
+fold to one idempotent `e`, membership is decided by the associated
+pair — `α ∈ L ⟺ (fold(w₀)·e, e) ∈ P` — and Ramsey's theorem guarantees
+every ω-word admits such a factorization [PP04]. Two ω-words that admit
+factorizations with the same stem image and the same idempotent block
+image therefore share their verdict.
 
 Every decision procedure below is a scan of `Val` over **cells**
 `(c, d) ∈ 𝒞 × (𝒞 \ {[ε]})` — the stem class `c = [ε]` encoding the empty
@@ -251,8 +261,9 @@ cannot be phrased as surgery on an aligned table — §3.4 locates those.
 
 ### 3.2 The free fragment: the surgery catalog
 
-All of the following act on a fixed table `(𝒞, λ, M)`; each returns a
-pair set on the same table, to be reduced at will. Proposition 5.11 of
+All of the following act on a fixed table `(𝒞, λ, M)`; each is either a
+query answered by lookups, or a surgery returning a pair set on the same
+table, to be reduced at will. Proposition 5.11 of
 [SωSX26] (decomposition never leaves LTL) is the safety net for the whole
 fragment: every result's syntactic algebra divides `M`, so surgery never
 escapes the variety of its table — an aperiodic table yields only
@@ -273,11 +284,11 @@ LTL-definable results, however the pair sets are cut.
   is one flip — against `2^{Θ(n log n)}` for nondeterministic Büchi
   complementation [TFVT10], this is the calculus's headline entry — and
   the constants are `∅` (empty language) and `linked(𝓘)` (universal).
-- **Rooting (left quotients).** For `c ∈ 𝒞¹` define
+- **Rooting (left quotients).** For `c ∈ 𝒞` define
   `P_c := { (s, e) linked : (c·s, e) ∈ P }`. Well-defined — `(c·s, e)` is
   linked when `(s, e)` is — and `Val_{P_c}(x, d) = Val_P(c·x, d)`, so
-  `L(P_c) = u⁻¹L` for any representative `u` of `c`: prefix subtraction
-  is pair surgery. The rootings form a right `M`-action,
+  `L(P_c) = u⁻¹L` for any representative `u` of `c` (in particular
+  `P_{[ε]} = P`): prefix subtraction is pair surgery. The rootings form a right `M`-action,
   `P_{c·d} = (P_c)_d`, so quotients compose as they must
   (`(uv)⁻¹L = v⁻¹(u⁻¹L)`), and the number of distinct rootings *is* the
   residual count read-off [SωS26, Prop 4.6]: the residual automaton of
@@ -348,7 +359,8 @@ LTL-definable results, however the pair sets are cut.
     canonical separating lasso. Compare: PSPACE-complete on automata,
     with counterexamples needing product-emptiness runs.
   - *Equivalence*: on two *reduced* invariants, byte equality of the
-    canonical serializations [SωS26, Thm 5.1] — `O(1)` scans. On an
+    canonical serializations [SωS26, Thm 5.1] — no scan at all, one
+    comparison linear in the artifact size. On an
     aligned pair, one scan of `Val₁ ≠ Val₂` decides both inclusion
     defects in a single pass and returns the least disagreeing cell as
     counterexample; the two routes agree wherever both apply.
@@ -385,7 +397,7 @@ Cross-table operations pay the alignment price `O(n₁·n₂·|Σ|)` once:
   multiplies behaviors. The realized ratio `|nodes| / (n₁·n₂)` is a
   datum the implementation records per alignment. ⟨TBD: its distribution
   over census pairs — V1.⟩ One further economy is structural: an
-  `Aligned` object is a table like any other, so a *session* of
+  aligned product is a table like any other, so a *session* of
   operations on the same pair — inclusion both ways, intersection,
   difference, their emptiness checks — pays its BFS once.
 
@@ -474,18 +486,17 @@ Same cell, same verdict.
 
 *Case 2: letters change infinitely often.* Write the normal form as
 `β = b₀b₁b₂⋯` with `b_i ≠ b_{i+1}`; then `α = b₀^{k₀}·b₁^{k₁}·⋯` for
-some exponents `k_i ≥ 1`. By Ramsey, `β` admits a factorization
-`β = w₀·w₁·w₂·⋯` with `fold(w_j) = e` idempotent for all `j ≥ 1`; its
-cut points fall at letter-change boundaries or can be moved to them
-(any cut inside `β` sits between two distinct letters, since adjacent
-letters of `β` differ), and each boundary of `β` persists as a boundary
-of `α`. Blowing up a factor `w_j = b_i⋯b_m` yields
+some exponents `k_i ≥ 1`. By Ramsey (§2), `β` admits a factorization
+`β = w₀·w₁·w₂·⋯` with `fold(w_j) = e` idempotent for all `j ≥ 1`. Every
+cut point of this factorization sits between two *distinct* letters —
+`β` is stutter-free — so it marks a block boundary of `α`, and cutting
+`α` at those boundaries blows each factor `w_j = b_i⋯b_m` up to
 `w_j' = b_i^{k_i}⋯b_m^{k_m}`, whose destuttered form is `w_j` itself
-(adjacent letters inside `w_j` differ), so `fold(w_j') = fold(w_j)` by
-the finite-word fact. Thus `α = w₀'·w₁'·w₂'·⋯` is a factorization with
-the same stem image and the same idempotent block image as `β`'s, and
-the factoring theorem gives both words the verdict of the one cell
-`(fold(w₀), e)`. ∎
+(adjacent letters inside `w_j` differ). By the finite-word fact
+`fold(w_j') = fold(w_j)`, so `α = w₀'·w₁'·w₂'·⋯` is a factorization
+with the same stem image `fold(w₀)` and the same idempotent block image
+`e` as `β`'s, and the strong factoring theorem of §2 gives both words
+one verdict. ∎
 
 Spot's check [MD15] translates the property *and its negation* to Büchi
 automata, applies closure constructions — `cl` (destuttering) and `sl`
@@ -601,7 +612,7 @@ One line per move; `n` is the class count of the relevant table,
 | align | `O(n₁·n₂·|Σ|)` steps, `≤ n₁·n₂` nodes | shared table + two verdict maps |
 | Boolean surgeries, rooting | `O(|linked|)` | pair set, same table |
 | saturation / legality check | `O(|linked|·n²)` | pair set (run rarely) |
-| inverse substitution | `O(|Σ'|)` + reduce | pair set on shrunk table |
+| inverse substitution | `O(|Σ'|)` + reduce | same table, new letter map; reduce before byte-level use |
 | lasso membership | `O(|u| + |v|)` | bit |
 | emptiness / universality | `O(n²)` `Val` | bit + minimal lasso |
 | inclusion / equivalence / intersection-word | `O(|nodes|²)` verdicts on the aligned table | bit + minimal lasso |
@@ -613,7 +624,8 @@ One line per move; `n` is the class count of the relevant table,
 
 The entry row is not an apology but a floor: deciding aperiodicity of an
 ω-regular language — one read-off among the ones the object supports —
-is already PSPACE-complete [CH91, DG08 via SωS26 §8], so *some*
+is already PSPACE-complete (hardness from the finite-word case [CH91],
+the ω transfer as in [SωS26, §8] via [DG08]), so *some*
 exponential must sit somewhere in any substrate this complete. The
 calculus's design choice is to sit it at the gate, once, rather than
 inside every operation.
@@ -688,7 +700,7 @@ normal-form move packaged as a calculus. That is this paper's claim.
 ## 7. Conclusion
 
 Recognition is usually consumed as a verdict: the algebra accepts, the
-characterization holds, the hierarchy level is such. This paper consumed
+characterization holds, the hierarchy level is such. This paper consumes
 it as a calculus. Three moves — align, the only product-priced one;
 operate, the free surgery catalog on pair sets; reduce, the normal form
 automata never had — carry the everyday toolbox: a Boolean algebra of
