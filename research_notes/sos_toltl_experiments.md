@@ -83,9 +83,14 @@ anchor class and `e` the idempotent power of the loop class:
   are the closure `{ m : (d, m) reachable from (d, [ε]) }` in the
   `(position in R, accumulated word class)` product; one verdict across
   all of them ⟹ (B) holds trivially at every width.
-- *bounded test*: enumerate cycle words up to length cap `2·|R|·|𝒞|`
-  under a node budget; group by recurring `k'`-window set; a verdict
-  conflict is an exact `FAIL(witness pair of lassos)`; conflict-free with
+- *bounded test*: enumerate cycle words **breadth-first** (shortest
+  cycles first — a conflict needs only short ones) up to length cap
+  `2·|R|·|𝒞|`, under one node budget **per anchor class** (a shared
+  budget lets one anchor starve the others, and a conflict routinely
+  pairs cycles at two different anchors — report F13); group by
+  recurring `k'`-window set; a verdict conflict is an exact
+  `FAIL(witness pair of lassos)` regardless of the enumeration's
+  completeness; conflict-free with
   the enumeration complete is a cap-bounded `PASS`; a tripped budget is
   `UNDECIDED(k')`. The cap must scale with `|𝒞|`, not with `|Σ_λ|`: the
   loop class folds through the whole algebra even where the walk is
