@@ -126,7 +126,8 @@ resurface in extraction as two engines.**
    (A), and — the walk provably cannot carry the loop coordinate (Lemma
    4.2) — a window engine transcribes `e` under a determinacy condition
    (B); both conditions are equations on the object, and together they
-   yield exactness by construction (§4–§5).
+   yield exactness by construction, assembled end to end as
+   Theorem 5.10 (§4–§5).
 3. The deliverable split, stated as a result: extraction is
    output-polynomial as a class-indexed DAG; the flat formula is the
    language's intrinsic cost,
@@ -167,14 +168,37 @@ route from an aperiodic algebra to a formula, which the extraction of
 
 ### 2.1 Notions from the literature
 
-`Σ` is a finite alphabet; in examples
-`Σ = 2^{AP}`, and over one atomic proposition we write the two letters
-`a` and `!a`. LTL has the primitives `X` (next) and `U` (until) plus the
-Boolean connectives, with the usual derived operators `F φ = ⊤ U φ`,
-`G φ = ¬F¬φ`, and weak until `φ W ψ = (φ U ψ) ∨ G φ`; formulas are
-future-only, evaluated on ω-words, and `⟦φ⟧ ⊆ Σ^ω` is the language of
-`φ`. `GF`/`FG` name the recurrence and persistence shapes. LTLf is the
-same syntax on finite words [DV13]. On the algebra
+**Words and formulas.** Fix a finite set `AP` of atomic propositions
+and let `Σ = 2^{AP}` — a letter is the set of propositions true at an
+instant; over one proposition we write the two letters `a` and `!a`.
+An ω-word is `α = α₀α₁⋯ ∈ Σ^ω`, and `α_{≥i} = α_i α_{i+1} ⋯` its
+suffix at position `i`. LTL formulas are
+
+```
+φ  ::=  p  |  ¬φ  |  φ ∧ φ  |  X φ  |  φ U φ          (p ∈ AP)
+```
+
+with satisfaction at a position defined by induction:
+
+```
+α, i ⊨ p      iff  p ∈ α_i
+α, i ⊨ ¬φ     iff  α, i ⊭ φ            α, i ⊨ φ ∧ ψ   iff  both hold at i
+α, i ⊨ X φ    iff  α, i+1 ⊨ φ
+α, i ⊨ φ U ψ  iff  α, j ⊨ ψ for some j ≥ i, and α, l ⊨ φ for all i ≤ l < j
+```
+
+`⟦φ⟧ = { α : α, 0 ⊨ φ }` is the language of `φ`, and the derived
+operators are the usual `∨`, `F φ = ⊤ U φ` (eventually),
+`G φ = ¬F¬φ` (always), and weak until `φ W ψ = (φ U ψ) ∨ G φ`;
+`GF`/`FG` name the recurrence and persistence shapes. Two conventions
+run through every formula below. A *letter* `σ ∈ Σ` used as a formula
+abbreviates its cube `⋀_{p ∈ σ} p ∧ ⋀_{p ∉ σ} ¬p` — "the current
+letter is `σ`" — and a *set* of letters abbreviates the disjunction of
+their cubes. And satisfaction is **future-only**: `α, i ⊨ φ` depends
+only on the suffix `α_{≥i}` (immediate induction on `φ`), so
+`α, i ⊨ φ ⟺ α_{≥i}, 0 ⊨ φ`. LTLf is the
+same syntax evaluated on non-empty finite words, `X` demanding that a
+next position exist [DV13]. On the algebra
 side [PP04]: an element `e` is *idempotent* if `e·e = e`; every element
 `d` of a finite semigroup has a unique idempotent among its powers,
 written `d^π`; a *linked pair* is `(s, e)` with `s·e = s` and `e`
@@ -946,6 +970,33 @@ evaluation itself. For the consequence:
 Lemma 4.7's identity `T_{[u]} = u⁻¹L` also shows the memoized children
 are exactly the residual tails, keyed by class — the DAG of §6 is a DAG
 of residuals with canonical names.
+
+**The label contract.** Lemma 4.7 fixes, once and for all, what every
+piece of the extraction is *for*. A **labeler** takes a class `c` —
+its layer `R` and entry role come with it — and returns an LTL formula
+`φ_c`, its **label**; the label is **exact at `c`** when
+`⟦φ_c⟧ = T_c`. The contract composes in exactly three ways, and the
+rest of the paper never composes labels any other way:
+
+- *down the R-order* — a label for `c` may use child labels `φ_d` at
+  exit targets `d` in strictly lower layers, guarded by the exit letter
+  (`… a ∧ X φ_{c·a} …`); if the children are exact, transport
+  (Lemma 4.7(ii)) folds their verdicts back onto `c`, and exactness at
+  `c` is what each engine theorem below proves;
+- *within one class* — the acceptance conjunct `Ω(R, c)` of a
+  confined-forever branch is a sub-label with its own contract
+  (Theorem 4.10's window contract), owned by the window engine (§5);
+- *across invariants* — the combinators (§5.3) split `P`,
+  re-canonicalize each piece, and recombine the pieces' root labels by
+  `∨` (OR-split) or `∧` (AND-split), exactness passing through union
+  and intersection.
+
+A labeler exact at every class defines the language at the root:
+`⟦φ_{[ε]}⟧ = T_{[ε]} = L` (Lemma 4.7(iii)). Every engine of §§4–5 —
+bricks, graded bricks, committed base case, scoped fallback, window
+templates, and the combinator recombinations — is a labeler for its
+stratum, and the end-to-end statement (Theorem 5.10) is that the
+assembled dispatch meets the contract at every class it labels.
 
 Anchoring is the *stem-side* precondition: it makes the walk transcribable.
 Lemma 4.2(ii) forces a second, independent precondition on the *loop side*:
@@ -2000,6 +2051,56 @@ next in positive positions, weak under negation [DV13] — §4.4's insertion
 operator is the same wrapper). Safety is the dual through
 `P ↦ P^c`; obligation, Boolean combinations of the two.
 
+The architecture's correctness is the label contract (§4.2), met on
+every branch and closed under its three compositions:
+
+**Theorem 5.10 (end-to-end exactness).** Let `𝓘(L)` be aperiodic and
+let `φ = extract(𝓘)`, with the graded stratum routed per §4.3's
+correction: a committed class takes `true`, and a non-committed layer
+anchoring only at `k ≥ 2` takes the scoped fallback. Then `⟦φ⟧ = L` —
+in the flat rendering, and in the definitional rendering in the
+deterministic-projection sense of §6.
+
+*Proof.* By Noetherian induction on the R-order beneath each dispatch
+point, every branch of `extract` emits a label exact at its class:
+
+- *width-1 layers* — Theorem 4.10, its window contract discharged
+  below;
+- *committed classes* — `Final(c) = true` and `T_c = Σ^ω` (§4.3,
+  correction);
+- *remaining (A)-side layers* (anchoring at `k ≥ 2` non-committed, or
+  at no width) — the scoped fallback, Proposition 4.14: exact given
+  exact children, its finite-word ingredient [DG08]'s correctness on
+  `𝒜_R` and its wrapper the insertion operator's displayed semantics;
+- *the window contract*, wherever a run can stay forever — under (B)
+  at some width, Proposition 5.4; where (B) fails at every affordable
+  width, a fallback formula defining `T_c` itself (§5.1) satisfies the
+  contract *a fortiori*, being exact on all tails, confined or not;
+- *ladder templates* (step 2) — the paragraph above: an exact
+  finite-word formula for the class-defined prefix language under the
+  same wrapper;
+- *combinators* (step 2.5) — an OR-split recombines exact piece labels
+  by disjoint union (§5.3(1)), an AND-split by intersection
+  (Theorem 5.8); each piece is recognized by its re-canonicalized
+  invariant (Propositions 5.5, 5.7), and the guard recurses only when
+  that invariant strictly shrinks, so the outer induction on
+  `(|𝒞|, R-order)` remains well-founded.
+
+At the root the contract reads `⟦φ_{[ε]}⟧ = T_{[ε]} = L`
+(Lemma 4.7(iii)). The flat rendering is the DAG's unfolding — the same
+formula written without sharing — and the definitional rendering
+defines `L` by deterministic projection as argued in §6. ∎
+
+Two remarks. The theorem states the extractor *as implemented and as
+corrected*: once the entry-rooted repair of §4.3's correction carries
+its completeness re-proof, the graded bricks of Theorem 4.13 replace
+the scoped fallback on non-committed `k ≥ 2` layers, and the statement
+survives verbatim with that branch swapped in. And exactness needs no
+equivalence oracle anywhere — every branch is exact by construction —
+but it is *checkable* by one: re-running the construction of [SωS26]
+on `φ` must return the byte-identical `𝓘`, the conformance gate the
+evaluation enforces (§8).
+
 ## 6. The deliverable: DAG, flat, and definitional forms
 
 Extraction as computed is a **class-indexed DAG**: one node per
@@ -2236,8 +2337,9 @@ shape: letters quotiented by `λ`, templates chosen by `P`'s ladder,
 layers walked down the R-order, flat bricks where the layers anchor
 (Theorems 4.10 and 4.13), window templates where the walk freezes
 (Proposition 5.4) — Arnold's two context shapes, met for the third time,
-now as the two engines of extraction — and nesting only where the
-algebra demands it. The deliverable split is part of the result: the
+now as the two engines of extraction — nesting only where the
+algebra demands it, and the assembled dispatch exact end to end
+(Theorem 5.10). The deliverable split is part of the result: the
 DAG is polynomial and canonical, the flat formula's size is the
 language's own, and the definitional format avoids that size exactly
 (§6).
