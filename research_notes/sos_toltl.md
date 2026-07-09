@@ -398,31 +398,48 @@ so
 f(M, Σ)  ≈  f(M', T) · max_m f(M, Σ \ {c})
 ```
 
-— multiplicative at every level of a recursion whose depth can reach
-`|M|·|Σ|`, with `T` re-inflating the alphabet to `O(|M|)` letters just
-as the monoid shrinks: blindnesses (1) and (2) as a recurrence. One
-qualification, measured rather than assumed (§8): class-indexed
-memoization localizes the explosion. Keying each call by
-(recursion instance, target) and substituting a *reference* instead of
-a copy makes each distinct sub-call built once — the output is a
-formula-DAG whose flat unfolding is the tree, and the multiplicative
-blow-up is confined entirely to the unfolding step. The number of
-distinct sub-calls is governed by the algebra, not by the tree
-(⟨TBD: FIG-3 of `sos_toltl_figures.md` — the tree-vs-DAG panel,
-delegated⟩): on the
-six-class syntactic algebra of `GF(aa)` the memoized recursion is 19
-recursion nodes and a shared arena of 1 287 nodes, while the flat tree
-unfolds to 1 991 717 nodes — 4.4 MB of rendered formula,
-Spot-equivalent to `GF(a ∧ Xa)`; catalogue-wide the arenas stay in the
-thousands where the trees overflow (§8). And the output is canonical:
+— multiplicative, with `T` re-inflating the alphabet to `O(|M|)`
+letters just as the monoid shrinks: blindnesses (1) and (2) as a
+recurrence. One distinction keeps the recurrence honest: it is a
+recurrence on *formula* size, not on the recursion — every one of its
+levels is the substitution *inside* one call, and the call tree itself
+stays small. Measured on the six-class algebra of `GF(aa)`
+(Figure 1 draws both objects): the
+recursion makes 34 call sites, 26 distinct — a 49-node tree over 4
+depths, 19 nodes memoized — so memoizing the *calls* saves a factor of
+≈ 2.6 and is not the story. The story is the formula: hash-consing the
+emitted AST, so that a substitution installs a *reference* where the
+tree copies, yields a shared arena of 1 287 nodes whose flat unfolding
+is 1 991 717 — 4.4 MB of rendered formula, equivalent to
+`GF(a ∧ Xa)` — and the multiplicative blow-up is confined entirely to
+the unfolding step; catalogue-wide the arenas stay in the thousands
+where the trees overflow (§8). Sizes here and throughout count the
+nodes of the induction's own shared representation, before any
+external normalization. And the output is canonical:
 two presentations of the language (a parity and a reset automaton)
 bridge to the byte-identical invariant and the character-identical
-formula. ⟨TBD: a proven polynomial bound on the number of distinct
-sub-calls from `𝓘(L)` — the measured arenas say yes, the recursion
-structure has no proof yet — or a census counterexample.⟩ The
+formula. ⟨TBD: two separate bounds to prove from `𝓘(L)`, not one — the
+count of distinct sub-calls (measured tiny, plausibly polynomial) and
+the arena size (the one that matters; a sub-call bound does not bound
+the arena, since a single call's substitution multiplies).⟩ The
 bottleneck is not computation but the deliverable format, which §6
 states as a result. The extraction of §4 attacks what remains — the
 flat size — by making the formula's shape follow the language's.
+
+<table>
+<tr>
+<td align="center"><img src="sos_toltl_figs/img/fig3_dg.png" alt="DG recursion: substitution tree vs memoized DAG" width="950"></td>
+</tr>
+</table>
+
+**Figure 1.** The DG recursion on the six-class algebra of `GF(aa)`,
+drawn twice. Left, the substituting recursion: one node per call site,
+so a call four parents make is copied four times — 49 tree nodes over 4
+depths. Right, the same recursion memoized: 19 distinct nodes, a dotted
+reference (annotated `n×`) wherever the left panel copies; shaded nodes
+are base cases. The violence is not here — 49 against 19 — but in what
+each node's substitution does to the *formula*: the shared arena of
+1 287 nodes unfolds flat to 1 991 717.
 
 ## 3. The non-LTL side: the witness certificate
 
@@ -1819,16 +1836,24 @@ of the R-order first, each line one rule of the grammar.
 `[ε]`, `[!a]` ("no `a` yet"), and `[a]` ("an `a` has occurred",
 two-sided absorbing); `P = { ([a], [!a]), ([a], [a]) }` — once `[a]` is
 reached every loop accepts, and `([!a], [!a]) ∉ P`. The class machine
-and its R-order (⟨TBD: FIG-4 candidate, ASCII may suffice⟩):
+and its R-order are Figure 2 — three singleton layers
+`{[ε]} → {[!a]} → {[a]}` in a chain with a skip, a pure peel: no layer
+has two classes, condition (A) is vacuous.
 
-```
-    [ε] ────a────→ [a] ↺ a, !a        three singleton layers:
-     │              ↑                 {[ε]} → {[!a]} → {[a]}
-     !a             a                 a pure peel — no layer has
-     ↓              │                 two classes, (A) is vacuous
-    [!a] ──────────┘
-     ↺ !a
-```
+<table>
+<tr>
+<td align="center"><img src="sos_toltl_figs/img/fig4_fa.png" alt="the F a micro-machine" width="420"></td>
+</tr>
+</table>
+
+**Figure 2.** The `F a` micro-machine. Ink conventions, shared with
+Figure 3: solid blue = a Cayley step under `a`, dashed amber = under
+`!a`, black = a step both letters agree on; rounded grey box = one
+layer (an SCC of `Cay(L)`, an R-class); thick grey arrow = the
+R-order; a short black stub marks a layer's entry class; a double
+circle marks a committed class (`T_c = Σ^ω`). Here the committed sink
+`[a]` takes label `⊤`, and the middle layer is all-rejecting as a
+final layer — its `STAY∞` is `⊥`, only the `leave` brick survives.
 
 Read-offs, top to bottom of the R-order: `{[ε]}` is transient (both
 letters exit — no run can stay, no `Ω` owed); `{[!a]}` has
@@ -1863,17 +1888,22 @@ Cayley edges `c →^x M(c, λ(x))` off that table:
 2: !a → 4    a → 5          5: !a → 5    a → 5
 ```
 
-The SCC decomposition — the R-order — is (ASCII placeholder;
-⟨TBD: FIG-1 of `sos_toltl_figures.md` — the layered Cayley graph,
-delegated⟩):
+The SCC decomposition — the R-order — is the diamond of Figure 3: the
+transient root `{0}`; two parallel moving layers `{1,3}` ("last was
+`!a`" side) and `{2,4}` ("started with `a`" side), mirror images of
+one another; and the absorbing frozen layer `{5}` = "contains `aa`".
 
-```
-        {0}                       layer R₀: the start, transient
-       /   \
-   {1,3}   {2,4}                 two parallel layers ("last was !a" side,
-       \   /                      "started with a" side)
-        {5}                       layer R∞: "contains aa", absorbing
-```
+<table>
+<tr>
+<td align="center"><img src="sos_toltl_figs/img/fig1_cayley.png" alt="the layered Cayley graph of GF(aa)" width="900"></td>
+</tr>
+</table>
+
+**Figure 3.** The layered Cayley graph of `GF(aa)`: the six classes of
+`S(GF(aa))₊¹`, their Cayley steps, the four layers, and the R-order
+diamond (conventions as in Figure 2). Each box's side tag is the
+layer's read-off — letter kinds, condition-(A) width, and for the
+frozen layer the condition-(B) width.
 
 Per-layer letter actions, and the k = 1 test:
 
@@ -1918,8 +1948,8 @@ exists anywhere), and only their `LEAVE` chains survive.
 
 The label stack, bottom of the R-order first; entry classes are `1`
 (the top's `!a`-exit) and `2` (its `a`-exit); layer `{1,3}` is shown in
-full, `{2,4}` is its mirror (⟨TBD: FIG-2 of `sos_toltl_figures.md`, the
-derivation panel, may replace this block⟩):
+full, `{2,4}` is its mirror (⟨TBD: a derivation-panel figure may
+replace this block⟩):
 
 ```
 -- layer {5}: frozen, terminal ⟹ the law is shed; (B) at k′ = 2
@@ -1955,9 +1985,9 @@ and since the reach wrapper is implied by the child (recurrence implies
 occurrence), the simplified form is `GF(a ∧ Xa)` exactly. A
 prefix-independence read-off (one residual ⟹ the reach wrapper is always
 redundant — Lemma 5.2) would emit it directly.
-The implementation confirms the layer tables, the widths, the
-Lemma-4.2 witness pair, and the emitted label above exactly, from
-either presentation of the language (§8).
+Either presentation of the language — the run-parity automaton or the
+reset one — yields this identical stack, character for character:
+Corollary 4.15's canonicity, made concrete.
 
 **Example 3: `GFa ∧ FGb` — a live `STAY∞`, a frozen window, and the
 prefix-independent collapse.** Two atomic propositions; the same
@@ -2293,9 +2323,9 @@ evaluation enforces (§8).
 ## 6. The deliverable: DAG, flat, and definitional forms
 
 Extraction as computed is a **class-indexed DAG**: one node per
-(class, engine-context) pair, children memoized — both implementations
-compute it at scale, the DG baseline over the whole catalogue and the
-engine wherever it answers (§8) ⟨TBD: the DAG-vs-|𝒞| scatter once the
+(class, engine-context) pair, children memoized — a format that
+computes at scale over the whole catalogue, for the baseline and for
+the transcription alike (§8) ⟨TBD: the DAG-vs-|𝒞| scatter once the
 graded engine lands⟩. Three renderings:
 
 1. **The DAG itself** — the working format, and polynomial on the
@@ -2310,11 +2340,14 @@ graded engine lands⟩. Three renderings:
    Two sharings the class index leaves on the table, both sound by the
    label contract (§4.2) and both read off `𝓘` for free. *Guard
    grouping*: an exit fan `⋁_{a ∈ Ex(c)} (a ∧ X φ_{c·a})` rewrites as
-   `⋁_d ( (⋁_{a : c·a = d} a) ∧ X φ_d )` — one disjunct per target,
-   the guard a letter set (a single arc labeled by the set, `⊤` when
-   every exit agrees on its target); the flat form shrinks by the
-   local branching factor and the result reads as the machine does
-   (Example 3's `!b`-arc into `⊥`). *Residual indexing at exits*: an
+   `⋁_φ ( (⋁_{a : child(c·a) = φ} a) ∧ X φ )` — one disjunct per
+   distinct *child*, the guard a letter set (a single arc labeled by
+   the set, `⊤` when every exit agrees); the fan must key on the child,
+   not on the target class, or it cannot compose with the second
+   sharing — two classes sharing one child would keep two arms (§8).
+   The flat form shrinks by the local branching factor and the result
+   reads as the machine does (Example 3's `!b`-arc into `⊥`).
+   *Residual indexing at exits*: an
    exit child matters only through its tail language `T_d` (transport,
    Lemma 4.7(ii)), and classes are strictly finer than residuals — two
    branches that diverge in class can re-merge in future, `T_d =
@@ -2328,17 +2361,25 @@ graded engine lands⟩. Three renderings:
    representative, or reuse-already-built) — an arbitrary
    representative can close a cycle, prefix-independence being the
    extreme case where one residual is shared by every class and its
-   "label" is the whole extraction, §5.1's no-recursion trap; there
-   Lemma 5.2's emit-directly rule applies instead. The within-layer
-   discipline is untouched (laws and
+   "label" is the whole extraction, §5.1's no-recursion trap. Under
+   reuse-already-built even that case is safe, and instructive: the
+   single representative sits in the deepest layer, every exit child
+   becomes that one label, and the memo *implements* Lemma 5.2's
+   emit-directly rule rather than colliding with it (§8). The
+   within-layer discipline is untouched (laws and
    anchors speak classes; only the child slots coarsen). Merges that
    are exact only *after d more steps* — two branches sharing a
    continuation from some depth on — are common-suffix sharing: free
    in the DAG and in the definitional rendering (one shared node,
    several parents), but not flat-factorable in general, the shared
-   tail sitting at different `X`-depths on its branches. ⟨TBD: E10 —
-   implement both sharings, measure DAG/flat deltas and the
-   class-vs-residual child counts over the census.⟩
+   tail sitting at different `X`-depths on its branches. One more
+   convention, fixed by measurement (§8): the size a claim is about is
+   the *final* label, after the formula-level simplifier. The two
+   syntactic sharings (guard synthesis, grouping) are largely subsumed
+   by such a simplifier — their post-simplification role is keeping
+   the DAG affordable for it — while residual indexing survives it:
+   identifying two classes as one tail language is a fact about `P`
+   that no formula-level rewrite can see.
 2. **Flat LTL** — the standard, and the intrinsically large one: no sharing
    in the syntax, so DAG unfolding multiplies along the R-order antichains.
    Two statements about depth, an upper bound the construction owns and
@@ -2494,17 +2535,42 @@ explosion as a catalogue-wide distribution rather than the single
 `GF(aa)` exemplar. The DAG computes; the flat form is what fails, per
 the deliverable split of §6.
 
-**The transcription engine, interim.** The walk+window engine is sound
-catalogue-wide — zero verified-non-equivalent answers under the same
-oracle — answering on the strata where its exactness is proven (width-1
+**The transcription engine.** The assembled extractor answers the
+whole catalogue: 2 237 LTL languages with a formula, 1 698 non-LTL
+with a certificate, 3 declines, zero verified-non-equivalent answers,
+2 856 Spot-verified equivalences (the rest size- or budget-unverified,
+never failed). Within the LTL side the walk+window engine renders
+1 114 languages — the strata where its exactness is proven (width-1
 layers, Theorem 4.10; committed classes and window terms, §4.3 and
-Proposition 5.4) and declining the non-committed graded stratum to the
-DG fallback until the entry-rooted repair of §4.3's correction carries
-its completeness re-proof. Where it answers, its DAG runs ≈3× below the
-baseline's — the compression the shape-following thesis predicts.
-Canonicity holds end to end: two presentations of `GF(aa)` (the parity
-and the reset automata) bridge to the byte-identical invariant and the
-character-identical formula.
+Proposition 5.4) — and the other 1 126 fall to the DG fallback until
+the entry-rooted repair of §4.3's correction carries its completeness
+re-proof. Canonicity holds end to end: two presentations of `GF(aa)`
+(the parity and the reset automata) bridge to the byte-identical
+invariant and the character-identical formula.
+
+**Branch factoring, measured.** The three sharings of §6 —
+guard synthesis, guard grouping keyed on the child, residual-indexed
+exit children — measured in isolation and combined over the 1 114
+languages the transcription covers. Together they shrink the final
+(post-simplification) DAG **1.93×** and the final flat tree **18.1×**
+(1 702 355 → 32 134), concentrated at Wagner degree ω and above where
+the layer stacks are deep; 264 of 5 096 exit fans collapse to a `⊤`
+guard. The decomposition of the win is the instructive part. The
+syntactic sharings are subsumed by the simplifier on inputs small
+enough for it (on the three-class exhibit `GF(a ∨ ¬b)`, plain, guards
+and grouping all land at a final DAG of 11) — their value is keeping
+larger inputs affordable for the simplifier's containment checks.
+Residual indexing is not subsumed: it alone takes the exhibit to the
+minimal `GF(a ∨ ¬b)` (DAG 6), because identifying two classes as one
+tail language is semantic, invisible to any formula-level rewrite.
+Classes are strictly finer than residuals on 90.8% of the rendered
+languages — the sharing is the common case, not a corner — and the
+prefix-independent stratum profits most (2.19× vs 1.65×): with one
+residual, every exit child is the deepest class's label, the memo
+implementing Lemma 5.2's emit-directly rule. No rendering is
+size-monotone (a handful of regressions of a few nodes each — at
+3 AP the minimized guards trade flat size against DAG size, each
+guard smaller but bespoke where cubes were shared).
 
 ## 9. Related work
 
