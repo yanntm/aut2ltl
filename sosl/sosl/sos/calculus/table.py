@@ -228,18 +228,6 @@ class Table:
         e = self.idem(d)
         return (self.mult[c][e], e) in pairs
 
-    def is_stutter_invariant(self) -> bool:
-        """Is ``L(P)`` stutter-invariant for *every* pair set ``P`` over this
-        table? True iff each letter's class is idempotent, ``M(λ(a), λ(a)) =
-        λ(a)`` for all ``a in Σ`` — then ``fold`` cannot tell ``a`` from ``aa``
-        anywhere, so no context does either (paper Prop 3.3). A table property,
-        independent of the accepting set: stutter-invariance is a fact about the
-        algebra, and it gates ``L(P)`` for all ``P`` at once."""
-        return all(
-            self.mult[la][la] == la
-            for la in (self.step(self.identity, a) for a in self.alphabet.letters())
-        )
-
     # --- the scan ----------------------------------------------------------
 
     def cells(self) -> Iterator[Cell]:

@@ -2,14 +2,13 @@
 
     python3 -m tests.calculus.stutter PATH.sos
 
-`Table.is_stutter_invariant` is the five-line algebraic read-off of paper
-Prop 3.3: ``L(P)`` is stutter-invariant for every ``P`` over the table iff every
-letter's class is idempotent, ``M(λ(a), λ(a)) = λ(a)``. On a *canonical*
-invariant (the `flat_canon` corpus is exactly these) this algebraic fact
-coincides with the language being stutter-invariant, because the table is the
-syntactic monoid: a non-idempotent letter is one the syntactic congruence keeps
-apart from its own square, so *some* context separates ``a`` from ``aa`` — a
-genuine stutter divergence.
+`sosl.sos.classify.is_stutter_invariant` is the algebraic read-off of paper
+Prop 3.3: ``L`` is stutter-invariant iff every letter's class is idempotent,
+``M(λ(a), λ(a)) = λ(a)``. On a *canonical* invariant (the `flat_canon` corpus is
+exactly these) this algebraic fact coincides with the language being
+stutter-invariant, because the table is the syntactic monoid: a non-idempotent
+letter is one the syntactic congruence keeps apart from its own square, so
+*some* context separates ``a`` from ``aa`` — a genuine stutter divergence.
 
 This gate exhibits that coincidence exactly. It runs the §8.6 divergence search
 — for each non-idempotent letter, the linear shape ``Val(x·λ(a)·y, t)`` vs
@@ -28,6 +27,7 @@ from typing import List, Optional, Tuple
 from sosl.sos import load_invariant
 from sosl.sos.calculus import Table
 from sosl.sos.calculus.decide import member
+from sosl.sos.classify import is_stutter_invariant
 from sosl.sos.io.serialize import render_word
 from sosl.sos.lasso import Lasso
 
@@ -81,7 +81,7 @@ def main(argv: List[str]) -> int:
     table = Table.of(inv)
     pairs = inv.accept
 
-    readoff = table.is_stutter_invariant()
+    readoff = is_stutter_invariant(inv)
     div = find_divergence(table, pairs)
 
     assert readoff == (div is None), (
