@@ -1602,3 +1602,87 @@ Open toward the next drop, and nothing else: the sweep-wide tallies
 count, `guard_fired_final = 0` across all `SOUND` rows), which replace the
 paper's two remaining guard ⟨TBD-M4⟩ markers (§2.3 firing tally, §6.1
 guard/cap tallies), under the `reference/` persistence floor.
+
+---
+
+## The guard fires — conjecture refuted, retraction banked, escalation and default leg landed (2026-07-09)
+
+Answering the four asks of the 2026-07-09b reply. Commits: `5e83cfae8` (guard),
+`902ed1f96` (escalation, exhibit, default leg).
+
+### Retraction first — the earlier "E2 is not invalidated" claim was wrong
+
+The 2026-07-09 entry above certified exact-by-reference on a 25-case replay of
+the committed drop and concluded the published E2 table stood. That check was
+too small. A full unguarded ablation sweep (3938 runs) disagreed with the
+committed drop on **74 of the 3796 jointly-decided rows, in both directions** —
+16 where the by-reference oracle certified a stall the closure had broken, 14
+where it found a counterexample the closure had certified away, and 44 where
+both said `permanent` at different class counts. Every one is a guard firing:
+that sweep is void and is not banked. The guarded sweep is in flight.
+
+### Ask 2 — one firing, exhibited (committed)
+
+`NotFunctional` now carries the shortlex keys of the colliding nodes, so a
+firing ships its own witness pair, and `exact_ref_guard` re-verifies both halves
+against the reference invariant and the hypothesis's fold rather than trusting
+the guard. Exhibit committed at
+`sosl/tests/sosl/reference/guard_firing_exhibit.md`
+(`2state1ap2acc_parity_2195145216`, ablation leg, 8 firings, 20–24 aligned nodes
+over 17 reference classes). The first:
+
+> `y = !a;!a;a` and `y' = a;!a;!a` — both in reference class 8 — fold to
+> hypothesis classes 3 and 2.
+
+Three syntactic classes (8, 12, 14) are split this way across the eight queries.
+Your reading is the right one and the exhibit's headline: a mid-run table is not
+merely *coarser* than the algebra, **its fold is incomparable with it**.
+
+### Ask 3 — `075976`'s dual, and dual symmetry among the deferred
+
+Under the old oracle the partner `3state1ap0acc_075976_c` sat among the 137
+`BUDGET` rows (ref 121, hit the 30 s wall), not among the `OVERSIZE` rows — as
+you predicted. Under the guard **both** guard-fire and both blow the closure's
+200 000-element cap, so both record `OVERSIZE`. The deferred set is
+dual-symmetric. `013908` and its complement likewise: the re-run answered *no*,
+and the five formerly-deferred cases stay deferred. `exact_ref_oversize` now
+reads an `OVERSIZE` as `DEFERRED` (rows F10 → F9), and a defect only when the
+guard never fired.
+
+### Ask 4 — the amended escalation, and the default leg
+
+`_exact` walks exact-by-reference under the guard → closure on a firing →
+`bounded:8` on a capped closure, the cap-escape enabled only where a later
+byte-equality still validates the run (`cap_escape = config.saturation`). The
+ablation leg leaves it off and lets `ExactTooLarge` propagate: a bounded answer
+cannot certify permanence. `manifest.DEFAULT` now carries `eq_mode="exact"`.
+
+E0 is green under it: `eq_certification = exact` on all ten rows, 8 SOUND /
+2 ACCEPTOR_ONLY / 0 MISMATCH, and the Even / EvenBlocks ledgers byte-stable to
+the M3 baselines — `99 (67/4/14/14)` and `43 (32/0/2/9)` (row P5).
+
+Your structural expectation holds where you placed it. `3state1ap0acc_013908`'s
+**default** leg reaches byte-equal `SOUND` with one mid-run firing and a **clean
+final query** — the canonical table's fold *is* the syntactic morphism. That is
+now a per-run field, `guard_fired_final`, and the probe treats a firing on the
+final query of a byte-equal run as a defect.
+
+Cost, since it bears on the retirement: the default leg ran at ~3.5 s per case
+under `bounded:8` (≈ 4 h for the catalogue) and now sweeps at **~33 cases/s** —
+until the guard fires, where the closure fallback drops it to ~2.5 cases/s. The
+switch pays for itself and the fallback is where the remaining cost lives.
+
+### Ask 1 — sweep tallies (partial; the sweep is in flight)
+
+Both legs, guarded, `--budget 30`. At 380 of 7876 runs: every run guard-green,
+`eq_certification = exact` throughout, all `SOUND`, no final-query firing. These
+are the small shapes; the firings begin at the parity and 3-state shapes. Full
+per-leg tallies — total firings, runs entirely guard-green, and whether any
+`SOUND` run fired on its final query (expected 0) — land with the completed
+sweep, together with the E2 recount and the item-8 dual-symmetry assertion, as a
+committed `reference/` drop.
+
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.exact_ref_guard <case_id>
+[--nosat]`; `python3 -m tests.sosl.exact_ref_oversize --list`;
+`python3 -m tests.sosl.campaign_e0`; the sweep is
+`python3 -m tests.sosl.census_campaign --config both --budget 30 --out <dir>`.
