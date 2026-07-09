@@ -365,6 +365,28 @@ def _fuse_or(fs: List["spot.formula"]) -> "spot.formula":
         return or_f
 
 
+def fuse_or(fs: List["spot.formula"]) -> "spot.formula":
+    """OR of propositional guards, minimized via BDD + Minato ISOP (public
+    entry to `_fuse_or`). Identity on a singleton; the plain Or on any BDD
+    failure — the minimization never carries correctness, only size."""
+    return _fuse_or(fs)
+
+
+def register_aps(names: List[str]) -> None:
+    """Register `names` with the guard bdd_dict, in the order given.
+
+    A BDD's variable order fixes the shape of every ISOP read off it. Callers
+    that need a reproducible `fuse_or` output register their propositions in a
+    canonical order first, before any guard is minimized; without this the
+    order is whatever the first minimized formula happened to traverse."""
+    global _guard_bdd_dict, _guard_bdd_owner
+    if _guard_bdd_dict is None:
+        _guard_bdd_dict = spot.make_bdd_dict()
+        _guard_bdd_owner = spot.make_twa_graph(_guard_bdd_dict)
+    for name in names:
+        spot.formula_to_bdd(_ap(name), _guard_bdd_dict, _guard_bdd_owner)
+
+
 def _str_f(f: spot.formula) -> str:
     """Convert formula to normalized str — top-level output and traces ONLY.
     Pure stringification: no simplify (that was a per-conversion tree walk that
