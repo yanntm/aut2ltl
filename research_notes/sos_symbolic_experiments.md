@@ -21,7 +21,17 @@ the derived-census driver, the engine's first consumer at scale),
   preimage sets + *forward* least-letter walk — see C7, C10); the
   calculus is specified with its correctness propositions (paper §6,
   Props 6.0–6.2) — covered by C10 + E9.
-- **TODO: everything else.** C1–C10, E0–E9, M1–M5: none started.
+- **DONE (engine-side): M1** — the engine lives in `sos_sdd/` (libDDD
+  multi-valued DDD core, Python `SoS` API; backend decisions recorded in
+  its README, milestone ledger in `sos_symbolic_report.md`). C1
+  (primitives + instrumentation), C2 (guard-cube → letter-behavior
+  classes; slot space + brick step homs — the backend note in §1 is
+  resolved: homomorphism bricks, not 2k-diagram relations), C3 (layered
+  closure, layers kept, budgets as findings), E0 green (10/7/16,
+  dual-verified; the §3.1 node-vs-cells figure measured: 10 < 32).
+- **TODO: everything else.** C4–C10, E1–E9, M2–M5. Phase 2 (`Comp`)
+  is pinned on libITS-gal `ExprHom`; Comp-free parts of C7 (shortlex
+  extraction over kept layers) and C8 (async generators) proceed first.
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat
