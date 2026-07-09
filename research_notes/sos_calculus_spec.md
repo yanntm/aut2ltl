@@ -12,6 +12,18 @@ Proposition 3.1 (with witness minimality as Proposition 3.2; the stutter
 scan renumbered to 3.3, V2 below updated). The `FoldedLanguage` alphabet
 field and the scoped `check` flag on reduce are accepted as specced.
 
+**Rev 3, 2026-07-09 (paper fill-in).** The calculus paper is now written up
+in full (introduction, background §2 carrying the normative `Val`/cell-order
+statements, Prop 3.3 with complete proof, ledger, complexity table, related
+work); proposition numbers 3.1/3.2/3.3 are stable as ratified above. One
+spec addition falls out, for V2: the stutter read-off enters the package as
+`is_stutter_invariant(table: Table) -> bool` —
+`all(M(λ(a), λ(a)) = λ(a) for a ∈ Σ)`, a *table* property (no pair set
+involved), living in `table.py`; V2 compares it against Spot's verdict per
+census case. Nothing else in the paper's free fragment exceeds what
+CAL1–CAL3 implement; the exponential frontier and the §3.5 hulls remain
+non-goals (theory still owes the hull pair sets).
+
 **Normative math.** `research_notes/sos_calculus.md` (the calculus paper:
 align / operate / reduce, the surgery catalog, the ledger) with [SωS26] for
 the invariant, its membership oracle, and canonicity (Thm 5.1). This
