@@ -176,11 +176,20 @@ stream.
   bounded refactor. Parts general enough may be pushed back to the library.
 - **Pure multi-valued DDD now; hierarchy (SDD) is an extension**, targeted
   at factored product coordinates when the scaling families land.
-- **Relations follow the ETF pattern, restructured to modern C++**: a
-  projection (the slots a relation touches) plus an interleaved 2k-level
-  diagram, applied via `apply2k`; slot-local projections are what the
-  saturation discipline rewards. The legacy code is inspiration, never a
-  dependency.
+- **Relations are homomorphism bricks, not 2k diagrams** (the ETF/`apply2k`
+  route was considered and dropped — DDD-side `apply2k` is single-variable,
+  and bricks get the library's canonization, caching and locality-driven
+  saturation for free). Phase 1's letter step is per-slot total functions:
+  `Hom_Basic` selectors/assignments summed over the **disjoint guard-cube
+  classes of the digest** — the letter coupling never puts α variables in
+  the diagram and never enumerates the alphabet; α-bits-as-variables is
+  the recorded fallback if cube refinement ever explodes. Phase 2's
+  `Comp` (indexed read `z_i ← y[state(x_i)]`) uses the GAL expression
+  homomorphisms — `assignExpr` / `syncAssignExpr` / `predicate` of
+  `its/gal/ExprHom.hpp` (the CAV 2012 symbolic expression evaluation) —
+  from **libITS' gal component**, which depends only on libITS root
+  contracts + libDDD (parsers depend on it, never the reverse). That
+  dependency joins at Phase 2; Phases 0–1 are pure libDDD.
 - **Guard**: DDD edge values are `val_t` (`short` in stock libDDD); the
   packed slot encoding caps at `|Q × 2^C| ≤ 32767`; the engine rejects a
   digest that exceeds it (reachable in flat coordinates on scaling
