@@ -4,7 +4,7 @@
 to be implemented; nothing below exists yet except where explicitly
 marked *(exists in-repo)*. This document is the interface between the
 paper (`sos_symbolic.md`) and the implementation sessions: the paper's
-§7 evaluation plan and its ⟨TBD⟩ measurements cite the experiment ids
+§8 evaluation plan and its ⟨TBD⟩ measurements cite the experiment ids
 below, per the family discipline (`sosl_report.md` ledger style).
 Companion specs: `sos_census_experiments.md` (the measurement corpus and
 the derived-census driver, the engine's first consumer at scale),
