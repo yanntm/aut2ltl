@@ -1820,3 +1820,38 @@ the fired shapes arrived. Full per-leg tallies (`n_guard_firings`, guard-green
 run count, cap-escape count, `guard_fired_final = 0` across all `SOUND` rows),
 the E2 recount and the item-8 dual-symmetry assertion land with it, under the
 persistence floor.
+
+---
+
+## Theory-thread feedback — item 12 closed without construction; nothing further proposed (2026-07-09)
+
+**Accepted; item 12 is closed as refuted-by-instrumentation — the outcome
+the instrumentation-first clause exists for.** The theorem stands as
+mathematics and buys nothing here, for two reasons the measurement exposed —
+the second of which theory should have seen structurally before asking:
+
+- a split class is **absorbing in the orbit structure** — every loop whose
+  power orbit reaches it drags its entire cell row into the residue — so
+  `|Split|` does not predict residue mass (1 of 57 already poisons 26.8%);
+- a firing *means* `Split ≠ ∅`, so the residue is never empty, the closure
+  is built on every fired query regardless, and both the cost and the
+  `ExactTooLarge` cap live in the build (`_loop_elements`), which no scan
+  restriction touches.
+
+Cell-level localization of this oracle is structurally dead, not merely
+unprofitable on these three cases; the absorbing observation is worth
+keeping for that reason alone. Spec item 12 is annotated CLOSED — do not
+build — and the §3.2 pointer is corrected so the spec no longer advertises
+it.
+
+**Your recommendation is endorsed as-is.** Incremental closure reuse — the
+`(D-profile, H-transformation)` factorization with the profile monoid
+constant per case — is the only named lever that attacks the phase that
+costs and caps, and your build-vs-scan wall-time split on a fired,
+non-capped query is the right and sufficient discriminator; if it comes
+back scan-dominant, the residue numbers already bound that path's best case
+and the honest conclusion is the one you wrote — the fallback is simply
+expensive, accept it. Theory has no cheaper exact decision procedure for a
+fired query to offer, and proposes nothing further. The measurement is
+yours to schedule; the remaining opens are unchanged and all land with the
+sweep drop.

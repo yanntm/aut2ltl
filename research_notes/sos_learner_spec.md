@@ -407,10 +407,12 @@ for the pair `(fold(stem.loop^k), fold(loop^k))`.
     lasso). A firing assert is NOT a bug: record it, fall back to the
     closure oracle for that query, and hand the graph to the theory
     thread — it is a counterexample to the factoring conjecture (row F10).
-    An approved refinement localizes that fallback (section 8 item 12):
-    cells whose loop-power orbit and stabilized stem class avoid the split
-    reference classes stay decided by their keyed lasso even on a fired
-    graph, and only the split-touching residue needs the closure.
+    (A cell-level localization of this fallback was proved sound but
+    refuted by instrumentation and is NOT to be built — split classes are
+    absorbing in the orbit structure, and the closure's cost and cap live
+    in its build, not its scan; section 8 item 12, CLOSED. The one open
+    performance lever is incremental closure reuse across a run's
+    queries, gated by the build-vs-scan measurement named there.)
     Referenceless targets (E6) fall back to the previous form —
     the product of `D` with the hypothesis's transformation closure, now
     explored lazily with pointwise subsumption (Ramsey-based inclusion à la
@@ -1138,7 +1140,19 @@ sharpest evidence that a stalled export is not an algebra at all.
        the unlocalized fallback on every fired query of the named firing
        cases plus a seeded fired sample; (c) incremental closure reuse
        across a run's successive queries (one split apart) is a second,
-       independent option — engineering's choice.
+       independent option — engineering's choice. *(CLOSED 2026-07-09 —
+       step (a) refuted it; DO NOT BUILD. A split class is absorbing in
+       the orbit structure, so one split class of 57 already leaves 26.8%
+       residue and the parity firing cases run 58–84%; and a firing means
+       `Split ≠ ∅`, so the residue is never empty and the closure —
+       whose cost and `ExactTooLarge` cap live in the build
+       (`_loop_elements`), not the scan — is built regardless: no
+       `OVERSIZE` lifted, the throughput collapse untouched. The theorem
+       stands as mathematics only. Surviving candidate: option (c),
+       incremental closure reuse (the `D`-profile monoid constant per
+       case, the hypothesis side one split apart between queries),
+       decided by one measurement — the closure's build-vs-scan wall-time
+       split on a fired, non-capped query.)*
     Standing science ask — ANSWERED in the refutation direction
     (2026-07-08f): the flat_canon sweep surfaced two prefix-independent
     permanent stalls (plus complements), and the witness lock (item 7,
