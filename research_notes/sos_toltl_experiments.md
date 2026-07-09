@@ -108,8 +108,18 @@ anchor class and `e` the idempotent power of the loop class:
   cap-bounded `PASS` is not a theorem until either this replaces the
   enumeration or a sufficiency proof for the cap is frozen
   (`sos_toltl_report.md` F1).
+- *park split (paper Lemma 5.5 / Prop 5.7)*: on a 1-anchored layer,
+  classify each conflict's shared recurring-window set by its letters:
+  **parked-type** — anchors of at most one class of `R` — vs
+  **recurring-type** (at least two). A parked-type conflict refutes
+  plain (B) only; condition (B̃) fails only on a recurring-type
+  conflict. The (B̃) verdict additionally needs, per class `d` with
+  `St(d) ≠ ∅`, the (B) test of the *frozen restriction* `({d}, St(d))`
+  — this same component run on the one-class machine at `d` over its
+  stutter letters.
 Output: smallest passing `k'` with its PASS/UNDECIDED grade, or
-`FAIL(witness pair of lassos)`.
+`FAIL(witness pair of lassos)`; on 1-anchored layers additionally the
+(B̃) verdict with its per-class frozen-restriction verdicts.
 
 **C4 — engine bricks (walk + window).** The transcription per the paper's
 §5 skeleton, emitting the class-indexed DAG; flattening and definitional
@@ -131,17 +141,17 @@ the Wilke-condition statement; E5 is blocked on this and on nothing else.⟩
   wrap, don't rewrite)*;
 - *OR-split*: restrict `P` per final layer, re-canonicalize each piece,
   report per-piece read-offs (`|𝒞'|`, rung, (A)/(B) widths);
-- *AND-split* (per paper Thm 5.8 / Prop 5.9): enumerate *pairs* of
+- *AND-split* (per paper Thm 5.11 / Prop 5.12): enumerate *pairs* of
   congruences of `(𝒞, M)` (census-sized — brute force over principal
   congruences and joins is acceptable), coarsest first; for each `θ`
   compute the canonical saturation `Val^θ` (pointwise `∨` of `Val_P` over
   `θ`-blocks) and test `Val^{θ₁} ∧ Val^{θ₂} = Val_P` with both factors
-  proper (`Val^{θᵢ} ≠ Val_P`) — this search is complete (Thm 5.8); the
-  `θ₁ ∩ θ₂ = Δ` condition is a theorem (Prop 5.9), assert it, don't test
+  proper (`Val^{θᵢ} ≠ Val_P`) — this search is complete (Thm 5.11); the
+  `θ₁ ∩ θ₂ = Δ` condition is a theorem (Prop 5.12), assert it, don't test
   for it. Report the factor invariants (re-canonicalized), or
   `IRREDUCIBLE`. **Test vectors:** `GFa` must *factor* — as
   `Fa ∧ (GFa ∨ G¬a)`, both congruences the neutral-unit merge (the
-  paper's properness caveat in Thm 5.8); `GFa ∧ FGb` must factor as
+  paper's properness caveat in Thm 5.11); `GFa ∧ FGb` must factor as
   `FGb ∧ GF(a ∨ !b)` — *not* as `GFa ∧ FGb`, `GFa` not being recognized
   on its table (paper §5.3(3)). Whether a found
   split is *adopted* is the §5.3(1) guard's read-off decision — report
@@ -237,7 +247,10 @@ sufficiency theorem until report-F1's open item is frozen), UNDECIDED.
 `(ω,·)`/`(ω²,·)` frozen final layers. The clean sweep is a *frame*
 fact: a (B) failure needs ≥ 2 AP and ≥ 2 states at once (report F13,
 `G(a → F b)`), and the catalogue holds no `2state2ap` shape. Re-runs
-on census-next when that axis lands.
+on census-next when that axis lands. Under the C3 park split the
+catalogue numbers are predicted unchanged: the 372 UNDECIDED are
+frozen final layers, where no letter is an anchor and (B̃) coincides
+with (B).
 
 ### E3 — presentation cross-test *(internal diagnostics, not paper material)*
 
@@ -325,7 +338,25 @@ notch at a time, smallest-first):
   (equal recurring window sets, opposite verdicts, the idle letter
   `!a&!b`). A (B) failure needs ≥ 2 AP *and* ≥ 2 states at once — a
   shape the catalogue omits; `2state2ap` is the census-next axis and
-  minimality is decided there.
+  minimality is decided there. **Park split (paper Prop 5.7): this
+  failure is parked-type.** Expected under the C3 park split: (B̃)
+  PASS at width 1 — both frozen restrictions constant (`Ω_2 = ⊤`,
+  `Ω_4 = ⊥`), the anchor-recurring side constant-accept. Confirm; the
+  residual hunt moves to H8.
+- **H8** *(new — paper §5.1 conformance, stop-the-line on
+  divergence)*: the park-irreparable witness
+  `GF(a ∧ X((!a&!b) U a))`. Bridge the formula and check against the
+  paper's §5.1 assertions: `|𝒞| = 10`, prefix-independent, every
+  layer 1-anchored at width 1, terminal final layers
+  `{(f,a,1), (f,b,1)}` keyed by the first non-silent letter; C3 with
+  the park split must report the frozen restrictions (B)-determined at
+  width 1 and a **recurring-type** `FAIL` witness pair at every tested
+  `k'` (alternating vs doubled-`a` lassos over growing silent gaps —
+  note the exact pair needs gaps `> k'`, so the breadth-first stage
+  must not cap gap length below the tested width). Any divergence is
+  stop-the-line for the paper's §5.1 residual-floor paragraph.
+  Minimality of the (B̃)-failing witness: census-next `2state2ap`,
+  the same axis as H3.
 - **H4** *(answered — report F14)*: smallest specimen forced to the DG
   fallback. Read as "(A)-forced": `|𝒞| = 15` (= H2). Read as "forced
   at all": the graded stratum reaches it first, at `|𝒞| = 12`
@@ -394,7 +425,7 @@ rung against `L`'s: the incidence of Wagner-ladder climb is the paper's
 §5.3(1) guard turned into a measurement (rung read-off via the classifier
 subproject — a dependency, note it in the run log); (iii) the **AND-split
 search** of C7, reporting factored-vs-`IRREDUCIBLE` fractions and the
-factor read-offs (the Thm 5.8 census query). Tables per §3b.
+factor read-offs (the Thm 5.11 census query). Tables per §3b.
 **Prediction:** final-layer pieces never climb the ladder and usually
 shrink; pair pieces climb on a measurable fraction (the guard's raison
 d'être) — if no pair piece climbs anywhere on the census, the guard is
