@@ -217,12 +217,14 @@ stream.
 
 ## Build
 
-C++17, libDDD (headers + static lib via `LIBDDD_HOME`, cache or
-environment), pybind11. CMake:
+C++17, pybind11 (system package), and the native deps installed from
+source into the untracked local prefix `deps/` by:
 
 ```
+./install_deps.sh   # libDDD + libITS from ~/git checkouts (see its header)
 cmake -B build && cmake --build build
 ```
 
-places `_core` inside the package directory, so `import sos_sdd` works
-from the repo root without an install step.
+The extension lands inside the package directory, so `import sos_sdd`
+works from the repo root without an install step. `LIBDDD_HOME`
+overrides the deps/ prefix if ever needed.
