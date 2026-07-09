@@ -16,7 +16,7 @@ coarsest congruence saturating `L`, it is presentation-independent and complete 
 it determines membership, equivalence, and every definability property of `L`,
 including whether `L` is expressible in linear temporal logic. Yet, unlike the
 finite-word syntactic monoid, which has been computed routinely for three decades,
-the syntactic ω-semigroup has never been constructed from an automaton. The obstruction is not
+the syntactic ω-semigroup has, to our knowledge, never been constructed from an automaton. The obstruction is not
 merely its size: computing it requires two ingredients the literature holds only
 separately — a recognizer that remembers *acceptance along runs* rather than only
 transitions, and a way to compute the inherently *two-sided* syntactic congruence
@@ -147,13 +147,13 @@ these three examples.
 
 ---
 
-| example | PSL/SERE source | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | group in TM? | group in `S(L)₊`? | LTL? | witness shape / defining formula |
+| example | PSL/SERE source | \|Q\| | \|EM\| | \|S(L)₊¹\| | group in TM? | group in `S(L)₊`? | LTL? | witness shape / defining formula |
 |---|---|:--:|:--:|:--:|:--:|:--:|:--:|---|
 | `GF(aa)` | `G F(a & Xa)` | 2 | **10** | **6** | yes (`Z₂`) | **no** | **yes** | defining formula ≡ `GF(a ∧ Xa)` |
 | `Even` | `{ {a[*2]}[*] ; !a }!` | 4 | 7 | 5 | yes | **yes (`Z₂`)** | no | `F₁` (linear): `aⁿ·!a·a^ω ∈ L ⟺ n` even |
-| `EvenBlocks` | `GF!a ∧ FG(!a → X{a[*2][*];!a}!)` | 2 | **16** | 8 | yes | yes (`Z₂`) | no | `F₂` (ω-power): `(aⁿ·!a)^ω`, by parity of `n` |
+| `EvenBlocks` | `GF!a ∧ FG(!a → X{{a[*2]}[*];!a}!)` | 2 | **16** | 8 | yes | yes (`Z₂`) | no | `F₂` (ω-power): `(aⁿ·!a)^ω`, by parity of `n` |
 
-**Table 1.** Algebraic fingerprints of the three examples. `|EM¹|` is the
+**Table 1.** Algebraic fingerprints of the three examples. `|EM|` is the
 acceptance-enriched monoid, `|S(L)₊¹|` the constructed SωS (a fresh identity
 adjoined unconditionally — the convention fixed in §2); a group
 in the *transition* monoid may be a presentation artifact, whereas a group in `S(L)₊` is
@@ -342,13 +342,14 @@ elements `⟦a⟧` (`a ∈ Σ`), with identity `⟦ε⟧ : q ↦ (q, ∅)`.
 Write `st_e(q)`, `mk_e(q)` for the two components of `e ∈ EM(D)` at `q`. The map
 `⟦·⟧ : Σ* → EM(D)` is a monoid morphism by construction.
 
-*Example (Table 2).* On `GF(aa)`, the elements `⟦a⟧` and `⟦aa⟧` already differ in
-`EM`, and precisely in the *mark* part: reading a second `a` closes an `aa` and
-collects the `Inf`-mark that reading a single `a` (from a fresh state) does not. Their
-*state* parts can nonetheless coincide, which is the whole point of the enrichment
-(Proposition 3.4). Closing `⟦a⟧`, `⟦!a⟧` under composition yields the ten elements of
-`EM(GF(aa))` — the empty word, the four `aa`-free "(first letter, last letter)"
-behaviors, and the absorbing "contains `aa`" behavior, each in one or two mark states —
+*Example (Table 2).* On `GF(aa)`, the elements `⟦a⟧` and `⟦a·a·a⟧` have the *same*
+state part — both transpose the two states, so the transition monoid identifies
+them — yet differ in the *mark* part: the longer word closes an `aa` and collects
+the `Inf`-mark that a single `a` does not. Separating equal state maps by their
+marks is the whole point of the enrichment (Proposition 3.4). Closing `⟦a⟧`, `⟦!a⟧`
+under composition yields the ten elements of `EM(GF(aa))` — the empty word, five
+`aa`-free elements, and the absorbing "contains `aa`" behavior in four state-map
+variants (all four carry the full mark everywhere) —
 tabulated in Table 2(a) alongside their fold to the six SωS classes of §4, with
 the sibling monoids of the other two examples beside it: the enrichment run on
 all three presentations at once (the wide row scrolls).
@@ -419,8 +420,9 @@ all three presentations at once (the wide row scrolls).
 
 **Table 2.** The enriched monoids of the three examples, each element a
 `(st, mk)` vector over its automaton's states, folded onto the SωS classes of
-§4. **(a)** `GF(aa)`: reading a second `a` collects the `Inf`-mark `0` — the
-only difference between `⟦a⟧` and `⟦aa⟧`, invisible to the transition monoid;
+§4. **(a)** `GF(aa)`: reading a third `a` collects the `Inf`-mark `0` at state
+`0` — the only difference between `⟦a⟧` and `⟦a·a·a⟧`, whose state parts are
+the same transposition, so the pair is invisible to the transition monoid;
 four elements collapse into the absorbing "contains `aa`" class and `a·!a·a`
 rejoins `[a]`: **10 → 6**. **(b)** `Even` (states: `2` initial/even parity,
 `1` odd parity, `0` accepting sink, `3` rejecting sink): `⟦aa⟧`'s *state*
@@ -518,15 +520,15 @@ function of `st_x(ι)` and `c` only, namely `A(st_x(ι), c)`. ∎
 
 ```
     e ~lin f   ⟺   ∀ q ∈ Q :   L(st_e(q)) = L(st_f(q)),
-    e ~ω  f    ⟺   ∀ b ∈ EM(D)¹ :   Aprof(e·b) = Aprof(f·b),        where  Aprof(c) = (q ↦ A(q, c)).
+    e ~ω  f    ⟺   ∀ b ∈ EM(D) :   Aprof(e·b) = Aprof(f·b),        where  Aprof(c) = (q ↦ A(q, c)).
 ```
 
-Here `b` ranges over `EM(D)¹`, the identity **included**: `b = 1` is the ω-power
-context with empty right padding `y = ε`, whose loop is `e` itself — a case we must
-keep. This is harmless: `e` is the image of a non-empty word, so the loop `e·b` is
-non-empty for every `b`, and `A(·, e·b)` is a genuine loop verdict; the degenerate
-`A(·, 1)` (an empty loop) would arise only from comparing the identity class with
-itself, which is trivial.
+Here `b` ranges over all of `EM(D)`, the identity **included**: `b = ⟦ε⟧` is the
+ω-power context with empty right padding `y = ε`, whose loop is `e` itself — a case
+we must keep. This is harmless: `e` is the image of a non-empty word, so the loop
+`e·b` is non-empty for every `b`, and `A(·, e·b)` is a genuine loop verdict; the
+degenerate `A(·, ⟦ε⟧)` (an empty loop) would arise only from comparing the identity
+class with itself, which is trivial.
 
 *Example (a profile, read off the automaton).* In `GF(aa)`'s run-parity form
 (Figure 1, Table 2) the letter `⟦a⟧` transposes the two states — `0 → 1` collecting no
@@ -540,7 +542,7 @@ exactly this per-state loop verdict, one bit per state.
 **Proposition 4.3 (factorization).** `e ~ f  ⟺  e ~lin f  ∧  e ~ω f`.
 
 *Proof.* *Linear shape.* By Lemma 4.1, `x·e·y·t^ω ∈ L ⟺ A(st_{x·e·y}(ι), t)`, and
-`st_{x·e·y}(ι) = st_y(st_e(st_x(ι)))`. As `x` ranges over `EM¹`, `st_x(ι)` ranges over
+`st_{x·e·y}(ι) = st_y(st_e(st_x(ι)))`. As `x` ranges over `EM(D)`, `st_x(ι)` ranges over
 exactly the reachable states; fix such a `q`. The linear condition then reads
 `∀ y, t : A(st_y(st_e(q)), t) = A(st_y(st_f(q)), t)`, i.e. the states `st_e(q)` and
 `st_f(q)` accept the same ultimately-periodic words, i.e. (agreement on
@@ -834,7 +836,7 @@ rejected — correctly, no `aa` recurs.
 <td align="center"><img src="sos_figs/img/gf_aa_reset.png" alt="GF(aa) reset automaton" width="280"></td>
 <td valign="middle">
 
-| presentation | `\|Q\|` | `a` acts by | group in TM? | `\|EM¹\|` | `𝓘(GF(aa))` |
+| presentation | `\|Q\|` | `a` acts by | group in TM? | `\|EM\|` | `𝓘(GF(aa))` |
 |---|:--:|---|:--:|:--:|---|
 | run-parity (Fig. 1a) | 2 | transposition | yes — `Z₂` | 10 | Figure 2 |
 | reset (left) | 2 | reset | no — aperiodic | 7 | *byte-identical* |
@@ -857,7 +859,7 @@ Figure 1(a) was pure presentation; Theorem 4.5's quotient is where it dies.
 A first, aperiodicity-free use: **language equality is table equality.** Where
 pairwise equivalence of `N` languages costs `O(N²)` automaton products, hashing `𝓘`
 buckets a corpus by true language in a hash join — the natural operation for
-deduplicating large language sets.
+deduplicating large language sets, and the first entry of the calculus §7.2 opens.
 
 ---
 
@@ -946,8 +948,9 @@ The cut is a single group-theoretic read-off: `S(L)₊` is **aperiodic**
 (group-free) iff `L` is **star-free** `= FO[<] =` **LTL** `=` counter-free
 [Sch65, Kam68, Tho79, DG08]. This is the paper's spine (§4) promoted to a decision:
 power-iterate each class (the class of `v^{k+1}` is a function of those of `v^k` and `v`,
-since `~` is a two-sided congruence by Lemma 4.4), report a repeated class in a power
-sequence as a group, and the verdict is exact in both directions — because `S(L)₊` *is*
+since `~` is a two-sided congruence by Lemma 4.4); in a finite monoid every power
+sequence settles on a cycle, and a cycle of period `≥ 2` is a group — aperiodicity is
+every period equal to `1`. The verdict is exact in both directions — because `S(L)₊` *is*
 the presentation-independent invariant (Theorem 4.5), a group in it is never an artifact
 (Proposition 3.4).
 
@@ -965,8 +968,11 @@ we claim the data, not the procedures.
 
 ### 7.2 A calculus over the syntactic ω-semigroup
 
-Theorem 5.1 has operational content beyond canonicity. On the reified
-invariant,
+Theorem 5.1 has operational content beyond canonicity: the operations one
+is used to performing on automata exist natively on the invariant, and where
+an automaton operation acts on a presentation, the same operation here acts
+on the language itself — its effect defined, and its result canonical, at
+language level. On the reified invariant,
 language equivalence is byte equality of canonical serializations; complement
 is one flip, `P ↦ P^c` within the linked pairs (§5); emptiness is `P = ∅`,
 universality is `P =` all linked pairs; membership of a lasso `u·v^ω` is one
@@ -975,7 +981,7 @@ carries its own certificate — shortlex keys turn any accepting pair `(s, e)`
 into the canonical witness lasso. Each entry replaces a construction on
 automata — complementation costs `2^{Θ(n log n)}` on nondeterministic Büchi
 automata [Saf88], equivalence sits in PSPACE — with a scan of the one
-canonical table, once the entry price of §8 has been paid.
+canonical table.
 
 The classical taxonomy of ω-regular
 languages is, theorem by theorem, a taxonomy of structural properties of the
@@ -987,14 +993,18 @@ acceptance index — the minimal deterministic condition `L` needs: Büchi,
 co-Büchi, parity `[i, j]`, a genuine Rabin pair — is the maximal length of an
 *alternating chain* of ultimately periodic behaviours, introduced on automata
 by Wagner [Wag79] and computable in the *syntactic* ω-semigroup by a theorem
-of Carton and Perrin [CP97, Cor. 1]. Subsuming every rung and the index, the
+of Carton and Perrin [CP97, Cor. 1].
+
+Subsuming every rung and the index, the
 exact **Wagner degree** — the complete classification of ω-regular languages
 up to continuous (Wadge) reducibility — is fixed by the chain and superchain
 structure of `S(L)` [CP97, CP99, SW08]. We claim no economy for a single
 verdict — a dedicated algorithm for one class will usually beat materializing
 the whole algebra — but a unifying one: build the SωS once, and each decision
 is a table search, several of them decisions for which no practical tool
-exists today. On the running examples the axes visibly decouple: `Even` is an
+exists today.
+
+On the running examples the axes visibly decouple: `Even` is an
 *open* (guarantee) property — a good prefix decides it — yet non-LTL, a
 genuine mod-2 group inside an open set; `GF(aa)` is recurrence, needing only
 Büchi, and LTL; `EvenBlocks` needs its genuine Rabin pair. The topological
@@ -1027,8 +1037,10 @@ deterministic ω-automata do not exist). What stays expensive is exactly what
 must: the ω-rational constructors — concatenation by a prefix set,
 ω-power — and existential projection embed a powerset, and entering the
 calculus costs what determinization always cost (§8). Developing this
-calculus, the classification procedures behind the table, and the rendering
-of the algebra back into defining formulas are each downstream of the
+calculus, the classification procedures behind the table, the rendering
+of the algebra back into defining formulas, and the census of small
+ω-regular languages that byte-canonicity makes enumerable — one item per
+language, not per presentation — are each downstream of the
 object: they consume it, and this paper delivers it.
 
 ---
