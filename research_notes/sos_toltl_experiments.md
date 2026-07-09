@@ -22,8 +22,9 @@ reproduce, and results come back as findings in `sos_toltl_report.md`
 - **Todo:** E9 candidates 3, 3a, 3b, 5 (the named 2-AP builds, the
   `GFa ∧ FGb` conformance, the width exemplar, the showpieces); H7
   (uncapped (A) fixpoint over the 258); E3 (presentation cross-test,
-  early pass); full E4 and E8; E5 (blocked on C6, itself blocked on
-  the paper's Thérien–Wilke freeze); H6 and smallest-H3 (census-next
+  early pass); full E4 and E8; C6 + E5 (unblocked — the paper's §2.2
+  Thérien–Wilke read-off is frozen, C6 carries the procedure); H8 (the
+  park-irreparable witness conformance); H6 and smallest-H3 (census-next
   `2state2ap`); the graded engine (M3) once the paper's §4.3
   entry-rooted repair carries its completeness re-proof — 42.5% of the
   LTL catalogue is graded, so M3 is the coverage frontier.
@@ -131,8 +132,25 @@ stand alone); M2 adds the emitter.
 count from the `.sos` residuals block); complement flip. Each is a pure
 `.sos` computation.
 
-**C6 — until-rank.** ⟨theory TBD — implement only after the paper freezes
-the Wilke-condition statement; E5 is blocked on this and on nothing else.⟩
+**C6 — until-rank.** The paper's §2.2 read-off is frozen ([TW01] =
+Thérien–Wilke, SIAM J. Comput. 31(3), 2001 —
+`papers/Therien_Wilke_2001_SIAM.pdf`): the until-rank of `L` is the
+least `k` with `S₊ ∈ (R ∗ MD1^k ∗ D)^ρ`, where `S₊` is the `.sos`
+word-class semigroup *without* the adjoined unit; validity over
+ω-words is TW01 Thms 5.8–5.9 directly on `S₊`, no transfer work on our
+side. Implementation follows TW01's own procedure (proofs of
+Thms 4.16–4.17): reverse `S₊` (the `ρ`); Straubing's delay bound
+reduces `∗ D` to `∗ D_{|S|}` (Thm 4.13/Prop 4.13); membership in
+`R ∗ (MD1^k ∗ D_l)` is the Thérien–Weiss graph-congruence check
+against the effectively-locally-finite `MD1^k ∗ D_l` (Thms 4.14–4.15;
+the underlying procedure is in their [19], Thérien–Weiss JPAA 1985 —
+verify the library's `Therien_Weiss_1986_RAIRO` is or contains it
+before leaning on it). **No elementary complexity bound exists (TW01
+Problem 1)**: budget every stage; an over-budget verdict is
+`UNDECIDED(k)`, never a rank; scan `k = 0, 1, …` under one global
+budget (every LTL language has a finite rank, so the scan terminates
+when it fits). Until-depth counts `U` only — `X`/`F`/`G` free (TW01
+§2) — which fixes E5's depth metric on the emitted side too.
 
 **C7 — combinator layer (paper §5.3).** Three pure-`.sos` operations:
 - *re-canonicalizer*: given `(𝒞, λ, M, P')` with any pair set `P'`, re-run
@@ -305,7 +323,7 @@ size-bucket histograms (flat and DAG) and the DAG-vs-`|𝒞|` scatter. This
 is §3/§6's explosion measured as a *distribution* instead of the single
 `GF(aa)` exemplar, and it freezes the (b) column before (a) exists.
 
-### E5 — until-rank vs emitted depth *(blocked on C6)*
+### E5 — until-rank vs emitted depth *(unblocked — C6 is specified)*
 
 Per census LTL specimen: until-rank from the algebra, until-depth of the
 emitted (simplified) formula. **Paper deliverable:** the optimality-gap
@@ -593,8 +611,9 @@ residual-sharing wins.
   layer action monoid `𝒜_R` (paper Prop 4.14) — full-coverage engine;
   full E4, E3; E8. *(Todo; the graded engine is gated on the paper's
   §4.3 completeness re-proof; C7 is done.)*
-- **M4** — C6 + E5; E6 sweeps; E7 re-run on census-next. *(Todo; C6
-  blocked on the paper's Thérien–Wilke freeze.)*
+- **M4** — C6 + E5; E6 sweeps; E7 re-run on census-next. *(Todo;
+  unblocked — C6 carries the frozen procedure and its budget
+  discipline.)*
 
 Every milestone ends with a report appended to `sos_toltl_report.md`
 (ledger style, one row per finding, predictions checked off or refuted —
