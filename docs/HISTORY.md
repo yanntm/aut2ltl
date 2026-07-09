@@ -2990,3 +2990,12 @@ Concatenation blow-up example written and proved on the invariant:
 W = Sigma*# times a mod-n counter language gives 2^n - 1 classes from
 O(n) operands, via residual counting through the rooting read-off.
 Empirical small-n check deferred to the V1 session.
+
+## 2026-07-09 — calculus spec: CAL4 protocol specced; spec de-historicized
+
+Section 8 added as the complete CAL4 work order (V1a/V1b/V1c/V2/V3, trap
+list, deliverables mapped to the paper TBDs). The spec was then reworked
+from changelog into work order: DONE/TODO status table up front, rev
+narratives folded into normative text, learner-spec pins dropped. The
+dropped rev history (rev 2 saturation correction, rev 3 paper fill-in,
+rev 4 protocol) survives in git log of sos_calculus_spec.md.
