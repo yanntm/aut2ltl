@@ -1,0 +1,183 @@
+# sos_sdd — symbolic SoS engine (libDDD core, Python API)
+
+A C++/libDDD engine computing the syntactic ω-semigroup invariant `𝓘(L)` of
+a Büchi automaton symbolically — multi-valued DDD now, hierarchical SDD as
+the growth path — exposed to Python as a `SoS` class carrying the calculus
+operators as its high-level API. It implements Phases 0–6 of the paper
+(`research_notes/sos_symbolic.md`) and the §6 calculus moves; the experiment
+contract is `research_notes/sos_symbolic_experiments.md` (C1–C10, E0–E9).
+
+The engine changes *representation, never mathematics*: on every instance
+where the explicit reference construction (`sosl.sos.build`) terminates, the
+emitted `.sos` must be byte-identical to the reference's (the conformance
+gate, spec §3). The serializer therefore mirrors
+`sosl/sosl/sos/io/serialize.py` exactly.
+
+This document is the IO contract — the Python API surface, the
+instrumentation stream, the failure taxonomy. It is written before the code;
+the code conforms to it.
+
+## Architecture
+
+- **C++ core** (`src/`): the five §2.2 primitives over libDDD, the phase
+  homomorphisms, the calculus moves. All diagram traffic stays on this side;
+  the binding is coarse-grained (one call per phase or move, never per node).
+- **pybind11 module** `sos_sdd`: the `SoS` class and the engine
+  configuration. No HOA parsing in C++ — Python digests inputs (the parser
+  half of C2 exists in-repo) and passes plain data across the binding. No
+  interchange file format: the automaton digest is an argument, not a file.
+- **Python drivers** under `tests/`: sweep the C9 switches, compare emitted
+  `.sos` against the reference (`cmp`), write the experiment ledgers.
+  Conformance comparison is the driver's job, not the engine's.
+
+## Input digest (Python → binding)
+
+`sos_sdd.Automaton` — the §2.3 input contract, digested:
+
+```python
+Automaton(name="evenblocks",
+          ap=["a"],                  # ordered; α ranges over 2^ap, never enumerated
+          states=2, init=0,
+          marks=2,                   # |C|; marks are 0..|C|-1
+          acceptance="Inf(0)&Inf(1)",# HOA acceptance formula over the marks
+          trans=[(0, "a", 1, {0}),   # (src, guard-cube, dst, mark set)
+                 (0, "!a", 0, set()),
+                 ...])
+```
+
+Guards are DNF cube strings over the declared APs (`a&!b`); a multi-cube
+guard is several `trans` entries. Product families (C8) are structured, the
+global automaton never expanded on the Python side:
+
+```python
+Product(components=[eb0, eb1, eb2],  # Automaton each
+        mode="async")                # async: disjoint APs and marks,
+                                     #   acceptance = conjunction
+                                     # sync: APs shared by name
+```
+
+## Engine configuration (the C9 switches)
+
+Every switch the E7/E8 sweeps need is a constructor argument, not a fork:
+
+```python
+eng = sos_sdd.Engine(
+    coords="factored",        # or "flat" — slot space of a Product (C8/E2/E3)
+    slot_perm="natural",      # "reverse" | explicit permutation list (E7)
+    slot_encoding="packed",   # one variable per slot, domain Q×2^C (§4.2)
+                              # | "split-sm" (state var above mark bits)
+                              # | "split-il" (interleaved)          (E7)
+    alpha="top",              # α-block position in relation diagrams (E7)
+    fp1="layered", fp5="layered",
+                              # | "chaining" | "saturation" (E8); a
+                              # non-layered Phase 1 runs a costed
+                              # length-reconstruction pass for shortlex,
+                              # reported as its own op record
+    square="check",           # squaring AND general pairing, compared —
+                              # disagreement raises StopTheLine (C4)
+                              # | "on" (shortcut trusted) | "off"
+    quotient="explicit",      # small-side fallback, recorded (spec §5) | "symbolic"
+    node_budget=0,            # live-node cap; 0 = unlimited (C3)
+    time_budget=0.0,          # wall seconds; 0 = unlimited
+    stats=None)               # path (JSONL) or callable(dict) (C1)
+```
+
+The first stats record echoes the resolved configuration
+(`{"ev":"config", ...}`), so a ledger line is reproducible from its log.
+
+## The `SoS` class
+
+```python
+S = eng.build(aut)                  # Phases 0–6
+S = eng.build(aut, until_phase=1)   # M1 form: closure only; later-phase
+                                    # accessors raise on a partial object
+```
+
+**Readings** (E0/E1/E5 are readings of these):
+
+```python
+S.em1_count()      # |EM¹| by model count
+S.depth            # closure depth (longest shortlex key)
+S.layers           # [(k, cardinality, nodes)] — kept layers (C3)
+S.nodes            # (final, peak) live diagram nodes
+S.to_sos()         # the .sos text — canonical, byte-identical to the
+                   # reference; forces reduce() (below)
+```
+
+**Calculus operators (C10)** — each names its paper anchor; built-in
+assertions are compiled in, not switchable:
+
+```python
+S.member(u, v)     # §6.1 lasso membership, closure-free — asserts Phase 1
+                   #   never runs on a membership query
+~S,  S & T,  S | T,  S - T
+                   # §6.2 same-table Boolean algebra: free (Acc-predicate
+                   #   plumbing) when S, T share a table; otherwise an
+                   #   implicit align (§6.3) is performed and priced —
+                   #   one closure, visible in stats
+sos_sdd.align(S, T)          # §6.3 explicit alignment — asserts Comp is
+                             #   never applied on the aligned space
+S.included(T), S.equiv(T), S.empty()   # §6.4
+S.witness(T)       # §6.4/Prop 6.2 — least separating lasso (stem, loop),
+                   #   the C7 forward-walk mechanism reused verbatim
+S.root(iota), S.subst(sigma) # §6.5 rootings / inverse substitutions
+S.reduce()         # quotient to canonical form — explicit, so E9's
+                   #   deferred-reduce column is a driver choice:
+                   #   operators do NOT auto-reduce ("pay canonicity
+                   #   only when consumed")
+```
+
+## Failure taxonomy (findings vs bugs)
+
+Findings are exceptions carrying their data — a driver catches and ledgers
+them, per spec §3 ("a blown cap or budget is a finding, not an error"):
+
+- `sos_sdd.DiagramBudget` — node budget blown; carries the phase and the
+  layer profile accumulated so far (spec C3: never a silent abort).
+- `sos_sdd.TimeBudget` — wall budget blown; same payload.
+
+Bugs are a distinct type, never caught-and-ledgered:
+
+- `sos_sdd.StopTheLine` — an internal invariant violated: squaring vs
+  pairing disagreement (C4); a `Comp`-shaped application inside the Phase 5
+  refinement (C6, the rotation lemma); `Comp` on an aligned space (§6.3);
+  Phase 1 entered from a membership query (§6.1); an orbit walk in Phases
+  3–4 (C5). By definition a defect — file it.
+
+## Instrumentation stream (C1 — built first)
+
+One JSON object per record, to the `stats` sink, flushed as produced (a
+budget-killed run keeps its prefix):
+
+```
+{"ev":"config", ...resolved switches...}
+{"ev":"op",     "phase":1, "op":"closure-step", "round":3,
+ "nodes_final":57, "nodes_peak":210, "ms":4.2}
+{"ev":"layer",  "k":3, "card":9, "nodes":57}
+{"ev":"phase",  "phase":1, "rounds":7, "nodes_final":123,
+ "nodes_peak":210, "ms":31.5}
+{"ev":"verdict","status":"OK", "em1":16, "depth":6,
+ "nodes_final":123, "nodes_peak":210, "ms":118.0}
+```
+
+`nodes_*` are live diagram nodes of the engine's working sets, sampled after
+each operation (`peak` = max over samples inside the op — an honest lower
+bound on the true peak, stated as such in the ledgers). Calculus moves emit
+`op` records too, so E9's per-operation pricing is a reading of the same
+stream.
+
+## Deviations from the experiments spec (recorded)
+
+- Spec C8 says the generators "emit each in both slot coordinates"; here the
+  `Product` carries *structure* and the coordinate choice is the engine's
+  `coords` switch. Same measurements, one input object per family point, and
+  E3's one-backend fairness clause holds by construction.
+- No standalone CLI for now: the drivers are Python, the API is the tool. If
+  profiling ever needs a pure-C++ entry point, a thin `main.cpp` replaying a
+  digest dump can be added without touching this contract.
+
+## Build
+
+C++17, libDDD (headers + static lib via `LIBDDD_HOME`), pybind11. Plain
+Makefile while prototyping (`make` builds the extension in place); revisit
+if the tool grows.
