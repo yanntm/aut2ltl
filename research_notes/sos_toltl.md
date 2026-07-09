@@ -101,11 +101,11 @@ ladder is a ladder of definiteness equations on the multiplication table.
 Each precondition is an equation on `𝓘(L)`, decided once, on the canonical
 object; whether a language transcribes flatly, and at which width, is
 therefore itself a definability property of `L` (§4.5). Under the two
-preconditions the width-1 transcription is exact by construction (§4.2);
-its graded extension to higher anchoring width (§4.3) is exact away from
-a near-entry seam, closed there by the committed base case and the scoped
-fallback (§4.3, correction). That exactness theorem is one of the paper's
-two central technical claims.
+preconditions the width-1 transcription is exact by construction (§4.2),
+and its graded extension to higher anchoring width stays exact: the
+entry transient is threaded, and the exit certificates that straddle
+the transient's seam are checked against the thread (§4.3). That
+exactness theorem is one of the paper's two central technical claims.
 
 The second claim is the structural split of §5.1: the class walk
 transcribes exactly the
@@ -1407,10 +1407,12 @@ step_κ   =  ⋀_{c ∈ R} ⋀_{w ∈ An_κ(c)} ( ŵ → X^κ sojourn(c) )
 
 TR_0(c)  =  sojourn(c)
 TR_j(c)  =  ⋁_{a ∈ St(c) ∪ Mo(c)} ( a ∧ X TR_{j−1}(c·a) )            j = 1..k
+seam(c)  =  ⋁_{c′ ∈ R} ⋁_{w ∈ An_κ(c′), c ∈ dom(act_R(w))} ( ŵ ∧ X^κ leave(c′) )
 TL_0(c)  =  leave(c) ∨ ( sojourn(c) ∧
               ( step_κ U ⋁_{c′ ∈ R} ⋁_{w ∈ An_κ(c′)} ( ŵ ∧ X^κ leave(c′) ) ) )
 TL_j(c)  =  ⋁_{a ∈ Ex(c)} ( a ∧ X φ_{c·a} )
-              ∨  ⋁_{a ∈ St(c) ∪ Mo(c)} ( a ∧ X TL_{j−1}(c·a) )       j = 1..k
+              ∨  ⋁_{a ∈ St(c) ∪ Mo(c)} ( a ∧ X TL_{j−1}(c·a) )
+              ∨  seam(c)                                              j = 1..k
 
 STAY∞_κ(R, r)  =  TR_k(r) ∧ G step_κ ∧ Ω(R, r)
 Final(r)       =  STAY∞_κ(R, r) ∨ TL_k(r)
@@ -1420,7 +1422,9 @@ The trees thread the fold explicitly — during the first `k` in-layer
 steps the phase is a known function of the entry class and the letters
 read, so nothing is guessed — and they are class-indexed like
 everything else: `TR_j(c)`, `TL_j(c)` depend on `(c, j)` only,
-`O(|R|·k)` DAG nodes of `O(|Σ_λ|)` edges each, while `step_κ` carries
+`O(|R|·k)` DAG nodes, each `O(|Σ_λ|)` branch edges plus at most
+`|An_κ| ≤ |Σ_λ|^κ` seam disjuncts (their window renderings shared with
+`step_κ`), while `step_κ` carries
 at most `|Σ_λ|^κ` triggers. Timing inherits width 1's asymmetry:
 `step_κ`'s consequences lag its triggers by `κ`, so triggers asserted
 on `[t, i)` govern moves on `[t+k, i+k)` — coverage ends exactly where
@@ -1430,6 +1434,18 @@ still ends strictly before the exit letter, and the degeneracies of
 §4.2 survive verbatim: a terminal layer sheds trees and law alike
 (`sojourn ≡ ⊤`, no consequence bites), a frozen layer reduces to
 `Ω(R, r)`.
+
+The third `TL` disjunct exists because the transient has a *seam*. An
+exit whose last within-layer change falls within `k` steps of the
+transient's end is certified by a `κ`-window that opens *inside* the
+transient — too early for `TL_0`'s `U`, which is rooted at the
+transient's end, and no transient depth removes the seam: deepening
+the thread only moves the straddling band with it. The thread itself
+closes it. At a tree node the class `c` is known exactly, so the
+certificate needs no escort: `c ∈ dom(act_R(w))` squeezes the window's
+whole span into the layer (Proposition 4.11(i)) and pins its landing
+class, and `leave` concludes — `seam(c)` is that certificate, checked
+against the thread, one disjunct per anchor window readable at `c`.
 
 **Theorem 4.13 (graded exactness).** Let every layer of `Cay(L)` be
 anchored at some width `k_R`, each transcribed at width 1 where
@@ -1451,15 +1467,21 @@ disjunct, whose child obligation holds by induction and transport
 `TL_0(c_k)` along true branches, and `sojourn(c_k)` holds as at
 width 1. If the class never changes on `[t+k, T)`, `leave(c_k)`
 concludes. Otherwise let `μ` be the last change in `[t+k, T)`: the
-window covering `[μ−k, μ]` sits inside the layer and moves the phase
-at its last step, so it is an anchor onto `q_{μ+1}` (Lemma 4.12(ii),
-contraposed) — the `U`-witness at `μ−k`, with `X^κ leave(q_{μ+1})`
-supplied by the stutters of `(μ, T)` and the exit. For the left arm, a
+window `w` covering `[μ−k, μ]` sits inside the layer and moves the
+phase at its last step, so it is an anchor onto `q_{μ+1}`
+(Lemma 4.12(ii), contraposed), and the stutters of `(μ, T)` with the
+exit supply `leave(q_{μ+1})` from `μ+1`. If `μ ≥ t+2k` this is
+`TL_0`'s `U`-witness at `μ−k ≥ t+k`; for the left arm, a
 trigger at `p ∈ [t+k, μ−k)` has its window inside the layer and its
 pin truthful (Lemma 4.12(i)), say onto `c`; the next change after it
 exists (`μ` at the latest, and `p + κ ≤ μ`), lands within `R` strictly
 before `T`, and discharges `sojourn(c)` — so `step_κ` holds throughout
-`[t+k, μ−k)`. If the walk never exits, the same trigger argument gives
+`[t+k, μ−k)`. If `μ < t+2k` the witness position `μ−k` lies inside
+the transient: the `TL` branch to `μ−k` follows the true letters —
+each within-layer at its threaded class — to the node threading
+`q_{μ−k}`, which lies in `dom(act_R(w))` since the walk realizes it,
+so `seam(q_{μ−k})` carries the disjunct `(w, q_{μ+1})`, satisfied
+verbatim. If the walk never exits, the same trigger argument gives
 `G step_κ` (a triggered sojourn discharges at the next change or holds
 by its weak arm), `TR_k(r)` follows the true branches into
 `sojourn(c_k)`, and `V(r, α) = 1` yields `Ω(R, r)` by the contract:
@@ -1470,6 +1492,11 @@ walk: branch letters lie in the threaded class's own `L ∪ M` (or `E`,
 in `TL`'s exit disjuncts), so formula and walk agree through the
 transient and no unlicensed exit occurs; an exit branch hands a tail
 in `T_{c_j·a}` (induction) and transport folds the verdict onto `r`.
+A satisfied `seam(c)` branch consults no escort: the thread has
+pinned the walk at `c`, `c ∈ dom(act_R(w))` keeps the window's whole
+span in `R` (Proposition 4.11(i)) and lands the walk on the anchor's
+target `c′`, and `leave(c′)` runs as at width 1 — stutters fix `c′`
+at every width — handing the exit child to induction and transport.
 Past the transient, Theorem 4.10's escort runs verbatim with
 Lemma 4.12 in the role of Lemma 4.9(i): an active `sojourn(c)`
 licenses only `St(c) ∪ Mo(c)` — never an exit — and holds the phase
@@ -1486,36 +1513,34 @@ in-layer), its pin is truthful — the walk sits at `c′` at `i+κ` — and
 `leave(c′)`, stutters then an exit with its child obligation,
 concludes by induction and transport. ∎
 
-**Correction (the graded exit-chain is incomplete near the entry; the
-committed base case, the counterexample, and the repair).** The
-completeness argument above places the `TL_0` `U`-witness at `μ − k`, `μ`
-the last within-layer change before an exit. When `μ ∈ [t+k, t+2k)` — an
-exit close to the entry — `μ − k ∈ [t, t+k)` lies inside the depth-`k`
-transient, which `TL_0`'s `U` (rooted at `t+k`) cannot witness: the
-`κ`-window certifying the exit class straddles the transient seam, and no
-transient depth removes the seam (deepening it only shifts the band). So
-Theorem 4.13 as stated is **incomplete**. Witness: on the layer `{2,5,8}`
-of the invariant of `L = { α : α reaches an accepting sink }`
-(2-anchored, `κ = 3`; `a` a partial constant onto `2`, `!a` acting
-`2↦5↦8↦8`), entry class `2`, the word `a·a·!a·a·(!a)^ω` stutters twice at
-`2`, moves to `5`, and exits to the accepting sink; its certifying window
-`(a,a,!a) ∈ An_3(5)` opens at the entry, and the constructed `Final(2)`
-rejects the word though it lies in `T_2 = Σ^ω`.
+*Remark (the seam is real, and only the thread closes it).* The seam
+disjunct is not decorative. On the layer `{2,5,8}` of the invariant of
+`L = { α : α reaches an accepting sink }` (2-anchored, `κ = 3`; `a` a
+partial constant onto `2`, `!a` acting `2↦5↦8↦8`), entry class `2`,
+the word `a·a·!a·a·(!a)^ω` stutters twice at `2`, moves to `5`, and
+exits to the accepting sink; its certifying window
+`(a,a,!a) ∈ An_3(5)` opens at the entry, and without `seam` the label
+rejects a word of `T_2 = Σ^ω` — the seam disjunct at the root carries
+`((a,a,!a), 5)` and accepts it. Two lighter mechanisms fail. Deepening
+the transient never closes the seam: at thread depth `d` the
+straddling band moves to the last changes in `[t+d, t+d+k)`. And
+rooting the window-leave `U` at the entry instead — a disjunct
+`sojourn(r) ∧ (step_κ U ⋯)` scanned from `t` — is **unsound**:
+`step_κ`'s consequences lag its triggers by `κ`, so between the entry
+sojourn's discharge and the first trigger-governed position up to `k`
+letters are licensed by nothing, and a word can exit the layer inside
+that gap while satisfying every asserted brick on letters alone. The
+thread is the only witness of the early classes, and `seam` is
+exactly the certificate checked against it.
 
-Two facts restore exactness. First, the **committed base case**: call
-`c` *committed* if `T_c = Σ^ω` — equivalently every linked pair whose
-stem is reachable from `c` in `Cay(L)` lies in `P`, an `O(|𝒞|²)` scan —
-in which case `Final(c) = true` is exact (`⟦true⟧ = Σ^ω = T_c`); this is
-the co-safety base of §5.3's strength stratification, and a committed
-class takes `true` in place of any walk brick. The failure above
-concentrates on the guarantee / co-safety stratum, where committed
-classes are the common case, so the base case removes the bulk of it.
-Second, a non-committed layer anchoring only at `k ≥ 2` takes the scoped
-fallback (§4.4) rather than the graded exit-chain. The direct repair of
-the exit-chain itself roots the window-leave `U` at the entry — a
-disjunct `sojourn(r) ∧ ( step_κ U ⋁_{c′}⋁_{w∈An_κ(c′)}( ŵ ∧ X^κ
-leave(c′) ) )` scanned from `t`, so a window opening at the entry is seen
-(it recovers the witness above); its completeness re-proof is ⟨TBD⟩.
+*Remark (the committed base case).* Independent of the seam, one
+read-off outranks every brick: call `c` **committed** if `T_c = Σ^ω` —
+equivalently every linked pair whose stem is reachable from `c` in
+`Cay(L)` lies in `P`, an `O(|𝒞|²)` scan — in which case
+`Final(c) = true` is exact (`⟦true⟧ = Σ^ω = T_c`). This is the
+co-safety base of §5.3's strength stratification surfacing per class,
+common on the guarantee stratum; the extractor prefers the constant
+to any brick, graded or not.
 
 ### 4.4 The scoped fallback
 
@@ -2566,9 +2591,9 @@ The architecture's correctness is the label contract (§4.2), met on
 every branch and closed under its three compositions:
 
 **Theorem 5.13 (end-to-end exactness).** Let `𝓘(L)` be aperiodic and
-let `φ = extract(𝓘)`, with the graded stratum routed per §4.3's
-correction: a committed class takes `true`, and a non-committed layer
-anchoring only at `k ≥ 2` takes the scoped fallback. Then `⟦φ⟧ = L` —
+let `φ = extract(𝓘)`, with a committed class taking `true` and a
+layer anchoring at no affordable width taking the scoped
+fallback. Then `⟦φ⟧ = L` —
 in the flat rendering, and in the definitional rendering in the
 deterministic-projection sense of §6.
 
@@ -2577,10 +2602,10 @@ point, every branch of `extract` emits a label exact at its class:
 
 - *width-1 layers* — Theorem 4.10, its window contract discharged
   below;
+- *graded layers* (`k ≥ 2`) — Theorem 4.13, seam bricks included;
 - *committed classes* — `Final(c) = true` and `T_c = Σ^ω` (§4.3,
-  correction);
-- *remaining (A)-side layers* (anchoring at `k ≥ 2` non-committed, or
-  at no width) — the scoped fallback, Proposition 4.14: exact given
+  remark);
+- *no-width layers* — the scoped fallback, Proposition 4.14: exact given
   exact children, its finite-word ingredient [DG08]'s correctness on
   `𝒜_R` and its wrapper the insertion operator's displayed semantics;
 - *the window contract*, wherever a run can stay forever — under (B)
@@ -2603,11 +2628,10 @@ At the root the contract reads `⟦φ_{[ε]}⟧ = T_{[ε]} = L`
 formula written without sharing — and the definitional rendering
 defines `L` by deterministic projection as argued in §6. ∎
 
-Two remarks. The theorem states the extractor *as implemented and as
-corrected*: once the entry-rooted repair of §4.3's correction carries
-its completeness re-proof, the graded bricks of Theorem 4.13 replace
-the scoped fallback on non-committed `k ≥ 2` layers, and the statement
-survives verbatim with that branch swapped in. And exactness needs no
+Two remarks. The dispatch is preference-ordered, never forced: a
+committed class takes the constant even where bricks exist, and the
+scoped fallback survives only on the no-width stratum — every other
+stem branch is Theorem 4.10 or 4.13. And exactness needs no
 equivalence oracle anywhere — every branch is exact by construction —
 but it is *checkable* by one: re-running the construction of [SωS26]
 on `φ` must return the byte-identical `𝓘`, the conformance gate the
@@ -2855,14 +2879,14 @@ whole catalogue: 2 237 LTL languages with a formula, 1 698 non-LTL
 with a certificate, 3 declines, zero verified-non-equivalent answers,
 2 856 Spot-verified equivalences (the rest size- or budget-unverified,
 never failed). Within the LTL side the walk+window engine renders
-1 114 languages — the strata where its exactness is proven (width-1
+1 114 languages — the strata its implementation covers (width-1
 layers, Theorem 4.10; committed classes and window terms, §4.3 and
 Proposition 5.4) — and the other 1 126 fall to the DG fallback until
-the entry-rooted repair of §4.3's correction carries its completeness
-re-proof. The declines decompose exactly: 952 languages carry a graded
+the graded bricks of Theorem 4.13, seam included, land in the
+engine. The declines decompose exactly: 952 languages carry a graded
 layer (`k ≥ 2`), 258 an (A)-failing one (192 both), 108 only a
 window-term budget gap — so the graded stratum alone is 42.5% of the
-LTL catalogue, and the §4.3 re-proof is the coverage frontier, not a
+LTL catalogue, and the graded engine is the coverage frontier, not a
 refinement. Canonicity holds end to end: two presentations of `GF(aa)`
 (the parity and the reset automata) bridge to the byte-identical
 invariant and the character-identical formula.
