@@ -3028,3 +3028,20 @@ the DAG transcription. Prop 3.11 proves it for the whole m=0 band via
 CP97 Thm 7 superchain normal form + Thm 3.10/Lemma 3.9. Spec CAL5 gains
 obligation_degree with the .cat gate. Paper theory now measurement-gated
 only.
+
+## 2026-07-09 — `Invariant.complement()` joins the sos api
+
+LANDED. `I(L)` and `I(L̄)` share their algebra — classes, keys, `λ`, `M` all
+factor through the syntactic congruence, which is complement-invariant — so the
+complement is a flip of `P` against the linked pairs: free (no closure, no
+automaton), involutive, and byte-canonicity preserving (only the dump's `P` block
+moves). The operation existed twice already, once one level down on a `Table`'s
+pair sets (`sos.calculus.surgery.complement`) and once inline in
+`genaut/gen/flatten.py::build_canon`, which rebuilt the dual `Invariant` field by
+field. Hoisted onto `Invariant`, beside the `linked_pairs()` it is defined
+against; no `calculus` import (the dependency runs the other way).
+`flatten.py` now calls it. `sosl/tests/sos/test_complement.py` pins the three
+laws — involution, table-preserving, and agreement with `spot.dualize` on the
+paired `det/` HOA (the cross-check the catalogue closure asserts) — over a spread
+sample of `flat_canon`; 40/40. Prompted by the `samples/benchmark/{det,sos}` build,
+which needs the same complement completion.
