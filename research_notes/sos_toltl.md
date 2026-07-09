@@ -1852,13 +1852,16 @@ is "the window `aa` recurs" (§5.2): upward-closed, minimum `{aa}`. ∎
 
 ### 5.2 Worked examples: the peel alone, then the full engine
 
-Two examples, sized to be checked by hand. The first is the R-order
-peel in its purest form — every layer a singleton, every label a
-`leave` brick or a base case — the second is `GF(aa)`, where both
-engines and both conditions do real work. Each is displayed the same
-way: the machine, the layer read-offs, then the **label stack** — the
-labels in the order the Noetherian induction discharges them, bottom
-of the R-order first, each line one rule of the grammar.
+Four examples, sized to be checked by hand: the R-order peel in its
+purest form (every layer a singleton, every label a `leave` brick or a
+base case); `GF(aa)`, where both engines and both conditions do real
+work; `GFa ∧ FGb`, a live confinement branch and the
+prefix-independent collapse; and the smallest language whose moving
+final layer is *accepting* — the two-anchor law in pure form. Each is
+displayed the same way: the machine, the layer read-offs, then the
+**label stack** — the labels in the order the Noetherian induction
+discharges them, bottom of the R-order first, each line one rule of
+the grammar.
 
 **Example 1: `F a` — a pure peel.** One atomic proposition;
 `L = ⟦F a⟧` = "an `a` eventually occurs". The syntactic classes are
@@ -2066,6 +2069,51 @@ equivalent under `FG b`, both canonical for their route: the algebra
 offers more than one exact dress, and the label contract is
 indifferent between them. ⟨TBD: conformance-check this stack against
 the tool's `.sos` and emitted label — E9.⟩
+
+**Example 4: the two-anchor law, live.** One proposition; the census's
+smallest language whose moving final layer is *accepting* — six
+classes `[ε], [!a], [a], [!a·!a], [!a·a], [a·!a]` (ids `0..5`),
+`P = {(1, 5), (4, 4)}`, and `[!a·!a] = 3` a two-sided zero. The layers
+mirror `GF(aa)`'s diamond — `{0}`, then `{1,4}` and `{2,5}` in
+parallel, then the frozen `{3}` — but here the zero is *all-rejecting*
+(no pair off it in `P`) and the acceptance sits on the moving layers'
+own loops: `P`'s two pairs are exactly the alternation loops of
+`{1,4}` (`(a·!a)^ω` from `1`, `(!a·a)^ω` from `4`). Layer `{1,4}` has
+no stutters at all — `An(1) = {!a}`, `An(4) = {a}`, `Mo(1) = {a}`,
+`Ex(1) = {!a}`, `Mo(4) = {!a}`, `Ex(4) = {a}`: each letter anchors the
+layer from one class and exits it from the other, and the grammar
+keeps the two roles apart by position (a trigger consequence versus an
+exit disjunct). The stack, entry `1`:
+
+```
+Final(3)   =  Ω({3}, 3)  =  ⊥                     frozen, all-rejecting
+-- layer {1,4}: St = ∅ everywhere
+sojourn(1) =  ⊥ W a  ≡  a           sojourn(4) =  ⊥ W !a  ≡  !a
+step       =  (!a → X a) ∧ (a → X !a)             the alternation law
+leave(1)   =  !a ∧ X Final(3)  ≡  ⊥     leave(4) =  a ∧ X Final(3) ≡ ⊥
+Ω({1,4},1) =  ⊤                     every confined tail is accepted
+Final(1)   =  ( a ∧ G step )  ∨  LEAVE(1)         with LEAVE(1) ≡ ⊥
+Final(2)   =  ⊥                     mirror layer {2,5}: no pair in P
+Final(0)   =  (!a ∧ X Final(1)) ∨ (a ∧ X Final(2))
+           ≡  !a ∧ X ( a ∧ G( (!a → X a) ∧ (a → X !a) ) )
+```
+
+— the language is the single word `!a·(a·!a)^ω`, and the label is its
+program. Four things to read off. With no stutters, each sojourn
+collapses to its move letter and `step` *is* the machine: the
+alternation law, the layer transcribed as one `G`. The acceptance term
+is `⊤` — every tail confined to `{1,4}` is accepted, so acceptance is
+pure confinement, the exact dual of `GF(aa)`'s frozen layer, where
+confinement was free and the window term did all the work. The
+`LEAVE` chain is fully instantiated and semantically empty: every
+exit lands on the empty-tail zero, and simplification erases precisely
+the branches `P` rejects — a specimen where both branches carry weight
+needs an accepting final layer *and* a non-empty exit child, a further
+census query. And the mirror is instructive a third time: `{2,5}` has
+the identical semiautomaton shape, yet `Final(2) = ⊥` — the walk
+cannot see acceptance (Lemma 4.2), and `P` alone chooses between two
+mirrored walks. ⟨TBD: conformance-check against the tool's emitted
+label — E9; the specimen is `2state1ap0acc_024` of the census.⟩
 
 ### 5.3 Combinators: decomposition on the invariant
 
