@@ -15,14 +15,22 @@ _spot_prefix="$(find "$OARRUN_ROOT/opt" -maxdepth 1 -type d -name 'spot-*' 2>/de
                 | sort -V | tail -1)"
 if [ -n "$_spot_prefix" ]; then
     export PATH="$_spot_prefix/bin:$PATH"
-    export LD_LIBRARY_PATH="$_spot_prefix/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-    # Where `make install` put the python bindings; the version segment depends
-    # on the interpreter the build found.
-    for _sp in "$_spot_prefix"/lib/python*/site-packages; do
+    for _lib in "$_spot_prefix/lib" "$_spot_prefix/lib64"; do
+        [ -d "$_lib" ] && export LD_LIBRARY_PATH="$_lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    done
+
+    # Where `make install` put the python bindings. Both the lib/ vs lib64/ split
+    # (autotools' pyexecdir: Fedora says lib64, Debian says lib) and the version
+    # segment depend on the machine, so neither is assumed. This must succeed:
+    # LD_LIBRARY_PATH above already points libspot.so at our build, so if our
+    # bindings are missing from PYTHONPATH a system `import spot` would load a
+    # foreign _impl.so against our library and die on an undefined symbol.
+    for _sp in "$_spot_prefix"/lib/python*/site-packages \
+               "$_spot_prefix"/lib64/python*/site-packages; do
         [ -d "$_sp" ] && export PYTHONPATH="$_sp${PYTHONPATH:+:$PYTHONPATH}"
     done
 fi
-unset _sp _spot_prefix
+unset _lib _sp _spot_prefix
 
 # GAP, installed by install_gap.sh into opt/gap. The bin/ holds a wrapper that
 # adds that prefix as a GAP root, so pkg/sgpdec loads; the code spawns a bare

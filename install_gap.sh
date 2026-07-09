@@ -115,8 +115,11 @@ ensure_gap_base() {
   existing="$(real_gap)"
 
   if [[ -n "$existing" ]] && ! $from_source; then
+    # -q silences the banner and the prompt, which otherwise land in the capture
+    # as terminal escapes; QUIT keeps GAP from waiting on stdin.
     local ver
-    ver=$("$existing" --no-window --bare -c 'Print(GAPInfo.Version, "\n");' 2>/dev/null | tail -1 | tr -d '\r' || true)
+    ver=$("$existing" --no-window --bare -q -c 'Print(GAPInfo.Version, "\n"); QUIT;' 2>/dev/null \
+          | tr -d '\r' | grep -oE '^[0-9]+\.[0-9.]+' | head -1 || true)
     log "Found GAP: ${ver:-unknown} ($existing)"
     return 0
   fi
@@ -184,9 +187,10 @@ install_sgpdec_local() {
   log "Downloading SgpDec ${SGPDEC_VERSION} into ${GAP_PKG_DIR}..."
   local tmp
   tmp=$(mktemp -d)
-  # Simple cleanup; avoid complex traps that can cause "unbound variable" noise on error paths.
-  cleanup() { rm -rf "$tmp" 2>/dev/null || true; }
-  trap cleanup EXIT
+  # The path is baked into the trap now, not read from a variable when it fires:
+  # EXIT runs after this function has returned, where a local `tmp` is gone and
+  # `set -u` would abort an otherwise successful script.
+  trap "rm -rf '$tmp' 2>/dev/null || true" EXIT
 
   curl -fL --progress-bar -o "$tmp/${SGPDEC_TARBALL}" "$SGPDEC_URL" || {
     # Fallback: try to clone the repo if release tarball layout changes
