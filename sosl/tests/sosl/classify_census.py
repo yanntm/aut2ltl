@@ -50,7 +50,7 @@ from sosl.sos import Invariant, dump_invariant, load_invariant
 from sosl.sos.build import ReferenceError
 from sosl.sos.build.importer import canonical
 from sosl.sos.core.quotient import invariant_of
-from sosl.sos.classify import classify, record_to_dict
+from sosl.sos.classify import classify
 from sosl.sos.classify.primitives import idempotents
 from sosl.sos.classify.readoff import in_gen_buchi_spectrum
 
@@ -143,7 +143,6 @@ def _one(tag: str, path: str, budget: int) -> Dict:
         t_built = time.time()
         r = classify(inv)
         t_classified = time.time()
-        doc = record_to_dict(r)
         dual = _duality_ok(inv, r)
         # Spot-vs-algebra cross-check (C§11): a canonical generalized-Büchi (or
         # trivial `t`) presentation forces the language into the gen-Büchi degree
@@ -167,10 +166,12 @@ def _one(tag: str, path: str, budget: int) -> Dict:
             ihash=_ihash(inv), classes=inv.n,
             n_idempotents=len(idempotents(inv)),
             n_linked_pairs=len(inv.linked_pairs()),
-            aperiodic=r.aperiodic,
+            aperiodic=r.aperiodic, stutter_invariant=r.stutter_invariant,
             m_plus=r.m_plus, m_minus=r.m_minus,
             n_plus=r.n_plus, n_minus=r.n_minus,
-            rungs=doc["rungs"], phi=doc["phi"], gamma_partial=r.gamma_partial,
+            rungs={"open": r.rungs.open, "closed": r.rungs.closed,
+                   "weak": r.rungs.weak, "dba": r.rungs.dba, "dca": r.rungs.dca},
+            phi=list(r.phi), gamma_partial=r.gamma_partial,
             boolean_level=r.boolean_level,
             parity_length=r.parity_length, co_parity_length=r.co_parity_length,
             build_wall=round(t_built - t0, 4),

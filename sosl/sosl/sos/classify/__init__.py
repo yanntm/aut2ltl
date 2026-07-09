@@ -1,4 +1,5 @@
-from .emit import record_to_dict, render_text
+from .emit import render_text
 from .record import Record, classify
+from .stutter import is_stutter_invariant
 
-__all__ = ["Record", "classify", "record_to_dict", "render_text"]
+__all__ = ["Record", "classify", "render_text", "is_stutter_invariant"]

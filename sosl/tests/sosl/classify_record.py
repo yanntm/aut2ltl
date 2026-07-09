@@ -13,18 +13,20 @@ from __future__ import annotations
 import os
 
 from sosl.sos import Invariant, load_invariant
-from sosl.sos.classify import classify, record_to_dict
+from sosl.sos.classify import classify
 from sosl.sos.classify.__main__ import main as cli_main
 from sosl.sos.classify.witness import chain_lassos
 
 _SOS = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
                     "samples", "fixtures", "hoa", "sos")
 
-# name -> (aperiodic, phi_gamma, sign, (m+,m-,n+,n-))  from C section 9.
+# name -> (aperiodic, stutter_invariant, phi_gamma, sign, (m+,m-,n+,n-))
+# from C section 9; the triptych is stutter-sensitive throughout (an a/aa
+# separation exists in each).
 EXPECT = {
-    "even":       (False, "1",       "sigma", (0, 0, 0, 1)),
-    "gf_aa":      (True,  "omega",   "sigma", (0, 1, -1, 0)),
-    "evenblocks": (False, "omega^2", "sigma", (1, 2, -1, 0)),
+    "even":       (False, False, "1",       "sigma", (0, 0, 0, 1)),
+    "gf_aa":      (True,  False, "omega",   "sigma", (0, 1, -1, 0)),
+    "evenblocks": (False, False, "omega^2", "sigma", (1, 2, -1, 0)),
 }
 
 
@@ -57,18 +59,17 @@ def _duality(inv: Invariant) -> None:
 def check(name: str) -> None:
     inv = _load(name)
     rec = classify(inv)
-    aper, gamma, sign, coords = EXPECT[name]
+    aper, stutter, gamma, sign, coords = EXPECT[name]
     assert rec.aperiodic == aper, (name, rec.aperiodic)
+    assert rec.stutter_invariant == stutter, (name, rec.stutter_invariant)
     assert (rec.m_plus, rec.m_minus, rec.n_plus, rec.n_minus) == coords, (name, coords)
     assert rec.phi == (gamma, sign), (name, rec.phi)
     # Non-aperiodic cases ship a group witness (chain witness replay is already
     # asserted inside classify()).
     assert ("group" in rec.witnesses) == (not aper), name
-    # Record is JSON-serializable and stable.
-    doc = record_to_dict(rec)
-    assert doc["phi"] == [gamma, sign]
     _duality(inv)
-    print(f"OK {name}: phi=({gamma}, {sign})  aperiodic={aper}  duality OK")
+    print(f"OK {name}: phi=({gamma}, {sign})  aperiodic={aper}  "
+          f"stutter_invariant={stutter}  duality OK")
 
 
 def check_cli() -> int:
