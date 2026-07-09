@@ -4,8 +4,8 @@ Companion artifact for [`sos_toltl.md`](../sos_toltl.md), built to the spec in
 [`sos_toltl_figures.md`](../sos_toltl_figures.md). Every number shown is
 produced by the probe named in each figure's provenance footer; nothing is
 transcribed by hand. See [`reproduction.md`](reproduction.md) to regenerate,
-and [`notes.md`](notes.md) for what the specification asked for and what the
-algebra actually turned out to support.
+and [`notes.md`](notes.md) for the measured facts and drawing decisions the
+figures rest on.
 
 Inputs are language-canonical `.sos` invariants, bundled in
 [`sources/`](sources/): `gf_aa.sos` (the six-class syntactic algebra of
@@ -25,7 +25,7 @@ Drawing conventions, shared by FIG-1 and FIG-4:
 
 ---
 
-## FIG-1 — the layered Cayley graph of `GF(aa)`
+## FIG-1 — the layered Cayley graph of `GF(aa)` (paper Figure 3)
 
 ![layered Cayley graph of GF(aa)](img/fig1_cayley.png)
 
@@ -51,19 +51,14 @@ within each layer one letter suffices, which is what makes width 1 enough.
 
 ## FIG-2 — the label stack as a derivation
 
-**Deferred, not built.** The panel must display the engine's own
-`sojourn` / `step` / `leave` / `Final` bricks with simplification off, but
-`aut2ltl.sos2ltl.engine.transcribe` returns only the root label — the
-per-layer bricks are locals inside `_layer_flat`. Emitting them needs a
-`_TRACE`-guarded dump in the engine, and the engine was under concurrent edit
-(the `guards.py` / AP-formula refactor) while these figures were built.
-Rationale and the proposed shape of the hook are in
-[`notes.md`](notes.md#fig-2-deferred); the paper's §5.2 code block stands in
-the meantime, and it is correct — the engine reproduces it.
+**Not built.** Requirement, panel layout, and the engine trace hook it
+needs are specified in
+[`../sos_toltl_figures.md`](../sos_toltl_figures.md) (FIG-2). The paper's
+§5.2 code block carries the content in the meantime.
 
 ---
 
-## FIG-3 — the DG recursion: substitution tree vs memoized DAG
+## FIG-3 — the DG recursion: substitution tree vs memoized DAG (paper Figure 1)
 
 ![DG recursion, tree vs DAG](img/fig3_dg.png)
 
@@ -99,7 +94,7 @@ governed by the algebra, not by the tree.
 
 ---
 
-## FIG-4 — the `F a` micro-machine
+## FIG-4 — the `F a` micro-machine (paper Figure 2)
 
 ![the F a micro-machine](img/fig4_fa.png)
 
