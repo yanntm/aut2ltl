@@ -178,6 +178,12 @@ stream.
 
 ## Build
 
-C++17, libDDD (headers + static lib via `LIBDDD_HOME`), pybind11. Plain
-Makefile while prototyping (`make` builds the extension in place); revisit
-if the tool grows.
+C++17, libDDD (headers + static lib via `LIBDDD_HOME`, cache or
+environment), pybind11. CMake:
+
+```
+cmake -B build && cmake --build build
+```
+
+places `_core` inside the package directory, so `import sos_sdd` works
+from the repo root without an install step.
