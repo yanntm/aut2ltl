@@ -8,7 +8,8 @@
 | soundness harness (§4) | **DONE** — green corpus-wide |
 | `is_stutter_invariant` in `table.py` (§3.1, §8.6) | **TODO** — five lines + gate, prerequisite of V2 |
 | CAL4: the experimental campaign (§8; sub-milestones §8.10) | **TODO** — nothing run yet; §8 is the work order |
-| exponential frontier (`W·L`, `W^ω`, `remove_ap`), NBA exits, hulls, CLI, learner integration | **NON-GOALS** here (see §6) |
+| hull surgeries (safety closure / interior / liveness part) | **OPTIONAL TODO** — theory delivered (paper §3.6, Prop 3.5); milestone CAL5 in §6 |
+| exponential frontier (`W·L`, `W^ω`, `remove_ap`), NBA exits, CLI, learner integration | **NON-GOALS** here (see §6) |
 
 An implementer starting cold reads, in order: this header, §1–§2, the
 section for the component at hand, §7 before filing any bug, and — for
@@ -381,12 +382,33 @@ the paper.
   delivered to `reference/calculus/` per the full protocol of §8;
   sub-milestones CAL4a–d in §8.10. Prerequisite:
   `is_stutter_invariant` (§8.6).
+- **CAL5 — hulls. [OPTIONAL TODO — theory delivered, paper §3.6.]**
+  `surgery.py` additions, all `O(n²)`, normative math Prop 3.5 and
+  Cor 3.6–3.7 of the paper:
+  - `live(table, P) -> FrozenSet[int]` — the classes `c` whose row
+    `{M(c, x) : x ∈ 𝒞} ∪ {c}` meets `stems(P) = {s : (s, e) ∈ P}`
+    (build the stems bitmask once, one pass over `M`);
+  - `safety_closure(table, P) = {(s, e) ∈ linked : s ∈ live(P)}`;
+  - `interior(table, P) = {(s, e) ∈ linked : s ∉ live(complement(P))}`;
+  - `liveness_part(table, P) = union(P, complement(safety_closure(P)))`;
+  - read-offs `is_safety(P) := P == safety_closure(P)` and
+    `is_cosafety(P) := P == interior(P)` (exact tests — fixpoint
+    equations, not approximations).
+  Gates: hull is extensive / monotone / idempotent on random pair sets;
+  outputs satisfy the saturation law (harness 2); duality
+  `interior(P) == complement(safety_closure(complement(P)))`;
+  decomposition identity
+  `P == intersection(safety_closure(P), liveness_part(P))`; every class
+  is `live` for `liveness_part(P)` (its closure is `linked`);
+  metamorphic replay against the paired det HOA — prefix-liveness of a
+  lasso's prefixes checked by bounded per-state emptiness on the
+  automaton, over all lassos `|u|, |v| ≤ 3`.
 
 Non-goals for this iteration: the exponential frontier (`W·L`, `W^ω`,
 `remove_ap` — §3.4 of the paper; do not implement, do not stub); exit
-constructions to NBA; hulls (§3.5 "conjecturally" — theory owes the pair
-sets first); any CLI; any learner integration (that is a *separate*
-commission, specified on the learner's side, once this package stands).
+constructions to NBA; any CLI; any learner integration (that is a
+*separate* commission, specified on the learner's side, once this
+package stands).
 
 ## 7. Expected failures — read before filing a bug
 
