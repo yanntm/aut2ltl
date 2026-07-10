@@ -49,6 +49,9 @@ def main(argv: Optional[List[str]] = None) -> int:
                                        "match the planner's folders, in order")
     p.add_argument("--slice", type=parse_slice, required=True, metavar="I:J",
                    help="half-open index range into the discovered examples")
+    p.add_argument("--use", action="append", default=[], metavar="TECH",
+                   help="technique, passed through opaquely (repeatable); omit "
+                        "for the default")
     p.add_argument("--build-timeout", type=int, default=15, metavar="S")
     p.add_argument("--equiv-timeout", type=int, default=15, metavar="S")
     args = p.parse_args(argv)
@@ -66,8 +69,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     # divert the summary to stderr, and leave stdout holding nothing but CSV.
     with tempfile.TemporaryDirectory() as tmp:
         with contextlib.redirect_stdout(sys.stderr):
-            rc = run(chunk, [], logs_dir=Path(tmp), verify=True, verbose=False,
-                     build_timeout=args.build_timeout,
+            rc = run(chunk, args.use, logs_dir=Path(tmp), verify=True,
+                     verbose=False, build_timeout=args.build_timeout,
                      equiv_timeout=args.equiv_timeout)
         for csv in Path(tmp).glob("survey_*.csv"):
             sys.stdout.write(csv.read_text())

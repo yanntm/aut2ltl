@@ -58,6 +58,9 @@ def main(argv: Optional[List[str]] = None) -> int:
                    metavar="FILE", help="where to write the command list")
     p.add_argument("--config", type=Path, default=Path("cluster/config.sh"),
                    metavar="FILE", help="the runner config to size chunks against")
+    p.add_argument("--use", action="append", default=[], metavar="TECH",
+                   help="technique, forwarded opaquely to every shard "
+                        "(repeatable); omit for the default")
     p.add_argument("--build-timeout", type=int, default=15, metavar="S")
     p.add_argument("--equiv-timeout", type=int, default=15, metavar="S")
     args = p.parse_args(argv)
@@ -77,9 +80,10 @@ def main(argv: Optional[List[str]] = None) -> int:
               file=sys.stderr)
 
     folder_args = " ".join(f"--folder {d}" for d in args.folder)
+    use_args = "".join(f"--use {t} " for t in args.use)
     lines = [
         f'python3 -m survey.cluster.shard {folder_args} '
-        f'--slice {i}:{min(i + chunk, n)} '
+        f'--slice {i}:{min(i + chunk, n)} {use_args}'
         f'--build-timeout {args.build_timeout} '
         f'--equiv-timeout {args.equiv_timeout} > "$OARRUN_OUT.csv"'
         for i in range(0, n, chunk)
