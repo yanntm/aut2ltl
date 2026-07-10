@@ -128,29 +128,11 @@ fi
 
 SGPDEC_DIR="$PREFIX/pkg/sgpdec"
 if [ ! -d "$SGPDEC_DIR" ]; then
-    log "installing SgpDec $SGPDEC_VERSION into $PREFIX/pkg"
-    rm -rf "$SGPDEC_DIR"
-    TMP="$(mktemp -d)"
-    # The path is baked into the trap: EXIT fires where a local would be gone,
-    # and under set -u that would abort an otherwise successful run.
-    trap "rm -rf '$TMP' 2>/dev/null || true" EXIT
-
-    if ! curl -fL --no-progress-meter -o "$TMP/sgpdec.tar.gz" "$SGPDEC_URL"; then
-        log "release tarball unavailable; cloning the tag instead"
-        git clone --depth 1 --branch "$SGPDEC_VERSION" \
-            https://github.com/gap-packages/sgpdec.git "$TMP/src" \
-            || die "could not obtain SgpDec sources"
-    else
-        mkdir -p "$TMP/x"
-        tar -xzf "$TMP/sgpdec.tar.gz" -C "$TMP/x"
-        # The tarball unpacks to sgpdec-<ver>/, or occasionally to its contents.
-        UNPACKED="$(find "$TMP/x" -maxdepth 1 -type d -name 'sgpdec*' | head -1)"
-        [ -n "$UNPACKED" ] || UNPACKED="$TMP/x"
-        mv "$UNPACKED" "$TMP/src"
-    fi
-
-    cp -r "$TMP/src" "$SGPDEC_DIR"
-    log "SgpDec installed."
+    log "cloning SgpDec $SGPDEC_VERSION into $PREFIX/pkg"
+    # By tag, not by release tarball: the tarball the release page advertises is
+    # not served. SgpDec is pure GAP, so the checkout is the installation.
+    git clone --quiet --depth 1 --branch "$SGPDEC_VERSION" \
+        "$SGPDEC_REPO" "$SGPDEC_DIR" || die "could not obtain SgpDec sources"
 else
     log "SgpDec already at $SGPDEC_DIR"
 fi
@@ -184,26 +166,16 @@ log "wrote wrapper $PREFIX/bin/gap"
 
 log "verifying SgpDec loads"
 
-# Streamed to a file rather than captured in a variable: a GAP that dies on a
-# signal (SIGILL from a package's kernel module, say) leaves the shell no output
-# to print, and under set -e the script would abort with the exit status alone.
-# The status is taken by hand so the log survives either way.
+# Output is shown and kept, never captured in a variable: a gap killed by a
+# signal leaves a command substitution nothing to print, and the failure then
+# reports an exit status and no reason. grep reads the file afterwards rather
+# than the pipe, whose early exit would SIGPIPE tee and fail a good verify.
 VERIFY_LOG="$ROOT/build/gap-verify.log"
-set +e
 "$PREFIX/bin/gap" --bare -q -c \
     'if LoadPackage("SgpDec") = fail then Print("LOAD_FAIL\n"); else Print("LOAD_OK\n"); fi; QUIT;' \
-    >"$VERIFY_LOG" 2>&1
-VERIFY_RC=$?
-set -e
-
-if [ "$VERIFY_RC" -ge 128 ]; then
-    cat "$VERIFY_LOG" >&2
-    die "gap died on signal $((VERIFY_RC - 128)) while loading SgpDec (see $VERIFY_LOG)"
-fi
-if ! grep -q LOAD_OK "$VERIFY_LOG"; then
-    cat "$VERIFY_LOG" >&2
-    die "SgpDec failed to load from $SGPDEC_DIR (gap exited $VERIFY_RC)"
-fi
+    2>&1 | tee "$VERIFY_LOG" \
+    || die "gap exited $? while loading SgpDec"
+grep -q LOAD_OK "$VERIFY_LOG" || die "SgpDec did not load from $SGPDEC_DIR"
 
 # Written last and only here: an interrupted or unloadable install carries no
 # stamp, so the next run rebuilds it rather than trusting it.

@@ -36,9 +36,10 @@
 : "${GAP_VERSION:=4.15.1}"
 : "${GAP_URL:=https://github.com/gap-system/gap/releases/download/v${GAP_VERSION}/gap-${GAP_VERSION}.tar.gz}"
 
-# SgpDec, the GAP package the Krohn-Rhodes path consumes.
+# SgpDec, the GAP package the Krohn-Rhodes path consumes. Cloned at its tag: it
+# is pure GAP, and the tarball its release page advertises is not served.
 : "${SGPDEC_VERSION:=v1.2.0}"
-: "${SGPDEC_URL:=https://github.com/gap-packages/sgpdec/releases/download/${SGPDEC_VERSION}/sgpdec-1.2.0.tar.gz}"
+: "${SGPDEC_REPO:=https://github.com/gap-packages/sgpdec.git}"
 
 # libDDD and libITS, for the symbolic path. Cloned into build/, installed into
 # opt/its; only libITS's gal expression component is consumed.
