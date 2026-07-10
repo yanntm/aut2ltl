@@ -1,6 +1,0 @@
-CSV: genaut/logs/rerun_sd/2state1ap1acc/survey_20260626_155138.csv
-survey: 929 inputs  (--use deep_nobls_sort_decomp)
-aut2ltl: 746 LTL, 122 not-LTL  |  declined 0, timeout 61, crash 0
-validation of 746 LTL: 744 TRUE, 0 FAIL, 2 not checked (size/timeout/error)
-totals: DAG=4437 temporals=1096 build=1684.437s
-SUCCESS
