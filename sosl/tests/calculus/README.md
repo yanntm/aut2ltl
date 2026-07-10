@@ -15,6 +15,7 @@ CORPUS=../genaut/corpus/flat_canon/sos
 python3 -m tests.calculus.smoke         $CORPUS/3state1ap0acc_074764.sos
 python3 -m tests.calculus.laws          $CORPUS/3state1ap0acc_074764.sos
 python3 -m tests.calculus.align_gate    $CORPUS/3state1ap0acc_074764.sos $CORPUS/3state1ap0acc_074764_c.sos
+python3 -m tests.calculus.product_gate  $CORPUS/3state1ap0acc_074381.sos $CORPUS/3state1ap0acc_013844.sos
 python3 -m tests.calculus.duality       $CORPUS/3state1ap0acc_074764.sos
 python3 -m tests.calculus.witness_min   $CORPUS/3state1ap0acc_005684.sos $CORPUS/3state1ap0acc_074764.sos
 python3 -m tests.calculus.corpus_oracle $CORPUS 40 0
@@ -27,6 +28,7 @@ python3 -m tests.calculus.corpus_oracle $CORPUS 40 0
 | `smoke.py` | — | every entry point once on one file: table shape, residual count, saturation of `P` and `Pᶜ`, the emptiness / universality / equivalence / intersection witnesses, the self-alignment ratio, and `reduce`. The first thing to run on a new input. |
 | `laws.py` | 1–4 | Boolean laws with pointwise `Val` agreement on every cell; the saturation law on every catalog output; metamorphic replay (`member` of a result is the operation on the `member`s of its inputs) exhaustively over lassos with `|u|,|v| ≤ 3`, including the three `inverse_substitution` maps; the rooting action laws. |
 | `align_gate.py` | 5 | `align(I, I')` on two separately loaded copies is the diagonal and `equivalent` accepts it; `reduce` is byte-identity on an already-reduced invariant. With a second file: `equivalent` over the aligned product agrees with `byte_equivalent` of the two reduced sides, and a disagreement witness replays positive on the left and negative on the right. |
+| `product_gate.py` | 5b | `materialize(align(a, b), a, b)` builds the product omega-semigroup that `align` defers: over every canonical cell lasso of the aligned product, `member` of `reduce(a ∩ b)` / `reduce(a ∪ b)` equals the Boolean combination of the two sides' `member`s; both carried sides are saturated; and the intersection is empty exactly when `intersecting_word` finds no shared word. `--sample N` sweeps same-alphabet corpus pairs. |
 | `duality.py` | 6 | `complement` is an involution, and `reduce(complement(P))` is **byte-identical** to the corpus's stored complement (`X.sos` ↔ `X_c.sos`) — the free operation landing exactly on the canonical form an independent automaton-side construction produced. Without a companion file, the involution law alone. |
 | `corpus_oracle.py` | 7 | language equality *is* filename equality in `flat_canon/`, an answer key the calculus never sees. Over a sample: same-file pairs are `equivalent` (and byte-equal reduced), cross-file pairs are separated by a witness that replays against both sides. Accumulates the alignment-ratio distribution — the V1 ledger's raw material. |
 | `witness_min.py` | 8 | Proposition W: the cell scan returns the *globally* minimal witness. Brute-force every lasso up to a bound in the same discipline order and demand the same lasso. A second file adds the cross-language scans, where the minimal separator is long enough for the claim to bite. |

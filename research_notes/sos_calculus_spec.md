@@ -126,6 +126,9 @@ sosl/sosl/sos/calculus/
                  factory (a Table carries MANY pair sets; pair sets are
                  values, tables are shared)
     align.py     align(A, B) -> Aligned: the generated product, lazy mult
+    product.py   materialize(Aligned, A, B) -> Product: the one move that
+                 pays for the product mult, so surgery + reduce combine two
+                 languages over DIFFERENT tables into a canonical Invariant
     surgery.py   the free fragment: Boolean ops, complement, rooting,
                  pair languages + saturate(), inverse substitution
     decide.py    emptiness / universality / inclusion / equivalence /
@@ -183,6 +186,28 @@ shortlex key (first discovery); each edge is two `step` calls.
   realized `|nodes| / (n_A·n_B)` ratio — V1 measures it.
 - When both sides are `Invariant`s over one table (`A.table is B.table`),
   `align` returns the trivial diagonal without BFS.
+
+### 3.2b `product.py` — materializing the deferred product table
+
+```
+materialize(aligned: Aligned, A: Language, B: Language) -> Product
+product(A, B) := materialize(align(A, B), A, B)
+Product = (table: Table, pairs_a: PairSet, pairs_b: PairSet)
+```
+
+The deliberate exception to 3.2's "no product mult is ever materialized":
+`align` stays decision-only, but *combining* two languages over different
+tables into a canonical `Invariant` (∩, ∪, ∖) needs the product `M` to
+exist. The reachable node set align already found is the letter-generated
+subsemigroup, **closed under the componentwise product**
+`M((c_A,c_B),(d_A,d_B)) = (M_A(c_A,d_A), M_B(c_B,d_B))`, so the mult is
+built over exactly those nodes and `of_raw` re-keys them (reproducing the
+align order). Each side is carried back as a pair set over the one product
+table; then the free `surgery` catalog applies and `reduce` canonicalizes.
+Cost: `O(|nodes|²)` product lookups + one `of_raw`. Correctness gate:
+`tests/calculus/product_gate.py` (harness 5b) — the `member` law over every
+cell of the aligned product, saturation of both carried sides, and the ∩
+emptiness/`intersecting_word` cross-check.
 
 ### 3.3 `surgery.py` — the free fragment
 

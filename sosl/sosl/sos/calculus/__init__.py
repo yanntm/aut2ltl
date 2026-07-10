@@ -17,6 +17,7 @@ from .decide import (
     is_universal,
     member,
 )
+from .product import Product, materialize, product
 from .reduce import reduce, reduced_invariant
 from .surgery import (
     complement,
@@ -45,6 +46,9 @@ __all__ = [
     "cells_in_order",
     "Aligned",
     "align",
+    "Product",
+    "product",
+    "materialize",
     "Witness",
     "Oracle",
     "Decision",
