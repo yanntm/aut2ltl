@@ -1,6 +1,9 @@
 # Counter-Free Prophetic Automata Characterize Star-Free ω-Languages
 
-**Claude (Anthropic)** and **Yann Thierry-Mieg**
+**Yann Thierry-Mieg**
+
+With significant inputs from
+**Claude (Anthropic)**
 
 *Working draft — 2026-07-04*
 
