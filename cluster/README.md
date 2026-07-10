@@ -1,13 +1,12 @@
-# cluster — provision, submit, collect
+# cluster — submit, collect
 
-Two independent things live here.
+Sends a list of shell commands to the OAR cluster and brings the results back.
+The runner never knows what a command means, so a census sweep, a learning run
+and the dependency build all go through it.
 
-**Provisioning** builds every native dependency into the repo's own `opt/`, from
-source, on any Linux. No root, no `$HOME`, nothing system-wide.
-
-**Running** sends a list of shell commands to the OAR cluster and brings the
-results back. The runner never knows what a command means, so a census sweep, a
-learning run and the provisioning build all go through it.
+Building the dependencies is [`deps/`](../deps/README.md)'s job, not this
+directory's. `deploy.sh` only submits that build as a job, because the submit host
+cannot compile.
 
 ---
 
@@ -19,65 +18,32 @@ RUN=$(cluster/oarrun.sh --split 4 --cores 64 cmds.txt)
 cluster/reap.sh "$RUN"                         # call again for progress
 ```
 
-Provisioning, run when a dependency moves. Three jobs, one per dependency, in
-parallel — they are independent and write to disjoint prefixes:
+Build the dependencies on the cluster, when one of them moves. Three jobs, one per
+dependency, in parallel — they are independent and write to disjoint prefixes:
 
 ```bash
 cluster/sync_cluster.sh
-cluster/reap.sh "$(cluster/deploy.sh)"       # --force to rebuild matching versions
+cluster/reap.sh "$(cluster/deploy.sh)"
 ```
 
-Locally, no cluster involved:
-
-```bash
-cluster/provision.sh          # build spot + gap + libDDD/libITS into opt/
-source cluster/env.sh         # put them on PATH / PYTHONPATH / LIBDDD_HOME
-```
+A dependency already in `opt/` is left alone. To replace one, remove its prefix on
+the cluster (`rm -rf opt/gap`) and submit again.
 
 ---
 
 ## Commands and flags
 
-### `deploy.sh [--force] [oarrun options...]` → prints a run id
+### `deploy.sh [oarrun options...]` → prints a run id
 
-Submits three jobs, one per dependency, each `cluster/provision.sh --<dep>-only`,
-with `--cores $BUILD_JOBS --timeout 0 --walltime $SPOT_BUILD_WALLTIME`. They run
+Submits three jobs, one per dependency, each `deps/build_all.sh --<dep>-only`,
+with `--cores $BUILD_JOBS --timeout 0 --walltime $DEPS_BUILD_WALLTIME`. They run
 concurrently on three machines. `reap.sh` reports `3/3` when all are done, and
 names the failing one otherwise.
 
-### `provision.sh [--force] [--spot-only|--gap-only|--its-only]`
-
-Builds Spot, GAP+SgpDec, libDDD+libITS into `opt/`. Ends by asserting each tool
-resolves **under `opt/`** — a tool that merely answers is not a tool that came
-from this tree.
-
-| flag | |
-|---|---|
-| *(none)* | build what is missing or stale; leave a matching install alone |
-| `--force` | rebuild and replace every prefix, even at the same version |
-| `--spot-only` `--gap-only` `--its-only` | one dependency |
-
-Each dependency keeps **one** install, stamped with its version in
-`opt/<name>/.version`. The stamp is written **last**, after the verify step, so
-an interrupted or unloadable install is never mistaken for a good one. A version
-change replaces the prefix; `--force` is only needed to rebuild the same version.
-
-### `build_spot.sh [--rebuild] [spot_version]`
-
-`--rebuild` replaces the install. A positional version overrides what the tracked
-repo says (e.g. `2.14.5.dev`).
-
-### `build_gap.sh [--rebuild]`
-
-Replaces GAP **and its packages** together: package kernel modules are compiled
-against one GAP, and mixing them does not work.
-
-### `build_its.sh [--rebuild]`
-
 ### `sync_cluster.sh [rev]`
 
-Fetches on the cluster and checks out `rev` (default `origin/master`), detached.
-Consults nothing local.
+Fetches on the cluster and checks out `rev` (default `origin/master`). Consults
+nothing local.
 
 ### `oarrun.sh [flags] cmds.txt` → prints a run id
 
@@ -88,7 +54,7 @@ Consults nothing local.
 | `--split K` | `1` | spread the list over K jobs |
 | `--cores N` | `4` | cores **requested** per job, and commands in flight on them |
 | `--walltime H:MM:SS` | `0:05:00` | per-job limit |
-| `--resources STR` | `/nodes=1` | OAR resource string, minus the core term and walltime |
+| `--resources STR` | `{host like 'tall%'}/nodes=1` | OAR resource string, minus the core term and walltime |
 | `--oar-opts STR` | — | extra `oarsub` options, e.g. `--besteffort` |
 | `--resume RUNID` | — | re-submit into an existing run; finished commands are skipped |
 | `--dry-run` | — | print the `oarsub` calls, submit nothing |
@@ -96,8 +62,8 @@ Consults nothing local.
 Submits, per shard `k`:
 
 ```
-oarsub -n <runid>.k -l /nodes=1/core=N,walltime=H:MM:SS \
-  "$HOME/git/aut2ltl/cluster/oar_worker.sh $HOME/git/aut2ltl/oarrun/<runid> k K T auto"
+oarsub -n <runid>.k -l {host like 'tall%'}/nodes=1/core=N,walltime=H:MM:SS \
+  "$HOME/git/aut2ltl/cluster/oar_worker.sh $HOME/git/aut2ltl/oarrun/<runid> k K T"
 ```
 
 ### `oarsub.sh [flags] -- <command...>` → prints a run id
@@ -112,21 +78,15 @@ Fetches the run into `results/cluster/<runid>/`, merges CSV shards, prints the
 tally. `--strict` exits nonzero if any command is missing. Safe at any time;
 calling it twice is how progress is observed.
 
-### `env.sh`
-
-Sourced, not run. Prepends `opt/spot/bin` and `opt/gap/bin` to `PATH`, Spot's
-`lib{,64}` to `LD_LIBRARY_PATH`, its Python bindings to `PYTHONPATH`, and exports
-`LIBDDD_HOME=opt/its`. Prefixes go in front **unconditionally**, so a missing
-build fails loudly instead of resolving to a system tool.
-
-`config.sh` holds every default (host, paths, versions, `BUILD_JOBS`); all of it
-is overridable from the environment.
+`config.sh` holds every default (host, paths, OAR settings); all of it is
+overridable from the environment.
 
 ---
 
 ## Contract for the commands
 
-One shell command per line, run with the repo root as working directory.
+One shell command per line, run with the repo root as working directory, with
+`deps/env.sh` already sourced.
 
 **Output must be additive and flushed after each record.** Collection is then
 decoupled from completion: a run still going, or killed at walltime, still yields
@@ -180,8 +140,9 @@ the work. The worker reads the **granted** allocation back from `$OAR_NODEFILE`
 — never `nproc`, which reports the whole machine — so reserved and used width
 agree.
 
-No host class is requested and no node is pinned. Prepend one with
-`--resources '{(host like "tall%")}/nodes=1'` when timings must be comparable.
+The host class is not a preference. `opt/` is compiled with the AVX2 instructions
+of the machine that built it, so a job landing elsewhere dies of `SIGILL`; builds
+and runs ask for the same class. It also makes timings comparable.
 
 Job walltime defaults to **5 minutes**: shards are sized to fit it, not the
 reverse. Raise `--split` or `--cores`, not the walltime. `oarrun.sh` warns when a
@@ -199,56 +160,8 @@ only transfer, always cluster → local; nothing is ever sent the other way.
 It is provisioned for submission, not for work. `oarrun.sh` makes K immediate
 `oarsub` calls and exits; `reap.sh` only reads files. No backgrounding there, no
 `nohup`, no poll loop anywhere on the cluster — progress is observed by calling
-`reap.sh` again from the client. Compute nodes have network, so the provisioning
-job downloads its own sources.
-
----
-
-## The dependencies
-
-**Spot.** [Spot-BinaryBuilds](https://github.com/yanntm/Spot-BinaryBuilds) is the
-source of *version truth*, not of source: `build_spot.sh` clones it to read which
-Spot release we track (often a tagged dev revision) and where its tarball lives,
-then fetches that tarball and applies **our own** configure flags. Theirs targets
-ITS-Tools — `--disable-shared`, static archives, no Python bindings — and we do
-`import spot`, so we build shared with `--enable-python`, out-of-tree.
-
-The bindings compile against whichever `python3` the node has. That is why we
-build rather than download: a prebuilt `_spot.so` is bound to one CPython ABI and
-one glibc, and the fleet is heterogeneous.
-
-`--enable-max-accsets=64` (kept from their recipe) lifts Spot's default
-32-acceptance-set ceiling, which our automata cross; a skipped oracle is not a
-verified one.
-
-**GAP + SgpDec.** Built from source; there is no distro-package path, since a
-result must be a function of the commit rather than of the GAP a node carries.
-GAP's own `make install` warns that it installs **no packages**, so SgpDec's
-closure — `GAPDoc, orb, semigroups, datastructures, digraphs, genss, images, IO`
-— is compiled with GAP's `BuildPackages.sh` and copied into the prefix.
-`opt/gap/bin/gap` is a generated wrapper: it carries `libgap.so` on the loader
-path, adds the prefix as an extra GAP root, and passes `-r` so `$HOME/.gap` is
-dropped from `GAPInfo.RootPaths` — a package in the account would otherwise
-outrank ours.
-
-GAP vendors GMP, whose `configure` probe declares `void g(){}` and calls it with
-arguments: valid up to C17, an error under gcc 14+'s default C23, which GMP reads
-as "no working compiler". Hence `CC="gcc -std=gnu17"` — the dialect is pinned,
-not the compiler, so older nodes behave alike.
-
-**libDDD + libITS.** Cloned into `build/`, installed into `opt/its`, reached by
-CMake through `LIBDDD_HOME`, the override `sos_sdd/CMakeLists.txt` already
-honours — no build-file changes. Only libITS's gal expression component is
-consumed; its `bin/` tools want headers nothing here needs, so a partial `make`
-is tolerated and the artifact check is the gate. Both projects clear `CXXFLAGS`
-before `AC_PROG_CXX`, suppressing autoconf's default `-g -O2`, so an unconfigured
-build is `-O0` with `-flto`: the IR bloat of link-time optimization without the
-optimization. `-O2` and `-DNDEBUG` are therefore stated, not inherited; DDD's
-asserts sit in the hot path.
-
-No source file changed for any of this: `bls/gap/runner.py` spawns a bare `gap`
-and gets the wrapper, `import spot` resolves from the prefix, and CMake reads an
-environment variable it already supported.
+`reap.sh` again from the client. Compute nodes have network, so the dependency
+build downloads its own sources.
 
 ---
 
@@ -260,25 +173,16 @@ root-anchored in `.gitignore`.
 
 | | |
 |---|---|
-| `opt/spot` `opt/gap` `opt/its` | the installs, one each, version-stamped |
-| `build/` | clones, tarballs, object trees; disposable |
 | `oarrun/<runid>/` | `cmds.txt`, `meta.json`, `out/`, `logs/`, `status/`, `oar/` |
 | `results/cluster/<runid>/` | what `reap.sh` brings back, on the client |
-
-`rm -rf opt build` undoes provisioning exactly.
 
 ## Files
 
 | | |
 |---|---|
 | `config.sh` | every default; overridable from the environment |
-| `env.sh` | in-job environment; sourced, never run |
-| `deploy.sh` | provision the cluster: one job per dependency, in parallel |
-| `provision.sh` | build all dependencies into `opt/` |
-| `build_spot.sh` | read the tracked version, fetch, out-of-tree build with Python bindings |
-| `build_gap.sh` | GAP from source, its package chain, the `gap` wrapper |
-| `build_its.sh` | libDDD + libITS from clean clones |
-| `sync_cluster.sh` | check the cluster out at this tree's HEAD |
+| `deploy.sh` | submit the dependency build: one job per dependency, in parallel |
+| `sync_cluster.sh` | check the cluster out at origin's master |
 | `oarrun.sh` | submit a command list as K jobs |
 | `oarsub.sh` | submit a single command |
 | `oar_worker.sh` | one job: strided shard, `xargs -P <granted cores>` |

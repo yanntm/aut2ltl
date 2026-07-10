@@ -10,18 +10,32 @@ reconstruction.
 
 ## Quick start
 
-Three dependencies must be installed at system level (they are *not* pip-installable):
+Three native dependencies are needed, none of them pip-installable:
 
-- **Python 3**
-- **[Spot](https://spot.lre.epita.fr/)** with its `spot` / `buddy` Python bindings
-- **[GAP](https://www.gap-system.org/) 4.12+** with the **SgpDec** package — run
-  [`install_gap.sh`](install_gap.sh) once to set it up user-locally (`~/.gap/pkg`)
+- **[Spot](https://spot.lre.epita.fr/)**, with its Python bindings
+- **[GAP](https://www.gap-system.org/)** with the **[SgpDec](https://github.com/gap-packages/sgpdec)** package
+- **[libDDD](https://github.com/lip6/libDDD) + [libITS](https://github.com/lip6/libITS)**
 
-Then install the package itself:
+[`install.sh`](install.sh) builds all three from source into this checkout's own
+`opt/`, taking nothing from the system and writing nothing outside the clone:
 
 ```bash
-pip install -e .          # provides `python3 -m aut2ltl` and the `aut2ltl` console script
+git clone https://github.com/yanntm/aut2ltl.git && cd aut2ltl
+./install.sh                      # once; the build takes a while
 ```
+
+Afterwards, run the tool through [`aut2ltl.sh`](aut2ltl.sh), a thin wrapper that puts
+those dependencies on the interpreter's path and passes everything else to `python3`:
+
+```bash
+./aut2ltl.sh -m aut2ltl model.hoa
+```
+
+To update a dependency, `git pull`, remove its prefix (`rm -rf opt/spot`, `opt/gap`
+or `opt/its`) and run `./install.sh` again; what is present is never rebuilt. The
+dependencies are compiled for the machine that builds them, AVX2 included, so a
+checkout shared between machines must be used from machines with the same instruction
+set. See [`deps/README.md`](deps/README.md).
 
 ### Examples
 
@@ -36,7 +50,7 @@ build its TGBA
 `aut2ltl` reads a defining formula back off the automaton:
 
 ```console
-$ python3 -m aut2ltl samples/fixtures/hoa/various/collapse_example.hoa
+$ ./aut2ltl.sh -m aut2ltl samples/fixtures/hoa/various/collapse_example.hoa
 technique : daisy+daisystardet
 DAG nodes : 6
 temporals : 1
@@ -63,7 +77,7 @@ the Büchi acceptance back as `GF`/`FG`, not just the transition structure.
 <p align="center"><img src="docs/img/fairness_example.png" alt="the TGBA of GFa & FGb" width="240"></p>
 
 ```console
-$ python3 -m aut2ltl samples/fixtures/hoa/various/fairness_example.hoa
+$ ./aut2ltl.sh -m aut2ltl samples/fixtures/hoa/various/fairness_example.hoa
 technique : acc2+daisy
 DAG nodes : 7
 temporals : 4
@@ -79,7 +93,7 @@ defining formula exists, `NOT_LTL: <witness>` when the language is not LTL-defin
 build time) goes to stderr and is silenced by `-q`:
 
 ```console
-$ python3 -m aut2ltl samples/fixtures/hoa/various/collapse_example.hoa -q
+$ ./aut2ltl.sh -m aut2ltl samples/fixtures/hoa/various/collapse_example.hoa -q
 LTL: F(b & X!a)
 ```
 
@@ -94,7 +108,7 @@ witness** of why. Take the mod-3 counter `L = a^{3k}·(!a)^ω`
 <p align="center"><img src="docs/img/mod3_a.png" alt="the mod-3 counter automaton for a^{3k}(!a)^ω" width="360"></p>
 
 ```console
-$ python3 -m aut2ltl samples/fixtures/hoa/various/mod3_a.hoa
+$ ./aut2ltl.sh -m aut2ltl samples/fixtures/hoa/various/mod3_a.hoa
 aut2ltl: NOT_LTL -- the language is not LTL-definable
   (the deterministic transition monoid is non-aperiodic (carries a non-trivial
    group), so the language is not star-free / counter-free and no LTL formula exists)
@@ -128,7 +142,7 @@ input automaton — sampling membership of `u·vⁿ·x` and confirming it toggle
 `p`:
 
 ```console
-$ python3 -m aut2ltl.verifier samples/fixtures/hoa/various/mod3_a.hoa \
+$ ./aut2ltl.sh -m aut2ltl.verifier samples/fixtures/hoa/various/mod3_a.hoa \
       "NOT_LTL: p=3 u=[] v=[a; a] x=[cycle{!a}]"
 VERIFY: ok pattern=1001001
 ```
@@ -142,11 +156,11 @@ The prefix `u` need not be empty. Here the family opens with a two-letter prefix
 `u = c; c` before the period-2 counting, and the verifier checks it the same way:
 
 ```console
-$ python3 -m aut2ltl samples/validation/hoa/prefix_nonltl_1.hoa
+$ ./aut2ltl.sh -m aut2ltl samples/validation/hoa/prefix_nonltl_1.hoa
 …
 NOT_LTL: p=2 u=[c; c] v=[a & !b] x=[cycle{!a & b}]
 
-$ python3 -m aut2ltl.verifier samples/validation/hoa/prefix_nonltl_1.hoa \
+$ ./aut2ltl.sh -m aut2ltl.verifier samples/validation/hoa/prefix_nonltl_1.hoa \
       "NOT_LTL: p=2 u=[c; c] v=[a & !b] x=[cycle{!a & b}]"
 VERIFY: ok pattern=10101
 ```
@@ -164,11 +178,11 @@ The input is auto-detected as a HOA file or an LTL/PSL formula; force it with
 `--ltl` / `--hoa`.
 
 ```bash
-python3 -m aut2ltl 'G(p -> (q U r))'           # an LTL/PSL formula in
-python3 -m aut2ltl model.hoa                    # a HOA automaton file in
-python3 -m aut2ltl model.hoa -q -o out.ltl      # -q: formula only; -o: to a file
-python3 -m aut2ltl model.hoa --list-options     # every -O knob, its default and doc
-python3 -m aut2ltl --help
+./aut2ltl.sh -m aut2ltl 'G(p -> (q U r))'           # an LTL/PSL formula in
+./aut2ltl.sh -m aut2ltl model.hoa                    # a HOA automaton file in
+./aut2ltl.sh -m aut2ltl model.hoa -q -o out.ltl      # -q: formula only; -o: to a file
+./aut2ltl.sh -m aut2ltl model.hoa --list-options     # every -O knob, its default and doc
+./aut2ltl.sh -m aut2ltl --help
 ```
 
 The reconstructed formula is a **hash-consed DAG**: it shares repeated sub-formulas,
@@ -177,7 +191,7 @@ when the flat string is large. By default a large formula is printed only up to 
 size gate (raise it with `--flatten-limit N`), or export the DAG itself:
 
 ```bash
-python3 -m aut2ltl model.hoa --dag | dot -Tpng -o dag.png
+./aut2ltl.sh -m aut2ltl model.hoa --dag | dot -Tpng -o dag.png
 ```
 
 Fine-tune any declared option with `-O key=value` (see `--list-options`).
