@@ -24,10 +24,12 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
   `bls_cascade_experiments.md` (K-E0 expectations, K-E1/E2/E4/E6/E7
   re-scoped), main paper `sos_toltl.md` §5.1/§8.
   **K-E1–K-E5: UNBLOCKED** under the revised spec.
-- **K-E0 steps 3 (sandwich)/6 (saturation) now DONE** — K-F4, K-F5 below. Only
-  step 4 (C3 (B)-mode cross-check) remains; it carries a buffer-width vs
-  window-width alignment subtlety (Lemma C.10) and is not load-bearing for any
-  landed finding (the decider is already validated by K-F1/K-F3/K-F4/K-F5).
+- **K-E0 COMPLETE** — all six steps green: steps 1–3 (revised expectations, via
+  the K-F2 paper edit), step 3 sandwich (K-F5), step 4 C3 (B)-cross (K-F6),
+  step 5 (K-F1), step 6 saturation (K-F4). The decider is validated five
+  independent ways.
+- **Next: K-E1** — (C) on the 372 (B)-undecided census layers, with K-E7
+  piggybacked.
 
 ---
 
@@ -133,3 +135,15 @@ seen on the controls). Scan is `O(|E_id|²)` per `(x,F)` — piggybacks K-E1/E2.
 
 Command: `python3 -m tests.cascade.k_e7_controls floor 0|floor 1|evenblocks 2|evenblocks 3`.
 Logs: `tests/cascade/logs/k_e7_*.txt`.
+
+## K-F6 — (B)-mode agrees with C3 wherever C3 decides (step 4) — CONFIRMED
+
+The config decider's (B)-mode (window-projection grouping) matches C3
+(`windows.realizable_verdicts`) at matching window width `k`: `GF(aa)` `{5}`
+k=1 both FAIL, k=2 both PASS with **all 6 window-sets agreeing at the verdict
+map level**; the floor `{6}` and `G(a→F b)` `{2,4}` layers both FAIL at k=0,1
+on both sides. No disagreement; the F1 cap-false-PASS divergence (a known C3
+limitation) does not arise on these layers.
+
+Command: `python3 -m tests.cascade.k_e0_bcross`. Log:
+`tests/cascade/logs/k_e0_bcross.txt`.
