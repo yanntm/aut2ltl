@@ -78,25 +78,33 @@ def _trace(row: Dict[str, object]) -> None:
 
 
 def run(examples: Sequence[Example], uses: Sequence[str], *,
-        logs_dir: Optional[Path] = None, verify: bool = True,
-        verbose: bool = False, build_timeout: int = 15,
+        logs_dir: Optional[Path] = None, csv_file: Optional[Path] = None,
+        verify: bool = True, verbose: bool = False, build_timeout: int = 15,
         equiv_timeout: int = 15) -> int:
     """Run every example under every resolved technique. Returns 1 iff a verified
-    NON-equivalent answer occurred (only possible with verify), else 0."""
+    NON-equivalent answer occurred (only possible with verify), else 0.
+
+    The CSV goes to `csv_file` if named, else a timestamped file under `logs_dir`
+    if named, else stdout."""
     techniques = resolve(uses)
     if verbose:
         _trace_header()
 
     # Open the CSV up front and stream a flushed row per record, so the file
-    # exists and grows during the run (live progress, crash-safe). A file under
-    # --logs, else stdout; the summary is the only end-of-run output.
+    # exists and grows during the run (live progress, crash-safe). A caller's
+    # named file, a file under --logs, else stdout; the summary is the only
+    # end-of-run output.
     csv_path: Optional[Path] = None
-    if logs_dir is not None:
+    if csv_file is not None:
+        csv_path = Path(csv_file)
+        csv_path.parent.mkdir(parents=True, exist_ok=True)
+        fh: "object" = csv_path.open("w", newline="", encoding="utf-8")
+    elif logs_dir is not None:
         logs_dir = Path(logs_dir)
         logs_dir.mkdir(parents=True, exist_ok=True)
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         csv_path = logs_dir / f"survey_{ts}.csv"
-        fh: "object" = csv_path.open("w", newline="", encoding="utf-8")
+        fh = csv_path.open("w", newline="", encoding="utf-8")
         print(f"CSV: {csv_path}", file=sys.stderr)
     else:
         fh = sys.stdout

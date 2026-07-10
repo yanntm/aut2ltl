@@ -31,9 +31,9 @@ CSV to `$OARRUN_OUT.csv` — never to a shared file. See
 
 Two defaults will bite a long benchmark:
 
-- `--timeout 90` caps **each command**. Raise it past your slowest single command,
+- `--timeout 130` caps **each command**. Raise it past your slowest single command,
   or pass `0` to disable. A command that exceeds it is reported `TIMEOUT`, not lost.
-- `--walltime 0:03:00` caps **each job**. Rather than raise it, raise `--split` so
+- `--walltime 0:05:00` caps **each job**. Rather than raise it, raise `--split` so
   the shards fit; `oarrun.sh` warns and names the split that would.
 
 `--cores 2` is deliberate and rarely wants raising: a command is a sequential run,
@@ -103,10 +103,10 @@ nothing local.
 | flag | default | |
 |---|---|---|
 | `--name SLUG` | basename of `cmds.txt` | tag in the run id |
-| `--timeout SECONDS` | `90` | per-command wall-clock cap; `0` disables it |
+| `--timeout SECONDS` | `130` | per-command wall-clock cap; `0` disables it |
 | `--split K` | `8` | spread the list over K jobs |
 | `--cores N` | `2` | cores **requested** per job, and commands in flight on them |
-| `--walltime H:MM:SS` | `0:03:00` | per-job limit |
+| `--walltime H:MM:SS` | `0:05:00` | per-job limit |
 | `--resources STR` | `{host like 'tall%'}/nodes=1` | OAR resource string, minus the core term and walltime |
 | `--oar-opts STR` | — | extra `oarsub` options, e.g. `--besteffort` |
 | `--resume RUNID` | — | re-submit into an existing run; finished commands are skipped |
@@ -199,7 +199,7 @@ The host class is not a preference. `opt/` is compiled with the AVX2 instruction
 of the machine that built it, so a job landing elsewhere dies of `SIGILL`; builds
 and runs ask for the same class. It also makes timings comparable.
 
-Job walltime defaults to **3 minutes**: shards are sized to fit it, not the
+Job walltime defaults to **5 minutes**: shards are sized to fit it, not the
 reverse. Raise `--split`, not the walltime, and not `--cores` — a command is
 sequential, so a wider job idles the cores it reserved. `oarrun.sh` warns when a
 shard looks too big and names the split that would fit.

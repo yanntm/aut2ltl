@@ -27,11 +27,12 @@
 # after diffing a run against the reference.
 : "${LOCAL_RESULTS:=logs/cluster}"
 
-# Default per-command wall-clock cap in seconds. 0 disables the cap and lets
-# the OAR walltime bound the job instead. Sized so a command may hold a handful
-# of examples at their worst case; a planner that packs commands reads this back
-# and cuts its chunks to fit, rather than naming a cap of its own.
-: "${OARRUN_TIMEOUT:=90}"
+# Default per-command wall-clock cap in seconds. 0 disables the cap and lets the
+# OAR walltime bound the job instead. Eight examples at a 15s budget, plus the
+# interpreter's start: a planner that packs commands reads this back and cuts its
+# chunks to fit, rather than naming a cap of its own. The job walltime above it
+# leaves margin for a cold cache and a slow node.
+: "${OARRUN_TIMEOUT:=130}"
 
 # Default number of jobs to spread the command list across. Throughput comes
 # from jobs, not from wide ones: a command is sequential.
@@ -45,10 +46,11 @@
 : "${OARRUN_CORES:=2}"
 
 # Default OAR walltime per job. Deliberately small: shards are sized to fit it
-# rather than the reverse. Raise --split, not the walltime. A job killed at
-# walltime keeps every result it already wrote; reap.sh reports the gap and
-# --resume finishes it.
-: "${OARRUN_WALLTIME:=0:03:00}"
+# rather than the reverse. Raise --split, not the walltime. Comfortably above the
+# per-command cap, so a run of consecutive timeouts does not cost the job. A job
+# killed at walltime keeps every result it already wrote; reap.sh reports the gap
+# and --resume finishes it.
+: "${OARRUN_WALLTIME:=0:05:00}"
 
 # OAR resource string, minus the core term and the walltime that oarrun.sh
 # appends. The host class is not a preference: the dependencies under opt/ are

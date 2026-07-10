@@ -5,20 +5,20 @@ Re-enumerates the given inputs with `survey.discovery.discover` and runs only
 as it did wherever the range was chosen; pass the same `--folder` arguments, in
 the same order, or the indices mean something else.
 
-Stdout carries the CSV and nothing else — one self-contained shard with its own
-header, ready to redirect into a private file; the end-of-run summary and the
-trace go to stderr. Each example keeps the `source` it was discovered with, which
-is what makes the shards reassemble into a CSV comparable, row for row, with an
-unsharded run.
+The CSV shard streams into `--out`, one flushed row per example, so a command
+killed at its cap keeps every example it finished; stdout stays empty and the
+summary and trace go to stderr. Each example keeps the `source` it was discovered
+with, which is what makes the shards reassemble into a CSV comparable, row for
+row, with an unsharded run.
 
-    python3 -m survey.cluster.shard --folder samples/benchmark --slice 0:7
+    python3 -m survey.cluster.shard --folder samples/benchmark --slice 0:8 \
+        --out shard.csv
 """
 from __future__ import annotations
 
 import argparse
 import contextlib
 import sys
-import tempfile
 from pathlib import Path
 from typing import List, Optional, Tuple
 
@@ -49,6 +49,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                                        "match the planner's folders, in order")
     p.add_argument("--slice", type=parse_slice, required=True, metavar="I:J",
                    help="half-open index range into the discovered examples")
+    p.add_argument("--out", type=Path, required=True, metavar="FILE",
+                   help="stream the CSV shard here, one flushed row per example")
     p.add_argument("--use", action="append", default=[], metavar="TECH",
                    help="technique, passed through opaquely (repeatable); omit "
                         "for the default")
@@ -64,17 +66,14 @@ def main(argv: Optional[List[str]] = None) -> int:
               f"examples", file=sys.stderr)
         return 2
 
-    # `run` puts the CSV on stdout only when it has no --logs, and its end-of-run
-    # summary on stdout either way. Give it a logs dir so the two are separable,
-    # divert the summary to stderr, and leave stdout holding nothing but CSV.
-    with tempfile.TemporaryDirectory() as tmp:
-        with contextlib.redirect_stdout(sys.stderr):
-            rc = run(chunk, args.use, logs_dir=Path(tmp), verify=True,
-                     verbose=False, build_timeout=args.build_timeout,
-                     equiv_timeout=args.equiv_timeout)
-        for csv in Path(tmp).glob("survey_*.csv"):
-            sys.stdout.write(csv.read_text())
-    return rc
+    # Stream straight into the named file: `run` opens it up front and flushes a
+    # row per record, so a command killed at its cap keeps every example it
+    # finished. Buffering the CSV and writing it at the end would forfeit the
+    # whole chunk. The summary, which `run` prints to stdout, goes to stderr.
+    with contextlib.redirect_stdout(sys.stderr):
+        return run(chunk, args.use, csv_file=args.out, verify=True,
+                   verbose=False, build_timeout=args.build_timeout,
+                   equiv_timeout=args.equiv_timeout)
 
 
 if __name__ == "__main__":

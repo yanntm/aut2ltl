@@ -31,9 +31,16 @@ from typing import List, Optional
 
 from survey.discovery import discover
 
-# Interpreter start plus imports, once per command. Generous, because it is
-# charged against every chunk's share of the per-command cap.
-STARTUP_S: int = 20
+# Interpreter start plus imports, once per command, charged against the chunk's
+# share of the per-command cap.
+STARTUP_S: int = 10
+
+# Budget for one example, in seconds. `--build-timeout` and `--equiv-timeout` cap
+# the two phases separately, so a pathological example can spend both; this is the
+# budget a chunk is packed against, not that sum. The bet is that almost every
+# example finishes in milliseconds — and when one does not, its command is cut at
+# the cap having already flushed every row before it.
+PER_EXAMPLE_S: int = 15
 
 
 def runner_timeout(config: Path) -> int:
@@ -61,6 +68,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--use", action="append", default=[], metavar="TECH",
                    help="technique, forwarded opaquely to every shard "
                         "(repeatable); omit for the default")
+    p.add_argument("--per-example", type=int, default=PER_EXAMPLE_S, metavar="S",
+                   help="seconds budgeted per example when packing a chunk")
     p.add_argument("--build-timeout", type=int, default=15, metavar="S")
     p.add_argument("--equiv-timeout", type=int, default=15, metavar="S")
     args = p.parse_args(argv)
@@ -71,13 +80,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 2
 
     timeout = runner_timeout(args.config)
-    worst_example = args.build_timeout + args.equiv_timeout
-    chunk = max(1, (timeout - STARTUP_S) // worst_example)
-    if timeout and chunk * worst_example + STARTUP_S > timeout:
-        print(f"survey.cluster.plan: one example's worst case ({worst_example}s) "
+    chunk = max(1, (timeout - STARTUP_S) // args.per_example)
+    if chunk == 1 and args.per_example + STARTUP_S > timeout:
+        print(f"survey.cluster.plan: one example's budget ({args.per_example}s) "
               f"plus startup ({STARTUP_S}s) exceeds the per-command cap "
-              f"({timeout}s); a slow example will be killed as a TIMEOUT",
-              file=sys.stderr)
+              f"({timeout}s); every command will be cut short", file=sys.stderr)
 
     folder_args = " ".join(f"--folder {d}" for d in args.folder)
     use_args = "".join(f"--use {t} " for t in args.use)
@@ -85,7 +92,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         f'python3 -m survey.cluster.shard {folder_args} '
         f'--slice {i}:{min(i + chunk, n)} {use_args}'
         f'--build-timeout {args.build_timeout} '
-        f'--equiv-timeout {args.equiv_timeout} > "$OARRUN_OUT.csv"'
+        f'--equiv-timeout {args.equiv_timeout} --out "$OARRUN_OUT.csv"'
         for i in range(0, n, chunk)
     ]
     # The conventional destination is under the ignored logs/ tree, which a fresh
@@ -94,7 +101,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     args.out.write_text("\n".join(lines) + "\n")
 
     print(f"{n} examples -> {len(lines)} commands of <={chunk}")
-    print(f"{worst_example}s worst case per example, {timeout}s cap per command")
+    print(f"{args.per_example}s budgeted per example, {timeout}s cap per command")
     print(f"wrote {args.out}\n")
     print(f"RUN=$(cluster/oarrun.sh {args.out})")
     return 0
