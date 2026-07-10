@@ -25,24 +25,27 @@
 : "${LOCAL_RESULTS:=results/cluster}"
 
 # Default per-command wall-clock cap in seconds. 0 disables the cap and lets
-# the OAR walltime bound the job instead.
-: "${OARRUN_TIMEOUT:=15}"
+# the OAR walltime bound the job instead. Sized so a command may hold a handful
+# of examples at their worst case; a planner that packs commands reads this back
+# and cuts its chunks to fit, rather than naming a cap of its own.
+: "${OARRUN_TIMEOUT:=90}"
 
-# Default number of whole nodes to spread the command list across.
-: "${OARRUN_SPLIT:=1}"
+# Default number of jobs to spread the command list across. Throughput comes
+# from jobs, not from wide ones: a command is sequential.
+: "${OARRUN_SPLIT:=8}"
 
 # Cores requested per job, and commands in flight on them: oarrun.sh puts this
 # in the resource string and the worker reads the granted allocation back from
-# $OAR_NODEFILE, so the width used equals the width reserved. Raise it for a
-# sweep that wants throughput; a request without a core term reserves the whole
-# machine, however few cores the work has.
-: "${OARRUN_CORES:=4}"
+# $OAR_NODEFILE, so the width used equals the width reserved. Small on purpose.
+# A command is a sequential run and wants one core; asking for a node's worth
+# would idle 60 of its cores and crowd out other jobs. Raise --split instead.
+: "${OARRUN_CORES:=2}"
 
 # Default OAR walltime per job. Deliberately small: shards are sized to fit it
-# rather than the reverse. Raise --split or --cores, not the walltime. A job
-# killed at walltime keeps every result it already wrote; reap.sh reports the
-# gap and --resume finishes it.
-: "${OARRUN_WALLTIME:=0:05:00}"
+# rather than the reverse. Raise --split, not the walltime. A job killed at
+# walltime keeps every result it already wrote; reap.sh reports the gap and
+# --resume finishes it.
+: "${OARRUN_WALLTIME:=0:03:00}"
 
 # OAR resource string, minus the core term and the walltime that oarrun.sh
 # appends. The host class is not a preference: the dependencies under opt/ are

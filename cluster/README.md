@@ -5,7 +5,7 @@ The cluster is deployed and working. Push your code to `master`, then:
 ```bash
 git push                                       # only committed code runs
 cluster/sync_cluster.sh                        # bring master onto the cluster
-RUN=$(cluster/oarrun.sh --split 8 --cores 16 --timeout 300 cmds.txt)
+RUN=$(cluster/oarrun.sh cmds.txt)              # defaults: 8 jobs, 2 cores each
 until cluster/reap.sh "$RUN"; do sleep 30; done   # run this in the background
 ```
 
@@ -31,10 +31,13 @@ CSV to `$OARRUN_OUT.csv` — never to a shared file. See
 
 Two defaults will bite a long benchmark:
 
-- `--timeout 15` caps **each command**. Raise it past your slowest single command,
+- `--timeout 90` caps **each command**. Raise it past your slowest single command,
   or pass `0` to disable. A command that exceeds it is reported `TIMEOUT`, not lost.
-- `--walltime 0:05:00` caps **each job**. Rather than raise it, raise `--split` so
+- `--walltime 0:03:00` caps **each job**. Rather than raise it, raise `--split` so
   the shards fit; `oarrun.sh` warns and names the split that would.
+
+`--cores 2` is deliberate and rarely wants raising: a command is a sequential run,
+so extra cores idle. Throughput comes from `--split`.
 
 `reap.sh` is safe to call while the run is still going: it collects whatever has
 been produced so far. Commands report `OK` / `TIMEOUT` / `FAIL`, and anything the
@@ -100,10 +103,10 @@ nothing local.
 | flag | default | |
 |---|---|---|
 | `--name SLUG` | basename of `cmds.txt` | tag in the run id |
-| `--timeout SECONDS` | `15` | per-command wall-clock cap; `0` disables it |
-| `--split K` | `1` | spread the list over K jobs |
-| `--cores N` | `4` | cores **requested** per job, and commands in flight on them |
-| `--walltime H:MM:SS` | `0:05:00` | per-job limit |
+| `--timeout SECONDS` | `90` | per-command wall-clock cap; `0` disables it |
+| `--split K` | `8` | spread the list over K jobs |
+| `--cores N` | `2` | cores **requested** per job, and commands in flight on them |
+| `--walltime H:MM:SS` | `0:03:00` | per-job limit |
 | `--resources STR` | `{host like 'tall%'}/nodes=1` | OAR resource string, minus the core term and walltime |
 | `--oar-opts STR` | — | extra `oarsub` options, e.g. `--besteffort` |
 | `--resume RUNID` | — | re-submit into an existing run; finished commands are skipped |
@@ -195,8 +198,9 @@ The host class is not a preference. `opt/` is compiled with the AVX2 instruction
 of the machine that built it, so a job landing elsewhere dies of `SIGILL`; builds
 and runs ask for the same class. It also makes timings comparable.
 
-Job walltime defaults to **5 minutes**: shards are sized to fit it, not the
-reverse. Raise `--split` or `--cores`, not the walltime. `oarrun.sh` warns when a
+Job walltime defaults to **3 minutes**: shards are sized to fit it, not the
+reverse. Raise `--split`, not the walltime, and not `--cores` — a command is
+sequential, so a wider job idles the cores it reserved. `oarrun.sh` warns when a
 shard looks too big and names the split that would fit.
 
 ---
