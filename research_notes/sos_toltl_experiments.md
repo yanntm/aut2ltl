@@ -12,21 +12,26 @@ reproduce, and results come back as findings in `sos_toltl_report.md`
   (census tables by Wagner degree); E4-interim (DG ledger); E7 with the
   dual scan and mechanism tiers (H5: ω-blind languages exist,
   linear-only certificates — the two-shape scan is load-bearing); E10
-  (guard synthesis, grouping, residual indexing — measured); engine
-  soundness (0 FAIL catalogue-wide, graded stratum declining to DG —
-  F8); the E9 gallery sorted (`e9_scan`/`e9_profile`, the FIG-2
-  trace hook); H3's first hit (`G(a → F b)`, F13); H2/H4 (all 258
-  (A)-failing languages are 1 AP, floor `|𝒞| = 15` — F14); E9
+  (guard synthesis, grouping, residual indexing — measured); **the
+  graded engine (M3's engine half)** — Theorem 4.13 live at window
+  width `k+1` with the seam bricks *and* the thread law `step_th`
+  (the seam-only grammar is refuted, report F15; the paper's §4.3
+  carries both), gated by `seam_gate`/`engine_diff` inside the E0
+  gate; engine soundness (0 FAIL catalogue-wide, graded stratum
+  included — F8/F15); the E9 gallery sorted (`e9_scan`/`e9_profile`,
+  the FIG-2 trace hook); H3's first hit (`G(a → F b)`, F13); H2/H4
+  (all 258 (A)-failing languages are 1 AP, floor `|𝒞| = 15` — F14); E9
   candidates 1, 2, 4 have their smallest specimens.
 - **Todo:** E9 candidates 3, 3a, 3b, 5 (the named 2-AP builds, the
   `GFa ∧ FGb` conformance, the width exemplar, the showpieces); H7
   (uncapped (A) fixpoint over the 258); E3 (presentation cross-test,
-  early pass); full E4 and E8; C6 + E5 (unblocked — the paper's §2.2
+  early pass); full E4 and E8 (unblocked — the graded engine renders
+  its stratum); the E10 ledger re-run over the graded stratum; C6 + E5
+  (unblocked — the paper's §2.2
   Thérien–Wilke read-off is frozen, C6 carries the procedure); H8 (the
   park-irreparable witness conformance); H6 and smallest-H3 (census-next
-  `2state2ap`); the graded engine (M3) — **unblocked**: paper
-  Theorem 4.13 is complete with the seam bricks — 42.5% of the
-  LTL catalogue is graded, so M3 is the coverage frontier.
+  `2state2ap`); the scoped DG fallback on `𝒜_R` (M3's remaining half,
+  no-width layers only — 258 languages, paper Prop 4.14).
 
 **One-line goal.** Provide the data for `sos_toltl.md`: per-layer anchoring
 and window-determinacy statistics over the census, the size ledgers against
@@ -69,8 +74,11 @@ every input, not a one-off.
   of within-layer actions of readable length-`j` words, extended letter by
   letter to the closing cycle; smallest `k` with every tail action
   identity-or-constant, else `FAIL`. (The engine
-  consumes a passing `k` at window width `k+1`, paper §4.3 / Thm 4.13.
-  Build the layer action monoid `𝒜_R` as a by-product — the (A)-fail
+  consumes a passing `k` at window width `k+1`, paper §4.3 / Thm 4.13,
+  through the anchor windows `An_κ(c)` *with their domains* — the
+  graded triggers, the seam certificates and the thread law all read
+  `dom(act_R(w))`. Build the layer action monoid `𝒜_R` as a
+  by-product — the (A)-fail
   fallback runs on it, paper Prop 4.11/4.14.)
 Output per language: list of layers with `|R|`, smallest passing `k` or
 `FAIL`, letter classification table.
@@ -613,17 +621,18 @@ residual-sharing wins.
   engine covers; conformance via the survey oracle. *(Done, plus E10
   beyond plan; the graded stratum declines to DG per report F8.)*
 - **M3** — graded engine at window width `k+1` (paper §4.3, Thm 4.13:
-  transient fold trees `TR`/`TL`, `step_κ`, and the **seam bricks
-  `seam(c)` — mandatory, the exit-chain is incomplete without them**),
-  scoped DG fallback on the
+  transient fold trees `TR`/`TL`, `step_κ`, the **seam bricks
+  `seam(c)`** and the **thread law `step_th(c)`** — both mandatory,
+  the band `[t+k, t+2k)` cuts each direction of exactness without its
+  brick), scoped DG fallback on the
   layer action monoid `𝒜_R` (paper Prop 4.14), needed only on
   no-width layers — full-coverage engine;
-  full E4, E3; E8. *(Todo; unblocked — Thm 4.13 is complete; C7 is
-  done. Do NOT implement the older entry-rooted-`U` sketch: it is
-  unsound — paper §4.3, the seam remark. Gate: the remark's witness —
-  layer `{2,5,8}` of "reaches an accepting sink", word
-  `a·a·!a·a·(!a)^ω` from entry 2 — must accept via the root seam
-  disjunct.)*
+  full E4, E3; E8. *(Engine half done: `engine.py::_layer_graded`,
+  gates `seam_gate` (the `{2,5,8}` witness accepts via the root seam
+  disjunct, rejects without it) and `engine_diff` (the F15 exhibit
+  grounds clean per class), both in the E0 gate; catalogue survey
+  SUCCESS, 0 FAIL. Remaining: the scoped fallback; full E4, E3, E8;
+  the E10 ledger over the graded stratum.)*
 - **M4** — C6 + E5; E6 sweeps; E7 re-run on census-next. *(Todo;
   unblocked — C6 carries the frozen procedure and its budget
   discipline.)*
