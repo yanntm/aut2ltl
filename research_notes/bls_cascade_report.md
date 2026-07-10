@@ -23,10 +23,11 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
   is C.5's fallback instance. Revised `bls_cascade.md` (banner, C.3–C.7),
   `bls_cascade_experiments.md` (K-E0 expectations, K-E1/E2/E4/E6/E7
   re-scoped), main paper `sos_toltl.md` §5.1/§8.
-  **K-E1–K-E5: UNBLOCKED** under the revised spec; K-E0 steps 4/6 still
-  pending.
-- Steps 4 (C3 (B)-mode cross-check) and 6 (saturation/raw agreement) not yet
-  run; the decider is already cross-validated indirectly (K-F1 vs K-F3).
+  **K-E1–K-E5: UNBLOCKED** under the revised spec.
+- **K-E0 steps 3 (sandwich)/6 (saturation) now DONE** — K-F4, K-F5 below. Only
+  step 4 (C3 (B)-mode cross-check) remains; it carries a buffer-width vs
+  window-width alignment subtlety (Lemma C.10) and is not load-bearing for any
+  landed finding (the decider is already validated by K-F1/K-F3/K-F4/K-F5).
 
 ---
 
@@ -101,6 +102,34 @@ The ALG-1/2/5/6 implementation reproduces the draft on the witness whose
 structural model matches `𝓘` (`G(a→F b)`: (C)@0 holds, plain (B) fails), and
 agrees with the C3/F13 fact that `G(a→F b)`'s terminal layer fails plain (B).
 Membership round-trips on both witnesses confirm `𝓘 = L`. This bounds K-F2:
-the floor divergence is the draft's, not a decider artifact. (Direct C3
-(B)-mode cross-check — K-E0 step 4 — and the saturation/raw agreement — step 6
-— still pending, but not load-bearing for the K-F2 attribution.)
+the floor divergence is the draft's, not a decider artifact.
+
+## K-F4 — saturation reproduces raw exploration; CL(x) is closed (step 6) — CONFIRMED
+
+At every entry cone / full-memory base of both witnesses' final layers, raw
+ALG-5 `CL(x)` is closed under `(F₁,d₁),(F₂,d₂) ↦ (F₁∪F₂, M(d₁,d₂))`, and
+saturating its **first-return loops** reproduces `CL(x)` exactly — the ALG-5
+saturation route is sound. Checked on `gaFb` `{2,4}` k=0, and `floor` `{6}`
+k=0 (|CL|=17) and k=1 (|CL| up to 262). (`first_returns` is the correct
+generator set; a naïve edge-set-only prime extraction under-generates.)
+
+Command: `python3 -m tests.cascade.k_e0_sat gaFb 0 | floor 0 | floor 1`.
+Logs: `tests/cascade/logs/k_e0_sat_*.txt`.
+
+## K-F5 — the sandwich scan detects both mechanisms (step 3) — CONFIRMED
+
+The K-E7 sandwich scan over ALG-5's idempotent loop classes detects both
+mandatory positive controls:
+
+- **floor witness** (`{6}`, aperiodic): every failing pair is `absorption` —
+  `e·z·e = z <_J e` with `e` an unflagged idempotent, `z=6` the 𝒥-minimal zero
+  (8 fails at k=0, 112 at k=1; 0 group/other/BUG).
+- **`EvenBlocks`** (`{6}`, non-aperiodic): every failing pair is `group` —
+  `f·z·f = z` (29 fails at k=2, 178 at k=3).
+
+Mechanism turns on the sink: 𝒥-minimal ⟹ absorption, non-aperiodic ⟹ group,
+𝒥-strictly-below-but-not-minimal ⟹ `other` (the K-E2 third-mechanism hunt, none
+seen on the controls). Scan is `O(|E_id|²)` per `(x,F)` — piggybacks K-E1/E2.
+
+Command: `python3 -m tests.cascade.k_e7_controls floor 0|floor 1|evenblocks 2|evenblocks 3`.
+Logs: `tests/cascade/logs/k_e7_*.txt`.
