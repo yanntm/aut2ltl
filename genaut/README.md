@@ -157,7 +157,7 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
    profile of a shape over the compact `sos/` tier (fast: no construction):
 
        python3 -m survey --folder genaut/corpus/tgba/2state1ap1acc \
-           --logs genaut/logs/rerun/2state1ap1acc > .../SUMMARY.txt
+           --logs genaut/reference/rerun/2state1ap1acc > .../SUMMARY.txt
        # from sosl/: the Wagner-degree profile of a shape's languages
        python3 -m tests.sosl.classify_census ../genaut/corpus/sos/2state1ap1acc \
            --logs tests/sosl/logs/<tag>
@@ -165,8 +165,8 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
 
 5. **Analyse** a survey run into a frontier report (pure CSV, no re-run):
 
-       python3 genaut/analyze_frontier.py genaut/logs/<tag>/default.csv \
-           --out genaut/logs/<tag>/frontier.pdf
+       python3 genaut/analyze_frontier.py genaut/reference/<tag>/default.csv \
+           --out genaut/reference/<tag>/frontier.pdf
 
 ## Extending the census — add a shape or an acceptance family
 

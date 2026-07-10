@@ -23,7 +23,7 @@ diagnosis by writing one and appending it to `SECTIONS`.
 
 Usage:
   python3 genaut/analyze_frontier.py [CSV] [--out PDF] [--top N]
-    CSV    survey CSV to analyse   (default: genaut/logs/default.csv)
+    CSV    survey CSV to analyse   (default: genaut/reference/default.csv)
     --out  output PDF              (default: <CSV dir>/frontier.pdf)
     --top  idiom-histogram depth   (default: 15)
 """

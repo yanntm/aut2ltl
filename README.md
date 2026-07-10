@@ -170,7 +170,7 @@ the `c; c` prefix is read.
 
 `aut2ltl` is also run over an exhaustive census of small ω-automata of a fixed
 shape, as a broad coverage and correctness check. The committed results are in
-[`genaut/logs/`](genaut/logs/).
+[`genaut/reference/`](genaut/reference/).
 
 ## Using it
 

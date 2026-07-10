@@ -117,7 +117,7 @@ def _write_census(out_dir: str, shape: Shape, combos: int, byte_distinct: int,
         f"{shape.nstates},{shape.naps},{shape.nacc}"
         f"{'' if shape.acc == 'gba' else ',' + shape.acc}`.\n"
         f"Reconstructed languages/formulas: see the survey run under "
-        f"`genaut/logs/{shape.tag}/`.\n")
+        f"`genaut/reference/{shape.tag}/`.\n")
     with open(os.path.join(out_dir, "census.md"), "w") as out:
         out.write(text)
 
