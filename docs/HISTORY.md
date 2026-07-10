@@ -3116,3 +3116,20 @@ old derivation salvaged as its presentation-side worked instance. Edited:
 sos_toltl.md (5.1 residual floor, 8), bls_cascade.md (banner, C.0, C.2-C.7),
 bls_cascade_experiments.md (K-E0 revised, K-E1/E2/E3/E4/E7 re-scoped, K-E6
 promoted), bls_cascade_report.md (status: K-E1..E5 unblocked).
+
+## 2026-07-11 — corpus-aware sampler (`sample --exclude-corpus`)
+
+`genaut/gen/sample.py` gained `--exclude-corpus [SOS_DIR]`: it loads a
+`flat_canon/sos` tier's canonical `.sos` bytes into a skip-set and drops any draw
+whose language is already catalogued, so `--target-langs` counts languages **new
+to the corpus**. The dedup key changed from the per-presentation `𝓘` dump to the
+`flatten --canon` fold `canon_key` (`remove_unused_ap` → `invariant_of` → `B_k`
+orbit representative) — the exact identity `flatten --canon` folds by, so a
+sampler keeper is guaranteed new and relabel/polarity twins fold to one keeper.
+Keeper `.sos` output is unchanged (the non-minimized census dump), so
+`tests/sample_subset.py` stays 129/129 faithful; `sample.json` gains
+`corpus_known_skipped`. Why: the uncontrolled `20260710-223251-gsample` campaign
+burned ~300s/job re-finding known languages (measured: of 390 folders folded into
+flat_canon, most yield was corpus duplicates); controlling against the corpus
+during generation is the biggest efficiency win before spending more cluster time.
+Committed `9bc259d9a` (sample) + `de3ab44ba` (README).
