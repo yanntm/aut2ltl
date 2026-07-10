@@ -42,3 +42,10 @@
 # opt/its; only libITS's gal expression component is consumed.
 : "${LIBDDD_REPO:=https://github.com/lip6/libDDD}"
 : "${LIBITS_REPO:=https://github.com/lip6/libITS}"
+
+# ROLL, the FDFA-learner baseline of the sosl E3 experiments -- not a pipeline
+# dependency, so build_all.sh builds it only on request (--roll-only). It has
+# no released distribution, so it is cloned from its GitHub at HEAD, like
+# libDDD/libITS; the jar its build.sh packs is pure bytecode, portable across
+# machine classes. Needs a system JDK and maven.
+: "${ROLL_REPO:=https://github.com/iscas-tis/roll-library.git}"
