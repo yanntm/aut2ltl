@@ -27,10 +27,19 @@ folder into corpus/sampled/ is a separate, deliberate copy:
 Keepers are written incrementally, so a run killed at a wall-clock cap (e.g. the
 cluster's per-command timeout) keeps every language found so far.
 
+Distinctness is the `flatten --canon` identity (language up to renaming symbols),
+so relabel/polarity twins fold to one keeper. With `--exclude-corpus`, a draw whose
+language is already in the given `flat_canon/sos` tier is skipped, so `--target-langs`
+counts languages **new to the corpus** — the sampler no longer re-finds what the
+catalogue already holds.
+
 Usage:
   python3 genaut/gen/sample.py <n,k,c[,acc]> [--target-langs T] [--sample K]
                                [--max-draws M] [--seed S] [--out DIR]
+                               [--exclude-corpus [SOS_DIR]]
     e.g.  python3 genaut/gen/sample.py 2,1,2,parity --target-langs 500 --seed 0
+          python3 genaut/gen/sample.py 2,2,1,parity --target-langs 50 --seed 100 \
+                  --exclude-corpus            # 50 languages NEW to flat_canon
 """
 from __future__ import annotations
 
@@ -58,10 +67,11 @@ if _SOSL not in sys.path:
 if _REPO not in sys.path:
     sys.path.insert(0, _REPO)
 
-from aut2ltl.ltl.twa import dump_hoa                    # noqa: E402
+from aut2ltl.ltl.twa import clone, dump_hoa             # noqa: E402
 from sosl.sos import dump_invariant                     # noqa: E402
 from sosl.sos.build.importer import canonical           # noqa: E402
 from sosl.sos.core.quotient import invariant_of         # noqa: E402
+from sosl.sos.relabel import canonical_relabeling       # noqa: E402
 
 # Where a run writes: ignored scratch, never the tracked corpus. The sampler
 # reads nothing (it draws fresh), so it has a write root only. Adopting a sampled
@@ -69,6 +79,12 @@ from sosl.sos.core.quotient import invariant_of         # noqa: E402
 _OUT = os.path.normpath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
                  "logs", "genaut", "corpus"))
+
+# The tracked catalogue a run controls against: `flatten --canon`'s canonical
+# `.sos` tier. `--exclude-corpus` (bare) loads it so every keeper is new.
+_FLAT_CANON = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), os.pardir,
+                 "corpus", "flat_canon", "sos"))
 
 
 def combo_of(shape: Shape, index: int) -> Tuple[int, ...]:
@@ -86,12 +102,50 @@ def combo_of(shape: Shape, index: int) -> Tuple[int, ...]:
     return tuple(guards[d] for d in digits)
 
 
+def canon_key(D: "spot.twa_graph") -> Optional[str]:
+    """The language identity `flatten --canon` folds by: alphabet-minimize a
+    canonical det `D` (`remove_unused_ap` — so `GF a` over `{a}` and over `{a,b}`
+    coincide), read its syntactic invariant `𝓘`, take that invariant's `B_k` orbit
+    representative (signed AP permutation), and dump. Byte-equal to a
+    `flat_canon/sos/*.sos` entry iff `D`'s language is already in the corpus **up to
+    renaming its symbols**. `None` when `𝓘` is uncomputable (the `capped` gate).
+    Computed on a clone so the written representative keeps its declared alphabet."""
+    Dk = clone(D)
+    Dk.remove_unused_ap()
+    inv = invariant_of(Dk)
+    if inv is None:
+        return None
+    return dump_invariant(canonical_relabeling(inv)[1])
+
+
+def load_corpus_keys(sos_dir: str) -> set:
+    """Every language already catalogued under `sos_dir`, as its canonical `.sos`
+    bytes. Intended for a `flat_canon/sos/` tier: its files are exactly the
+    `B_k`-canonical dumps `flatten --canon` writes, so they are read verbatim (the
+    same bytes `canon_key` produces) — no re-folding. A drawn language whose
+    `canon_key` lands in this set is a corpus duplicate; the sampler skips it so
+    every keeper is genuinely new. The tier is complement-closed, so a language
+    whose complement is already present is caught too."""
+    keys: set = set()
+    for name in os.listdir(sos_dir):
+        if name.endswith(".sos"):
+            with open(os.path.join(sos_dir, name)) as fh:
+                keys.add(fh.read())
+    return keys
+
+
 def sample(
     shape: Shape, target_langs: Optional[int], sample_draws: Optional[int],
     max_draws: int, seed: int, out_root_base: str,
+    corpus_keys: Optional[set] = None,
 ) -> Dict:
     """Draw ids until the stop condition, keeping one representative per distinct
-    language. Returns the run summary (and writes the det/ + sos/ tiers)."""
+    language. Distinctness is the `flatten --canon` identity (`canon_key`: language
+    up to renaming symbols), so relabel/polarity twins fold to one keeper. When
+    `corpus_keys` is given (a `flat_canon/sos/` tier's canonical bytes), a draw
+    already in that set is skipped as a corpus duplicate, so every keeper — and the
+    `--target-langs` count — is a language **new to the corpus**. Returns the run
+    summary (and writes the det/ + sos/ tiers)."""
     tag = shape.tag
     n = shape.num_combos
     width = shape.id_width
@@ -108,8 +162,8 @@ def sample(
     seen_ids: set = set()
     seen_md5: set = set()             # byte-identical reduced HOA
     seen_key: set = set()             # AP-canonical twin (a<->!a, AP rename)
-    langs: Dict[str, str] = {}        # 𝓘 dump -> representative id
-    draws = folded = capped = 0
+    langs: Dict[str, str] = {}        # canon_key (B_k orbit) -> representative id
+    draws = folded = capped = known = 0
 
     def done() -> bool:
         if target_langs is not None and len(langs) >= target_langs:
@@ -140,19 +194,25 @@ def sample(
             continue
         seen_key.add(key)
         D = canonical(red)
-        inv = invariant_of(D)
-        if inv is None:
+        ck = canon_key(D)                 # language identity (flatten --canon fold)
+        if ck is None:
             capped += 1
             continue
-        dump = dump_invariant(inv)
-        if dump in langs:
+        if corpus_keys is not None and ck in corpus_keys:
+            known += 1                     # already in the corpus — not new
             continue
+        if ck in langs:                    # a relabel/polarity twin already kept
+            continue
+        # genuinely new (and, under --exclude-corpus, absent from the corpus). The
+        # stored .sos is the non-minimized dump — the census tier's convention, and
+        # what tests/sample_subset.py reproduces; flatten re-derives the canonical
+        # form from the det on adoption, so the keeper need not carry it.
         ident = f"{tag}_{i:0{width}d}"
-        langs[dump] = ident
+        langs[ck] = ident
         with open(os.path.join(det_dir, f"{ident}.hoa"), "w") as fh:
             fh.write(dump_hoa(D))
         with open(os.path.join(sos_dir, f"{ident}.sos"), "w") as fh:
-            fh.write(dump)
+            fh.write(dump_invariant(invariant_of(D)))
         if len(langs) % 64 == 0:
             print(f"  ... {draws} draws, {len(langs)} languages "
                   f"({capped} capped)", file=sys.stderr, flush=True)
@@ -161,7 +221,8 @@ def sample(
         "tag": tag, "seed": seed, "num_combos": n,
         "target_langs": target_langs, "sample_draws": sample_draws,
         "max_draws": max_draws, "draws": draws, "languages": len(langs),
-        "polarity_name_twins_folded": folded, "capped": capped, "exhaustive": False,
+        "polarity_name_twins_folded": folded, "capped": capped,
+        "corpus_known_skipped": known, "exhaustive": False,
         "yield_per_draw": round(len(langs) / draws, 4) if draws else 0.0,
     }
     with open(os.path.join(out_root, "sample.json"), "w") as fh:
@@ -184,6 +245,12 @@ def main(argv: List[str]) -> int:
     ap.add_argument("--out", default=_OUT,
                     help="root to write sampled/<tag>__seed<S>/ under "
                          "(default logs/genaut/corpus, ignored scratch)")
+    ap.add_argument("--exclude-corpus", nargs="?", const=_FLAT_CANON, default=None,
+                    metavar="SOS_DIR",
+                    help="skip any draw whose language is already in this "
+                         "flat_canon/sos tier (bare flag = the tracked "
+                         "corpus/flat_canon/sos), so --target-langs counts only "
+                         "languages NEW to the corpus")
     args = ap.parse_args(argv)
 
     shape = parse_shape(args.token)
@@ -194,13 +261,19 @@ def main(argv: List[str]) -> int:
     max_draws = args.max_draws if args.max_draws is not None else shape.num_combos
     max_draws = min(max_draws, shape.num_combos)
 
+    corpus_keys: Optional[set] = None
+    if args.exclude_corpus is not None:
+        corpus_keys = load_corpus_keys(args.exclude_corpus)
     print(f"=== sample {shape.tag} (N={shape.num_combos}) seed={args.seed} "
           f"target_langs={args.target_langs} sample={args.sample} "
-          f"max_draws={max_draws} ===", flush=True)
+          f"max_draws={max_draws} "
+          f"exclude_corpus={len(corpus_keys) if corpus_keys is not None else 'off'}"
+          f" ===", flush=True)
     s = sample(shape, args.target_langs, args.sample, max_draws, args.seed,
-               args.out)
-    print(f"[{s['tag']}] {s['draws']} draws -> {s['languages']} languages "
-          f"({s['capped']} capped, {s['yield_per_draw']} lang/draw) -> "
+               args.out, corpus_keys)
+    print(f"[{s['tag']}] {s['draws']} draws -> {s['languages']} NEW languages "
+          f"({s['corpus_known_skipped']} known, {s['capped']} capped, "
+          f"{s['yield_per_draw']} lang/draw) -> "
           f"{args.out}/sampled/{s['tag']}__seed{s['seed']}/", flush=True)
     return 0
 
