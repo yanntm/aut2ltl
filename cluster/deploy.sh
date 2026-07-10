@@ -5,8 +5,10 @@
 # under opt/, so they build at the same time on three machines rather than one
 # after another on one.
 #
-# Usage: cluster/deploy.sh [--force] [oarrun options...]
-#   --force  rebuild each prefix even when its version stamp matches
+# A dependency already built into opt/ is left alone. To replace one, remove its
+# prefix on the cluster -- `rm -rf opt/gap` -- and submit again.
+#
+# Usage: cluster/deploy.sh [oarrun options...]
 #
 # Prints the run id. Collect with `cluster/reap.sh <runid>`; it reports 3/3 when
 # all three are done, and names the one that failed otherwise.
@@ -16,25 +18,26 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=config.sh
 source "$HERE/config.sh"
-
-FORCE=""
-if [ "${1:-}" = "--force" ]; then FORCE=" --force"; shift; fi
+# For BUILD_JOBS: the jobs submitted here are builds, and ask for the width the
+# build scripts use.
+# shellcheck source=../deps/versions.sh
+source "$HERE/../deps/versions.sh"
 
 CMDS="$(mktemp)"
 trap 'rm -f "$CMDS"' EXIT
 cat >"$CMDS" <<EOF
-cluster/provision.sh --spot-only$FORCE
-cluster/provision.sh --gap-only$FORCE
-cluster/provision.sh --its-only$FORCE
+deps/build_all.sh --spot-only
+deps/build_all.sh --gap-only
+deps/build_all.sh --its-only
 EOF
 
 # --timeout 0: a compile is bounded by the walltime, not by the per-command cap.
 # --cores matches BUILD_JOBS, the width every build actually uses.
 "$HERE/oarrun.sh" \
-    --name provision \
+    --name deps \
     --split 3 \
     --cores "$BUILD_JOBS" \
     --timeout 0 \
-    --walltime "$SPOT_BUILD_WALLTIME" \
+    --walltime "$DEPS_BUILD_WALLTIME" \
     "$@" \
     "$CMDS"

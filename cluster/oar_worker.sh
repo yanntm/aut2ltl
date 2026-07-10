@@ -15,8 +15,11 @@ SPLIT="$3"
 TIMEOUT="$4"
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=env.sh
-source "$HERE/env.sh"
+# shellcheck source=../deps/env.sh
+source "$HERE/../deps/env.sh"
+
+# The repo root, under the name the commands are promised. env.sh found it.
+export OARRUN_ROOT="$AUT2LTL_ROOT"
 
 # Width comes from OAR, not from the machine: $OAR_NODEFILE holds one line per
 # core actually allocated, whereas nproc reports the whole node and would

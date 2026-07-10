@@ -1,5 +1,6 @@
 # Local-side cluster configuration. Sourced by sync_cluster.sh / oarrun.sh / reap.sh.
-# Nothing here runs on a compute node; see env.sh for the in-job environment.
+# Nothing here runs on a compute node; see deps/env.sh for the in-job environment,
+# and deps/versions.sh for what the dependencies are built from.
 # Every value may be overridden from the caller's environment.
 
 # SSH destination. Passwordless via the default key (~/.ssh/id_ed25519).
@@ -15,42 +16,10 @@
 # files.
 : "${REMOTE_RUNS:=$REMOTE_REPO/oarrun}"
 
-# Source of truth for which Spot release we track. cluster/build_spot.sh clones
-# it to read the version and the tarball URL, then applies its own configure
-# flags; that repo's own recipe targets ITS-Tools and builds no Python bindings.
-: "${SPOT_SRC_REPO:=https://github.com/yanntm/Spot-BinaryBuilds}"
-
-# Walltime for the one-off provisioning job. Long by design and by exception:
-# a compile is not a sweep, and this runs when Spot moves, not per experiment.
-: "${SPOT_BUILD_WALLTIME:=3:00:00}"
-
-# make -j for the provisioning builds. A fixed width, never nproc: under a
-# scheduler's cpuset nproc reports the whole machine rather than the allocation,
-# and Spot's heavier translation units want memory more than they want lanes.
-: "${BUILD_JOBS:=10}"
-
-# GAP, built from source like Spot: never a distro package, or a run would depend
-# on which node it landed on rather than on the commit. Keep this recent: GAP
-# vendors GMP, and older bundles fail configure's long-long check under a modern
-# gcc ("could not find a working compiler").
-: "${GAP_VERSION:=4.15.1}"
-: "${GAP_URL:=https://github.com/gap-system/gap/releases/download/v${GAP_VERSION}/gap-${GAP_VERSION}.tar.gz}"
-
-# SgpDec, the GAP package the Krohn-Rhodes path consumes. Cloned at its tag: it
-# is pure GAP, and the tarball its release page advertises is not served.
-: "${SGPDEC_VERSION:=v1.2.0}"
-: "${SGPDEC_REPO:=https://github.com/gap-packages/sgpdec.git}"
-
-# libDDD and libITS, for the symbolic path. Cloned into build/, installed into
-# opt/its; only libITS's gal expression component is consumed.
-: "${LIBDDD_REPO:=https://github.com/lip6/libDDD}"
-: "${LIBITS_REPO:=https://github.com/lip6/libITS}"
-
-# SgpDec's transitive dependencies, in the GAP distribution but not installed by
-# GAP's `make install`. Four of them carry kernel modules that must be compiled
-# (io, orb, datastructures, digraphs, semigroups); semigroups vendors libsemigroups
-# and dominates the build time. Order is irrelevant, BuildPackages.sh sorts it out.
-: "${GAP_PKGS:=gapdoc io orb datastructures digraphs genss images semigroups}"
+# Walltime for a provisioning job submitted through deploy.sh. Long by design and
+# by exception: a compile is not a sweep, and it runs when a dependency moves,
+# not per experiment.
+: "${DEPS_BUILD_WALLTIME:=3:00:00}"
 
 # Where reap.sh deposits a fetched run, relative to the local repo root.
 : "${LOCAL_RESULTS:=results/cluster}"
@@ -76,10 +45,15 @@
 : "${OARRUN_WALLTIME:=0:05:00}"
 
 # OAR resource string, minus the core term and the walltime that oarrun.sh
-# appends. No machine-class property: the fleet is heterogeneous, the worker
-# sizes itself from the allocation, and no host is pinned. Prepend a class here
-# when a run needs comparable timings, e.g. '{(host like "tall%")}/nodes=1'.
-: "${OARRUN_RESOURCES:=/nodes=1}"
+# appends. The host class is not a preference: the dependencies under opt/ are
+# compiled with the AVX2 instructions of the machine that built them, and a job
+# landing anywhere else dies of SIGILL. Builds and runs must therefore ask for
+# the same class. It also makes timings comparable, which a heterogeneous
+# allocation would not.
+#
+# Single-quoted inside the filter: oarrun.sh interpolates this into a
+# double-quoted -l argument, which a double quote here would close early.
+: "${OARRUN_RESOURCES:={host like 'tall%'}/nodes=1}"
 
 # Extra oarsub options (queue, project, --besteffort, ...).
 : "${OARRUN_OAR_OPTS:=}"

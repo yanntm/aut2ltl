@@ -1,27 +1,20 @@
 #!/bin/bash
-# Build every native dependency into the repo's own opt/, from scratch.
+# Build every native dependency into the repo's own opt/.
 #
-# Self-contained by design: no root, no $HOME, nothing system-wide. A raw Linux
-# box with a compiler, make and curl (or wget) ends up able to run the whole
+# Self-contained by design: no root, no $HOME, nothing system-wide. A Linux box
+# with a compiler, make and curl (or wget) ends up able to run the whole
 # pipeline, and deleting opt/ and build/ undoes it exactly.
 #
-# Runnable anywhere. On the cluster it is submitted as an ordinary job, because
-# the submit host cannot compile:
-#   cluster/oarsub.sh --timeout 0 --walltime 3:00:00 -- cluster/provision.sh
-# On a laptop or a container, just run it.
+#   deps/build_all.sh              # spot + gap + its
+#   deps/build_all.sh --spot-only
+#   deps/build_all.sh --gap-only
+#   deps/build_all.sh --its-only
 #
-#   cluster/provision.sh              # spot + gap + its; keeps what is current
-#   cluster/provision.sh --force      # rebuild and replace every prefix
-#   cluster/provision.sh --spot-only
-#   cluster/provision.sh --gap-only
-#   cluster/provision.sh --its-only
+# A dependency already built into opt/ is left alone. To replace one, remove its
+# prefix -- `rm -rf opt/gap` -- and run this again.
 #
-# Each dependency keeps one install, stamped with its version. A run reuses a
-# prefix whose stamp matches and replaces it otherwise, so --force is needed
-# only to rebuild the same version.
-#
-# Ends by proving what the rest of the pipeline needs: `import spot`, and a
-# `gap` on PATH that loads SgpDec -- each resolving from opt/, not from a system
+# Ends by proving what the rest of the pipeline needs: `import spot`, and a `gap`
+# on PATH that loads SgpDec -- each resolving from opt/, not from a system
 # install that merely happens to answer.
 
 set -euo pipefail
@@ -32,41 +25,38 @@ ROOT="$(cd "$HERE/.." && pwd)"
 DO_SPOT=1
 DO_GAP=1
 DO_ITS=1
-FORCE=()
-while [ $# -gt 0 ]; do
-    case "$1" in
-        --force)     FORCE=(--rebuild); shift ;;
-        --spot-only) DO_GAP=0; DO_ITS=0; shift ;;
-        --gap-only)  DO_SPOT=0; DO_ITS=0; shift ;;
-        --its-only)  DO_SPOT=0; DO_GAP=0; shift ;;
-        -h|--help)   sed -n '2,24p' "$0"; exit 0 ;;
-        *)           echo "unknown option: $1" >&2; exit 2 ;;
-    esac
-done
+
+case "${1:-}" in
+    "")          ;;
+    --spot-only) DO_GAP=0; DO_ITS=0 ;;
+    --gap-only)  DO_SPOT=0; DO_ITS=0 ;;
+    --its-only)  DO_SPOT=0; DO_GAP=0 ;;
+    -h|--help)   sed -n '2,17p' "$0"; exit 0 ;;
+    *)           echo "unknown option: $1" >&2; exit 2 ;;
+esac
 
 cd "$ROOT"
 
 if [ "$DO_SPOT" -eq 1 ]; then
     echo "=== spot"
-    "$HERE/build_spot.sh" "${FORCE[@]+"${FORCE[@]}"}"
+    "$HERE/build_spot.sh"
 fi
 
 if [ "$DO_GAP" -eq 1 ]; then
     echo "=== gap"
-    "$HERE/build_gap.sh" "${FORCE[@]+"${FORCE[@]}"}"
+    "$HERE/build_gap.sh"
 fi
 
 if [ "$DO_ITS" -eq 1 ]; then
     echo "=== libDDD + libITS"
-    "$HERE/build_its.sh" "${FORCE[@]+"${FORCE[@]}"}"
+    "$HERE/build_its.sh"
 fi
 
-echo "=== verify (as a job would see it)"
+echo "=== verify"
 # shellcheck source=env.sh
 source "$HERE/env.sh"
 
-# Only what this invocation built: the three dependencies are independent, and
-# each is submitted as its own job.
+# Only what this invocation built: the three dependencies are independent.
 if [ "$DO_SPOT" -eq 1 ]; then
     python3 -c 'import spot; print("spot", spot.version(), "| accsets", spot.mark_t.max_accsets(), "|", spot.__file__)'
 fi
@@ -81,4 +71,4 @@ if [ "$DO_ITS" -eq 1 ]; then
     ls -l "$ROOT/opt/its/lib/libDDD.a" "$ROOT/opt/its/lib/libITS.a"
 fi
 
-echo "provisioned into $ROOT/opt"
+echo "built into $ROOT/opt"
