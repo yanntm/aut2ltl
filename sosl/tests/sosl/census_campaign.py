@@ -4,6 +4,7 @@ language under the default (saturation on) and the ablation (`--no-saturation
 
     python3 -m tests.sosl.census_campaign [--config default|ablate|both]
                                           [--limit N] [--budget S] [--out DIR]
+                                          [--cases i:j] [--out-csv FILE]
 
 The source is the flat catalogue `genaut/corpus/flat_canon` (one file per
 language up to AP relabeling, closed under complement — the project standard);
@@ -16,6 +17,14 @@ This driver only *produces* the raw per-run data — it prints progress and appe
 stats are computed a posteriori by `census_e1` (E1 soundness + per-N cost) and
 `census_e2_exhibits` (E2 permanent-stall family + exhibits), each reading this
 CSV. The run is **resumable**: `(case, config)` rows already present are skipped.
+
+For a fan-out sweep, shard the fixed `flat_canon_cases()` order by index and give
+each shard a private output file — the cluster runner forbids appending to a
+shared file (`O_APPEND` is not atomic over NFS): `--cases i:j` learns the
+half-open slice `[i, j)` (either end may be empty: `i:`, `:j`, `:`), and
+`--out-csv FILE` writes that one file instead of `<out>/results.csv`. A cluster
+line is `... --cases 0:50 --out-csv "$OARRUN_OUT.csv"`; `reap.sh` concatenates
+the shards, so a slice covers each language exactly once with no overlap.
 """
 from __future__ import annotations
 
@@ -42,11 +51,25 @@ def _done_runs(csv_path: Path) -> Set[Tuple[str, str]]:
         return {(r["case_id"], r["config_id"]) for r in csv.DictReader(fh)}
 
 
+def _parse_slice(spec: str, n: int) -> Tuple[int, int]:
+    """Parse an ``i:j`` half-open slice spec against a length ``n``, clamped to
+    ``[0, n]``. Either end may be empty: ``:j`` is ``[0, j)``, ``i:`` is
+    ``[i, n)``, ``:`` is the whole range. Raises `ValueError` on a missing colon."""
+    if ":" not in spec:
+        raise ValueError(f"--cases expects i:j (half-open), got {spec!r}")
+    lo_s, _, hi_s = spec.partition(":")
+    lo = int(lo_s) if lo_s.strip() else 0
+    hi = int(hi_s) if hi_s.strip() else n
+    return max(0, lo), min(n, hi)
+
+
 def main(argv: List[str]) -> int:
     config_sel = "both"
     limit = 0
     budget = PER_CASE_BUDGET
     out = OUT
+    cases_spec = ""
+    out_csv = ""
     skip = -1
     for i, a in enumerate(argv):
         if i == skip:
@@ -63,12 +86,24 @@ def main(argv: List[str]) -> int:
         elif a == "--out":
             out = Path(argv[i + 1])
             skip = i + 1
+        elif a == "--cases":
+            cases_spec = argv[i + 1]
+            skip = i + 1
+        elif a == "--out-csv":
+            out_csv = argv[i + 1]
+            skip = i + 1
 
     cases = flat_canon_cases()
     if not cases:
         print("no flat_canon cases (is genaut/corpus/flat_canon/det built?)",
               file=sys.stderr)
         return 2
+    if cases_spec:
+        total_cases = len(cases)
+        lo, hi = _parse_slice(cases_spec, total_cases)
+        cases = cases[lo:hi]
+        print(f"--cases {cases_spec}: languages [{lo}, {hi}) of {total_cases}",
+              file=sys.stderr)
     if limit:
         cases = cases[:limit]
 
@@ -78,8 +113,12 @@ def main(argv: List[str]) -> int:
     if config_sel in ("ablate", "both"):
         configs.append(Config(**{**NOSAT_EXACT.__dict__, "budget_seconds": budget}))
 
-    out.mkdir(parents=True, exist_ok=True)
-    csv_path = out / "results.csv"
+    if out_csv:
+        csv_path = Path(out_csv)
+        csv_path.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        out.mkdir(parents=True, exist_ok=True)
+        csv_path = out / "results.csv"
     done = _done_runs(csv_path)
     total = len(cases) * len(configs)
     print(f"flat_canon: {len(cases)} languages x {len(configs)} config(s) "
