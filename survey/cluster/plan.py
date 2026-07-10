@@ -88,6 +88,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         f'--equiv-timeout {args.equiv_timeout} > "$OARRUN_OUT.csv"'
         for i in range(0, n, chunk)
     ]
+    # The conventional destination is under the ignored logs/ tree, which a fresh
+    # clone does not have.
+    args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text("\n".join(lines) + "\n")
 
     print(f"{n} examples -> {len(lines)} commands of <={chunk}")

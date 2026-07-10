@@ -64,19 +64,23 @@ RUN=$(cluster/oarrun.sh logs/cluster/validation.txt)
 until cluster/reap.sh "$RUN"; do sleep 30; done   # run this in the background
 ```
 
-Then diff `results/cluster/$RUN/results.csv` exactly as step 2 diffs
+A cluster run is an ordinary throwaway run that happened to execute elsewhere: it
+lands in the ignored `logs/cluster/$RUN/`, exactly as a local rerun lands in
+`logs/rerun/<corpus>/`. Nothing enters `results/` by running. Feed
+`logs/cluster/$RUN/results.csv` to step 2 in place of
 `logs/rerun/<corpus>/survey_*.csv` — the shards carry each example's original
-`source`, so the merged CSV is row-for-row comparable with the reference. Swap the
-`--folder` for `samples/benchmark` or `samples/kinska`; nothing else changes.
+`source`, so the merged CSV is row-for-row comparable with the reference — and then
+step 3 adopts it, or does not. Swap the `--folder` for `samples/benchmark` or
+`samples/kinska`; nothing else changes.
 
 **Clean**, here, is `reap.sh` reporting `N/N done` with `0 timeout, 0 fail, 0
 missing` *and* the step-2 diff reporting `0 regression(s)`. There is no
-`SUMMARY.txt`: each shard's summary went to its own `results/cluster/$RUN/logs/
-<idx>.err`. Nothing is lost — the `validation` column the summary counts is in the
-CSV, and the diff reads it — but the `SUMMARY.txt ends SUCCESS` half of the local
-criterion has no cluster counterpart, and the diff is the gate. A `missing` command
-is work the cluster lost, not a regression: reclaim it with `cluster/oarrun.sh
---resume "$RUN"` and reap again before you believe any diff.
+`SUMMARY.txt`: each shard's summary went to its own `logs/cluster/$RUN/logs/<idx>.err`.
+Nothing is lost — the `validation` column the summary counts is in the CSV, and the
+diff reads it — but the `SUMMARY.txt ends SUCCESS` half of the local criterion has
+no cluster counterpart, and the diff is the gate. A `missing` command is work the
+cluster lost, not a regression: reclaim it with `cluster/oarrun.sh --resume "$RUN"`
+and reap again before you believe any diff.
 
 See [`cluster/README.md`](../cluster/README.md) for the runner itself.
 

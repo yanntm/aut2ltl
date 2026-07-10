@@ -9,7 +9,7 @@ RUN=$(cluster/oarrun.sh cmds.txt)              # defaults: 8 jobs, 2 cores each
 until cluster/reap.sh "$RUN"; do sleep 30; done   # run this in the background
 ```
 
-Results arrive in `results/cluster/$RUN/results.csv`, with `logs/` beside it. That
+Results arrive in `logs/cluster/$RUN/results.csv`, with `logs/` beside it. That
 is the whole interface. You do not build anything, you do not log into the cluster,
 and you do not need to understand what follows.
 
@@ -127,7 +127,7 @@ the command has shell metacharacters.
 
 ### `reap.sh RUNID`
 
-Fetches the run into `results/cluster/<runid>/`, merges the CSV shards, prints the
+Fetches the run into `logs/cluster/<runid>/` (ignored scratch), merges the CSV shards, prints the
 tally. Exits 0 once every command has a status file, nonzero while any has none.
 Takes no flags: the exit code is what a wait loop needs, and reading files on the
 cluster is safe at any time, so calling it again is how progress is observed.
@@ -158,7 +158,8 @@ Each command gets:
 
 **Do not append to one shared file**: `O_APPEND` is not atomic over NFS and
 interleaves under fan-out. Write `$OARRUN_OUT.csv`; `reap.sh` concatenates the
-shards in index order into `results.csv`, header once.
+shards into `results.csv`, header once. Row order across shards is not meaningful —
+the commands ran in parallel — so a consumer keys on a column, never on position.
 
 Stdout and stderr are line-buffered (`stdbuf`, `PYTHONUNBUFFERED=1`) into
 `logs/<idx>.{out,err}`.
@@ -229,7 +230,7 @@ root-anchored in `.gitignore`.
 | | |
 |---|---|
 | `oarrun/<runid>/` | `cmds.txt`, `meta.json`, `out/`, `logs/`, `status/`, `oar/` |
-| `results/cluster/<runid>/` | what `reap.sh` brings back, on the client |
+| `logs/cluster/<runid>/` | what `reap.sh` brings back, on the client; ignored scratch |
 
 ## Files
 

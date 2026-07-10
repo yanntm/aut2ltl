@@ -21,8 +21,11 @@
 # not per experiment.
 : "${DEPS_BUILD_WALLTIME:=3:00:00}"
 
-# Where reap.sh deposits a fetched run, relative to the local repo root.
-: "${LOCAL_RESULTS:=results/cluster}"
+# Where reap.sh deposits a fetched run, relative to the local repo root. Under
+# the ignored logs/ tree: a cluster run is an ordinary throwaway run that happened
+# to execute elsewhere. What lands in results/ is what someone chose to adopt,
+# after diffing a run against the reference.
+: "${LOCAL_RESULTS:=logs/cluster}"
 
 # Default per-command wall-clock cap in seconds. 0 disables the cap and lets
 # the OAR walltime bound the job instead. Sized so a command may hold a handful
