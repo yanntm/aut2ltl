@@ -6,8 +6,8 @@ one-glance `SUMMARY.txt`:
 
 | corpus | folder | CSV | inputs |
 |---|---|---|---|
-| validation (the correctness gate) | `reference/validation/` | `default.csv` | 81 |
-| benchmark (survey + W/U/R chains + Kinská) | `reference/benchmark/` | `default.csv` | 334 |
+| validation (the correctness gate) | `reference/validation/` | `default.csv` | 83 |
+| benchmark (survey + W/U/R chains + Kinská) | `reference/benchmark/` | `default.csv` | 336 |
 | Kinská on their own | `reference/kinska/` | `kinska.csv` | 165 |
 
 Each CSV is keyed by its **`source`** column — the unique provenance of every row
@@ -43,6 +43,42 @@ python3 -m survey.diff.results results/reference/benchmark/default.csv  logs/rer
 `SUCCESS` (no verified non-equivalent / `FAIL`). A validation regression
 (`TRUE -> ` anything else) makes the diff exit 1 — investigate, do not overwrite.
 Size / technique movements are informational, a human judgement call.
+
+### Step 1 on the cluster, if and only if you have one
+
+Only on a machine inside the LIP6 network, where the OAR cluster answers. Anywhere
+else the local step 1 above is the procedure — this section is not a fallback and
+has no offline mode. It replaces step 1 only; steps 2–4 are unchanged, reading the
+CSV from wherever it was produced.
+
+The corpus is one example per row and the rows are independent, so it shards. The
+planner discovers the examples once and cuts them into index ranges, each sized to
+fit the runner's per-command cap, which it reads out of `cluster/config.sh`. No
+sizing to choose, and no flags:
+
+```bash
+git push                                       # only committed code runs
+cluster/sync_cluster.sh
+python3 -m survey.cluster.plan --folder samples/validation -o logs/cluster/validation.txt
+RUN=$(cluster/oarrun.sh logs/cluster/validation.txt)
+until cluster/reap.sh "$RUN"; do sleep 30; done   # run this in the background
+```
+
+Then diff `results/cluster/$RUN/results.csv` exactly as step 2 diffs
+`logs/rerun/<corpus>/survey_*.csv` — the shards carry each example's original
+`source`, so the merged CSV is row-for-row comparable with the reference. Swap the
+`--folder` for `samples/benchmark` or `samples/kinska`; nothing else changes.
+
+**Clean**, here, is `reap.sh` reporting `N/N done` with `0 timeout, 0 fail, 0
+missing` *and* the step-2 diff reporting `0 regression(s)`. There is no
+`SUMMARY.txt`: each shard's summary went to its own `results/cluster/$RUN/logs/
+<idx>.err`. Nothing is lost — the `validation` column the summary counts is in the
+CSV, and the diff reads it — but the `SUMMARY.txt ends SUCCESS` half of the local
+criterion has no cluster counterpart, and the diff is the gate. A `missing` command
+is work the cluster lost, not a regression: reclaim it with `cluster/oarrun.sh
+--resume "$RUN"` and reap again before you believe any diff.
+
+See [`cluster/README.md`](../cluster/README.md) for the runner itself.
 
 ```bash
 # 3. only when clean: overwrite the committed CSV + summary, then commit
