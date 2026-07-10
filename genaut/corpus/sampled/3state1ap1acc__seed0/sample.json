@@ -1,0 +1,14 @@
+{
+  "tag": "3state1ap1acc",
+  "seed": 0,
+  "num_combos": 68719476736,
+  "target_langs": 500,
+  "sample_draws": null,
+  "max_draws": 68719476736,
+  "draws": 139210,
+  "languages": 500,
+  "polarity_name_twins_folded": 1287,
+  "capped": 0,
+  "exhaustive": false,
+  "yield_per_draw": 0.0036
+}
