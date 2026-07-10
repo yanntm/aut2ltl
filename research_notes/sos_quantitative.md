@@ -4,7 +4,9 @@
 question (Q1) is settled, positively, with proofs — see §1. Not a paper; a
 map of candidate results for one, whose technical heart now exists at memo
 rigor. Companion to `sos_calculus.md` (the qualitative calculus); notation
-and the object `𝓘(L) = (𝒞, λ, M, P)` as there.*
+and the object `𝓘(L) = (𝒞, λ, M, P)` as there. **The paper now exists:
+`sos_measure.md`, with `sos_measure_spec.md` (engineering direction) and
+`sos_measure_report.md` (results interface); this memo stays as the map.*
 
 ## 0. Premise
 
@@ -283,10 +285,13 @@ no new mathematical dependencies.
   §4.1 recurrent product states, Def. 4.1.1 / Lemma 4.1.2, linear-system
   aggregation.
 - [Sta97] Staiger. *ω-Languages.* Handbook of Formal Languages, vol. 3,
-  Springer 1997. **NOT yet in library** — the file added as
-  `Staiger_1997_Book.pdf` turned out to be a JLLI *book review* of the
-  Handbook, not the chapter; do not cite until the chapter itself is held.
-  Wanted for: entropy of ω-languages via prefix growth, measure background.
-  (Replaces the earlier dangling [Sta93]/[Sta98] pointers; the in-library
-  `Staiger_1983_JCSS` is the structural-classes paper, not this.)
+  Springer 1997. **In library** (`Rozenberg_Salomaa_1997_HandbookVol3.pdf`,
+  two-up scan, chapter at PDF pages 179–203) — inspected: it is a
+  Büchi/topology/Wagner-hierarchy survey and contains **no entropy or
+  measure material**; the entropy load is carried by Lind–Marcus 1995
+  (`Lind_Marcus_1995_Book.pdf`, in library) and the ω-transposition ask is
+  now Staiger, *Kolmogorov complexity and Hausdorff dimension*, Inf.
+  Comput. 103(2), 1993 — the memo's original [Sta93] pointer was right all
+  along. (The in-library `Staiger_1983_JCSS` is the structural-classes
+  paper, not this.)
 - [PP04], [SωS26], [SωSX26], [SωSN26]: as in `sos_calculus.md`.
