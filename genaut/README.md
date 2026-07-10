@@ -43,6 +43,13 @@ presentation-distinct automaton of one language onto a single entry; the collaps
 is large where nondeterminism proliferates presentations (`2state1ap1acc`: 929
 TGBA -> 129 languages) and near 1 where the shape is already language-sparse.
 
+**Every HOA is written canonically** (`aut2ltl.ltl.twa.dump_hoa`, not
+`aut.to_str("hoa")`): acceptance forced onto the transitions, atomic propositions
+registered in name order, states renumbered by a label-canonical BFS. So the bytes
+are a function of the automaton, not of the Spot build that produced them — two
+Spot versions emit the same corpus, and `spot_det`/`tgba` presentation dedup counts
+what is genuinely distinct rather than what a printer happened to differ on.
+
 ## The flat pool — cross-shape union of distinct languages
 
 The per-shape tiers language-dedup *within* a shape, but the same language recurs
@@ -119,6 +126,12 @@ The acceptance **family** (`gba` / `parity`) is orthogonal to the slot enumerati
 same slots, guards, marksets, and combo ids; only the acceptance *formula* changes
 (`gba`: `Inf(0)∧…∧Inf(c−1)`; `parity`: `parity max even c`). So a `_parity` shape
 reuses the id space of its `gba` twin.
+
+**At `c = 1` the two families are the same condition** — both reduce to `Inf(0)`,
+and Spot normalizes them identically — so a `c = 1` `_parity` shape is a byte-for-byte
+language duplicate of its Büchi twin and is **not** kept. Parity folders exist only
+at `c ≥ 2`, where the families genuinely diverge (parity then reaches Wagner degrees
+generalized-Büchi cannot).
 
 This slot set is **fully general** — a separate slot per markset covers parallel
 coloured edges, and we deliberately do *not* hand-prune "useless" slots, so full
@@ -234,13 +247,17 @@ base-`|guards|` decode, O(`|slots|`), *not* `Shape.combo_at` (which is O(index) 
 unusable on a 1e9 space) — and runs the exact census chain on it
 (`build → reduce → canonical D → 𝓘`), keeping a language only when it is new.
 
-    python3 genaut/gen/sample.py 2,1,2,parity --target-langs 1024 --seed 0
+    python3 genaut/gen/sample.py 2,1,2,parity --target-langs 500 --seed 0
 
 It stops at `--target-langs` distinct languages (default 1024), or `--sample K`
-draws, or a `--max-draws` safety cap — whichever first — and writes a
-**clearly-non-exhaustive** tree so it never masquerades as a census:
+draws, or a `--max-draws` safety cap — whichever first. Keepers are written
+incrementally, so a run killed at a wall-clock cap (the cluster's per-command
+timeout is how "5 minutes or N languages" is expressed) keeps everything found so
+far. The tree is written under the scratch `--out` root, **never** the tracked
+corpus — adopting a folder into `corpus/sampled/` is a separate, deliberate copy,
+the same discipline every other generator follows:
 
-    corpus/sampled/<tag>__seed<S>/det/  + /sos/  + sample.json  (exhaustive:false)
+    <out>/sampled/<tag>__seed<S>/det/  + /sos/  + sample.json  (exhaustive:false)
 
 Dedup gates are the census's own: reduced-HOA md5, then `default_key`
 (polarity∘names), then the `𝓘` dump. Sampling is uniform over *presentations*, so

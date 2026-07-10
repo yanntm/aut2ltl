@@ -16,16 +16,21 @@ distinct languages (default), or `--sample` draws, or the `--max-draws` safety
 cap — whichever first. Keepers are written incrementally, so an interrupted
 overnight run keeps everything found so far.
 
-Output is a clearly-non-exhaustive tree so it never masquerades as a census:
+Output is a clearly-non-exhaustive tree so it never masquerades as a census,
+written under the scratch --out root (never the tracked corpus); adopting a
+folder into corpus/sampled/ is a separate, deliberate copy:
 
-    corpus/sampled/<tag>__seed<S>/det/<tag>_<id>.hoa      canonical D per language
-    corpus/sampled/<tag>__seed<S>/sos/<tag>_<id>.sos      𝓘(L) per language
-    corpus/sampled/<tag>__seed<S>/sample.json             seed, draws, yield, cap
+    <out>/sampled/<tag>__seed<S>/det/<tag>_<id>.hoa      canonical D per language
+    <out>/sampled/<tag>__seed<S>/sos/<tag>_<id>.sos      𝓘(L) per language
+    <out>/sampled/<tag>__seed<S>/sample.json             seed, draws, yield, cap
+
+Keepers are written incrementally, so a run killed at a wall-clock cap (e.g. the
+cluster's per-command timeout) keeps every language found so far.
 
 Usage:
   python3 genaut/gen/sample.py <n,k,c[,acc]> [--target-langs T] [--sample K]
-                               [--max-draws M] [--seed S] [--corpus DIR]
-    e.g.  python3 genaut/gen/sample.py 2,1,2,parity --target-langs 1024 --seed 0
+                               [--max-draws M] [--seed S] [--out DIR]
+    e.g.  python3 genaut/gen/sample.py 2,1,2,parity --target-langs 500 --seed 0
 """
 from __future__ import annotations
 
@@ -58,8 +63,12 @@ from sosl.sos import dump_invariant                     # noqa: E402
 from sosl.sos.build.importer import canonical           # noqa: E402
 from sosl.sos.core.quotient import invariant_of         # noqa: E402
 
-_CORPUS = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), os.pardir, "corpus"))
+# Where a run writes: ignored scratch, never the tracked corpus. The sampler
+# reads nothing (it draws fresh), so it has a write root only. Adopting a sampled
+# folder into corpus/sampled/ is a separate, deliberate copy.
+_OUT = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
+                 "logs", "genaut", "corpus"))
 
 
 def combo_of(shape: Shape, index: int) -> Tuple[int, ...]:
@@ -79,14 +88,14 @@ def combo_of(shape: Shape, index: int) -> Tuple[int, ...]:
 
 def sample(
     shape: Shape, target_langs: Optional[int], sample_draws: Optional[int],
-    max_draws: int, seed: int, corpus: str,
+    max_draws: int, seed: int, out_root_base: str,
 ) -> Dict:
     """Draw ids until the stop condition, keeping one representative per distinct
     language. Returns the run summary (and writes the det/ + sos/ tiers)."""
     tag = shape.tag
     n = shape.num_combos
     width = shape.id_width
-    out_root = os.path.join(corpus, "sampled", f"{tag}__seed{seed}")
+    out_root = os.path.join(out_root_base, "sampled", f"{tag}__seed{seed}")
     det_dir = os.path.join(out_root, "det")
     sos_dir = os.path.join(out_root, "sos")
     for d in (det_dir, sos_dir):
@@ -172,7 +181,9 @@ def main(argv: List[str]) -> int:
                     help="optional cap on draws; default is to exhaust the id space "
                          "(so the only stops are --target-langs or exhaustion)")
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--corpus", default=_CORPUS)
+    ap.add_argument("--out", default=_OUT,
+                    help="root to write sampled/<tag>__seed<S>/ under "
+                         "(default logs/genaut/corpus, ignored scratch)")
     args = ap.parse_args(argv)
 
     shape = parse_shape(args.token)
@@ -187,10 +198,10 @@ def main(argv: List[str]) -> int:
           f"target_langs={args.target_langs} sample={args.sample} "
           f"max_draws={max_draws} ===", flush=True)
     s = sample(shape, args.target_langs, args.sample, max_draws, args.seed,
-               args.corpus)
+               args.out)
     print(f"[{s['tag']}] {s['draws']} draws -> {s['languages']} languages "
           f"({s['capped']} capped, {s['yield_per_draw']} lang/draw) -> "
-          f"corpus/sampled/{s['tag']}__seed{s['seed']}/", flush=True)
+          f"{args.out}/sampled/{s['tag']}__seed{s['seed']}/", flush=True)
     return 0
 
 
