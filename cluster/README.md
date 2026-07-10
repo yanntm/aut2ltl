@@ -75,10 +75,10 @@ one with `--resources '{(host like "tall%")}/nodes=1'` when timings must be
 comparable.
 
 Per-command cap defaults to **15s** (the discipline; `--timeout 0` disables it
-and lets walltime bound the job). Job walltime defaults to **5 minutes**: a job
-holds a whole node, so shards are sized to fit rather than the reverse. Raise
-`--split`, not the walltime. `oarrun.sh` warns when a shard looks too big and
-names the split that would fit.
+and lets walltime bound the job). Job walltime defaults to **5 minutes**: shards
+are sized to fit it rather than the reverse. Raise `--split` or `--cores`, not
+the walltime. `oarrun.sh` warns when a shard looks too big and names the split
+that would fit.
 
 ## The submit host does nothing
 

@@ -8,6 +8,7 @@
 # Usage: cluster/oarsub.sh [options] <command...>
 #   --name SLUG        tag for the run id (default: the command's first word)
 #   --timeout SECONDS  wall-clock cap on the command, 0 to disable
+#   --cores N          cores requested for the job
 #   --walltime H:MM:SS job limit
 #   --resources STR    OAR resource string minus walltime
 #   --oar-opts STR     extra oarsub options, e.g. --besteffort
@@ -29,7 +30,7 @@ FORWARD=()
 while [ $# -gt 0 ]; do
     case "$1" in
         --name)      NAME="$2"; shift 2 ;;
-        --timeout|--walltime|--resources|--oar-opts)
+        --timeout|--walltime|--cores|--resources|--oar-opts)
                      FORWARD+=("$1" "$2"); shift 2 ;;
         --dry-run)   FORWARD+=("$1"); shift ;;
         -h|--help)   sed -n '2,21p' "$0"; exit 0 ;;

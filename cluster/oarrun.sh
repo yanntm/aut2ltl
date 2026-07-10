@@ -13,7 +13,7 @@
 #   --name SLUG        tag for the run id (default: basename of cmds.txt)
 #   --timeout SECONDS  per-command cap, 0 to disable (default: $OARRUN_TIMEOUT)
 #   --split K          spread over K jobs / K nodes (default: $OARRUN_SPLIT)
-#   --cores N|auto     commands in flight per node (default: $OARRUN_CORES)
+#   --cores N          cores requested per job, and commands in flight on them
 #   --walltime H:MM:SS per-job limit (default: $OARRUN_WALLTIME)
 #   --resources STR    OAR resource string minus walltime
 #   --oar-opts STR     extra oarsub options, e.g. --besteffort
@@ -68,19 +68,24 @@ else
     RUNDIR="$REMOTE_RUNS/$RUNID"
 fi
 
-# A job holds a whole node, so the shard is sized to the walltime rather than
-# the reverse. Advisory only: OAR schedules what we submit, a job killed at
-# walltime keeps its finished results, and --resume makes finishing cheap.
+# The shard is sized to the walltime rather than the reverse. Advisory only: OAR
+# schedules what we submit, a job killed at walltime keeps its finished results,
+# and --resume makes finishing cheap.
 if [ "$OARRUN_TIMEOUT" -gt 0 ]; then
     WT_SECONDS="$(awk -F: '{print $1 * 3600 + $2 * 60 + $3}' <<<"$OARRUN_WALLTIME")"
-    WORST="$(( (N + OARRUN_SPLIT * OARRUN_ASSUMED_CORES - 1) \
-               / (OARRUN_SPLIT * OARRUN_ASSUMED_CORES) * OARRUN_TIMEOUT ))"
+    LANES=$(( OARRUN_SPLIT * OARRUN_CORES ))
+    WORST="$(( (N + LANES - 1) / LANES * OARRUN_TIMEOUT ))"
     if [ "$WORST" -gt "$WT_SECONDS" ]; then
         SUGGEST="$(( (WORST + WT_SECONDS - 1) / WT_SECONDS * OARRUN_SPLIT ))"
         echo "warning: worst case ~${WORST}s per shard exceeds walltime ${OARRUN_WALLTIME}" >&2
-        echo "         (assuming $OARRUN_ASSUMED_CORES cores/node); consider --split $SUGGEST" >&2
+        echo "         at $OARRUN_SPLIT x $OARRUN_CORES cores; raise --split (to ~$SUGGEST) or --cores" >&2
     fi
 fi
+
+# Cores are asked for, not taken: a resource string without a core term reserves
+# every core on the node, whatever the job's actual width. The worker reads the
+# granted allocation back from $OAR_NODEFILE, so reserved and used agree.
+RESOURCES="$OARRUN_RESOURCES/core=$OARRUN_CORES"
 
 GITREV="$(git -C "$HERE" rev-parse --short HEAD 2>/dev/null || echo unknown)"
 GITDIRTY=false
@@ -96,7 +101,7 @@ cat >"$META" <<EOF
   "split": $OARRUN_SPLIT,
   "cores": "$OARRUN_CORES",
   "walltime": "$OARRUN_WALLTIME",
-  "resources": "$OARRUN_RESOURCES",
+  "resources": "$RESOURCES",
   "git_rev": "$GITREV",
   "git_dirty": $GITDIRTY,
   "submitted_at": "$(date -Is)",
@@ -106,8 +111,8 @@ EOF
 
 if [ "$DRY" -eq 1 ]; then
     echo "would submit $OARRUN_SPLIT job(s) for $N commands as $RUNID"
-    echo "  oarsub $OARRUN_OAR_OPTS -n $RUNID.K -l $OARRUN_RESOURCES,walltime=$OARRUN_WALLTIME \\"
-    echo "    \"\$HOME/$REMOTE_REPO/cluster/oar_worker.sh \$HOME/$RUNDIR K $OARRUN_SPLIT $OARRUN_TIMEOUT $OARRUN_CORES\""
+    echo "  oarsub $OARRUN_OAR_OPTS -n $RUNID.K -l $RESOURCES,walltime=$OARRUN_WALLTIME \\"
+    echo "    \"\$HOME/$REMOTE_REPO/cluster/oar_worker.sh \$HOME/$RUNDIR K $OARRUN_SPLIT $OARRUN_TIMEOUT auto\""
     exit 0
 fi
 
@@ -128,8 +133,8 @@ cd "\$HOME/$RUNDIR/oar"
 for k in \$(seq 0 $((OARRUN_SPLIT - 1))); do
     oarsub $OARRUN_OAR_OPTS \
         -n "$RUNID.\$k" \
-        -l "$OARRUN_RESOURCES,walltime=$OARRUN_WALLTIME" \
-        "\$HOME/$REMOTE_REPO/cluster/oar_worker.sh \$HOME/$RUNDIR \$k $OARRUN_SPLIT $OARRUN_TIMEOUT $OARRUN_CORES" \
+        -l "$RESOURCES,walltime=$OARRUN_WALLTIME" \
+        "\$HOME/$REMOTE_REPO/cluster/oar_worker.sh \$HOME/$RUNDIR \$k $OARRUN_SPLIT $OARRUN_TIMEOUT auto" \
         | sed -n 's/^OAR_JOB_ID=//p'
 done >>"\$HOME/$RUNDIR/oar/jobs.txt"
 echo "submitted $OARRUN_SPLIT job(s) for $N command(s) as $RUNID" >&2

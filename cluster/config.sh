@@ -60,24 +60,23 @@
 # Default number of whole nodes to spread the command list across.
 : "${OARRUN_SPLIT:=1}"
 
-# Default commands in flight per node. "auto" means: ask OAR how many cores it
-# actually gave us ($OAR_NODEFILE), inside the job.
-: "${OARRUN_CORES:=auto}"
+# Cores requested per job, and commands in flight on them: oarrun.sh puts this
+# in the resource string and the worker reads the granted allocation back from
+# $OAR_NODEFILE, so the width used equals the width reserved. Raise it for a
+# sweep that wants throughput; a request without a core term reserves the whole
+# machine, however few cores the work has.
+: "${OARRUN_CORES:=4}"
 
-# Default OAR walltime per job. Deliberately small: a job holds a whole node,
-# so shards are sized to fit this rather than the reverse. Raise --split, not
-# the walltime. A job killed at walltime keeps every result it already wrote;
-# reap.sh reports the gap and --resume finishes it.
+# Default OAR walltime per job. Deliberately small: shards are sized to fit it
+# rather than the reverse. Raise --split or --cores, not the walltime. A job
+# killed at walltime keeps every result it already wrote; reap.sh reports the
+# gap and --resume finishes it.
 : "${OARRUN_WALLTIME:=0:05:00}"
 
-# Cores assumed per node when oarrun.sh checks a shard against the walltime
-# before submitting. Only an estimate: the worker uses the real allocation.
-: "${OARRUN_ASSUMED_CORES:=32}"
-
-# OAR resource string, minus the walltime that oarrun.sh appends. A whole node
-# with no machine-class property: the fleet is heterogeneous and the worker
-# sizes itself from the allocation. Pin a class here when a run needs
-# comparable timings, e.g. '{(host like "tall%")}/nodes=1'.
+# OAR resource string, minus the core term and the walltime that oarrun.sh
+# appends. No machine-class property: the fleet is heterogeneous, the worker
+# sizes itself from the allocation, and no host is pinned. Prepend a class here
+# when a run needs comparable timings, e.g. '{(host like "tall%")}/nodes=1'.
 : "${OARRUN_RESOURCES:=/nodes=1}"
 
 # Extra oarsub options (queue, project, --besteffort, ...).
