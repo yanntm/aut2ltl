@@ -14,8 +14,17 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
 
 - **K-E0 — gate: DONE, split verdict.** Step 5 (`G(a→F b)`) CONFIRMED; steps 1–3
   (the floor witness `GF(a∧X((!a∧!b)U a))`) REFUTED — `PAPER-EDIT` on C.3.
-  Per the spec decision rule (§4, K-E0 *Decision*), a mismatch stops K-E1–K-E5
-  pending the paper edit. **K-E1–K-E5: BLOCKED on the C.3 revision.**
+- **The paper edit landed** (theory thread, 2026-07-11): K-F2's read is
+  confirmed — the old C.3 derivation ran in the profile monoid, whose four
+  flagged profiles the syntactic quotient merges into a zero (10 → 7 classes,
+  frozen terminal layer). Consequence drawn on paper: Conjecture C.12 (both
+  halves) and C.17 are **refuted** by the floor witness (draft C.4,
+  Theorem C.12′); `G(a→Fb)` is the new C.3 worked witness; the floor witness
+  is C.5's fallback instance. Revised `bls_cascade.md` (banner, C.3–C.7),
+  `bls_cascade_experiments.md` (K-E0 expectations, K-E1/E2/E4/E6/E7
+  re-scoped), main paper `sos_toltl.md` §5.1/§8.
+  **K-E1–K-E5: UNBLOCKED** under the revised spec; K-E0 steps 4/6 still
+  pending.
 - Steps 4 (C3 (B)-mode cross-check) and 6 (saturation/raw agreement) not yet
   run; the decider is already cross-validated indirectly (K-F1 vs K-F3).
 

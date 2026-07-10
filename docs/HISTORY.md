@@ -3100,3 +3100,19 @@ overstates. Flagged to the cluster owner rather than patched.
   (measure/distance/entropy; crux = generic-verdict lemma Q1).
 - Source audit question: "what does an automata toolbox do that the
   calculus has not described"; answers triaged into the three memos.
+
+## 2026-07-11 — cascade draft: K-E0 absorbed, C.12/C.17 refuted
+
+Engineering's K-E0 gate (bls_cascade_report.md, K-F1/K-F2) caught that the
+floor-witness hand derivation ran in the profile monoid, not its syntactic
+quotient: the four flagged profiles merge into a zero (10 -> 7 classes), the
+terminal layer is the frozen singleton {z}, and the six-edge {A,B} machine
+belongs to G(a->Fb) (canonical there, K-F1-confirmed at width 0). Consequences
+drawn on paper: Conjecture C.12 (both halves) and C.17 refuted by the floor
+witness itself (Theorem C.12', zero-absorption counterexample e.z.e = z <_J e);
+Prop C.19 transfers the failure to moving layers; no-go on bounded-width
+canonical recurrence conditions; C.5 fallback promoted to load-bearing with the
+old derivation salvaged as its presentation-side worked instance. Edited:
+sos_toltl.md (5.1 residual floor, 8), bls_cascade.md (banner, C.0, C.2-C.7),
+bls_cascade_experiments.md (K-E0 revised, K-E1/E2/E3/E4/E7 re-scoped, K-E6
+promoted), bls_cascade_report.md (status: K-E1..E5 unblocked).

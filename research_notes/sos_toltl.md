@@ -1847,8 +1847,9 @@ are the ladder's:
   not determine the verdict. On a 1-anchored layer this failure has two
   distinct sources, separated by the park dichotomy (Lemma 5.5 below):
   the window set is blind to the **parking class** — the class holding
-  the walk once it stops changing — or blind to the **order** among
-  recurring anchors. The first blindness is repaired exactly: every
+  the walk once it stops changing — or blind to the **order** in which
+  recurring letters succeed one another, a failure that lives inside a
+  single frozen restriction. The first blindness is repaired exactly: every
   within-layer change reads an anchor onto its destination
   (Lemma 4.9(i)), so an ultimately idle confined tail parks on the
   class its last anchor named, and a loop vocabulary of *anchored
@@ -2142,43 +2143,62 @@ and vanishes), park at the entry — and the layer being terminal with
 one, its nesting depth that of the parks, not of a descent.
 
 **The residual floor.** The relaxation is proper, and it is not
-complete: condition (ii) is a real assumption. Let
+complete: condition (i) is a real assumption. Let
 
 ```
 L  =  GF( a ∧ X( (!a∧!b) U a ) )
 ```
 
 — infinitely often, two `a`s with only the silent letter `s = !a∧!b`
-between. Its classes are the unit, `[s]`, and the eight profiles
-`(f, l, φ)` of the `s`-erased content — first non-`s` letter kind,
-last, and whether an `a`-pair with only `s` between has occurred — ten
-classes counting as `GF(aa)`'s six are counted; multiplication
-`(f, l, φ)(f′, l′, φ′) = (f, l′, φ ∨ φ′ ∨ [l = a ∧ f′ = a])`, aperiodic
-(`x² = x³`), prefix-independent, `P` loop-determined: a loop accepts
-iff its idempotent carries the flag `φ`. Every layer is 1-anchored —
-condition (A) holds at width 1 globally — and the final layer
-`R = {(f, a, 1), (f, b, 1)}` is terminal, with `a` resetting onto
-`(f, a, 1)`, the `b`-letter onto `(f, b, 1)`, `s` neutral. Condition
-(i) also holds at width 1: parked at `(f, a, 1)` the verdict is "`a`
-recurs", parked at `(f, b, 1)` it is constantly rejecting. Condition
-(ii) fails at every width: from the entry `(a, a, 1)`, with strictly
-growing gaps `n₁ < n₂ < ⋯`, the two anchor-recurring confined tails
+between. The natural recognizing algebra is the *profile monoid*: the
+unit, `[s]`, and the eight profiles `(f, l, φ)` of the `s`-erased
+content — first non-`s` letter kind, last, and whether an `a`-pair
+with only `s` between has occurred — with multiplication
+`(f, l, φ)(f′, l′, φ′) = (f, l′, φ ∨ φ′ ∨ [l = a ∧ f′ = a])`,
+aperiodic (`x² = x³`), prefix-independent, `P` loop-determined: a loop
+accepts iff its idempotent carries the flag `φ`. But the profile
+monoid is **not syntactic**: the four flagged profiles are pairwise
+inseparable — prefix-independence washes every stem context
+(`V(wβ) = V(β)`), and every loop through a flagged element is itself
+flagged, hence accepting, whatever its `f` and `l` — so the syntactic
+quotient merges them into a single two-sided zero `z`, and `𝓘(L)` has
+**seven** classes: the unit, `[s]`, the four unflagged profiles, and
+`z`. The two unflagged pairs `{(b,b,0),(b,a,0)}` and
+`{(a,b,0),(a,a,0)}` are moving 1-anchored layers, but the *completion*
+— an `a` read at pending-`a` — is on them an **exit** (it raises the
+flag and leaves), so a tail confined to either never completes a
+pattern and every confined verdict is rejecting: their window terms
+are `⊥` at width 0. The final layer is the frozen singleton `{z}`:
+every letter neutral, every tail confined, and the completion, an exit
+everywhere else, is here an invisible self-loop. All of `L`'s loop
+content thus sits on one frozen layer, where the whole vocabulary of
+this section reduces to Proposition 5.4's window term for the frozen
+restriction — condition (i) — and that term fails at every width:
+with strictly growing gaps `n₁ < n₂ < ⋯`, the two confined tails
 
 ```
 a s^{n₁} b s^{n₂} a s^{n₃} b ⋯        a's and b's alternate      rejected
-a s^{n₁} a s^{n₂} b s^{n₃} a a ⋯      the pair a·s*·a recurs     accepted
+a s^{n₁} a s^{n₂} b s^{n₃} a s^{n₄} a ⋯   the pair a·s*·a recurs     accepted
 ```
 
 share the recurring window set
-`{s^k} ∪ {s^i x s^{k−1−i} : x ∈ {a, !a∧b}, 0 ≤ i ≤ k−1}` at every
-width — a window holding two anchors occurs but never recurs, the gaps
-outgrowing every `k` — and their verdicts differ. What separates them
-is the *order* in which the two recurring anchors succeed one another,
-invisible to windows and parks alike. The residual loop stratum is
-therefore inhabited strictly above the parks, and this witness is its
-floor in the purest form: (A)-clean at width 1 on every layer,
-park-clean, terminal final layer — the entire missing label is the
-`Ω` no window vocabulary reaches.
+`{s^k} ∪ {s^i x s^{k−1−i} : x ∈ {a, !a∧b}, 0 ≤ i ≤ k−1}` at *every*
+width simultaneously — a window holding two non-silent letters occurs
+but never recurs, the gaps outgrowing every `k` — and their verdicts
+differ. What separates them is the *order* in which the recurring
+letters succeed one another — an `a` follows an `a` across pure
+silence, or `a` and `b` alternate — invisible to any bounded window;
+and the layer being frozen, no class decoration is left to see it
+with: the walk sits at `z` from the first step. The residual loop
+stratum is therefore inhabited, and this witness is its floor in the
+purest form: prefix-independent, parks vacuous (the final layer is its
+own frozen restriction), terminal frozen final layer — the entire
+missing label is the `Ω` no window vocabulary reaches. The pendency
+that separates the two tails *is* tracked by a presentation — the
+profile machine's own terminal layer carries it in one bit — but the
+syntactic congruence has provably erased it: once the flag saturates,
+no context distinguishes pending from not. The repair cannot come from
+`𝓘`'s own walk; this is the shape of the main open problem.
 
 ### 5.2 Worked examples: the peel alone, then the full engine
 
@@ -2860,7 +2880,7 @@ final layer needs two states and two propositions *at once*, a shape
 the frame omits. Beyond the frame, the first plain-(B) failure,
 `G(a → F b)` (§5.1), lands in the parked row — repaired by
 Proposition 5.7 — and the first inhabitant of the loop-residual
-stratum is `GF(a ∧ X((!a∧!b) U a))` (§5.1), ten classes. The open
+stratum is `GF(a ∧ X((!a∧!b) U a))` (§5.1), seven classes. The open
 hunts that remain: the smallest witness of each of the two loop
 strata, and the smallest witness of each graded stem stratum beyond
 the tester's cap.
@@ -2940,8 +2960,9 @@ states with two atomic propositions, and the first (B)-failing final
 layer lives exactly there — `G(a → F b)` (§5.1), five classes, whose
 moving, 1-anchored final layer fails (B) at every width on an exact
 witness pair — a failure the parks repair (Proposition 5.7), while its
-park-irreparable sharpening `GF(a ∧ X((!a∧!b) U a))` (§5.1) needs the
-same two-by-two shape. A (B) failure therefore needs at least two
+park-irreparable sharpening `GF(a ∧ X((!a∧!b) U a))` (§5.1), whose
+failure sits on a *frozen* final layer, needs the same two-by-two
+shape. A (B) failure therefore needs at least two
 propositions *and* at least two states; the `2state2ap` shape is the
 census-next axis, and the smallest witnesses of both loop strata are
 open hunts with named upper bounds.
