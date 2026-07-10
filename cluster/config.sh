@@ -51,9 +51,13 @@
 # the same class. It also makes timings comparable, which a heterogeneous
 # allocation would not.
 #
-# Single-quoted inside the filter: oarrun.sh interpolates this into a
-# double-quoted -l argument, which a double quote here would close early.
-: "${OARRUN_RESOURCES:={host like 'tall%'}/nodes=1}"
+# Assigned the long way: ${VAR:=default} ends the default at its first `}`, and
+# the OAR filter contains one, so that form would silently store a truncated
+# string. Single quotes inside the filter, because oarrun.sh interpolates this
+# into a double-quoted -l argument.
+if [ -z "${OARRUN_RESOURCES:-}" ]; then
+    OARRUN_RESOURCES="{host like 'tall%'}/nodes=1"
+fi
 
 # Extra oarsub options (queue, project, --besteffort, ...).
 : "${OARRUN_OAR_OPTS:=}"
