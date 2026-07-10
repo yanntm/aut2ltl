@@ -10,10 +10,15 @@
 #   cluster/oarsub.sh --timeout 0 --walltime 3:00:00 -- cluster/provision.sh
 # On a laptop or a container, just run it.
 #
-#   cluster/provision.sh              # spot + gap + its
+#   cluster/provision.sh              # spot + gap + its; keeps what is current
+#   cluster/provision.sh --force      # rebuild and replace every prefix
 #   cluster/provision.sh --spot-only
 #   cluster/provision.sh --gap-only
 #   cluster/provision.sh --its-only
+#
+# Each dependency keeps one install, stamped with its version. A run reuses a
+# prefix whose stamp matches and replaces it otherwise, so --force is needed
+# only to rebuild the same version.
 #
 # Ends by proving what the rest of the pipeline needs: `import spot`, and a
 # `gap` on PATH that loads SgpDec -- each resolving from opt/, not from a system
@@ -27,30 +32,33 @@ ROOT="$(cd "$HERE/.." && pwd)"
 DO_SPOT=1
 DO_GAP=1
 DO_ITS=1
-case "${1:-}" in
-    --spot-only) DO_GAP=0; DO_ITS=0 ;;
-    --gap-only)  DO_SPOT=0; DO_ITS=0 ;;
-    --its-only)  DO_SPOT=0; DO_GAP=0 ;;
-    "")          ;;
-    -h|--help)   sed -n '2,19p' "$0"; exit 0 ;;
-    *)           echo "unknown option: $1" >&2; exit 2 ;;
-esac
+FORCE=()
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --force)     FORCE=(--rebuild); shift ;;
+        --spot-only) DO_GAP=0; DO_ITS=0; shift ;;
+        --gap-only)  DO_SPOT=0; DO_ITS=0; shift ;;
+        --its-only)  DO_SPOT=0; DO_GAP=0; shift ;;
+        -h|--help)   sed -n '2,24p' "$0"; exit 0 ;;
+        *)           echo "unknown option: $1" >&2; exit 2 ;;
+    esac
+done
 
 cd "$ROOT"
 
 if [ "$DO_SPOT" -eq 1 ]; then
     echo "=== spot"
-    "$HERE/build_spot.sh"
+    "$HERE/build_spot.sh" "${FORCE[@]+"${FORCE[@]}"}"
 fi
 
 if [ "$DO_GAP" -eq 1 ]; then
     echo "=== gap"
-    "$HERE/build_gap.sh"
+    "$HERE/build_gap.sh" "${FORCE[@]+"${FORCE[@]}"}"
 fi
 
 if [ "$DO_ITS" -eq 1 ]; then
     echo "=== libDDD + libITS"
-    "$HERE/build_its.sh"
+    "$HERE/build_its.sh" "${FORCE[@]+"${FORCE[@]}"}"
 fi
 
 echo "=== verify (as a job would see it)"

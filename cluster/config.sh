@@ -6,8 +6,9 @@
 : "${CLUSTER:=ythierry@cluster.lip6.fr}"
 
 # Repo copy on the cluster, relative to the remote HOME. That HOME is NFS and
-# visible from every compute node, so the path is valid inside jobs.
-: "${REMOTE_REPO:=git/BuchiToLTL}"
+# visible from every compute node, so the path is valid inside jobs. Named after
+# the project, not after any one working copy's directory.
+: "${REMOTE_REPO:=git/aut2ltl}"
 
 # Run directories, under the repo root and root-anchored in .gitignore. Safe
 # there because sync_cluster.sh checks out a commit and never removes untracked

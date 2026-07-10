@@ -12,8 +12,9 @@
 # the install under opt/. Nothing is written to $HOME, nothing needs root, and
 # `rm -rf opt build` undoes it exactly.
 #
-# Usage: cluster/build_spot.sh [spot_version]
-#   spot_version overrides what the clone says, e.g. 2.14.5.dev
+# Usage: cluster/build_spot.sh [--rebuild] [spot_version]
+#   --rebuild      replace the current install rather than keeping it
+#   spot_version   override what the clone says, e.g. 2.14.5.dev
 
 set -euo pipefail
 
@@ -21,6 +22,9 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 # shellcheck source=config.sh
 source "$HERE/config.sh"
+
+REBUILD=0
+if [ "${1:-}" = "--rebuild" ]; then REBUILD=1; shift; fi
 
 TRUTH="$ROOT/build/Spot-BinaryBuilds"
 DL="$ROOT/build/dl"
@@ -73,8 +77,26 @@ fi
 
 # --- build -------------------------------------------------------------------
 
-PREFIX="$ROOT/opt/spot-$SPOTVER"
+# One install, never one per version: the stamp records what is in there, and a
+# different version replaces it. Several coexisting prefixes would leave every
+# consumer guessing which to put on its path.
+PREFIX="$ROOT/opt/spot"
+STAMP="$PREFIX/.version"
 BUILD="$ROOT/build/spot-$SPOTVER-build"
+
+if [ "$REBUILD" -eq 0 ] && [ -x "$PREFIX/bin/ltl2tgba" ] \
+   && [ -f "$STAMP" ] && [ "$(cat "$STAMP")" = "$SPOTVER" ]; then
+    echo "spot $SPOTVER already installed in $PREFIX (--rebuild to force)"
+    exit 0
+fi
+
+# The stamp is written last, so an interrupted install is never mistaken for a
+# complete one; clearing the prefix keeps a version bump from leaving orphans.
+#
+# The object tree goes with it: libtool records the install directory in each
+# .la at link time, and refuses to install a library built for another prefix.
+# Re-running configure does not relink them, so a stale tree cannot be reused.
+rm -rf "$PREFIX" "$BUILD"
 
 echo "building on $(hostname -s), make -j$BUILD_JOBS"
 echo "  prefix $PREFIX"
@@ -103,6 +125,7 @@ cd "$BUILD"
 
 make -j"$BUILD_JOBS"
 make install
+printf '%s\n' "$SPOTVER" >"$STAMP"
 
 # --- verify ------------------------------------------------------------------
 

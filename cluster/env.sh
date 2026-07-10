@@ -9,34 +9,27 @@
 OARRUN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export OARRUN_ROOT
 
-# Highest-versioned prefix under opt/, if one has been built. Version sort, so
-# spot-2.14.5 wins over spot-2.9.6 where a lexical sort would not.
-_spot_prefix="$(find "$OARRUN_ROOT/opt" -maxdepth 1 -type d -name 'spot-*' 2>/dev/null \
-                | sort -V | tail -1)"
-if [ -n "$_spot_prefix" ]; then
-    export PATH="$_spot_prefix/bin:$PATH"
-    for _lib in "$_spot_prefix/lib" "$_spot_prefix/lib64"; do
-        [ -d "$_lib" ] && export LD_LIBRARY_PATH="$_lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-    done
+# Spot and GAP, built by build_spot.sh / build_gap.sh into single prefixes.
+# Prepended unconditionally, not only when present: our directories must win the
+# PATH lookup whatever the machine carries, and a missing build should surface as
+# `command not found` rather than as a silent fall-through to a system install.
+export PATH="$OARRUN_ROOT/opt/spot/bin:$OARRUN_ROOT/opt/gap/bin:$PATH"
 
-    # Where `make install` put the python bindings. Both the lib/ vs lib64/ split
-    # (autotools' pyexecdir: Fedora says lib64, Debian says lib) and the version
-    # segment depend on the machine, so neither is assumed. This must succeed:
-    # LD_LIBRARY_PATH above already points libspot.so at our build, so if our
-    # bindings are missing from PYTHONPATH a system `import spot` would load a
-    # foreign _impl.so against our library and die on an undefined symbol.
-    for _sp in "$_spot_prefix"/lib/python*/site-packages \
-               "$_spot_prefix"/lib64/python*/site-packages; do
-        [ -d "$_sp" ] && export PYTHONPATH="$_sp${PYTHONPATH:+:$PYTHONPATH}"
-    done
-fi
-unset _lib _sp _spot_prefix
+_spot="$OARRUN_ROOT/opt/spot"
+for _lib in "$_spot/lib" "$_spot/lib64"; do
+    [ -d "$_lib" ] && export LD_LIBRARY_PATH="$_lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+done
 
-# GAP, built by build_gap.sh into opt/gap. Prepended unconditionally, not only
-# when present: our directory must win the PATH lookup whatever the machine
-# carries, and a missing build should surface as `gap: command not found` rather
-# than as a silent fall-through to a system install of another version.
-export PATH="$OARRUN_ROOT/opt/gap/bin:$PATH"
+# Where `make install` put the python bindings: the lib/ vs lib64/ split is
+# autotools' pyexecdir (Fedora says lib64, Debian lib) and the version segment
+# follows the interpreter, so neither is assumed. This must succeed --
+# LD_LIBRARY_PATH above already points libspot.so at our build, so were our
+# bindings absent from PYTHONPATH a system `import spot` would load a foreign
+# _impl.so against our library and die on an undefined symbol.
+for _sp in "$_spot"/lib/python*/site-packages "$_spot"/lib64/python*/site-packages; do
+    [ -d "$_sp" ] && export PYTHONPATH="$_sp${PYTHONPATH:+:$PYTHONPATH}"
+done
+unset _lib _sp _spot
 
 # libDDD + libITS, built by build_its.sh into opt/its. Named rather than placed
 # on a search path: the CMake build takes this prefix as a hint directly, which

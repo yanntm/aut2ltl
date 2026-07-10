@@ -23,18 +23,31 @@ REBUILD=0
 [ "${1:-}" = "--rebuild" ] && REBUILD=1
 
 PREFIX="$ROOT/opt/gap"
+# One install, never one per version. The stamp records which GAP is in there;
+# a different one replaces it, taking the packages with it, since their kernel
+# modules are compiled against a particular GAP.
 GAP_INST="$PREFIX/gap-inst"
+STAMP="$PREFIX/.version"
 DL="$ROOT/build/dl"
 BUILD="$ROOT/build/gap-$GAP_VERSION"
 
 log() { echo "[gap] $*"; }
 die() { echo "[gap] ERROR: $*" >&2; exit 1; }
 
+# A prefix holding another GAP is stale in its entirety, packages included: they
+# are replaced together, so no combination of versions can ever be loaded.
+STALE=1
+if [ "$REBUILD" -eq 0 ] && [ -x "$GAP_INST/bin/gap" ] \
+   && [ -f "$STAMP" ] && [ "$(cat "$STAMP")" = "$GAP_VERSION" ]; then
+    STALE=0
+fi
+[ "$STALE" -eq 1 ] && rm -rf "$PREFIX"
+
 mkdir -p "$DL" "$PREFIX/pkg" "$PREFIX/bin"
 
 # --- GAP ---------------------------------------------------------------------
 
-if [ "$REBUILD" -eq 1 ] || [ ! -x "$GAP_INST/bin/gap" ]; then
+if [ "$STALE" -eq 1 ]; then
     log "building GAP $GAP_VERSION into $GAP_INST"
 
     TARBALL="$DL/gap-$GAP_VERSION.tar.gz"
@@ -85,7 +98,7 @@ for p in $GAP_PKGS; do
     [ -d "$PREFIX/pkg/$p" ] || NEED_PKGS=1
 done
 
-if [ "$REBUILD" -eq 1 ] || [ "$NEED_PKGS" -eq 1 ]; then
+if [ "$NEED_PKGS" -eq 1 ]; then
     log "building GAP packages: $GAP_PKGS"
     ( cd "$BUILD/pkg" && "$BUILD/bin/BuildPackages.sh" --with-gaproot="$BUILD" $GAP_PKGS ) \
         || log "WARN: BuildPackages reported failures; the load test below is the gate"
@@ -103,7 +116,7 @@ fi
 # --- SgpDec ------------------------------------------------------------------
 
 SGPDEC_DIR="$PREFIX/pkg/sgpdec"
-if [ "$REBUILD" -eq 1 ] || [ ! -d "$SGPDEC_DIR" ]; then
+if [ ! -d "$SGPDEC_DIR" ]; then
     log "installing SgpDec $SGPDEC_VERSION into $PREFIX/pkg"
     rm -rf "$SGPDEC_DIR"
     TMP="$(mktemp -d)"
@@ -165,4 +178,8 @@ if ! printf '%s' "$OUT" | grep -q LOAD_OK; then
     printf '%s\n' "$OUT" >&2
     die "SgpDec failed to load from $SGPDEC_DIR"
 fi
+
+# Written last and only here: an interrupted or unloadable install carries no
+# stamp, so the next run rebuilds it rather than trusting it.
+printf '%s\n' "$GAP_VERSION" >"$STAMP"
 log "SgpDec OK"
