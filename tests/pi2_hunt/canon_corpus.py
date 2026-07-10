@@ -22,6 +22,8 @@ from typing import List
 
 import spot
 
+from aut2ltl.ltl.twa import dump_hoa
+
 from aut2ltl.language import Language
 from survey.normalize import normalize_hoa
 
@@ -66,7 +68,7 @@ def main(argv: List[str]) -> int:
         seen.add(key)
         det.set_name(f"canon of {os.path.basename(path)}")
         with open(os.path.join(args.out, f"canon_{kept:04d}_s{n}.hoa"), "w") as fh:
-            fh.write(det.to_str("hoa"))
+            fh.write(dump_hoa(det))
         kept += 1
 
     print(f"read={read} skipped={skipped} kept(distinct minimal recurrence)={kept} "

@@ -21,6 +21,8 @@ from pathlib import Path
 import buddy
 import spot
 
+from aut2ltl.ltl.twa import dump_hoa
+
 OUT = Path("samples/fixtures/hoa/various/mod3_a.hoa")
 
 
@@ -55,7 +57,7 @@ def main() -> int:
     aut = build_mod3()
     assert aut.is_deterministic(), "mod3 automaton must be deterministic"
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(aut.to_str("hoa") + "\n", encoding="utf-8")
+    OUT.write_text(dump_hoa(aut) + "\n", encoding="utf-8")
     print(f"wrote {OUT}  ({aut.num_states()} states, {len(aut.ap())} AP)")
     return 0
 

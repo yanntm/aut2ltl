@@ -69,6 +69,7 @@ for _p in (_REPO, os.path.join(_REPO, "sosl")):
 
 import spot  # noqa: E402
 
+from aut2ltl.ltl.twa import dump_hoa  # noqa: E402
 from sosl.sos import dump_invariant  # noqa: E402
 from sosl.sos.build.importer import canonical  # noqa: E402
 from sosl.sos.core.quotient import invariant_of  # noqa: E402
@@ -227,7 +228,7 @@ def build(inputs: str, out_dir: str, timeout: float,
 
         seen[key] = ident
         funnel.bump(source, "new")
-        primals.append(Entry(ident, D.to_str("hoa"), dump, comp_dump))
+        primals.append(Entry(ident, dump_hoa(D), dump, comp_dump))
 
     for e in primals:
         _write(det_dir, e.ident + ".hoa", e.hoa)
@@ -268,7 +269,7 @@ def _close(primals: List[Entry], seen: Dict[str, str],
             raise AssertionError(
                 f"{e.ident}: spot.dualize disagrees with the P-flip")
         seen[key] = e.ident + "_c"
-        _write(det_dir, e.ident + "_c.hoa", Dc.to_str("hoa"))
+        _write(det_dir, e.ident + "_c.hoa", dump_hoa(Dc))
         _write(sos_dir, e.ident + "_c.sos", e.comp_sos)
         duals += 1
     return duals

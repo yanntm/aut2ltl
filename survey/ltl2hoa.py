@@ -20,6 +20,8 @@ from typing import List, Tuple
 
 import spot
 
+from aut2ltl.ltl.twa import dump_hoa
+
 
 def formulas(ltl: Path) -> List[Tuple[int, str]]:
     """The (line-number, formula) pairs of an `.ltl` file — `#` comments and blank
@@ -42,7 +44,7 @@ def build(src: Path, dst: Path) -> int:
             aut = spot.translate(f, "small")
             out = dst / rel / f"{ltl.stem}_l{line}.hoa"
             out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(aut.to_str("hoa"), encoding="utf-8")
+            out.write_text(dump_hoa(aut), encoding="utf-8")
             n += 1
     return n
 

@@ -15,6 +15,8 @@ from typing import List
 
 import spot
 
+from aut2ltl.ltl.twa import dump_hoa
+
 DEFAULT_OUT = "samples/fixtures/hoa/sere"
 DEFAULT_SRC_DIR = "samples/fixtures/ltl/sere"
 
@@ -32,7 +34,7 @@ def emit(out_dir: str, sources: List[str]) -> int:
             if not formula:
                 continue
             aut = spot.translate(spot.formula(formula))
-            aut.save(str(out / f"{stem}_l{lineno}.hoa"))
+            (out / f"{stem}_l{lineno}.hoa").write_text(dump_hoa(aut))
             n += 1
     return n
 

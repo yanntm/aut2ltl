@@ -28,6 +28,8 @@ from typing import Iterable, List, Sequence, Tuple
 
 import spot
 
+from aut2ltl.ltl.twa import dump_hoa
+
 from aut2ltl.language import Language
 from survey.normalize import normalize_hoa
 
@@ -119,7 +121,7 @@ def main(argv: List[str]) -> int:
         seen.add(key)
         g.set_name(f_str)
         with open(os.path.join(args.out, f"c3a_{kept:04d}_s{g.num_states()}.hoa"), "w") as fh:
-            fh.write(g.to_str("hoa"))
+            fh.write(dump_hoa(g))
         kept += 1
 
     print(f"considered={considered} kept={kept} -> {args.out}", file=sys.stderr)
