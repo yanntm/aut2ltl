@@ -1,53 +1,52 @@
 #!/bin/bash
 # Build GAP and install SgpDec under the repo's opt/. Always from source.
 #
-# Source only: no distro package, no system install, no sudo, no $HOME. A build
-# result must be a function of the commit, not of which machine ran it, and GAP
-# versions and bundled packages differ across a heterogeneous fleet. Everything
-# lands under opt/, and `rm -rf opt build` undoes it exactly.
+# Source only: no distro package, no system install, no sudo, no $HOME. GAP
+# versions and bundled packages differ across machines, and the pipeline needs
+# one it can name. Everything lands under opt/, and `rm -rf opt build` undoes it
+# exactly.
+#
+# The packages are built for the machine that builds them: semigroups vendors
+# libsemigroups, which compiles HPCombi's AVX2 intrinsics when the compiler
+# offers them. The result is fast, and raises SIGILL on a machine without AVX2.
+#
+# One install, kept as it is: a prefix holding a GAP is left alone, whatever
+# version it holds. To replace it, `rm -rf opt/gap` and run again.
 #
 # opt/gap/bin/gap is a wrapper: it carries the library path of GAP's own
 # libgap.so and adds the prefix as an extra GAP root, so pkg/sgpdec loads. It is
 # what a bare `gap` on PATH resolves to.
 #
-# Usage: cluster/build_gap.sh [--rebuild]
+# Usage: deps/build_gap.sh
 
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
-# shellcheck source=config.sh
-source "$HERE/config.sh"
+# shellcheck source=versions.sh
+source "$HERE/versions.sh"
 
-REBUILD=0
-[ "${1:-}" = "--rebuild" ] && REBUILD=1
+[ $# -eq 0 ] || { echo "usage: build_gap.sh (no arguments)" >&2; exit 2; }
 
 PREFIX="$ROOT/opt/gap"
-# One install, never one per version. The stamp records which GAP is in there;
-# a different one replaces it, taking the packages with it, since their kernel
-# modules are compiled against a particular GAP.
 GAP_INST="$PREFIX/gap-inst"
-STAMP="$PREFIX/.version"
 DL="$ROOT/build/dl"
 BUILD="$ROOT/build/gap-$GAP_VERSION"
 
 log() { echo "[gap] $*"; }
 die() { echo "[gap] ERROR: $*" >&2; exit 1; }
 
-# A prefix holding another GAP is stale in its entirety, packages included: they
-# are replaced together, so no combination of versions can ever be loaded.
-STALE=1
-if [ "$REBUILD" -eq 0 ] && [ -x "$GAP_INST/bin/gap" ] \
-   && [ -f "$STAMP" ] && [ "$(cat "$STAMP")" = "$GAP_VERSION" ]; then
-    STALE=0
-fi
-[ "$STALE" -eq 1 ] && rm -rf "$PREFIX"
+# True when the package compiled its kernel module. The source directory is
+# unpacked before the compile and survives its failure, so it says nothing.
+has_kernel_module() {
+    test -n "$(find "$1/bin" -name '*.so' 2>/dev/null | head -1)"
+}
 
 mkdir -p "$DL" "$PREFIX/pkg" "$PREFIX/bin"
 
 # --- GAP ---------------------------------------------------------------------
 
-if [ "$STALE" -eq 1 ]; then
+if [ ! -x "$GAP_INST/bin/gap" ]; then
     log "building GAP $GAP_VERSION into $GAP_INST"
 
     TARBALL="$DL/gap-$GAP_VERSION.tar.gz"
@@ -97,22 +96,30 @@ NEED_PKGS=0
 for p in $GAP_PKGS; do
     [ -d "$PREFIX/pkg/$p" ] || NEED_PKGS=1
 done
+for p in $GAP_KERNEL_PKGS; do
+    has_kernel_module "$PREFIX/pkg/$p" || NEED_PKGS=1
+done
 
 if [ "$NEED_PKGS" -eq 1 ]; then
     log "building GAP packages: $GAP_PKGS"
-    # semigroups vendors libsemigroups, which enables HPCombi and compiles it with
-    # -mavx whenever the *compiler* accepts the flag -- the CPU is never asked.
-    # The result is a SIGILL on any machine without AVX, and the install sits on
-    # a shared filesystem that every node reads. BuildPackages.sh forwards
-    # PACKAGE_CONFIG_ARGS_<PackageName> to that package's configure.
+    # semigroups vendors libsemigroups, which uses the AVX2 intrinsics of HPCombi.
+    # Both are left at their defaults, so the packages are built for the machine
+    # that builds them and raise SIGILL on a machine without those instructions.
+    #
     # BuildPackages.sh defaults MAKEFLAGS to -j3, which throttles the one heavy
     # compile here (semigroups vendors libsemigroups) to three lanes whatever the
     # job holds. It honours the variable when set.
     ( cd "$BUILD/pkg" \
       && MAKEFLAGS="-j$BUILD_JOBS" \
-         PACKAGE_CONFIG_ARGS_Semigroups="--disable-hpcombi" \
          "$BUILD/bin/BuildPackages.sh" --with-gaproot="$BUILD" $GAP_PKGS ) \
-        || log "WARN: BuildPackages reported failures; the load test below is the gate"
+        || die "BuildPackages failed; see $BUILD/pkg/log"
+
+    # A package that failed to compile leaves its source directory behind, so
+    # installing whatever is there would put a broken package in the prefix and
+    # defer the failure to whoever loads it.
+    for p in $GAP_KERNEL_PKGS; do
+        has_kernel_module "$BUILD/pkg/$p" || die "package $p built no kernel module"
+    done
 
     for p in $GAP_PKGS; do
         [ -d "$BUILD/pkg/$p" ] || die "package $p is not in the GAP distribution"
@@ -149,7 +156,7 @@ done
 
 cat >"$PREFIX/bin/gap" <<EOF
 #!/usr/bin/env bash
-# Generated by cluster/build_gap.sh. Runs our GAP with its own libraries on the
+# Generated by deps/build_gap.sh. Runs our GAP with its own libraries on the
 # loader path and this prefix as an extra GAP root, so pkg/sgpdec loads.
 # Callers spawn a bare 'gap' from PATH; this is it.
 #
@@ -177,7 +184,4 @@ VERIFY_LOG="$ROOT/build/gap-verify.log"
     || die "gap exited $? while loading SgpDec"
 grep -q LOAD_OK "$VERIFY_LOG" || die "SgpDec did not load from $SGPDEC_DIR"
 
-# Written last and only here: an interrupted or unloadable install carries no
-# stamp, so the next run rebuilds it rather than trusting it.
-printf '%s\n' "$GAP_VERSION" >"$STAMP"
 log "SgpDec OK"

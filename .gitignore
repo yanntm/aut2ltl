@@ -18,9 +18,9 @@ dist/
 /logs/
 *.log
 
-# Cluster install and scratch, root-anchored so they never match a subfolder:
-# /opt/ is the Spot prefix built by cluster/build_spot.sh, /build/ its
-# out-of-tree build directory, /oarrun/ the run directories of cluster jobs.
+# Build products and scratch, root-anchored so they never match a subfolder:
+# /opt/ holds the prefixes built by deps/build_all.sh, /build/ the source trees
+# and object directories it works in, /oarrun/ the run directories of cluster jobs.
 /opt/
 /build/
 /oarrun/

@@ -12,19 +12,25 @@
 # the install under opt/. Nothing is written to $HOME, nothing needs root, and
 # `rm -rf opt build` undoes it exactly.
 #
-# Usage: cluster/build_spot.sh [--rebuild] [spot_version]
-#   --rebuild      replace the current install rather than keeping it
-#   spot_version   override what the clone says, e.g. 2.14.5.dev
+# One install, kept as it is. To take a newer Spot, `rm -rf opt/spot` and run
+# again: the version is read from Spot-BinaryBuilds at that moment.
+#
+# Usage: deps/build_spot.sh
 
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
-# shellcheck source=config.sh
-source "$HERE/config.sh"
+# shellcheck source=versions.sh
+source "$HERE/versions.sh"
 
-REBUILD=0
-if [ "${1:-}" = "--rebuild" ]; then REBUILD=1; shift; fi
+[ $# -eq 0 ] || { echo "usage: build_spot.sh (no arguments)" >&2; exit 2; }
+
+PREFIX="$ROOT/opt/spot"
+if [ -x "$PREFIX/bin/ltl2tgba" ]; then
+    echo "spot already installed in $PREFIX (rm -rf $PREFIX to rebuild)"
+    exit 0
+fi
 
 TRUTH="$ROOT/build/Spot-BinaryBuilds"
 DL="$ROOT/build/dl"
@@ -45,7 +51,7 @@ RECIPE="$TRUTH/build_spot.sh"
 [ -f "$RECIPE" ] || { echo "no build_spot.sh in $TRUTH" >&2; exit 1; }
 
 # The live assignment, not the commented-out alternatives above it.
-SPOTVER="${1:-$(sed -n 's/^export SPOTVER=\([^ #]*\).*/\1/p' "$RECIPE" | tail -1)}"
+SPOTVER="$(sed -n 's/^export SPOTVER=\([^ #]*\).*/\1/p' "$RECIPE" | tail -1)"
 [ -n "$SPOTVER" ] || { echo "could not read SPOTVER from $RECIPE" >&2; exit 1; }
 
 # Likewise the live wget line: the tarball moves between hosts across versions,
@@ -77,26 +83,13 @@ fi
 
 # --- build -------------------------------------------------------------------
 
-# One install, never one per version: the stamp records what is in there, and a
-# different version replaces it. Several coexisting prefixes would leave every
-# consumer guessing which to put on its path.
-PREFIX="$ROOT/opt/spot"
-STAMP="$PREFIX/.version"
 BUILD="$ROOT/build/spot-$SPOTVER-build"
 
-if [ "$REBUILD" -eq 0 ] && [ -x "$PREFIX/bin/ltl2tgba" ] \
-   && [ -f "$STAMP" ] && [ "$(cat "$STAMP")" = "$SPOTVER" ]; then
-    echo "spot $SPOTVER already installed in $PREFIX (--rebuild to force)"
-    exit 0
-fi
-
-# The stamp is written last, so an interrupted install is never mistaken for a
-# complete one; clearing the prefix keeps a version bump from leaving orphans.
-#
-# The object tree goes with it: libtool records the install directory in each
-# .la at link time, and refuses to install a library built for another prefix.
-# Re-running configure does not relink them, so a stale tree cannot be reused.
-rm -rf "$PREFIX" "$BUILD"
+# The prefix does not exist (we exited above otherwise), but the object tree may:
+# libtool records the install directory in each .la at link time and refuses to
+# install a library built for another prefix. Re-running configure does not
+# relink them, so a stale tree cannot be reused.
+rm -rf "$BUILD"
 
 echo "building on $(hostname -s), make -j$BUILD_JOBS"
 echo "  prefix $PREFIX"
@@ -110,8 +103,8 @@ cd "$BUILD"
 # Ours, and deliberately not theirs: shared libraries and Python bindings,
 # because the pipeline does `import spot`. --enable-max-accsets=64 lifts Spot's
 # default 32-acceptance-set ceiling, which our automata cross; a skipped oracle
-# is not a verified one. The bindings compile against whichever python3 the node
-# has, which is the point of building here rather than shipping a binary: a
+# is not a verified one. The bindings compile against whichever python3 is
+# present, which is the point of building here rather than shipping a binary: a
 # prebuilt _spot.so is bound to one CPython ABI and one glibc.
 "$SRC/configure" -C \
     VALGRIND=false \
@@ -125,7 +118,6 @@ cd "$BUILD"
 
 make -j"$BUILD_JOBS"
 make install
-printf '%s\n' "$SPOTVER" >"$STAMP"
 
 # --- verify ------------------------------------------------------------------
 

@@ -9,20 +9,21 @@
 # (gmpxx) that nothing here needs, so a partial `make` is tolerated: the gate is
 # the presence of the archives and the its/ header tree, checked at the end.
 #
-# The prefix is exported to CMake as LIBDDD_HOME by cluster/env.sh, which is the
-# override sos_sdd/CMakeLists.txt already honours -- no build file changes.
+# The prefix is exported to CMake as LIBDDD_HOME by env.sh, which is the override
+# sos_sdd/CMakeLists.txt already honours -- no build file changes.
 #
-# Usage: cluster/build_its.sh [--rebuild]
+# One install, kept as it is. To replace it, `rm -rf opt/its` and run again.
+#
+# Usage: deps/build_its.sh
 
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
-# shellcheck source=config.sh
-source "$HERE/config.sh"
+# shellcheck source=versions.sh
+source "$HERE/versions.sh"
 
-REBUILD=0
-[ "${1:-}" = "--rebuild" ] && REBUILD=1
+[ $# -eq 0 ] || { echo "usage: build_its.sh (no arguments)" >&2; exit 2; }
 
 PREFIX="$ROOT/opt/its"
 DDD_SRC="$ROOT/build/libDDD"
@@ -31,10 +32,9 @@ ITS_SRC="$ROOT/build/libITS"
 log() { echo "[its] $*"; }
 die() { echo "[its] ERROR: $*" >&2; exit 1; }
 
-if [ "$REBUILD" -eq 0 ] \
-   && [ -f "$PREFIX/lib/libDDD.a" ] && [ -f "$PREFIX/lib/libITS.a" ] \
+if [ -f "$PREFIX/lib/libDDD.a" ] && [ -f "$PREFIX/lib/libITS.a" ] \
    && [ -f "$PREFIX/include/its/gal/ExprHom.hpp" ]; then
-    log "already built at $PREFIX (--rebuild to force)"
+    log "already built at $PREFIX (rm -rf $PREFIX to rebuild)"
     exit 0
 fi
 
