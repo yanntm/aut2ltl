@@ -36,9 +36,21 @@ if [ -f "$PREFIX/ROLL.jar" ]; then
     exit 0
 fi
 
-for tool in java jar mvn; do
-    command -v "$tool" >/dev/null || die "$tool not found (JDK + maven needed)"
-done
+command -v java >/dev/null || die "java not found (a JDK is needed)"
+command -v mvn >/dev/null || die "mvn not found (maven is needed)"
+
+# `jar` (and javac, which maven's compile needs) may be off PATH even where
+# java is on it -- a distro often symlinks only java into /usr/bin. Resolve
+# the JDK from the running java's own java.home and put its bin/ first.
+if ! command -v jar >/dev/null; then
+    JAVA_HOME="$(java -XshowSettings:properties -version 2>&1 \
+                 | sed -n 's/^ *java\.home = //p')"
+    { [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/jar" ]; } \
+        || die "jar not found and java.home ('$JAVA_HOME') has no bin/jar (a full JDK is needed)"
+    export JAVA_HOME
+    export PATH="$JAVA_HOME/bin:$PATH"
+    log "jar resolved from java.home: $JAVA_HOME/bin"
+fi
 
 if [ ! -d "$SRC/.git" ]; then
     log "cloning $ROLL_REPO -> ${SRC#"$ROOT"/}"
