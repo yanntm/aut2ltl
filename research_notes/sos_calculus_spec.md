@@ -7,7 +7,7 @@
 | CAL1–CAL3: the package `sosl/sosl/sos/calculus/` (§2–§3) | **DONE** — implemented, harness 1–8 green, gates in `sosl/tests/calculus/` |
 | soundness harness (§4) | **DONE** — green corpus-wide |
 | stutter read-off (§8.6) | **DONE** — `is_stutter_invariant` lives in `sosl.sos.classify` (a classification, not a calculus op) and rides the `.cat` sidecar; `tests/calculus/stutter.py` cross-checks it against the exact §8.6 search |
-| CAL4: the experimental campaign (§8; sub-milestones §8.10) | **IN PROGRESS** — all five V-experiments delivered to `reference/calculus/` (V1a/V1b/V1c/V2/V3); remaining: patch the paper's five TBD slots + the abstract headline (§8.9) |
+| CAL4: the experimental campaign (§8; sub-milestones §8.10) | **DONE** — all five V-experiments delivered to `reference/calculus/` (V1a/V1b/V1c/V2/V3); paper `⟨TBD⟩` slots filled in pure form; report `sos_calculus_report.md` carries the reproducibility (§8.9) |
 | hull surgeries + ladder read-offs (safety closure / interior / liveness part / `is_obligation`) | **OPTIONAL TODO** — theory delivered (paper §3.6, Prop 3.5 + Thm 3.10); milestone CAL5 in §6 |
 | exponential frontier (`W·L`, `W^ω`, `remove_ap`), NBA exits, CLI, learner integration | **NON-GOALS** here (see §6) |
 
@@ -795,10 +795,25 @@ header):
    `v1_ops.md` (corpus size 3 938, median ratio, the one
    representative op-time pair, stutter agreement rate).
 
-After the reference files land, patch the paper's five TBD slots citing
-the files by path; the abstract's TBD sentence becomes the headline
-paragraph. The hull conjecture (§3.5 of the paper) is NOT part of CAL4;
-it stays a theory item.
+After the reference files land, two consumers take the numbers, and the
+split is deliberate:
+
+- **The paper** (`sos_calculus.md`) carries the *results in pure form* —
+  measured constants stated as facts about the object and the census
+  (median ratio, the `W·L_n` cardinalities, the stutter agreement) — and
+  cites **no** artifact: no file path, no row/seed/tool scaffolding, no
+  log of how the number was obtained. The five `⟨TBD⟩` slots and the
+  abstract sentence are filled this way.
+- **The report** (`sos_calculus_report.md`) is the direct answer to this
+  spec — the measures it asks for, useful to the paper — and carries the
+  *reproducibility weight*: each finding `Fn` ties a paper claim to its
+  `reference/calculus/*.md` machine report, the producing script, and the
+  regen command, so every paper claim is reproducible from the machine
+  reports alone. (Sibling works each have such a report:
+  `sos_classifier_report.md`, `sosl_report.md`, ….)
+
+The hull conjecture (§3.5 of the paper) is NOT part of CAL4; it stays a
+theory item.
 
 ### 8.10 Milestone restated
 
@@ -809,10 +824,12 @@ it stays a theory item.
   `reference/calculus/v1_pipeline.md`.
 - **CAL4c** — V2 delivered, zero unexplained disagreements (item 4).
   **DONE** — `reference/calculus/v2_stutter.md`, 3938/3938 agree.
-- **CAL4d** — V3 delivered (item 5). **DONE (V3)** —
-  `reference/calculus/v3_blowup.md`; the paper-TBD patch (all five slots +
-  abstract headline, §8.9) is the remaining CAL4 step.
+- **CAL4d** — V3 delivered (item 5). **DONE** —
+  `reference/calculus/v3_blowup.md`; the paper `⟨TBD⟩` slots are filled in
+  pure form and the report `sos_calculus_report.md` carries the
+  reproducibility (§8.9).
 
-Acceptance for the whole of CAL4: the five reference files committed,
-the paper carrying their numbers, and every F1/F2 row in the files
-explained by a dossier line.
+Acceptance for the whole of CAL4 **(met)**: the five reference files
+committed, the paper carrying their numbers in pure form, the report
+answering this spec, and every F1/F2 row in the files explained (the
+campaigns ran F2-free; V3 finished without a timeout).

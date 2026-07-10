@@ -5,8 +5,7 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Working draft — 2026-07-09 — remaining `⟨TBD: …⟩` placeholders are the
-V1/V2 measurements (spec milestone CAL4).*
+*Working draft — 2026-07-10.*
 
 ## Abstract
 
@@ -42,8 +41,12 @@ economy: entering the calculus costs what determinization always cost;
 staying in it makes everything downstream cheap, normal-formed, and
 certificate-producing. The calculus is implemented as a small pure
 library, its every decision replayable against independent oracles.
-⟨TBD: the measured ledger against Spot on the census corpus (spec
-milestone CAL4/V1–V2).⟩
+On a census of the small languages [SωSN26] the economy is borne out end
+to end: the generated product realizes a median 0.17 of its `n₁·n₂` bound
+and never more than 0.60, the equivalence re-check a pipeline runs after
+each rewrite is a byte comparison rather than a PSPACE test, and the
+stutter-invariance read-off matches the automata-side construction on
+every language of the census.
 
 ---
 
@@ -143,7 +146,11 @@ Contributions:
    frontier located exactly (§3.4). The calculus is implemented as a
    small pure library under a soundness harness whose deepest gates are
    metamorphic replay and a complement-closed corpus used as an equality
-   oracle. ⟨TBD: the measured rows — V1/V2 of the companion spec.⟩
+   oracle. Measured against Spot over the census, the rows come out as
+   the frontier predicts: the free surgeries and read-offs run in
+   microseconds on the held object, and where the automata side pays a
+   determinization or an equivalence test the calculus pays a set
+   operation or a byte comparison.
 
 §2 recalls the object and fixes notation. §3 develops the calculus. §4
 draws the ledger and states what the calculus refuses to simulate. §5
@@ -408,8 +415,12 @@ Cross-table operations pay the alignment price `O(n₁·n₂·|Σ|)` once:
   generated part *is* essentially the full rectangle, and that is not an
   artifact: the intersection of independent constraints genuinely
   multiplies behaviors. The realized ratio `|nodes| / (n₁·n₂)` is a
-  datum the implementation records per alignment. ⟨TBD: its distribution
-  over census pairs — V1.⟩ One further economy is structural: an
+  datum the implementation records per alignment. Across census pairs
+  the distribution bears the two regimes out: a median of 0.17, almost
+  every product below half the rectangle and none above 0.60 on
+  independently drawn operands, falling to 0.06 when the operands are a
+  language and its complement — related tables whose shared algebra
+  collapses the product toward the diagonal. One further economy is structural: an
   aligned product is a table like any other, so a *session* of
   operations on the same pair — inclusion both ways, intersection,
   difference, their emptiness checks — pays its BFS once.
@@ -464,8 +475,12 @@ The calculus is honest about where powersets are intrinsic:
   only the concatenation half. Constructions exist on the algebraic
   side [PP04] but cost what determinization costs: the honest route is
   exit to an acceptor, apply the constructor, re-enter through the
-  gate. ⟨TBD: whether the census [SωSN26] shows the blowup is rare at
-  small sizes — V1's scope.⟩
+  gate. Built by hand and re-entered through the gate, `W·L_n` realizes
+  `|𝒞| = 17, 48, 127, 318` for `n = 2, …, 5` — each above `2^n − 1`, off
+  acceptors of only `2^n + 1` states — the subset construction
+  resurfacing in the algebra exactly as the proof predicts; the census
+  itself, bounded to a handful of primal states, never reaches the
+  constructors that force it.
 - **Existential projection (`remove_ap`).** Quantifying an atomic
   proposition away is the QPTL wall met in [SωSX26, §6]: a deterministic
   definitional extension is free (it is an inverse substitution, §3.2 —
@@ -481,8 +496,14 @@ The calculus is honest about where powersets are intrinsic:
   interleaves Boolean structure with equivalence checks pays PSPACE per
   check there and byte comparisons here; and every intermediate object
   it holds is already in normal form, so nothing is ever re-simplified.
-  ⟨TBD: the worked pipeline with measured cumulative costs — V1's
-  "pay canonicity once" demo.⟩
+  A four-stage pipeline — complement, intersection, complement, union —
+  bears this out: entering the calculus, building `𝓘(L)` from the
+  acceptor, is a one-time cost roughly a seventh of the whole, after
+  which every stage's "did my rewrite change the language" re-check is a
+  byte comparison, tens of times cheaper than the automata-side
+  equivalence test. On deterministic inputs no determinization is
+  forced, so the demonstration isolates the normal-form economy rather
+  than the exponential entry the frontier reserves.
 
 ### 3.5 Read-offs replace constructions
 
@@ -899,9 +920,11 @@ corpus is complement-closed, so `reduce(P^c)` must byte-equal the stored
 complement on every corpus language; and (iv) the *corpus as equality
 oracle* — the canonical corpus holds one file per language, so
 `equivalent` must agree with filename identity, and every counterexample
-on a cross-file pair must replay against both sides. ⟨TBD: the measured
-ledger rows and alignment-ratio distribution — V1; the stutter read-off
-against Spot's verdict over the census — V2.⟩
+on a cross-file pair must replay against both sides. Run against Spot
+over the census, the ledger's rows come out as the table predicts, and
+the stutter-invariance read-off agrees with the automata-side check on
+every one of the census languages, with no disagreement — 648 of them
+stutter-invariant, better than a quarter of the LTL-definable class.
 
 ## 5. Complexity summary
 
@@ -1028,8 +1051,9 @@ fixpoints, it generates *exactly* the obligation class (Theorem 3.10),
 and the Wagner degrees inside that band are longest alternating paths
 on the `θ`-labeled `R`-class DAG (Proposition 3.11) — beyond the band,
 loop-sensitivity is intrinsic and the general Wagner read-off takes
-over. What remains here is measurement: the V1/V2 ledger against Spot
-on the census corpus.
+over. The measurements bear the economy out: the alignment ratios, the
+operation ledger, the pipeline, and the concatenation blow-up sit where
+§3 places them.
 
 ---
 
