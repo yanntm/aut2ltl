@@ -259,14 +259,31 @@ the same discipline every other generator follows:
 
     <out>/sampled/<tag>__seed<S>/det/  + /sos/  + sample.json  (exhaustive:false)
 
-Dedup gates are the census's own: reduced-HOA md5, then `default_key`
-(polarity∘names), then the `𝓘` dump. Sampling is uniform over *presentations*, so
-a presentation-rich language is likelier drawn — the sample is a probe, not a
-census, and cannot support an "all languages" claim (those live at the exhaustive
-small shapes). Two placed tests guard it: `tests/sample_decode.py` (the fast
-decoder equals `Shape.combo_at`) and `tests/sample_subset.py` (the per-id chain
-reproduces the census `.sos` byte-for-byte — 129/129 on `2state1ap1acc`, proving
-the sampler skips no pipeline step).
+Dedup gates are the census's own presentation gates — reduced-HOA md5, then
+`default_key` (polarity∘names) — and then, decisively, the **language** key: the
+`flatten --canon` fold `canon_key` (`remove_unused_ap` → `𝓘` → `B_k` orbit
+representative). So distinctness is language identity **up to renaming symbols**,
+and relabel/polarity twins fold to one keeper (unlike the older per-presentation
+`𝓘` dump, which kept `GF a` and `GF !a` apart). The stored `.sos` is still the
+non-minimized dump (the census-tier convention `tests/sample_subset.py`
+reproduces); `flatten` re-derives the canonical form from the det on adoption.
+
+**`--exclude-corpus [SOS_DIR]`** makes the sample *corpus-aware*: it loads the
+canonical `.sos` bytes of an existing `flat_canon/sos` tier (bare flag = the
+tracked `corpus/flat_canon/sos`) into a set and skips any draw whose `canon_key`
+is already there. `--target-langs` then counts languages **new to the corpus**, so
+the run spends its budget finding genuinely new examples instead of re-deriving the
+catalogue — the single biggest efficiency win for a beyond-the-wall sweep. The
+tier is complement-closed, so a draw whose complement is already catalogued is
+skipped too. `sample.json` records `corpus_known_skipped`.
+
+Sampling is uniform over *presentations*, so a presentation-rich language is
+likelier drawn — the sample is a probe, not a census, and cannot support an "all
+languages" claim (those live at the exhaustive small shapes). Two placed tests
+guard it: `tests/sample_decode.py` (the fast decoder equals `Shape.combo_at`) and
+`tests/sample_subset.py` (the per-id chain reproduces the census `.sos`
+byte-for-byte — 129/129 on `2state1ap1acc`, proving the sampler skips no pipeline
+step).
 
 ## Polarity / relabeling — a known non-canonicalization
 
