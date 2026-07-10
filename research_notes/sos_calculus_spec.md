@@ -404,10 +404,10 @@ the paper.
 - **CAL3 — normal form. [DONE]** `reduce.py`. Accept: harness 5–6 green
   on the full corpus; `reduce` idempotent everywhere; byte-equivalence
   and scan-equivalence agree everywhere.
-- **CAL4 — the ledger. [TODO — the open milestone.]** V1 + V2 + V3
-  delivered to `reference/calculus/` per the full protocol of §8;
-  sub-milestones CAL4a–d in §8.10. Prerequisite:
-  `is_stutter_invariant` (§8.6).
+- **CAL4 — the ledger. [DONE.]** V1 + V2 + V3 delivered to
+  `reference/calculus/` per the full protocol of §8; paper `⟨TBD⟩` slots
+  filled in pure form; report `sos_calculus_report.md` carries the
+  reproducibility. Sub-milestones CAL4a–d all DONE (§8.10).
 - **CAL5 — hulls. [OPTIONAL TODO — theory delivered, paper §3.6.]**
   `surgery.py` additions, all `O(n²)`, normative math Prop 3.5 and
   Cor 3.6–3.7 of the paper:
