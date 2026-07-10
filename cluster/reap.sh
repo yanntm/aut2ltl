@@ -1,59 +1,41 @@
 #!/bin/bash
 # Fetch a run's results and report how much of it exists.
 #
-# Additive and idempotent: it copies down whatever has been written so far and
-# tallies it against the command count, so it is safe to call while jobs are
-# still running, and calling it twice is how progress is observed. The only
-# thing it does on the cluster is read files.
+# A wrapper around one rsync. It only reads files on the cluster, so it is safe
+# to call at any time; calling it again is how progress is observed.
 #
-# A command's status file is written last and atomically, so the split below is
-# meaningful: FAIL is the tool's verdict, TIMEOUT is the cap, and a missing
-# status is work *we* lost and can reclaim with `oarrun.sh --resume`.
+# Exits 0 once every command has a status file, nonzero while any has none, so
+# waiting for a run needs no flag:
 #
-# Usage: cluster/reap.sh [--quiet] <runid>
+#     until cluster/reap.sh "$RUN"; do sleep 30; done
+#
+# Usage: cluster/reap.sh <runid>
 
 set -euo pipefail
-
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$(cd "$HERE/.." && pwd)"
 # shellcheck source=config.sh
 source "$HERE/config.sh"
 
-QUIET=0
-[ "${1:-}" = "--quiet" ] && { QUIET=1; shift; }
-[ $# -eq 1 ] || { echo "usage: reap.sh [--quiet] <runid>" >&2; exit 2; }
-RUNID="$1"
-
-DEST="$ROOT/$LOCAL_RESULTS/$RUNID"
+[ $# -eq 1 ] || { echo "usage: reap.sh <runid>" >&2; exit 2; }
+DEST="$(cd "$HERE/.." && pwd)/$LOCAL_RESULTS/$1"
 mkdir -p "$DEST"
-rsync -az "$CLUSTER:$REMOTE_RUNS/$RUNID/" "$DEST/"
+rsync -az "$CLUSTER:$REMOTE_RUNS/$1/" "$DEST/"
 
-[ -s "$DEST/cmds.txt" ] || { echo "no command list in $DEST — unknown run id?" >&2; exit 2; }
+shopt -s nullglob
 N="$(grep -c '' "$DEST/cmds.txt")"
 
-read -r OK TIMEOUT FAIL < <(
-    cat "$DEST"/status/* 2>/dev/null \
-        | awk '{ c[$1]++ } END { printf "%d %d %d\n", c["OK"], c["TIMEOUT"], c["FAIL"] }'
-)
-DONE=$((OK + TIMEOUT + FAIL))
+# A status file is written last and atomically: FAIL is the tool's verdict,
+# TIMEOUT is the cap, and an absent status is work lost to a walltime kill or a
+# dead node, reclaimable with `oarrun.sh --resume`.
+read -r OK TO FAIL DONE < <(cat "$DEST"/status/* 2>/dev/null |
+    awk '{ c[$1]++ } END { printf "%d %d %d %d\n", c["OK"], c["TIMEOUT"], c["FAIL"], NR }')
 
-# Per-command CSV shards, concatenated in index order with one header. Written
-# per command rather than appended to a shared file because O_APPEND is not
-# atomic over NFS and interleaves under fan-out.
-SHARDS=("$DEST"/out/*.csv)
-if [ -e "${SHARDS[0]}" ]; then
-    printf '%s\n' "${SHARDS[@]}" | sort -t/ -k2 -n \
-        | xargs awk 'FNR == 1 && NR != 1 { next } { print }' >"$DEST/results.csv"
-fi
+# One CSV per command, header kept once. Written per command rather than appended
+# to a shared file because O_APPEND is not atomic over NFS and interleaves under
+# fan-out. Row order is not meaningful; the commands run in parallel.
+shards=("$DEST"/out/*.csv)
+[ "${#shards[@]}" -gt 0 ] && awk 'FNR == 1 && NR != 1 { next } { print }' "${shards[@]}" >"$DEST/results.csv"
 
-echo "$RUNID: $DONE/$N done — $OK ok, $TIMEOUT timeout, $FAIL fail, $((N - DONE)) missing"
-[ "$QUIET" -eq 1 ] && exit 0
-
-echo "  fetched to $DEST"
-for f in "$DEST"/status/*; do
-    case "$(head -c 4 "$f" 2>/dev/null)" in
-        FAIL) i="${f##*/}"
-              printf '    FAIL [%s] %s\n' "$i" "$(sed -n "${i}p" "$DEST/cmds.txt")" ;;
-    esac
-done
-exit 0
+echo "$1: $DONE/$N done — $OK ok, $TO timeout, $FAIL fail, $((N - DONE)) missing"
+echo "  $DEST"
+[ "$DONE" -eq "$N" ]

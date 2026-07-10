@@ -1,25 +1,65 @@
-# cluster — submit, collect
+# cluster — run a benchmark on the OAR cluster
 
-Sends a list of shell commands to the OAR cluster and brings the results back.
-The runner never knows what a command means, so a census sweep, a learning run
-and the dependency build all go through it.
+The cluster is deployed and working. Push your code to `master`, then:
 
-Building the dependencies is [`deps/`](../deps/README.md)'s job, not this
-directory's. `deploy.sh` only submits that build as a job, because the submit host
-cannot compile.
+```bash
+git push                                       # only committed code runs
+cluster/sync_cluster.sh                        # bring master onto the cluster
+RUN=$(cluster/oarrun.sh --split 8 --cores 16 --timeout 300 cmds.txt)
+until cluster/reap.sh "$RUN"; do sleep 30; done   # run this in the background
+```
+
+Results arrive in `results/cluster/$RUN/results.csv`, with `logs/` beside it. That
+is the whole interface. You do not build anything, you do not log into the cluster,
+and you do not need to understand what follows.
+
+`reap.sh` exits 0 only once every command is accounted for, so that `until` loop
+ends by itself, within 30s of the run finishing. Put the whole line in the
+background and be notified on completion rather than waiting on it: no polling by
+hand, no progress-watching. A bare `cluster/reap.sh "$RUN"` still works and is
+still safe at any moment — it collects whatever exists so far and prints the tally.
+
+The loop turns on *accounted for*, not on *succeeded*: a command that fails or
+times out has a verdict, so the loop ends. Only work the cluster **lost** (walltime
+kill, dead node) has no verdict, and that never arrives — reclaim it with
+`cluster/oarrun.sh --resume "$RUN"`, which re-submits just the gaps.
+
+`cmds.txt` is one shell command per line. Each runs at the repo root with the
+dependencies (Spot, GAP + SgpDec, libDDD/libITS) already on `PATH`, and writes its
+CSV to `$OARRUN_OUT.csv` — never to a shared file. See
+[Contract for the commands](#contract-for-the-commands).
+
+Two defaults will bite a long benchmark:
+
+- `--timeout 15` caps **each command**. Raise it past your slowest single command,
+  or pass `0` to disable. A command that exceeds it is reported `TIMEOUT`, not lost.
+- `--walltime 0:05:00` caps **each job**. Rather than raise it, raise `--split` so
+  the shards fit; `oarrun.sh` warns and names the split that would.
+
+`reap.sh` is safe to call while the run is still going: it collects whatever has
+been produced so far. Commands report `OK` / `TIMEOUT` / `FAIL`, and anything the
+cluster lost is *missing* and reclaimed with `oarrun.sh --resume "$RUN"`.
+
+Since `sync_cluster.sh` fast-forwards the cluster's checkout of `master`, it fails
+rather than discard work if that tree has commits of its own. That failure is
+information; do not force past it.
 
 ---
 
-## Quick start
+## Other scenarios
+
+**Check the infra is alive.** Four commands, each asking one dependency to identify
+itself on the granted node; expect `4/4 done — 4 ok` and a four-row `results.csv`:
 
 ```bash
-cluster/sync_cluster.sh                        # after each push
-RUN=$(cluster/oarrun.sh --split 4 --cores 64 cmds.txt)
-cluster/reap.sh "$RUN"                         # call again for progress
+cluster/reap.sh "$(cluster/oarrun.sh --split 2 --cores 4 cluster/smoke.txt)"
 ```
 
-Build the dependencies on the cluster, when one of them moves. Three jobs, one per
-dependency, in parallel — they are independent and write to disjoint prefixes:
+**One command, not a list.** `cluster/oarsub.sh [flags] -- <command...>`, same
+machinery, same run id.
+
+**Rebuild a dependency**, when one of them moves. Three jobs, one per dependency, in
+parallel — they are independent and write to disjoint prefixes:
 
 ```bash
 cluster/sync_cluster.sh
@@ -27,7 +67,17 @@ cluster/reap.sh "$(cluster/deploy.sh)"
 ```
 
 A dependency already in `opt/` is left alone. To replace one, remove its prefix on
-the cluster (`rm -rf opt/gap`) and submit again.
+the cluster (`rm -rf opt/gap`) and submit again. Building is
+[`deps/`](../deps/README.md)'s job, not this directory's; `deploy.sh` only submits
+that build as a job, because the submit host cannot compile.
+
+---
+
+## What this is
+
+Sends a list of shell commands to the OAR cluster and brings the results back.
+The runner never knows what a command means, so a census sweep, a learning run
+and the dependency build all go through it.
 
 ---
 
@@ -72,11 +122,12 @@ Single command through the same machinery. Takes `--name`, `--timeout`,
 `--cores`, `--walltime`, `--resources`, `--oar-opts`, `--dry-run`. Use `--` when
 the command has shell metacharacters.
 
-### `reap.sh [--strict] [--quiet] RUNID`
+### `reap.sh RUNID`
 
-Fetches the run into `results/cluster/<runid>/`, merges CSV shards, prints the
-tally. `--strict` exits nonzero if any command is missing. Safe at any time;
-calling it twice is how progress is observed.
+Fetches the run into `results/cluster/<runid>/`, merges the CSV shards, prints the
+tally. Exits 0 once every command has a status file, nonzero while any has none.
+Takes no flags: the exit code is what a wait loop needs, and reading files on the
+cluster is safe at any time, so calling it again is how progress is observed.
 
 `config.sh` holds every default (host, paths, OAR settings); all of it is
 overridable from the environment.
