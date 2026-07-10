@@ -7,6 +7,6 @@ Acceptance: 1 Inf(0)
 properties: trans-labels explicit-labels trans-acc deterministic
 --BODY--
 State: 0
-[!1&2 | 1&!2] 0
 [!0&1&2 | !1&!2] 0 {0}
+[!1&2 | 1&!2] 0
 --END--

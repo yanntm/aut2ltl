@@ -10,9 +10,9 @@ properties: deterministic
 State: 0
 [t] 1
 State: 1
+[!0] 2
 [0] 1
-[!0] 2
 State: 2
-[0] 1 {0}
 [!0] 2
+[0] 1 {0}
 --END--

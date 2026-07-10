@@ -4,10 +4,10 @@ Start: 0
 AP: 1 "a"
 acc-name: Buchi
 Acceptance: 1 Inf(0)
-properties: trans-labels explicit-labels state-acc deterministic
+properties: trans-labels explicit-labels trans-acc deterministic
 --BODY--
-State: 0 {0}
-[t] 1
+State: 0
+[t] 1 {0}
 State: 1
 [!0] 0
 --END--

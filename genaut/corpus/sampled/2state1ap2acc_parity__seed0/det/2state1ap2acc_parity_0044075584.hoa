@@ -1,6 +1,6 @@
 HOA: v1
 States: 5
-Start: 3
+Start: 0
 AP: 1 "a"
 acc-name: Rabin 1
 Acceptance: 2 Fin(0) & Inf(1)
@@ -9,16 +9,16 @@ properties: deterministic
 --BODY--
 State: 0
 [!0] 1
-[0] 2
+[0] 2 {1}
 State: 1
-[!0] 1
-[0] 3
+[t] 1
 State: 2
-[0] 0 {1}
-[!0] 1 {0}
+[!0] 3
+[0] 4
 State: 3
-[0] 0 {1}
-[!0] 4
+[!0] 3
+[0] 0
 State: 4
-[t] 4
+[!0] 3 {0}
+[0] 2 {1}
 --END--

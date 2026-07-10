@@ -1,6 +1,6 @@
 # 1state1ap0acc — generation census
 
-- shape: nstates=1, naps=1, nacc=0
+- shape: nstates=1, naps=1, nacc=0, acc=gba
 - guard alphabet: 4 boolean functions over 1 AP(s) (incl. false = edge absent)
 - slots: 1  (= nstates^2 x 2^nacc)
 - combos (generator-id space N): 4

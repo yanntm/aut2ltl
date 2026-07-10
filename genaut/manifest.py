@@ -22,9 +22,9 @@ parses and joins, it recomputes nothing:
 
 The acceptance family is the tag suffix (`_parity`), the bare tag being generalized
 Büchi (`gba`). Output is a Markdown table (SHAPES.md's idiom), written to
-`genaut/MANIFEST.md` and echoed to stdout.
+`logs/genaut/corpus/MANIFEST.md` and echoed to stdout.
 
-  python3 genaut/manifest.py            # -> genaut/MANIFEST.md
+  python3 genaut/manifest.py            # -> logs/genaut/corpus/MANIFEST.md
 """
 from __future__ import annotations
 
@@ -35,8 +35,9 @@ import re
 from typing import Dict, List, Optional
 
 HERE = os.path.dirname(__file__)
-CORPUS = os.path.join(HERE, "corpus")
-OUT = os.path.join(HERE, "MANIFEST.md")
+_CORPUS = os.path.join(HERE, "corpus")
+# A generated report is not source: beside the corpus, under the write root.
+_OUT = os.path.normpath(os.path.join(HERE, os.pardir, "logs", "genaut", "corpus"))
 
 _TAG = re.compile(r"(\d+)state(\d+)ap(\d+)acc(?:_(\w+))?")
 
@@ -75,14 +76,14 @@ def acc_family(tag: str) -> str:
     return m.group(4) if (m and m.group(4)) else "gba"
 
 
-def exhaustive_rows() -> List[Dict[str, object]]:
+def exhaustive_rows(corpus: str) -> List[Dict[str, object]]:
     """One joined row per censused shape (tgba funnel + det dedup)."""
     rows: List[Dict[str, object]] = []
-    for path in glob.glob(os.path.join(CORPUS, "tgba", "*", "census.md")):
+    for path in glob.glob(os.path.join(corpus, "tgba", "*", "census.md")):
         tag = os.path.basename(os.path.dirname(path))
         row: Dict[str, object] = {"tag": tag, "acc": acc_family(tag)}
         row.update(_grab(open(path).read(), _GEN, path))
-        det = os.path.join(CORPUS, "det", tag, "census.md")
+        det = os.path.join(corpus, "det", tag, "census.md")
         if os.path.isfile(det):
             row.update(_grab(open(det).read(), _LANG, det))
         rows.append(row)
@@ -90,11 +91,11 @@ def exhaustive_rows() -> List[Dict[str, object]]:
     return rows
 
 
-def sample_rows() -> List[Dict[str, object]]:
+def sample_rows(corpus: str) -> List[Dict[str, object]]:
     """One row per sampled probe, its live language count read off the folder
     (authoritative — sample.json's own count is an in-run checkpoint)."""
     rows: List[Dict[str, object]] = []
-    for path in glob.glob(os.path.join(CORPUS, "sampled", "*", "sample.json")):
+    for path in glob.glob(os.path.join(corpus, "sampled", "*", "sample.json")):
         j = json.load(open(path))
         folder = os.path.dirname(path)
         live = len(glob.glob(os.path.join(folder, "sos", "*.sos")))
@@ -115,9 +116,9 @@ def _cell(row: Dict[str, object], key: str, fmt: str = "{}") -> str:
     return "—" if v is None else fmt.format(v)
 
 
-def render() -> str:
-    ex = exhaustive_rows()
-    sa = sample_rows()
+def render(corpus: str) -> str:
+    ex = exhaustive_rows(corpus)
+    sa = sample_rows(corpus)
     out: List[str] = [
         "# genaut bench manifest — the reduction funnel per shape × acceptance family",
         "",
@@ -167,13 +168,21 @@ def render() -> str:
     return "\n".join(out) + "\n"
 
 
-def main() -> None:
-    table = render()
-    with open(OUT, "w") as f:
+def main(argv=None) -> None:
+    import argparse
+    ap = argparse.ArgumentParser(prog="manifest")
+    ap.add_argument("--corpus", default=_CORPUS, help="corpus root to READ")
+    ap.add_argument("--out", default=_OUT, help="corpus root to WRITE MANIFEST.md under")
+    args = ap.parse_args(argv)
+    os.makedirs(args.out, exist_ok=True)
+    out_path = os.path.join(args.out, "MANIFEST.md")
+    table = render(args.corpus)
+    with open(out_path, "w") as f:
         f.write(table)
     print(table)
-    print(f"[wrote {OUT}]")
+    print(f"[wrote {out_path}]")
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(sys.argv[1:])

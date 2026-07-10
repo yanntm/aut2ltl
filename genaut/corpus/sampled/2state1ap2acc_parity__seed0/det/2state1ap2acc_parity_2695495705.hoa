@@ -8,14 +8,14 @@ properties: trans-labels explicit-labels trans-acc complete
 properties: deterministic
 --BODY--
 State: 0
-[0] 1
-[!0] 3
+[!0] 1
+[0] 2
 State: 1
-[0] 1
-[!0] 2
+[t] 1 {0}
 State: 2
-[!0] 2
-[0] 2 {0}
+[!0] 3
+[0] 2
 State: 3
-[t] 3 {0}
+[!0] 3
+[0] 3 {0}
 --END--

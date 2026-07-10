@@ -14,7 +14,7 @@ No arithmetic here beyond the collapse ratio — just read what each stage
 recorded — and write the SHAPES.md feasible-shapes table sorted by N. A shape
 whose `det/` tier is not built yet shows `—` in the language column.
 
-  python3 genaut/shapes_table.py        # -> rewrites genaut/SHAPES.md
+  python3 genaut/shapes_table.py        # -> logs/genaut/corpus/SHAPES.md
 """
 from __future__ import annotations
 
@@ -24,8 +24,10 @@ import re
 from typing import Dict, List, Optional
 
 HERE = os.path.dirname(__file__)
-CORPUS = os.path.join(HERE, "corpus")
-OUT = os.path.join(HERE, "SHAPES.md")
+_CORPUS = os.path.join(HERE, "corpus")
+# A generated report is not source: it goes beside the corpus it summarizes,
+# under the write root, never into genaut/ itself.
+_OUT = os.path.normpath(os.path.join(HERE, os.pardir, "logs", "genaut", "corpus"))
 DEFERRED_KEPT = 1000          # kept above this is heavy to survey -> flagged "deferred"
 
 _FIELDS = {
@@ -49,20 +51,20 @@ def parse_census(path: str) -> Dict[str, int]:
     return row
 
 
-def parse_languages(tag: str) -> Optional[int]:
+def parse_languages(tag: str, corpus: str) -> Optional[int]:
     """The language-distinct count from `corpus/det/<tag>/census.md`, or `None`
     if the canonical tier is not built yet."""
-    path = os.path.join(CORPUS, "det", tag, "census.md")
+    path = os.path.join(corpus, "det", tag, "census.md")
     if not os.path.isfile(path):
         return None
     m = re.search(r"distinct languages \(syntactic[^)]*\):\s*(\d+)", open(path).read())
     return int(m.group(1)) if m else None
 
 
-def parse_det_forms(tag: str) -> Optional[int]:
+def parse_det_forms(tag: str, corpus: str) -> Optional[int]:
     """The structural determinized-form count from
     `corpus/spot_det/<tag>/census.md`, or `None` if the tier is not built."""
-    path = os.path.join(CORPUS, "spot_det", tag, "census.md")
+    path = os.path.join(corpus, "spot_det", tag, "census.md")
     if not os.path.isfile(path):
         return None
     m = re.search(r"kept \(AP-canonical determinized forms\):\s*(\d+)",
@@ -124,18 +126,26 @@ PROSE_TAIL = """
 """
 
 
-def main() -> None:
+def main(argv: Optional[List[str]] = None) -> None:
+    import argparse
+    ap = argparse.ArgumentParser(prog="shapes_table")
+    ap.add_argument("--corpus", default=_CORPUS, help="corpus root to READ")
+    ap.add_argument("--out", default=_OUT, help="corpus root to WRITE SHAPES.md under")
+    args = ap.parse_args(argv)
+    corpus, out_root = args.corpus, args.out
+    out_path = os.path.join(out_root, "SHAPES.md")
+    os.makedirs(out_root, exist_ok=True)
     rows: List[Dict[str, int]] = [
         parse_census(p)
-        for p in glob.glob(os.path.join(CORPUS, "tgba", "*", "census.md"))]
+        for p in glob.glob(os.path.join(corpus, "tgba", "*", "census.md"))]
     rows.sort(key=lambda r: (r["combos"], r["tag"]))
     lines = ["| shape | n | k | c | slots | N (combos) | byte-distinct "
              "| **kept** | det-forms | **langs** | collapse | survey |",
              "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
         survey = "deferred" if r["kept"] > DEFERRED_KEPT else ""
-        langs = parse_languages(r["tag"])
-        detforms = parse_det_forms(r["tag"])
+        langs = parse_languages(r["tag"], corpus)
+        detforms = parse_det_forms(r["tag"], corpus)
         lang_cell = "—" if langs is None else f"**{langs}**"
         det_cell = "—" if detforms is None else str(detforms)
         collapse = "—" if not langs else f"{r['kept'] / langs:.2f}x"
@@ -143,10 +153,11 @@ def main() -> None:
             f"| `{r['tag']}` | {r['nstates']} | {r['naps']} | {r['nacc']} "
             f"| {r['slots']} | {r['combos']} | {r['byte']} "
             f"| **{r['kept']}** | {det_cell} | {lang_cell} | {collapse} | {survey} |")
-    with open(OUT, "w") as out:
+    with open(out_path, "w") as out:
         out.write(PROSE_HEAD + "\n" + "\n".join(lines) + "\n" + PROSE_TAIL)
-    print(f"wrote {OUT} from {len(rows)} census.md files")
+    print(f"wrote {out_path} from {len(rows)} census.md files")
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(sys.argv[1:])

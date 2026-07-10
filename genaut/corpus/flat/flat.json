@@ -3,8 +3,8 @@
   "excluded": [
     "2state2ap0acc"
   ],
-  "sources": 19,
-  "total_langs": 3790,
+  "sources": 17,
+  "total_langs": 4110,
   "rows": [
     {
       "source": "1state1ap0acc",
@@ -26,17 +26,6 @@
       "exhaustive": true,
       "scanned": 4,
       "new_langs": 1,
-      "cumulative": 4
-    },
-    {
-      "source": "1state1ap1acc_parity",
-      "n": 1,
-      "k": 1,
-      "c": 1,
-      "family": "parity",
-      "exhaustive": true,
-      "scanned": 4,
-      "new_langs": 0,
       "cumulative": 4
     },
     {
@@ -106,17 +95,6 @@
       "cumulative": 27
     },
     {
-      "source": "1state2ap1acc_parity",
-      "n": 1,
-      "k": 2,
-      "c": 1,
-      "family": "parity",
-      "exhaustive": true,
-      "scanned": 22,
-      "new_langs": 0,
-      "cumulative": 27
-    },
-    {
       "source": "1state2ap2acc",
       "n": 1,
       "k": 2,
@@ -183,17 +161,6 @@
       "cumulative": 1706
     },
     {
-      "source": "2state1ap1acc_parity",
-      "n": 2,
-      "k": 1,
-      "c": 1,
-      "family": "parity",
-      "exhaustive": true,
-      "scanned": 129,
-      "new_langs": 0,
-      "cumulative": 1706
-    },
-    {
       "source": "3state1ap0acc",
       "n": 3,
       "k": 1,
@@ -214,19 +181,30 @@
       "scanned": 591,
       "new_langs": 464,
       "cumulative": 3790
+    },
+    {
+      "source": "3state1ap1acc__seed0",
+      "n": 3,
+      "k": 1,
+      "c": 1,
+      "family": "gba",
+      "exhaustive": false,
+      "scanned": 500,
+      "new_langs": 320,
+      "cumulative": 4110
     }
   ],
   "by_family": {
-    "gba": 3288,
+    "gba": 3608,
     "parity": 502
   },
   "by_exhaustive": {
     "exhaustive": 3326,
-    "sampled": 464
+    "sampled": 784
   },
   "by_colours": {
     "0": 1699,
-    "1": 1544,
+    "1": 1864,
     "2": 546,
     "3": 1
   }

@@ -8,6 +8,6 @@ properties: trans-labels explicit-labels trans-acc colored
 properties: deterministic
 --BODY--
 State: 0
-[!0&!1 | 0&1] 0 {0}
 [!0&1] 0 {1}
+[!0&!1 | 0&1] 0 {0}
 --END--

@@ -9,16 +9,16 @@ properties: deterministic
 --BODY--
 State: 0
 [!0] 1
-[0] 4
+[0] 2
 State: 1
 [!0] 1
-[0] 2
+[0] 3
 State: 2
-[0] 1 {0}
-[!0] 3
+[t] 2
 State: 3
-[!0] 1 {0}
-[0] 2
+[!0] 4
+[0] 1 {0}
 State: 4
-[t] 4
+[!0] 1 {0}
+[0] 3
 --END--

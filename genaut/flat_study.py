@@ -5,7 +5,7 @@ read off the shape, not the SoS); this reports the *languages* that survive the
 dedup passes (cross-shape union → unused-AP dropping → `B_k` relabeling fold),
 bucketed by the origin shape encoded in each model's name.
 
-    python3 genaut/flat_study.py                 # -> corpus/flat_canon/STUDY.md
+    python3 genaut/flat_study.py                 # -> logs/genaut/corpus/flat_canon/STUDY.md
 
 Pure post-processing of the built `corpus/flat_canon/` (+ its json and `flat/`
 for the fixed-labeling reference); no rebuild.
@@ -26,6 +26,9 @@ from sosl.sos.classify.io import (                        # noqa: E402
 
 _CORPUS = os.path.normpath(
     os.path.join(os.path.dirname(__file__), "corpus"))
+# STUDY.md is written under the corpus write root, never the read root.
+_OUT = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), os.pardir, "logs", "genaut", "corpus"))
 _TAG_RE = re.compile(r"^(\d+)state(\d+)ap(\d+)acc(_parity)?$")
 _TRIVIAL = {("0", "sigma"), ("0", "pi")}
 
@@ -289,13 +292,19 @@ def build_study(corpus: str) -> str:
     return "\n".join(L)
 
 
-def main() -> int:
-    out = os.path.join(_CORPUS, "flat_canon", "STUDY.md")
+def main(argv=None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser(prog="flat_study")
+    ap.add_argument("--corpus", default=_CORPUS, help="corpus root to READ")
+    ap.add_argument("--out", default=_OUT, help="corpus root to WRITE STUDY.md under")
+    args = ap.parse_args(argv)
+    out = os.path.join(args.out, "flat_canon", "STUDY.md")
+    os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w") as fh:
-        fh.write(build_study(_CORPUS))
+        fh.write(build_study(args.corpus))
     print(f"wrote {out}")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import sys; raise SystemExit(main(sys.argv[1:]))

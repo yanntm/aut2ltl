@@ -1,6 +1,6 @@
 HOA: v1
 States: 4
-Start: 1
+Start: 0
 AP: 1 "a"
 acc-name: co-Buchi
 Acceptance: 1 Fin(0)
@@ -9,13 +9,13 @@ properties: deterministic
 --BODY--
 State: 0
 [!0] 1
-[0] 2
+[0] 1 {0}
 State: 1
 [!0] 0
-[0] 0 {0}
+[0] 2
 State: 2
-[0] 2 {0}
 [!0] 3
+[0] 2 {0}
 State: 3
 [t] 2
 --END--

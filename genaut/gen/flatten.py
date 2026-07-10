@@ -41,6 +41,8 @@ from typing import Dict, List, NamedTuple, Optional, Tuple
 _REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 if _REPO not in sys.path:
     sys.path.insert(0, _REPO)
+sys.path.insert(0, os.path.join(_REPO, "sosl"))
+import spot                                                # noqa: E402
 from survey.normalize.sos import sos_key                   # noqa: E402
 from aut2ltl.ltl.twa import dump_hoa                        # noqa: E402
 
@@ -195,7 +197,13 @@ def flatten(corpus: str, out_root: str, exclude: Tuple[str, ...]) -> Dict:
             if not os.path.isfile(det_src):
                 continue                      # unpaired sos — skip defensively
             seen[key] = src.tag
-            shutil.copyfile(det_src, os.path.join(flat_det, ident + ".hoa"))
+            # Re-serialize the det representative canonically rather than copy its
+            # bytes: flat is then a function of the language, not of whatever byte
+            # form the source tier happened to hold (a stale or a sampled tier may
+            # not be canonical). Idempotent on an already-canonical det. The .sos
+            # is language-canonical already, so it copies.
+            with open(os.path.join(flat_det, ident + ".hoa"), "w") as fh:
+                fh.write(dump_hoa(spot.automaton(det_src)))
             shutil.copyfile(os.path.join(src.sos_dir, fname),
                             os.path.join(flat_sos, ident + ".sos"))
             new += 1
