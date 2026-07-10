@@ -123,8 +123,10 @@ oarsub -n <runid>.k -l {host like 'tall%'}/nodes=1/core=N,walltime=H:MM:SS \
 ### `oarsub.sh [flags] -- <command...>` → prints a run id
 
 Single command through the same machinery. Takes `--name`, `--timeout`,
-`--cores`, `--walltime`, `--resources`, `--oar-opts`, `--dry-run`. Use `--` when
-the command has shell metacharacters.
+`--cores`, `--walltime`, `--resources`, `--oar-opts`, `--dry-run`. After `--`,
+several words are an argv reproduced on the node exactly as given; for shell
+syntax (pipes, `&&`, redirects) pass the whole line as one quoted argument,
+taken verbatim.
 
 ### `reap.sh RUNID`
 
