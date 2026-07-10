@@ -58,8 +58,9 @@ def _dump_hoa(lang: "Language", aut: "spot.twa_graph") -> str:
     os.makedirs(_TRACE_DIR, exist_ok=True)
     path = os.path.join(_TRACE_DIR, f"{lang.id}.hoa")
     if not os.path.exists(path):
+        from aut2ltl.ltl.twa import dump_hoa
         with open(path, "w") as fh:
-            fh.write(aut.to_str("hoa"))
+            fh.write(dump_hoa(aut))
     return path
 
 

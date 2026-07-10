@@ -195,8 +195,9 @@ class Language:
         Interned on its `canon.normalize`d HOA, so the key is a function of the
         automaton, not of its (transport-dependent) state numbering."""
         from aut2ltl.ltl import canon                  # deferred: keep the floor import-acyclic
+        from aut2ltl.ltl.twa import dump_hoa
         na = canon.normalize(aut)
-        key = "A\n" + na.to_str("hoa")
+        key = "A\n" + dump_hoa(aut)                    # canonical: AP order + t + renumber
         lang = _intern(key, lambda: cls(aut=na, lid=_fingerprint(key)))
         if _OF_TRACE:
             from aut2ltl.printer import format_language  # deferred: keep the floor import-acyclic

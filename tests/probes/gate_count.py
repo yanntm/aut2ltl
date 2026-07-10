@@ -39,7 +39,8 @@ from aut2ltl.portfolio import build_portfolio
 
 
 def _fp(aut: "spot.twa_graph") -> str:
-    return hashlib.md5(aut.to_str("hoa").encode()).hexdigest()[:12]
+    from aut2ltl.ltl.twa import dump_hoa
+    return hashlib.md5(dump_hoa(aut).encode()).hexdigest()[:12]
 
 
 def main(path: str, use: Optional[str] = None) -> None:
