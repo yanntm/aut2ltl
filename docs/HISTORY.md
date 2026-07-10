@@ -3045,3 +3045,29 @@ laws — involution, table-preserving, and agreement with `spot.dualize` on the
 paired `det/` HOA (the cross-check the catalogue closure asserts) — over a spread
 sample of `flat_canon`; 40/40. Prompted by the `samples/benchmark/{det,sos}` build,
 which needs the same complement completion.
+
+## 2026-07-10 — ROLL deployed for cluster E3 (deps/build_roll.sh + copied jar)
+
+LANDED: ROLL (the sosl E3 FDFA baseline) enters the deps/ mechanism without
+becoming a dependency: `deps/build_roll.sh` clones its GitHub at HEAD (no
+released distribution exists), runs the project's own maven build.sh, installs
+the self-contained `opt/roll/ROLL.jar` (RABIT bundled); `build_all.sh
+--roll-only` (never in the default build), `env.sh` exports `ROLL_JAR` when
+present, `cluster/deploy.sh` submits it as a fourth job, and
+`sosl/sosl/experiment/baseline.py` reads `$ROLL_JAR` with the repo's own
+`opt/roll` as default -- the `~/git/roll-library` path is gone. Verified: the
+placed E3 gate reproduces the paper-anchored paired table byte-for-byte
+through the new path.
+
+WHY the copied jar: the cluster's compute nodes carry maven and a headless
+JRE but no JDK anywhere (`javac`/`jar` absent, probed), so the jar cannot be
+built there; being portable bytecode it was built+verified locally and copied
+once into the cluster checkout's `opt/roll/` (user-sanctioned exception to
+"nothing is sent the other way"), then smoke-checked green on a compute node
+(`java -jar opt/roll/ROLL.jar help`, run 20260710-172950-rollcheck2).
+
+KNOWN ISSUE (cluster/, not fixed here): `oarsub.sh -- bash -c '<quoted
+compound>'` loses the quoting when the command is serialized -- the script
+word-splits, e.g. `bash -c source deps/env.sh && ...` runs the one-word
+script `source`. Metacharacter-free argv works; the README's "use --" claim
+overstates. Flagged to the cluster owner rather than patched.
