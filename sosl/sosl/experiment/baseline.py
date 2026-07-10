@@ -1,6 +1,8 @@
 """E3 baseline: the ROLL FDFA learner over the same census languages (spec §6 E3).
 
-ROLL (`~/git/roll-library`) learns the *language* of a target Büchi automaton, so
+ROLL (the jar `$ROLL_JAR` names, defaulting to the repo's own
+`opt/roll/ROLL.jar` — `deps/build_roll.sh` installs it there, `deps/env.sh`
+exports the variable) learns the *language* of a target Büchi automaton, so
 the baseline feeds it a state-based Büchi presentation of each census language
 (via Spot) and parses its `Statistics` output — membership / equivalence counts
 and the learned FDFA size (leading + progress DFAs) — for the three canonical
@@ -18,11 +20,14 @@ import os
 import re
 import subprocess
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Dict, List, Optional
 
 import spot
 
-ROLL_JAR = os.path.expanduser("~/git/roll-library/ROLL.jar")
+ROLL_JAR = os.environ.get(
+    "ROLL_JAR",
+    str(Path(__file__).resolve().parents[3] / "opt" / "roll" / "ROLL.jar"))
 MODES = ("periodic", "syntactic", "recurrent")
 
 # the Statistics lines we harvest: label -> field
