@@ -12,7 +12,7 @@ to length-1 stars. It still adopts under a Spot equivalence gate (declining on a
 unproven surprise) and declines when the precondition fails. Always sound.
 
 Imports only `spot`/`buddy`, the floor (`aut2ltl.language`, `aut2ltl.result`), its
-own `shape` helpers, and `aut2ltl.twa.reroot`.
+own `shape` helpers, and `aut2ltl.ltl.twa.reroot`.
 
 Public entry: `DaisystarDet`. See algorithm.md for the construction.
 """

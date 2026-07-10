@@ -13,7 +13,7 @@ from typing import List, Optional
 
 import spot  # noqa: E402
 
-from aut2ltl.twa import reroot  # noqa: E402
+from aut2ltl.ltl.twa import reroot  # noqa: E402
 
 from aut2ltl.language import Language  # noqa: E402
 from aut2ltl.partscc import PartScc  # noqa: E402

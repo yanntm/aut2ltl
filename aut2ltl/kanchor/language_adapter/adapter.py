@@ -16,7 +16,7 @@ import spot
 from aut2ltl.language import Language
 from aut2ltl.result import LTLResult
 from ..kanchor import KAnchor
-from aut2ltl.twa import reroot
+from aut2ltl.ltl.twa import reroot
 
 if TYPE_CHECKING:
     from aut2ltl.translator import Translator

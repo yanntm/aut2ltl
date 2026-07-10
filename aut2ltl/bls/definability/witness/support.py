@@ -14,7 +14,7 @@ from typing import Dict, List, Optional
 
 import spot
 
-from aut2ltl.twa import clone
+from aut2ltl.ltl.twa import clone
 
 
 def valuation_to_letter(val: Dict[str, bool]) -> str:

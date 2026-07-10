@@ -28,7 +28,7 @@ import spot
 from aut2ltl.language import Language
 from aut2ltl.result import LTLResult, Status
 from aut2ltl.printer import format_language, format_result
-from aut2ltl.twa import reroot
+from aut2ltl.ltl.twa import reroot
 from .shape import init_scc_states, lame_data
 from .windows import k1_violation, k1_table, k2_violation, k2_table
 from .label import TriggerTable, assemble

@@ -10,7 +10,7 @@ one-state daisy.
 
 `star_partition` is the accept/decline test *and* the partition in one pass: it
 returns `None` exactly when `C` is not such a star, else `(petals, spokes,
-stems)`. `aut2ltl.twa.reroot` builds the sub-automaton
+stems)`. `aut2ltl.ltl.twa.reroot` builds the sub-automaton
 `A↓dst` handed to the child for a stem.
 """
 

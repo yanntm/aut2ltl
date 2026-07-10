@@ -9,19 +9,16 @@ Three properties, each the negation of a way `to_str("hoa")` failed the corpus:
    `corpus/det/` differ between two Spot builds.
 3. idempotent — reparsing a canonical dump and dumping it again is a fixpoint.
 
-    python3 sosl/tests/sos/canonical_hoa.py
+    python3 tests/probes/canonical_hoa.py
 """
 from __future__ import annotations
 
-import os
 import sys
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
 import spot  # noqa: E402
 import buddy  # noqa: E402
 
-from sosl.sos.io import dump_hoa  # noqa: E402
+from aut2ltl.ltl.twa import dump_hoa  # noqa: E402
 
 
 def _loop(order: "list[str]") -> "spot.twa_graph":
@@ -39,6 +36,25 @@ def _loop(order: "list[str]") -> "spot.twa_graph":
     res.set_acceptance(spot.acc_cond(1, "Inf(0)"))
     cond = buddy.bdd_ithvar(var["a"]) & -buddy.bdd_ithvar(var["b"])
     res.new_edge(0, 0, cond, [0])
+    return res
+
+
+def _rotate_states(aut: "spot.twa_graph") -> "spot.twa_graph":
+    """The same automaton with every state index shifted by one (mod n).
+
+    A pure renumbering: same graph, same language, different indices — what a
+    process-boundary round trip or a Spot minimization leaves behind.
+    """
+    n = aut.num_states()
+    new = lambda s: (s + 1) % n                                     # noqa: E731
+    res = spot.make_twa_graph(aut.get_dict())
+    res.copy_ap_of(aut)
+    res.copy_acceptance_of(aut)
+    res.new_states(n)
+    res.set_init_state(new(aut.get_init_state_number()))
+    for e in aut.edges():
+        res.new_edge(new(e.src), new(e.dst), e.cond, e.acc)
+    res.prop_copy(aut, spot.twa_prop_set.all())
     return res
 
 
@@ -81,7 +97,21 @@ def main() -> int:
     else:
         print("  ok  [ap] canonical bytes agree")
 
-    # 3. fixpoint.
+    # 3. state numbering cannot be observed.
+    for f in ("F a & G b", "a U (b & X c)", "GF a & GF b", "G(a -> X b)"):
+        d = _canonical(f)
+        if d.num_states() < 2:
+            print(f"  --  [states] {f}: single state, nothing to permute"); continue
+        rot = _rotate_states(d)
+        if d.to_str("hoa") == rot.to_str("hoa"):
+            print(f"  ??  [states] {f}: plain printer already agreed (weak case)")
+        if dump_hoa(d) != dump_hoa(rot):
+            print(f"FAIL [states] {f}: canonical dump depends on state numbering")
+            bad += 1
+        else:
+            print(f"  ok  [states] {f}: canonical bytes agree under renumbering")
+
+    # 4. fixpoint.
     for f in ("F a", "F a & G b", "a U (b & X c)"):
         once = dump_hoa(_canonical(f))
         twice = dump_hoa(spot.automaton(once))

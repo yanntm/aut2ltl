@@ -15,7 +15,7 @@ from typing import List
 
 import spot
 
-from aut2ltl.twa import clone_structural
+from aut2ltl.ltl.twa import clone_structural
 from aut2ltl.combinators.decompose import decompose
 from aut2ltl.bls.definability.witness.reseed import reseed_witness
 

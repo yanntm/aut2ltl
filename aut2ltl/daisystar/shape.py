@@ -16,7 +16,7 @@ is the *rejecting* (reachability) regime where `STAY∞` is `false`:
 
 `star_partition` is the accept/decline test and the partition in one pass:
 `None` exactly when `C` is not such a star, else `(petals, spokes, hub_stems)`.
-`aut2ltl.twa.reroot` builds `A↓dst` for a stem child.
+`aut2ltl.ltl.twa.reroot` builds `A↓dst` for a stem child.
 """
 
 from dataclasses import dataclass, field

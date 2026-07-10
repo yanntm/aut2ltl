@@ -9,7 +9,7 @@ guard data the read-off consumes:
   out-guards) and `exits` (`state → [(guard, dst∉C)]`), in one edge pass.
 * `is_deterministic` — `partscc`'s input-determinizing test on the `L`-partition.
 
-The `A↓dst` rebase for an exit child is `aut2ltl.twa.reroot`.
+The `A↓dst` rebase for an exit child is `aut2ltl.ltl.twa.reroot`.
 """
 
 from typing import Dict, List, Optional, Set, Tuple

@@ -5,7 +5,7 @@ center with **petals** (self-loops `q → q`) and **stems** (exits `q → dst �
 `is_daisy` is the accept/decline test (purely local to `q`'s incoming edges);
 `split` partitions `q`'s out-edges into petals (guard + acceptance sets) and stems
 (guard + target). The `A↓dst` rebase that hands a stem target to a child is
-`aut2ltl.twa.reroot`. See algorithm.md.
+`aut2ltl.ltl.twa.reroot`. See algorithm.md.
 """
 
 from typing import FrozenSet, List, Tuple

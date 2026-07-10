@@ -18,7 +18,7 @@ from aut2ltl.language import Language                               # noqa: E402
 from aut2ltl.result import decline                                 # noqa: E402
 from aut2ltl.daisy.daisy import Daisy                              # noqa: E402
 from aut2ltl.daisystar.daisystar import Daisystar, build_leave     # noqa: E402
-from aut2ltl.twa import reroot                                     # noqa: E402
+from aut2ltl.ltl.twa import reroot                                     # noqa: E402
 from aut2ltl.daisystar.shape import star_partition                 # noqa: E402
 from aut2ltl.simplify_ltl import Simplify                          # noqa: E402
 

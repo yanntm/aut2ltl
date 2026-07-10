@@ -15,7 +15,7 @@ from typing import List, Optional
 
 import spot  # noqa: E402
 
-from aut2ltl.twa import clone  # noqa: E402
+from aut2ltl.ltl.twa import clone  # noqa: E402
 
 def _aps(aut: "spot.twa_graph") -> List[str]:
     return sorted(str(x) for x in aut.ap())
