@@ -4,15 +4,13 @@ A **daisy** is the initial state `q` whose only incoming edges are self-loops: a
 center with **petals** (self-loops `q → q`) and **stems** (exits `q → dst ≠ q`).
 `is_daisy` is the accept/decline test (purely local to `q`'s incoming edges);
 `split` partitions `q`'s out-edges into petals (guard + acceptance sets) and stems
-(guard + target); `reroot` builds `A↓dst`, the sub-automaton rooted at a stem target
-that becomes the unit of child delegation. See algorithm.md.
+(guard + target). The `A↓dst` rebase that hands a stem target to a child is
+`aut2ltl.twa.reroot`. See algorithm.md.
 """
 
 from typing import FrozenSet, List, Tuple
 
 import spot
-
-from aut2ltl.twa import clone
 
 # A petal is a self-loop's (guard, acceptance sets); a stem is an exit's
 # (guard, destination state).
@@ -52,11 +50,3 @@ def split(aut: "spot.twa_graph", q: int) -> Tuple[List[Petal], List[Stem]]:
     return petals, stems
 
 
-def reroot(aut: "spot.twa_graph", state: int) -> "spot.twa_graph":
-    """A fresh copy of `aut` rooted at `state` and trimmed to the states reachable
-    from it — the sub-automaton `A↓state`, whose language is exactly what is accepted
-    from `state`. Does not mutate `aut`."""
-    sub = clone(aut)
-    sub.set_init_state(state)
-    sub.purge_unreachable_states()
-    return sub

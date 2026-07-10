@@ -16,7 +16,7 @@ is the *rejecting* (reachability) regime where `STAY∞` is `false`:
 
 `star_partition` is the accept/decline test and the partition in one pass:
 `None` exactly when `C` is not such a star, else `(petals, spokes, hub_stems)`.
-`reroot` (reused from `aut2ltl.daisy.shape`) builds `A↓dst` for a stem child.
+`aut2ltl.twa.reroot` builds `A↓dst` for a stem child.
 """
 
 from dataclasses import dataclass, field
@@ -24,7 +24,6 @@ from typing import Dict, List, Optional, Set, Tuple
 
 import spot
 
-from aut2ltl.daisy.shape import reroot  # reused verbatim: A↓dst for stem delegation
 
 # A stem is an exit's (guard, destination state ∉ C).
 Stem = Tuple["spot.formula", int]

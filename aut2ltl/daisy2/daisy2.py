@@ -29,7 +29,8 @@ from aut2ltl.language import Language
 from aut2ltl.verifier import revalidated
 from aut2ltl.result import LTLResult, Status
 from aut2ltl.printer import format_language, format_result
-from .shape import Spoke, Stem, reroot, star_partition
+from aut2ltl.twa import reroot
+from .shape import Spoke, Stem, star_partition
 
 if TYPE_CHECKING:
     from aut2ltl.translator import Translator

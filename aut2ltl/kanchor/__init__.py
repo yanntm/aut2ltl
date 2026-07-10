@@ -13,7 +13,7 @@ k = 1 document, kept for reconciliation); the package splits as:
 * `label.py`   — the level-agnostic assembler `Final = STAY∞ ∨ LEAVE` over a
   `TriggerTable`.
 * `pieces.py`  — the letter-level vocabulary (`sojourn`, `leave`, `G L`).
-* `shape.py`   — the L/A/M/E split, the P1/P2 test, `reroot` (anchor's copy).
+* `shape.py`   — the L/A/M/E split and the P1/P2 test (`A↓dst` is `aut2ltl.twa.reroot`).
 * `lift.py`    — the exact reaching word lifting a NOT_LTL exit witness
   (anchor's copy, level-blind).
 """

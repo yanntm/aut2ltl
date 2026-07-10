@@ -9,8 +9,7 @@ guard data the read-off consumes:
   out-guards) and `exits` (`state → [(guard, dst∉C)]`), in one edge pass.
 * `is_deterministic` — `partscc`'s input-determinizing test on the `L`-partition.
 
-`reroot` (the `A↓dst` rebase for an exit child) is reused verbatim from
-`aut2ltl.daisy.shape`.
+The `A↓dst` rebase for an exit child is `aut2ltl.twa.reroot`.
 """
 
 from typing import Dict, List, Optional, Set, Tuple
@@ -18,9 +17,8 @@ from typing import Dict, List, Optional, Set, Tuple
 import spot
 import buddy
 
-from aut2ltl.daisy.shape import reroot  # reused verbatim: A↓dst for exit delegation
 
-__all__ = ["init_scc_states", "scc_data", "is_deterministic", "exit_word", "reroot"]
+__all__ = ["init_scc_states", "scc_data", "is_deterministic", "exit_word"]
 
 
 def exit_word(

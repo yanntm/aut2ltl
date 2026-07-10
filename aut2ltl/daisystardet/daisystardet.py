@@ -32,7 +32,8 @@ import spot
 from aut2ltl.language import Language
 from aut2ltl.result import LTLResult, Status
 from aut2ltl.printer import format_language, format_result
-from .shape import init_scc_states, scc_data, is_deterministic, exit_word, reroot
+from aut2ltl.twa import reroot
+from .shape import init_scc_states, scc_data, is_deterministic, exit_word
 
 if TYPE_CHECKING:
     from aut2ltl.translator import Translator

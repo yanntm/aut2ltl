@@ -61,6 +61,12 @@ child or leaf Translator and delegates to it.
   rescue heuristics (verify-before-use).
 - **`ltl/`** — engine-agnostic LTL machinery: builders, BDD utilities, size metrics,
   printers, and the `simplify/` rules. Used by every engine.
+- **`twa.py`** — the Spot-facing floor: `clone` / `clone_structural` / `reroot`.
+  Copy an automaton with Spot's own `make_twa_graph`, never by round-tripping it
+  through HOA — a serialize/parse loses the properties the text does not carry and
+  the parser re-infers others (`state_acc`, `complete`), so the copy is not the
+  automaton that was copied. `reroot` is the `A↓state` rebase every peeling engine
+  hands to a child.
 - **`portfolio/`** — the assembled default: combinators that wire the translators into
   the best-effort pipeline behind the CLI. *(In flux — being reworked.)*
 - **`__main__.py`** — the command-line front end (`python3 -m aut2ltl`).

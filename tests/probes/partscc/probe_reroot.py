@@ -13,7 +13,7 @@ from typing import List, Optional
 
 import spot  # noqa: E402
 
-from aut2ltl.twa import clone  # noqa: E402
+from aut2ltl.twa import reroot  # noqa: E402
 
 from aut2ltl.language import Language  # noqa: E402
 from aut2ltl.partscc import PartScc  # noqa: E402
@@ -30,11 +30,6 @@ def _terminal_scc_state(aut: "spot.twa_graph") -> Optional[int]:
             return states[0]
     return None
 
-def _reroot(aut: "spot.twa_graph", state: int) -> "spot.twa_graph":
-    sub = clone(aut)
-    sub.set_init_state(state)
-    sub.purge_unreachable_states()
-    return sub
 
 def main(argv: List[str]) -> int:
     if len(argv) != 2:
@@ -49,7 +44,7 @@ def main(argv: List[str]) -> int:
         print("RESULT  : no terminal SCC of size >= 2 in the TGBA")
         return 0
 
-    sub = _reroot(tgba, st)
+    sub = reroot(tgba, st)
     si = spot.scc_info(sub)
     print(f"REROOTED: state {st} -> {sub.num_states()} states, {si.scc_count()} SCC(s)")
 

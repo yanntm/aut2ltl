@@ -17,7 +17,6 @@ consumes and decide that precondition:
 * `anchored_violation` — the precondition test: P1 (anchors pairwise disjoint)
   and P2 (a loop letter fires no foreign anchor). Returns the reason a test
   fails, or `None` when the component is anchored.
-* `reroot` — the `A↓dst` rebase handing an exit target to a child.
 
 All guard work is symbolic (BDD conjunctions against `bddfalse`): no letter
 enumeration, cost quadratic in `|C|` and linear in the edges.
@@ -28,9 +27,7 @@ from typing import Dict, List, Optional, Set, Tuple
 import spot
 import buddy
 
-from aut2ltl.twa import clone
-
-__all__ = ["init_scc_states", "lame_data", "anchored_violation", "reroot"]
+__all__ = ["init_scc_states", "lame_data", "anchored_violation"]
 
 # The L/A/M/E data of a component: per-state Loop / Anchor / Move guard
 # disjunctions (BDDs), the exit list `state -> [(guard, dst)]`, and the
@@ -106,11 +103,3 @@ def anchored_violation(
     return None
 
 
-def reroot(aut: "spot.twa_graph", state: int) -> "spot.twa_graph":
-    """A fresh copy of `aut` rooted at `state` and trimmed to the states
-    reachable from it — the sub-automaton `A↓state`, whose language is exactly
-    what is accepted from `state`. Does not mutate `aut`."""
-    sub = clone(aut)
-    sub.set_init_state(state)
-    sub.purge_unreachable_states()
-    return sub

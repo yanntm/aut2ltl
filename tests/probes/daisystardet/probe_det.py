@@ -29,7 +29,8 @@ import buddy                                                 # noqa: E402
 from aut2ltl.language import Language                        # noqa: E402
 from aut2ltl.result import decline                           # noqa: E402
 from aut2ltl.daisy.daisy import Daisy                        # noqa: E402
-from aut2ltl.daisystardet.shape import init_scc_states, reroot  # noqa: E402
+from aut2ltl.twa import reroot  # noqa: E402
+from aut2ltl.daisystardet.shape import init_scc_states  # noqa: E402
 
 _F = spot.formula
 

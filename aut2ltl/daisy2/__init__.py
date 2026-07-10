@@ -8,7 +8,7 @@ production lifted from letters to moves and adopts the candidate only if a Spot
 oracle confirms language-equivalence (the closed move-level form is not yet
 solved — see algorithm.md), declining otherwise. Always sound. Defined against
 the Translator contract; imports only `spot`, the floor (`aut2ltl.language`,
-`aut2ltl.result`), its own `shape` helpers, and `reroot` reused from `daisy`.
+`aut2ltl.result`), its own `shape` helpers, and `aut2ltl.twa.reroot`.
 
 Public entry: `Daisy2`. See algorithm.md for the construction.
 """

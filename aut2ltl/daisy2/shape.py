@@ -10,7 +10,7 @@ one-state daisy.
 
 `star_partition` is the accept/decline test *and* the partition in one pass: it
 returns `None` exactly when `C` is not such a star, else `(petals, spokes,
-stems)`. `reroot` (reused from `aut2ltl.daisy.shape`) builds the sub-automaton
+stems)`. `aut2ltl.twa.reroot` builds the sub-automaton
 `A↓dst` handed to the child for a stem.
 """
 
@@ -19,7 +19,6 @@ from typing import Dict, FrozenSet, List, Optional, Set, Tuple
 
 import spot
 
-from aut2ltl.daisy.shape import reroot  # reused verbatim: A↓dst for stem delegation
 
 # A petal is a hub self-loop's (guard, acceptance sets); a stem is a hub exit's
 # (guard, destination state ∉ C).
