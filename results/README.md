@@ -73,14 +73,27 @@ lands in the ignored `logs/cluster/$RUN/`, exactly as a local rerun lands in
 step 3 adopts it, or does not. Swap the `--folder` for `samples/benchmark` or
 `samples/kinska`; nothing else changes.
 
+No shard writes a `SUMMARY.txt` — each summarized only its own slice, into its own
+`logs/cluster/$RUN/logs/<idx>.err`. Rebuild the run's summary from the merged CSV
+once the run is **fully reaped**, and the local criterion applies unchanged:
+
+```bash
+python3 -m survey.summary logs/cluster/$RUN/results.csv > logs/cluster/$RUN/SUMMARY.txt
+```
+
+The summary is a fold over the rows, so this is the same text a live run would have
+printed, `SUCCESS` and all, save the wall-clock `build=` (the cluster's nodes are
+not your laptop). It exits 1 on a verified non-equivalence, so it gates. Pass
+`--label` to name the recipe: the CSV records the technique that answered, not the
+one `--use` asked for.
+
 **Clean**, here, is `reap.sh` reporting `N/N done` with `0 timeout, 0 fail, 0
-missing` *and* the step-2 diff reporting `0 regression(s)`. There is no
-`SUMMARY.txt`: each shard's summary went to its own `logs/cluster/$RUN/logs/<idx>.err`.
-Nothing is lost — the `validation` column the summary counts is in the CSV, and the
-diff reads it — but the `SUMMARY.txt ends SUCCESS` half of the local criterion has
-no cluster counterpart, and the diff is the gate. A `missing` command is work the
-cluster lost, not a regression: reclaim it with `cluster/oarrun.sh --resume "$RUN"`
-and reap again before you believe any diff.
+missing`, the regenerated `SUMMARY.txt` ending `SUCCESS`, *and* the step-2 diff
+reporting `0 regression(s)`. Regenerate only when the run is complete: a summary
+folded over a partial CSV counts only the commands that finished, and will happily
+say `SUCCESS`. A `missing` command is work the cluster lost, not a regression:
+reclaim it with `cluster/oarrun.sh --resume "$RUN"` and reap again before you
+believe any diff.
 
 See [`cluster/README.md`](../cluster/README.md) for the runner itself.
 
