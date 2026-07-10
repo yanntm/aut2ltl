@@ -47,7 +47,10 @@ _REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pa
 _SOSL = os.path.join(_REPO, "sosl")
 if _SOSL not in sys.path:
     sys.path.insert(0, _SOSL)
+if _REPO not in sys.path:
+    sys.path.insert(0, _REPO)
 
+from aut2ltl.ltl.twa import dump_hoa                    # noqa: E402
 from sosl.sos import dump_invariant                     # noqa: E402
 from sosl.sos.build.importer import canonical           # noqa: E402
 from sosl.sos.core.quotient import invariant_of         # noqa: E402
@@ -109,10 +112,17 @@ def canonize(tag: str, in_dir: str, out_root: str) -> Dict:
         # spot_det tier: the SAME deterministic automaton D, deduped
         # *structurally* (md5 → AP-canonical, the TGBA gates) rather than by
         # language — the count of distinct deterministic presentations.
-        content = D.to_str("hoa")
+        #
+        # The file is `D` canonically serialized, never polarity-flipped: it pairs
+        # with a polarity-sensitive `.sos`. The dedup KEY is a different object —
+        # the twins are folded on the text first, and only then is the presentation
+        # canonicalized. Canonicalizing first would defeat the fold: `canon.normalize`
+        # orders successors by the printed condition, so `a` and `!a` twins get
+        # different state numberings and never converge.
+        content = dump_hoa(D)
+        key = dump_hoa(spot.automaton(ap_key(D.to_str("hoa"))))
         if hashlib.md5(content.encode()).hexdigest() not in det_md5:
             det_md5.add(hashlib.md5(content.encode()).hexdigest())
-            key = ap_key(content)
             if key in det_key:
                 det_folded += 1
             else:
@@ -131,7 +141,7 @@ def canonize(tag: str, in_dir: str, out_root: str) -> Dict:
             seen[h] = ident
             sizes[h] = inv.n
             with open(os.path.join(det_dir, f"{ident}.hoa"), "w") as fh:
-                fh.write(D.to_str("hoa"))
+                fh.write(dump_hoa(D))
             with open(os.path.join(sos_dir, f"{ident}.sos"), "w") as fh:
                 fh.write(dump)
 

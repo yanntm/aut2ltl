@@ -50,7 +50,10 @@ _REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pa
 _SOSL = os.path.join(_REPO, "sosl")
 if _SOSL not in sys.path:
     sys.path.insert(0, _SOSL)
+if _REPO not in sys.path:
+    sys.path.insert(0, _REPO)
 
+from aut2ltl.ltl.twa import dump_hoa                    # noqa: E402
 from sosl.sos import dump_invariant                     # noqa: E402
 from sosl.sos.build.importer import canonical           # noqa: E402
 from sosl.sos.core.quotient import invariant_of         # noqa: E402
@@ -114,12 +117,15 @@ def sample(
         draws += 1
         combo = combo_of(shape, i)
         red = reduce_aut(build_aut(shape, combo, bdict))
-        content = red.to_str("hoa") + "\n"
+        content = dump_hoa(red)           # canonical bytes, as the census writes
         digest = hashlib.md5(content.encode()).hexdigest()
         if digest in seen_md5:
             continue
         seen_md5.add(digest)
-        key = ap_key(content)             # fold a<->!a / AP-rename twins, as the census does
+        # fold a<->!a / AP-rename twins on the text, THEN canonicalize, as the
+        # census does — canonicalizing first defeats the fold (canon.normalize
+        # orders successors by the printed condition).
+        key = dump_hoa(spot.automaton(ap_key(red.to_str("hoa"))))
         if key in seen_key:
             folded += 1
             continue
@@ -135,7 +141,7 @@ def sample(
         ident = f"{tag}_{i:0{width}d}"
         langs[dump] = ident
         with open(os.path.join(det_dir, f"{ident}.hoa"), "w") as fh:
-            fh.write(D.to_str("hoa"))
+            fh.write(dump_hoa(D))
         with open(os.path.join(sos_dir, f"{ident}.sos"), "w") as fh:
             fh.write(dump)
         if len(langs) % 64 == 0:

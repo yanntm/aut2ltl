@@ -42,6 +42,7 @@ _REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pa
 if _REPO not in sys.path:
     sys.path.insert(0, _REPO)
 from survey.normalize.sos import sos_key                   # noqa: E402
+from aut2ltl.ltl.twa import dump_hoa                        # noqa: E402
 
 
 def relabel_hoa(text: str, sigma: "Tuple[Tuple[int, ...], int]", k: int) -> str:
@@ -276,7 +277,7 @@ def build_canon(corpus: str, out_root: str, exclude: Tuple[str, ...]) -> Dict:
             seen[canon_sos] = src.tag
             primal_idents.append(ident)
             with open(os.path.join(det_dir, ident + ".hoa"), "w") as fh:
-                fh.write(D.to_str("hoa"))
+                fh.write(dump_hoa(D))
             with open(os.path.join(sos_dir, ident + ".sos"), "w") as fh:
                 fh.write(canon_sos)
             new += 1
@@ -307,7 +308,7 @@ def build_canon(corpus: str, out_root: str, exclude: Tuple[str, ...]) -> Dict:
             raise AssertionError(f"dualize disagrees with flip-P on {ident}")
         seen[comp_sos] = "complement"
         with open(os.path.join(det_dir, ident + "_c.hoa"), "w") as fh:
-            fh.write(Dc.to_str("hoa"))
+            fh.write(dump_hoa(Dc))
         with open(os.path.join(sos_dir, ident + "_c.sos"), "w") as fh:
             fh.write(comp_sos)
         dual += 1

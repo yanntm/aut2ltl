@@ -29,6 +29,12 @@ from typing import Callable, Optional, Set
 import spot
 
 # sibling modules (run as a path-script: genaut/gen is sys.path[0])
+_REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+if _REPO not in sys.path:
+    sys.path.insert(0, _REPO)
+
+from aut2ltl.ltl.twa import dump_hoa   # noqa: E402
+
 from shape import Shape
 from build import build_aut, reduce_aut
 
@@ -81,12 +87,17 @@ def main(shape: Shape, limit: Optional[int], out_root: str = RAW_ROOT) -> None:
         if limit is not None and i >= limit:
             break
         total += 1
-        content = reduce_aut(build_aut(shape, combo, bdict)).to_str("hoa") + "\n"
+        aut = reduce_aut(build_aut(shape, combo, bdict))
+        content = dump_hoa(aut)            # what is written: canonical, unflipped
         digest = hashlib.md5(content.encode()).hexdigest()
         if digest in seen_md5:             # byte-identical to an earlier id -> drop
             continue
         seen_md5.add(digest)
-        key = ap_key(content)              # only the byte-distinct survivors pay this
+        # The twin key folds polarity/names on the text *before* the presentation is
+        # canonicalized. The other order defeats the fold: canon.normalize orders
+        # successors by the printed condition, so `a` and `!a` twins get different
+        # state numberings and never converge.
+        key = dump_hoa(spot.automaton(ap_key(aut.to_str("hoa"))))
         if key in seen_key:                # AP-canonical twin of an earlier id -> drop
             folded += 1
             continue
