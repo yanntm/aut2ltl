@@ -599,7 +599,7 @@ learner bug.
         |                                |
         +---------> sos_validate <-------+
                         |
-              per-case verdict: SOUND / MISMATCH / BUDGET
+              per-case verdict: SOUND / FAIL / BUDGET
                         |
                  experiment driver -> results.csv -> tables/plots
 ```
@@ -628,7 +628,7 @@ Layered; every layer is automated and green before any experiment is reported.
    every recorded split against the teacher and confirm the bits still differ.
    (Catches transcript/bookkeeping corruption and any nondeterminism.)
 4. **End-to-end gate.** On the full corpus: `learned.sos` byte-equals
-   `reference.sos`. This is the soundness criterion. A `MISMATCH` is always
+   `reference.sos`. This is the soundness criterion. A `FAIL` is always
    treated as a learner bug until proven otherwise; the audit log localizes
    the first divergent decision.
 5. **Metamorphic checks** (cheap, high-value):
@@ -837,7 +837,7 @@ max_cex_stem, max_cex_loop, max_query_word_len,
 n_guard_firings, guard_fired_final (true|false),
 eq_certification (reps|bounded:<B>|exact),
 export_associative (true|false|n/a),
-wall_seconds, verdict (SOUND|MISMATCH|BUDGET|ACCEPTOR_ONLY|OVERSIZE)
+wall_seconds, verdict (SOUND|FAIL|BUDGET|ACCEPTOR_ONLY|OVERSIZE|CRASH)
 ```
 
 `n_classes_initial` is the class count of the first stabilized table (the
@@ -876,7 +876,7 @@ check but fail byte-equality.
 transformation-closure work cap (`ExactTooLarge`): an honest "too large to
 certify exactly", occurring only on the ablation leg of the largest
 languages. The run's `stall_class` is deferred (`n/a`) and never enters E2's
-frequency counts; `MISMATCH` stays reserved for a genuine byte mismatch
+frequency counts; `FAIL` stays reserved for a genuine byte mismatch
 (row F9). *Rescoped 2026-07-08h: with exact-by-reference (section 3.2) the
 census ablation leg never builds the closure, so `OVERSIZE` can arise only
 on the referenceless fallback path (E6); once section 8 item 10 lands, an
@@ -1197,7 +1197,7 @@ recorded outcome, not a defect.
 | P7 | exported `M` is associative (`export_associative = true`) | any **saturated** run | always green | the sweep failed to deliver a two-sided congruence — learner bug; a two-sided quotient's table is associative by construction |
 | F8 | exported `M` is associative | `--no-saturation` runs | MAY be red; on `a_implies_xa` MUST be red with witness triple `([a],[a],[a])` | record the witness triple, never "fix" it — it anchors the paper's §4.2 display (a green here on `a_implies_xa` means the export or the check is wrong) |
 | P8 | ω-sort discipline on prefix-independent cases: every column ever minted in a default-config run is of the ω-sort (paper Cor. 4.7(b)) | any prefix-independent case (`GF(aa)`, `EvenBlocks`, the E2 witnesses) | always green | a linear mint means the prefix-independence predicate or the sweep is wrong — build-stopping either way; the corollary's proof leaves no third option |
-| F9 | exact oracle raises `ExactTooLarge` | referenceless fallback (E6), or the closure fallback of a guard-failed census query (F10) | allowed there; on any other census run it is a defect (exact-by-reference builds no closure) | record `OVERSIZE` (section 7); permanence classification deferred, default-leg soundness stands — never `MISMATCH` |
+| F9 | exact oracle raises `ExactTooLarge` | referenceless fallback (E6), or the closure fallback of a guard-failed census query (F10) | allowed there; on any other census run it is a defect (exact-by-reference builds no closure) | record `OVERSIZE` (section 7); permanence classification deferred, default-leg soundness stands — never `FAIL` |
 | F10 | functionality guard on the aligned graph (section 3.2 point (iii): non-identity node count `= N_R`) fires | any exact-by-reference query | MAY be red — it IS red in practice (2026-07-09b: the factoring conjecture is refuted; mid-run tables, sweep-clean ones included, split syntactic classes beyond their table words); a red is a recorded outcome, not a bug. Exception: a firing on the FINAL certifying query of a `SOUND` run is a defect — a canonical table's fold is the syntactic morphism | record it and fall back to the closure oracle for that query; certification/minimality claims for that query then rest on the fallback (cap-escape per section 3.2 default) |
 
 Two "surprising green" notes, so nobody distrusts a passing run:

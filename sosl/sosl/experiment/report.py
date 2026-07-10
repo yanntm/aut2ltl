@@ -3,7 +3,7 @@ renderers (split ledger + signature matrix), all machine-generated from a
 `CampaignResult` — no hand-edited numbers.
 
 The E0 report is the campaign's gate: it tabulates every run's verdict and
-declares PASS only when no run is `MISMATCH` or `BUDGET` and every
+declares PASS only when no run is `FAIL`, `BUDGET`, or `CRASH` and every
 permanent-stall specimen certified `ACCEPTOR_ONLY` under a no-saturation config
 (spec §9 P4/F5). The E4 renderers reproduce the paper's ledger format and the
 signature matrix (companion to Tables 6/8) for a single run.
@@ -23,16 +23,16 @@ def _byte_flag(s: RunStats) -> str:
     """The byte-equality reading implied by the verdict (SOUND = byte-equal)."""
     if s.verdict == "SOUND":
         return "yes"
-    if s.verdict in ("ACCEPTOR_ONLY", "MISMATCH"):
+    if s.verdict in ("ACCEPTOR_ONLY", "FAIL"):
         return "no"
     return "-"
 
 
 def e0_gate(campaign: CampaignResult) -> Optional[str]:
     """``None`` if E0 passes, else a one-line reason it failed."""
-    bad = [s for s in campaign.stats if s.verdict in ("MISMATCH", "BUDGET")]
+    bad = [s for s in campaign.stats if s.verdict in ("FAIL", "BUDGET", "CRASH")]
     if bad:
-        return (f"{len(bad)} run(s) MISMATCH/BUDGET: "
+        return (f"{len(bad)} run(s) FAIL/BUDGET/CRASH: "
                 + ", ".join(f"{s.case_id}/{s.config_id}={s.verdict}" for s in bad))
     return None
 
@@ -64,19 +64,20 @@ def e0_report(campaign: CampaignResult) -> str:
 
     sound = sum(s.verdict == "SOUND" for s in campaign.stats)
     acc = sum(s.verdict == "ACCEPTOR_ONLY" for s in campaign.stats)
-    mismatch = sum(s.verdict == "MISMATCH" for s in campaign.stats)
+    fail = sum(s.verdict == "FAIL" for s in campaign.stats)
     budget = sum(s.verdict == "BUDGET" for s in campaign.stats)
+    crash = sum(s.verdict == "CRASH" for s in campaign.stats)
     total_mem = sum(max(0, s.n_member_total) for s in campaign.stats)
     total_eq = sum(max(0, s.n_equiv) for s in campaign.stats)
     lines.append(f"**Totals.** {sound} SOUND · {acc} ACCEPTOR_ONLY · "
-                 f"{mismatch} MISMATCH · {budget} BUDGET. "
+                 f"{fail} FAIL · {budget} BUDGET · {crash} CRASH. "
                  f"Query budget used: {total_mem} membership, {total_eq} equivalence.")
     lines.append("")
     reason = e0_gate(campaign)
     if reason is None:
-        lines.append("**E0 gate: PASS** — zero mismatches, zero budget overruns; "
-                     "the permanent specimens certify ACCEPTOR_ONLY under "
-                     "no-saturation (spec §9 P4/F5).")
+        lines.append("**E0 gate: PASS** — zero failures, zero budget overruns, "
+                     "zero crashes; the permanent specimens certify ACCEPTOR_ONLY "
+                     "under no-saturation (spec §9 P4/F5).")
     else:
         lines.append(f"**E0 gate: FAIL** — {reason}.")
     lines.append("")

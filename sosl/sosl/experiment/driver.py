@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 from sosl.experiment.manifest import Case, e0_runs
-from sosl.experiment.run import Config, RunResult, run_case
+from sosl.experiment.run import Config, RunResult, _Budget, run_case
 from sosl.experiment.stats import CSV_FIELDS, RunStats, csv_row
 
 
@@ -56,9 +56,17 @@ def run_matrix(
             cfg = Config(**{**config.__dict__, "budget_seconds": budget_seconds})
         try:
             res = run_case(case.case_id, case.hoa, cfg, reference_sos=case.sos)
-        except Exception as exc:  # noqa: BLE001 -- defensive: the driver never aborts
+        except _Budget:
+            # SIGALRM can leak past `run_case`'s own `finally` (the alarm firing
+            # after its `except _Budget` is unreachable): still a clean timeout.
             stats = RunStats(case_id=case.case_id, config_id=cfg.config_id,
-                             verdict="MISMATCH",
+                             verdict="BUDGET", detail="DRIVER-CAUGHT:_Budget (finally-race)")
+            res = RunResult(stats)
+        except Exception as exc:  # noqa: BLE001 -- defensive: the driver never aborts
+            # A leaked fault is a run that never completed, not a soundness FAIL
+            # (spec §7 row F9): record CRASH.
+            stats = RunStats(case_id=case.case_id, config_id=cfg.config_id,
+                             verdict="CRASH",
                              detail=f"DRIVER-CAUGHT:{type(exc).__name__}: {exc}")
             res = RunResult(stats)
         json_path = str(out / f"{_run_id(case, cfg)}.json")

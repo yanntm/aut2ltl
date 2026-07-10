@@ -9,7 +9,7 @@ canonical equality (the soundness criterion) and a weaker acceptance check
 - **`sos_validate learned reference`** — parse both invariants, re-canonicalize
   defensively (re-sort accepting pairs, normalize whitespace), and compare
   byte-for-byte. Byte-equality is the tool's soundness verdict: `SOUND` /
-  `MISMATCH`.
+  `FAIL`.
 - **`sos_validate --acceptor learned <hoa> --bound B`** — check a membership
   read-off against direct automaton simulation on all lassos up to bound `B`.
   This certifies *acceptance-correctness* separately from canonicity: a

@@ -71,7 +71,7 @@ class RunStats:
     eq_certification: str = ""       # reps | bounded:<B> | exact
 
     wall_seconds: float = -1.0
-    verdict: str = ""                # SOUND | MISMATCH | BUDGET | ACCEPTOR_ONLY | OVERSIZE
+    verdict: str = ""                # SOUND | FAIL | BUDGET | ACCEPTOR_ONLY | OVERSIZE | CRASH
 
     detail: str = ""                 # free-text note (error kind, blocking record)
 

@@ -216,7 +216,7 @@ def run_case(case_id: str, hoa_path: str, config: Config,
         try:
             ref_dump, ref_inv = _reference(hoa_path, reference_sos)
         except ReferenceError as exc:
-            stats.verdict = "MISMATCH"
+            stats.verdict = "FAIL"
             stats.detail = f"NONDEF: {exc}"
             return RunResult(stats)
         teacher = HoaTeacher.of_hoa(hoa_path, eq_mode=config.eq_mode,
@@ -258,8 +258,11 @@ def run_case(case_id: str, hoa_path: str, config: Config,
         stats.detail = f"OVERSIZE:{exc}"
         return RunResult(stats)
     except Exception as exc:  # noqa: BLE001 -- a run records its own fault, never aborts
-        stats.verdict = "MISMATCH"
-        stats.detail = f"ERROR:{type(exc).__name__}: {exc}"
+        # A leaked exception is a run that never completed, not a run that
+        # completed with a bad byte: FAIL is a soundness verdict (spec §7 row
+        # F9), so a fault is CRASH, never FAIL.
+        stats.verdict = "CRASH"
+        stats.detail = f"CRASH:{type(exc).__name__}: {exc}"
         return RunResult(stats)
     finally:
         signal.alarm(0)
@@ -375,12 +378,12 @@ def _classify_verdict(byte_equal: bool, p1_ok: bool, config: Config,
                       stats: RunStats):
     """The run verdict (spec §7): ``SOUND`` on byte-equality; ``ACCEPTOR_ONLY``
     for a non-saturated run whose Cayley hypothesis is still acceptance-correct;
-    ``MISMATCH`` otherwise (a P1 failure, or a byte mismatch the config does not
+    ``FAIL`` otherwise (a P1 failure, or a byte mismatch the config does not
     excuse). Returns ``(verdict, detail)``."""
     if byte_equal:
-        return ("SOUND", "") if p1_ok else ("MISMATCH", "byte-equal but P1 red (bug)")
+        return ("SOUND", "") if p1_ok else ("FAIL", "byte-equal but P1 red (bug)")
     if not p1_ok:
-        return "MISMATCH", "P1 red: hypothesis predictions disagree with teacher"
+        return "FAIL", "P1 red: hypothesis predictions disagree with teacher"
     if not config.saturation:
         return "ACCEPTOR_ONLY", "non-saturated fixpoint: export byte-differs, hypothesis sound"
-    return "MISMATCH", "byte-differs under saturation (expected byte-equal)"
+    return "FAIL", "byte-differs under saturation (expected byte-equal)"

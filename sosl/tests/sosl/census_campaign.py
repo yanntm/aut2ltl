@@ -26,8 +26,8 @@ from pathlib import Path
 from typing import List, Set, Tuple
 
 from sosl.experiment.manifest import DEFAULT, NOSAT_EXACT, flat_canon_cases
-from sosl.experiment.run import Config, run_case
-from sosl.experiment.stats import CSV_FIELDS, csv_row
+from sosl.experiment.run import Config, _Budget, run_case
+from sosl.experiment.stats import CSV_FIELDS, RunStats, csv_row
 
 OUT = Path("tests/sosl/logs/census")
 PER_CASE_BUDGET = 30
@@ -103,10 +103,19 @@ def main(argv: List[str]) -> int:
             try:
                 res = run_case(case.case_id, case.hoa, cfg, reference_sos=case.sos)
                 st = res.stats
-            except Exception as exc:  # noqa: BLE001 -- the sweep never aborts
-                from sosl.experiment.stats import RunStats
+            except _Budget:
+                # SIGALRM can fire inside `run_case`'s own `finally` window, after
+                # its `except _Budget` is no longer reachable, so the alarm leaks
+                # past `run_case`. The verdict is still a clean budget timeout, not
+                # a fault: record BUDGET, never FAIL.
                 st = RunStats(case_id=case.case_id, config_id=cfg.config_id,
-                              verdict="MISMATCH",
+                              verdict="BUDGET", detail="CAUGHT:_Budget (finally-race)")
+            except Exception as exc:  # noqa: BLE001 -- the sweep never aborts
+                # Any other leaked exception is a run that never completed, not a
+                # run that completed with a bad byte: FAIL is a soundness verdict
+                # (spec §7 row F9), so a fault is CRASH, never FAIL.
+                st = RunStats(case_id=case.case_id, config_id=cfg.config_id,
+                              verdict="CRASH",
                               detail=f"CAUGHT:{type(exc).__name__}: {exc}")
             writer.writerow(csv_row(st))
             fh.flush()
