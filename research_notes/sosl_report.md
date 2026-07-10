@@ -1999,3 +1999,34 @@ leak path and asserts `_Budget → BUDGET`, other `→ CRASH`. Green. Standing g
 re-run green (`saturation_gate`, `exact_fixtures`, `campaign_e0` byte-stable,
 `witness_lock`). The partial `census_guard` misfiled row is thereby explained and
 retired; the fresh cluster sweep at `--budget 60` banks the tally.
+
+## Cluster infra for the sweep + E3 is in place (items 2–4) (2026-07-10)
+
+The sharding infrastructure the cluster drop needs is landed and verified
+locally against the current catalogue (now **4248 languages** — the concurrent
+genaut rewrite is enriching the corpus with higher-Wagner-degree samples; every
+tally below re-runs fresh, so the growth is immaterial to what is banked).
+
+- **`census_campaign --cases i:j --out-csv FILE`** — the learner sweep shards by
+  a half-open slice of the fixed `flat_canon_cases()` order into a private file
+  (the runner forbids a shared output — `O_APPEND` is not atomic over NFS).
+  Verified: `0:3` and `3:6` are disjoint and partition `0:6`.
+- **`census_e3`** rebuilt to a **long CSV** (`case, kind, size, MQ, EQ`, kind ∈
+  {ours} ∪ the three ROLL FDFA modes) so per-`(case, mode)` shards concatenate;
+  `--cases` / `--only KIND` / `--out-csv` shard it, `--summary-only` pivots the
+  merged CSV to the same paired medians / size-comparison / LTL-cut. The
+  paper-anchored `campaign_e3` and `baseline.py` are untouched.
+- **`cluster_plan`** (modeled on `survey/cluster/plan.py`) cuts either sweep into
+  a `cmds.txt`, chunk size packed to `OARRUN_TIMEOUT` sourced from
+  `cluster/config.sh` (no drift; env override honoured by planner and runner
+  alike). Default plans the learner sweep; `--e3` plans the ROLL census, one line
+  per `(kind, case-slice)`. At cap 130: sweep 4248 commands (1 case/cmd, both
+  legs = 120 s); E3 6443 commands (3 ROLL modes × 2124 at 2 cases/cmd + ours ×
+  71). Raising the cap repacks (cap 300 → 2 cases/cmd on the sweep).
+
+Owed next (items 5–6): push (needs the user's OK) + `sync_cluster.sh`, submit
+both cmds lists, reap, run the analyzers (`census_e1`, `census_e2_exhibits`,
+`census_e3 --summary-only`) and gates (`witness_lock`, dual-symmetry / (d′),
+`guard_fired_final = 0` on every SOUND row) off the merged CSVs, commit the drop
+under `reference/`, and hand theory the item-6 tallies (which replace the paper's
+9 `⟨TBD-M4⟩`).
