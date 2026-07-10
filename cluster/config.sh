@@ -28,6 +28,28 @@
 # and Spot's heavier translation units want memory more than they want lanes.
 : "${BUILD_JOBS:=10}"
 
+# GAP, built from source like Spot: never a distro package, or a run would depend
+# on which node it landed on rather than on the commit. Keep this recent: GAP
+# vendors GMP, and older bundles fail configure's long-long check under a modern
+# gcc ("could not find a working compiler").
+: "${GAP_VERSION:=4.15.1}"
+: "${GAP_URL:=https://github.com/gap-system/gap/releases/download/v${GAP_VERSION}/gap-${GAP_VERSION}.tar.gz}"
+
+# SgpDec, the GAP package the Krohn-Rhodes path consumes.
+: "${SGPDEC_VERSION:=v1.2.0}"
+: "${SGPDEC_URL:=https://github.com/gap-packages/sgpdec/releases/download/${SGPDEC_VERSION}/sgpdec-1.2.0.tar.gz}"
+
+# libDDD and libITS, for the symbolic path. Cloned into build/, installed into
+# opt/its; only libITS's gal expression component is consumed.
+: "${LIBDDD_REPO:=https://github.com/lip6/libDDD}"
+: "${LIBITS_REPO:=https://github.com/lip6/libITS}"
+
+# SgpDec's transitive dependencies, in the GAP distribution but not installed by
+# GAP's `make install`. Four of them carry kernel modules that must be compiled
+# (io, orb, datastructures, digraphs, semigroups); semigroups vendors libsemigroups
+# and dominates the build time. Order is irrelevant, BuildPackages.sh sorts it out.
+: "${GAP_PKGS:=gapdoc io orb datastructures digraphs genss images semigroups}"
+
 # Where reap.sh deposits a fetched run, relative to the local repo root.
 : "${LOCAL_RESULTS:=results/cluster}"
 

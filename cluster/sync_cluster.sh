@@ -7,11 +7,10 @@
 #
 # The local working tree is irrelevant: only what is pushed can run. An unpushed
 # HEAD is therefore fatal — the cluster fetches from origin and could not reach
-# it — while uncommitted changes are ignored entirely, since they do not travel.
-# Pushing to get a cluster run is the point: it means it was tested locally first.
+# it — while uncommitted changes are ignored, since they do not travel.
 #
-# Pushing is never done here. If HEAD is not on the remote, this says so and
-# stops; running `git push` is the user's call.
+# Pushing is never done here; an unpushed HEAD is reported and nothing else
+# happens.
 #
 # Usage: cluster/sync_cluster.sh
 

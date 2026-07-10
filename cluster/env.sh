@@ -32,12 +32,16 @@ if [ -n "$_spot_prefix" ]; then
 fi
 unset _lib _sp _spot_prefix
 
-# GAP, installed by install_gap.sh into opt/gap. The bin/ holds a wrapper that
-# adds that prefix as a GAP root, so pkg/sgpdec loads; the code spawns a bare
-# `gap` and finds it here.
-if [ -x "$OARRUN_ROOT/opt/gap/bin/gap" ]; then
-    export PATH="$OARRUN_ROOT/opt/gap/bin:$PATH"
-fi
+# GAP, built by build_gap.sh into opt/gap. Prepended unconditionally, not only
+# when present: our directory must win the PATH lookup whatever the machine
+# carries, and a missing build should surface as `gap: command not found` rather
+# than as a silent fall-through to a system install of another version.
+export PATH="$OARRUN_ROOT/opt/gap/bin:$PATH"
+
+# libDDD + libITS, built by build_its.sh into opt/its. Named rather than placed
+# on a search path: the CMake build takes this prefix as a hint directly, which
+# leaves its own default (a deps/ dir beside it) intact.
+export LIBDDD_HOME="$OARRUN_ROOT/opt/its"
 
 # So that `python3 -m aut2ltl ...` resolves the package from the root whatever
 # the command's own working directory.

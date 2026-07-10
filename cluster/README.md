@@ -23,10 +23,11 @@ Everything resolves from the repo root. The cluster checkout is at
 
 ## Only committed code runs
 
-`sync_cluster.sh` refuses a dirty tree or an unpushed HEAD, then checks the
-cluster out **detached at your exact HEAD commit** — not at the remote's tip. So
-a run's recorded `git_rev` names the code that ran. `git push` is never done for
-you.
+`sync_cluster.sh` checks the cluster out **detached at the local HEAD commit** —
+not at the remote's tip — so a run's recorded `git_rev` names the code that ran.
+An unpushed HEAD is refused, since the cluster fetches from origin and could not
+reach it. Uncommitted changes are ignored: they do not travel. Nothing is ever
+pushed for you, and `reap.sh` is the only transfer, always cluster to local.
 
 ## Contract for the commands
 
@@ -81,13 +82,12 @@ names the split that would fit.
 
 ## The submit host does nothing
 
-It is provisioned for submission only, and was once crashed by a background
-process. So: `oarrun.sh` makes K immediate `oarsub` calls and exits, `reap.sh`
-only reads files. No backgrounding there, no `nohup`, no poll loop anywhere on
-the cluster — progress is observed by calling `reap.sh` again from the client.
+It is provisioned for submission, not for work. `oarrun.sh` makes K immediate
+`oarsub` calls and exits; `reap.sh` only reads files. No backgrounding there, no
+`nohup`, no poll loop anywhere on the cluster — progress is observed by calling
+`reap.sh` again from the client.
 
-Compute nodes have network, so nothing needs fetching on its behalf either: the
-provisioning job downloads its own sources.
+Compute nodes have network, so the provisioning job downloads its own sources.
 
 ## Provisioning: from scratch, inside the folder
 
@@ -114,16 +114,18 @@ CPython ABI and one glibc, and the fleet is heterogeneous.
 32-acceptance-set ceiling, which our automata cross; a skipped oracle is not a
 verified one.
 
-**GAP + SgpDec** come from `install_gap.sh` (repo root), into `opt/gap/`. It
-takes a distro GAP when one exists and root is available, and builds from source
-otherwise, so a node without `sudo` provisions itself. SgpDec is installed into
-`opt/gap/pkg/`, and `opt/gap/bin/gap` is a generated wrapper that runs the real
-GAP with the prefix as an extra GAP root.
+**GAP + SgpDec.** `build_gap.sh` builds GAP from source into `opt/gap/` and
+installs SgpDec into `opt/gap/pkg/`. There is no distro-package path: a result
+must be a function of the commit, not of the GAP a given node happens to carry.
+`opt/gap/bin/gap` is a generated wrapper that adds the prefix as an extra GAP
+root and carries `libgap.so` on the loader path, which GAP's own (self-described
+experimental) `make install` does not.
 
-`env.sh` puts both on `PATH` (plus Spot on `LD_LIBRARY_PATH`/`PYTHONPATH`).
-Nothing in `aut2ltl/` changed for any of this: `bls/gap/runner.py` spawns a bare
-`gap` and gets the wrapper; `import spot` resolves from the prefix.
-`provision.sh` ends by proving both.
+`env.sh` prepends both prefixes to `PATH` unconditionally, so ours win the lookup
+and a missing build fails loudly instead of silently resolving to a system tool.
+No source file changed for any of this: `bls/gap/runner.py` spawns a bare `gap`
+and gets the wrapper; `import spot` resolves from the prefix. `provision.sh` ends
+by proving each tool resolves under `opt/`, not merely that it runs.
 
 ## Files
 
@@ -131,8 +133,9 @@ Nothing in `aut2ltl/` changed for any of this: `bls/gap/runner.py` spawns a bare
 |---|---|
 | `config.sh` | client-side settings (host, paths, defaults); all overridable from the environment |
 | `env.sh` | in-job environment on a compute node; finds `opt/spot-*` and `opt/gap` from the root |
-| `provision.sh` | build spot + install gap into `opt/`; runs on any Linux, no root |
+| `provision.sh` | build spot + gap into `opt/`; runs on any Linux, no root |
 | `build_spot.sh` | read the tracked version, fetch, out-of-tree build with Python bindings |
+| `build_gap.sh` | build GAP from source, install SgpDec, write the `gap` wrapper |
 | `sync_cluster.sh` | check out the cluster at this tree's HEAD (committed + pushed only) |
 | `oarrun.sh` | submit a command list as K jobs |
 | `oarsub.sh` | submit a single command |

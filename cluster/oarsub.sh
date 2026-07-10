@@ -44,7 +44,9 @@ done
 # Multiple words are joined verbatim: the job runs the line through `bash -c`,
 # so an already-quoted single argument and a bare argv both behave as typed.
 CMD="$*"
-[ -n "$NAME" ] || NAME="$(basename "${1%% *}")"
+# The command's program name, without a directory or a script suffix: it becomes
+# part of the run id and of the OAR job name.
+[ -n "$NAME" ] || NAME="$(basename "${1%% *}" | sed 's/\.[a-zA-Z0-9]*$//')"
 
 CMDS="$(mktemp)"
 trap 'rm -f "$CMDS"' EXIT
