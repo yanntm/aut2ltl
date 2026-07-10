@@ -19,12 +19,12 @@ RUN=$(cluster/oarrun.sh --split 4 --cores 64 cmds.txt)
 cluster/reap.sh "$RUN"                         # call again for progress
 ```
 
-Provisioning is an ordinary job, run when a dependency moves:
+Provisioning, run when a dependency moves. Three jobs, one per dependency, in
+parallel — they are independent and write to disjoint prefixes:
 
 ```bash
 cluster/sync_cluster.sh
-cluster/reap.sh "$(cluster/oarsub.sh --timeout 0 --cores 10 --walltime 3:00:00 \
-                     -- cluster/provision.sh)"
+cluster/reap.sh "$(cluster/deploy.sh)"       # --force to rebuild matching versions
 ```
 
 Locally, no cluster involved:
@@ -37,6 +37,13 @@ source cluster/env.sh         # put them on PATH / PYTHONPATH / LIBDDD_HOME
 ---
 
 ## Commands and flags
+
+### `deploy.sh [--force] [oarrun options...]` → prints a run id
+
+Submits three jobs, one per dependency, each `cluster/provision.sh --<dep>-only`,
+with `--cores $BUILD_JOBS --timeout 0 --walltime $SPOT_BUILD_WALLTIME`. They run
+concurrently on three machines. `reap.sh` reports `3/3` when all are done, and
+names the failing one otherwise.
 
 ### `provision.sh [--force] [--spot-only|--gap-only|--its-only]`
 
@@ -266,6 +273,7 @@ root-anchored in `.gitignore`.
 |---|---|
 | `config.sh` | every default; overridable from the environment |
 | `env.sh` | in-job environment; sourced, never run |
+| `deploy.sh` | provision the cluster: one job per dependency, in parallel |
 | `provision.sh` | build all dependencies into `opt/` |
 | `build_spot.sh` | read the tracked version, fetch, out-of-tree build with Python bindings |
 | `build_gap.sh` | GAP from source, its package chain, the `gap` wrapper |

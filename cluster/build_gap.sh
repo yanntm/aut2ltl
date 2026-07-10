@@ -105,8 +105,12 @@ if [ "$NEED_PKGS" -eq 1 ]; then
     # The result is a SIGILL on any machine without AVX, and the install sits on
     # a shared filesystem that every node reads. BuildPackages.sh forwards
     # PACKAGE_CONFIG_ARGS_<PackageName> to that package's configure.
+    # BuildPackages.sh defaults MAKEFLAGS to -j3, which throttles the one heavy
+    # compile here (semigroups vendors libsemigroups) to three lanes whatever the
+    # job holds. It honours the variable when set.
     ( cd "$BUILD/pkg" \
-      && PACKAGE_CONFIG_ARGS_Semigroups="--disable-hpcombi" \
+      && MAKEFLAGS="-j$BUILD_JOBS" \
+         PACKAGE_CONFIG_ARGS_Semigroups="--disable-hpcombi" \
          "$BUILD/bin/BuildPackages.sh" --with-gaproot="$BUILD" $GAP_PKGS ) \
         || log "WARN: BuildPackages reported failures; the load test below is the gate"
 

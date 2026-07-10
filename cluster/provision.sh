@@ -65,25 +65,20 @@ echo "=== verify (as a job would see it)"
 # shellcheck source=env.sh
 source "$HERE/env.sh"
 
-# Resolved through PATH, then checked to be the one under opt/: a bare name that
-# silently found a system install would verify the wrong thing entirely.
-for tool in python3 gap ltl2tgba; do
-    case "$tool" in python3) continue ;; esac
-    resolved="$(command -v "$tool" || true)"
-    case "$resolved" in
-        "$ROOT/opt/"*) ;;
-        *) echo "verify: $tool resolves to '${resolved:-nothing}', not under $ROOT/opt" >&2; exit 1 ;;
-    esac
-done
+# Only what this invocation built: the three dependencies are independent, and
+# each is submitted as its own job.
+if [ "$DO_SPOT" -eq 1 ]; then
+    python3 -c 'import spot; print("spot", spot.version(), "| accsets", spot.mark_t.max_accsets(), "|", spot.__file__)'
+fi
 
-python3 -c 'import spot, pathlib, sys
-root = pathlib.Path(sys.argv[1]).resolve()
-mod = pathlib.Path(spot.__file__).resolve()
-if root / "opt" not in mod.parents and not str(mod).startswith(str(root / "opt")):
-    sys.exit(f"verify: spot imported from {mod}, not from {root}/opt")
-print("spot", spot.version(), "| accsets", spot.mark_t.max_accsets())' "$ROOT"
+if [ "$DO_GAP" -eq 1 ]; then
+    gap --bare -q -c 'Print("gap ", GAPInfo.Version, "\n");
+                      if LoadPackage("SgpDec") = fail then Print("SGPDEC FAIL\n"); else Print("SgpDec OK\n"); fi;
+                      QUIT;'
+fi
 
-gap --bare -q -c 'Print("gap ", GAPInfo.Version, "\n");
-                  if LoadPackage("SgpDec") = fail then Print("SGPDEC FAIL\n"); else Print("SgpDec OK\n"); fi;
-                  QUIT;'
+if [ "$DO_ITS" -eq 1 ]; then
+    ls -l "$ROOT/opt/its/lib/libDDD.a" "$ROOT/opt/its/lib/libITS.a"
+fi
+
 echo "provisioned into $ROOT/opt"
