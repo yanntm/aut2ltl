@@ -1,4 +1,5 @@
-"""The E0 gate — every sos2ltl probe on the triptych, one process per case.
+"""The E0 gate — every sos2ltl probe on the triptych, one process per case,
+plus the graded-band gates (the seam witness and the step_th exhibit).
 
     python3 -m tests.sos2ltl.e0_gate
 
@@ -6,7 +7,8 @@ Runs each probe as a subprocess under a per-case timeout and stops on the
 first failure. Green means: the E0 predictions of
 `research_notes/sos_toltl_experiments.md` hold end to end — read-offs,
 layers, (A)/(B) widths, certificates byte-exact, dg synthesis equivalent,
-translator verdicts, canonicity.
+translator verdicts, canonicity — and Theorem 4.13's band bricks are
+load-bearing on their census exhibits.
 """
 from __future__ import annotations
 
@@ -55,6 +57,11 @@ CASES: List[Tuple[str, ...]] = [
      "--expect", "notltl:omega"),
     ("tests.sos2ltl.e0_canon", f"{SOS}/gf_aa_parity.hoa",
      "research_notes/sos_figs/sources/gf_aa_reset.hoa"),
+    # The graded band (Thm 4.13): the seam witness accepts via the root
+    # seam disjunct, and the step_th exhibit grounds clean per class.
+    ("tests.sos2ltl.seam_gate",),
+    ("tests.sos2ltl.engine_diff",
+     "genaut/corpus/flat_canon/sos/3state1ap0acc_006478_c.sos"),
 ]
 
 

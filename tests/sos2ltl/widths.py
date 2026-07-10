@@ -3,7 +3,7 @@
 One line per input: the multiset of per-layer condition-(A) widths (None = a
 layer anchoring at no width, the scoped-fallback stratum). The tail line
 reports the corpus maximum, which is the reachability answer for the graded
-engine (Theorem 5.23 fires only where some layer needs width ≥ 2).
+engine (Theorem 4.13 fires only where some layer needs width ≥ 2).
 
     python3 -m tests.sos2ltl.widths samples/validation/hoa
 """
