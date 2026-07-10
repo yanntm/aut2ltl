@@ -26,7 +26,11 @@ distribution, so `--roll-only` clones its GitHub at HEAD, runs the project's
 own `build.sh` (maven, then a repack into one self-contained jar, RABIT
 included), and installs `opt/roll/ROLL.jar`; `env.sh` exports `ROLL_JAR` when
 that file exists. Being bytecode, it is the one artifact that ignores the
-machine-class caveat below.
+machine-class caveat below — which also sanctions the one exception to
+"nothing is copied to a machine": a host whose java is a JRE without `javac`
+and `jar` (the cluster's compute nodes) cannot build the jar but runs it fine,
+so there a `ROLL.jar` built elsewhere is copied into the checkout's
+`opt/roll/` instead, where this script then leaves it alone.
 
 ## Updating a dependency
 
