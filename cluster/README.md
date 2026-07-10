@@ -25,7 +25,8 @@ kill, dead node) has no verdict, and that never arrives — reclaim it with
 `cluster/oarrun.sh --resume "$RUN"`, which re-submits just the gaps.
 
 `cmds.txt` is one shell command per line. Each runs at the repo root with the
-dependencies (Spot, GAP + SgpDec, libDDD/libITS) already on `PATH`, and writes its
+dependencies (Spot, GAP + SgpDec, libDDD/libITS, and `$ROLL_JAR` when deployed)
+already on `PATH`, and writes its
 CSV to `$OARRUN_OUT.csv` — never to a shared file. See
 [Contract for the commands](#contract-for-the-commands).
 
@@ -61,7 +62,7 @@ cluster/reap.sh "$(cluster/oarrun.sh --split 2 --cores 4 cluster/smoke.txt)"
 **One command, not a list.** `cluster/oarsub.sh [flags] -- <command...>`, same
 machinery, same run id.
 
-**Rebuild a dependency**, when one of them moves. Three jobs, one per dependency, in
+**Rebuild a dependency**, when one of them moves. Four jobs, one per dependency, in
 parallel — they are independent and write to disjoint prefixes:
 
 ```bash
@@ -88,9 +89,9 @@ and the dependency build all go through it.
 
 ### `deploy.sh [oarrun options...]` → prints a run id
 
-Submits three jobs, one per dependency, each `deps/build_all.sh --<dep>-only`,
+Submits four jobs, one per dependency, each `deps/build_all.sh --<dep>-only`,
 with `--cores $BUILD_JOBS --timeout 0 --walltime $DEPS_BUILD_WALLTIME`. They run
-concurrently on three machines. `reap.sh` reports `3/3` when all are done, and
+concurrently on four machines. `reap.sh` reports `4/4` when all are done, and
 names the failing one otherwise.
 
 ### `sync_cluster.sh [rev]`
