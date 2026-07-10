@@ -4,10 +4,10 @@ A layer `R` (an R-class of the algebra, an SCC of `Cay(L)`) is *k-anchored*
 when the within-layer action of every word readable in `R` of length at
 least `k` is a partial identity (a neutral window, attributing nothing) or a
 partial constant (an anchor window, resetting the layer onto its target) —
-Definitions 5.4/5.5 of `research_notes/sos_toltl.md`; mixed actions are what
+Definitions 4.4/4.5 of `research_notes/sos_toltl.md`; mixed actions are what
 the condition excludes. The width ladder is monotone in `k`, and the first
 passing width is decided by one fixpoint on the layer's action sets
-(Lemma 5.6(v)): iterate the sets `𝒜_j` of within-layer actions of readable
+(Lemma 4.6(v)): iterate the sets `𝒜_j` of within-layer actions of readable
 length-`j` words, extended letter by letter, to their closing cycle.
 
 Per layer this module reports the width-1 letter classification
@@ -28,12 +28,27 @@ from sosl.sos import Invariant, Letter
 from .cayley import Cayley
 
 Window = Tuple[Letter, ...]
-"""A length-`k` word over `Σ_λ`, the graded engine's window (Def 5.5)."""
+"""A length-`k` word over `Σ_λ`, the graded engine's window (Def 4.5),
+carried by one representative letter per λ-class."""
 
 Action = Tuple[Optional[int], ...]
 """A within-layer action: for each position in the layer's sorted class
 tuple, the class reached (a member of the layer) or None (the word is not
 readable from there). The empty action (all None) is never stored."""
+
+
+@dataclass(frozen=True)
+class AnchorWindow:
+    """One anchor window of a layer: a length-`κ` word over `Σ_λ` whose
+    within-layer action is a partial constant, together with the domain
+    `dom(act_R(w))` of that action — the layer classes the word is readable
+    from. The target class is the key of the `anchor_windows` map; the domain
+    is what the graded engine's seam bricks consult (Thm 4.13: at a thread
+    node of known class `c`, `c ∈ dom(act_R(w))` squeezes the window's whole
+    span into the layer and pins its landing class)."""
+
+    word: Window
+    domain: FrozenSet[int]
 
 
 @dataclass(frozen=True)
@@ -128,7 +143,7 @@ def analyze_layer(cay: Cayley, layer_id: int) -> LayerAnchoring:
         else:
             letter_kind[a] = "mixed"
 
-    # Lemma 5.6(v): iterate 𝒜_j to its closing cycle over set space.
+    # Lemma 4.6(v): iterate 𝒜_j to its closing cycle over set space.
     width: Optional[int]
     monoid: Set[Action] = set()
     if not letter_acts:
@@ -168,23 +183,31 @@ def analyze(cay: Cayley) -> Tuple[LayerAnchoring, ...]:
 
 
 def anchor_windows(cay: Cayley, layer_id: int,
-                   kappa: int) -> Dict[int, Tuple[Window, ...]]:
-    """`A_κ(c)` per target class: the length-`kappa` words over `Σ_λ` whose
-    within-layer action is a partial constant onto `c` (Def 5.5, Thm 5.23).
+                   kappa: int) -> Dict[int, Tuple[AnchorWindow, ...]]:
+    """`An_κ(c)` per target class: the length-`kappa` words over `Σ_λ` whose
+    within-layer action is a partial constant onto `c`, each carrying its
+    domain `dom(act_R(w))` (Def 4.5, Thm 4.13).
 
-    A word is readable from `c ∈ R` iff folding it from `c` never leaves the
-    layer (right multiplication descends the R-order, so an escaped walk never
-    returns — Prop 5.21(i)); its action is constant onto its single image
+    Windows are words over `Σ_λ` — one representative letter per λ-class;
+    letters of one class share their monoid action, and the rendering `ŵ`
+    prints the whole class regardless of the representative. A word is
+    readable from `c ∈ R` iff folding it from `c` never leaves the layer
+    (right multiplication descends the R-order, so an escaped walk never
+    returns — Prop 4.11(i)); its action is constant onto its single image
     class, the diagonal case (identity on a singleton domain) included. Words
     with two or more image classes are neutral windows, attributing nothing,
-    and belong to no `A_κ(c)`."""
+    and belong to no `An_κ(c)`."""
     inv = cay.inv
     layer = cay.layers[layer_id]
     member = frozenset(layer)
-    out: Dict[int, List[Window]] = {c: [] for c in layer}
-    for combo in itertools.product(inv.alphabet.letters(), repeat=kappa):
+    reps: Dict[int, Letter] = {}
+    for a in inv.alphabet.letters():
+        reps.setdefault(inv.letter_class[a], a)
+    out: Dict[int, List[AnchorWindow]] = {c: [] for c in layer}
+    for combo in itertools.product(sorted(reps.values()), repeat=kappa):
         classes = [inv.letter_class[a] for a in combo]
         images: Set[int] = set()
+        sources: List[int] = []
         for c in layer:
             cur = c
             for d in classes:
@@ -193,6 +216,8 @@ def anchor_windows(cay: Cayley, layer_id: int,
                     break
             else:
                 images.add(cur)
+                sources.append(c)
         if len(images) == 1:
-            out[next(iter(images))].append(combo)
+            out[next(iter(images))].append(
+                AnchorWindow(word=combo, domain=frozenset(sources)))
     return {c: tuple(v) for c, v in out.items()}

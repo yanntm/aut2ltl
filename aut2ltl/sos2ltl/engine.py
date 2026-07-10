@@ -1,4 +1,4 @@
-"""C4 — the walk+window transcription engine (paper §5.2, Theorem 5.10).
+"""C4 — the walk+window transcription engine (paper §4.2, Theorem 4.10).
 
 Transcribes `Cay(L)` into the flat brick vocabulary, per layer `R` rooted
 at its entry class, with the class-memoized label `Final(c)`:
@@ -11,7 +11,7 @@ at its entry class, with the class-memoized label `Final(c)`:
     Final(c)    =  STAY∞(R,c) ∨ LEAVE(c)
 
 `W(R)` is the window engine's acceptance term: the constant verdict on a
-trivially determined layer; on a (B)-determined layer the Proposition 5.15
+trivially determined layer; on a (B)-determined layer the Proposition 5.4
 normal form over the realizable recurring-window sets — collapsed to
 `⋁_min ⋀ GF ŵ` when the accepting family is upward-closed within the
 realizable sets, the general exact-set form otherwise (with the `FG`
@@ -19,27 +19,51 @@ conjuncts restricted to realizable windows, equivalent on confined tails).
 A transient layer, and an all-rejecting one, take `W = ⊥`.
 
 A layer anchored only at a width `k ≥ 2` is transcribed by the graded
-grammar (Theorem 5.23, §5.7) at operating window width `κ = k + 1`: the
-law's trigger moves from anchor letters to anchor windows `A_κ(c)`, and a
+grammar (Theorem 4.13, §4.3) at operating window width `κ = k + 1`: the
+law's trigger moves from anchor letters to anchor windows `An_κ(c)`, a
 transient fold of depth `k` (`TR`/`TL`) threads the phase over the entry,
-where a trailing window would still straddle it:
+where a trailing window would still straddle it, and the seam bricks
+`seam(c)` close the exit-chain across that straddling band — an exit whose
+last within-layer change falls within `k` steps of the transient's end is
+certified by a window opening *inside* the transient, too early for
+`TL_0`'s `U`; the thread pins the class, so the certificate needs no
+escort (`c ∈ dom(act_R(w))` squeezes the window's span into the layer):
 
-    step_κ  =  ⋀_{c ∈ R} ⋀_{w ∈ A_κ(c)} ( ŵ → X^κ sojourn(c) )
+    step_κ  =  ⋀_{c ∈ R} ⋀_{w ∈ An_κ(c)} ( ŵ → X^κ sojourn(c) )
     TR_0(c) =  sojourn(c)
     TR_j(c) =  ⋁_{a ∈ L(c) ∪ M(c)} ( a ∧ X TR_{j−1}(c·a) )
+    seam(c)    =  ⋁_{c' ∈ R} ⋁_{w ∈ An_κ(c'), c ∈ dom(act_R(w))} ( ŵ ∧ X^κ leave(c') )
+    step_th(c) =  ⋀_{c' ∈ R} ⋀_{w ∈ An_κ(c'), c ∈ dom(act_R(w))}
+                    ( ŵ → X^κ ( sojourn(c') ∨ leave(c') ) )
     TL_0(c) =  leave(c) ∨ ( sojourn(c) ∧
-                 ( step_κ U ⋁_{c',w ∈ A_κ(c')} ( ŵ ∧ X^κ leave(c') ) ) )
+                 ( step_κ U ⋁_{c',w ∈ An_κ(c')} ( ŵ ∧ X^κ leave(c') ) ) )
     TL_j(c) =  ⋁_{a ∈ E(c)} ( a ∧ X φ_{c·a} )
-                 ∨ ⋁_{a ∈ L(c) ∪ M(c)} ( a ∧ X TL_{j−1}(c·a) )
+                 ∨ ( step_th(c) ∧ ⋁_{a ∈ L(c) ∪ M(c)} ( a ∧ X TL_{j−1}(c·a) ) )
+                 ∨ seam(c)                                        j = 1..k
     STAY∞_κ =  TR_k(r) ∧ G step_κ ∧ W(R)         Final(r) = STAY∞_κ ∨ TL_k(r)
 
 with `sojourn`, `leave`, and the letter sets unchanged from width 1.
+`step_th(c)` — the dom-restricted law at a thread node, the step-side twin
+of `seam(c)` — rides the thread's *continue* branch and nothing else. It
+closes the soundness side of the same straddling band the seam closes for
+completeness: a move at a position in `[t+k, t+2k)` has its certifying
+window opening inside the transient, where `TL_0`'s `U` asserts no
+triggers, so without it the `U`-witness can fire on letters alone while
+the true walk has already left the layer. The dom restriction keeps every
+asserted trigger truthful (the thread pins the class, and
+`c ∈ dom(act_R(w))` squeezes the window's span into the layer); on the
+exit branch it is vacuous, and on the seam branch it would wrongly demand
+a sojourn after an exit the seam itself certifies. The consequence keeps
+a `leave` arm as a valve: the pinned landing may be followed by stutters
+and an exit with no intervening move, where `sojourn`'s weak-until is cut
+by the exit letter — `leave(c')` is exactly that continuation, and a
+realized `leave` is a sound conclusion in its own right.
 
 Operating stratum (outside it `transcribe` returns None and the caller
 falls back): every layer anchored at some finite width — condition (A)
 holds; every final-candidate layer with a PASS-graded (B) width and a
 complete, conflict-free verdict table. A layer anchored at no width (the
-scoped DG fallback of Prop 5.24) is not built here. Constructors collapse
+scoped DG fallback of Prop 4.14) is not built here. Constructors collapse
 `⊤`/`⊥` structurally — deterministic identities, not a simplifier — which
 is what lets a terminal layer shed its law and reduce `STAY∞` to `W(R)`
 alone.
@@ -363,7 +387,7 @@ def _layer_flat(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
                 lets: _Letters, final: Dict[int, "spot.formula"],
                 exit_: "_Exits", rend: Rendering,
                 wterm: "spot.formula") -> None:
-    """The width-1 bricks of Theorem 5.10 (§5.2)."""
+    """The width-1 bricks of Theorem 4.10 (§4.2)."""
     layer = la.layer
     sojourn = {c: _sojourn(la, lets, c) for c in layer}
     step = _and([
@@ -389,11 +413,20 @@ def _layer_flat(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
             _trace(layer_id, "Final", c, final[c])
 
 
+def _seam(arms: Sequence[Tuple[anchoring.AnchorWindow, "spot.formula"]],
+          c: int) -> "spot.formula":
+    """`seam(c)` — the anchor-window arms readable at `c` (Thm 4.13): at a
+    thread node the class `c` is known exactly, so `c ∈ dom(act_R(w))`
+    squeezes the window's whole span into the layer, pins its landing class,
+    and `leave` concludes — the certificate needs no escort."""
+    return _or([term for w, term in arms if c in w.domain])
+
+
 def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
                   k: int, lets: _Letters, final: Dict[int, "spot.formula"],
                   exit_: "_Exits", rend: Rendering,
                   wterm: "spot.formula") -> None:
-    """The graded bricks of Theorem 5.23 (§5.7) for a `k`-anchored layer,
+    """The graded bricks of Theorem 4.13 (§4.3) for a `k`-anchored layer,
     operating at window width `κ = k + 1`."""
     layer = la.layer
     kappa = k + 1
@@ -402,7 +435,7 @@ def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
     aw = anchoring.anchor_windows(cay, layer_id, kappa)
 
     step = _and([
-        _implies(lets.window(w), _xn(sojourn[c], kappa))
+        _implies(lets.window(w.word), _xn(sojourn[c], kappa))
         for c in layer for w in aw[c]])
 
     def inside(c: int) -> Tuple[Letter, ...]:
@@ -416,9 +449,20 @@ def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
                       rend.group)
               for c in layer}
 
-    relay = _or([                                             # ⋁_{c',w∈A_κ(c')} ŵ ∧ X^κ leave(c')
-        _and([lets.window(w), _xn(leave[cp], kappa)])
-        for cp in layer for w in aw[cp]])
+    # One arm per anchor window (c', w): ŵ ∧ X^κ leave(c'). The relay — the
+    # `U`-witness of TL_0 — disjoins all of them; seam(c) keeps those whose
+    # domain contains the thread's class; step_th(c) asserts the law over
+    # the same dom-restricted windows on the thread's continue branch.
+    arms: List[Tuple[anchoring.AnchorWindow, "spot.formula"]] = [
+        (w, _and([lets.window(w.word), _xn(leave[cp], kappa)]))
+        for cp in layer for w in aw[cp]]
+    relay = _or([term for _, term in arms])
+    seam = {c: _seam(arms, c) for c in layer}
+    step_th = {
+        c: _and([
+            _implies(lets.window(w.word), _xn(sojourn[cp], kappa))
+            for cp in layer for w in aw[cp] if c in w.domain])
+        for c in layer}
     tl: Dict[int, "spot.formula"] = {                         # TL_0(c)
         c: _or([leave[c], _and([sojourn[c], _u(step, relay)])])
         for c in layer}
@@ -426,14 +470,18 @@ def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
         prev = tl
         tl = {c: _or([_fan(cay, lets, c, la.exits[c], exit_.key, exit_.label,
                            rend.group),
-                      _fan(cay, lets, c, inside(c), _self, prev.__getitem__,
-                           rend.group)])
+                      _and([step_th[c],
+                            _fan(cay, lets, c, inside(c), _self,
+                                 prev.__getitem__, rend.group)]),
+                      seam[c]])
               for c in layer}
 
     if _TRACE:
         for c in layer:
             _trace(layer_id, "sojourn", c, sojourn[c])
             _trace(layer_id, "leave", c, leave[c])
+            _trace(layer_id, "seam", c, seam[c])
+            _trace(layer_id, "step_th", c, step_th[c])
         _trace(layer_id, "step_kappa", None, step)
     for c in layer:
         stay = _and([tr[c], _g(step), wterm])                # STAY∞_κ(R, c)
@@ -445,7 +493,7 @@ def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
 
 
 # ------------------------------------------------------------------ #
-# Committed-accepting classes (§6.3 strength stratification).
+# Committed-accepting classes (the §4.3 committed base case).
 # ------------------------------------------------------------------ #
 def _committed(cay: Cayley, c: int) -> bool:
     """Whether every ω-word from class `c` is accepted — the tail language
@@ -471,13 +519,15 @@ def _committed(cay: Cayley, c: int) -> bool:
 # ------------------------------------------------------------------ #
 # The transcription.
 # ------------------------------------------------------------------ #
-def transcribe(inv: Invariant, k_b_max: int = 3,
-               rend: Rendering = DEFAULT) -> Optional["spot.formula"]:
-    """The defining formula of an aperiodic invariant on the anchored
-    stratum, or None when a precondition fails: some layer anchors at no
-    width (condition (A) fails — the scoped fallback is not built here), or
-    some final-candidate layer has no computable window term within width
-    `k_b_max`."""
+def labels(inv: Invariant, k_b_max: int = 3,
+           rend: Rendering = DEFAULT) -> Optional[Dict[int, "spot.formula"]]:
+    """The full class-indexed memo `Final(c)` — an exact label of the tail
+    language `T_c` for every class `c` — or None when a precondition fails:
+    some layer anchors at no width (condition (A) fails — the scoped
+    fallback is not built here), or some final-candidate layer has no
+    computable window term within width `k_b_max`. `transcribe` is the
+    root-only wrapper; the memo itself is the grounding surface for
+    per-class diagnostics."""
     cay: Cayley = build(inv)
     anch = anchoring.analyze(cay)
     if any(la.width is None for la in anch):
@@ -502,20 +552,28 @@ def transcribe(inv: Invariant, k_b_max: int = 3,
         assert term is not None
         _trace(layer_id, "window", None, term)
         committed = [c for c in la.layer if _committed(cay, c)]
-        if la.width == 1:
-            _layer_flat(cay, la, layer_id, lets, final, exit_, rend, term)
-        elif len(committed) < len(la.layer):
-            # A k≥2 (graded) layer with a non-committed class: the graded
-            # exit-chain collapse (Theorem 5.23) is not proven exact, so
-            # decline to the DG baseline rather than risk an
-            # under-approximation. A fully committed graded layer needs no
-            # brick — every class takes Final = true below.
-            return None
-        # §6.3: a committed-accepting class takes Final = true directly, its
-        # reachable region being entirely in P (co-safety template).
+        if len(committed) < len(la.layer):
+            if la.width == 1:
+                _layer_flat(cay, la, layer_id, lets, final, exit_, rend,
+                            term)
+            else:
+                _layer_graded(cay, la, layer_id, la.width, lets, final,
+                              exit_, rend, term)
+        # A committed-accepting class takes Final = true directly, its
+        # reachable region being entirely in P (the co-safety base case,
+        # paper §4.3); the constant outranks any brick, flat or graded.
         for c in committed:
             final[c] = _TT
             _trace(layer_id, "committed", c, _TT)
         exit_.built(la.layer)
 
-    return final[inv.identity]
+    return final
+
+
+def transcribe(inv: Invariant, k_b_max: int = 3,
+               rend: Rendering = DEFAULT) -> Optional["spot.formula"]:
+    """The defining formula of an aperiodic invariant on the anchored
+    stratum — the root of the `labels` memo — or None when a precondition
+    fails (see `labels`)."""
+    memo = labels(inv, k_b_max, rend)
+    return None if memo is None else memo[inv.identity]

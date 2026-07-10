@@ -41,8 +41,10 @@ complement flip; the aperiodicity read-off lives in the classifier subproject
 `sosl/sosl/sos/classify/aperiodic/` and is consumed, not duplicated),
 `witness/` (§4 certificate + the presentation-agnostic toggle replay + the dual
 scan), `dg/` (the Diekert–Gastin baseline, E4b), and `engine.py`
-(C4 — the walk+window transcription; sound, with the graded stratum deferred to
-the DG baseline, F8). The `translator.py`
+(C4 — the walk+window transcription; sound, width-1 and graded strata both
+live — Theorem 4.10 and Theorem 4.13 with the seam and `step_th` bricks,
+F8/F15; only no-width layers and window-term gaps fall to the DG
+baseline). The `translator.py`
 flow: bridge `Language → 𝓘(L)`; a step-0 group scan (a certificate replayed by
 membership against the *input* automaton before the absorbing `NOT_LTL`, a
 failed replay declining, never verdicting); on an aperiodic invariant the
@@ -50,9 +52,11 @@ transcription engine, else the dg baseline. The bridge builds `𝓘(L)` from the
 Language's base automaton (`canonical` determinizes and completes it) — the
 invariant is language-canonical, independent of the seeding presentation.
 
-The gate: `python3 -m tests.sos2ltl.e0_gate` — 27 cases, one subprocess per
+The gate: `python3 -m tests.sos2ltl.e0_gate` — 29 cases, one subprocess per
 case under a 15 s cap, SUCCESS. Individual probes `e0_{layers,anchoring,windows,
-witness,dg,translator,canon}` and `e7_dualscan` under `tests/sos2ltl/`.
+witness,dg,translator,canon}`, `e7_dualscan`, and the graded-band gates
+`seam_gate` (the Thm 4.13 seam witness) and `engine_diff` (per-class label
+grounding against the invariant, the F15 diagnostic) under `tests/sos2ltl/`.
 
 ## E0 — the triptych
 
@@ -851,7 +855,7 @@ the committed reference copies live in `results/reference/flat_canon/`.
 
 **E0 / triptych.**
 
-    python3 -m tests.sos2ltl.e0_gate                         # 27 cases, green
+    python3 -m tests.sos2ltl.e0_gate                         # 29 cases, green
     python3 -m tests.sos2ltl.e7_dualscan samples/fixtures/hoa/sos/even.sos \
         --hoa samples/fixtures/hoa/sos/even.hoa --expect even
 
@@ -871,15 +875,17 @@ the committed reference copies live in `results/reference/flat_canon/`.
     python3 -m tests.sos2ltl.e7_mechanism_probe \
         genaut/corpus/flat_canon/sos/2state1ap1acc_01681.sos   # P-level, |𝒞|=13
 
-**F8 exhibits (0 FAIL).**
+**F8/F15 exhibits (0 FAIL).**
 
     python3 -m tests.sos2ltl.engine_fails logs/flat_canon/sos2ltl/survey_*.csv   # 0 FAIL
     # window-class rendering — engine answers GF(a|!b):
     python3 -m survey --hoa genaut/corpus/flat_canon/det/1state2ap1acc_030.hoa --use sos2ltl
-    # committed classes / graded decline — engine declines, DG answers:
-    python3 -m survey --hoa genaut/corpus/flat_canon/det/2state1ap0acc_086_c.hoa --use sos2ltl
-    cat genaut/corpus/flat_canon/det/2state1ap0acc_086_c.hoa
+    # committed classes + the graded seam witness (engine renders):
+    python3 -m tests.sos2ltl.seam_gate
     cat genaut/corpus/flat_canon/sos/2state1ap0acc_086_c.sos
+    # the step_th refutation exhibit (per-class grounding, clean):
+    python3 -m tests.sos2ltl.engine_diff \
+        genaut/corpus/flat_canon/sos/3state1ap0acc_006478_c.sos
 
 **E10 branch factoring (F9–F12).**
 
