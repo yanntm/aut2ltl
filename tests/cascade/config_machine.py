@@ -157,6 +157,79 @@ def closure_at(inv: Invariant, cone: Cone, x: Node,
     return cl
 
 
+Closed = Set[Tuple[FrozenSet[Edge], int]]
+
+
+def first_returns(inv: Invariant, cone: Cone, x: Node,
+                  budget: int) -> Optional[Closed]:
+    """The first-return loops based at `x`: closed walks that touch `x` only at
+    their ends. Every closed walk at `x` is a concatenation of these, so
+    saturating them under the composition rule reproduces `CL(x)` (ALG-5's
+    saturation route). `None` on BUDGET."""
+    one = inv.identity
+    start = (x, one, frozenset())
+    seen: Set[Tuple[Node, int, FrozenSet[Edge]]] = {start}
+    frontier = [start]
+    prims: Closed = set()
+    while frontier:
+        node, d, F = frontier.pop()
+        for e in cone.out_edges.get(node, ()):
+            node2 = cone.edge_succ[e]
+            d2 = inv.mult[d][e[1]]
+            F2 = F | {e}
+            if node2 == x and d2 != one:
+                prims.add((F2, d2))          # first return: collect, do not extend
+                continue
+            st = (node2, d2, F2)
+            if st in seen:
+                continue
+            if len(seen) >= budget:
+                return None
+            seen.add(st)
+            frontier.append(st)
+    return prims
+
+
+def is_closed(inv: Invariant, cl: Closed) -> Optional[Tuple]:
+    """The ALG-5 assertion: `CL(x)` is closed under
+    `(F₁,d₁),(F₂,d₂) ↦ (F₁∪F₂, M(d₁,d₂))`. Returns `None` if closed, else a
+    witness `(a, b, composite)` whose composite is missing."""
+    for F1, d1 in cl:
+        for F2, d2 in cl:
+            comp = (F1 | F2, inv.mult[d1][d2])
+            if comp not in cl:
+                return ((F1, d1), (F2, d2), comp)
+    return None
+
+
+def saturate(inv: Invariant, seeds: Closed) -> Closed:
+    """Close `seeds` under the composition rule to a fixpoint — the saturation
+    alternative to raw exploration (ALG-5 note)."""
+    out: Closed = set(seeds)
+    frontier = list(seeds)
+    while frontier:
+        F1, d1 = frontier.pop()
+        for F2, d2 in list(out):
+            comp = (F1 | F2, inv.mult[d1][d2])
+            if comp not in out:
+                out.add(comp)
+                frontier.append(comp)
+    return out
+
+
+def all_closures(inv: Invariant, R: FrozenSet[int], k: int,
+                 budget: int = 10 ** 6) -> Dict[Tuple[int, Node], Closed]:
+    """Per-base `CL(x)` over every entry cone — the raw ALG-5 output, keyed by
+    `(entry c, base x)`. `None` values mark BUDGET-hit bases."""
+    sigma = quotient_letters(inv)
+    out: Dict[Tuple[int, Node], Closed] = {}
+    for c in sorted(R):
+        cone = build_cone(inv, R, c, k, sigma)
+        for x in cone.fm_nodes:
+            out[(c, x)] = closure_at(inv, cone, x, budget)
+    return out
+
+
 @dataclass
 class Decision:
     """ALG-6 output for one layer at one width. `verdicts[F]` is `VerdictSet(F)`;
