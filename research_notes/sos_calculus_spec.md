@@ -7,7 +7,7 @@
 | CAL1–CAL3: the package `sosl/sosl/sos/calculus/` (§2–§3) | **DONE** — implemented, harness 1–8 green, gates in `sosl/tests/calculus/` |
 | soundness harness (§4) | **DONE** — green corpus-wide |
 | stutter read-off (§8.6) | **DONE** — `is_stutter_invariant` lives in `sosl.sos.classify` (a classification, not a calculus op) and rides the `.cat` sidecar; `tests/calculus/stutter.py` cross-checks it against the exact §8.6 search |
-| CAL4: the experimental campaign (§8; sub-milestones §8.10) | **TODO** — nothing run yet; §8 is the work order |
+| CAL4: the experimental campaign (§8; sub-milestones §8.10) | **IN PROGRESS** — V2 (CAL4c) + V1a delivered to `reference/calculus/`; remaining: V1b (CAL4a), V1c (CAL4b), V3 (CAL4d) |
 | hull surgeries + ladder read-offs (safety closure / interior / liveness part / `is_obligation`) | **OPTIONAL TODO** — theory delivered (paper §3.6, Prop 3.5 + Thm 3.10); milestone CAL5 in §6 |
 | exponential frontier (`W·L`, `W^ω`, `remove_ap`), NBA exits, CLI, learner integration | **NON-GOALS** here (see §6) |
 
@@ -356,7 +356,7 @@ The experiments are specified in full in §8; this is the index.
 | id | what | spec | status |
 |---|---|---|---|
 | V0 | gate: harness 1–8 green (triptych, named cases, corpus sample) — blocking for everything else | §4 | **DONE** |
-| V1a | alignment-ratio distribution (uniform / large / related populations) | §8.3 | TODO |
+| V1a | alignment-ratio distribution (uniform / large / related populations) | §8.3 | **DONE** — `reference/calculus/v1_align_ratio.md`, 6200 pairs, uniform median 0.174, related 0.063 < uniform, F2=0 |
 | V1b | operation costs, calculus vs Spot, counts + warm timings | §8.4 | TODO |
 | V1c | pipeline demo: normal-form economy + entry price | §8.5 | TODO |
 | V2 | stutter read-off vs Spot over the census | §8.6 | **DONE** — `reference/calculus/v2_stutter.md`, 3938/3938 agree, 0 disagreements |
