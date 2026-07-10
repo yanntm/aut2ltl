@@ -179,14 +179,17 @@ Borel–Cantelli and finite Markov chain absorption is needed.
 
 The **topological entropy** of `L` is the exponential growth rate of its
 prefix set: `h(L) := limsup_n (1/n)·log₂ |pref_n(L)|`, where `pref_n(L)`
-is the set of length-`n` finite prefixes of members of `L`. This is the
-standard entropy of symbolic dynamics transposed from block sets to
-prefix sets [LM95, Def. 4.1.1]; for shift spaces presented by graphs it
-equals the log of the Perron eigenvalue of the adjacency matrix
-[LM95, Thm 4.3.1, Thm 4.3.3, and §4.4 for the reducible case], and the
-transposition to (prefix sets of) ω-languages is due to Staiger
-⟨Staiger 1993, pending library — see §7⟩. We prove what we use in §5, on
-our own object.
+is the set of length-`n` finite prefixes of members of `L`. This is
+Staiger's entropy of an ω-language — defined through the structure
+function of the prefix language [Sta93, Eq. (2.3) and p. 168:
+`H_F := H_{A(F)}`], itself the classical entropy of symbolic dynamics
+read on prefix sets rather than block sets [LM95, Def. 4.1.1]. Two
+classical facts we will meet again: for shift spaces presented by
+graphs, entropy is the log of the Perron eigenvalue of the adjacency
+matrix [LM95, Thm 4.3.1, Thm 4.3.3, and §4.4 for the reducible case];
+and the entropy of an ω-language equals that of its topological closure
+[Sta93, p. 168]. (Staiger normalizes `log` to base `|Σ|`; we keep
+base 2.) We prove what we use in §5, on our own object.
 
 ## 3. The generic-verdict theorem
 
@@ -431,7 +434,16 @@ the closure: `cl(L)` is the set of words all of whose prefixes are live
 a member of `cl(L)` by König's lemma — and the two entropies are growth
 rates of one prefix set. ∎
 
-Conventions and refinements: `h(∅) := 0` by fiat (empty `Live`);
+The closure identity is classical — Staiger derives `H_F = H_{cl(F)}`
+directly from `A(cl(F)) = A(F)` [Sta93, p. 168] — and our proof is the
+same identity read on the invariant; what the proposition adds is the
+*read-off*: `pref(L)` is recognized by the right-Cayley DFA with
+accepting set `Live`, so the entropy rides the same `O(n²)` liveness
+scan that already computes the safety hull, with no pruning or
+co-reachability analysis (co-reachability to `Live` *is* `Live`).
+
+Conventions and refinements: `h(∅) := 0` (Staiger's convention
+[Sta93, Eq. (2.3)]; [LM95] uses `−∞` — empty `Live` either way);
 `h(L) ≤ log₂|Σ|` always, with equality iff `Live` supports the full
 branching; entropy is monotone under inclusion (prefix sets nest) —
 a metamorphic law for the harness; on an aligned table the *relative*
@@ -478,15 +490,14 @@ every full-support noise model).
 **Measure and entropy of ω-languages.** The entropy machinery is
 symbolic dynamics: block-growth entropy and its Perron-eigenvalue
 computation for graph and sofic presentations are [LM95, Ch. 4]; the
-transposition to prefix sets of ω-languages and its finite-state theory
-are Staiger's line of work ⟨Staiger 1993, *Kolmogorov complexity and
-Hausdorff dimension*, Inform. Comput. 103(2) — pending library; his
-1985 entropy paper is unobtainable to us⟩. Rationality of `μ_p(L)` we
-re-derive (§3.4), with [CY95] as the classical carrier. Our §5 is a
-transposition of classical facts onto the canonical object, the new
-content being the identification `pref(L) = Live` and the
-closure-invariance corollary, both inherited from the calculus's hull
-theory.
+prefix-set entropy of ω-languages, its finite-state theory, and the
+closure identity `H_F = H_{cl(F)}` are Staiger's [Sta93, §2] (his 1985
+entropy paper being unobtainable to us, [Sta93] is our citable carrier
+of that line). Rationality of `μ_p(L)` we re-derive (§3.4), with [CY95]
+as the classical carrier. Our §5 is thus a transposition of classical
+facts onto the canonical object; the new content is the identification
+`pref(L) = Live` — entropy as a one-eigenvalue read-off over the same
+class set the calculus's hull theory already computes.
 
 **The algebraic line.** The syntactic ω-semigroup and its structure
 theory are [PP04]; the Wagner-degree and chain machinery on the algebra
@@ -534,7 +545,10 @@ MIT Press 2008. [VV06] Varacca, Völzer, *Temporal logics and model
 checking for fairly correct systems*, LICS 2006. [LM95] Lind, Marcus,
 *An Introduction to Symbolic Dynamics and Coding*, CUP 1995. [Sta05]
 Staiger, *The entropy of Łukasiewicz-languages*, RAIRO-ITA 39(4), 2005
-(context-free family; background only). [Sta97H] Staiger,
+(context-free family; background only). [Sta93] Staiger,
+*Kolmogorov complexity and Hausdorff dimension*, Inform. Comput.
+103(2):159–194, 1993 (scan — read via images; entropy of ω-languages:
+§2, Eq. (2.3), closure identity p. 168). [Sta97H] Staiger,
 *ω-Languages*, Handbook of Formal Languages vol. 3, 1997 (in library as
 `Rozenberg_Salomaa_1997_HandbookVol3.pdf`, printed pp. 339–387; Wagner
 hierarchy survey — contains no entropy or measure material). [CP97]
@@ -545,6 +559,5 @@ Selivanov, Wagner (Fund. Inform. 2008). [SωS26],
 line, as in the calculus paper.
 
 Pending library acquisition (do not cite in submitted form until read):
-Staiger, *Kolmogorov complexity and Hausdorff dimension*, Inform.
-Comput. 103(2):159–194, 1993; Kwiatkowska–Norman–Parker CAV 2011;
-Chatterjee–Doyen–Henzinger ToCL 2010.
+Kwiatkowska–Norman–Parker CAV 2011; Chatterjee–Doyen–Henzinger ToCL
+2010.
