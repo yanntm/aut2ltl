@@ -83,6 +83,14 @@ def relabel_hoa(text: str, sigma: "Tuple[Tuple[int, ...], int]", k: int) -> str:
 _CORPUS = os.path.normpath(
     os.path.join(os.path.dirname(__file__), os.pardir, "corpus"))
 
+# Where a run writes. Never the read root: a generated tier is adopted into the
+# tracked corpus by a separate, deliberate copy, never by the run that made it.
+# The layout beneath is the corpus's own, so a run's output and the corpus differ
+# only in their root.
+_OUT = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
+                 "logs", "genaut", "corpus"))
+
 # Heavy shapes whose sheer language count dominates any composition read (their
 # large-alphabet blow-up is a separate concern); excluded from flat by default.
 _DEFAULT_EXCLUDE = ("2state2ap0acc",)
@@ -157,11 +165,14 @@ def discover(corpus: str, exclude: Tuple[str, ...]) -> List[Source]:
     return sorted(out, key=lambda s: s.order)
 
 
-def flatten(corpus: str, exclude: Tuple[str, ...]) -> Dict:
-    """Copy one representative per distinct language into `corpus/flat/`, keeping
-    the smallest-shape source, and return the composition record."""
-    flat_det = os.path.join(corpus, "flat", "det")
-    flat_sos = os.path.join(corpus, "flat", "sos")
+def flatten(corpus: str, out_root: str, exclude: Tuple[str, ...]) -> Dict:
+    """Copy one representative per distinct language into `<out_root>/flat/`,
+    keeping the smallest-shape source, and return the composition record.
+
+    Reads the census tiers under `corpus`, writes under `out_root`: a run never
+    writes where it read."""
+    flat_det = os.path.join(out_root, "flat", "det")
+    flat_sos = os.path.join(out_root, "flat", "sos")
     for d in (flat_det, flat_sos):
         shutil.rmtree(d, ignore_errors=True)
         os.makedirs(d, exist_ok=True)
@@ -205,14 +216,14 @@ def flatten(corpus: str, exclude: Tuple[str, ...]) -> Dict:
                           "sampled": sum(r["new_langs"] for r in rows if not r["exhaustive"])},
         "by_colours": dict(_tally(rows, "c")),
     }
-    _write_census(os.path.join(corpus, "flat"), record)
-    with open(os.path.join(corpus, "flat", "flat.json"), "w") as fh:
+    _write_census(os.path.join(out_root, "flat"), record)
+    with open(os.path.join(out_root, "flat", "flat.json"), "w") as fh:
         json.dump(record, fh, indent=2)
     return record
 
 
-def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
-    """Materialize `corpus/flat_canon/` — one representative per distinct language
+def build_canon(corpus: str, out_root: str, exclude: Tuple[str, ...]) -> Dict:
+    """Materialize `<out_root>/flat_canon/` — one representative per distinct language
     **up to AP relabeling** (`B_k` orbit-min, `sosl.sos.relabel`). Each kept
     language's det HOA and `.sos` are relabeled into the same canonical labeling
     (σ* applied to both), so the pair is consumable as-is; the smallest-shape
@@ -225,8 +236,8 @@ def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
     from sosl.sos.io.serialize import dump_invariant, load_invariant  # noqa: E402
     from sosl.sos.relabel import canonical_relabeling      # noqa: E402
 
-    det_dir = os.path.join(corpus, "flat_canon", "det")
-    sos_dir = os.path.join(corpus, "flat_canon", "sos")
+    det_dir = os.path.join(out_root, "flat_canon", "det")
+    sos_dir = os.path.join(out_root, "flat_canon", "sos")
     for d in (det_dir, sos_dir):
         shutil.rmtree(d, ignore_errors=True)
         os.makedirs(d, exist_ok=True)
@@ -316,8 +327,8 @@ def build_canon(corpus: str, exclude: Tuple[str, ...]) -> Dict:
                           "sampled": sum(r["new_langs"] for r in rows if not r["exhaustive"])},
         "by_colours": dict(_tally(rows, "c")),
     }
-    _write_canon_census(os.path.join(corpus, "flat_canon"), record)
-    with open(os.path.join(corpus, "flat_canon", "flat_canon.json"), "w") as fh:
+    _write_canon_census(os.path.join(out_root, "flat_canon"), record)
+    with open(os.path.join(out_root, "flat_canon", "flat_canon.json"), "w") as fh:
         json.dump(record, fh, indent=2)
     return record
 
@@ -422,19 +433,23 @@ def _write_canon_census(canon_dir: str, r: Dict) -> None:
 
 def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description="Build corpus/flat/ (cross-shape language union).")
-    ap.add_argument("--corpus", default=_CORPUS, help="corpus root (default genaut/corpus)")
+    ap.add_argument("--corpus", default=_CORPUS,
+                    help="corpus root to READ (default genaut/corpus)")
+    ap.add_argument("--out", default=_OUT,
+                    help="root to WRITE under, in corpus layout "
+                         "(default logs/genaut/corpus, ignored scratch)")
     ap.add_argument("--exclude", nargs="*", default=list(_DEFAULT_EXCLUDE),
                     help="shape tags to omit (default: the alphabet-blow-up dominators)")
     ap.add_argument("--canon", action="store_true",
-                    help="also materialize corpus/flat_canon/ (B_k relabeling fold)")
+                    help="also materialize <out>/flat_canon/ (B_k relabeling fold)")
     args = ap.parse_args(argv)
-    rec = flatten(args.corpus, tuple(args.exclude))
+    rec = flatten(args.corpus, args.out, tuple(args.exclude))
     print(f"[flat] {rec['total_langs']} distinct languages from {rec['sources']} sources "
           f"(exhaustive {rec['by_exhaustive']['exhaustive']}, "
           f"sampled {rec['by_exhaustive']['sampled']}); "
           f"excluded {rec['excluded']}")
     if args.canon:
-        crec = build_canon(args.corpus, tuple(args.exclude))
+        crec = build_canon(args.corpus, args.out, tuple(args.exclude))
         print(f"[flat_canon] {crec['primal_langs']} languages up to AP relabeling "
               f"(from {rec['total_langs']} fixed-labeling) + {crec['dual_langs']} "
               f"complements = {crec['total_langs']} complement-closed")

@@ -23,7 +23,7 @@ import os
 import sys
 from typing import List
 
-from canonize import canonize, _CORPUS
+from canonize import canonize, _CORPUS, _OUT
 
 
 def _shapes(corpus: str, tags: List[str]) -> List[str]:
@@ -40,7 +40,11 @@ def main(argv: List[str]) -> int:
     ap = argparse.ArgumentParser(prog="rebuild")
     ap.add_argument("tags", nargs="*")
     ap.add_argument("--force", action="store_true")
-    ap.add_argument("--corpus", default=_CORPUS)
+    ap.add_argument("--corpus", default=_CORPUS,
+                    help="corpus root to READ (default genaut/corpus)")
+    ap.add_argument("--out", default=_OUT,
+                    help="root to WRITE under, in corpus layout "
+                         "(default logs/genaut/corpus, ignored scratch)")
     args = ap.parse_args(argv)
 
     shapes = _shapes(args.corpus, args.tags)
@@ -54,13 +58,15 @@ def main(argv: List[str]) -> int:
         if not os.path.isdir(in_dir):
             print(f"  ! {tag}: no TGBA source, skipped", file=sys.stderr)
             continue
-        tiers = [os.path.join(args.corpus, t, tag)
+        # "already built" is asked of the OUTPUT, so a fresh scratch root always
+        # rebuilds and the tracked corpus never decides whether a run happens.
+        tiers = [os.path.join(args.out, t, tag)
                  for t in ("det", "sos", "spot_det")]
         if not args.force and all(os.path.isdir(t) for t in tiers):
             print(f"  = {tag}: already built, skipped (--force to rebuild)")
             skipped += 1
             continue
-        f = canonize(tag, in_dir, args.corpus)
+        f = canonize(tag, in_dir, args.out)
         print(f"  + {tag}: {f['tgba_in']} TGBA -> {f['spot_det']} det forms "
               f"-> {f['languages']} languages ({f['collapse']}x, {f['capped']} capped)")
         built += 1

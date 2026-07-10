@@ -19,10 +19,15 @@ language, so the language count is far below the TGBA `kept` count; the funnel
 each tier's `census.md` and composed into `SHAPES.md` by `shapes_table.py`.
 
 Usage:
-  python3 genaut/gen/canonize.py <tag> [--in DIR] [--corpus DIR]
+  python3 genaut/gen/canonize.py <tag> [--in DIR] [--corpus DIR] [--out DIR]
     <tag>     shape tag, e.g. 2state1ap1acc or 1state2ap2acc_parity
     --in      the TGBA source folder (default <corpus>/tgba/<tag>)
-    --corpus  the corpus root (default genaut/corpus)
+    --corpus  the corpus root to READ (default genaut/corpus)
+    --out     the root to WRITE under, in the corpus's own layout (default
+              logs/genaut/corpus, ignored scratch)
+
+A run writes only under `--out`; adopting a generated tier into the tracked
+corpus is a separate, deliberate copy.
 """
 from __future__ import annotations
 
@@ -50,6 +55,14 @@ from sosl.sos.core.quotient import invariant_of         # noqa: E402
 _CORPUS = os.path.normpath(
     os.path.join(os.path.dirname(__file__), os.pardir, "corpus"))
 
+# Where a run writes. Never the read root: a generated tier is adopted into the
+# tracked corpus by a separate, deliberate copy, never by the run that made it.
+# The layout beneath is the corpus's own, so a run's output and the corpus differ
+# only in their root.
+_OUT = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
+                 "logs", "genaut", "corpus"))
+
 
 def _ihash(dump: str) -> str:
     return hashlib.sha1(dump.encode()).hexdigest()[:16]
@@ -67,12 +80,15 @@ def _ap_canonical_key() -> "callable":
     return default_key
 
 
-def canonize(tag: str, in_dir: str, corpus: str) -> Dict:
+def canonize(tag: str, in_dir: str, out_root: str) -> Dict:
     """Build the `det/` and `sos/` tiers for one shape from its TGBA folder,
-    deduplicating by the syntactic `𝓘` key. Returns the funnel counts."""
-    det_dir = os.path.join(corpus, "det", tag)
-    sos_dir = os.path.join(corpus, "sos", tag)
-    spot_det_dir = os.path.join(corpus, "spot_det", tag)
+    deduplicating by the syntactic `𝓘` key. Returns the funnel counts.
+
+    Reads `in_dir`, writes under `out_root` in the corpus's own layout. The two
+    are distinct roots: a run never writes where it read."""
+    det_dir = os.path.join(out_root, "det", tag)
+    sos_dir = os.path.join(out_root, "sos", tag)
+    spot_det_dir = os.path.join(out_root, "spot_det", tag)
     for d in (det_dir, sos_dir, spot_det_dir):
         shutil.rmtree(d, ignore_errors=True)
         os.makedirs(d, exist_ok=True)
@@ -187,18 +203,23 @@ def _write_spot_det_census(spot_det_dir: str, f: Dict) -> None:
 def main(argv: List[str]) -> int:
     ap = argparse.ArgumentParser(prog="canonize")
     ap.add_argument("tag")
-    ap.add_argument("--in", dest="in_dir")
-    ap.add_argument("--corpus", default=_CORPUS)
+    ap.add_argument("--in", dest="in_dir",
+                    help="the TGBA source folder (default <corpus>/tgba/<tag>)")
+    ap.add_argument("--corpus", default=_CORPUS,
+                    help="the corpus root to READ (default genaut/corpus)")
+    ap.add_argument("--out", default=_OUT,
+                    help="the root to WRITE under, in corpus layout "
+                         "(default logs/genaut/corpus, ignored scratch)")
     args = ap.parse_args(argv)
     in_dir = args.in_dir or os.path.join(args.corpus, "tgba", args.tag)
     if not os.path.isdir(in_dir):
         print(f"no TGBA source folder: {in_dir}", file=sys.stderr)
         return 1
-    f = canonize(args.tag, in_dir, args.corpus)
+    f = canonize(args.tag, in_dir, args.out)
     print(f"[{f['tag']}] {f['tgba_in']} TGBA -> {f['spot_det']} determinized "
           f"forms (structural) -> {f['languages']} languages (semantic) "
           f"({f['collapse']}x collapse, {f['capped']} capped) "
-          f"-> corpus/{{det,sos,spot_det}}/{f['tag']}/")
+          f"-> {args.out}/{{det,sos,spot_det}}/{f['tag']}/")
     return 0
 
 

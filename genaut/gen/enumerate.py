@@ -4,15 +4,18 @@ For a Shape (states/APs/acc sets) this enumerates every combo of the slot model
 (shape.combo_at order), runs one spot.postprocess(Small, Generic) pass on each,
 and applies the two pre-write dedup gates — byte-identical md5, then the shared
 AP-canonical key (polarity o names) from survey.normalize — before writing one HOA
-per survivor to genaut/raw/<tag>/<tag>_<id>.hoa (the file carries its own shape, so
+per survivor to <out>/<tag>/<tag>_<id>.hoa (the file carries its own shape, so
 it is self-identifying out of its folder). A twin is never built into a file. See
 algorithm.md.
 
 Usage:
-  python3 genaut/gen/enumerate.py [SHAPE] [LIMIT]
+  python3 genaut/gen/enumerate.py [SHAPE] [LIMIT] [--out DIR]
     SHAPE  nstates,naps,nacc[,acc]   (default 2,1,1 — the legacy census; acc
            defaults to "gba" generalized-Büchi, "parity" for the Fin/Inf ladder)
     LIMIT  smoke-test the first N combos only
+    --out  the root to write <tag>/ under (default logs/genaut/raw, ignored
+           scratch). Promoting a validated shape into corpus/tgba/<tag>/ is a
+           separate, deliberate copy.
 """
 from __future__ import annotations
 
@@ -29,8 +32,12 @@ import spot
 from shape import Shape
 from build import build_aut, reduce_aut
 
+# Where a run writes: ignored scratch, outside genaut/, one folder per shape.
+# Promoting a validated shape into the tracked corpus/tgba/<tag>/ is a separate,
+# deliberate copy — never something a run does.
 RAW_ROOT = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), os.pardir, "raw"))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
+                 "logs", "genaut", "raw"))
 
 
 def _ap_canonical_key() -> "Callable[[str], str]":
@@ -55,11 +62,11 @@ def parse_shape(token: str) -> Shape:
     return Shape(n, k, c, acc)
 
 
-def main(shape: Shape, limit: Optional[int]) -> None:
+def main(shape: Shape, limit: Optional[int], out_root: str = RAW_ROOT) -> None:
     if shape.naps < 1:                  # 0-AP = one-letter alphabet: only 0/1, no content
         raise SystemExit(f"{shape.tag}: 0-AP shapes are linguistically empty "
                          "(the only languages are 0 and 1) — not censused.")
-    out_dir = os.path.join(RAW_ROOT, shape.tag)
+    out_dir = os.path.join(out_root, shape.tag)
     shutil.rmtree(out_dir, ignore_errors=True)   # start clean: no stale survivors
     os.makedirs(out_dir, exist_ok=True)
     bdict = spot.make_bdd_dict()
@@ -124,6 +131,11 @@ def _write_census(out_dir: str, shape: Shape, combos: int, byte_distinct: int,
 
 if __name__ == "__main__":
     args = sys.argv[1:]
+    out_root = RAW_ROOT
+    if "--out" in args:                     # positional SHAPE/LIMIT keep their places
+        i = args.index("--out")
+        out_root = args[i + 1]
+        del args[i:i + 2]
     shp = parse_shape(args[0]) if args else Shape(2, 1, 1)
     lim = int(args[1]) if len(args) > 1 else None
-    main(shp, lim)
+    main(shp, lim, out_root)
