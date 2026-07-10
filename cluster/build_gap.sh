@@ -100,7 +100,14 @@ done
 
 if [ "$NEED_PKGS" -eq 1 ]; then
     log "building GAP packages: $GAP_PKGS"
-    ( cd "$BUILD/pkg" && "$BUILD/bin/BuildPackages.sh" --with-gaproot="$BUILD" $GAP_PKGS ) \
+    # semigroups vendors libsemigroups, which enables HPCombi and compiles it with
+    # -mavx whenever the *compiler* accepts the flag -- the CPU is never asked.
+    # The result is a SIGILL on any machine without AVX, and the install sits on
+    # a shared filesystem that every node reads. BuildPackages.sh forwards
+    # PACKAGE_CONFIG_ARGS_<PackageName> to that package's configure.
+    ( cd "$BUILD/pkg" \
+      && PACKAGE_CONFIG_ARGS_Semigroups="--disable-hpcombi" \
+         "$BUILD/bin/BuildPackages.sh" --with-gaproot="$BUILD" $GAP_PKGS ) \
         || log "WARN: BuildPackages reported failures; the load test below is the gate"
 
     for p in $GAP_PKGS; do
@@ -172,11 +179,26 @@ log "wrote wrapper $PREFIX/bin/gap"
 # --- verify ------------------------------------------------------------------
 
 log "verifying SgpDec loads"
-OUT="$("$PREFIX/bin/gap" --bare -q -c \
-    'if LoadPackage("SgpDec") = fail then Print("LOAD_FAIL\n"); else Print("LOAD_OK\n"); fi; QUIT;' 2>&1)"
-if ! printf '%s' "$OUT" | grep -q LOAD_OK; then
-    printf '%s\n' "$OUT" >&2
-    die "SgpDec failed to load from $SGPDEC_DIR"
+
+# Streamed to a file rather than captured in a variable: a GAP that dies on a
+# signal (SIGILL from a package's kernel module, say) leaves the shell no output
+# to print, and under set -e the script would abort with the exit status alone.
+# The status is taken by hand so the log survives either way.
+VERIFY_LOG="$ROOT/build/gap-verify.log"
+set +e
+"$PREFIX/bin/gap" --bare -q -c \
+    'if LoadPackage("SgpDec") = fail then Print("LOAD_FAIL\n"); else Print("LOAD_OK\n"); fi; QUIT;' \
+    >"$VERIFY_LOG" 2>&1
+VERIFY_RC=$?
+set -e
+
+if [ "$VERIFY_RC" -ge 128 ]; then
+    cat "$VERIFY_LOG" >&2
+    die "gap died on signal $((VERIFY_RC - 128)) while loading SgpDec (see $VERIFY_LOG)"
+fi
+if ! grep -q LOAD_OK "$VERIFY_LOG"; then
+    cat "$VERIFY_LOG" >&2
+    die "SgpDec failed to load from $SGPDEC_DIR (gap exited $VERIFY_RC)"
 fi
 
 # Written last and only here: an interrupted or unloadable install carries no
