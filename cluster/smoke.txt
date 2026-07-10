@@ -1,0 +1,4 @@
+printf 'dep,answer\nspot,%s\n' "$(./aut2ltl.sh -c 'import spot; print(spot.version())')" > "$OARRUN_OUT.csv"
+printf 'dep,answer\ngap,%s\n' "$(gap --bare -q -c 'Print(GAPInfo.Version,"\n"); QUIT;' | tail -1)" > "$OARRUN_OUT.csv"
+printf 'dep,answer\nsgpdec,%s\n' "$(gap --bare -q -c 'if LoadPackage("SgpDec") = fail then Print("FAIL\n"); else Print("OK\n"); fi; QUIT;' | tail -1)" > "$OARRUN_OUT.csv"
+printf 'dep,answer\nits,%s\n' "$(test -f opt/its/lib/libITS.a && echo OK || echo FAIL)" > "$OARRUN_OUT.csv"
