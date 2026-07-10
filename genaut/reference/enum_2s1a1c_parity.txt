@@ -1,1 +1,0 @@
-[2state1ap1acc_parity] scanned 65536 combos, kept 929 AP-canonical distinct (1845 byte-distinct, 916 polarity/name twins folded pre-write) -> /home/ythierry/git/BuchiToLTL/genaut/raw/2state1ap1acc_parity/2state1ap1acc_parity_NNNNN.hoa
