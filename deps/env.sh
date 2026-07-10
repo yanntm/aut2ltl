@@ -53,3 +53,10 @@ export PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 export MKL_NUM_THREADS=1
+
+# ROLL, the sosl E3 baseline jar, when deployed (deps/build_roll.sh). Optional,
+# so exported only when present: a tree without it leaves the baseline to its
+# own default lookup rather than pointing it at a missing file.
+if [ -f "$AUT2LTL_ROOT/opt/roll/ROLL.jar" ]; then
+    export ROLL_JAR="$AUT2LTL_ROOT/opt/roll/ROLL.jar"
+fi
