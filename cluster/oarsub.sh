@@ -7,9 +7,12 @@
 #
 # Usage: cluster/oarsub.sh [oarrun options...] -- <command...>
 #   Everything before `--` goes to oarrun.sh (see its --help); everything after
-#   is the command, run through `bash -c` from the repo root.
+#   is the command, run through `bash -c` from the repo root. Several words are
+#   an argv, reproduced on the node exactly as given; for shell syntax (pipes,
+#   `&&`, redirects), pass the whole line as ONE quoted argument, taken verbatim.
 #
 #   cluster/oarsub.sh --timeout 0 -- python3 -m survey --folder samples/validation
+#   cluster/oarsub.sh -- 'source deps/env.sh && java -jar "$ROLL_JAR" help'
 #
 # Prints the run id on stdout; collect with `cluster/reap.sh <runid>`.
 
@@ -26,7 +29,17 @@ done
 
 CMDS="$(mktemp)"
 trap 'rm -f "$CMDS"' EXIT
-printf '%s\n' "$*" >"$CMDS"
+# One argument is a shell line, taken verbatim -- cmds.txt semantics. Several
+# arguments are an argv: re-quote each word, because quoting does not survive
+# a bare "$*" join -- the node's `bash -c` would take only the first word as
+# its script (e.g. `-- bash -c 'a && b'` used to run the one-word script
+# `bash -c a` with the rest re-parsed by the outer shell).
+if [ $# -eq 1 ]; then
+    printf '%s\n' "$1" >"$CMDS"
+else
+    LINE="$(printf '%q ' "$@")"
+    printf '%s\n' "${LINE% }" >"$CMDS"
+fi
 
 # Not exec'd: the trap must still fire, and oarrun.sh has copied the list to the
 # cluster by the time it returns. --name defaults to the command's program.
