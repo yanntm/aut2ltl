@@ -7,7 +7,7 @@
 | CAL1–CAL3: the package `sosl/sosl/sos/calculus/` (§2–§3) | **DONE** — implemented, harness 1–8 green, gates in `sosl/tests/calculus/` |
 | soundness harness (§4) | **DONE** — green corpus-wide |
 | stutter read-off (§8.6) | **DONE** — `is_stutter_invariant` lives in `sosl.sos.classify` (a classification, not a calculus op) and rides the `.cat` sidecar; `tests/calculus/stutter.py` cross-checks it against the exact §8.6 search |
-| CAL4: the experimental campaign (§8; sub-milestones §8.10) | **IN PROGRESS** — CAL4a (V1a+V1b) + CAL4c (V2) delivered to `reference/calculus/`; remaining: V1c (CAL4b), V3 (CAL4d) |
+| CAL4: the experimental campaign (§8; sub-milestones §8.10) | **IN PROGRESS** — CAL4a (V1a+V1b), CAL4b (V1c), CAL4c (V2) delivered to `reference/calculus/`; remaining: V3 (CAL4d), then patch the paper's five TBD slots |
 | hull surgeries + ladder read-offs (safety closure / interior / liveness part / `is_obligation`) | **OPTIONAL TODO** — theory delivered (paper §3.6, Prop 3.5 + Thm 3.10); milestone CAL5 in §6 |
 | exponential frontier (`W·L`, `W^ω`, `remove_ap`), NBA exits, CLI, learner integration | **NON-GOALS** here (see §6) |
 
@@ -383,7 +383,7 @@ The experiments are specified in full in §8; this is the index.
 | V0 | gate: harness 1–8 green (triptych, named cases, corpus sample) — blocking for everything else | §4 | **DONE** |
 | V1a | alignment-ratio distribution (uniform / large / related populations) | §8.3 | **DONE** — `reference/calculus/v1_align_ratio.md`, 6200 pairs, uniform median 0.174, related 0.063 < uniform, F2=0 |
 | V1b | operation costs, calculus vs Spot, counts + warm timings | §8.4 | **DONE** — `reference/calculus/v1_ops.md`, 8100 rows over 1000 pairs / 1550 langs, F2=0; intersection object via new `calculus.product` |
-| V1c | pipeline demo: normal-form economy + entry price | §8.5 | TODO |
+| V1c | pipeline demo: normal-form economy + entry price | §8.5 | **DONE** — `reference/calculus/v1_pipeline.md`, 20 pairs / 4 stages, F2=0; re-check byte-compare vs `equivalent_to`, entry-price row |
 | V2 | stutter read-off vs Spot over the census | §8.6 | **DONE** — `reference/calculus/v2_stutter.md`, 3938/3938 agree, 0 disagreements |
 | V3 | Prop 3.4 blow-up check, `W·L_n` for n = 2..5 | §8.7 | TODO |
 
@@ -805,7 +805,8 @@ it stays a theory item.
 - **CAL4a** — V1a + V1b delivered (items 1–2, 6 of §8.9). **DONE** —
   `reference/calculus/v1_align_ratio.md`, `v1_ops.md`; headline paragraph in
   `v1_ops.md`.
-- **CAL4b** — V1c delivered (item 3). TODO.
+- **CAL4b** — V1c delivered (item 3). **DONE** —
+  `reference/calculus/v1_pipeline.md`.
 - **CAL4c** — V2 delivered, zero unexplained disagreements (item 4).
   **DONE** — `reference/calculus/v2_stutter.md`, 3938/3938 agree.
 - **CAL4d** — V3 delivered (item 5); paper TBDs patched. TODO.
