@@ -1913,3 +1913,44 @@ withdrawn.
 
 _Reproduce (from `sosl/`):_ `python3 -m tests.sosl.exact_closure_profile
 <case_id> [--nosat]` — one case per invocation.
+
+## Status note — the sweep died with its session; the campaign moves to the cluster (2026-07-10)
+
+The guarded both-legs sweep reported "in flight" above **crashed with its
+session at 4275 / 7876 runs** (partial tallies: SOUND 3308, ACCEPTOR_ONLY 916,
+BUDGET 46, OVERSIZE 4, MISMATCH 1; guard firings in 2234 runs — routine at the
+3-state shapes, far past the early all-green extrapolation — and
+`guard_fired_final = 0` on every SOUND row so far). The lone MISMATCH is a
+**driver defect, not a byte mismatch**: `census_campaign`'s catch-all records
+any exception leaked by `run_case` as `verdict=MISMATCH`
+(`3state1ap0acc_013604`, ablation, `CAUGHT: _Budget`) — row F9 reserves
+MISMATCH for genuine byte mismatches, so the misfile must be fixed before any
+tally is banked. The partial CSV (`tests/sosl/logs/census_guard/`) is
+superseded, not resumed: the sweep re-runs fresh on the OAR cluster at
+`--budget 60`, which also discharges the `gates.txt` ask to redo the 72
+deferred dual-symmetry comparisons at a higher budget.
+
+Infra landed for that (2026-07-10, commits `af759d0de..3d5380462`): the
+cluster runner is the interface (`cluster/README.md`; shards write private
+`$OARRUN_OUT.csv`, `reap.sh` merges — which suits the sweep-now-study-later
+analyzers directly), and **ROLL is deployed cluster-side**:
+`deps/build_roll.sh` builds `opt/roll/ROLL.jar` from ROLL's GitHub HEAD where
+a JDK exists, and on the JDK-less compute nodes (headless JRE + maven, no
+`javac`/`jar` anywhere — probed) the locally built jar was copied once into
+the cluster checkout's `opt/roll/` (documented exception, `deps/README.md`).
+`baseline.py` now resolves `$ROLL_JAR` with the repo's own `opt/roll` as
+default — no path outside the tree. The named-case E3 gate reproduces the
+paired table above **byte-for-byte** through the new path (same jar revision
+`54d32d2`, ROLL HEAD unmoved since the paper numbers). A node-side smoke run
+answers green. Also fixed in passing: `cluster/oarsub.sh` lost argv quoting
+on multi-word commands (its README overstated); re-quoted, regression-tested
+on the node, contract documented.
+
+The next drop is unchanged in content — item-11a per-leg guard tallies, the
+E2 recount, the item-8 dual-symmetry assertion, wall-time line and
+LTL-agreement count — now produced from the cluster run's merged
+`results.csv`, under the `reference/` persistence floor. Owed first, in order:
+the MISMATCH-misfile fix, `--cases`/`--out-csv` sharding on `census_campaign`
+(the runner forbids shared output files), a planner cutting the catalogue to
+the runner's caps (60 s per run, ~300 s per command, 5-minute walltime), and
+the E3 leg as one command per (case, mode) submitted `--cores 4`.
