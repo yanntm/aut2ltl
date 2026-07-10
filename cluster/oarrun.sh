@@ -68,75 +68,47 @@ else
     RUNDIR="$REMOTE_RUNS/$RUNID"
 fi
 
-# The shard is sized to the walltime rather than the reverse. Advisory only: OAR
-# schedules what we submit, a job killed at walltime keeps its finished results,
-# and --resume makes finishing cheap.
-if [ "$OARRUN_TIMEOUT" -gt 0 ]; then
-    WT_SECONDS="$(awk -F: '{print $1 * 3600 + $2 * 60 + $3}' <<<"$OARRUN_WALLTIME")"
-    LANES=$(( OARRUN_SPLIT * OARRUN_CORES ))
-    WORST="$(( (N + LANES - 1) / LANES * OARRUN_TIMEOUT ))"
-    if [ "$WORST" -gt "$WT_SECONDS" ]; then
-        SUGGEST="$(( (WORST + WT_SECONDS - 1) / WT_SECONDS * OARRUN_SPLIT ))"
-        echo "warning: worst case ~${WORST}s per shard exceeds walltime ${OARRUN_WALLTIME}" >&2
-        echo "         at $OARRUN_SPLIT x $OARRUN_CORES cores; raise --split (to ~$SUGGEST) or --cores" >&2
-    fi
-fi
-
 # Cores are asked for, not taken: a resource string without a core term reserves
 # every core on the node, whatever the job's actual width. The worker reads the
 # granted allocation back from $OAR_NODEFILE, so reserved and used agree.
 RESOURCES="$OARRUN_RESOURCES/core=$OARRUN_CORES"
-
-GITREV="$(git -C "$HERE" rev-parse --short HEAD 2>/dev/null || echo unknown)"
-GITDIRTY=false
-git -C "$HERE" diff --quiet 2>/dev/null || GITDIRTY=true
-
-META="$(mktemp)"
-trap 'rm -f "$META"' EXIT
-cat >"$META" <<EOF
-{
-  "runid": "$RUNID",
-  "commands": $N,
-  "timeout_seconds": $OARRUN_TIMEOUT,
-  "split": $OARRUN_SPLIT,
-  "cores": "$OARRUN_CORES",
-  "walltime": "$OARRUN_WALLTIME",
-  "resources": "$RESOURCES",
-  "git_rev": "$GITREV",
-  "git_dirty": $GITDIRTY,
-  "submitted_at": "$(date -Is)",
-  "submitted_from": "$(hostname -s)"
-}
-EOF
+WORKER="\$HOME/$REMOTE_REPO/cluster/oar_worker.sh \$HOME/$RUNDIR"
 
 if [ "$DRY" -eq 1 ]; then
     echo "would submit $OARRUN_SPLIT job(s) for $N commands as $RUNID"
     echo "  oarsub $OARRUN_OAR_OPTS -n $RUNID.K -l $RESOURCES,walltime=$OARRUN_WALLTIME \\"
-    echo "    \"\$HOME/$REMOTE_REPO/cluster/oar_worker.sh \$HOME/$RUNDIR K $OARRUN_SPLIT $OARRUN_TIMEOUT auto\""
+    echo "    \"$WORKER K $OARRUN_SPLIT $OARRUN_TIMEOUT\""
     exit 0
 fi
 
-if [ -z "$RESUME" ]; then
+[ -n "$RESUME" ] || {
     ssh "$CLUSTER" "mkdir -p '$RUNDIR'/{out,logs,status,oar}"
     scp -q "$CMDS" "$CLUSTER:$RUNDIR/cmds.txt"
-    scp -q "$META" "$CLUSTER:$RUNDIR/meta.json"
-else
-    scp -q "$META" "$CLUSTER:$RUNDIR/meta.resume-$(date +%s).json"
-fi
+}
 
+# meta.json is written on the cluster, and records the commit checked out there:
+# the local tree is not what runs, so its revision would say nothing.
+#
 # oarsub deposits OAR.<jobid>.std{out,err} in its working directory; keep them
 # with the run. Each call returns as soon as the job is queued, so nothing of
 # ours is left running on the submit host.
 ssh "$CLUSTER" bash -s <<EOF
 set -eu
-cd "\$HOME/$RUNDIR/oar"
+cd "\$HOME/$RUNDIR"
+cat >>meta.json <<META
+{ "runid": "$RUNID", "commands": $N, "timeout_seconds": $OARRUN_TIMEOUT,
+  "split": $OARRUN_SPLIT, "cores": $OARRUN_CORES, "walltime": "$OARRUN_WALLTIME",
+  "resources": "$RESOURCES", "submitted_at": "$(date -Is)",
+  "git_rev": "\$(git -C "\$HOME/$REMOTE_REPO" rev-parse --short HEAD)" }
+META
+cd oar
 for k in \$(seq 0 $((OARRUN_SPLIT - 1))); do
     oarsub $OARRUN_OAR_OPTS \
         -n "$RUNID.\$k" \
         -l "$RESOURCES,walltime=$OARRUN_WALLTIME" \
-        "\$HOME/$REMOTE_REPO/cluster/oar_worker.sh \$HOME/$RUNDIR \$k $OARRUN_SPLIT $OARRUN_TIMEOUT auto" \
+        "$WORKER \$k $OARRUN_SPLIT $OARRUN_TIMEOUT" \
         | sed -n 's/^OAR_JOB_ID=//p'
-done >>"\$HOME/$RUNDIR/oar/jobs.txt"
+done >>jobs.txt
 echo "submitted $OARRUN_SPLIT job(s) for $N command(s) as $RUNID" >&2
 EOF
 
