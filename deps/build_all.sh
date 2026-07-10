@@ -9,6 +9,7 @@
 #   deps/build_all.sh --spot-only
 #   deps/build_all.sh --gap-only
 #   deps/build_all.sh --its-only
+#   deps/build_all.sh --roll-only  # ROLL, the sosl E3 baseline; on request only
 #
 # A dependency already built into opt/ is left alone. To replace one, remove its
 # prefix -- `rm -rf opt/gap` -- and run this again.
@@ -25,13 +26,15 @@ ROOT="$(cd "$HERE/.." && pwd)"
 DO_SPOT=1
 DO_GAP=1
 DO_ITS=1
+DO_ROLL=0
 
 case "${1:-}" in
     "")          ;;
     --spot-only) DO_GAP=0; DO_ITS=0 ;;
     --gap-only)  DO_SPOT=0; DO_ITS=0 ;;
     --its-only)  DO_SPOT=0; DO_GAP=0 ;;
-    -h|--help)   sed -n '2,17p' "$0"; exit 0 ;;
+    --roll-only) DO_SPOT=0; DO_GAP=0; DO_ITS=0; DO_ROLL=1 ;;
+    -h|--help)   sed -n '2,18p' "$0"; exit 0 ;;
     *)           echo "unknown option: $1" >&2; exit 2 ;;
 esac
 
@@ -52,6 +55,11 @@ if [ "$DO_ITS" -eq 1 ]; then
     "$HERE/build_its.sh"
 fi
 
+if [ "$DO_ROLL" -eq 1 ]; then
+    echo "=== roll"
+    "$HERE/build_roll.sh"
+fi
+
 echo "=== verify"
 # shellcheck source=env.sh
 source "$HERE/env.sh"
@@ -69,6 +77,10 @@ fi
 
 if [ "$DO_ITS" -eq 1 ]; then
     ls -l "$ROOT/opt/its/lib/libDDD.a" "$ROOT/opt/its/lib/libITS.a"
+fi
+
+if [ "$DO_ROLL" -eq 1 ]; then
+    java -jar "$ROOT/opt/roll/ROLL.jar" help 2>&1 | head -1
 fi
 
 echo "built into $ROOT/opt"
