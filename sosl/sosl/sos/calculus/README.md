@@ -26,6 +26,12 @@ return to canonical form).
   its residual-count read-off; `inverse_substitution` (relabeling, letter
   merging, alphabet extension); `saturate` / `pair_language` (is this pair set a
   language at all?).
+- **The hulls** (`surgery`, paper §3.6): `safety_closure` / `interior` /
+  `liveness_part` — the safety hull, its dual, and the Alpern–Schneider
+  liveness factor, all `O(n²)` on the same table — with the exact rung tests
+  `is_safety` / `is_cosafety` and the obligation read-offs `is_obligation` /
+  `obligation_degree` (the Wagner coordinates `(n⁺, n⁻)` as longest alternating
+  paths in the condensed right-Cayley graph).
 - **The decisions** (`decide`): `member`, `is_empty`, `is_universal`,
   `included`, `equivalent`, `intersecting_word` — each returning a `Witness`
   that is the globally minimal lasso settling the question, replayable against
@@ -41,7 +47,8 @@ return to canonical form).
     table       Table (one algebra), PairSet (one language), Val, the cell scan
                 order, and the FoldedLanguage protocol
     surgery     the free fragment: Boolean ops, rooting, saturation, inverse
-                substitution
+                substitution; the hulls (safety closure / interior / liveness
+                part) and the obligation read-offs
     align       align(A, B) -> Aligned: the generated product, verdicts read
                 componentwise
     decide      emptiness / universality / inclusion / equivalence /

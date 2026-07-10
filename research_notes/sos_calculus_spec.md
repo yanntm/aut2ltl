@@ -8,7 +8,7 @@
 | soundness harness (§4) | **DONE** — green corpus-wide |
 | stutter read-off (§8.6) | **DONE** — `is_stutter_invariant` lives in `sosl.sos.classify` (a classification, not a calculus op) and rides the `.cat` sidecar; `tests/calculus/stutter.py` cross-checks it against the exact §8.6 search |
 | CAL4: the experimental campaign (§8; sub-milestones §8.10) | **DONE** — all five V-experiments delivered to `reference/calculus/` (V1a/V1b/V1c/V2/V3); paper `⟨TBD⟩` slots filled in pure form; report `sos_calculus_report.md` carries the reproducibility (§8.9) |
-| hull surgeries + ladder read-offs (safety closure / interior / liveness part / `is_obligation`) | **OPTIONAL TODO** — theory delivered (paper §3.6, Prop 3.5 + Thm 3.10); milestone CAL5 in §6 |
+| CAL5: hull surgeries + ladder read-offs (safety closure / interior / liveness part / `is_obligation` / `obligation_degree`) | **DONE** — in `calculus.surgery`; gates `tests/calculus/hulls.py` (laws + det-HOA prefix-liveness replay) and `tests/calculus/obligation_oracle.py` (corpus-wide vs the `.cat` Wagner coordinates, 4248/4248 green) |
 | exponential frontier (`W·L`, `W^ω`, `remove_ap`), NBA exits, CLI, learner integration | **NON-GOALS** here (see §6) |
 
 An implementer starting cold reads, in order: this header, §1–§2, the
@@ -408,7 +408,13 @@ the paper.
   `reference/calculus/` per the full protocol of §8; paper `⟨TBD⟩` slots
   filled in pure form; report `sos_calculus_report.md` carries the
   reproducibility. Sub-milestones CAL4a–d all DONE (§8.10).
-- **CAL5 — hulls. [OPTIONAL TODO — theory delivered, paper §3.6.]**
+- **CAL5 — hulls. [DONE.]** Landed in `calculus.surgery`; gates green
+  (`tests/calculus/hulls.py` on sampled corpus cases incl. the 121-class
+  maximum, `tests/calculus/obligation_oracle.py` corpus-wide: 4248 rows,
+  2860 obligations, degree = sidecar everywhere). One correction against the
+  text below, found at implementation time: the corpus gate condition is
+  `max(m⁺, m⁻) ≤ 0`, not `m⁺ = m⁻ = 0` — a `-1` coordinate (no chain of that
+  polarity at all, the empty/universal convention) still is an obligation.
   `surgery.py` additions, all `O(n²)`, normative math Prop 3.5 and
   Cor 3.6–3.7 of the paper:
   - `live(table, P) -> FrozenSet[int]` — the classes `c` whose row
@@ -445,10 +451,12 @@ the paper.
   automaton, over all lassos `|u|, |v| ≤ 3`. For `is_obligation`, the
   corpus is its own oracle: the `.cat` sidecars carry the Wagner
   coordinates, and `is_obligation` must return true exactly when
-  `m⁺ = m⁻ = 0` — a corpus-wide equality gate, no Spot involved.
-  Likewise `obligation_degree` must equal the sidecar `(n⁺, n⁻)` on
-  every corpus row with `m⁺ = m⁻ = 0` (worked reference case:
-  `a*·b^ω` gives `(1, 2)`, per [CP97, Ex. 10] and paper Prop 3.11).
+  `max(m⁺, m⁻) ≤ 0` (a `-1` polarity — no chain at all, the
+  empty/universal convention — still is an obligation) — a corpus-wide
+  equality gate, no Spot involved. Likewise `obligation_degree` must
+  equal the sidecar `(n⁺, n⁻)` on every such corpus row (worked
+  reference case: `a*·b^ω` gives `(1, 2)`, per [CP97, Ex. 10] and
+  paper Prop 3.11).
 
 Non-goals for this iteration: the exponential frontier (`W·L`, `W^ω`,
 `remove_ap` — §3.4 of the paper; do not implement, do not stub); exit

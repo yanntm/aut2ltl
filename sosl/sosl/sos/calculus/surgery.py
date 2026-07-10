@@ -15,6 +15,13 @@ realizing the left quotient ``key(c)^{-1}.L``; `inverse_substitution` rewrites
 the letter map, realizing relabeling / letter merging / alphabet extension, and
 is the only one that returns a new table.
 
+The hull section (`live`, `safety_closure`, `interior`, `liveness_part` and the
+`is_safety` / `is_cosafety` / `is_obligation` / `obligation_degree` read-offs)
+costs one ``O(n^2)`` liveness scan or one ``O(n * |Sigma|)`` SCC pass: the
+topological classifications — safety closure, Alpern-Schneider decomposition,
+the obligation rung and its Wagner coordinates — as surgeries and read-offs on
+the same table.
+
 **The internal law.** Two linked pairs denote the same set of omega-words iff
 they are conjugate, so a pair set that is a *language* is closed under
 conjugation — `saturate`d. Every operation here maps saturated sets to saturated
@@ -23,7 +30,7 @@ operation (never `saturate` an output silently to hide it).
 """
 from __future__ import annotations
 
-from typing import Callable, Iterable, List, Sequence, Set, Tuple
+from typing import Callable, Dict, FrozenSet, Iterable, Iterator, List, Optional, Sequence, Set, Tuple
 
 from ..alphabet import Alphabet, Letter
 from .table import PairSet, Table
@@ -143,6 +150,186 @@ def pair_language(table: Table, pairs: Iterable[Tuple[int, int]]) -> PairSet:
     assert not illegal, f"not linked pairs: {sorted(illegal)}"
     assert is_saturated(table, frozen), "pair set is not conjugation-closed"
     return frozen
+
+
+# --- hulls: the safety closure, the interior, the liveness part -------------
+
+
+def live(table: Table, pairs: PairSet) -> FrozenSet[int]:
+    """The classes with a nonempty residual: ``c`` is live iff some right
+    multiple ``M(c, x)`` is the stem of a pair in ``pairs`` (the identity is in
+    the table, so the row of ``c`` already contains ``c`` itself). One pass over
+    the rows of ``M`` against the stem set, ``O(n^2)``."""
+    stems = {s for (s, e) in pairs}
+    return frozenset(
+        c for c in range(table.n) if not stems.isdisjoint(table.mult[c])
+    )
+
+
+def safety_closure(table: Table, pairs: PairSet) -> PairSet:
+    """The pair set of ``cl(L(pairs))``, the smallest closed (safety) superset:
+    the linked pairs whose stem is `live`. An omega-word is in the closure iff
+    every finite prefix of it is live, and that holds exactly on these pairs —
+    a closure operator on the saturated pair sets of the table (extensive,
+    monotone, idempotent)."""
+    alive = live(table, pairs)
+    return frozenset(p for p in table.linked if p[0] in alive)
+
+
+def interior(table: Table, pairs: PairSet) -> PairSet:
+    """The pair set of the interior, the largest open (co-safety) subset — the
+    dual hull ``int(L) = complement(cl(complement(L)))``: the linked pairs whose
+    stem has *every* continuation inside ``L(pairs)``."""
+    escaping = live(table, complement(table, pairs))
+    return frozenset(p for p in table.linked if p[0] not in escaping)
+
+
+def liveness_part(table: Table, pairs: PairSet) -> PairSet:
+    """The canonical liveness factor of the Alpern-Schneider decomposition:
+    ``pairs | complement(safety_closure(pairs))``. Its closure is the universal
+    language (every class is live for it), and
+    ``pairs == safety_closure(pairs) & liveness_part(pairs)``."""
+    return pairs | (table.linked - safety_closure(table, pairs))
+
+
+def is_safety(table: Table, pairs: PairSet) -> bool:
+    """Is ``L(pairs)`` a safety (closed) property? Exact: the fixpoint equation
+    ``pairs == safety_closure(pairs)`` on saturated pair sets."""
+    return pairs == safety_closure(table, pairs)
+
+
+def is_cosafety(table: Table, pairs: PairSet) -> bool:
+    """Is ``L(pairs)`` a co-safety (open, guarantee) property? Exact: the
+    fixpoint equation ``pairs == interior(pairs)``."""
+    return pairs == interior(table, pairs)
+
+
+# --- the obligation rung (Boolean combinations of safety) -------------------
+
+
+def _right_cayley_sccs(table: Table) -> Tuple[List[int], int]:
+    """The strongly connected components of the right-Cayley letter graph
+    ``c -> M(c, lambda(a))`` — Green's R-classes, since the table is
+    letter-generated. Iterative Tarjan, ``O(n * |Sigma|)``. Returns
+    ``(component of each class, component count)``; component ids are in
+    reverse topological order (every edge leaves a component toward a
+    smaller id or stays inside)."""
+    n = table.n
+    succs: List[List[int]] = [
+        sorted({table.mult[c][x] for x in table.letter_class}) for c in range(n)
+    ]
+    index: List[int] = [-1] * n
+    low: List[int] = [0] * n
+    on_stack: List[bool] = [False] * n
+    comp: List[int] = [-1] * n
+    stack: List[int] = []
+    counter = 0
+    ncomp = 0
+    for root in range(n):
+        if index[root] != -1:
+            continue
+        index[root] = low[root] = counter
+        counter += 1
+        stack.append(root)
+        on_stack[root] = True
+        work: List[Tuple[int, Iterator[int]]] = [(root, iter(succs[root]))]
+        while work:
+            v, it = work[-1]
+            descended = False
+            for w in it:
+                if index[w] == -1:
+                    index[w] = low[w] = counter
+                    counter += 1
+                    stack.append(w)
+                    on_stack[w] = True
+                    work.append((w, iter(succs[w])))
+                    descended = True
+                    break
+                if on_stack[w]:
+                    low[v] = min(low[v], index[w])
+            if descended:
+                continue
+            work.pop()
+            if work:
+                parent = work[-1][0]
+                low[parent] = min(low[parent], low[v])
+            if low[v] == index[v]:
+                while True:
+                    w = stack.pop()
+                    on_stack[w] = False
+                    comp[w] = ncomp
+                    if w == v:
+                        break
+                ncomp += 1
+    return comp, ncomp
+
+
+def _stem_verdicts(table: Table, pairs: PairSet) -> Optional[Dict[int, bool]]:
+    """The loop-blind verdict ``theta(s)`` per linked stem, or ``None`` if some
+    stem carries two loops with different verdicts."""
+    theta: Dict[int, bool] = {}
+    for s, e in table.linked:
+        v = (s, e) in pairs
+        if theta.setdefault(s, v) != v:
+            return None
+    return theta
+
+
+def is_obligation(table: Table, pairs: PairSet) -> bool:
+    """Is ``L(pairs)`` an obligation (Staiger-Wagner) property — a Boolean
+    combination of safety properties? Exact read-off: the verdict must depend
+    only on the R-class of the stem, i.e. be constant across the loops of each
+    linked stem and constant on each strongly connected component of the
+    right-Cayley graph. ``O(|linked| + n * |Sigma|)``."""
+    theta = _stem_verdicts(table, pairs)
+    if theta is None:
+        return False
+    comp, _ = _right_cayley_sccs(table)
+    by_comp: Dict[int, bool] = {}
+    for s, v in theta.items():
+        if by_comp.setdefault(comp[s], v) != v:
+            return False
+    return True
+
+
+def obligation_degree(table: Table, pairs: PairSet) -> Tuple[int, int]:
+    """The Wagner superchain coordinates ``(n_plus, n_minus)`` of an obligation
+    language: the longest theta-alternating path in the condensed right-Cayley
+    DAG starting at a linked stem of verdict 1 (``n_plus``) resp. 0
+    (``n_minus``), where path steps descend through right multiplication. A
+    lone stem is a path of length 0; a polarity with no starting stem yields
+    ``-1`` (the empty/universal convention). Precondition: `is_obligation`
+    (asserted). One reverse-topological sweep, ``O(n * |Sigma|)``."""
+    assert is_obligation(table, pairs), "obligation_degree needs an obligation"
+    theta = _stem_verdicts(table, pairs)
+    assert theta is not None
+    comp, ncomp = _right_cayley_sccs(table)
+    label: List[Optional[bool]] = [None] * ncomp
+    for s, v in theta.items():
+        label[comp[s]] = v
+    dag: List[Set[int]] = [set() for _ in range(ncomp)]
+    for c in range(table.n):
+        for x in set(table.letter_class):
+            d = comp[table.mult[c][x]]
+            if d != comp[c]:
+                dag[comp[c]].add(d)
+    # best[b][w]: the longest alternating path starting at a stem of verdict b
+    # reachable from component w (w included); -1 when no such stem exists.
+    # Component ids are reverse-topological, so successors are already done.
+    best: List[List[int]] = [[-1] * ncomp, [-1] * ncomp]
+    alt: List[int] = [-1, -1]
+    for w in range(ncomp):
+        below = [-1, -1]
+        for s in dag[w]:
+            below[0] = max(below[0], best[0][s])
+            below[1] = max(below[1], best[1][s])
+        best[0][w], best[1][w] = below[0], below[1]
+        if label[w] is not None:
+            b = int(label[w])
+            here = 0 if below[1 - b] < 0 else 1 + below[1 - b]
+            best[b][w] = max(best[b][w], here)
+            alt[b] = max(alt[b], here)
+    return alt[1], alt[0]
 
 
 # --- inverse substitution (the alphabet move) -------------------------------

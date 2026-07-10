@@ -3071,3 +3071,21 @@ compound>'` loses the quoting when the command is serialized -- the script
 word-splits, e.g. `bash -c source deps/env.sh && ...` runs the one-word
 script `source`. Metacharacter-free argv works; the README's "use --" claim
 overstates. Flagged to the cluster owner rather than patched.
+
+## 2026-07-10 — CAL5 landed: hulls + obligation read-offs (sos calculus)
+
+- `sosl/sosl/sos/calculus/surgery.py`: `live` / `safety_closure` / `interior` /
+  `liveness_part` (paper Prop 3.5, Cor 3.6-3.7), exact `is_safety` /
+  `is_cosafety` fixpoints, `is_obligation` (Thm 3.10: stem-only verdict +
+  R-class constancy, iterative Tarjan over the right-Cayley letter graph),
+  `obligation_degree` (Prop 3.11: longest theta-alternating DAG paths).
+- Gates: `tests/calculus/hulls.py` (closure laws, duality, Alpern-Schneider
+  decomposition, prefix-liveness replay vs paired det HOA via per-state Spot
+  emptiness; green on sampled corpus incl. the 121-class max) and
+  `tests/calculus/obligation_oracle.py` (corpus-wide vs `.cat` Wagner coords:
+  4248 rows, 2860 obligations, degree == sidecar everywhere; hand-built
+  a*.b^omega reference gives (1,2) per CP97 Ex. 10).
+- Spec correction found while gating: obligation <=> max(m+, m-) <= 0, not
+  m+ = m- = 0 (the -1 no-chain polarity of empty/universal rows still is an
+  obligation). Spec section 6 + status table updated; paper section 4
+  implementation paragraph now records the hull-fragment validation.

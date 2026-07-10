@@ -19,6 +19,8 @@ python3 -m tests.calculus.product_gate  $CORPUS/3state1ap0acc_074381.sos $CORPUS
 python3 -m tests.calculus.duality       $CORPUS/3state1ap0acc_074764.sos
 python3 -m tests.calculus.witness_min   $CORPUS/3state1ap0acc_005684.sos $CORPUS/3state1ap0acc_074764.sos
 python3 -m tests.calculus.corpus_oracle $CORPUS 40 0
+python3 -m tests.calculus.hulls         $CORPUS/3state1ap0acc_074764.sos
+python3 -m tests.calculus.obligation_oracle $CORPUS 60 0
 ```
 
 ## Source map
@@ -33,6 +35,8 @@ python3 -m tests.calculus.corpus_oracle $CORPUS 40 0
 | `corpus_oracle.py` | 7 | language equality *is* filename equality in `flat_canon/`, an answer key the calculus never sees. Over a sample: same-file pairs are `equivalent` (and byte-equal reduced), cross-file pairs are separated by a witness that replays against both sides. Accumulates the alignment-ratio distribution — the V1 ledger's raw material. |
 | `witness_min.py` | 8 | Proposition W: the cell scan returns the *globally* minimal witness. Brute-force every lasso up to a bound in the same discipline order and demand the same lasso. A second file adds the cross-language scans, where the minimal separator is long enough for the claim to bite. |
 | `stutter.py` | V2 prereq | `Table.is_stutter_invariant` (paper Prop 3.3, the algebraic read-off) against the exact §8.6 divergence search over class triples/pairs: on a canonical invariant they must agree, and every "sensitive" verdict comes with two stutter-equivalent lassos that `member` confirms disagree. |
+| `hulls.py` | CAL5 | the hull surgeries (paper §3.6): `safety_closure` is a closure operator and `interior` its dual (extensive/monotone/idempotent, outputs saturated), the duality and Alpern–Schneider decomposition identities, the exact `is_safety`/`is_cosafety` fixpoint tests, hull Boolean combinations are obligations — and `member` of the closure equals prefix-liveness on the paired det HOA (per-state emptiness, Spot) over all lassos up to the exhaustive bound. |
+| `obligation_oracle.py` | CAL5 | `is_obligation` / `obligation_degree` against the `.cat` Wagner coordinates, the answer key the calculus never sees: obligation ⟺ `max(m⁺, m⁻) ≤ 0` (a `-1` polarity still counts — the empty/universal convention), and on every obligation row the degree equals the sidecar `(n⁺, n⁻)`. Opens with the paper's worked reference `a*·b^ω → (1, 2)`. `LIMIT 0` (default) sweeps the whole directory. |
 
 ## Scope and budget
 
@@ -48,7 +52,9 @@ and restricts the draw to one alphabet (`align` compares languages over one Σ).
 
 ## What these do not cover
 
-No Spot cross-check lives here — the package imports no external tool, and
-`Witness.replay` takes its oracle as an argument. The V1 (ledger) and V2
-(read-off validation) experiments of `research_notes/sos_calculus_spec.md` §5,
-which *do* compare against Spot bounded-or-skipped, are not part of this folder.
+The package itself imports no external tool, and `Witness.replay` takes its
+oracle as an argument. The only Spot use in the harness proper is `hulls.py`'s
+per-state emptiness on the paired det HOA (skipped with a note when no HOA is
+paired); the V1 (ledger) and V2 (read-off validation) experiments of
+`research_notes/sos_calculus_spec.md` §5, which compare against Spot
+bounded-or-skipped at scale, live in the `v*_*.py` scripts.

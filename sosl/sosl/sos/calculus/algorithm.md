@@ -179,6 +179,42 @@ satisfies `saturate(P') = P'`; the harness asserts it on every operation output,
 and a violation convicts the operation. Never `saturate` an output silently to
 hide it.
 
+### 4.2 Hulls and the obligation rung (paper §3.6)
+
+The topological classifications as surgeries and read-offs on the same table.
+Normative math: paper Prop 3.5, Cor 3.6–3.7, Thm 3.10, Prop 3.11.
+
+- `live(P) = {c : row of c in M meets stems(P)}` — the classes with a nonempty
+  residual (the identity is a class, so the row contains `c` itself). One
+  `O(n²)` pass against a stem bitmask.
+- `safety_closure(P) = {(s, e) ∈ linked : s ∈ live(P)}` — the pair set of
+  `cl(L)`, the smallest closed superset. A closure operator on the saturated
+  pair sets (extensive, monotone, idempotent).
+- `interior(P) = {(s, e) ∈ linked : s ∉ live(complement(P))}` — the largest
+  open subset, `¬cl(¬L)`.
+- `liveness_part(P) = P ∪ complement(safety_closure(P))` — the canonical
+  liveness factor: every class is live for it, and
+  `P = safety_closure(P) ∩ liveness_part(P)` (Alpern–Schneider on one table).
+- `is_safety(P) := P == safety_closure(P)`, `is_cosafety(P) := P ==
+  interior(P)` — exact fixpoint tests, not approximations.
+- `is_obligation(P)`: the verdict depends only on the R-class of the stem —
+  bucket linked pairs by stem (constant verdict per bucket), then demand
+  constancy on each SCC of the right-Cayley letter graph `c → M(c, λ(a))`
+  (R-classes, since the table is letter-generated). One Tarjan pass,
+  `O(|linked| + n·|Σ|)`.
+- `obligation_degree(P) -> (n⁺, n⁻)` (precondition `is_obligation`, asserted):
+  condense the right-Cayley graph, label each SCC holding a linked stem with
+  its verdict `θ`, and take the longest `θ`-alternating path starting at a
+  `θ = 1` (resp. `0`) node — one reverse-topological DP per polarity. A lone
+  node is a path of length 0; a polarity with no starting node yields `-1`
+  (the empty/universal convention of the `.cat` sidecars).
+
+Gates: `tests/calculus/hulls.py` (closure laws, duality, decomposition,
+prefix-liveness replay against the paired det HOA) and
+`tests/calculus/obligation_oracle.py` (the `.cat` Wagner coordinates as the
+oracle: `is_obligation ⟺ max(m⁺, m⁻) ≤ 0`, degree = sidecar `(n⁺, n⁻)`;
+worked reference `a*·b^ω` → `(1, 2)`).
+
 ---
 
 ## 5. `decide.py` — decisions as scans, witnesses always

@@ -925,6 +925,14 @@ over the census, the ledger's rows come out as the table predicts, and
 the stutter-invariance read-off agrees with the automata-side check on
 every one of the census languages, with no disagreement — 648 of them
 stutter-invariant, better than a quarter of the LTL-definable class.
+The hull fragment of §3.6 is under the same discipline: the safety
+closure replays as prefix-liveness against each language's
+deterministic acceptor, and the obligation read-off and the band's
+degree (Theorem 3.10, Proposition 3.11) agree, on every census
+language, with the Wagner coordinates computed independently by the
+census's chain and superchain engines — the calculus reading off in
+one SCC pass what the classification side establishes by chain
+juggling.
 
 ## 5. Complexity summary
 
