@@ -5,8 +5,9 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Working draft — 2026-07-10. Structure complete; §3 at full rigor; §6
-carries ⟨TBD⟩ slots to be filled from `sos_measure_report.md`.*
+*Working draft — 2026-07-11. Structure complete; §3 (including the
+product form 3.5) at full rigor; §6 carries ⟨TBD⟩ slots to be filled
+from `sos_measure_report.md`.*
 
 ## Abstract
 
@@ -331,22 +332,60 @@ word's verdict is the constant `θ_B := Val(c, k)` (any `(q̂, c) ∈ B`),
 and `Pr_M(L) = Σ_B θ_B · Pr[absorption in B]`, one linear system on the
 product chain.
 
-*Proof sketch (the Bernoulli proof relativizes).* A.e. run absorbed in
-`B` visits `q̂` infinitely often, and at successive visits reads the
-doubled cycle word `w·w` infinitely often (conditional Borel–Cantelli:
-each visit gives an independent positive-probability trial). Mid-cutting
-those occurrences yields blocks `w·x·w` with `x` a `B`-internal cycle
-word at `q̂`, folding into `k·T¹·k = H_T(k)` — a group, since `k` lies in
-the kernel *of `T`* — and the pigeonhole of Lemma 3.1 again produces
-loop blocks folding exactly to `k`. Achievable stems again form one
-`H_T(k)`-orbit: for stems based at an entry `(q₀, c₀) ∈ B`, strong
-connectivity of `B` provides a return path to `(q₀, c₀)` from any
-mid-cut configuration, and the composition of that return with the next
-stem's path is a cycle at `q̂`, so two stems differ by
-`k·(element of T)·k ∈ H_T(k)`, and Lemma 3.2's conjugacy applies
-verbatim. Constancy across entry points as in Lemma 3.3(1) (strong
-connectivity nests the stem sets); independence of `q̂` and `k` because
-two full-measure readings of the same event agree. ∎
+*Proof.* After entry the product run stays in `B` (bottom SCC) and a.s.
+visits every state of `B` infinitely often (finite-chain recurrence).
+
+*(i) The cycle semigroup and its kernel.* `T` is nonempty (`B` is
+finite, closed, strongly connected, and every state has a successor, so
+cycles through `q̂` exist) and closed under concatenation of cycle
+words: a finite subsemigroup of `S`. Let `k` be an idempotent in the
+kernel of `T`, realized by a cycle word `w` at `q̂` — as in §3.1,
+realize any kernel element by a cycle word and raise it to its
+idempotent power; powers of cycle words are cycle words.
+
+*(ii) Infinitely many doubled cycles.* `w·w` is a path in `B` from `q̂`
+to `q̂`; let `δ > 0` be the product of its transition probabilities.
+Define stopping times `σ₁ < σ₂ < ⋯`: `σ₁` the first visit to `q̂` after
+entry, `σ_{i+1}` the first visit to `q̂` at least `2|w|` steps after
+`σ_i` — each a.s. finite by recurrence. By the strong Markov property
+the events `A_i` = "the run reads `w·w` starting at `σ_i`" satisfy
+`Pr[A_i | F_{σ_i}] ≥ δ`, so by the conditional Borel–Cantelli lemma
+a.s. infinitely many `A_i` occur: infinitely many disjoint occurrences
+of `w·w` read from `q̂`.
+
+*(iii) Blocks fold in a group; pigeonhole.* Cut the emitted word at the
+midpoints `σ_i + |w|` of the successful occurrences; at each cut the
+chain sits at `q̂` (`w` is a cycle). An inter-cut block reads `w·x·w`
+with `x` read from `q̂` to `q̂` inside `B`, so its fold lies in
+`k·T¹·k = H_T(k)` — the maximal group at `k`, since `k` lies in `T`'s
+kernel. Exactly as in Lemma 3.1: the cumulative block products take
+finitely many values in `H_T(k)`; a value recurring along an infinite
+set `J` of cuts makes the inter-`J` blocks fold to `k` exactly.
+
+*(iv) Stem invariance.* At a `J`-cut the product run sits at `(q̂, s)`,
+where `s` is the fold of the entire emitted prefix, and `s·k = s`
+(the prefix ends with `w`). So every achievable stem lies in
+`Σ_B := { s : (q̂, s) ∈ B, s·k = s }`, and the run's verdict is
+`Val(s, k)` by the strong factoring theorem. `Val(·, k)` is constant on
+`Σ_B`: for `s, s' ∈ Σ_B`, strong connectivity of `B` gives a product
+path `(q̂, s) → (q̂, s')`, whose word `z` is a cycle at `q̂`; hence
+`fold(z) ∈ T` and
+
+```
+s' = s'·k = s·fold(z)·k = s·(k·fold(z)·k) = s·m,      m ∈ H_T(k),
+```
+
+and the conjugacy law with `k = m·m^{-1}` transports `(s, k)` to
+`(s', k)` as in Lemma 3.2. Finally, for any `(q̂, c) ∈ B`, reading `w`
+from `(q̂, c)` shows `(q̂, c·k) ∈ B`, so `c·k ∈ Σ_B` and
+`θ_B = Val(c·k, k) = Val(c, k)` — the displayed one-lookup formula.
+
+*(v) Well-definedness.* Two choices of base point and kernel idempotent
+each equate, on a full-measure set of runs absorbed in `B`, the
+indicator `1_{α ∈ L}` with their constant; the intersection of the two
+sets has full measure, so the constants coincide. The decomposition
+`Pr_M(L) = Σ_B θ_B · Pr[absorption in B]` and the linear system are the
+classical absorption facts, now with exact boundary bits. ∎
 
 Two consequences. `Pr_M(L)` — the flagship query of probabilistic model
 checking [CY95] — is computable with the *canonical* object on the spec
@@ -366,8 +405,10 @@ On the held invariant, computing `μ_p(L)`:
 1. SCC pass on the right-Cayley graph, `O(n·|Σ|)` (shared with the
    calculus's hull/obligation scans); identify bottom SCCs.
 2. Kernel idempotent: the two-sided Cayley graph (edges
-   `c → λ(a)·c` and `c → c·λ(a)`) has a unique bottom SCC, the kernel
-   `K`; take any `t ∈ K` and `k := idem(t)`. `O(n·|Σ|)`.
+   `c → λ(a)·c` and `c → c·λ(a)`) has SCCs the `J`-classes and a unique
+   bottom SCC — the minimum of the `J`-order, which is the kernel `K`
+   [PP04]; take any `t ∈ K` and `k := idem(t)` (`K` is closed under
+   powers). `O(n·|Σ|)`.
 3. `θ_C := Val(c, k)` for one representative `c` per bottom SCC —
    `O(1)` lookups each.
 4. Solve the transient linear system over `ℚ`; `μ_p(L) = x_{[ε]}`.
