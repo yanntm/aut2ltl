@@ -1,7 +1,8 @@
 # aut2ltl.ltl — the shared LTL / Spot / BDD toolbox
 
 A leaf library of generic operations on LTL as hash-consed `spot.formula` DAGs,
-plus the buddy-BDD plumbing. It knows nothing of automata-to-LTL: it depends only
+plus the buddy-BDD plumbing and the Spot-automaton helpers. It knows nothing of
+automata-to-LTL: it depends only
 on LTL syntax, `spot`, and `buddy`. The Spot/buddy dependency is concentrated here
 so the engines above can treat LTL as an opaque service.
 
@@ -42,6 +43,33 @@ unfolded tree).
 
 Reliable buddy-BDD construction from a Spot automaton: the AP→buddy-var map
 (computed once) and point/cube BDDs for a concrete letter.
+
+## Automata — `twa.py`, `canon.py`
+
+`twa.py` — copying and serializing a `twa_graph`. `clone` is Spot's own
+`make_twa_graph(aut, prop_set)`; **never copy an automaton by round-tripping it
+through HOA**, because the parser re-infers the properties the text does not
+carry (`state_acc`, `complete`), so what comes back is not what was copied.
+`clone_structural` drops the two properties an acceptance rewrite invalidates.
+`reroot` is the `A↓state` copy-and-trim.
+
+`dump_hoa` is the canonical serialization, and `aut.to_str("hoa")` is not one: it
+re-declares state-based acceptance whenever it can — even after `prop_state_acc`
+was cleared — lists the atomic propositions in the bdd dictionary's variable
+order, so two Spot builds emit different bytes for one automaton, and prints
+whatever state numbering it was handed. `dump_hoa` forces the acceptance onto the
+edges, registers the APs in name order on a fresh dictionary, then renumbers the
+states with `canon.normalize`. The AP pass runs first, because `canon.normalize`
+orders successors by the *printed* edge condition. Persisted HOA, and any identity
+key taken over HOA bytes, goes through it.
+
+`canon.py` — `normalize`, the canonical state numbering: `0` is initial, then BFS
+visiting successors in `(cond, acceptance)` order. Exact on a deterministic
+automaton, where the condition picks the successor and no tie can arise;
+heuristic otherwise, ties falling back to the old index.
+
+Neither determinizes. Serialization normalizes a *presentation*; obtaining the
+presentation worth serializing is the caller's business.
 
 ---
 
