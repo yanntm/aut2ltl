@@ -1954,3 +1954,48 @@ the MISMATCH-misfile fix, `--cases`/`--out-csv` sharding on `census_campaign`
 (the runner forbids shared output files), a planner cutting the catalogue to
 the runner's caps (60 s per run, ~300 s per command, 5-minute walltime), and
 the E3 leg as one command per (case, mode) submitted `--cores 4`.
+
+## Item 1 done — the fault-verdict misfile is fixed; verdict `MISMATCH`→`FAIL`, new `CRASH` (2026-07-10)
+
+The census drivers' catch-alls recorded *any* leaked exception as the soundness
+verdict. Row F9 reserves that verdict for a genuine byte inequality, so the
+crashed sweep's lone such row (`3state1ap0acc_013604`, ablation,
+`CAUGHT:_Budget`) was misfiled: it was not a byte mismatch but a leaked
+`_Budget` — the SIGALRM/`finally` race in `run_case`, the alarm firing in the
+narrow window inside `run_case`'s own `finally` after its `except _Budget` is no
+longer reachable, so the one-shot alarm escapes the function.
+
+**Two vocabulary decisions you should ratify (spec §7 updated in lockstep):**
+
+1. **`MISMATCH` → `FAIL`.** The soundness verdict is renamed. "Mismatch" is too
+   weak for what it certifies — a run that *ran to completion and produced an
+   unsound byte* (P1 red, or byte-differs under saturation). That is a failure,
+   and the verdict should read as one. `FAIL` stays reserved for exactly that
+   (row F9). Spec §7 (the `sos_validate` diagram, the end-to-end gate wording,
+   the field enum, row F9) and `sosl/validate/README.md` are renamed to match;
+   `classify_census` keeps its own separate `MISMATCH` (a neutral duality /
+   spectrum-law file comparison — "mismatch" is apt there), and the local
+   diagnostic prints in the ad-hoc probes are untouched.
+
+2. **New sixth verdict `CRASH`.** A leaked exception is a run that **never
+   completed** — categorically outside soundness. Folding it into `FAIL` (or
+   naming it "ERROR", which connotes a bad *result*) would inflate the one count
+   that means "the learner is unsound". So a leaked fault routes by kind:
+   `_Budget` → `BUDGET` (a clean timeout; the race changes *where* the alarm is
+   caught, not the verdict it earns), anything else → `CRASH`. Spec §7's enum is
+   now `SOUND | FAIL | BUDGET | ACCEPTOR_ONLY | OVERSIZE | CRASH`.
+
+**Scope.** The misfile lived in *two* drivers, not one: `census_campaign`'s
+catch-all (the handoff item) and `driver.py`'s defensive outer guard (the same
+bug, unlisted). Both now split `_Budget`→`BUDGET` / other→`CRASH`. `run_case`'s
+own internal catch-all is aligned too (in-body crash → `CRASH`). `report.py`'s
+E0 gate now fails on `CRASH` as well as `FAIL`/`BUDGET`, and its totals line
+counts crashes. The `census_e1`/`census_e2` analyzers treat every non-`SOUND`
+verdict generically, so nothing downstream shifts; the F9 count of genuine byte
+failures is now clean of faults.
+
+Guard: `tests/sosl/fault_verdict_probe.py` monkeypatches `run_case` to force each
+leak path and asserts `_Budget → BUDGET`, other `→ CRASH`. Green. Standing gates
+re-run green (`saturation_gate`, `exact_fixtures`, `campaign_e0` byte-stable,
+`witness_lock`). The partial `census_guard` misfiled row is thereby explained and
+retired; the fresh cluster sweep at `--budget 60` banks the tally.
