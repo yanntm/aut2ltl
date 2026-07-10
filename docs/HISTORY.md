@@ -3089,3 +3089,14 @@ overstates. Flagged to the cluster owner rather than patched.
   m+ = m- = 0 (the -1 no-chain polarity of empty/universal rows still is an
   obligation). Spec section 6 + status table updated; paper section 4
   implementation paragraph now records the hull-fragment validation.
+
+## 2026-07-10 — post-CAL5 audit: three research-direction memos
+
+- research_notes/sos_calculus_extensions.md (paper sections queued: mixed
+  product K x C, frontier completion, LTL-over-SoS, monitor one-liner),
+  sos_giventhat.md (DPT25 given-that port: interval lattice, one-scan
+  class-existence tests off CAL5 hulls, stutter-quotient conjecture,
+  separator synthesis, LTL-given-that via sos2ltl), sos_quantitative.md
+  (measure/distance/entropy; crux = generic-verdict lemma Q1).
+- Source audit question: "what does an automata toolbox do that the
+  calculus has not described"; answers triaged into the three memos.

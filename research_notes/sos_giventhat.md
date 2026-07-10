@@ -73,6 +73,12 @@ fixpoints:
   both ways** — checkable in `O(|linked|)` after the SCC pass, greedy
   witness for free (unforced classes: pick anything, e.g. minimize the
   alternation depth of Prop 3.11 while at it).
+- **Separator synthesis is the same machinery, free of charge**: for two
+  disjoint languages `L₁, L₂`, take the interval `[P_{L₁}, P_{L₂}^c]` — the
+  tests above then answer "is there a *safety* (co-safety, obligation)
+  property separating them", e.g. ∃ safety separator ⟺
+  `safety_closure(P_{L₁}) ∩ P_{L₂} = ∅`. A two-automata operation the
+  automata toolbox does not offer at all.
 - **Degree/strength minimization** (open): the minimal Wagner degree /
   Carton–Perrin acceptance index achievable in the interval. The band
   cases above are the first rungs; whether the general question has a
