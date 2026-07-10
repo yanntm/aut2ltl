@@ -15,9 +15,18 @@ that the wrapper resolves each dependency. Nothing here knows about a cluster.
 | `build_spot.sh` | read the tracked version, fetch, out-of-tree build with Python bindings |
 | `build_gap.sh` | GAP from source, its package chain, the `gap` wrapper |
 | `build_its.sh` | libDDD + libITS from clean clones |
+| `build_roll.sh` | ROLL (the sosl E3 FDFA baseline), packed to one portable jar |
 
-`build_all.sh` takes `--spot-only` / `--gap-only` / `--its-only`; the build
-scripts take nothing at all.
+`build_all.sh` takes `--spot-only` / `--gap-only` / `--its-only` /
+`--roll-only`; the build scripts take nothing at all.
+
+ROLL is not part of the default build: it is an experiment baseline, not a
+pipeline dependency, and needs a system JDK and maven. It has no released
+distribution, so `--roll-only` clones its GitHub at HEAD, runs the project's
+own `build.sh` (maven, then a repack into one self-contained jar, RABIT
+included), and installs `opt/roll/ROLL.jar`; `env.sh` exports `ROLL_JAR` when
+that file exists. Being bytecode, it is the one artifact that ignores the
+machine-class caveat below.
 
 ## Updating a dependency
 
