@@ -67,9 +67,10 @@ against one GAP, and mixing them does not work.
 
 ### `build_its.sh [--rebuild]`
 
-### `sync_cluster.sh`
+### `sync_cluster.sh [rev]`
 
-Checks the cluster out detached at the local HEAD commit. No flags.
+Fetches on the cluster and checks out `rev` (default `origin/master`), detached.
+Consults nothing local.
 
 ### `oarrun.sh [flags] cmds.txt` → prints a run id
 
@@ -183,11 +184,8 @@ shard looks too big and names the split that would fit.
 
 ## Only committed code runs
 
-`sync_cluster.sh` checks the cluster out detached at the local HEAD commit — not
-at the remote's tip — so a run's recorded `git_rev` names the code that ran. An
-unpushed HEAD is refused: the cluster fetches from origin and could not reach it.
-Uncommitted changes are ignored; they do not travel. Nothing is pushed for you,
-and `reap.sh` is the only transfer, always cluster → local.
+The cluster runs what is on origin, so push before you sync. `reap.sh` is the
+only transfer, always cluster → local; nothing is ever sent the other way.
 
 ## The submit host does nothing
 
