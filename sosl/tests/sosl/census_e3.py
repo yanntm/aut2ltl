@@ -1,18 +1,28 @@
 """E3 census: ROLL FDFA baseline vs our learner over the flat catalogue, with
-paired medians (spec §6 E3). Streams one raw row per language as it goes, then
-computes the summary a posteriori from that CSV — the genaut pattern (sweep now,
-study later), so the ROLL-free summary is re-runnable without re-invoking ROLL.
+paired medians (spec §6 E3). Streams one raw row per (language, kind) as it goes,
+then computes the summary a posteriori from that CSV — the genaut pattern (sweep
+now, study later), so the ROLL-free summary is re-runnable without re-invoking
+ROLL.
 
-    python3 -m tests.sosl.census_e3 [--limit N] [--roll-timeout S] [--summary-only]
+    python3 -m tests.sosl.census_e3 [--limit N] [--cases i:j] [--only KIND]
+                                    [--roll-timeout S] [--out-csv FILE]
+                                    [--summary-only]
 
 Source is the flat catalogue `genaut/corpus/flat_canon` (the project standard).
-For every language: our class count N and (MQ/EQ) under the default config, and
-ROLL's three FDFA modes (FDFA size = leading + progress states, MQ, EQ). The
-summary reports the per-metric medians, the size-comparison distribution (how
+Each row is one **kind** of one language, in a long format that concatenates
+across shards: `case, kind, size, MQ, EQ`, where `kind` is `ours` (our class
+count N, its MQ/EQ under the default config) or one of ROLL's three FDFA modes
+(`size` = leading + progress states). The cluster unit is one `(case, mode)` — a
+single sequential JVM — so `--cases i:j` slices the catalogue and `--only KIND`
+picks one kind, and each shard writes its private `$OARRUN_OUT.csv` (the runner
+forbids a shared file). `reap.sh` concatenates; `--summary-only` pivots the merged
+CSV back per case.
+
+The summary reports the per-metric medians, the size-comparison distribution (how
 often the algebra is smaller / larger / tied against ROLL's smallest FDFA — the
 wash inside the `N+N²` envelope, not a win), and the SoS-category ventilation
-(the LTL cut). Resumable: languages already in `results.csv` are skipped.
-Writes `tests/sosl/logs/census_e3/{results.csv, summary.md}`.
+(the LTL cut). Resumable: `(case, kind)` rows already present are skipped.
+Writes `tests/sosl/logs/census_e3/{results.csv, summary.md}` by default.
 """
 from __future__ import annotations
 
@@ -22,49 +32,58 @@ import statistics
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Tuple
 
-from sosl.experiment.baseline import MODES, ROLL_JAR, roll_case
+from sosl.experiment.baseline import MODES, ROLL_JAR, run_roll, to_buchi_hoa
 from sosl.experiment.manifest import (FLAT_CANON_ROOT, flat_canon_cases,
                                       load_category)
 from sosl.experiment.run import Config, run_case
 
 OUT = Path("tests/sosl/logs/census_e3")
 DEFAULT = Config("default", saturation=True, eq_mode="bounded")
-FIELDS = (["case", "our_N", "our_MQ", "our_EQ"]
-          + [f"{m}_{k}" for m in MODES for k in ("fdfa", "MQ", "EQ")])
+KINDS: Tuple[str, ...] = ("ours",) + MODES
+FIELDS = ["case", "kind", "size", "MQ", "EQ"]
 
 
 def _median(xs: List[float]) -> float:
     return statistics.median(xs) if xs else -1.0
 
 
-def _done_cases(csv_path: Path) -> Set[str]:
+def _done_rows(csv_path: Path) -> Set[Tuple[str, str]]:
+    """The `(case, kind)` pairs already recorded — the resume set."""
     if not csv_path.exists():
         return set()
     with open(csv_path, newline="") as fh:
-        return {r["case"] for r in csv.DictReader(fh)}
+        return {(r["case"], r["kind"]) for r in csv.DictReader(fh)}
 
 
 def _summary(csv_path: Path) -> None:
-    """Compute the E3 summary a posteriori from the streamed raw CSV: paired
-    medians, the size-comparison distribution, and the LTL-cut ventilation."""
+    """Compute the E3 summary a posteriori from the streamed long-format CSV:
+    pivot per case, then paired medians, the size-comparison distribution, and the
+    LTL-cut ventilation."""
     rows: List[dict] = list(csv.DictReader(open(csv_path, newline="")))
-    our_N = [int(r["our_N"]) for r in rows]
+    # case -> kind -> size (ours = class count N, a ROLL mode = FDFA states)
+    by_case: Dict[str, Dict[str, int]] = defaultdict(dict)
+    for r in rows:
+        by_case[r["case"]][r["kind"]] = int(r["size"])
+
+    our_N: List[int] = []
     fdfa: Dict[str, List[int]] = {m: [] for m in MODES}
     smaller = larger = tied = 0
     ltl_cmp = {True: [0, 0, 0], False: [0, 0, 0], None: [0, 0, 0]}  # s/l/t
-    for r in rows:
+    for case, kinds in by_case.items():
+        n = kinds.get("ours", -1)
+        if n >= 0:
+            our_N.append(n)
         best = -1
         for m in MODES:
-            v = int(r[f"{m}_fdfa"])
+            v = kinds.get(m, -1)
             if v >= 0:
                 fdfa[m].append(v)
                 best = v if best < 0 else min(best, v)
-        if best < 0:
+        if best < 0 or n < 0:
             continue
-        n = int(r["our_N"])
-        cat = load_category(f"{FLAT_CANON_ROOT}/sos/{r['case']}.sos")
+        cat = load_category(f"{FLAT_CANON_ROOT}/sos/{case}.sos")
         key = cat.ltl if cat else None
         if n < best:
             smaller += 1; ltl_cmp[key][0] += 1
@@ -73,8 +92,9 @@ def _summary(csv_path: Path) -> None:
         else:
             tied += 1; ltl_cmp[key][2] += 1
 
+    n_langs = len(by_case)
     lines = ["# E3 census — ROLL FDFA baseline (flat_canon)", ""]
-    lines.append(f"{len(rows)} languages. Paired medians (our class count N vs "
+    lines.append(f"{n_langs} languages. Paired medians (our class count N vs "
                  "ROLL's FDFA size = leading + progress states):")
     lines.append("")
     lines.append("| metric | ours | ROLL periodic | ROLL syntactic | ROLL recurrent |")
@@ -82,8 +102,8 @@ def _summary(csv_path: Path) -> None:
     lines.append(f"| median size | {_median(our_N):.0f} | "
                  + " | ".join(f"{_median(fdfa[m]):.0f}" for m in MODES) + " |")
     lines.append("")
-    n = smaller + larger + tied
-    lines.append(f"**Size comparison over {n} languages** (algebra N vs ROLL's "
+    cmp_n = smaller + larger + tied
+    lines.append(f"**Size comparison over {cmp_n} languages** (algebra N vs ROLL's "
                  f"smallest FDFA): algebra smaller **{smaller}**, larger "
                  f"**{larger}**, tied **{tied}**. The objects trade places inside "
                  "the `N+N²` envelope — a wash, not a win (Prop. 5.3(a)); the "
@@ -100,16 +120,36 @@ def _summary(csv_path: Path) -> None:
             lines.append(f"| {label} | {s} | {l} | {t} |")
     lines.append("")
     (OUT / "summary.md").write_text("\n".join(lines), encoding="utf-8")
-    print(f"E3: {len(rows)} langs | median N={_median(our_N):.0f} "
+    print(f"E3: {n_langs} langs | median N={_median(our_N):.0f} "
           f"FDFA={{{', '.join(f'{m}:{_median(fdfa[m]):.0f}' for m in MODES)}}}")
     print(f"  size: algebra smaller {smaller} / larger {larger} / tied {tied}")
     print(f"artifacts: {OUT / 'results.csv'}, {OUT / 'summary.md'}")
+
+
+def _ours_row(case) -> dict:
+    """The `ours` row for a case: class count N and its MQ/EQ (default config)."""
+    s = run_case(case.case_id, case.hoa, DEFAULT, reference_sos=case.sos).stats
+    return {"case": case.case_id, "kind": "ours", "size": s.ref_classes,
+            "MQ": s.n_member_total, "EQ": s.n_equiv}
+
+
+def _roll_row(case, mode: str, ba_file: str, roll_timeout: int) -> dict:
+    """One ROLL-mode row for a case: FDFA size and MQ/EQ, or `-1`s if the run did
+    not produce stats (timeout / parse failure)."""
+    r = run_roll(ba_file, mode, case.case_id, roll_timeout)
+    ok = r.ok
+    return {"case": case.case_id, "kind": mode,
+            "size": r.fdfa_states if ok else -1,
+            "MQ": r.n_member if ok else -1, "EQ": r.n_equiv if ok else -1}
 
 
 def main(argv: List[str]) -> int:
     limit = 0
     roll_timeout = 60
     summary_only = False
+    cases_spec = ""
+    only = ""
+    out_csv = ""
     skip = -1
     for i, a in enumerate(argv):
         if i == skip:
@@ -118,11 +158,22 @@ def main(argv: List[str]) -> int:
             limit = int(argv[i + 1]); skip = i + 1
         elif a == "--roll-timeout":
             roll_timeout = int(argv[i + 1]); skip = i + 1
+        elif a == "--cases":
+            cases_spec = argv[i + 1]; skip = i + 1
+        elif a == "--only":
+            only = argv[i + 1]; skip = i + 1
+        elif a == "--out-csv":
+            out_csv = argv[i + 1]; skip = i + 1
         elif a == "--summary-only":
             summary_only = True
 
     OUT.mkdir(parents=True, exist_ok=True)
-    csv_path = OUT / "results.csv"
+    if out_csv:
+        csv_path = Path(out_csv)
+        csv_path.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        csv_path = OUT / "results.csv"
+
     if summary_only:
         if not csv_path.exists():
             print(f"no {csv_path}", file=sys.stderr)
@@ -130,18 +181,31 @@ def main(argv: List[str]) -> int:
         _summary(csv_path)
         return 0
 
-    if not os.path.exists(ROLL_JAR):
+    kinds = KINDS
+    if only:
+        if only not in KINDS:
+            print(f"--only expects one of {KINDS}, got {only!r}", file=sys.stderr)
+            return 2
+        kinds = (only,)
+    if any(k in MODES for k in kinds) and not os.path.exists(ROLL_JAR):
         print(f"ROLL.jar not found at {ROLL_JAR}", file=sys.stderr)
         return 3
+
     cases = flat_canon_cases()
     if not cases:
         print("no flat_canon cases", file=sys.stderr)
         return 2
+    if cases_spec:
+        from tests.sosl.census_campaign import _parse_slice
+        lo, hi = _parse_slice(cases_spec, len(cases))
+        cases = cases[lo:hi]
+        print(f"--cases {cases_spec}: languages [{lo}, {hi})", file=sys.stderr)
     if limit:
         cases = cases[:limit]
-    done = _done_cases(csv_path)
-    print(f"flat_canon E3: {len(cases)} languages; {len(done)} already done",
-          file=sys.stderr, flush=True)
+
+    done = _done_rows(csv_path)
+    print(f"flat_canon E3: {len(cases)} languages x {len(kinds)} kind(s) "
+          f"{kinds}; {len(done)} rows already done", file=sys.stderr, flush=True)
 
     fresh = not csv_path.exists()
     fh = open(csv_path, "a", newline="")
@@ -149,27 +213,35 @@ def main(argv: List[str]) -> int:
     if fresh:
         writer.writeheader(); fh.flush()
 
+    work_dir = str(OUT / "targets")
+    os.makedirs(work_dir, exist_ok=True)
     for i, case in enumerate(cases):
-        if case.case_id in done:
+        todo = [k for k in kinds if (case.case_id, k) not in done]
+        if not todo:
             continue
-        ours = run_case(case.case_id, case.hoa, DEFAULT,
-                        reference_sos=case.sos).stats
-        runs = {r.mode: r for r in roll_case(case.case_id, case.hoa,
-                                             str(OUT / "targets"), roll_timeout)}
-        row = {"case": case.case_id, "our_N": ours.ref_classes,
-               "our_MQ": ours.n_member_total, "our_EQ": ours.n_equiv}
-        for m in MODES:
-            r = runs.get(m)
-            row[f"{m}_fdfa"] = r.fdfa_states if r and r.ok else -1
-            row[f"{m}_MQ"] = r.n_member if r and r.ok else -1
-            row[f"{m}_EQ"] = r.n_equiv if r and r.ok else -1
-        writer.writerow(row)
-        fh.flush()
+        if "ours" in todo:
+            writer.writerow(_ours_row(case)); fh.flush()
+        roll_kinds = [k for k in todo if k in MODES]
+        if roll_kinds:
+            ba_file = os.path.join(work_dir, f"{case.case_id}.ba.hoa")
+            try:
+                with open(ba_file, "w", encoding="utf-8") as bf:
+                    bf.write(to_buchi_hoa(case.hoa))
+                for m in roll_kinds:
+                    writer.writerow(_roll_row(case, m, ba_file, roll_timeout))
+                    fh.flush()
+            except Exception as exc:  # noqa: BLE001 -- record conversion faults per case
+                for m in roll_kinds:
+                    writer.writerow({"case": case.case_id, "kind": m, "size": -1,
+                                     "MQ": -1, "EQ": -1})
+                    fh.flush()
+                print(f"  convert failed {case.case_id}: {exc}", file=sys.stderr)
         if (i + 1) % 25 == 0:
             print(f"  ... {i + 1}/{len(cases)}", file=sys.stderr, flush=True)
     fh.close()
 
-    _summary(csv_path)
+    if not out_csv and not only:
+        _summary(csv_path)
     return 0
 
 
