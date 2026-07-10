@@ -13,6 +13,8 @@ from typing import List, Optional
 
 import spot  # noqa: E402
 
+from aut2ltl.twa import clone  # noqa: E402
+
 from aut2ltl.language import Language  # noqa: E402
 from aut2ltl.partscc import PartScc  # noqa: E402
 
@@ -29,7 +31,7 @@ def _terminal_scc_state(aut: "spot.twa_graph") -> Optional[int]:
     return None
 
 def _reroot(aut: "spot.twa_graph", state: int) -> "spot.twa_graph":
-    sub = spot.automaton(aut.to_str("hoa"))
+    sub = clone(aut)
     sub.set_init_state(state)
     sub.purge_unreachable_states()
     return sub

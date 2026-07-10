@@ -28,6 +28,8 @@ from typing import Dict, List, Optional, Set, Tuple
 import spot
 import buddy
 
+from aut2ltl.twa import clone
+
 __all__ = ["init_scc_states", "lame_data", "anchored_violation", "reroot"]
 
 # The L/A/M/E data of a component: per-state Loop / Anchor / Move guard
@@ -108,7 +110,7 @@ def reroot(aut: "spot.twa_graph", state: int) -> "spot.twa_graph":
     """A fresh copy of `aut` rooted at `state` and trimmed to the states
     reachable from it — the sub-automaton `A↓state`, whose language is exactly
     what is accepted from `state`. Does not mutate `aut`."""
-    sub = spot.automaton(aut.to_str("hoa"))
+    sub = clone(aut)
     sub.set_init_state(state)
     sub.purge_unreachable_states()
     return sub

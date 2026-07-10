@@ -15,6 +15,8 @@ from typing import List, Optional
 
 import spot  # noqa: E402
 
+from aut2ltl.twa import clone  # noqa: E402
+
 def _aps(aut: "spot.twa_graph") -> List[str]:
     return sorted(str(x) for x in aut.ap())
 
@@ -45,7 +47,7 @@ def main(argv: List[str]) -> int:
         print("  (no terminal SCC >= 2; testing cleanup on the base directly)")
         sub = base
     else:
-        sub = spot.automaton(base.to_str("hoa"))
+        sub = clone(base)
         sub.set_init_state(st)
         sub.purge_unreachable_states()
         _show("rerooted (raw)", sub)

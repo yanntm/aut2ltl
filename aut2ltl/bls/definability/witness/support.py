@@ -14,6 +14,8 @@ from typing import Dict, List, Optional
 
 import spot
 
+from aut2ltl.twa import clone
+
 
 def valuation_to_letter(val: Dict[str, bool]) -> str:
     """Render a letter valuation `{ap: bool}` as a Boolean cube, e.g. `a & !b`."""
@@ -80,9 +82,8 @@ def word_to(
 
 
 def copy_with_init(aut: "spot.twa_graph", q: int) -> "spot.twa_graph":
-    """A deep copy of `aut` whose initial state is `q` (via HOA round-trip —
-    robust and cheap on the small minimized automaton)."""
-    a = spot.automaton(aut.to_str("hoa"))
+    """A deep copy of `aut` whose initial state is `q`."""
+    a = clone(aut)
     a.set_init_state(q)
     return a
 

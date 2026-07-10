@@ -12,6 +12,8 @@ from typing import FrozenSet, List, Tuple
 
 import spot
 
+from aut2ltl.twa import clone
+
 # A petal is a self-loop's (guard, acceptance sets); a stem is an exit's
 # (guard, destination state).
 Petal = Tuple["spot.formula", FrozenSet[int]]
@@ -54,7 +56,7 @@ def reroot(aut: "spot.twa_graph", state: int) -> "spot.twa_graph":
     """A fresh copy of `aut` rooted at `state` and trimmed to the states reachable
     from it — the sub-automaton `A↓state`, whose language is exactly what is accepted
     from `state`. Does not mutate `aut`."""
-    sub = spot.automaton(aut.to_str("hoa"))
+    sub = clone(aut)
     sub.set_init_state(state)
     sub.purge_unreachable_states()
     return sub

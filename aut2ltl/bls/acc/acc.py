@@ -22,6 +22,7 @@ language-faithful LTLResult or a DECLINE.
 from __future__ import annotations
 from typing import Optional
 
+from aut2ltl.twa import clone
 from aut2ltl.ltl.builders import _And, _Or, _X, _tt, _ff, _simp_f, _letters_to_f
 from aut2ltl.bls.cascade import Cascade, CascadeHolder
 from aut2ltl.bls.cascade_translator import CascadeTranslator
@@ -61,7 +62,7 @@ def _unroll(casc: Cascade) -> Optional["spot.formula"]:
         if q in base_memo:
             return base_memo[q]
         if _Dq is None:
-            _Dq = spot.automaton(D.to_str("hoa"))   # one mutable copy, re-pointed
+            _Dq = clone(D)                          # one mutable copy, re-pointed
             _true = spot.formula("1").translate()
         _Dq.set_init_state(q)
         if _Dq.is_empty():

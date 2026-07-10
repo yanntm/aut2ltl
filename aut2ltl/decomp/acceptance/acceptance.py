@@ -15,6 +15,7 @@ from typing import List
 
 import spot
 
+from aut2ltl.twa import clone_structural
 from aut2ltl.combinators.decompose import decompose
 from aut2ltl.bls.definability.witness.reseed import reseed_witness
 
@@ -30,7 +31,7 @@ def conjunct_pieces(aut: "spot.twa_graph") -> List["spot.twa_graph"]:
         return []
     pieces: List["spot.twa_graph"] = []
     for c in conj:
-        sub = spot.automaton(aut.to_str("hoa"))    # independent clone
+        sub = clone_structural(aut)                # acceptance is about to change
         sub.set_acceptance(spot.acc_cond(aut.num_sets(), c))
         spot.cleanup_acceptance_here(sub)
         pieces.append(sub)
