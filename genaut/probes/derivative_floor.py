@@ -12,9 +12,14 @@ enter two absorbing one-state basins — under `parity max even 2` (accept iff
 (accepts `GF !a`: a negative chain), the basins are mutually unreachable —
 so the language is `(a & FGa) | (!a & GF!a)`, the polarity flip of `Fork`.
 The probe encodes the combo, recovers its generator id, runs the census chain
-on it, asserts the classifier lands PARTIAL at coordinates `(1, 1, 0, 0)`, and
-checks the language equals `Fork` up to AP relabeling (the `canon_key` fold).
-Prints the id — a concrete regime witness in the shape's id space.
+on it, asserts the classifier resolves the degree through one derivation to
+`phi = (omega+1, delta)` at coordinates `(1, 1, 0, 0)`, and checks the
+language equals `Fork` up to AP relabeling (the `canon_key` fold). It also
+materializes the witness as the committed fixture pair
+`samples/fixtures/hoa/sos/fork_floor.{sos,hoa}` (byte-gated on later runs) —
+the corpus-native derivative-regime specimen, ready for adoption into
+`corpus/sampled/` under the printed `<tag>_<id>` name (then `flatten --canon`
+rebuild + summary regen per `genaut/README.md`).
 """
 from __future__ import annotations
 
@@ -37,9 +42,13 @@ for p in (os.path.join(_REPO, "sosl"), _REPO):
     if p not in sys.path:
         sys.path.insert(0, p)
 
+from aut2ltl.ltl.twa import dump_hoa                     # noqa: E402
 from sosl.sos.build.importer import canonical            # noqa: E402
 from sosl.sos.classify import classify                   # noqa: E402
 from sosl.sos.core.quotient import invariant_of          # noqa: E402
+from sosl.sos.io.serialize import dump_invariant         # noqa: E402
+
+_FIX = os.path.join(_REPO, "samples", "fixtures", "hoa", "sos")
 
 FORK = "(a & GFa) | (!a & FG!a)"
 # guard codes for k=1 (shape.guard_alphabet): 0 absent, 1 !a, 2 a, 3 true
@@ -66,19 +75,35 @@ def main() -> int:
     print(f"combo id = {ident}  ({shape.tag}, id-space {shape.num_combos})")
 
     D = canonical(reduce_aut(build_aut(shape, combo, spot.make_bdd_dict())))
-    rec = classify(invariant_of(D))
+    inv = invariant_of(D)
+    rec = classify(inv)
     coords = (rec.m_plus, rec.m_minus, rec.n_plus, rec.n_minus)
-    print(f"classified: coords {coords}, mu = {rec.mu}, sign = {rec.sign}, "
+    print(f"classified: coords {coords}, mu = {rec.mu}, phi = {rec.phi}, "
           f"LTL = {rec.aperiodic}, stutter-inv = {rec.stutter_invariant}")
     assert coords == (1, 1, 0, 0), coords
-    assert rec.gamma_partial and rec.sign == "PARTIAL", rec.sign
+    assert rec.phi == ("omega+1", "delta"), rec.phi   # one derivation, self-dual
 
     fork = canonical(spot.translate(FORK))
     same = canon_key(D) == canon_key(fork)
     print(f"language equals Fork up to AP relabeling: {same}")
     assert same, "expected the polarity flip of Fork"
+
+    for name, text in (("fork_floor.sos", dump_invariant(inv)),
+                       ("fork_floor.hoa", dump_hoa(D))):
+        path = os.path.join(_FIX, name)
+        if os.path.isfile(path):
+            with open(path) as fh:
+                assert fh.read() == text, f"{name} drifted from the build"
+            print(f"OK fixture byte-identical: {path}")
+        else:
+            with open(path, "w") as fh:
+                fh.write(text)
+            print(f"OK fixture written: {path}")
+
     print(f"OK: the derivative regime is inhabited at {shape.tag}, "
           f"witness id {ident}")
+    print(f"adoption name: {shape.tag}_{ident:0{shape.id_width}d} "
+          f"(det/ + sos/ under corpus/sampled/, then flatten --canon)")
     return 0
 
 
