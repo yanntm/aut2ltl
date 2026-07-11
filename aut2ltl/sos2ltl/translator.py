@@ -30,8 +30,10 @@ if TYPE_CHECKING:
     from aut2ltl.language import Language
     from sosl.sos import Invariant, Lasso
     from .dg.formulas import Ast
+    from .engine import LayerFallback
 
 TAG = "sos2ltl"
+TAG_CASC = "sos2ltl_casc"
 TAG_ENGINE = "sos2ltl.engine"
 TAG_DG = "sos2ltl.dg"
 
@@ -94,12 +96,14 @@ def _lasso_str(inv: "Invariant", lasso: "Lasso") -> str:
     return "; ".join(parts)
 
 
-def sos2ltl(lang: "Language") -> LTLResult:
-    """Translate via the syntactic ω-semigroup (`README.md` pipeline)."""
+def _sos2ltl(lang: "Language", tag: str,
+             fallback: Optional["LayerFallback"]) -> LTLResult:
+    """The shared assembly: bridge, step-0 witness scan, engine (with an
+    optional per-layer delegate), dg where the engine declines."""
     try:
         inv = invariant_of_language(lang)
     except BridgeDecline as e:
-        return LTLResult.decline(f"sos2ltl: {e}", TAG)
+        return LTLResult.decline(f"{tag}: {e}", tag)
 
     fam = extract_family(inv)
     if CENSUS:
@@ -111,23 +115,38 @@ def sos2ltl(lang: "Language") -> LTLResult:
         if certified:
             shape = "omega-power" if fam.omega_power else "linear"
             return LTLResult.not_definable(
-                f"sos2ltl: group in the syntactic algebra; {shape} counting "
+                f"{tag}: group in the syntactic algebra; {shape} counting "
                 f"family (p'={fam.period}) replayed against the input",
-                TAG, witness=_floor_witness(inv, fam))
+                tag, witness=_floor_witness(inv, fam))
         return LTLResult.decline(
-            "sos2ltl: counting family failed replay against the input "
-            "(internal inconsistency)", TAG)
+            f"{tag}: counting family failed replay against the input "
+            "(internal inconsistency)", tag)
 
-    phi: Optional["spot.formula"] = transcribe(inv)
+    phi: Optional["spot.formula"] = transcribe(inv, fallback=fallback)
     if phi is not None:
-        return LTLResult.success(phi, TAG, TAG_ENGINE)
+        return LTLResult.success(phi, tag, TAG_ENGINE)
 
     try:
         ast, phi, _ = synthesize(inv)
     except DgDecline as e:
-        return LTLResult.decline(f"sos2ltl: {e}", TAG, TAG_DG)
+        return LTLResult.decline(f"{tag}: {e}", tag, TAG_DG)
     return LTLResult.success(
-        _to_formula(ast, phi, _cubes(inv)), TAG, TAG_DG)
+        _to_formula(ast, phi, _cubes(inv)), tag, TAG_DG)
+
+
+def sos2ltl(lang: "Language") -> LTLResult:
+    """Translate via the syntactic ω-semigroup (`README.md` pipeline)."""
+    return _sos2ltl(lang, TAG, None)
+
+
+def sos2ltl_casc(lang: "Language") -> LTLResult:
+    """`sos2ltl` with the decomposition fallback below the engine (paper §6,
+    `cascade/`): a no-width or window-undetermined layer is delegated to the
+    per-layer KR cascade instead of failing the whole engine; dg remains the
+    floor when the delegate itself declines."""
+    from .cascade.delegate import CascadeFallback
+    return _sos2ltl(lang, TAG_CASC,
+                    CascadeFallback(lambda: lang.det_parity_sbacc()))
 
 
 def sos2ltl_dg(lang: "Language") -> LTLResult:
