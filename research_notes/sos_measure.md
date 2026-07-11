@@ -36,7 +36,10 @@ On an aligned table, measure turns the free `xor` into a computable
 pseudometric whose null pairs are exactly characterized — and a
 one-surgery *shadow* renders every language null-equivalent to a
 canonical open one: up to measure, all of ω-regularity is co-safety,
-and the topological hierarchies live entirely on null sets. Topological
+and the topological hierarchies live entirely on null sets. A finer
+quotient, by the residual-measure series, yields the *essential form*
+— the least, canonical member of each null-class — and decides whether
+a language is measure-equivalent to an LTL-definable one. Topological
 entropy is one Perron eigenvalue over the live classes — the class set
 that already carries the safety hull, so the classical invariance of
 entropy under safety closure is visible in the object itself. Each quantity
@@ -113,7 +116,9 @@ Contributions:
    aligned `xor`; a one-surgery **measure shadow** `sh(L)` gives every
    language a canonical open null-equivalent representative — up to
    measure, every ω-regular language is co-safety — and the null-class
-   itself is characterized by the residual-measure series; topological
+   itself is characterized by the residual-measure series, whose
+   monoid quotient yields the class's *least* canonical member and
+   decides the measure-blind LTL frontier (Theorem 4.4); topological
    entropy is `log ρ` of the letter-count
    matrix restricted to the live classes — one Perron eigenvalue on top
    of the calculus's liveness scan — with Staiger's closure identity
@@ -616,12 +621,96 @@ on all Borel sets; taking `E = L₁^c` gives
 `P_{fold(u)}` on the same table, and Theorem 3.4 started at `fold(u)`
 is the same chain. ∎
 
-The series view is the first concrete beachhead of the weighted
-direction (§7): the null-class quotient is carried by a canonical
-`ℚ`-weighted object. Whether a null-class contains an LTL-definable
-member — the *measure-blind LTL frontier* — we leave open; note that
-`sh(L)` aperiodic is sufficient but, by the warning above, not
-necessary.
+The series does more than characterize the class: quotienting `L`'s
+monoid by it produces the class's canonical member and decides its
+logic. Fix a full-support rational `p` (uniform as the convention),
+let `x` be the vector of Theorem 3.4 extended by `x_c := θ_C` on
+bottom classes, let `≈` be the syntactic congruence of the map
+`c ↦ x_c` — `c ≈ c'` iff `x(w·c·z) = x(w·c'·z)` for all
+`w, z ∈ 𝒞¹` — and let `M_x := 𝒞/≈` be the quotient monoid, `x̄` the
+induced map.
+
+**Theorem 4.4 (the essential form).**
+
+1. *(least recognizer)* `M_x` divides the syntactic monoid of every
+   member of the null-class of `L`.
+2. *(canonical member)* On the right-Cayley graph of `M_x`, `x̄` is
+   constant with value in `{0, 1}` on every bottom SCC. With `D̄` the
+   union of the value-`1` ones,
+
+   ```
+   ess(L)  :=  { α : some finite prefix of α folds into D̄ }
+   ```
+
+   — the shadow construction of Proposition 4.1, performed on the
+   quotient — is a member of the null-class, its syntactic monoid is
+   exactly `M_x`, and it depends only on the class:
+   `μ_p(L₁ Δ L₂) = 0` iff the reduced invariants of `ess(L₁)` and
+   `ess(L₂)` are byte-equal.
+3. *(the measure-blind LTL frontier is decidable)* The null-class of
+   `L` contains an LTL-definable language iff `M_x` is aperiodic — a
+   `p`-free condition — and in that case `ess(L)` is itself an LTL
+   witness.
+
+*Proof.* (1) Every member `L''` has residual-measure series `x`
+(Prop 4.3), and the series factors through `L''`'s syntactic morphism;
+taking `≈` on `Σ*` (`u ≈ v` iff `x(w·u·z) = x(w·v·z)` for all finite
+`w, z`), the congruence contains the syntactic congruence of `L''`,
+so `Σ*/≈` is a quotient of `M(L'')`; and `Σ*/≈ = 𝒞/≈ = M_x` because
+`x` already factors through `𝒞`.
+
+(2) *Constancy.* Let `C̄` be a bottom SCC of the quotient graph and
+`[c] ∈ C̄`. The upstairs walk from `c` reaches some bottom SCC `C` of
+`𝒞`, whose image — reachable from `[c]` — lies inside `C̄`
+(bottomness). For `c' ∈ C`, `x(c') = θ_C`; and any state of `C̄` is
+reachable from `[c']`, say as `[c'·t]`, with `c'·t ∈ C` by
+closedness, so `x̄ = θ_C` there. Hence `x̄ ≡ θ_C ∈ {0, 1}` on all of
+`C̄` (and every original bottom SCC mapping into `C̄` carries the
+same bit). *Membership.* `x̄` is harmonic on the quotient chain
+(inherited from `x` termwise) and agrees with the `{0,1}` boundary on
+the quotient-bottom SCCs, so on the transients it satisfies the same
+nonsingular system as the absorption probability into `D̄`:
+`x̄([c]) = Pr[the quotient walk from [c] enters D̄]`. Proposition 4.1
+applied on the quotient table makes `ess(L)` an open ω-regular
+language with pair set `{(s̄, ē) linked : s̄ ∈ D̄}`, recognized by
+`M_x`, whose residual measures are exactly
+`u ↦ x̄([fold(u)]) = x(fold(u))` — the series of `L` — so `ess(L)`
+is in the class by Prop 4.3. Its syntactic monoid divides `M_x`
+(recognition) and is divided by it (part 1), hence equals it.
+Canonicality: `ess(L)` is built from the series alone, and the series
+is a complete invariant of the class (Prop 4.3).
+
+(3) (⇒) An LTL member has aperiodic syntactic monoid [DG08], which
+`M_x` divides (part 1), and divisors of aperiodic monoids are
+aperiodic. (⇐) If `M_x` is aperiodic, `ess(L)`'s syntactic monoid is
+aperiodic (part 2), so `ess(L)` is LTL-definable [DG08]. The frontier
+bit is `p`-free: the null-class itself is `p`-free (the xor-profile
+test never reads `p`), and if `M_x` at one full-support `p` is
+aperiodic then the class has an LTL member, so `M_x` at any other
+full-support `p'` divides that member's aperiodic monoid. ∎
+
+Three remarks. **The warning is repaired**: the essential form is a
+*complete* canonical invariant of the null-class where the shadow was
+only sufficient — on the warning's pair, the series is constantly `1`,
+`M_x` is trivial, and `ess(Σ*·b·Σ^ω) = ess(Σ^ω) = Σ^ω`. In
+particular the exact `d_p = 0` quotient of a census is computed with
+*no pairwise work at all*: one `ess` per language, byte dedup.
+**The frontier genuinely cuts through the non-aperiodic languages.**
+"Some `b` at an even position" (non-aperiodic, `μ = 1`) is
+null-equivalent to `Σ^ω`; but the §4.1 example "first `b` at an even
+position" is not null-LTL: `≈` merges `[ε]` with the neutral class
+`A₀` and nothing else (`x(A₀) = 2/3 ≠ 1/3 = x(A₁)`), so
+`M_x = {1̄, A₁, F₀, F₁}` retains the parity group `{1̄, A₁} ≅ ℤ/2`
+and is not aperiodic. The direct argument agrees: an aperiodic `L'`
+has `fold(a^j)` eventually constant, while
+`μ_p((a^{j}·b)⁻¹L)` must alternate between `1` and `0`.
+**What stays open is only a refinement**: whether `≈` itself (not
+just the frontier bit) is independent of `p` — an accidental rational
+coincidence at one `p` could in principle coarsen the quotient; `ess`
+is canonical at the fixed conventional `p` regardless. The
+construction is also the promised beachhead of the weighted direction
+(§7): `M_x` is precisely the syntactic object of a `ℚ`-weighted
+series, arrived at from purely Boolean questions.
 
 ### 4.3 The verification pipeline
 
@@ -695,12 +784,15 @@ concentration of measure-0/1 in the safety/co-safety rungs, tested;
 of the census: the `d_p = 0` quotient computed in full (all μ-0
 languages collapse to one point and all μ-1 languages to another —
 `μ(L) = μ(L') = 1` forces `μ(L Δ L') = 0` — so only the
-strictly-interior languages can separate; dedup by shadow bytes, then
-the aligned xor-profile for the exact classes), followed by exhaustive
+strictly-interior languages can separate; the exact classes are the
+byte-classes of the reduced essential forms, Theorem 4.4, with the
+aligned xor-profile re-checking a sample), followed by exhaustive
 all-pairs distances between class representatives per alphabet slice —
 diameter, distance distribution, clustering by degree,
-nearest-LTL-neighbor; (v) the pipeline demonstration of §4.3 with its
-baseline comparison.⟩
+nearest-LTL-neighbor; (v) the measure-blind LTL frontier column: how
+many non-LTL census languages are null-equivalent to LTL ones;
+(vi) the pipeline demonstration of §4.3 with its baseline
+comparison.⟩
 
 ## 7. Related work
 
@@ -782,6 +874,9 @@ on the LTL frontier.
   Comput., 1999.
 - [CY95] C. Courcoubetis, M. Yannakakis. *The complexity of
   probabilistic verification.* J. ACM 42(4), 1995.
+- [DG08] V. Diekert, P. Gastin. *First-order definable languages.* In
+  *Logic and Automata: History and Perspectives*, Amsterdam University
+  Press, 2008.
 - [LM95] D. Lind, B. Marcus. *An Introduction to Symbolic Dynamics and
   Coding.* Cambridge University Press, 1995.
 - [PP04] D. Perrin, J.-É. Pin. *Infinite Words: Automata, Semigroups,

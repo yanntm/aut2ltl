@@ -366,6 +366,33 @@ Laws, all exact:
   warning); an implementation that makes F-G "pass" by equating the
   shadows is wrong.
 
+**Essential form** (paper Thm 4.4): `essential(inv, p=uniform) -> Inv`
+and `ltl_up_to_null(inv, p=uniform) -> bool`. Algorithm: solve for the
+full vector `x` (M1 solver; extend by `θ_C` on bottom classes);
+compute the congruence `≈` on `𝒞` by direct pair testing —
+`c ≈ c'` iff `x(M(w, M(c, z))) == x(M(w, M(c', z)))` for ALL
+`w, z ∈ 𝒞` including the identity (`O(n⁴)` exact Fraction
+comparisons; census sizes make this nothing); build the quotient
+table and letter map; bottom SCCs of the quotient; **assert** `x̄` is
+constant `0` or `1` on each quotient-bottom SCC (paper Thm 4.4(2) —
+a violation is a stop-the-line finding); `D̄` = the value-1 ones; pair
+set `{(s̄, ē) linked : s̄ ∈ D̄}`; reduce. `ltl_up_to_null` =
+aperiodicity of the quotient monoid (reuse the calculus aperiodicity
+scan — grep `aperiodic` under `calculus/`/`classify/`). Laws and
+fixtures:
+
+- `d_p(L, essential(L)) = 0` and `essential(essential(L))` byte-equal
+  `essential(L)`, fixtures + corpus samples;
+- **F-H (the repair)**: `essential(Σ*·b·Σ^ω)` and `essential(Σ^ω)`
+  are byte-EQUAL (both `= Σ^ω`'s invariant) — exactly where F-G's
+  shadows differ;
+- **F-I**: on F-E ("first `b` at even position"): `≈` merges `[ε]`
+  with the neutral class `A₀` and nothing else, the quotient retains
+  `{1̄, A₁} ≅ ℤ/2`, `essential(F-E)` is byte-equal to (reduced) F-E
+  itself, and `ltl_up_to_null(F-E) = False`;
+- `ltl_up_to_null(F-A) = True` (already aperiodic);
+- consistency: shadow bytes equal ⟹ essential bytes equal, sampled.
+
 ## 10. M4 (QNT3) — entropy
 
 Paper Prop 5.1: `A` = letter-count matrix on `Live × Live` (`Live`
@@ -398,9 +425,13 @@ columns, no JSON). E1 measure+θ-profile columns (distribution per
 Wagner degree / safety band); E2 entropy column; E3 the *exact* metric
 geometry per alphabet slice — NOT sampled: (a) all μ=0 languages are
 one `d_p = 0` class and all μ=1 languages another (skip their pairs
-entirely); (b) among the strictly-interior languages, dedup by reduced
-shadow bytes (free), then decide the exact `d_p = 0` classes by the
-aligned xor-profile on the survivors; (c) exhaustive all-pairs `d_p`
+entirely); (b) among the strictly-interior languages, the exact
+`d_p = 0` classes are the byte-classes of the reduced essential forms
+(paper Thm 4.4) — no pairwise work; re-check a sample of merged and
+separated pairs with the aligned xor-profile; (b') the frontier
+column: `ltl_up_to_null` per language — report how many non-LTL
+census languages are null-equivalent to LTL ones; (c) exhaustive
+all-pairs `d_p`
 between class representatives (the M1 census counts make this a few
 `10^5` alignments at worst) — report diameter, distance distribution,
 clustering by Wagner degree, nearest-LTL-neighbor per non-LTL
