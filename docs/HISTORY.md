@@ -3201,3 +3201,22 @@ conformance into C.3 worked witness + C.7 note. Banner updated.
   (sampling chain + classifier keep-predicate) for future draws.
 - Report section 4 + paper section 8 absorbed the finding: inhabited at the
   floor, unreachable by uniform draws — "one must aim".
+
+## 2026-07-11 — K4 LANDED: the Wagner derivative on the invariant
+- classify/derive/ implements Theorem 4.5: zones from maximal superchain tops
+  (tops now exposed by the superchain engine), chains engine gains an optional
+  stem restriction, virtual sinks folded per the theorem (m' floored at 0 per
+  sign; n' = restricted+1 via one opposite-sign sink when m'=0), per-level mu
+  CNF-summed into gamma, sign at the first untied level, m strictly decreases
+  (asserted). record.py runs it on the tied case: no more PARTIAL from the
+  assembly; trace in witnesses["derivation"]. Ordinal rendering made spaceless
+  ("omega+1") to match the vocab dictionary key and keep .cat one-token.
+- Worked checks green: Fork + complement + floor-shape twin (omega+1, delta)
+  with empty kept core (classify_fork); escape language (omega+1, sigma)/dual
+  pi with non-empty kept core and sink-resolved sign (classify_escape, new,
+  from its 4-state EL presentation). Full classify suite green; the 6220 .cat
+  re-tag is byte-identical (no catalogue language is tied).
+- Fixtures: fork_floor.{sos,hoa} committed (combo 9241386589983080592 of
+  3state1ap2acc_parity), adoption-ready as
+  3state1ap2acc_parity_0009241386589983080592 — corpus integration deferred to
+  the corpus thread by design; report section 4 records the suggestion.
