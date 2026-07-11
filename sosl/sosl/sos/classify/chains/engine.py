@@ -16,7 +16,7 @@ maximal chain. Normative math: `research_notes/sos_classification.md` section 5.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, FrozenSet, List, Optional, Tuple
 
 from ...invariant import Invariant
 from ..primitives import h_descents, idempotents
@@ -86,9 +86,12 @@ def _reconstruct(top: int, desc: Dict[int, List[int]], bit: Dict[int, bool],
     return idems, bits
 
 
-def chains(inv: Invariant) -> ChainResult:
+def chains(inv: Invariant,
+           stems: Optional[FrozenSet[int]] = None) -> ChainResult:
     """Compute ``(m_plus, m_minus)`` with a maximal witness of each sign and the
-    per-stem best lengths."""
+    per-stem best lengths. When ``stems`` is given, only those stems are
+    searched — the restriction the degree derivation applies (C section 8:
+    the marking is unchanged, the admissible stems shrink)."""
     E = idempotents(inv)
     desc_all = dict(zip(E, h_descents(inv, E)))
     mult, accept = inv.mult, inv.accept
@@ -99,7 +102,7 @@ def chains(inv: Invariant) -> ChainResult:
     stem_best: Dict[int, Tuple[int, int]] = {}
 
     for s in range(inv.n):
-        if s == inv.identity:
+        if s == inv.identity or (stems is not None and s not in stems):
             continue
         linked = [e for e in E if mult[s][e] == s]
         if not linked:
