@@ -7,7 +7,8 @@ one JSON file per run and concatenates the records into a single CSV (one row
 per run) via `CSV_FIELDS` / `csv_row`.
 
 The field set is spec §7 verbatim; the three fields added in revision 2026-07-07b
-(`n_classes_initial`, `stall_class`, `cex_policy`) are present. `to_dict` /
+(`n_classes_initial`, `stall_class`, `cex_policy`) and the two of rev 2026-07-11
+(`export_associative`, `fixpoint_congruent`) are present. `to_dict` /
 `CSV_FIELDS` share one field order so the JSON keys and the CSV columns never
 drift apart.
 """
@@ -69,6 +70,18 @@ class RunStats:
     max_query_word_len: int = -1
 
     eq_certification: str = ""       # reps | bounded:<B> | exact
+
+    # Associativity of the exported multiplication table (spec §7, row P7/F8):
+    # brute-force over class triples on the produced export; "n/a" when no
+    # export was produced (refusal, BUDGET, CRASH, OVERSIZE).
+    export_associative: str = "n/a"  # true | false | n/a
+
+    # The Lemma 5.2 congruence check on the final table (spec §3.2 step 6):
+    # "true" recorded for free on a saturated run (its final sweep ran clean),
+    # computed by the check phase on ablation fixpoints, "n/a" when no
+    # certified fixpoint was reached (BUDGET, CRASH, OVERSIZE). Gated by rows
+    # P9/P10; E2's recount keys on it.
+    fixpoint_congruent: str = "n/a"  # true | false | n/a
 
     wall_seconds: float = -1.0
     verdict: str = ""                # SOUND | FAIL | BUDGET | ACCEPTOR_ONLY | OVERSIZE | CRASH
