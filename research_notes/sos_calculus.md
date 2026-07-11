@@ -1,52 +1,49 @@
-# A Calculus on the Syntactic ω-Semigroup: Align, Operate, Reduce
+# Computing with ω-Regular Languages in Canonical Form: A Calculus on the Syntactic ω-Semigroup
 
 **Yann Thierry-Mieg**
 
 With significant inputs from
 **Claude (Anthropic)**
 
-*Working draft — 2026-07-10.*
+*Working draft — 2026-07-11.*
 
 ## Abstract
 
-The syntactic ω-semigroup of an ω-regular language is now constructible
-[SωS26], learnable [SωSL26], and exploitable for definability [SωSX26].
-This paper proposes it as something more mundane and more consequential: a
-*computational substrate* — the object on which the everyday operations of
-an ω-automata toolbox (Spot's, say) are performed, instead of on automata.
-The calculus has three primitive moves: **align** two invariants on a
-common table (a generated product, the only product-priced move),
-**operate** by surgery on the pair set `P` (where almost every operation
-lives, almost always for free), and **reduce** to the canonical object
-(re-quotient, polynomial). Complement — `2^{Θ(n log n)}` on
-nondeterministic Büchi automata — is one bit-flip. Equivalence — PSPACE on
-automata — is byte equality. Membership of a lasso is one fold and one
-lookup. Inclusion, emptiness, universality, intersection-nonemptiness:
-scans, each returning the *minimal* witness lasso. Left quotients,
-rootings, pair languages, inverse substitutions: free surgeries.
-Classification checks that Spot implements as constructions
-(stutter-invariance, safety/co-safety, obligation, the acceptance strength
-actually needed) are equations on the table, read off. The safety
-closure, the interior, and the Alpern–Schneider safety/liveness
-decomposition are surgeries too — one `O(n²)` stem-liveness scan — and
-the hulls close the safety-shaped hierarchy exactly: the obligation
-(Staiger–Wagner) class is precisely the Boolean sublattice the closed
-pair sets generate, equivalently the languages whose verdict depends
-only on the stem's R-class — a theorem, a one-scan test, and, within
-the band, the Wagner degree as a longest alternating path. The
-exponentials do not disappear — they concentrate, exactly at the ω-rational constructors
-(concatenation by a prefix set, ω-power) and existential projection, where
-a powerset is intrinsic. The resulting picture is a *pay-canonicity-once*
-economy: entering the calculus costs what determinization always cost;
-staying in it makes everything downstream cheap, normal-formed, and
-certificate-producing. The calculus is implemented as a small pure
-library, its every decision replayable against independent oracles.
-On a census of the small languages [SωSN26] the economy is borne out end
-to end: the generated product realizes a median 0.17 of its `n₁·n₂` bound
-and never more than 0.60, the equivalence re-check a pipeline runs after
-each rewrite is a byte comparison rather than a PSPACE test, and the
-stutter-invariance read-off matches the automata-side construction on
-every language of the census.
+The syntactic ω-semigroup of an ω-regular language — Arnold's canonical
+algebra — is now constructible from any deterministic Emerson–Lei
+automaton, reified as a finite, byte-comparable invariant
+`𝓘(L) = (𝒞, λ, M, P)`: a keyed class set, a letter map, a multiplication
+table, and a set of accepting linked pairs [SωS26]. This paper proposes
+to *compute with it*: to perform the everyday operations of an
+ω-automata toolbox (Spot's, say) on the invariant instead of on
+automata. The calculus has three primitive moves: **align** two
+invariants on a common table (a generated product, the only
+product-priced move), **operate** by surgery on the pair set `P` (where
+almost every operation lives, almost always for free), and **reduce** to
+the canonical object (re-quotient, polynomial). Complement —
+`2^{Θ(n log n)}` on nondeterministic Büchi automata — is one bit-flip.
+Equivalence — PSPACE on automata — is byte equality. Membership of a
+lasso is one fold and one lookup; emptiness, universality, and inclusion
+are scans, each returning the *minimal* witness lasso; left quotients,
+inverse substitutions, and alphabet hygiene — dropping an unconstrained
+atomic proposition, equality up to renaming — are free surgeries and
+read-offs. Classification checks that automata libraries implement as
+constructions (stutter-invariance, the safety–progress ladder, the
+acceptance strength a language actually needs) are equations on the
+table; the safety closure, the interior, and the Alpern–Schneider
+decomposition are `O(n²)` surgeries whose fixpoints generate exactly the
+obligation (Staiger–Wagner) class, with the Wagner degree inside that
+band a longest-path read-off. The exponentials do not disappear — they
+concentrate, exactly at the ω-rational constructors (concatenation by a
+prefix set, ω-power) and existential projection, where a powerset is
+intrinsic. The economy is *pay canonicity once*: entering the calculus
+costs what determinization always cost; everything downstream is cheap,
+normal-formed, and certificate-producing. The calculus is implemented as
+a small pure library, its every decision replayable against independent
+oracles; measured on a complement-closed corpus of small languages, the
+generated product realizes a median 0.17 of its `n₁·n₂` bound, and every
+classification read-off agrees with the automata-side construction on
+every language of the corpus.
 
 ---
 
@@ -81,9 +78,7 @@ the exportable invariant `𝓘(L) = (𝒞, λ, M, P)`: a keyed class set, a
 letter map, a multiplication table, and a set of accepting linked pairs
 [SωS26]. The reification comes with a completeness theorem
 [SωS26, Thm 5.1]: two ω-regular languages are equal iff their invariants
-are byte-equal after canonical keying. The same object is learnable from
-membership queries alone [SωSL26], carries the LTL frontier and its
-certificates [SωSX26], and has been censused at small sizes [SωSN26].
+are byte-equal after canonical keying.
 
 This paper reads the completeness theorem as an API. If `𝓘(L)` *is* the
 language, then operations on languages ought to be operations on
@@ -103,8 +98,7 @@ The calculus we propose has three primitive moves:
    induce, returning *the* syntactic invariant of the result — a normal
    form, available after every step, that automata do not have.
 
-The slogan: **align is the only product-priced move; operate is free;
-reduce is the normal form.** An operation is expensive exactly when it
+An operation is expensive exactly when it
 cannot be phrased as surgery on an aligned table, and the calculus is
 honest about which those are: the ω-rational constructors — concatenation
 by a prefix set, ω-power — and existential projection of an atomic
@@ -121,7 +115,8 @@ Contributions:
 1. **The three-move decomposition** and the free-surgery catalog (§3):
    the classical toolbox — complement, union, intersection, difference,
    membership, emptiness, universality, inclusion, equivalence,
-   intersection-nonemptiness, left quotient, relabeling — realized as
+   intersection-nonemptiness, left quotient, relabeling, alphabet
+   hygiene — realized as
    pair-set surgeries and `Val`-scans over a fixed table, with the
    conjugacy-saturation law (Proposition 3.1) delimiting which pair sets
    are languages at all.
@@ -129,34 +124,41 @@ Contributions:
    calculus renders is accompanied by the *globally minimal* witness
    lasso, obtained from the scan order alone — no separate
    counterexample-extraction machinery.
-3. **Read-offs replacing constructions** (§3.5–§3.6): classification
+3. **Read-offs replacing constructions** (§5–§6): classification
    queries answered by equations on the table, including a one-scan
-   stutter-invariance test (Proposition 3.3, with full proof) where the
+   stutter-invariance test (Proposition 5.1, with full proof) where the
    automata-side check builds closure automata and tests product
    emptiness; the hulls — safety closure, interior, and the
    Alpern–Schneider decomposition — as `O(n²)` surgeries on the same
-   table (Proposition 3.5), turning the ladder's first rungs into
+   table (Proposition 6.1), turning the ladder's first rungs into
    fixpoint equations; and the theorem that the obligation rung is
    *exactly* the Boolean sublattice the hull fixpoints generate
-   (Theorem 3.10), with obligation membership a one-scan read-off and
+   (Theorem 6.6), with obligation membership a one-scan read-off and
    the band's Wagner degrees longest-path read-offs
-   (Proposition 3.11).
-4. **The ledger** (§4): a side-by-side of the calculus against a
-   production toolbox, one row per operation, with the exponential
-   frontier located exactly (§3.4). The calculus is implemented as a
-   small pure library under a soundness harness whose deepest gates are
-   metamorphic replay and a complement-closed corpus used as an equality
-   oracle. Measured against Spot over the census, the rows come out as
-   the frontier predicts: the free surgeries and read-offs run in
+   (Proposition 6.7).
+4. **The ledger, and the evidence** (§7–§8): a side-by-side of the
+   calculus against a production toolbox, one row per operation, with
+   the exponential frontier located exactly (§4); and the measurements.
+   The calculus is implemented as a small pure library under a
+   soundness harness whose deepest gates are metamorphic replay and a
+   complement-closed corpus used as an equality oracle. Measured
+   against Spot over that corpus (§8), the rows come out as the
+   frontier predicts: the free surgeries and read-offs run in
    microseconds on the held object, and where the automata side pays a
    determinization or an equivalence test the calculus pays a set
    operation or a byte comparison.
 
-§2 recalls the object and fixes notation. §3 develops the calculus. §4
-draws the ledger and states what the calculus refuses to simulate. §5
-summarizes complexity; §6 positions the work; §7 concludes.
+§2 recalls the object, the algebraic toolkit the proofs use, and the
+running example. §3 develops the calculus; §4 locates the exponential
+frontier; §5 turns the classification battery into read-offs; §6
+develops the hulls and the obligation band they generate; §7 draws the
+ledger and the cost summary and states what the calculus refuses to
+simulate; §8 reports the measurements; §9 positions the work; §10
+concludes.
 
-## 2. Background: the object and its oracle
+## 2. Background: the object, the toolkit, the example
+
+### 2.1 The invariant and its oracle
 
 We recall from [SωS26] exactly what the calculus consumes, and fix the
 conventions every later scan relies on. Throughout, `Σ` is a finite
@@ -236,6 +238,106 @@ its acceptance datum; one table hosts many pair sets, and the calculus's
 central discipline is that pair sets are *values* over a shared,
 immutable table. Not every subset of `linked(𝓘)` denotes a language; the
 exact condition — saturation under conjugacy — is Proposition 3.1.
+
+### 2.2 The algebraic toolkit
+
+The proofs of §6 use a small kit of classical finite-semigroup facts,
+collected here so the paper is self-contained; [PP04] covers all of it.
+Products are taken in `M`; recall that `𝒞` contains the fresh identity
+`[ε]`, so `c·𝒞` below already includes `c` itself.
+
+**Idempotent powers.** In a finite semigroup every element `x` has
+exactly one idempotent among its powers `{x, x², x³, …}`; we write it
+`x^π` (so `idem(d) = d^π`, computed by the memoized power walk of §2.1).
+The exponent can be taken uniform over the table (any sufficiently
+divisible one); the proofs use only idempotence, `x·x^π·x = x^{π+2}`-style
+arithmetic, and uniqueness.
+
+**Green's relations.** For `x, y ∈ 𝒞`: `x ≤_R y` iff `x ∈ y·𝒞`, and
+`x R y` iff each is `≤_R` the other — they generate the same right
+ideal. `L` is the left dual, `H = R ∩ L`. The `R`-classes are the
+strongly connected components of the **right-Cayley graph** of the table
+(nodes `𝒞`, an edge `c → c·λ(a)` per letter [SωS26, Def 5.2]), and
+`≥_R` is reachability in it — the geometric reading every scan of §6
+exploits. On idempotents we use the natural order:
+`f ≤_H e` iff `e·f = f·e = f`.
+
+**The kernel.** Every finite semigroup has a least two-sided ideal `K`,
+its *kernel*, and `K` is completely simple: by Rees–Suschkewitsch it is
+isomorphic to a matrix semigroup over a group `G` — elements are
+triples `(i, g, λ)` (row, group element, column), multiplication is
+`(i, g, λ)·(j, h, μ) = (i, g·q_{λj}·h, μ)` with sandwich entries
+`q_{λj} ∈ G`, and every subsemigroup of a completely simple semigroup
+is completely simple. Lemma 6.4 computes inside one such presentation;
+only the multiplication rule is needed.
+
+**Chains and the Wagner coordinates.** Fix a saturated pair set `P` on
+the table. A *chain of length `n`* is a linked stem `s` carrying
+idempotent loops `e₀ >_H e₁ >_H ⋯ >_H e_n` whose verdicts
+`Val_P(s, e_i)` alternate; its *sign* is the first verdict. `m⁺(L)`
+(resp. `m⁻(L)`) is the maximal length of a chain of sign 1 (resp. 0),
+with the convention `m^b = −1` when no linked pair of verdict `b`
+exists at all, and `m(L) = max(m⁺, m⁻)`. A *superchain of length `n`*
+is a sequence of chains `C₀, …, C_n` of alternating signs whose stems
+are strictly `R`-decreasing and successively accessible
+(`s_{i+1} ∈ s_i·𝒞`); `n⁺(L)` / `n⁻(L)` are the maximal lengths of
+superchains of first sign 1 / 0. These coordinates, evaluated in the
+syntactic ω-semigroup, determine the Wagner degree of `L`
+[Wag79, CP97, CP99, SW08]. §6 imports exactly two facts from that
+theory: `m(L) = 0` iff `L` is a Boolean combination of open sets
+(Wagner's theorem in the Carton–Perrin form [CP99, Thm 6, Cor 7]), and
+the superchain normal form [CP97, Thm 7].
+
+### 2.3 The running example
+
+The specimen threaded through the paper is Carton–Perrin's own
+[CP97, Ex. 10]: `L = a*·b^ω` over `Σ = {a, b}` — some `a`'s, then `b`'s
+forever. Its invariant has five classes,
+
+```
+𝒞 = { [ε], A, B, C, D },    keyed    ε, a, b, ab, ba,
+```
+
+with `A = [a]` the words in `a⁺`, `B = [b]` those in `b⁺`, `C = [ab]`
+those in `a⁺b⁺`, and `D = [ba]` the *dead* words — once an `a` follows
+a `b`, no continuation can rescue the word. The letter map is
+`λ(a) = A`, `λ(b) = B`; the multiplication table (identity row and
+column omitted) is
+
+| `·` | `A` | `B` | `C` | `D` |
+|---|---|---|---|---|
+| **`A`** | `A` | `C` | `C` | `D` |
+| **`B`** | `D` | `B` | `D` | `D` |
+| **`C`** | `D` | `C` | `D` | `D` |
+| **`D`** | `D` | `D` | `D` | `D` |
+
+The idempotents are `A`, `B`, `D` (`C² = D`, so `C^π = D`). The linked
+pairs are `(A,A), (D,A), (B,B), (C,B), (D,B), (D,D)`, and the
+accepting set is
+
+```
+P = { (B, B), (C, B) }
+```
+
+— the two behaviors of the language: "reading `b`'s after nothing but
+`a`'s (if any), keep reading `b`'s".
+
+**Reading the algebra: lasso queries.** Membership of a lasso is one
+fold and one lookup (§3.2), and the example shows each part of the
+oracle at work:
+
+- `b^ω`: `fold(ε) = [ε]`, `fold(b) = B` idempotent;
+  `Val_P([ε], B) = ((B, B) ∈ P)` — accept.
+- `aab·b^ω`: `fold(aab) = A·A·B = C`, loop class `B`;
+  `(C·B, B) = (C, B) ∈ P` — accept.
+- `a·(ab)^ω`: `fold(ab) = C` is *not* idempotent; the oracle totalizes
+  through `C^π = D`: `Val_P(A, C) = ((A·D, D) ∈ P) = ((D, D) ∈ P)` —
+  reject. The idempotent-power step is visibly doing the work: the
+  loop `ab` keeps producing an `a` after a `b`.
+
+Every later section revisits this table: complement and quotients in
+§3.2, alignment in §3.3, the hulls, the obligation verdict, and the
+Wagner degree `(n⁺, n⁻) = (1, 2)` in §6.
 
 ## 3. The calculus
 
