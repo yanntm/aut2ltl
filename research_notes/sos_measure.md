@@ -6,7 +6,8 @@ With significant inputs from
 **Claude (Anthropic)**
 
 *Working draft — 2026-07-11. Structure complete; §3 (including the
-product form 3.5) at full rigor; §6 carries ⟨TBD⟩ slots to be filled
+product form 3.5) at full rigor; Figures 1–3 in place (companion
+artifact `sos_measure_figs/`); §6 carries ⟨TBD⟩ slots to be filled
 from `sos_measure_report.md`.*
 
 ## Abstract
@@ -277,6 +278,22 @@ entry prefix (`fold(u) = c`), the tail part `y'` ends with a full `w`,
 so `fold(y) = c·fold(y') ∈ c·S¹·k`. The strong factoring theorem (§2.1)
 gives `α ∈ L ⟺ (fold(y)·k, k) ∈ P`, i.e. `Val(fold(y), k)`. ∎
 
+![the doubled-word cut on one sampled word](sos_measure_figs/img/fig2_cut.png)
+
+**Figure 2 (the doubled-word cut, run on one word).** Lemma 3.1's
+mechanism on a uniformly sampled length-56 word over the §3.4 example
+language ("some `a` at infinitely many even positions"), whose kernel
+idempotent is `k = fold(aa)` with `H(k) ≅ ℤ/2` — so folds in `H(k)`
+render as parities. Disjoint occurrences of the doubled word
+`w·w = aaaa` are highlighted and cut at their midpoints (bars); each
+inter-cut block reads `w·x·w` and folds into `H(k)`, its parity
+printed beneath; the cumulative product is a running XOR, and the cuts
+where it hits the recurring value are circled — the `J`-cuts — between
+which the blocks fold to `k` exactly (brackets), including across the
+one excursion (two parity-`1` blocks about a non-`J` cut whose product
+returns to `k`). Left of the first cut, the stem folds into
+`Stems(c, k)`. A reader who follows the ruler has re-run the proof.
+
 ### 3.2 The achievable stems form one `H(k)`-orbit
 
 **Lemma 3.2 (stem invariance).** Let `C` be a closed `R`-class,
@@ -402,6 +419,22 @@ identically true: `θ_K = 1` and `μ_p(L) = 1` for every full-support
 `p`. A word like `(ba)^ω`, which threads its `a`'s onto odd positions
 forever, lives precisely in the null set that avoids the doubled word
 `aaaa`; and the complement flips `P`, hence the bit: `μ_p(L^c) = 0`.
+
+![the kernel group and the phase contrast](sos_measure_figs/img/fig3_kernel.png)
+
+**Figure 3 (the kernel group and the phase contrast).** The example's
+two halves. Left: the right-Cayley graph of the nine classes `(r, E)`
+plus `[ε]` (solid blue = step under `a`, dashed amber = under `b`,
+grey boxes = SCCs; nodes carry canonical shortlex keys, here
+`K = {[a·a], [¬a·a·a]}`); the unique bottom SCC is the kernel
+`K ≅ ℤ/2` (double circles, thick borders), verdict `θ_K = 1`, so
+`μ_p(L) = 1` for every full-support `p`. Right: the phase contrast —
+the non-kernel idempotent `e' = fold(ba)` *splits* the `R`-equivalent
+stems `fold(b)` and `fold(bb)` (`b·(ba)^ω ∈ L`, `bb·(ba)^ω ∉ L`), so
+`Val(·, e')` is not an `R`-class function; the kernel loop
+`k = fold(aa)` *merges* them, the re-bracketing
+`u·(aa)^ω = (u·a)·(aa)^ω` forgetting the phase exactly as Lemma 3.2
+forces.
 
 ### 3.5 The product form: Markov chains and Markov sources
 
@@ -548,6 +581,21 @@ classes: `[ε]`; the `b`-free classes `A₁ = fold(a)`, `A₀ = fold(aa)`
    `Σ_j p_a^{2j}·p_b`. The certificate is the labeled map
    `{F₀} ↦ 1, {F₁} ↦ 0` together with the `2×2` system; a checker
    replays it without re-deriving the SCC structure.
+
+![the read-off of the example, end to end](sos_measure_figs/img/fig1_readoff.png)
+
+**Figure 1 (the worked read-off, end to end).** The whole algorithm in
+one picture, on the example above (nodes carry canonical shortlex
+keys: `A₁ = [a]`, `A₀ = [a·a]`, `F₀ = [¬a]`, `F₁ = [a·¬a]`). The
+transient SCC `{A₀, A₁}` is boxed — the `a`-edges exchange its two
+classes, the `b`-edges exit; the bottom SCCs `{F₀}` and `{F₁}` are
+double-circled with self-loops on both letters. The kernel *spans both
+bottom SCCs* — its two `R`-classes — so both carry the thick border:
+one global idempotent `k = F₀` serves both components, each `θ`-lookup
+staying inside its own closed `R`-class. Badges give `θ_{F₀} = 1`,
+`θ_{F₁} = 0`; under each class its exact value at uniform `p` —
+`x_{[ε]} = 2/3`, `x_{A₁} = 1/3`, `x_{A₀} = 2/3`, `x_{F₀} = 1`,
+`x_{F₁} = 0` — and the read-off is `μ_p(L) = x_{[ε]} = 2/3`.
 
 ### 4.2 Distance on an aligned table
 
