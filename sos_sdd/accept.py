@@ -89,3 +89,19 @@ def accept_masks(formula: str, n_marks: int) -> Tuple[int, ...]:
     """Every mark mask over `n_marks` marks the formula accepts, sorted —
     the numeric acceptance table a slot model carries."""
     return tuple(m for m in range(1 << n_marks) if eval_acceptance(formula, m))
+
+
+def masks_to_formula(masks: Tuple[int, ...], n_marks: int) -> str:
+    """The canonical formula denoting exactly `masks`: perfect DNF — one
+    `Inf/Fin` conjunct per accepted mask (`t`/`f` at the extremes). The
+    Boolean calculus (§6.2) operates on mask sets, the denotations; this
+    is the inverse rendering, so a derived language's digest carries an
+    acceptance text equivalent to its table by construction."""
+    if len(masks) == 1 << n_marks:
+        return "t"
+    if not masks:
+        return "f"
+    def conj(m: int) -> str:
+        return "&".join((f"Inf({b})" if m & (1 << b) else f"Fin({b})")
+                        for b in range(n_marks))
+    return " | ".join(f"({conj(m)})" for m in sorted(masks))
