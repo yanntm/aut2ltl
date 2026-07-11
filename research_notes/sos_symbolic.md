@@ -5,7 +5,7 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Working draft — 2026-07-09 — placeholders marked `⟨TBD: …⟩`*
+*Working draft — 2026-07-11 — placeholders marked `⟨TBD: …⟩`*
 
 ## Abstract
 
@@ -23,8 +23,9 @@ computes the two-sided syntactic congruence with right moves alone, is
 exactly the statement that every relation the construction *iterates* is
 **slot-local**: a conjunction of one identical small relation applied at
 each slot. Closure is a least fixpoint; profiles collapse to a single
-slot-read once idempotent powers are computed (repeated squaring, which
-on the aperiodic side converges in logarithmically many steps); the
+slot-read once idempotent powers are computed (a pairing fixpoint, with
+repeated squaring a logarithmic shortcut exactly when the orbit periods
+are powers of two — the aperiodic side included); the
 residual equivalence, delegated to an external language-equivalence
 oracle in explicit implementations, *internalizes* as a small profile-
 seeded refinement; the congruence is a greatest-fixpoint partition
@@ -49,8 +50,12 @@ monoid factors exactly (`EM(D₁ ⊗ D₂) ≅ EM(D₁) × EM(D₂)`), so factor
 slot coordinates give additive diagrams where the flat state-space vector
 is itself the explosion. The compactness bet is that of symbolic model
 checking, made on the same grounds: engineered inputs are products.
-⟨TBD: experimental headline — diagram size vs `|EM|` on the evaluation
-corpus and on scaling product families.⟩
+The engine exists: its exported invariant is byte-identical to the
+explicit reference construction's on every instance both complete, and
+the factored bet is measured where it starts — `9n + 1` diagram nodes
+carrying `16ⁿ` elements on the `n`-fold product family, against a flat
+encoding that hits its proven exponential wall at `n = 3` — with the
+census-scale scatter the open column (§8).
 
 ---
 
@@ -59,9 +64,10 @@ corpus and on scaling product families.⟩
 [SωS26] ends its complexity section on a promissory note: the
 construction's ingredients are all Boolean, its steps are all images,
 fixpoints and quotients over sets, "native to decision diagrams". This
-paper is the note called in — a design, not yet an implementation, but a
-design in which every step is named, priced, and mapped onto a small
-abstract engine.
+paper is the note called in — a design in which every step is named,
+priced, and mapped onto a small abstract engine, and an implementation
+whose exported invariant is byte-identical to the explicit reference
+construction's (§8).
 
 The construction it symbolizes decides, among other things, whether an
 ω-regular language is LTL-definable, and its cost profile is lopsided in
@@ -247,7 +253,8 @@ domain is `V = Q × 2^C`, of `log|Q| + |C|` bits.
 variables of type `V`, one per slot — and every set the construction
 manipulates is a set of such points: one decision diagram. Variable
 order: slots grouped by the input's structure (§4.2); within a slot,
-state bits above mark bits ⟨TBD: order study⟩.
+the packed value `(q, S)` is one multi-valued variable (split
+encodings — state above marks, interleaved — are §8's order study).
 
 **Phase 0 — letter relations.** From `Δ` and `Mk`, the letter-element
 relation and the right-multiplication relation:
@@ -299,15 +306,26 @@ functional relation on the element space:
   right factor of `x` — a pairing lfp of at most `ℓ` rounds, `ℓ` the
   longest power-orbit — then select per `x` the unique idempotent in its
   orbit (`Idem(y) = [Comp(y, y, y)]`, a diagram test).
-- *Aperiodic shortcut*: when every element's orbit has period 1 — the
-  entire LTL-definable side of the frontier [SωS26, §7] — repeated
-  **squaring** converges:
-  `x^{2^j} = x^π` as soon as `2^j` passes the index, so `O(log ℓ)`
-  applications of `Sq(x, z) = Comp(x, x, z)` compute `π` outright.
-  (Squaring also converges on period-2 groups — it detects powers of
-  two, not aperiodicity — so it is a shortcut, never a verdict; the
-  aperiodicity verdict itself is read on the small quotient, where it
-  belongs.)
+- *Squaring shortcut*: repeated **squaring** `z ← z·z` reaches `x^π`
+  in `O(log ℓ)` rounds whenever it converges, and its convergence is
+  exactly characterized: `x^{2^j}` stabilizes iff `2^j` passes the
+  orbit's index *and* the orbit's period divides `2^j`, so the
+  iteration converges **iff every orbit period is a power of two** —
+  the entire aperiodic (LTL-definable) side of the frontier
+  [SωS26, §7] included, but not only it, so squaring is a shortcut,
+  never a verdict; the aperiodicity verdict itself is read on the
+  small quotient, where it belongs. The squaring step is genuinely
+  simultaneous — every slot written while every slot is read — which
+  no assignment-shaped operation renders; instead the squaring map is
+  materialized **once** as a `2k`-variable relation
+  `Sq = {(z, z·z) : z ∈ EM¹}`: double each element variable into an
+  adjacent (pre, post) pair and apply one `Comp` case split whose
+  guards and right-hand sides read only pre variables — written and
+  read variable sets disjoint, so simultaneity is vacuous. Every power
+  `x^{2^j}` stays inside `EM¹`, so the one relation serves all rounds,
+  each round a relational image (primitive 3), and a
+  `⌈log₂|EM¹|⌉ + 1` round cap decides divergence: past it, an orbit
+  that has not stabilized never will.
 
 Phase 2 sits outside every fixpoint of the pipeline: `π` is computed
 once and consumed as a static functional relation.
@@ -343,11 +361,14 @@ profile columns and refined by the deterministic steps:
 *Correctness*: unwinding the gfp, `(q, q′)` survives iff every
 lockstep-reachable pair agrees on every loop verdict, i.e.
 `∀b, c ∈ EM: A(st_b(q), c) = A(st_b(q′), c)`, which is agreement on all
-ultimately-periodic words, which is language equality. The seed costs
-one universal quantification of the element diagram per state pair —
-the heaviest single query in the pipeline after Phase 2 — and the
-refinement is over the tiny space `Q × Q`. The engine is oracle-free
-end to end.
+ultimately-periodic words, which is language equality. The seed is
+cheaper than the formula reads: materialize per state the **profile
+column** `S_q = { x ∈ EM : A(q, x) }` — one predicate application of
+`ProfR` to the element diagram — and two states agree on *every*
+element iff `S_q` and `S_{q′}` are the **same node** of the unique
+table. Canonicity turns the per-pair universal quantification into
+`|Q|` predicate applications plus `O(1)` comparisons; the refinement
+is over the tiny space `Q × Q`. The engine is oracle-free end to end.
 
 **Phase 5 — seed and congruence.** The seed equivalence on elements is
 slot-local given `≃` and `ProfR`:
@@ -374,19 +395,18 @@ intersection.
 **Phase 6 — quotient and exports.** Primitive 5 quotients `EM¹/~`;
 everything a consumer needs falls out of objects already present:
 
-- **Class table**: representatives `x_κ` per class (least element per
-  class under the variable order, or shortlex-faithful extraction:
-  the minimal BFS layer `i` intersecting the class gives the length;
-  backward preimage chaining from the class through layers
-  `i−1, …, 0` gives the layer-indexed sets that can still reach it,
-  and a *forward* walk through those sets choosing the least letter
-  at each step gives the lex-least word of that length — backward
-  letter choice would minimize the wrong end. `|𝒞|` extractions, each
-  linear in the closure depth); the multiplication table `M(κ, a)` by
-  one `R_a` image per representative, lifted to `M(κ, κ′)` by folding
-  the representative word of `κ′` letter by letter — `|𝒞|` folds of
-  total length `Σ_κ |key(κ)|`, cheaper than `|𝒞|²` applications of
-  Phase 2's crossing relation `Comp` and using only slot-local moves.
+- **Class table**: the quotient hands each class a representative
+  element; the multiplication table and the letter map are evaluated
+  on representatives on the small side — slot-local composition of
+  explicit points, never Phase 2's crossing relation. Canonical ids
+  and keys then cost nothing extra: a shortlex BFS **over the quotient
+  algebra itself** — `step(κ, α) = M(κ, λ(α))` from `[ε]`, letters in
+  canonical order — names every class by the first word that reaches
+  it, which is its shortlex-least key, and its discovery order is the
+  id order. The layer-indexed extraction walk (the minimal layer gives
+  the length; backward preimage sets; a *forward* least-letter walk —
+  a backward letter choice would minimize the wrong end) is not needed
+  for the table; it is the witness reader of §6.4.
 - **Letter map and λ-quotient**: `λ` classifies letters by the class of
   `Lett(α; ·)` — and since `α` is symbolic, the *guard* of each letter
   class (the BDD over `AP` collecting the letters mapping to class `κ`)
@@ -400,6 +420,16 @@ everything a consumer needs falls out of objects already present:
   [SωS26, Lemma 3.2].
 - **Residuals block**: the `≃`-classes of Phase 4, keyed by their least
   reaching words through the same layers.
+
+**The identity convention.** `[ε]` is adjoined **fresh**: word classes
+are the `~`-classes of the images of *non-empty* words — the identity
+element counts among them exactly when some non-empty word folds onto
+it — and the class of the empty word is a separate class that no word
+can collide with, a two-sided unit in `M`. Quotienting `EM¹` wholesale
+would instead merge `[ε]` with `[w]` whenever `⟦w⟧` happens to equal
+the identity element (`!a` in a one-state automaton of `GF a` already
+does), making the class count presentation-dependent; the fresh class
+is what makes the export canonical.
 
 The output is the explicit, canonical `𝓘(L)` — the exponential
 intermediate never exists outside its diagram, and is discarded with it.
@@ -423,9 +453,11 @@ elements first reached at length `i`. The fixpoint is the union: every
 so it holds `{(x, x^j) : 1 ≤ j ≤ orbit length}`; the cyclic
 subsemigroup `{x^j}` of a finite monoid contains exactly one idempotent
 [PP04], so the `Idem`-filtered selection is functional and equals `π`.
-For the squaring shortcut: if `x`'s orbit has period 1, then
-`x^m = x^π` for every `m ≥` the orbit's index, and `2^j` passes the
-index in `⌈log₂ index⌉` squarings. ∎
+For the squaring shortcut: `x^{2^j} = x^π` iff `2^j ≥` the orbit's
+index and the orbit's period divides `2^j`; both conditions are
+settled — if they ever hold — once `2^j ≥ |EM¹|`, so the capped
+iteration converges exactly when every orbit period is a power of two,
+in `O(log ℓ)` rounds. ∎
 
 **Proposition 3.3 (profiles).** `A(q, x) = Acc(mk_{x^π}(st_{x^π}(q)))`
 equals the loop verdict `A(q, x)` of [SωS26, Lemma 4.1].
@@ -458,9 +490,10 @@ two-sided congruence `~`. ∎
 
 **Proposition 3.6 (exports).** Phase 6 emits `𝓘(L) = (𝒞, λ, M, P)` of
 [SωS26, Thm. 5.1].
-*Proof.* `𝒞 = EM¹/~` by Prop. 3.5 and [SωS26, Thm. 4.5]; the extracted
-keys are shortlex-least representatives by Prop. 3.1's layer
-characterization (length) plus the forward lex-least walk (order);
+*Proof.* `𝒞` is the word-class quotient of Prop. 3.5's `~` (with the
+fresh `[ε]`) by [SωS26, Thm. 4.5]; the BFS keys are shortlex-least
+because breadth-first discovery with letters taken in canonical order
+reaches each class first by its length-least, then lex-least word;
 `λ` and `M` are well-defined on classes because `~` is a two-sided
 congruence; `P` is read through `Val` on representatives, and verdicts
 are class-invariant [SωS26, Lemma 3.2]. ∎
@@ -474,11 +507,14 @@ the sharing that the diagram exploits: the slot-0 and slot-1 values of
 the 15 non-identity elements are highly correlated
 (state components complementary or equal, mark components differing in
 one bit along the four `{0,1}`-subsets), and the two-level diagram has
-one node per distinct slot-0 value with shared slot-1 suffixes ⟨TBD:
-draw it; count nodes vs the 32 explicit cells; then the same picture for
-a 3-fold asynchronous product of `EvenBlocks`, where the explicit table
-is `16³ = 4096` rows and the factored diagram is three copies of the
-same 16-point component diagram — Proposition 4.1 made visible⟩.
+one node per distinct slot-0 value with shared slot-1 suffixes. The
+closed `EM¹` holds in **10 diagram nodes** against the 32 explicit slot
+cells (the run-parity form of `GF(aa)`: 5 nodes for 20 cells). The
+`n`-fold asynchronous product of `EvenBlocks` in factored coordinates
+makes Proposition 4.1 visible: the diagram is literally additive —
+**`9n + 1` nodes** carrying `16ⁿ` elements, so at `n = 3` a 28-node
+diagram stands where the explicit table has `16³ = 4096` rows (the
+measured line is §8's).
 
 ## 4. Why this works: locality, shape, and the honest wall
 
@@ -614,11 +650,11 @@ diagram width, where structure fights it.
 |---|---|---|---|---|
 | 0 | `Lett`, `R` | build from `Δ, Mk` | slot-local, `2k + AP` | — |
 | 1 | `EM¹` + layers | lfp, image | slot-local | closure depth `≤ \|EM\|` |
-| 2 | `π`-map | pairing lfp / squaring | **crossing** (`\|Q\|`-way split) | `O(ℓ)`; `O(log ℓ)` aperiodic |
+| 2 | `π`-map | pairing lfp / squaring | **crossing** (`\|Q\|`-way split) | `O(ℓ)`; `O(log ℓ)` when periods are powers of two |
 | 3 | `ProfR` | compose + predicate | one slot-read + `Acc` | 1 |
-| 4 | `≃` | gfp on `Q × Q` | small; seed: one `∀x ∈ EM` | `≤ \|Q\|` |
+| 4 | `≃` | gfp on `Q × Q` | small; seed: `\|Q\|` profile columns + `O(1)` compares | `≤ \|Q\|` |
 | 5 | `~` | gfp refinement | slot-local preimages, `∀α` | `≤ \|EM\|` splits |
-| 6 | `𝓘(L)` | quotient + extraction | small, explicit | `\|𝒞\|` extractions |
+| 6 | `𝓘(L)` | quotient + algebra BFS | small, explicit | `\|𝒞\|·\|Σ\|` table steps |
 
 Every round is polynomial in the *diagram sizes* of its operands — the
 symbolic contract; the open quantity is the diagrams themselves (§8).
@@ -927,6 +963,11 @@ The engine's boundaries, stated once:
   a *deterministic* exit on top costs what determinization always
   costs. Extraction of a defining LTL formula on the aperiodic side is
   beyond this paper's scope.
+- **The AP set is part of the object.** `𝓘(L)` is keyed over a
+  declared `AP`, and byte equality is same-AP equality: a language
+  indifferent to a declared proposition still carries it. Reducing an
+  input to its support APs is an input normalization a front end may
+  apply — not the engine's business, and not part of the invariant.
 - **Not simulated.** Branching semantics — games, synthesis — are out:
   the invariant is a linear-time object. And canonicity has a price
   ceiling: `𝓘(L)` can be exponentially larger than a good
@@ -936,21 +977,50 @@ The engine's boundaries, stated once:
 
 ## 8. Evaluation
 
-⟨TBD: after implementation. The planned columns: (i) diagram size vs
-`|EM|` across the evaluation corpus — the compression scatter; (ii) scaling
-on asynchronous product families (`n` copies of a fixed component:
-cardinality `|EM|ⁿ`, factored diagram size expected `O(n·|EM-diagram|)` —
-Proposition 4.1 as a measured line); (iii) synchronous products —
-distance of the reachable set from product form; (iv) phase profiling —
-where the time goes, with Phase 2's crossing and Phase 4's seed
-quantification the predicted peaks; (v) variable-order sensitivity, flat
-vs factored on the same inputs — the §4.2 lower-bound picture
-empirically; (vi) the bottom line against the explicit implementation's
-closure cap: instances the cap kills that the diagram carries, and the
-converse; (vii) the calculus in motion — a worked multi-operation
-pipeline (complement, conjoin, check, re-check) measured against
-per-operation automata constructions, and deferred-reduce vs
-reduce-then-operate on the same sequence.⟩
+The engine is built on multi-valued decision diagrams (libDDD): letter
+steps as per-slot homomorphism sums, the crossing as the `|Q|`-way case
+split over symbolic expression homomorphisms, the squaring relation and
+its relational product as §3 describes, Phase 6 explicit on the small
+side. Protocols, instance-level figures and the finding ledger live in
+the companion experiment report (`sos_symbolic_experiments.md` /
+`sos_symbolic_report.md`); this section states what is measured and
+what remains.
+
+**Measured.**
+
+- **Conformance.** On every instance where the explicit reference
+  construction terminates (and shares the input's declared AP set —
+  §7), the engine's exported `.sos` is **byte-identical** to the
+  reference's: the output is the same canonical object, so every
+  downstream classification read-off transfers unchanged.
+- **Compression, first points.** `EvenBlocks`: 10 diagram nodes
+  against 32 explicit slot cells; the `GF(aa)` run-parity form: 5
+  against 20. The scatter across the census corpus is the open column.
+- **Factored scaling — Proposition 4.1 as an equality.**
+  `EvenBlocks^{⊗n}` in factored coordinates: `|EM¹| = 16ⁿ` exactly at
+  every `n ≤ 6`, on a diagram of exactly `9n + 1` nodes — additivity
+  measured as an equality, not an order — with the interleaving
+  isomorphism element-exact through `n = 4`. The same inputs in flat
+  coordinates hit Lemma 4.2's wall already at `n = 3` (a time budget
+  mid-closure with the diagram still growing); the divergence pair at
+  scale is the variable-order study's.
+- **Phase profile, small instances.** The crossing dominates as
+  predicted; the Phase 4 seed does not — canonicity absorbs it into
+  `|Q|` predicate applications (§3, Phase 4). Where squaring
+  converges it reaches `π` in 2 rounds on every instance tried,
+  against the pairing's 2–5; where it cannot (an orbit period that is
+  not a power of two), the cap detects it and the pairing carries.
+
+**Open columns.** (i) the compression scatter over the census corpus;
+(ii) synchronous products — distance of the reachable set from product
+form; (iii) variable-order sensitivity, flat vs factored and the
+split-encoding orders, on the same inputs — the §4.2 lower-bound
+picture empirically; (iv) the bottom line against the explicit
+implementation's closure cap: instances the cap kills that the diagram
+carries, and the converse; (v) the calculus in motion — a worked
+multi-operation pipeline (complement, conjoin, check, re-check)
+measured against per-operation automata constructions, and
+deferred-reduce vs reduce-then-operate on the same sequence.
 
 ## 9. Related work
 
