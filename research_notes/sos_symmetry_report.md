@@ -11,23 +11,21 @@ regenerable machine report under `reference/symmetry/` or a gate log
 under `sosl/tests/symmetry/logs/` (date / git-rev / seed / corpus
 header, regen command per finding).
 
-**How to use this file (implementer):** fill the pre-named slots as
-the milestones close; never renumber; a slot that dies gets a one-line
-epitaph, not deletion. Anything that belongs to the theory thread —
+**How to use this file (implementer):** fill the pre-named finding
+slots as the milestones close. Anything for the theory thread —
 disagreements with the paper, E1 escalations of spec §8, the T2/T3
-dossiers — goes in **To theory** at the bottom, the moment it is
-found, even mid-milestone.
+dossiers — goes in **To theory** at the bottom the moment it is found.
+This file is current state, not a log: once a to-theory item is
+resolved and its outcome lands in the paper or spec, it is removed
+here, not archived.
 
 ## Status
 
-**Corpus note (2026-07-11).** The corpus was regenerated and extended
-between the spec's writing and SY1's run: `flat_canon` now holds
-**6 222** cases (spec text says 3 938), of which **2 484** are
-non-LTL by the `.cat` bit (spec says 1 698); by AP count: 2 zero-AP,
-4 006 one-AP, 1 438 two-AP, 776 three-AP; stutter tags 896 invariant
-/ 5 326 sensitive. All counts from
-`reference/symmetry/sy1_summary.md` — SY1 data is produced on the
-current corpus, counts recomputed, never hardcoded.
+**Corpus.** `flat_canon` holds **6 222** canonical cases, **2 484**
+non-LTL by the `.cat` bit; by AP count 2 / 4 006 / 1 438 / 776 for
+0–3 APs; stutter tags 896 invariant / 5 326 sensitive. Counts are
+recomputed at run time from the corpus (`sy1_summary.md` /
+`sy3_summary.md`), never hardcoded.
 
 | milestone | state | findings |
 |---|---|---|
@@ -53,16 +51,11 @@ current corpus, counts recomputed, never hardcoded.
   recorded asymmetry witness for FIX_A/`flip_a` is the loop on the
   `¬a∧¬b` minterm (`(¬a¬b)^ω ∈ GF a` xor its flip image). Gate log:
   `reference/symmetry/sy1_gates.txt`; regen
-  `python3 -m tests.symmetry.sigma_gate` (from `sosl/`).
-  **Deviation from spec §3.4, FIX_A build:** the entire canonize
-  pipeline sheds free APs (spot label simplification +
-  `remove_free_aps`; `flat_canon` is alphabet-minimal by
-  construction), so *no* hand HOA can carry the unused `b` through
-  `genaut/gen/canonize.py`. FIX_A over `{a, b}` is instead produced
-  in the calculus: `inverse_substitution` along the projection
-  `2^{a,b} → 2^{a}` of the canonized 1-AP `GF a`, then `reduce` —
-  same language, same 3 classes, `b` free by construction
-  (`tests/symmetry/fixtures.py`). Escalated below.
+  `python3 -m tests.symmetry.sigma_gate` (from `sosl/`). FIX_A
+  (`GF a` over `{a, b}`) is calculus-built —
+  `inverse_substitution` along `2^{a,b} → 2^{a}` then `reduce` — not
+  through canonize, which sheds the free `b` (spec §3.4,
+  `tests/symmetry/fixtures.py`).
 - **F2 — the laws hold as runtime facts.** *(CONFIRMED, zero
   violations.)* Campaign: **69 742** candidate checks, each with the
   kernel law (`in_kernel ⟹ is_symmetry`), the obstruction law
@@ -82,7 +75,7 @@ current corpus, counts recomputed, never hardcoded.
   survive into `flat_canon`. The paper §3.1 "fat kernel" expectation
   is thus *unmeasurable on this corpus* — the curation already
   harvested exactly what `inert_aps` detects (the read-off and
-  `sosl.sos.minimize.free_aps` coincide). Escalated below. Data:
+  `sosl.sos.minimize.free_aps` coincide). Data:
   `reference/symmetry/sy1_generators.csv` (+ `sy1_summary.md`);
   regen `sigma_gate --campaign` then `sy1_summary`.
 - **F4 — generator-level symmetry hits.** *(MEASURED.)* Over 6 222
@@ -92,7 +85,7 @@ current corpus, counts recomputed, never hardcoded.
   all polarity flips, never a transposition. `anti_possible` is True
   on **164 cases (2.64 %)**: the pair-count alone closes the anti
   question negatively on the remaining **97.36 %** of the census — a
-  very sharp fast path (paper §3.2 talking point; see To theory).
+  very sharp fast path (paper §3.2 Lemma 3.2).
   Full `B_n` sweep (all 6 222 rows have `n ≤ 3`): 5 600 rows have
   the trivial group `{id}`; the tail: 498 rows with 2 symmetric
   elements, 52 × 4, 58 × 6, 2 × 8, 8 × 12, 4 × 24 (order-24
@@ -108,7 +101,7 @@ current corpus, counts recomputed, never hardcoded.
   the 202 nontrivial-group rows show a generator hit, at `n = 3`
   only 136 of 388: most symmetric elements are composite (signed
   swaps, 3-cycles), which is empirical justification for SY2's full
-  group computation. Escalated below (measurement-design question).
+  group computation.
 
 ## SY2 — the group, the witness, symmetrization
 
@@ -163,19 +156,19 @@ current corpus, counts recomputed, never hardcoded.
   is exactly the stutter-invariant set (rung 1 is stutter); rungs 2–3
   add **1 062 cases that are block-stutter at a deeper window but not
   letter-stutter** — the "new canonical parameter" of paper §4.2 is
-  non-trivially populated, not vacuous. The `= k` (not `≤ k`) reading
-  of the rung is what makes this a genuine parameter; see To-theory
-  item 5 (a spec/paper prose fix, not a semantic surprise). By AP the
-  deep rungs concentrate in 1-AP counting languages (594 at k=2, 326
-  at k=3). Data: `sy3_summary.md` (F11).
+  non-trivially populated, not vacuous. The rung tests length-`= k`
+  blocks (not `≤ k`) — the reading that makes the entry a genuine
+  parameter; the one pending theory ask (below) is that prose fix. By
+  AP the deep rungs concentrate in 1-AP counting languages (594 at
+  k=2, 326 at k=3). Data: `sy3_summary.md` (F11).
 
 ## SY4 — the spectrum and the LTL hull/kernel
 
 - **F12 — the corpus LTL-bit oracle.** *(pending — run FIRST)*
-  `spec == ∅` iff the `.cat` LTL bit, over 3 938: agreement counts;
-  any disagreement is a to-theory event, smallest case verbatim.
+  `spec == ∅` iff the `.cat` LTL bit, over all 6 222: agreement
+  counts; any disagreement is a to-theory event, smallest case verbatim.
 - **F13 — the spectrum census.** *(pending)* Spectrum values over the
-  1 698 non-LTL rows (expected overwhelmingly `{Z/2}`),
+  2 484 non-LTL rows (expected overwhelmingly `{Z/2}`),
   cross-tabulated with Wagner coordinates; FIX_E and `EvenBlocks`
   sanity; **any nonabelian or non-solvable specimen is a headline
   find — file immediately**; composition-factor cap (order > 512)
@@ -205,174 +198,40 @@ current corpus, counts recomputed, never hardcoded.
 
 ## To theory
 
-1. **[2026-07-11, SY1] Corpus renumbering.** `flat_canon` is now
-   6 222 cases (2 484 non-LTL) after regeneration + adoption of the
-   parity sampling campaign; every "3 938" / "1 698" in the spec and
-   the paper's §9 measurement plan is stale. No semantic impact on
-   SY1 (counts were recomputed), but the paper's census-shaped
-   claims should quote the new totals once they cite this report.
+**Open ask (one).**
 
-   **Theory response (2026-07-11).** Swept. Spec: §0 corpus block
-   now states 6 222 / 2 484 with the AP breakdown and a
-   recount-at-run-time rule, plus the two structural facts every
-   milestone must respect (alphabet-minimality, 1-AP skew); all
-   SY1/SY3/SY4/SY5 occurrences updated. Paper: §9 `Spec` bullet
-   now 2 484. One further stale number found in the sweep: the
-   paper §3.1 cost remark quoted `|𝒞| ≤ 121` (old corpus); the max
-   `n_classes` over `reference/symmetry/sy1_generators.csv` is
-   **208**, paper updated — engineering: countersign by adding
-   max `|𝒞|` to `sy1_summary.md` at the next regen.
-2. **[2026-07-11, SY1] F3 is structurally zero — spec §3.4/F3 and
-   the paper §3.1 "fat kernel" expectation need a decision.** The
-   corpus pipeline alphabet-minimizes every case (`remove_free_aps`
-   in `flatten.py`), and the minimizer's free-AP test *is* the
-   `inert_aps` read-off, so nonempty `inert_aps` is impossible on
-   `flat_canon` by construction: 0/6 222 measured. The
-   corpus-curation anecdote is thereby *confirmed at the pipeline
-   level* (the curation harvests exactly the kernel flips) but the
-   census cannot quantify kernel fatness. Options we see: (a) state
-   the coincidence-of-read-offs as the finding itself (the paper's
-   Example A is what the curation automates), (b) commission a
-   measurement on the *pre-minimization* corpus tiers, or (c) drop
-   the census-shaped version of the claim. Related deviation: FIX_A
-   over `{a, b}` cannot be built through canonize.py (it sheds `b`);
-   we build it by calculus alphabet-extension + reduce (F1) —
-   suggest spec §3.4 be edited to that construction.
+1. **The `k`-block ladder rung is length `= k`, not `≤ k` — a
+   one-word prose fix in paper §4.2 and spec §5.** Both currently
+   write the rung as "`[v] = [vv]` for all `|v| ≤ k`", which is
+   internally inconsistent with the same passage and the fixture gate:
+   the `≤ k` reading is nested, so `ladder_entry` (least satisfying
+   rung) can only be 1 or `None` — never the 2/3 the F11 distribution
+   names; it contradicts the paper's own per-rung count "`|Σ_λ|^k`
+   equations" (that is the length-**exactly**-`k` count); and under
+   `≤ k` the gate's `ladder_entry(FIX_A) == 1` is trivially true for
+   every stutter language. The length-`= k` reading — rungs do not
+   nest, `ladder_entry ∈ {1,2,3,None}` — is what every concrete
+   artifact agrees on; it is implemented (`relations.py`) and yields
+   the F11 spread 896 / 736 / 326 / 4 264. **Requested:** change
+   "`|v| ≤ k`" to "`|v| = k`" in paper §4.2 and spec §5; no math
+   moves (`k=1` is still stutter, Thm 4.2 unaffected).
 
-   **Theory response (2026-07-11).** Decision: **(a)** — the
-   coincidence of the read-offs is the finding, and the paper now
-   says so: §3.1 Example A states that the curation *is* Example A
-   run at scale (inert propositions structurally absent, 0/6 222),
-   and that kernel fatness lives upstream of any curated corpus, in
-   raw specifications as users write them; the §9 `Sym±` bullet no
-   longer expects kernel measurements from the census. Option (b)
-   (pre-minimization tiers) is NOT commissioned — it measures the
-   corpus generator's habits, not verification practice, so the
-   number would not support the paper's claim anyway; it stays
-   available if a referee asks. Spec edited as you suggest: §3.4
-   FIX_A is now the calculus construction verbatim (your F1 build),
-   trap #7 rewritten to match, SY1 acceptance and Y0a now say
-   assert-zero, not measure.
-3. **[2026-07-11, SY1] The pair-count obstruction is sharper than a
-   remark.** `anti_possible` is False on 97.36 % of the census, so
-   the count alone refutes *all* anti-candidates nearly everywhere
-   (and the 8 realized anti hits are all polarity flips). Item 5 of
-   the standing list: on this evidence the obstruction deserves the
-   highlighted-lemma treatment in §3.2.
+**Standing items — open data/answers the theory thread expects.**
 
-   **Theory response (2026-07-11).** Promoted: it is now **Lemma
-   3.2 (the pair-count obstruction)** in paper §3.2, with a
-   three-line proof (the witnessing automorphism permutes the
-   linked pairs and carries `P` onto its complement) and the census
-   sharpness stated in prose (97.36 % closed by the count; every
-   realized anti-symmetry a polarity flip). The §1.3 contribution
-   bullet and §9 P3 now cite it by number. Standing item 5 is
-   resolved.
-4. **[2026-07-11, SY1] The census is too 1-AP-heavy for the paper's
-   symmetry claims — larger AP sets needed (measurement design,
-   theory owns).** 64 % of `flat_canon` is 1-AP, where
-   `B_1 = {id, flip}` makes the symmetry question nearly vacuous
-   (0.80 % nontrivial); prevalence climbs to 14.05 % at 2 APs and
-   **50 %** at 3 APs (stratified table in `sy1_summary.md`). The
-   group-spectrum, `Sym±`-distribution and orbit-dedup measurements
-   (SY2/SY4/SY5, paper §9) will be shaped by this skew. Options:
-   (a) commission the corpus thread to *sample* 4-AP (and heavier
-   3-AP) shapes on the cluster — exhaustive enumeration at 4 APs is
-   out of reach, and note random sampling may find symmetry rare;
-   (b) manufacture ground-truth cases by symmetrization (§3.4 /
-   SY2): `⋂_{σ∈G} σ(L)` over corpus seeds is `G`-invariant *by
-   construction* at any `n`, giving a stress set with known groups;
-   (c) keep the census as-is but state all census-shaped claims
-   stratified by AP count, never pooled. We recommend (b) + (c)
-   now (no new corpus dependency, SY2 builds symmetrization anyway)
-   with (a) as the follow-up campaign. Related F4 datum: most
-   symmetric elements are composite (generator screening finds 35 %
-   of nontrivial groups at `n = 3`), so any larger-`n` campaign
-   should budget for group search, not generator scans.
-
-   **Theory response (2026-07-11).** Adopted: **(b) + (c)** now,
-   **(a)** as the follow-up, exactly as recommended. Concretely:
-   (c) — the stratified-by-AP mandate is now spec §0 structural
-   fact (ii), binding on Y0a and every census-shaped table; paper
-   §9's `Sym±` bullet states the stratified baseline (0.80 / 14.05
-   / 50 %) and why pooled rates are mix artifacts. (b) — a new
-   campaign **Y0s (symmetrized ground truth)** is spec'd in §7:
-   150 seeded rows per arity `n ∈ {2, 3}`, planted groups chosen so
-   composite elements are represented (`⟨t01∘f0⟩` order-4 signed
-   swap at `n = 2`; S₃ and the 3-cycle `⟨(012)⟩` at `n = 3` — your
-   F4 under-detection point), degenerate collapses counted and
-   dropped, `G ≤ Sym±(L')` asserted elementwise with strict
-   containment recorded as data, orbit prices fed to F7. The paper
-   §9 gains a matching "symmetrized ground truth" bullet with the
-   lower-bound caveat stated. (a) — the sampled 4-AP corpus
-   campaign is named in the spec as the follow-up, explicitly NOT
-   part of SY5; we will commission it to the corpus thread once
-   Y0s bounds expectations.
-
-5. **[2026-07-11, SY3] The `k`-block ladder rung reads `= k`, not
-   `≤ k` — a prose fix in spec §5 and paper §4.2.** Both write the
-   rung as "`[v] = [vv]` for all `|v| ≤ k`", but that phrasing is
-   internally inconsistent with the rest of the same passage and with
-   the fixture gate:
-   - It is **nested** (a larger `k` is a strictly stronger
-     requirement), so `ladder_entry` = "least `k` with `stutter_rung`"
-     can only ever be **1 or `None`** — never the 2/3 the F11
-     distribution table names, making the "new canonical parameter"
-     vacuous.
-   - It contradicts the paper's own per-rung count "**each rung is
-     `|Σ_λ|^k` table equations**" (that count is the number of
-     length-**exactly**-`k` class-words; `≤ k` would be
-     `Σ_{j≤k}|Σ_λ|^j`).
-   - It contradicts spec §5 gate 3's expectation
-     `ladder_entry(FIX_A) == 1` only being informative under a
-     non-nested reading (under `≤ k`, *every* stutter language is 1
-     trivially).
-
-   The reading every concrete artifact agrees on is **length
-   `= k`**: rung `k` tests `[v] = [vv]` for class-words of length
-   exactly `k`, the rungs do **not** nest, and `ladder_entry` (least
-   satisfying rung) ranges over `{1, 2, 3, None}`. Implemented that
-   way (`relations.py`, `algorithm.md`), and it yields the F11 spread
-   896 / 736 / 326 / 4 264 with the `k=1` bucket coinciding with the
-   stutter set as required. **Requested:** theory change "`|v| ≤ k`"
-   to "`|v| = k`" in paper §4.2 and spec §5 (one word each); no
-   downstream math moves — `k=1` is still stutter, Thm 4.2 is
-   unaffected. Flagged rather than silently reconciled per the report
-   contract, though the evidence is one-sided.
-
-Standing items the theory thread expects data or answers on:
-
-1. Any disagreement between the spec and the paper (spec §8 E1
-   escalations included) — smallest case, verbatim. The paper's
-   hand computations (P1–P5) are predictions under test: a stable
-   mismatch after the E1 escalation ladder means the paper's
-   arithmetic gets corrected, and theory owns that edit.
-2. The stutter-oracle verdict (F8) and the LTL-bit-oracle verdict
-   (F12): confirmed or the smallest disagreeing case. *(F8 CONFIRMED
-   2026-07-11 — 6 222/6 222, read-off count 896 = the `.cat`
-   stutter-tag total; F12 still pending, needs SY4.)*
-3. The leastness probe (F14): any strictly-between aperiodic
-   congruence falsifies the reflection-as-`θ_ap` reading of paper
-   §6.2 — the dossier decides how Prop 6.2's proof gets written.
-   *(Update 2026-07-11: leastness is now PROVED — paper Lemma 6.2a —
-   and Prop 6.2 has a full proof; the probe stays but now gates the
-   `aperiodic_reflection` implementation, not the theory. The proof
-   also corrected the saturation: hull acceptance is the conjugacy
-   closure of `q(P)` (Lemma 6.2b), and `kernel :=
-   complement∘hull∘complement` (Prop 6.2(v)) — spec §6.2 rewritten
-   accordingly; the iteration count remains an F14 datum since
-   whether one collapse round always suffices is open.)*
-4. Group-size numbers (F5) — feed the paper §9 stratified
-   expectations. *(The kernel-fatness half is closed 2026-07-11:
-   unmeasurable on this corpus by To-theory item 2's resolution;
-   §3.1 and §9 rewritten, Y0a asserts zero.)*
-5. ~~The `anti_possible` hit rate (F4) — decides whether the
-   pair-count obstruction is a remark or a highlighted lemma.~~
-   *(Resolved 2026-07-11: promoted to Lemma 3.2 — To-theory
-   item 3.)*
-6. Any nonabelian/non-solvable spectrum specimen (F13) — a find; the
-   paper's §6.1 discussion would gain a concrete witness outside
-   `FO+MOD`.
-7. The orbit-price evidence (F7) and the tier of `n = 5` skips (F5)
-   — decide whether the stabilizer-search stretch of spec §4 is
-   commissioned.
+- **Spec/paper disagreements** (spec §8 E1 escalations): smallest case
+  verbatim. The paper's P1–P5 hand computations are predictions under
+  test; a stable mismatch after the E1 ladder is a paper-arithmetic
+  correction theory owns.
+- **F12 — the LTL-bit oracle** (needs SY4): `spec == ∅` iff the `.cat`
+  LTL bit over all 6 222, confirmed or the smallest disagreeing case
+  (the §6 twin of the F8 oracle, now confirmed).
+- **F13 — a nonabelian/non-solvable spectrum specimen** (needs SY4): a
+  headline find — the paper's §6.1 gains a concrete witness outside
+  `FO+MOD`. File the moment it appears.
+- **F14 — the leastness probe** (needs SY4): it gates the
+  `aperiodic_reflection` implementation of the proved Lemma 6.2a; a
+  strictly-between aperiodic congruence is a bug dossier (convicts the
+  implementation, not the math), filed verbatim.
+- **F5 / F7 — group-size and orbit-price numbers** (need SY2): feed
+  the paper §9 stratified expectations and decide whether spec §4's
+  stabilizer-search stretch is commissioned (the `n = 5` skip tier).
