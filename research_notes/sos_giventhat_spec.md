@@ -381,6 +381,22 @@ Gates (`ladder_gate.py`):
 4. **Witness discipline**: on no, the refusal lasso replays as ∈
    hull-language and ∉ `L(p_max)` against the exit HOAs (bounded) or
    via `member` on the table (always).
+5. **The worked-example fixture (paper §4.6 — a second hand-verified
+   oracle).** Build DELAs for `¬φ = F(a∧c) ∨ (GFb ∧ GF¬b)` and
+   `K = FGb ∧ Gc` over `AP = {a,b,c}` (via `ltl2tgba -D` if
+   convenient — bounded — or by hand from the paper's class
+   descriptions), canonize, and assert the paper's hand computation:
+   `|𝒞(¬φ)| == 7`, `|𝒞(K)| == 4`, product table 13 classes; both
+   endpoints inconclusive with witnesses replaying as `({abc})^ω`
+   and `({bc})^ω`; `exists_safety` NO with refusal lasso replaying
+   as `({bc})^ω`; `exists_cosafety` YES with kernel witness whose
+   reduce is the invariant of `F(a ∨ ¬c)` and least member the
+   invariant of `F(a∧c)` (byte-compare against canonized DELAs for
+   those two formulas); `is_recurrence(P_¬φ)` true,
+   `is_persistence(P_¬φ)` and `is_obligation(P_¬φ)` false. Any
+   mismatch: E1 discipline (spec §8) — first the encoding, then
+   canonize, then the paper's §4.6 arithmetic; escalations go to the
+   report verbatim.
 
 **GT2 acceptance:** rung oracle 3 938/3 938 explained (green or a
 filed orientation flip); ladder gates green on the GT1 campaign pairs;

@@ -108,7 +108,11 @@ the automata side lacks, and the freedom becomes *arithmetic*:
    same tests, applied to the interval `[P_{L₁}, P_{L₂}^c]` of two
    disjoint languages, decide *separator synthesis* by class — a
    two-automata operation absent from the toolbox, and a decidable
-   ω-side instance of the separation program [PZ16].
+   ω-side instance of the separation program [PZ16]. The whole battery
+   is worked end-to-end on [DPT25]'s own running example (§4.6), where
+   it certifies no safety `B` exists, brackets their Minato-derived
+   `Fa` between two canonical guarantee hulls, and reads the
+   recurrence-to-guarantee drop off the table.
 3. **Stutter invariance, exactly — and a locality theorem** (§5): the
    stutter-invariant languages on a table are exactly those recognized
    through its stutter quotient (a clean recognition proposition), but
@@ -473,6 +477,73 @@ pleasant inversion of [DPT25]'s caveat that "the smallest language
 need not have the smallest automaton": on the invariant,
 smallest-`|𝒞|` is a *well-posed* objective, because the object is
 canonical per language.
+
+### 4.6 A worked example: [DPT25]'s own, on the invariant
+
+The running example of [DPT25, Figs. 2–3]:
+`¬φ = F(a∧c) ∨ (GFb ∧ GF¬b)` given `K = FGb ∧ Gc`, over
+`Σ = 2^{a,b,c}` (we write a letter as the set of propositions it makes
+true: `{abc}`, `{bc}`, …). There, the bounded automaton plus Minato's
+algorithm simplify `A_{¬φ}` to an automaton for `Fa`, observed to be
+"now terminal". Here is the same instance as pair-set arithmetic.
+
+**The tables.** `𝓘(¬φ)` has 7 classes: a finite word is characterized
+by three monotone bits `(σ, p, q)` — *contains an `a∧c` letter* /
+*a `b` letter* / *a `¬b` letter* — multiplying by bitwise OR, with
+`Val_{¬φ}((σ_s,·,·),(σ_e,p_e,q_e)) = σ_s ∨ σ_e ∨ (p_e ∧ q_e)`.
+`𝓘(K)` has 4: `[ε]`, `BC` (all letters `b∧c`), `C` (all `c`, some
+`¬b`), and the absorbing dirty class `D` (some `¬c`), with
+`Val_K(s, e) = [k_s ≠ D] ∧ [k_e = BC]`. The generated product has
+**13 classes** — the consistent quadruples `(σ, p, q | k)` — and both
+verdicts ride along. Every letter class is idempotent (both formulas
+are `X`-free), so `T = T/∼` and the §5 tier-1 test is trivially exact
+on this instance; the stutter drama needs §5.2's pair.
+
+**Endpoints (§3).** A `P_min` pair's stem absorbs its loop, so
+`σ_s ∨ σ_e` collapses: `P_min = {stems (1,·,·\,|BC/C), loops
+(·,1,0\,|BC)}` — the language `F(a∧c) ∧ FGb ∧ Gc`. Both decisive
+checks fail, each with a one-letter-loop minimal witness:
+`k_settles_phi` returns `({abc})^ω` (the shortest behavior `K` leaves
+open to `¬φ`), `k_refutes_phi` returns `({bc})^ω` (the shortest
+`K`-behavior satisfying `φ`).
+
+**No safety `B`, certified (Prop 4.2).** `D` is the only dead class,
+so `P̄_min = {(s,e) : k_s ≠ D}` — the language `Gc` — and the cell
+`(({bc}), ({bc}))` lies in `P̄_min \ P_max`: the scan refuses with the
+minimal lasso `({bc})^ω`. Reading: any safety property containing the
+mandatory behaviors must accept `({bc})^ω` — every prefix of it
+extends into `ℒ(¬φ) ∩ ℒ(K)` — yet `K` allows it and `φ` holds on it.
+No presentation search could have survived this word.
+
+**Co-safety `B` exists; the interval brackets Minato.** The interior:
+`σ` is absorbing, so `Live_{P_max^c} = {σ = 0, k ≠ D}` and
+`P̊_max = {stems with σ = 1 or k = D}` — the language
+`F(a∧c) ∨ F¬c = F(a ∨ ¬c)`. Every `P_min` stem has `σ = 1`, so
+`P_min ⊆ P̊_max`: **yes**, and by the sub-interval clause of
+Lemma 4.1 the guarantee members of the interval are exactly
+
+    [ F(a∧c) ,  F(a ∨ ¬c) ]
+
+(the least member is the open set `{σ_s = 1}`: openness forces
+right-closure of the committed stems, and `(1,·,·\,|D)` is reachable
+from every `P_min` stem, so nothing smaller is open on `T`). [DPT25]'s
+`Fa` sits strictly inside this bracket —
+`F(a∧c) ⊆ Fa ⊆ F(a∨¬c)` — and is itself **off-table**: no class of
+`T` tracks `a` without `c`. The heuristic landed a perfectly legal
+member; the calculus names the canonical endpoints it landed between,
+and certifies that the *class* is guarantee — which is exactly the
+"now terminal" observation of their Figure 3, decided rather than
+noticed.
+
+**The rung drop, read off.** On its own table, `Val_{¬φ}` is monotone
+under adding loop bits, and `H`-descent in an OR-monoid *is* adding
+bits: verdicts propagate down, so `¬φ` is a recurrence property
+(§4.3). It is nothing lower: the stem `(0,1,1)` carries the loops
+`(0,1,1) <_H (0,1,0)` with verdicts `1 > 0` — loop-sensitive (not an
+obligation), bottom-true (not persistence). So the knowledge buys a
+drop from recurrence to guarantee — from a full Büchi emptiness check
+to reachability — and §4's tests deliver it with a canonical `B` and
+a certificate at the rung below.
 
 ## 5. Stutter invariance, exactly
 
