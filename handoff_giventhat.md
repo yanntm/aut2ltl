@@ -50,9 +50,10 @@ the normative math you consult when the spec points at it.
   + `tests/giventhat/gt2_summary.py`. Rung oracle **6 222/6 222**
   (paper orientation confirmed, F5); campaign 700/700 with zero gate
   violations; brute lattice oracle exact on all 264 `bits ≤ 12`
-  cases; §4.6 fixture green on every semantic prediction — but the
-  paper's class counts are wrong (5 vs 7; product 10 vs 13), filed E1
-  with a hand census. Data: `reference/giventhat/gt2_ladder.md` + two
+  cases; §4.6 fixture green on every prediction, class counts
+  included (`|𝒞(¬φ)| = 5`, product 10 — paper §4.6 and the spec
+  fixture item state these; `reference/giventhat/gt2_fixture.md` is
+  the census). Data: `reference/giventhat/gt2_ladder.md` + two
   csvs; report F5–F8 filled.
 - **Policy (2026-07-11):** code duplication in the name of oracle
   "independence" is rejected — `h_below` reuses `classify.primitives`
@@ -78,22 +79,6 @@ the normative math you consult when the spec points at it.
    (T2) — dossier to F12, do not patch.
 3. **GT5/W0 (spec §7)** — after GT3/GT4. W1 stays **blocked on
    external data — do not fetch it**.
-
-## TODO — theory (reads the report's To theory, owes back)
-
-1. **Paper §4.6 corrections (E1, filed 2026-07-11):** `|𝒞(¬φ)| = 5`
-   (not 7), product table 10 classes (not 13). Edit paper §4.6 to
-   match `reference/giventhat/gt2_fixture.md` (tracked, generated:
-   the machine census of `𝓘(¬φ)` and the full prediction-vs-machine
-   table). Also worth a sentence there: the §4.6 band is `bits = 25`,
-   and the least co-safety member comes from the least-open-hull
-   (stems' right ideal), which §4.1 leaves implicit.
-2. **Soften the paper's §2/§7 "independently computed" wording** to
-   match the shared-primitives policy above (report To theory has the
-   exact framing).
-3. **Integrate F5–F8 into the paper** (orientation confirmed; hull
-   laws + brute exactness; the per-rung strict-drop rates for §7
-   item 3 — safety drops available on ~21% of census pairs).
 
 ## The one theorem to keep in your head
 
