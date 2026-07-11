@@ -8,9 +8,11 @@ into one flat `Record`. The always-on internal laws of the soundness harness
 ``n>=1 => m_plus=m_minus``, and a self-replay of each chain witness against
 ``Invariant.member`` (an `AssertionError` here is the tool's exit-code-4 case).
 
-The derivative recursion (C section 8, ``m>=1 & n_plus=n_minus``) is not done
-here: such a record carries ``gamma_partial`` with ``gamma=None`` and
-``sign="PARTIAL"`` until the degree assembly resolves it from a presentation.
+The derivative recursion (C section 8, ``m>=1 & n_plus=n_minus``) runs here
+too, on the same table (`derive`): a tied read-off is resolved to its full
+``gamma`` (the CNF sum of the level ``mu`` terms) and sign, with the level
+trace recorded among the witnesses. ``gamma_partial`` remains in the record
+shape for consumers but is never set by this assembly.
 Normative math: `research_notes/sos_classification.md`.
 """
 from __future__ import annotations
@@ -21,6 +23,7 @@ from typing import Dict, Optional, Tuple
 from ..invariant import Invariant
 from .aperiodic import first_group
 from .chains import ChainResult, chains
+from .derive import derive
 from .readoff import Ordinal, ReadOff, Rungs, read_off
 from .stutter import is_stutter_invariant
 from .superchains import SuperchainResult, superchains
@@ -89,7 +92,19 @@ def classify(inv: Invariant) -> Record:
 
     ro: ReadOff = read_off(cr.m_plus, cr.m_minus, sr.n_plus, sr.n_minus)
 
+    sign, gamma = ro.sign, ro.gamma
+    derivation = None
+    if ro.needs_derivative:
+        derivation = derive(inv, cr, sr, ro)
+        sign, gamma = derivation.sign, derivation.gamma
+
     witnesses: Dict = {}
+    if derivation is not None:
+        witnesses["derivation"] = tuple(
+            {"coords": (lv.m_plus, lv.m_minus, lv.n_plus, lv.n_minus),
+             "mu": str(lv.mu),
+             "kept": tuple(inv.keys[s] for s in lv.kept)}
+            for lv in derivation.trace)
     if orbit is not None:
         witnesses["group"] = group_witness(inv, orbit)
     if cr.witness_plus is not None:
@@ -108,6 +123,6 @@ def classify(inv: Invariant) -> Record:
         n_plus=sr.n_plus, n_minus=sr.n_minus,
         rungs=ro.rungs, boolean_level=ro.boolean_level,
         parity_length=ro.parity_length, co_parity_length=ro.co_parity_length,
-        mu=ro.mu, sign=ro.sign, gamma=ro.gamma,
-        gamma_partial=ro.needs_derivative, witnesses=witnesses,
+        mu=ro.mu, sign=sign, gamma=gamma,
+        gamma_partial=False, witnesses=witnesses,
     )
