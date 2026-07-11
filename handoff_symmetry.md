@@ -50,7 +50,15 @@ their named sections.
   we do not cite without reading): Etessami00, Diekert–Muscholl 94,
   Gastin–Petit 95 (Book of Traces), Straubing–Thérien–Thomas 95,
   Emerson–Trefler (virtual symmetry — positions §7.4).
-- Engineering: NOT started. SY1 is the open milestone.
+- Engineering: **SY1 DONE** (2026-07-11): `sosl.sos.symmetry` (sigma.py)
+  built, gates 1–6 green first run, census campaign 6 222/6 222 with zero
+  law violations; artifacts in `reference/symmetry/`, report F1–F4 filled.
+  NOTE the corpus grew: census is now **6 222** cases (2 484 non-LTL) —
+  every 3 938/1 698 in paper/spec is stale. The report's **To theory**
+  section is no longer empty: three items (corpus renumbering, F3
+  structurally zero — the curation IS the kernel read-off, obstruction
+  fast path closes 97.36 % → lemma-worthy). SY2/SY3 are the next open
+  engineering milestones (SY1 acceptance passed).
 
 ## Next tasks
 
@@ -75,11 +83,12 @@ Theory queue, priority order (all are ⟨TBD⟩s in the paper):
    Emerson–Trefler positioning of §7.4 once fetched.
 
 Engineering next (separate session, weaker model, spec-driven):
-**SY1** per `sos_symmetry_spec.md` — read its header + §0–§3 + §8/§9;
-fixtures first (the paper's P1–P3 are the acceptance oracle); then
-the 3 938-case generator campaign (count moves under concurrent
-corpus regeneration — recompute, never hardcode). Figures session can
-run FIG-1/FIG-2 independently.
+**SY2** (group, witness, symmetrization) and/or **SY3** (relational
+read-offs — its stutter oracle F8 runs FIRST) per the spec §4/§5;
+SY1 is done and its acceptance passed (see report F1–F4). Theory
+should first answer the report's three To-theory items — the F3
+decision may edit spec §3.4/F3. Figures session can run FIG-1/FIG-2
+independently (fixtures now exist: `tests/symmetry/fixtures.py`).
 
 ## The one theorem to keep in your head
 
