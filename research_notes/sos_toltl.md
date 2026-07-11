@@ -69,7 +69,7 @@ Input:   the invariant 𝓘(L) = (𝒞, λ, M, P) of [SωS26] — classes keyed 
 Output:  L not LTL — a counting-family certificate, checkable by lasso
          membership queries against any acceptor of L (§3);
          L LTL     — a defining formula, ⟦φ⟧ = L, as a class-indexed DAG
-         with flat and definitional renderings (§4–§6).
+         with flat and definitional renderings (§4–§7).
 ```
 
 The non-LTL side is the shorter story and is closed in §3. The LTL side is
@@ -120,7 +120,7 @@ resurface in extraction as two engines.**
 **Contributions.**
 1. The frontier, both directions, from one object: the aperiodicity verdict
    with, on failure, a portable non-LTL witness certificate (§3), and, on
-   success, a defining formula (§4–§7).
+   success, a defining formula (§4–§8).
 2. A presentation-independent transcription engine targeting the accepting
    pair `(s, e)`: the walk on the right Cayley graph of `S(L)₊¹` (layers =
    R-classes) transcribes the stem coordinate under an anchoring condition
@@ -134,10 +134,10 @@ resurface in extraction as two engines.**
    output-polynomial as a class-indexed DAG; the flat formula is the
    language's intrinsic cost,
    bounded by the R-depth and until-rank read-offs, and avoidable in a
-   definitional format (§6).
+   definitional format (§7).
 4. The inner frontier: within LTL, the algebra grades which layers admit
    flat transcription and which demand nesting, with the until-rank as a
-   per-language lower-bound certificate on formula depth (§7), read off
+   per-language lower-bound certificate on formula depth (§8), read off
    the invariant's word semigroup by the Thérien–Wilke
    characterization, valid over ω-words [TW01].
 5. An exhaustive census of small ω-regular languages — 3 938
@@ -145,18 +145,20 @@ resurface in extraction as two engines.**
    empirically: where each precondition holds and at which width, where
    the fallback strata first switch on, which certificate shapes are
    available — including the ω-blind languages, whose groups only linear
-   contexts can see (§3.3, §8).
+   contexts can see (§3.3, §9).
 
 **Outline.** §2 fixes notation (§2.1), recalls the syntactic
 ω-semigroup, its invariant, and the running examples of [SωS26]
 (§2.2), and recalls the Diekert–Gastin extraction (§2.3). The rest of
 the paper follows the title's three nouns. *Certificates*: the non-LTL
 witness family, its extraction and its verification contract (§3).
-*Formulas*: the walk engine (§4) and the window engine with the
-combinators and the assembled extractor (§5), then the deliverable
-formats and the size results (§6). *The shape of the cut*: the inner
-frontier the two preconditions grade inside LTL (§7). §8 evaluates
-everything on the census; §9 and §10 close with related work and open
+*Formulas*: the walk engine (§4), the window engine with the
+combinators and the assembled extractor (§5), and the cascade import
+— the configuration rung, its floor, and the decomposition fallback
+(§6; details in the companion note [Cas26]) — then the deliverable
+formats and the size results (§7). *The shape of the cut*: the inner
+frontier the two preconditions grade inside LTL (§8). §9 evaluates
+everything on the census; §10 and §11 close with related work and open
 problems.
 
 ## 2. Background: the object and its read-offs
@@ -267,7 +269,7 @@ iff their invariants are byte-equal [SωS26, Thm 5.1].
   propositions last.
 - *the ladder position* — safety / co-safety / obligation / recurrence /
   persistence / reactivity [MP92] as closure conditions on `P`
-  [SωS26, §7.1]; deciding a language's level is classical [Lan69].
+  [SωS26, §8.1]; deciding a language's level is classical [Lan69].
 - *residual count* — one residual ⟺ prefix-independent ⟺ the linear half
   is blind [SωS26, Prop 4.6].
 - *absorbing classes* — two-sided zeros; runs that reach them have committed.
@@ -426,7 +428,7 @@ tree copies, yields a shared arena of 1 287 nodes whose flat unfolding
 is 1 991 717 — 4.4 MB of rendered formula, equivalent to
 `GF(a ∧ Xa)` — and the multiplicative blow-up is confined entirely to
 the unfolding step; catalogue-wide the arenas stay in the thousands
-where the trees overflow (§8). Sizes here and throughout count the
+where the trees overflow (§9). Sizes here and throughout count the
 nodes of the induction's own shared representation, before any
 external normalization. And the output is canonical:
 two presentations of the language (a parity and a reset automaton)
@@ -435,7 +437,7 @@ formula. ⟨TBD: two separate bounds to prove from `𝓘(L)`, not one — the
 count of distinct sub-calls (measured tiny, plausibly polynomial) and
 the arena size (the one that matters; a sub-call bound does not bound
 the arena, since a single call's substitution multiplies).⟩ The
-bottleneck is not computation but the deliverable format, which §6
+bottleneck is not computation but the deliverable format, which §7
 states as a result. The extraction of §4 attacks what remains — the
 flat size — by making the formula's shape follow the language's.
 
@@ -690,7 +692,7 @@ exist. The census settles §3.1's availability question this way, and its
 smallest witness is worked next, with its mechanism.
 
 **The fourth specimen: the smallest ω-blind language.** The dual scan
-over the language-keyed census (§8) returns, at four classes, the
+over the language-keyed census (§9) returns, at four classes, the
 exhibit
 
 ```
@@ -752,11 +754,11 @@ On `L₄`, `e_C = [a·a]` and the constant verdict is
 `(x·[a·a], [a·a]) ∈ P` — the "infinitely many `a`" acceptance, true for
 every `x`. The condition is sufficient but not necessary: of the 100
 ω-blind census languages only 8 are right-ideal, the other 92 falling into
-a phase-collapse tier and an acceptance-level `P`-tier (§8); the exact
+a phase-collapse tier and an acceptance-level `P`-tier (§9); the exact
 ω-blindness condition is acceptance-level, so no condition on `(𝒞, ·)`
 alone is necessary. Neither context shape, then, is universally available — the ω-power-only stratum is
 Proposition 3.2's, the linear-only stratum Proposition 3.5's, and the
-census counts both (§8): the extractor's two-shape scan is load-bearing
+census counts both (§9): the extractor's two-shape scan is load-bearing
 in both directions, no longer resting on Proposition 3.2 alone.
 
 ### 3.4 The verification contract
@@ -921,7 +923,7 @@ identity-or-reset layers [KR65], and cascaded decompositions translate
 into temporal logic [Mal10]. A 1-anchored layer is the case where the
 canonical machine carries the reset brick on its own R-classes, with no
 decomposition manufactured; what the transcription emits against what a
-blindly-built cascade of `Cay(L)` would cost is §9's comparison ⟨TBD⟩.
+blindly-built cascade of `Cay(L)` would cost is §10's comparison ⟨TBD⟩.
 
 *Reporting convention* (fixed here because letter tables appear below):
 a letter's *kind* is reported identity-first — a letter neutral wherever
@@ -1021,7 +1023,7 @@ power stabilizes — `[x^N] = [x^{N+1}]` fails for all `N`, contradicting
 aperiodicity (equal classes act equally). Mixed actions therefore need
 `|R| ≥ 3`, exactly the size at which Lemma 4.6(iii)'s scheme lives; on
 census-scale invariants, whose layers are tiny, condition (A) at width 1
-is the generic case: the large majority of layers anchor at width 1 (§8).
+is the generic case: the large majority of layers anchor at width 1 (§9).
 Two open questions calibrate the scheme itself.
 Its status: the four letters generate an aperiodic action monoid — every
 composite action defined on two classes fixes the class `1`, so no power
@@ -1032,7 +1034,7 @@ exhibited, Lemma 4.6(iii) is a statement about the definition, not yet
 about a language. Its budget: the scheme spends four letters, but two
 letters already defeat every affordable width — the census holds 258
 languages, all over a single proposition, whose layers anchor at no
-`k ≤ 3`, the smallest at fifteen classes (§8). Whether one of them
+`k ≤ 3`, the smallest at fifteen classes (§9). Whether one of them
 anchors at *no* width is decided by the uncapped fixpoint of
 Lemma 4.6(v) ⟨TBD: run it on the stratum — a no-width two-letter layer
 would realize the scheme's semantics at half its alphabet budget⟩.
@@ -1065,7 +1067,7 @@ evaluation itself. For the consequence:
 `β ∈ T_{[u]} ⟺ V([u], β) = V([ε], u·β) = [u·β ∈ L]`. ∎
 
 Lemma 4.7's identity `T_{[u]} = u⁻¹L` also shows the memoized children
-are exactly the residual tails, keyed by class — the DAG of §6 is a DAG
+are exactly the residual tails, keyed by class — the DAG of §7 is a DAG
 of residuals with canonical names.
 
 **The label contract.** Lemma 4.7 fixes, once and for all, what every
@@ -1114,7 +1116,7 @@ preconditions: (A) makes the *stem* coordinate letter-recoverable — the
 walk can be transcribed — and (B) makes the *loop* coordinate's verdict
 letter-recoverable — acceptance can be. The two are independent conditions
 on `(𝒞, λ, M, P)`: a frozen layer passes (A) vacuously with all its content
-in (B), and the census hunts the dual (§8) — layers anchoring at width 1
+in (B), and the census hunts the dual (§9) — layers anchoring at width 1
 whose verdicts defeat every affordable window. The exactness theorem needs both:
 condition (A) on every layer the walk traverses, condition (B) on every
 layer a run can remain in forever.
@@ -1392,7 +1394,7 @@ completes an anchor window. And `k + 1` is the operating width,
 `k` being insufficient whenever some neutral `k`-window hosts a
 completed excursion — whether a census specimen realizes that
 insufficiency, making `k + 1` tight and not merely sufficient, is a
-frontier hunt (§8).
+frontier hunt (§9).
 
 **The graded bricks.** Fix a layer anchored at width `k ≥ 2`, write
 `κ = k + 1`, `An_κ(c) = { w ∈ Σ_λ^κ : act_R(w) constant onto c }`, and
@@ -1669,10 +1671,11 @@ second the contract reads the verdict off `Ω(R, r)`. Both directions
 follow disjunct by disjunct from the uniqueness of that decomposition.
 (iii) is Proposition 4.11(ii). ∎
 
-If (B) also fails on `R` at every affordable width, `Ω(R, r)` falls
-back independently, on the window engine's own side (§5.1) — the two
-conditions fail separately, and the paper's main open problem, an
-ω-specific descent beating DG on that stratum, lives there.
+If the loop conditions also fail on `R` at every affordable width,
+`Ω(R, r)` falls back independently, on the window engine's own side
+(§5.1, served by §6's loop half) — the two conditions fail
+separately, and the paper's main open problem, an ω-specific
+*canonical* descent for that stratum, lives there (§6, [Cas26]).
 
 ### 4.5 Anchoring is a property of the language
 
@@ -1681,7 +1684,7 @@ widths at which they pass, the split of every layer's letters into
 stutter, anchor, and exit — all of it is read off the canonical object, and
 is therefore a function of `L` and nothing else. Whether a language admits
 a flat transcription, and at which width, is thus itself a *definability
-property* of the language, sitting in the inner-frontier table of §7 next
+property* of the language, sitting in the inner-frontier table of §8 next
 to the ladder rung and the until-rank. No machine chosen to present `L`
 enters the question; a presentation's states are not even comparable to
 the phases the discipline tracks (two words reaching the same state of
@@ -1877,15 +1880,17 @@ are the ladder's:
   survives the parks: its witness
   `GF(a ∧ X((!a∧!b) U a))` — infinitely often two `a`s with only
   silence between — defeats windows and parks together at every width
-  (the residual floor, after Proposition 5.7). On this stratum, and
-  only here, a DG-style descent survives, demoted to the engine inside
-  one final layer and scoped to that layer's tail algebra — which is
-  not smaller in general (`T_c = L` whenever `L` is prefix-independent,
-  Lemma 5.2(ii)). The plain statement, then: this stratum is where
-  extraction still pays DG's price; the census finds it nowhere inside
-  its own frame, and its first witness one shape beyond it (§8). An
-  ω-specific descent that beats DG on this stratum is the paper's main
-  open problem — and now has a concrete instance to beat it on.
+  (the residual floor, after Proposition 5.7). No refinement of the
+  recurring-data vocabulary escapes this stratum — §6 states the floor
+  (proved in [Cas26]) — and a DG-style descent scoped to the layer's
+  tail algebra is broken by design: the tail algebra is not smaller
+  (`T_c = L` whenever `L` is prefix-independent, Lemma 5.2(ii)). The
+  stratum is served by §6's decomposition fallback — a machine
+  descent that consults a presentation, the one non-canonical branch
+  of the extraction — and the census inhabits it in-frame ⟨TBD: the
+  §9 re-based numbers⟩. An ω-specific descent from the canonical
+  object alone is the paper's main open problem, and now has both a
+  concrete instance and a proof of where it cannot come from ([Cas26]).
 
 The first bullet's read-off, in full:
 
@@ -2356,10 +2361,10 @@ conjunct. `STAY∞` and `LEAVE` get no rows of their own — they are the
 two disjuncts of `Final`, and the one fact they carry that `Final`
 hides, whether the confinement branch survived, is each block's side
 note. The stack is drawn in the plain rendering; under the
-residual-keyed rendering of §6, prefix-independence collapses the
+residual-keyed rendering of §7, prefix-independence collapses the
 root's whole fan to `X Final(5)` — correct and cheaper, but it would
 leave the derivation's last step with nothing to show (the collapse
-is §6's subject).
+is §7's subject).
 
 Every line is one rule of §4.2's grammar, and the language's two-letter
 content is visible in the syntax: `Final(1)`'s `U`-witness reads *the
@@ -2423,7 +2428,7 @@ extractor emits the cheapest, the frozen window term:
 proving `a`" — the branch `GF(aa)` never exercised (its moving layers
 are all-rejecting). The exit fans group by target: both `!b`-letters
 share the child `⊥`, so the guard is the letter set `!b` — one arc,
-not two (the sharing §6 systematizes). And the comparison with §5.3:
+not two (the sharing §7 systematizes). And the comparison with §5.3:
 the AND-split of the same table factors the language as
 `FG b ∧ GF(a ∨ !b)`, the direct window read-off emits
 `FG b ∧ GF(a ∧ b)` — syntactically different second conjuncts,
@@ -2647,7 +2652,7 @@ of the object's own quotients — self-relativizing, and exact. Each
 factor extracts as a one-layer window brick. ⟨TBD: display the two
 quotient tables; conformance-check the factorization in the tool
 (E-series); measure the irreducible-vs-split fractions over the census
-(§8).⟩
+(§9).⟩
 
 The combinators compose (OR of ANDs, complement flips via `P^c` choosing
 the cheaper side), they all commute with re-canonicalization, and
@@ -2678,24 +2683,26 @@ extract(𝓘):
        (A) fails       ⟹ (a) retry after the step-2.5 combinators — an
                           OR/AND piece re-canonicalizes to its own smaller
                           table whose layers may anchor (Thm 5.11); (b)
-                          else the scoped fallback (§4.4, Prop 4.14): DG
-                          run on the layer action monoid 𝒜_R — a quotient
-                          of S(L)₊¹, aperiodic with it (Prop 4.11) — choosing
-                          the separator c as a width-1 partial-constant
-                          letter if one exists (the least blind choice —
-                          it is an anchor of the failed test, repairing
-                          §2.3's blindness (3)), the emitted subformula
-                          rooted at the layer entry and memoized as
-                          usual; DG's price is paid on |𝒜_R|, never on
-                          |M|
+                          else the scoped fallback (§4.4, Prop 4.14),
+                          inner extractor per §9's ledger: DG on the
+                          layer action monoid 𝒜_R — a quotient of
+                          S(L)₊¹, aperiodic with it (Prop 4.11),
+                          separator a width-1 partial-constant letter
+                          when one exists (an anchor of the failed
+                          test, repairing §2.3's blindness (3)) — or
+                          the holonomy cascade of §6's stem half; the
+                          emitted subformula rooted at the layer entry
+                          and memoized as usual; either price is paid
+                          on the layer, never on |M|
   4. window engine (loop side), on every layer a run can end in:
-       (B) at k' ≤ cap ⟹ GF/FG window combination read off P (STAY∞,
-                          parks) — includes every frozen layer
-       (B) fails       ⟹ DG on the tail algebra: the residual stratum,
-                          measured, not hidden
+       (C) at k' ≤ cap ⟹ GF/FG combination read off P — windows,
+                          parks, config atoms (§6) — includes every
+                          frozen layer
+       (C) fails       ⟹ the decomposition fallback (§6, loop half):
+                          the residual stratum, measured, not hidden
   5. finite-word sub-extractor (shared with step 2): the same rules one
      level down on S(L)₊'s finite part — the LTLf story of [SωS26, §6]
-  output: class-indexed formula DAG; render flat or definitional (§6)
+  output: class-indexed formula DAG; render flat or definitional (§7)
 ```
 
 *Step 2, validated.* For co-safety `L` the good-prefix set
@@ -2717,7 +2724,7 @@ let `φ = extract(𝓘)`, with a committed class taking `true` and a
 layer anchoring at no affordable width taking the scoped
 fallback. Then `⟦φ⟧ = L` —
 in the flat rendering, and in the definitional rendering in the
-deterministic-projection sense of §6.
+deterministic-projection sense of §7.
 
 *Proof.* By Noetherian induction on the R-order beneath each dispatch
 point, every branch of `extract` emits a label exact at its class:
@@ -2730,12 +2737,15 @@ point, every branch of `extract` emits a label exact at its class:
   remark);
 - *no-width layers* — the scoped fallback, Proposition 4.14: exact given
   exact children, its finite-word ingredient [DG08]'s correctness on
-  `𝒜_R` and its wrapper the insertion operator's displayed semantics;
+  `𝒜_R` (or the reach family's on the holonomy cascade, §6 [Cas26])
+  and its wrapper the insertion operator's displayed semantics;
 - *the window contract*, wherever a run can stay forever — under (B)
   at some width, Proposition 5.4; under (B̃) on a 1-anchored layer,
-  Proposition 5.7; where both fail at every affordable
-  width, a fallback formula defining `T_c` itself (§5.1) satisfies the
-  contract *a fortiori*, being exact on all tails, confined or not;
+  Proposition 5.7; under (C), the config normal form (§6, [Cas26]);
+  where all fail at every affordable
+  width, a fallback formula defining `T_c` itself (§6, loop half)
+  satisfies the contract *a fortiori*, being exact on all tails,
+  confined or not;
 - *ladder templates* (step 2) — the paragraph above: an exact
   finite-word formula for the class-defined prefix language under the
   same wrapper;
@@ -2749,7 +2759,7 @@ point, every branch of `extract` emits a label exact at its class:
 At the root the contract reads `⟦φ_{[ε]}⟧ = T_{[ε]} = L`
 (Lemma 4.7(iii)). The flat rendering is the DAG's unfolding — the same
 formula written without sharing — and the definitional rendering
-defines `L` by deterministic projection as argued in §6. ∎
+defines `L` by deterministic projection as argued in §7. ∎
 
 Two remarks. The dispatch is preference-ordered, never forced: a
 committed class takes the constant even where bricks exist, and the
@@ -2758,14 +2768,133 @@ stem branch is Theorem 4.10 or 4.13. And exactness needs no
 equivalence oracle anywhere — every branch is exact by construction —
 but it is *checkable* by one: re-running the construction of [SωS26]
 on `φ` must return the byte-identical `𝓘`, the conformance gate the
-evaluation enforces (§8).
+evaluation enforces (§9).
 
-## 6. The deliverable: DAG, flat, and definitional forms
+## 6. The cascade import: configurations, the floor, and the decomposition fallback
+
+Two strata of §5.4's dispatch still pay the generic price of §2.3: the
+stem side's no-width layers (step 3(b), DG on `𝒜_R`) and the loop
+side's residual stratum (step 4, DG on the tail algebra — broken by
+design, since `T_c = L` whenever `L` is prefix-independent,
+Lemma 5.2(ii)). This section imports the structural idea of [BLS22] —
+for the ω-part, **descend on the machine, never on the language** —
+in three statements: a finer rung above (B) that is free to decide; the
+proof that no rung of this kind, however refined, empties the residual
+stratum; and the fallback that replaces both DG calls by a
+Krohn–Rhodes decomposition of the *scoped* machine. Proofs, the worked
+development, and everything this paper does not consume are in the
+companion note [Cas26]; what follows is what the architecture uses.
+
+**The configuration rung.** For a layer `R` and width `k`, the
+*configuration machine* is `M_k(R) = A_R × SR_k` — the partial
+within-layer machine of `R` product the width-`k` shift register — and
+condition **(C)** at width `k` asks that the verdict on confined tails
+factor through the set of *recurring edges* of `M_k(R)`. Windows are
+the class-blind projection of this data, so (B) at `k` implies (C) at
+`k`, and the implication is strict: on `G(a → F b)`'s final layer
+(§5.1's own witness) condition (C) holds at width 0 while plain (B)
+fails at every width — the class coordinate supplies exactly what the
+window vocabulary could not name. Deciding (C) is a *prefix* of
+deciding (B): Proposition 5.4(iii)'s loop-class closure decides it
+before its final window-projection grouping, so the rung costs
+nothing the tester does not already pay [Cas26]. The transcription
+extends Proposition 5.7's vocabulary with *anchored edge atoms* — for
+an edge `e` of `M_k(R)` at class `q` reading `a`,
+
+```
+A_e  =  m̂ ∧ X^k a                                (class pinned by the window)
+A_e  =  An(q) ∧ X( St(q) U ( m̂ ∧ X^k a ) )       (class carried)
+```
+
+— `Σ₁` formulas, so `GF A_e ∈ Π₂` and `FG ¬A_e ∈ Σ₂`; wherever (C)
+holds at some width, the exact-set combination of these atoms plus the
+anchored parks meets the window contract of Theorem 4.10, collapsing
+to a pure-`GF` (`Π₂`) or pure-`FG` (`Σ₂`) form when the accepting
+family is monotone [Cas26]. Step 4 of the architecture reads "(B) at
+`k′`" as "(C) at `k′`" from here on; on frozen layers the two ladders
+coincide up to a width shift ((C) at `k` is (B) at `k + 1`), so the
+gain there is budget, and the logical gain lives on moving layers.
+
+**The floor.** No rung of this family goes further, and one example
+says why. On the residual witness `GF(a ∧ X((!a∧!b) U a))` (§5.1) the
+loop content sits on a frozen *singleton* terminal layer `{z}`: the
+decorated walk is constant, configurations collapse to windows, and
+the growing-gap pair
+
+```
+β   =  a s^{n₁} b s^{n₂} a s^{n₃} b ⋯          rejected
+β′  =  a s^{n₁} a s^{n₂} b s^{n₃} a ⋯          accepted      (s = !a∧!b)
+```
+
+shares its recurring data at **every** width — any window sees at most
+one non-silent letter — while the verdicts differ on the `a·s^*·a`
+completions the windows cannot count. So (C), and with it *any*
+condition whose verdict factors through bounded-width recurring data
+of the canonical walk, fails on `{z}` at every width; the mechanism
+(the syntactic congruence saturates exactly where the verdict-carrying
+recurrence lives) and the census-scale extent of the stratum are
+worked in [Cas26]. We claim no completeness anywhere on this axis: the
+residual stratum cannot be emptied from `𝓘`'s walk, and the ladder's
+role in the architecture is coverage and budget, not closure.
+
+**The decomposition fallback.** Where the ladder ends, the machine
+descent begins — this is the import that retires the two DG calls.
+
+*Stem half ((A) fails at every width).* Totalize the confined machine
+`A_R` with an absorbing exit sink; it is counter-free
+(Proposition 4.11), so the holonomy decomposition applies
+[KR65, Mal10, BLS22]: a reset cascade homomorphic to `A_R`, every
+level identity-or-reset over its combined letters — that is, every
+level *1-anchored* in this paper's own sense. The confined-walk
+languages `L_{r→c}` of Proposition 4.14 are then emitted by [BLS22]'s
+finite-word reach family on the cascade, memoized per level — a
+class-indexed DAG again — and Proposition 4.14's `SAFE`/insertion
+assembly is unchanged: only the inner extractor swaps. Against DG on
+`𝒜_R`, each of §2.3's blindnesses falls: no alphabet inflation (the
+combined letters are structured pairs), no per-occurrence substitution
+(reach formulas memoize), no separator choice (the level order is the
+holonomy's). The cost moves from DG's multiplicative recursion to the
+cascade height — up to `2^{|R|}` levels in the worst case
+[BLS22, Prop 6], expected far below it on the census stratum ⟨TBD:
+the §9 ledger — DAG size and printed size against the DG route on the
+(A)-fallback stratum — decides which extractor step 3(b) keeps⟩.
+
+*Loop half ((C) fails at every width, or (A) fails on a final layer).*
+Here the wall is Lemma 4.2(ii): no machine derived from `Cay(L)` —
+hence none derived from the invariant alone, as the floor above
+re-proves operationally — carries its acceptance on recurring
+configurations. The honest transposition consumes what [BLS22]'s
+construction consumed: a deterministic acceptor — the one the pipeline
+started from — restricted to the states realizing the layer's tails,
+KR-decomposed, its acceptance lifted to cascade configurations
+[BLS22, Props 7–8], and encoded as a Boolean combination of `Σ₂`
+last-visit atoms ("configuration `C` is visited finitely often") —
+Büchi as `⋁ ¬Fin(C)`, co-Büchi as `⋀ Fin(C)`, Muller as the exact-set
+product. A machine descent, never a recursion on the language,
+terminating precisely where DG on the tail algebra provably cannot
+shrink. The price is stated plainly: this branch, alone in the whole
+extraction, consults a presentation — canonicity fails on it exactly
+as it failed on DG's separator choice — and its output is certified by
+the conformance gate (§9), never by construction. The canonical repair
+candidate (a prophetic-automaton transcription) is developed in
+[Cas26].
+
+*The architecture, patched.* Step 3(b) gains the stem half as the
+measured alternative to DG-on-`𝒜_R`; step 4's residual branch — "(B)
+fails ⟹ DG on the tail algebra" — becomes "(C) fails at every
+affordable width ⟹ the decomposition fallback". On the loop side the
+replacement needs no ledger: it replaces a route that provably cannot
+shrink its input. On the stem side both routes are sound and §9's size
+ledger decides. Theorem 5.13 is untouched: both halves emit exact
+labels under the same contracts its proof already quantifies over
+(Proposition 4.14's assembly; a formula defining `T_c` on all tails).
+
+## 7. The deliverable: DAG, flat, and definitional forms
 
 Extraction as computed is a **class-indexed DAG**: one node per
 (class, engine-context) pair, children memoized — a format that
 computes at scale over the whole catalogue, for the baseline and for
-the transcription alike (§8) ⟨TBD: the DAG-vs-|𝒞| scatter once the
+the transcription alike (§9) ⟨TBD: the DAG-vs-|𝒞| scatter once the
 graded engine lands⟩. Three renderings:
 
 1. **The DAG itself** — the working format, and polynomial on the
@@ -2784,7 +2913,7 @@ graded engine lands⟩. Three renderings:
    distinct *child*, the guard a letter set (a single arc labeled by
    the set, `⊤` when every exit agrees); the fan must key on the child,
    not on the target class, or it cannot compose with the second
-   sharing — two classes sharing one child would keep two arms (§8).
+   sharing — two classes sharing one child would keep two arms (§9).
    The flat form shrinks by the local branching factor and the result
    reads as the machine does (Example 3's `!b`-arc into `⊥`).
    *Residual indexing at exits*: an
@@ -2805,7 +2934,7 @@ graded engine lands⟩. Three renderings:
    reuse-already-built even that case is safe, and instructive: the
    single representative sits in the deepest layer, every exit child
    becomes that one label, and the memo *implements* Lemma 5.2's
-   emit-directly rule rather than colliding with it (§8). The
+   emit-directly rule rather than colliding with it (§9). The
    within-layer discipline is untouched (laws and
    anchors speak classes; only the child slots coarsen). Merges that
    are exact only *after d more steps* — two branches sharing a
@@ -2813,7 +2942,7 @@ graded engine lands⟩. Three renderings:
    in the DAG and in the definitional rendering (one shared node,
    several parents), but not flat-factorable in general, the shared
    tail sitting at different `X`-depths on its branches. One more
-   convention, fixed by measurement (§8): the size a claim is about is
+   convention, fixed by measurement (§9): the size a claim is about is
    the *final* label, after the formula-level simplifier. The two
    syntactic sharings (guard synthesis, grouping) are largely subsumed
    by such a simplifier — their post-simplification role is keeping
@@ -2835,7 +2964,7 @@ graded engine lands⟩. Three renderings:
    ([TW01, Thms 4.8, 5.8–5.9], §2.2), hence the nesting depth any
    extraction whatsoever can achieve — the flat explosion is the
    language's own, not an artifact of the extraction.
-   ⟨TBD: the size ledger DG vs. ours on the triptych + census (§8).⟩
+   ⟨TBD: the size ledger DG vs. ours on the triptych + census (§9).⟩
 3. **LTL with definitions** — one fresh proposition `p_n` per DAG node `n`,
    a conjunction of `G(p_n ↔ brick_n(…))` definitions plus a root: linear
    in the DAG, printable, and defining `L` exactly, in the following
@@ -2854,7 +2983,7 @@ graded engine lands⟩. Three renderings:
    wrapper the quantifier adds no expressive power and the semantics stays
    exact.
 
-## 7. The inner frontier
+## 8. The inner frontier
 
 Aperiodicity is the outer cut. Inside it, the extraction's case analysis
 induces a second, finer map, and every coordinate is a read-off:
@@ -2866,24 +2995,22 @@ induces a second, finer map, and every coordinate is a read-off:
 | stem-transcribable, k ≤ K | (A): local k-definiteness mod stutter | graded bricks at width k+1 (Thm 4.13), same depth | step 3 |
 | loop-transcribable | (B) at width k′ ⟨TBD: align with local ω-testability⟩ | `GF`/`FG` window combinations | step 4 |
 | loop-transcribable, parked | (B̃) at width k′: windows plus last anchor (Prop 5.7) | window combinations + anchored parks `F(An(d) ∧ X G St(d))` | step 4 |
-| residual | (A) or (B̃) fails at every affordable width | genuine nesting; until-rank certifies | steps 3–4 fallback, stem side scoped (Prop 4.14) |
+| loop-transcribable, config | (C) at width k′: recurring configuration edges (§6) | `GF`/`FG` over anchored edge atoms + parks | step 4 |
+| residual | (A) or (C) fails at every affordable width | genuine nesting; until-rank certifies | steps 3–4 decomposition fallback (§6) |
 
 **Table 2.** The inner frontier: which fragment of LTL a language actually
 needs, decided on `𝓘(L)` before any formula is built.
 
-The census maps the strata empirically (§8). The stem half of the
-residual row is real but confined: every (A)-fallback layer sits at
-Wagner depth 1, over a single proposition, in an algebra of fifteen
-classes or more. The loop
-half fails nowhere inside the catalogue's own frame — a (B)-failing
-final layer needs two states and two propositions *at once*, a shape
-the frame omits. Beyond the frame, the first plain-(B) failure,
-`G(a → F b)` (§5.1), lands in the parked row — repaired by
-Proposition 5.7 — and the first inhabitant of the loop-residual
-stratum is `GF(a ∧ X((!a∧!b) U a))` (§5.1), seven classes. The open
-hunts that remain: the smallest witness of each of the two loop
-strata, and the smallest witness of each graded stem stratum beyond
-the tester's cap.
+The census maps the strata empirically (§9 ⟨TBD: re-based on the
+current corpus⟩). The first plain-(B) failure, `G(a → F b)` (§5.1),
+lands in the parked row — repaired by Proposition 5.7, then
+transcribed one width earlier by the config row (§6) — and the floor
+of the loop-residual stratum is `GF(a ∧ X((!a∧!b) U a))` (§5.1, §6),
+seven classes; a (B)-failing final layer needs two states and two
+propositions *at once*, and the census populates that shape in-frame
+⟨TBD: §9 numbers⟩. The open hunts that remain: the smallest witness
+per loop stratum, and the smallest witness of each graded stem
+stratum beyond the tester's cap.
 (The full alignment of the strata with the known sub-LTL
 hierarchies — definite [PRS63], locally testable [BS73], the
 until-free fragment of Cohen–Perrin–Pin [CPP93] (level 0 of the until
@@ -2892,14 +3019,14 @@ is a classification question, deliberately outside this paper's
 scope; the rows state operational conditions, and the kinships are
 noted where each condition is introduced.)
 
-The inner frontier is also the size story of §6 made structural: flat cost
+The inner frontier is also the size story of §7 made structural: flat cost
 concentrates exactly in the residual stratum, and the strata above it are
 the reason extraction on real specimens is small — which DG, treating every
 language as residual, cannot see.
 
-## 8. Evaluation
+## 9. Evaluation
 
-The census maps both frontiers empirically and measures §6's size claims;
+The census maps both frontiers empirically and measures §7's size claims;
 every emitted formula is verified against the language itself (Spot
 equivalence under a per-instance cap, an unverifiable explosion recorded
 as such, never as a pass). ⟨TBD: the full flat-size and depth ledger
@@ -2940,7 +3067,7 @@ languages (19 082 layers):
 The (A)-fallback stratum is 1 432 layers over 258 languages, all at
 Wagner degree `(1,σ)` / `(1,π)` (guarantee / safety, by duality); the
 clopen, `(2,·)`, `(ω,·)` and `(ω²,·)` degrees have none. The stem-side
-residual row of §7 is a Wagner-depth-1 phenomenon, not a shape one —
+residual row of §8 is a Wagner-depth-1 phenomenon, not a shape one —
 and not an alphabet one: every (A)-failing language is over a *single*
 proposition, none over two or three, and the floor is `|𝒞| = 15` at
 three states (three 3-class layers, both letters mixed on each). The
@@ -2999,7 +3126,7 @@ where Spot terminates within the cap, verification returns 159
 equivalent, 0 non-equivalent, and 2 078 flat-rendering overflows: §2.3's
 explosion as a catalogue-wide distribution rather than the single
 `GF(aa)` exemplar. The DAG computes; the flat form is what fails, per
-the deliverable split of §6.
+the deliverable split of §7.
 
 **The transcription engine.** The assembled extractor answers the
 whole catalogue: 2 237 LTL languages with a formula, 1 698 non-LTL
@@ -3018,7 +3145,7 @@ refinement. Canonicity holds end to end: two presentations of `GF(aa)`
 (the parity and the reset automata) bridge to the byte-identical
 invariant and the character-identical formula.
 
-**Branch factoring, measured.** The three sharings of §6 —
+**Branch factoring, measured.** The three sharings of §7 —
 guard synthesis, guard grouping keyed on the child, residual-indexed
 exit children — measured in isolation and combined over the 1 114
 languages the transcription covers. Together they shrink the final
@@ -3042,7 +3169,7 @@ size-monotone (a handful of regressions of a few nodes each — at
 3 AP the minimized guards trade flat size against DAG size, each
 guard smaller but bespoke where cubes were shared).
 
-## 9. Related work
+## 10. Related work
 
 ⟨TBD: biblio sweep still pending on the cites marked below.⟩
 
@@ -3057,12 +3184,19 @@ Carton–Michel automata [CM03] — the nearest decision-side relative of our
 frozen-layer templates.
 
 **Cascades.** Krohn–Rhodes for aperiodic monoids = wreath products of
-resets; Maler's work on cascaded decomposition translates automaton
-cascades to LTL. Our 1-anchored layer *is* the reset
-brick surfacing on the canonical machine; the R-order walk is a cascade
-whose levels the algebra names. ⟨TBD: precise comparison — what the Cayley
-transcription emits vs. what a KR cascade of Cay(L) would; the claim that
-R-depth ≤ cascade height obtainable blindly.⟩
+resets [KR65]; Maler's work on cascaded decomposition translates
+automaton cascades to LTL [Mal10], and Boker–Lehtinen–Sickert [BLS22]
+translate a counter-free automaton through a manufactured reset
+cascade, with the ω-part encoded as finite-visitation atoms over
+configurations — the source of §6's import. The precise comparison is
+[Cas26]'s dictionary: a 1-anchored layer *is* a reset level, read off
+the canonical machine where [BLS22] manufactures one (up to `2^n`
+levels, their Prop 6); condition (B)'s exact-set form is the Muller
+encoding over a pure-reset cascade; the anchored parks and `Fin(C)`
+are the two polarities of one last-event idiom. What the blind
+cascade buys in exchange — acceptance carried on configurations of a
+*presentation* — is exactly what §6's fallback imports on the stratum
+where the canonical walk provably cannot carry it.
 
 **Local languages and definiteness.** The anchoring ladder relaxes local /
 k-definite / k-testable recognizability modulo stuttering (local
@@ -3080,7 +3214,7 @@ deterministic Emerson–Lei automaton and reifies it as the invariant
 paper starts there and rebuilds, on either side of the aperiodicity
 verdict, the artifact the verdict calls for.
 
-## 10. Conclusion
+## 11. Conclusion
 
 The syntactic ω-semigroup was built to decide one question. This paper
 is about the day after: on either side of the decision, the same four
@@ -3100,14 +3234,18 @@ algebra demands it, and the assembled dispatch exact end to end
 (Theorem 5.13). The deliverable split is part of the result: the
 DAG is polynomial and canonical, the flat formula's size is the
 language's own, and the definitional format avoids that size exactly
-(§6).
+(§7).
 
-Two open problems mark where the paper stops. The main one: an
-ω-specific descent that beats DG on the residual stratum — the one
-place extraction still pays the generic price (§5.1). The other, the
+Two open problems mark where the paper stops. The main one,
+sharpened from both sides by §6 ([Cas26]): the residual stratum is
+provably out of reach of every bounded-recurrence condition on the
+canonical walk, and the decomposition fallback that serves it is the
+extraction's one non-canonical branch — an ω-specific descent from
+the canonical object alone is the open problem, with the carriers
+named ([Cas26]: the prophetic transcription). The other, the
 realization questions the census sharpened: a
 layer anchoring at no width over two letters (§4.2), the smallest
-(B)-failing and the smallest park-irreparable final layers —
+witnesses per loop stratum —
 `G(a → F b)` and `GF(a ∧ X((!a∧!b) U a))` bound the hunts from above
 (§5.1) — and a sufficient tour cap for deciding (B) (§5.1). The
 formula was always going to be large sometimes; the algebra now says
@@ -3119,8 +3257,13 @@ exactly when, and exactly why.
 
 - **[Arn85]** A. Arnold. *A syntactic congruence for rational ω-languages.*
   TCS 39 (1985) 333–335.
+- **[BLS22]** U. Boker, K. Lehtinen, S. Sickert. *On the Translation of
+  Automata to Linear Temporal Logic.* FoSSaCS 2022.
 - **[BP91]** D. Beauquier, J.-É. Pin. *Languages and scanners.*
   TCS 84 (1991) 3–21.
+- **[Cas26]** Y. Thierry-Mieg, with Claude (Anthropic). *The cascade
+  ladder: the loop side beyond windows and parks.* Companion working
+  note, 2026 (`research_notes/bls_cascade.md`).
 - **[BS73]** J. A. Brzozowski, I. Simon. *Characterizations of locally
   testable events.* Discrete Mathematics 4(3) (1973) 243–271.
 - **[CM03]** O. Carton, M. Michel. *Unambiguous Büchi automata.* TCS 297
@@ -3179,4 +3322,4 @@ exactly when, and exactly why.
 - ⟨TBD, sources to fetch: Beauquier–Pin / Wilke (locally
   (threshold-)testable ω-varieties, for the (B)-stratum alignment);
   Thérien–Weiss (the FO[+1] separator in §5.1); Kufleitner et al.
-  (finite-word local-divisor proofs, §9).⟩
+  (finite-word local-divisor proofs, §10).⟩
