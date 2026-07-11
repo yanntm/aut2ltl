@@ -119,7 +119,25 @@ def main() -> None:
             f"— the pair-count fast path closes the anti question on the other "
             f"{n_cases - len(anti_poss)} cases ({pct(n_cases - len(anti_poss))})\n\n"
         )
-        out.write("## Full B_n sweep (n ≤ 3 rows)\n\n")
+        out.write("## Stratified by AP count\n\n")
+        out.write(
+            "| n | cases | ≥1 sym generator | ≥1 anti generator | "
+            "anti_possible | nontrivial group (full sweep) | "
+            "group-order distribution |\n|---|---|---|---|---|---|---|\n"
+        )
+        for n in sorted(by_n):
+            sub = [r for r in rows if r["n_aps"] == n]
+            s = sum(1 for r in sub if r["sym_generator_hits"])
+            a = sum(1 for r in sub if r["anti_generator_hits"])
+            p = sum(1 for r in sub if r["anti_possible"] == "1")
+            dist = Counter(r["sym_full_count"] for r in sub)
+            nont = sum(v for k, v in dist.items() if k not in ("1", "-1"))
+            out.write(
+                f"| {n} | {len(sub)} | {s} ({100 * s / len(sub):.2f}%) "
+                f"| {a} | {p} | {nont} ({100 * nont / len(sub):.2f}%) | "
+                f"{dict(sorted(dist.items(), key=lambda kv: int(kv[0])))} |\n"
+            )
+        out.write("\n## Full B_n sweep (n ≤ 3 rows)\n\n")
         out.write(f"- rows swept: {len(full_rows)}\n")
         out.write(
             "- symmetric-element count distribution (identity included): "
