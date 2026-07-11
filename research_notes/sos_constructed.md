@@ -873,13 +873,13 @@ would complete it into a canonical — not minimal — deterministic automaton f
 `L`. We leave the extraction as a prospect.
 
 **Proposition 5.3 (residuals are derived data).** The residual `u⁻¹L` depends
-only on the class `[u]`; write `L_s` for the residual of `s ∈ 𝒞` (so
-`L_{[ε]} = L`, and every residual of `L` is an `L_s`). Membership is one fold
-and one lookup — `y·t^ω ∈ L_s ⟺ (s·[y]·e, e) ∈ P`, `e` the idempotent power of
-`[t]` — and residual equality `L_s = L_{s'}` is right-invariant, so the
-residual automaton is the quotient of `Cay(L)` by it. Everything the residuals
-block of Figure 2 carries is thus recomputable from `(𝒞, λ, M, P)`: it is
-shipped for convenience, and rightly enters no equality test.
+only on the class `[u]`; write `L_s` for the residual of `s ∈ 𝒞`
+(`L_{[ε]} = L`). Membership is one fold and one lookup —
+`y·t^ω ∈ L_s ⟺ (s·[y]·e, e) ∈ P`, `e` the idempotent power of `[t]` — and
+residual equality is right-invariant, so the residual automaton is the
+quotient of `Cay(L)` by it. The residuals block of Figure 2 is thus
+recomputable from `(𝒞, λ, M, P)`: shipped for convenience, it rightly enters
+no equality test.
 
 *Proof.* If `u ≈_L v`, Arnold's linear shape at `x = ε` gives
 `u·y·t^ω ∈ L ⟺ v·y·t^ω ∈ L` for all `y, t`; two regular ω-languages agreeing
