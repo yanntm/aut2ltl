@@ -64,21 +64,17 @@ flat). Refused loudly, never ignored: `quotient="symbolic"`, products
 at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
 `slot_perm`, non-packed `slot_encoding`, unknown `square` values.
 
-## Work items (in order)
+## Work items — engineering (in order)
 
-1. ✅ **E1 census done** (F17–F20): bridge = `sos_sdd/hoa.py`
-   (`digest_twa`, verbatim; import via standard APIs), driver =
-   `tests/sos_sdd/e1_census.py`, data =
-   `tests/sos_sdd/reference/e1_census.csv`. Conformance green on all
-   6102 completed corpus instances (byte-parity vs the precomputed
-   `flat_canon/sos/` tier — det/sos are a self-consistent pair, no
-   reference runs); 120 TIME_BUDGET at 10 s (1.9 %, mostly
-   `3state2ap2acc_parity`; phases 1/3/5/2 = 52/32/21/15 — the
-   Phase-3/5 kills contradict E5's "cheap" prediction, revisit at E5).
-   Left open from E1's scope: the C5 cross-check probe vs the explicit
-   tool's residual classes (Spot `language_map`) — unblocked by the
-   bridge, not written; the constant/shared-slot and
-   mark-upward-closure covariate columns (§4.2) in the CSV.
+1. ✅ **E1 fully done** (F17–F22): bridge `sos_sdd/hoa.py`
+   (`digest_twa`, verbatim; import via standard APIs), driver
+   `tests/sos_sdd/e1_census.py`, covariate pass
+   `tests/sos_sdd/e1_covariates.py`, C5 cross-check
+   `tests/sos_sdd/residual_crosscheck.py`. Data (tracked):
+   `tests/sos_sdd/reference/e1_census.csv` + `e1_covariates.csv`.
+   Conformance green on all 6102 completed corpus instances; |EM¹|
+   corroborated three ways (model count / explicit BFS / byte gate);
+   120 TIME_BUDGET at 10 s (1.9 %, mostly `3state2ap2acc_parity`).
 2. ⏳ **C9/C10** — remaining engine switches (fp disciplines `chaining`
    / `saturation`, split slot encodings, slot permutations — E7/E8's
    axes) and the §6 calculus operators (member / Boolean algebra /
@@ -87,9 +83,32 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
    compare against Spot-side oracles, bounded.
 3. ⏳ **E2's second component family** + per-point budget sweeps at
    scale; E3 order sweeps (needs C9's `slot_perm`).
-4. Housekeeping when touched: milestones append ledger rows to the
+4. Optional, cluster-sized: re-run the 120 TIME_BUDGET rows at bigger
+   budgets (E6 will need the honest two-column data anyway);
+   full-corpus C5 cross-check (sample of 25 done).
+5. Housekeeping when touched: milestones append ledger rows to the
    report AND sync the spec's *State of play*; paper only when a
    `⟨TBD⟩` becomes measurable.
+
+## To-theory (escalations awaiting a Theory session)
+
+- **F22 — bless the monotone-marks metric.** Paper §4.2 says ⟨TBD:
+  quantify on the corpus⟩; engineering operationalized it as
+  per-(slot, dst) mark families, closure under adding one mark,
+  fraction over non-empty families → **62 %** upward-closed. Adjust or
+  bless before the paper cites it.
+- **F19 vs E5's prediction.** Census budget kills land in phases
+  1/3/5/2 = 52/32/21/15 — Phases 3 and 5 firing contradicts "Phases
+  5–6 are cheap relative to closure". E5 profiling will decide; the §5
+  cost-table narrative may need an edit.
+- **F19 vs E6's prediction.** The explicit reference completed all 120
+  instances the engine's 10 s budget killed — "loses nowhere on the
+  census" looks refutable at small budgets. E6 must measure both
+  columns honestly (budget parity).
+- **Paper integration.** E1 data exists for the compression-scatter
+  `⟨TBD⟩` (§3.1/§8): F17–F18 + the two reference CSVs; the correlate
+  analysis (which covariate predicts compression) is a reading of
+  those CSVs, not new runs.
 
 ## Binding engine facts (learned the hard way — do not relearn)
 
