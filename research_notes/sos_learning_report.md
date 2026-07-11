@@ -2099,59 +2099,105 @@ number in `reference/census/README.md`. A figure that traces only to `logs/` doe
 enter the paper: the corpus moves, so a re-run is not a reproduction — the committed
 CSV *is* the source.
 
-## Open defect — the no-saturation raw algebra can carry classes unreachable from ε
+## Open defect — the no-saturation fixpoint is not a congruence, and `export` assumes it is
 
-**Status: open, under investigation. Flagged for the theory thread: the fix may be
-a paper-level patch, not just an engineering one.**
+**Status: diagnosed, fix proposed, awaiting a theory ruling. This needs a paper-level
+patch, not only an engineering one.**
 
-The v2 drop (6220 languages) crashes on the ablation leg
-(`--no-saturation --eq-mode exact`):
+### The mechanism
 
-```
-AssertionError: raw algebra has classes unreachable from eps   (sosl/sos/core/canonical.py:72)
-```
+`export` (`sosl/learn/export.py`) reads the raw algebra off the learner's partition as
 
-`canonicalize()` re-indexes the raw algebra by a shortlex BFS from ε under
-letter-multiplication, and asserts the BFS reaches every class
-(`len(order) == len(mult)`). On these cases it does not: the raw algebra the
-ablation hands it contains classes that ε cannot reach by multiplying letters.
+    mult[c][d] = fold(c, rep(d))          # fold by a *representative* of d
 
-### What the data says
+and its docstring states the premise: *"At a fixpoint the partition is a finite
+congruence."* **Saturation is what makes that true.** `run_case` calls `saturate`
+only `if config.saturation`, so under the ablation (`--no-saturation --eq-mode
+exact`) the loop exits on the equivalence query alone. The resulting partition is
+closed and consistent *as a table*, but it need not be a congruence for the
+**product** — and then `mult[c][class(a)] ≠ step(c, a)`: multiplying by a letter's
+class is not the same as stepping by the letter, so the product depends on which
+representative was chosen. It is not a well-defined operation on classes.
 
-| | |
-|---|---|
-| crashing rows | 17, **all on `no-sat-exact`**; the default leg is **1972/1972 SOUND** |
-| distinct languages | 9, every one a **parity** shape (the family v2 added) |
-| complement symmetry | **holds** — 8 of 9 crash as closed `(L, L̄)` pairs; the 9th's complement only escapes by hitting `BUDGET` first, so it is masked, not exempt |
-| default-leg verdict on all 17 | **SOUND** — the same languages learn cleanly with saturation on |
+Measured on `2state2ap2acc_parity_16186325768790242365`:
 
-So the defect is confined to the saturation-off path, is complement-symmetric (as
-the P-flip construction demands), and is invisible to the default leg.
+| | classes | reached from ε by the product | `step` vs product disagreements | verdict |
+|---|---|---|---|---|
+| saturation **on** | 17 (= `ref_classes`) | 17 | **0** | SOUND |
+| saturation **off** | 13 | 10 | **4** | CRASH |
 
-### Why it matters beyond a crash
+The three missed classes *are* reachable by `step()` — the learner can name them;
+only the algebraic product cannot. Note also how `export` is reached at all: the
+loop breaks only when `equiv` returns no counterexample, so **the exact oracle
+certified the 13-class hypothesis as language-equivalent to `L`**. The learner
+produced a correct acceptor and no algebra.
 
-E2's claim is that *with exact equivalence, every surviving stall is provably
-permanent*. That claim quantifies over the ablation leg — the very leg that
-crashes. Nine languages currently drop out of E2 rather than being classified, so
-the experiment's universe is silently smaller than the catalogue. This is a
-correctness question, not a robustness one: an unreachable class means the object
-the ablation calls "the algebra" is not the algebra the theory describes, and the
-assertion is the only thing that noticed.
+### The loud failure is not the dangerous one
 
-### The question for the theory thread
+Non-congruence surfaces in two ways, and only one of them is loud:
 
-Saturation is what closes the class set under multiplication. With it off, the
-learner's table can hold classes discovered by counterexample that are *not*
-products of letters from ε. The paper's `𝓘(L)` is by definition ε-generated, so:
-is the saturation-off object a different (larger) algebra that merely *contains*
-`𝓘(L)`, and if so, what is E2 actually measuring on it? Either the ablation must
-close the class set before canonicalizing (an engineering fix, and the assertion
-stays), or the ablation's object needs its own definition in the paper (a
-paper-level patch, and §5's ablation story changes).
+- **Loud (17 rows).** The product's BFS from ε misses classes, so `canonicalize`'s
+  `assert len(order) == len(mult)` fires → `CRASH`. Nine parity languages,
+  complement-symmetric, every one **SOUND on the default leg**.
+- **Silent (the real problem).** The partition is *not* a congruence, yet the BFS
+  still happens to cover every class. **No assertion fires.** `canonicalize` returns
+  an invariant read off an ill-defined multiplication — a meaningless algebra — and
+  the run is scored `ACCEPTOR_ONLY`, whose spec §7 gloss is "export byte-differs,
+  hypothesis sound", as though export had merely landed on a coarser object.
+
+  In a 14-case sample of parity `ACCEPTOR_ONLY` runs, **3 were non-congruent with
+  every class still reachable** (`bad_cells` 1, 1, 4). So the `ACCEPTOR_ONLY`
+  population is contaminated: an unknown fraction of E2's "exported invariant"
+  rows are not invariants of anything. The assertion is a *partial* guard — it
+  catches the cases where non-congruence happens to break reachability, and misses
+  the rest.
+
+This is what makes it a correctness question rather than a robustness one. E2's
+claim quantifies over exactly this leg.
+
+### Proposed fix (engineering), pending the ruling
+
+The condition is cheap and exact — `mult[c][class(a)] == step(c, a)` for every class
+`c` and letter `a`, `O(n·|Σ|)`:
+
+1. `export` stops assuming: it either refuses (returns no invariant) on a
+   non-congruent partition, or the caller tests congruence first. The
+   `canonicalize` assertion **stays** — it is a correct guard on its own contract,
+   it is simply not the right place to discover this.
+2. A non-congruent ablation fixpoint is not a crash and not a byte-difference: it is
+   the honest outcome **"correct acceptor, no algebra"**, which is what
+   `ACCEPTOR_ONLY` should mean — with a `detail` that distinguishes *no invariant
+   exists* from *an invariant that byte-differs*. Those are different facts and E2
+   currently conflates them.
+3. The congruence check becomes a standing gate on the ablation leg, so the silent
+   kind can never be counted again.
+
+Probes: `tests/sosl/crash_unreachable.py` (per-case diagnosis: reachability +
+disagreeing cells, `--sat` for the contrast), `tests/sosl/congruence_audit.py`
+(one line per case: `congruent` / `reachable` / `bad_cells`, for sweeping a sample).
+
+### What theory owes
+
+Saturation closes the class set under multiplication; the paper's `𝓘(L)` is
+ε-generated by definition. So:
+
+1. **What is the ablation's object?** Without saturation the fixpoint is a
+   language-correct acceptor whose class set is not multiplicatively closed. It is
+   not `𝓘(L)`, and it is not an algebra. Does the paper name it, or does §5's
+   ablation story simply become *"saturation is what makes the fixpoint an algebra
+   at all"* — which the data now says outright?
+2. **What is E2 measuring?** E2 says *with exact equivalence every surviving stall
+   is provably permanent*. If some ablation runs export a meaningless invariant,
+   the E2 counts drawn from those rows are not measuring what they claim. The
+   recount is blocked until (1) is answered.
+3. The 9 crashing languages are, on this reading, **witnesses** rather than bugs:
+   they exhibit a fixpoint that is language-correct and algebraically inconsistent.
+   That is E2's thesis in its sharpest form, and it may be worth an exhibit.
 
 Reproduce (from `sosl/`), one case per invocation:
 
 ```
-python3 -m tests.sosl.census_campaign --cases <i>:<i+1> --config ablate --budget 60
-# e.g. 2state2ap2acc_parity_16186325768790242365 (and its _c mate)
+python3 -m tests.sosl.crash_unreachable 2state2ap2acc_parity_16186325768790242365 60
+python3 -m tests.sosl.crash_unreachable 2state2ap2acc_parity_16186325768790242365 60 --sat
+python3 -m tests.sosl.congruence_audit  2state3ap1acc_parity_05090827433075437251 20
 ```
