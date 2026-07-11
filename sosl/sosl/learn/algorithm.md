@@ -60,20 +60,26 @@ All query counts are logged by phase (fill / harvest / saturation / P).
    query each (or from cache) on `member(key(s), key(e))` — both keys non-empty
    by the identity convention; emit the canonical invariant.
 
-   **Two-sidedness caveat.** The exported invariant decides a lasso by
-   multiplying *classes*: `M(c, c') = fold(c, key(c'))` substitutes a class
-   representative *in the middle of a product*. That substitution is sound only
-   when the partition is a congruence on **both** sides (`u ~ v` must give both
-   `u·x ~ v·x` and `x·u ~ x·v`). A table closed under fill/close/consist alone
-   guarantees only the right-hand half, so an export taken from a fixpoint
-   reached **without saturation** can be acceptance-wrong even when every one of
-   the hypothesis's own predictions is correct — the hypothesis folds the
-   literal letters of the queried lasso and never substitutes a representative,
-   so the two read-offs of the same partition can disagree. Pre-saturation
-   exports are therefore **diagnostic artifacts, not deliverables**: an acceptor
-   check for a `--no-saturation` run targets the Cayley hypothesis, not the
-   exported `.sos`. Saturation (below) is what makes the partition two-sided and
-   the export sound.
+   **Two-sidedness is checked, not assumed (export refusal).** The exported
+   invariant decides a lasso by multiplying *classes*: `M(c, c') =
+   fold(c, key(c'))` substitutes a class representative *in the middle of a
+   product*. That substitution is sound only when the partition is a congruence
+   on **both** sides (`u ~ v` must give both `u·x ~ v·x` and `x·u ~ x·v`). A
+   table closed under fill/close/consist alone guarantees only the right-hand
+   half. Export therefore runs the congruence test first — the saturation
+   sweep's **check phase** on the final table (`find_left_divergence`: for
+   every table word `p` with `rep(class(p)) ≠ p` and every class `d`, compare
+   `fold(d, p)` with `fold(d, rep(class(p)))`; zero queries) — and **refuses**
+   on a dirty check: a non-congruent partition has *no algebra to read off*,
+   and on an exactly-certified fixpoint the check clean forces the export
+   canonical (paper Lemma 5.2 / Theorem 5.3). A refused run is still a correct
+   *acceptor*: the Cayley hypothesis folds the literal letters of a queried
+   lasso and never substitutes a representative. An `unchecked` export
+   bypassing the test exists to *display* what the raw read-off would produce
+   (it can be acceptance-wrong and non-associative) — a diagnostic artifact,
+   never a deliverable. On a saturated run the final sweep just ran clean, so
+   no recheck is needed: saturation (below) is what makes the fixpoint a
+   congruence at all.
 
 **Main loop.** `fill; close; consist;` to fixpoint, then `saturate` (restart on
 any split), then `equiv`. On a counterexample, process it (one split) and
