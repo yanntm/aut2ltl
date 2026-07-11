@@ -179,17 +179,14 @@ SoSCore build(const py::dict &payload, const py::dict &config,
       config.contains("time_budget") ? py::cast<double>(config["time_budget"]) : 0.0;
   core.close(st, node_budget, time_budget);
   if (until_phase >= 2) {
-    // The squaring shortcut is deferred (pending a 2k-variable relation
-    // encoding of the simultaneous step); only the general pairing runs.
     const std::string square =
         config.contains("square") ? py::cast<std::string>(config["square"])
                                   : "off";
-    if (square != "off")
-      not_implemented("square=" + square +
-                      " (squaring shortcut deferred; only off is implemented)");
+    if (square != "off" && square != "check" && square != "on")
+      not_implemented("square=" + square + " (off | check | on)");
     PackInfo pack{py::cast<std::vector<int>>(payload["mark_bits"]),
                   py::cast<std::vector<int>>(payload["block_base"])};
-    core.cross(st, pack, node_budget, time_budget);
+    core.cross(st, pack, node_budget, time_budget, square);
     if (until_phase >= 3) {
       const auto accept =
           py::cast<std::vector<std::vector<int>>>(payload["accept"]);
@@ -233,6 +230,18 @@ PYBIND11_MODULE(_core, m) {
           },
           py::arg("limit") = 100000,
           "Every (x, x^pi) pair as raw slot values (test/debug reading).")
+      .def(
+          "square_rel_pairs",
+          [](const SoSCore &s, size_t limit) {
+            py::list out;
+            for (const auto &[z, zz] : s.square_rel_pairs(limit))
+              out.append(py::make_tuple(py::tuple(py::cast(z)),
+                                        py::tuple(py::cast(zz))));
+            return out;
+          },
+          py::arg("limit") = 100000,
+          "Every (z, z·z) row of the squaring relation R (test/debug "
+          "reading).")
       .def("n_states", &SoSCore::n_states,
            "Global automaton states (mixed-radix over the component "
            "blocks, block 0 most significant).")

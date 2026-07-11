@@ -161,11 +161,29 @@ public:
     st.emit(Record("phase")
                 .add("phase", 2LL)
                 .add("pairing_rounds", static_cast<long long>(rounds))
-                .add("squaring", "deferred")
+                .add("pi_nodes", node_count(pi_)));
+  }
+
+  // Adopt an externally computed pi (the squaring shortcut under
+  // square="on") — same functionality check as run(), same readings
+  // afterward. The orchestration seam; the shortcut itself lives in
+  // squaring.hh.
+  void adopt_pi(Stats &st, const DDD &pi, double em1_count, int rounds) {
+    pi_ = pi;
+    if (model_count(pi_) != em1_count)
+      throw LineStopped{name_ + ": pi is not functional (" +
+                        std::to_string(model_count(pi_)) + " pairs for " +
+                        std::to_string(em1_count) + " elements)"};
+    built_ = true;
+    st.emit(Record("phase")
+                .add("phase", 2LL)
+                .add("squaring", "trusted")
+                .add("square_rounds", static_cast<long long>(rounds))
                 .add("pi_nodes", node_count(pi_)));
   }
 
   // -- readings --------------------------------------------------------
+  const DDD &diag() const { return diag_; }
   const DDD &pi() const { require(); return pi_; }
   double pi_count() const { require(); return model_count(pi_); }
   unsigned long long pi_nodes() const { require(); return node_count(pi_); }

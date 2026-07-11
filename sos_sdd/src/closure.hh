@@ -28,6 +28,7 @@
 #include "primitives.hh"
 #include "residuals.hh"
 #include "slotspace.hh"
+#include "squaring.hh"
 #include "stats.hh"
 
 namespace sossdd {
@@ -119,10 +120,12 @@ public:
   }
 
   // Phase 2: build the crossing on the doubled slot space and compute the
-  // idempotent-power map pi. A wall budget spans the whole build, so only
-  // the remainder after the closure is granted here.
+  // idempotent-power map pi — by the general pairing, the squaring
+  // shortcut, or both compared (the `square` mode; the shortcut design is
+  // recorded in ../README.md). A wall budget spans the whole build, so
+  // only the remainder after the closure is granted here.
   void cross(Stats &st, const PackInfo &pack, long long node_budget,
-             double time_budget) {
+             double time_budget, const std::string &square) {
     require();
     const auto t0 = std::chrono::steady_clock::now();
     double remaining = 0.0;
@@ -131,7 +134,31 @@ public:
       if (remaining <= 0) throw BudgetExhausted{true, 2, profile_};
     }
     cross_ = std::make_shared<Crossing>(name_, space_, pack, em1_);
-    cross_->run(st, model_count(em1_), node_budget, remaining, profile_);
+    if (square != "on")
+      cross_->run(st, model_count(em1_), node_budget, remaining, profile_);
+    if (square != "off") {
+      sq_ = std::make_shared<Squaring>(name_, space_, pack);
+      sq_->build_rel(st, em1_);
+      const bool conv = sq_->run(st, cross_->diag(), model_count(em1_),
+                                 node_budget, remaining, profile_);
+      if (square == "check") {
+        // Converged: one O(1) comparison; disagreement is a defect.
+        // Diverged: the expected outcome on non-power-of-two orbit
+        // periods — a recorded finding, the pairing's pi stands.
+        if (conv && !(sq_->pi() == cross_->pi()))
+          throw LineStopped{name_ +
+                            ": squaring and pairing disagree on pi (C4)"};
+        st.emit(Record("op").add("phase", 2LL).add("op", "square-outcome")
+                    .add("mode", square).add("converged", conv)
+                    .add("rounds", static_cast<long long>(sq_->rounds())));
+      } else {  // "on" — shortcut trusted
+        if (!conv)
+          throw LineStopped{name_ + ": square=on but the shortcut did not "
+                            "converge (an orbit period is not a power of "
+                            "two); use square=check or off"};
+        cross_->adopt_pi(st, sq_->pi(), model_count(em1_), sq_->rounds());
+      }
+    }
     cross_secs_ =
         std::chrono::duration<double>(std::chrono::steady_clock::now() - t0)
             .count();
@@ -247,6 +274,15 @@ public:
   std::vector<std::pair<std::vector<int>, std::vector<int>>>
   pi_pairs(size_t limit) const { return crossing().pi_pairs(limit); }
 
+  // Explicit (z, z·z) rows of the squaring relation R — a test/debug
+  // reading; raises when no squaring mode ran.
+  std::vector<std::pair<std::vector<int>, std::vector<int>>>
+  square_rel_pairs(size_t limit) const {
+    if (!sq_)
+      throw std::logic_error(name_ + ": squaring has not been run");
+    return sq_->rel_pairs(limit);
+  }
+
   // -- phase 3-4 readings ----------------------------------------------
   int n_states() const { return residuals().n_states(); }
   std::vector<std::vector<int>> residual_classes() const {
@@ -331,6 +367,7 @@ private:
   std::vector<DDD> layers_;
   std::vector<LayerRow> profile_;
   std::shared_ptr<Crossing> cross_;
+  std::shared_ptr<Squaring> sq_;
   std::shared_ptr<Residuals> resid_;
   std::shared_ptr<Congruence> cong_;
   int depth_ = -1;

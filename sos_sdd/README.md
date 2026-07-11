@@ -266,13 +266,8 @@ stream.
 - No standalone CLI for now: the drivers are Python, the API is the tool. If
   profiling ever needs a pure-C++ entry point, a thin `main.cpp` replaying a
   digest dump can be added without touching this contract.
-- The C4 squaring shortcut has its **design pinned** (next section,
-  settled with the libDDD author) but is not yet implemented: until it
-  lands only `square="off"` is accepted; `"check"`/`"on"` are refused
-  loudly (never silently ignored), and Phase 2 runs the general pairing,
-  which is the always-correct path.
-
-## The squaring shortcut (C4 completion) — recorded design
+## The squaring shortcut (C4) — recorded design (implemented,
+`src/squaring.hh`)
 
 `y ← y·y` rewrites every slot while reading the others, a genuinely
 simultaneous step; `syncAssignExpr` is ruled out. The recorded rendering
@@ -344,9 +339,9 @@ output live on distinct variables.
   period-2 counter (converges despite periodicity), `EvenBlocks^{⊗2}`
   factored (`block_base` offsets in the interleaved space). Ground
   truth: the pairing π, itself F8-validated against explicit power
-  orbits. Implementation order: dupe + R probed against explicit
-  `z·z` first, then the product probed by `applyRel(R)(diag) ==
-  step(diag)`, then the loop and modes.
+  orbits, plus every R row checked against the explicit packed
+  composition (`square_rel_pairs`, a test/debug reading). Gate:
+  `tests/sos_sdd/squaring_test.py`.
 
 ## Build
 
