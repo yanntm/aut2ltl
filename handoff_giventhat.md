@@ -80,6 +80,12 @@ the normative math you consult when the spec points at it.
 3. **GT5/W0 (spec §7)** — after GT3/GT4. W1 stays **blocked on
    external data — do not fetch it**.
 
+## TODO — theory (reads the report's To theory, owes back)
+
+Nothing pending. Next items land here when engineering files a To
+theory entry (expected: the GT4 dossier if greedy ≠ brute, the GT3
+tier-gap frequency).
+
 ## The one theorem to keep in your head
 
 Paper Prop 3.1: on the product table, `P_max \ P_min = P_K^c`, and
