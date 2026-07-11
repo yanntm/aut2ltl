@@ -77,17 +77,30 @@ only the file and section named for the task at hand — nothing else.
    point over the COMMON denominator 10⁴⁰ (per-entry
    `limit_denominator` blows up through the lcm). Awaiting theory
    reply.
-2. **M5 (spec §11)** — the Markov product `Pr_M(L)`. NEXT, on the
+2. **Convention-flip doc sweep (cheap, do before or with M5).** The
+   paper's chain model changed AFTER your M1–M4 docs were written:
+   state-labelled is now PRIMARY (`M = (Q, P, ι, ℓ)`, word =
+   `ℓ(s₀)ℓ(s₁)…` including the initial letter; Mealy is the embedded
+   convention; Thm 3.4 = the Bernoulli-chain `B_p` case — see the
+   P-M5 reply + addendum in the report). Expected code impact on
+   M1–M4: NONE — chains only enter at M5, and μ_p/Bernoulli is
+   untouched. But go make sure: sweep your docs (`quant/algorithm.md`,
+   `quant/README.md`, any forward-looking M5 text) for paraphrases of
+   the old transition-emitting model, "one-state chain emitting all
+   letters", or Thm 3.5's old `[ε]` product start, and align them; if
+   any *code or gate* turns out to depend on the old convention,
+   that's a finding — report it, don't silently adapt.
+3. **M5 (spec §11)** — the Markov product `Pr_M(L)`. NEXT, on the
    user's go; P-M5 is RATIFIED (2026-07-11) and spec §11 is the
-   complete work order: `.mc` = restricted PRISM-language subset,
-   state-labelled (Moore), exact rationals in source, word INCLUDES
-   the initial state's letter (`word = ℓ(s₀)ℓ(s₁)…`; product starts
-   at `(q₀, λ(ℓ(q₀)))`, reads `ℓ(q')` per step). Fixture F-M pins
-   the convention. Stored-chain placement stays with the corpus
-   keeper (only needed at M6/E4).
-3. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
+   complete work order, written against the NEW convention: `.mc` =
+   restricted PRISM-language subset, state-labelled (Moore), exact
+   rationals in source, word INCLUDES the initial state's letter
+   (`word = ℓ(s₀)ℓ(s₁)…`; product starts at `(q₀, λ(ℓ(q₀)))`, reads
+   `ℓ(q')` per step). Fixture F-M pins the convention. Stored-chain
+   placement stays with the corpus keeper (only needed at M6/E4).
+4. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
    and abstract ⟨TBD⟩ slots through report findings only.
-4. **Figures** — FIG-1/2/3 **DONE (2026-07-11)**: artifact
+5. **Figures** — FIG-1/2/3 **DONE (2026-07-11)**: artifact
    `research_notes/sos_measure_figs/` (index `figures.md`, `Makefile`,
    `reproduction.md`, `notes.md`, PNGs in `img/`, canonical `.sos`
    sources F-D/F-E in `sources/`); probes in `sosl/tests/quant/figs/`
@@ -97,7 +110,7 @@ only the file and section named for the task at hand — nothing else.
    own placement only. FIG-1/2/3 **placed in the paper**
    (§3.1/§3.4/§4.1, 2026-07-11). FIG-4 now unblocked by M3 (its own
    session); FIG-5 blocked on M4/M6.
-5. Deferred until a user go-ahead: move `sosl/sosl/quant/` under
+6. Deferred until a user go-ahead: move `sosl/sosl/quant/` under
    `sosl/sosl/sos/`.
 
 Implementation starts only on the user's go. One milestone per pass;
