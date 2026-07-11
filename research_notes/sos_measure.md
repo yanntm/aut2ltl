@@ -203,19 +203,20 @@ denotes topological closure — the *safety closure* of `L`, computed on
 the invariant by the hull surgery of [SωSC26, Prop 6.1]. A
 **Bernoulli measure** `p` assigns i.i.d. letters,
 `μ_p(w·Σ^ω) = Π p(w_i)`; it has *full support* if `p(a) > 0` for all
-`a`. A **labeled Markov chain** `M` is a finite-state chain whose
-transitions emit letters (every present transition with positive
-probability); a run of `M` emits an ω-word, and `Pr_M(L)` is the
-probability that the emitted word lies in `L`. (State-labeled chains,
-as in [CY95] and the input languages of the probabilistic model
-checkers, embed by pushing each state's letter onto its incoming
-transitions and prepending a fresh pre-initial state whose single
-probability-1 transition emits the initial state's letter: the
-emitted word of a run `s₀s₁s₂…` is then the full path word
-`ℓ(s₀)ℓ(s₁)ℓ(s₂)…`, the object those tools measure. The pre-initial
-state has no incoming transitions, so it lies on no cycle and leaves
-the cycle structure used in §3.5 untouched.) Both `μ_p(L)` (the case of a
-one-state chain emitting all letters) and `Pr_M(L)` are measurable for
+`a`. A **labeled Markov chain** `M = (Q, P, ι, ℓ)` is a finite-state
+chain — transition matrix `P` (every present transition with positive
+probability), initial distribution `ι` — with a letter on each state,
+`ℓ : Q → Σ`. This is the classical model of probabilistic
+verification [CY95] and the input model of the probabilistic model
+checkers. A run `s₀s₁s₂…` (with `s₀ ~ ι`) emits the path word
+`ℓ(s₀)ℓ(s₁)ℓ(s₂)…` — the initial state's letter opens the word — and
+`Pr_M(L)` is the probability that this word lies in `L`.
+(Transition-emitting chains embed: one state per (letter, target)
+pair with `ℓ(a, q) = a`, `ι` the first-step distribution; nothing is
+lost by reading letters on states.) The **Bernoulli chain** `B_p` has
+states `Σ`, `ℓ = id`, and every row of `P` as well as `ι` equal to
+`p`; its emitted word is i.i.d. `p`, so `μ_p = Pr_{B_p}`. Both
+`μ_p(L)` and `Pr_M(L)` are measurable for
 ω-regular `L`, and
 computable in polynomial time from a *deterministic* ω-automaton for `L`
 by the classical recipe — product with the chain, classification of the
@@ -448,12 +449,17 @@ Theorem 3.4 relativizes to the product with a finite labeled Markov
 chain `M`; the only change is *where the kernel is taken* — the tail is
 no longer free to realize every word, only those labeling cycles at a
 recurrent state, so the kernel moves to the semigroup of those cycles.
+The **label** of a finite path `q₀q₁…q_m` of `M` is the word
+`ℓ(q₁)⋯ℓ(q_m)` read on the states the path *enters* (the start's
+letter belongs to the preceding step, so labels of consecutive paths
+concatenate); the emitted word of a run is `ℓ(s₀)` followed by the
+label of its path.
 
 **Theorem 3.5.** Let `M` be a finite labeled Markov chain, and form the
 product chain on the reachable part of `states(M) × 𝒞` (the chain moves
-by `M`, the second coordinate folds the emitted letter, starting at
-`[ε]`). Let `B` be a bottom SCC of the product, `q̂` a state of `M`
-occurring in `B`, and
+by `M`, the second coordinate folds the letter of the state entered,
+starting at `(s₀, λ(ℓ(s₀)))` with `s₀ ~ ι`). Let `B` be a bottom SCC
+of the product, `q̂` a state of `M` occurring in `B`, and
 
 ```
 T := { fold(z) : z labels a cycle of M at q̂ }
@@ -536,7 +542,7 @@ once per campaign, byte-comparable across rewrites, every verdict
 certificate-bearing (the θ-labeled product-component map). And a
 **stationary Markov letter source** is just such an `M`, so the measure
 of `L` under Markov (not merely Bernoulli) sources is the same read-off;
-Theorem 3.4 is the one-state case.
+Theorem 3.4 is the case `M = B_p` (§2.3).
 
 ## 4. Measure and distance read-offs
 
