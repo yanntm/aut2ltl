@@ -41,24 +41,26 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
   DAG-only and conformance-gated ≡ `G(a→F b)`. Remaining K-E4: wire the emitter
   into the production window engine for the full K-E1-decided-layer sweep + DG
   size ledger.
-- **⚠ K-F12 — the extended corpus inhabits the floor IN-FRAME.** The corpus
-  grew 4248 → 6222 (campaign tier, Wagner ω³/ω⁴); the first aperiodic
-  conflict is ALG-7-verified **GENUINE** (K-F12 below). K-F7's "0 conflicts"
-  was a property of the old frame, not of the census axis; the PAPER-EDIT on
-  "floor empty on the census frame" (C.2/C.19/C.7) waits on pass 2.
-- **Extended-corpus re-measurement, state (2026-07-11, data:
-  `reference/cascade/k_series.md`).** K-E1 pass 1 (cluster, 60 s/command):
-  6610 of 8786 undecided layers decide, **all at k≤2** (6105/346/159), 0
-  verdict-splitting `other`; the 472-language timeout stratum (2176 layers)
-  holds every potential conflict by construction (a CONFLICT verdict needs
-  four full decides > 60 s). K-E3 rerun: 74 ≥2-class families, 16/16/28/14
-  (up/down tie forced by complement closure); Cor C.9 stratum 0; pfxind
-  1104/1104 frozen. **K-E1 pass 2** (conflict hunt, `k_e1_verify` sharded
-  over the 2176 missing layers) was submitted but the client died before
-  printing the run id — recovery options in `k_series.md`.
-- **Next: recover/rerun pass 2, tally conflicts + genuineness, then the
-  K-F7/F8/F10 rewrite against `reference/cascade/` and the K-F12
-  PAPER-EDIT**; then K-E4 engine integration, K-E5, K-E6.
+- **⚠ K-F12 — the extended corpus inhabits the floor IN-FRAME, at scale.**
+  The corpus grew 4248 → 6222 (campaign tier, Wagner ω³/ω⁴). All three
+  cluster passes are DONE (2026-07-11, data + regen:
+  `reference/cascade/k_series.md`): of 8786 census-undecided layers,
+  **6610 decide, all at k≤2** (6105/346/159; 0 verdict-splitting `other`);
+  of the 2176 heavy remainder, **1021 are genuine (C)@0-conflicts — every
+  one ALG-7-verified — 806 aperiodic / 215 group**; at k=1, **263 conflict
+  again (all genuine; 246 aperiodic)**, 118 are ladder-rescued, 640
+  budget-open. So K-F7's "0 conflicts" was a property of the old frame:
+  the aperiodic floor-track stratum is **≥246 in-frame layers failing (C)
+  at widths 0 and 1**. Every-width floor membership still needs the
+  structural absorption argument (or deeper passes). K-E3 rerun: 74
+  ≥2-class families, 16/16/28/14 (up/down tie forced by complement
+  closure); Cor C.9 stratum 0; pfxind 1104/1104 frozen.
+- **Next: the K-F7/F8/F10/F12 entry rewrite against `reference/cascade/`
+  and the K-F12 PAPER-EDIT** (draft C.2 remark, after-C.8 numbers, C.9
+  1104/1104, C.4 map + "floor empty on the census frame" FALLS, C.19
+  closing bold, C.7 §8 bullet; spec's stale input descriptions); then the
+  every-width question (structural absorption argument vs k=2 pass), K-E4
+  engine integration, K-E5, K-E6.
 
 ---
 
