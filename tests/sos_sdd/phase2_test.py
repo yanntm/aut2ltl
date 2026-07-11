@@ -97,13 +97,9 @@ def case_ebeb() -> None:
 
 
 def case_refuse() -> None:
-    # Deferred square modes are refused loudly, never silently ignored.
-    try:
-        Engine(square="check").build(TRIPTYCH[0][0], until_phase=2)
-        raise AssertionError("square=check was not refused")
-    except NotImplementedError:
-        pass
-    # Phase-2 readings on a phase-1 object must refuse too.
+    # Squaring modes are implemented (squaring_test is their gate; unknown
+    # modes are refused there). Phase-2 readings on a phase-1 object must
+    # refuse.
     s1 = Engine().build(TRIPTYCH[0][0], until_phase=1)
     try:
         s1.pi_count()
