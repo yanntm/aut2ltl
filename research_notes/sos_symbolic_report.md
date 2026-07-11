@@ -298,6 +298,31 @@ E1's scope is now fully closed. Scatter correlate analysis (which
 covariate predicts compression) is a reading of the two reference CSVs,
 left for the paper integration.
 
+## C9 — the order switch (`slot_perm`)
+
+Engine state added: the C9 slot permutation is live — `slot_perm` takes
+`"natural"`, `"reverse"`, or an explicit slot→variable list (bijectivity
+checked, non-permutations refused). The recorded rendering
+(`sos_sdd/README.md`): an indirection `var_of[slot]`, never a
+re-semantics — payload tables stay slot-indexed, the ExprHom case
+splits are untouched (their `GalOrder` label lists place each variable
+name at its permuted position), the pair and squaring spaces inherit
+the perm blockwise, and every explicit reading un-permutes back to
+slot order. E3's order sweep and E7's within-run axis are unblocked.
+
+- **F24 — the perm is invisible except where it should show.** Gate
+  `tests/sos_sdd/slotperm_test.py`: on the triptych, `mod3`, `stem`
+  (full pipeline, `square="check"`) and `EvenBlocks^{⊗2}` factored
+  (phase 5), every reading under `"reverse"` and under a rotation
+  equals the natural build's — elements, layer profile, π pairs,
+  residual and congruence partitions — and the emitted `.sos` is
+  byte-identical (transferring the conformance gate to every perm).
+  Node counts differ exactly where the paper predicts order matters:
+  block-preserving perms are node-neutral on the product
+  (`natural`/`reverse` = 19 nodes) while the block-interleaving
+  rotation inflates to 82 — a first E7-flavored datum for "slot
+  grouping dominates, within-block order is second-order".
+
 ## Theory responses — the E1 escalations (2026-07-11)
 
 - **F23 — the E1 read-offs** (Theory-run; regen

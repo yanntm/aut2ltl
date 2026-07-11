@@ -2,7 +2,7 @@
 
 You are the **symbolic engine thread** (sos_sdd). Bootstrap: this file,
 then `CLAUDE.md` (discipline — binding), then the files below in order.
-Do NOT read `docs/HISTORY.md`. This file carries **current state + next
+This file carries **current state + next
 work items + pointers only**; the report is the ledger.
 
 ## Critical files (read in this order)
@@ -15,7 +15,7 @@ work items + pointers only**; the report is the ledger.
    (C1–C10 components, E0–E9 experiments, M1–M5 milestones); its
    *State of play* block is current.
 3. `research_notes/sos_symbolic_report.md` — the ledger, findings
-   F1–F23 + Theory responses: every measured/green claim, plus
+   F1–F24 + Theory responses: every measured/green claim, plus
    recorded gaps.
 4. `research_notes/sos_symbolic.md` — the paper. Engine + E1 census
    results are integrated (current-state voice, no history); exactly
@@ -41,7 +41,9 @@ work items + pointers only**; the report is the ledger.
   seed≠gfp witness), `congruence_test` (C6; ebeb 256→37),
   `conformance_test` (C7 byte gate, Spot-backed; `conformance_diff.py`
   = side-by-side probe), `hoa_bridge_test` (C2 parser half: round-trip
-  + corpus byte-parity). Logs → `tests/sos_sdd/logs/`, never /tmp.
+  + corpus byte-parity), `slotperm_test` (C9 `slot_perm`:
+  perm-invariant readings, byte-equal `.sos`). Logs →
+  `tests/sos_sdd/logs/`, never /tmp.
 - **Sweeps are NEVER one process** (OOM'd once, near machine crash:
   libDDD's unique table is never GC'd, diagrams accumulate across
   instances). `e1_census.py --isolate` = per-instance subprocess under
@@ -76,20 +78,23 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
    Conformance green on all 6102 completed corpus instances; |EM¹|
    corroborated three ways (model count / explicit BFS / byte gate);
    120 TIME_BUDGET at 10 s (1.9 %, mostly `3state2ap2acc_parity`).
-2. **E1 wrap-up (small, do when convenient):** adopt
-   `tests/sos_sdd/e1_readoff.py` (the regen for report F23's numbers)
-   and prune its name-token stratification — instance-name acc tokens
-   are source-GBA provenance, never an analysis variable (report F23
-   note; the paper cites the pooled 62 % only).
-3. ⏳ **C9/C10** — remaining engine switches (fp disciplines `chaining`
-   / `saturation`, split slot encodings, slot permutations — E7/E8's
-   axes) and the §6 calculus operators (member / Boolean algebra /
-   align / included / witness / reduce; the `.sos` residuals trailer
-   can ride the witness machinery). Paper §6 is the spec; C10 gates
-   compare against Spot-side oracles, bounded.
-4. ⏳ **E2's second component family** + per-point budget sweeps at
-   scale; E3 order sweeps (needs C9's `slot_perm`).
-5. **E5/E6 per the spec protocols (read them before running):**
+2. ✅ **E1 wrap-up done:** `tests/sos_sdd/e1_readoff.py` adopted (F23
+   numbers reproduced exactly), name-token stratification pruned.
+3. ✅ **C9's `slot_perm` done** (F24): indirection rendering recorded
+   in the README, gate `slotperm_test` green (perm-invariant readings,
+   byte parity under every perm; block-interleaving a factored product
+   inflates nodes 19→82, block-preserving perms neutral).
+4. ⏳ **C9 remainder / C10** — fp disciplines (`fp1`/`fp5` `chaining` /
+   `saturation` — E8's axis; a non-layered Phase 1 must run a costed
+   length-reconstruction pass for shortlex), split slot encodings
+   (`split-sm` / `split-il` — E7's axis), and the §6 calculus
+   operators (member / Boolean algebra / align / included / witness /
+   reduce; the `.sos` residuals trailer can ride the witness
+   machinery). Paper §6 is the spec; C10 gates compare against
+   Spot-side oracles, bounded.
+5. ⏳ **E2's second component family** + per-point budget sweeps at
+   scale; E3 order sweeps (unblocked — `slot_perm` is live).
+6. **E5/E6 per the spec protocols (read them before running):**
    E5a = parse the retained census stats JSONLs
    (per-phase time/peak nodes on the 6102 completed; if not retained,
    stratified ~200 rerun); E5b = the 120 TIME_BUDGET rows at 60 s /
@@ -97,9 +102,9 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
    *explicit reference* under the same caps — the corpus `sos/` tier
    is NOT the explicit column. Kill-phase histograms are
    right-censored; never present one as a cost profile.
-6. Optional, cluster-sized: full-corpus C5 cross-check (sample of 25
+7. Optional, cluster-sized: full-corpus C5 cross-check (sample of 25
    done).
-5. Housekeeping when touched: milestones append ledger rows to the
+8. Housekeeping when touched: milestones append ledger rows to the
    report AND sync the spec's *State of play*; paper only when a
    `⟨TBD⟩` becomes measurable.
 

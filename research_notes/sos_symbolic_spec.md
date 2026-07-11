@@ -101,10 +101,19 @@ the derived-census driver, the engine's first consumer at scale),
   **F23**; regen `tests/sos_sdd/e1_readoff.py`) and integrated
   (abstract, §5, §8). Remaining paper ⟨TBD⟩: the E8 saturation study
   only.
-- **TODO: everything else.** C9–C10 proper, E3–E9, M3–M5 (E2 still
-  owes the second component family and per-point budget sweeps at
-  scale; M2's E5 first profile still owed). Next candidates: C9
-  switches (unlocks E3/E7/E8); C10 calculus.
+- **DONE (engine-side): C9's `slot_perm`** — the slot→variable
+  permutation as a pure indirection (payload semantics slot-indexed
+  throughout; ExprHom label lists permuted; readings un-permuted).
+  Gate green with byte parity under every perm tried; first order
+  datum: block-interleaving a factored product inflates nodes 19→82
+  while block-preserving perms are neutral (ledger F24). E3's order
+  sweep is unblocked.
+- **TODO: everything else.** C9's remaining switches (fp disciplines
+  `chaining`/`saturation`, split slot encodings), C10 proper, E3–E9,
+  M3–M5 (E2 still owes the second component family and per-point
+  budget sweeps at scale; M2's E5 first profile still owed). Next
+  candidates: C9 fp disciplines (E8), split encodings (E7); C10
+  calculus.
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat
