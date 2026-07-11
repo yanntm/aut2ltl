@@ -569,7 +569,7 @@ component `α`, and no discovered node offers both (`B` pairs only with
 `a*·b^ω ⊆ FG ¬a` — the pointwise `Val₁ ≤ ¬Val₂` — with no further
 construction.
 
-### 3.4 The exponential frontier
+## 4. The exponential frontier
 
 The calculus is honest about where powersets are intrinsic:
 
@@ -581,7 +581,7 @@ The calculus is honest about where powersets are intrinsic:
   over factorizations — and none could, because the result's algebra can
   be exponentially larger than both operands':
 
-  **Proposition 3.4 (concatenation blows up).** Over `Σ = {a, b, #}`,
+  **Proposition 4.1 (concatenation blows up).** Over `Σ = {a, b, #}`,
   let `W = Σ*·#` (a three-element syntactic monoid: the last letter is
   `#` or it is not) and
   `L_n = { α : α contains a b, and the number of a's before the first b
@@ -622,14 +622,24 @@ The calculus is honest about where powersets are intrinsic:
   gate. Built by hand and re-entered through the gate, `W·L_n` realizes
   `|𝒞| = 17, 48, 127, 318` for `n = 2, …, 5` — each above `2^n − 1`, off
   acceptors of only `2^n + 1` states — the subset construction
-  resurfacing in the algebra exactly as the proof predicts; the census
-  itself, bounded to a handful of primal states, never reaches the
+  resurfacing in the algebra exactly as the proof predicts (§8); a
+  corpus bounded to a handful of acceptor states never reaches the
   constructors that force it.
 - **Existential projection (`remove_ap`).** Quantifying an atomic
-  proposition away is the QPTL wall met in [SωSX26, §6]: a deterministic
+  proposition away is the QPTL wall: a deterministic
   definitional extension is free (it is an inverse substitution, §3.2 —
   *adding* letters costs nothing), a genuine guess is a powerset. Spot
   pays the same, differently distributed.
+- **The polynomial middle band.** Between the free fragment and the
+  powerset wall sits a band where a split is present but
+  *deterministic*: `X L = Σ·L` (the split is at position 1, and
+  `a⁻¹(X L) = L` for every `a` — a new small table, constructible
+  directly); `W·L` when `W` is a prefix code, so the factorization is
+  functional — the thread mechanism of Proposition 4.1 cannot open,
+  since at most one thread is ever live; and the free-proposition drop
+  of §3.2, where the projection quantifier is vacuous. The frontier is
+  three-tiered: surgery (free), deterministic split (a new polynomial
+  object), existential split (powerset, intrinsic).
 - **Entry price.** Constructing `𝓘(L)` from a nondeterministic acceptor
   embeds a determinization, and the construction itself is dominated by
   the enriched-monoid closure [SωS26, §8]; the calculus does not evade
@@ -640,16 +650,11 @@ The calculus is honest about where powersets are intrinsic:
   interleaves Boolean structure with equivalence checks pays PSPACE per
   check there and byte comparisons here; and every intermediate object
   it holds is already in normal form, so nothing is ever re-simplified.
-  A four-stage pipeline — complement, intersection, complement, union —
-  bears this out: entering the calculus, building `𝓘(L)` from the
-  acceptor, is a one-time cost roughly a seventh of the whole, after
-  which every stage's "did my rewrite change the language" re-check is a
-  byte comparison, tens of times cheaper than the automata-side
-  equivalence test. On deterministic inputs no determinization is
-  forced, so the demonstration isolates the normal-form economy rather
-  than the exponential entry the frontier reserves.
+  (§8 measures a four-stage pipeline: the entry is a small one-time
+  share of the whole, and every stage's "did my rewrite change the
+  language" re-check is a byte comparison.)
 
-### 3.5 Read-offs replace constructions
+## 5. Read-offs replace constructions
 
 Spot answers classification queries by building automata and testing
 them; on the invariant the same queries are equations on the table. The
@@ -662,7 +667,7 @@ letter (an eventually-constant word `u·a^ω` has normal form
 `destutter(u·a)·a^ω`). `L` is stutter-invariant iff it is a union of
 stutter classes.
 
-**Proposition 3.3.** `L` is stutter-invariant iff `λ(a)·λ(a) = λ(a)`
+**Proposition 5.1.** `L` is stutter-invariant iff `λ(a)·λ(a) = λ(a)`
 for every letter `a ∈ Σ`.
 
 *Proof.* (⇒) Fix `a ∈ Σ`; we show `a ≈_L a·a` in Arnold's congruence,
@@ -708,6 +713,9 @@ with the same stem image `fold(w₀)` and the same idempotent block image
 `e` as `β`'s, and the strong factoring theorem of §2 gives both words
 one verdict. ∎
 
+(On the running example: `A² = A` and `B² = B` — `a*·b^ω` is
+stutter-invariant, in two lookups.)
+
 Spot's check [MD15] translates the property *and its negation* to Büchi
 automata, applies closure constructions — `cl` (destuttering) and `sl`
 ("self-loopization", instuttering) — and tests emptiness of products
@@ -726,10 +734,8 @@ a construction on automata, an equation on the table:
   structure [SωS26, §7.2; Lan69, MP92, PW13] — Spot's `is_safety`,
   `is_obligation`, … as scans, uniform over one object where the
   automata-side answers are model-specific checks. The first rungs
-  become exact tests once the hulls of §3.6 are in hand: `L` is safety
-  iff `P = P̄`, co-safety iff `P = P̊` (Corollary 3.6), and an
-  obligation iff `Val_P` depends only on the stem's `R`-class
-  (Theorem 3.10) — each one scan.
+  become *exact fixpoint tests* once the hulls are in hand — that is
+  §6's subject.
 - **Acceptance strength needed** (Spot's parity/Rabin-index style
   queries): the acceptance index — the minimal deterministic condition
   the *language* needs — is the maximal alternating chain in the
@@ -739,12 +745,14 @@ a construction on automata, an equation on the table:
   reducibility is fixed by the chain and superchain structure of the
   algebra [CP97, CP99, SW08]; every hierarchy query above specializes
   it.
-- **LTL-definability and extraction**: the aperiodicity scan on `M`,
-  then [SωSX26] for the defining formula or the counting-family
-  certificate. (Spot has no automaton→LTL path.)
+- **LTL-definability**: the aperiodicity scan on `M` — `L` is
+  LTL-definable iff `M` is aperiodic, the classical correspondence
+  [DG08] landed on the canonical table, and stable under every surgery
+  by Lemma 3.3. Formula extraction is beyond this paper; the read-off
+  is its gate. (Spot has no automaton→LTL path.)
 - **Hulls.** The safety closure of `L`, its interior, and the
   Alpern–Schneider decomposition `L = safety ∩ liveness` are pair-set
-  surgeries on the same table, computable in `O(n²)` — §3.6 proves it.
+  surgeries on the same table, computable in `O(n²)` — §6 proves it.
 
 ### 3.6 Hulls, and the obligation rung they generate
 
