@@ -59,3 +59,56 @@ campaigns may pass `check=False`). `decompose` inverts it by intersecting
 convict Prop 3.1, asserted), remainder empty. Laws the gate holds:
 `choose(∅) = P_min`, `choose(range(bits)) = P_max`,
 `decompose(choose(S)) = S`, monotonicity in `S`.
+
+## 5. The ladder (`ladder.py`): one lemma, one hull per rung
+
+Every "does the interval contain a member of class 𝒦" question is one
+instance of paper Lemma 4.1: when 𝒦 is intersection-closed with
+`linked ∈ 𝒦` (a Moore family on the finite lattice of saturated pair sets),
+its closure operator `ρ_𝒦` decides existence —
+
+    𝒦 ∩ [P_min, P_max] ≠ ∅   ⟺   ρ_𝒦(P_min) ⊆ P_max,
+
+and `ρ_𝒦(P_min)` is then the least member. Dually a union-closed 𝒦 with
+`∅ ∈ 𝒦` is decided by its kernel `κ_𝒦` on `P_max`, greatest member
+`κ_𝒦(P_max)`. Each rung is one hull:
+
+- **safety** — `ρ` = `safety_closure` (CAL5); **co-safety** — `κ` =
+  `interior`. Both one `O(n²)` liveness scan.
+- **obligation** — 𝒦 = the `R`-class-constant verdicts `B_θ` (paper
+  Prop 4.3). An `R`-class is *forced to 1* by a `P_min` stem, *forced to 0*
+  by a linked stem outside `P_max`; a member exists iff no class is forced
+  both ways, least member θ = forced₁, greatest θ = ¬forced₀. `R`-classes
+  come from `r_classes` in `calculus.surgery` (the SCC pass `is_obligation`
+  already runs, promoted — never a second Tarjan).
+- **recurrence** — 𝒦 = the chain-condition sets: no linked stem `s` with
+  loops `f ≤_H e`, `Val(s,e) = 1`, `Val(s,f) = 0`. The H-order on
+  idempotents is `classify.primitives`' (`leq_h_idem`, one implementation
+  in the repo); `h_below` is its ladder-shaped view. `ρ` = `rec_hull`: the
+  Horn rule "(s,e) ∈ Q, f ≤_H e, f a loop of s ⟹ (s,f) ∈ Q" alternated
+  with `saturate` to the joint least fixpoint — the Horn rule alone does
+  not yield a language (spec trap #10).
+- **persistence** — the mirror chain condition, decided with **no new
+  machinery**: `B ∈ [P_min, P_max]` is a persistence iff `B^c ∈
+  [P_max^c, P_min^c]` is a recurrence (paper Prop 4.4), so the test is
+  `rec_hull(P_max^c) ⊆ P_min^c` and the greatest member is
+  `rec_hull(P_max^c)^c` — one complement flip.
+
+**Witness convention.** Every `exists_*` returns
+`(bool, Optional[PairSet], Optional[Witness])`. On yes the pair set is the
+canonical member — least for the Moore rungs (safety, obligation,
+recurrence), greatest for the kernel rungs (co-safety, persistence). On no
+the `Witness` is the refusal certificate: the first hull pair pushed past
+the constraining endpoint, in the key discipline order, rendered as its
+canonical lasso — a behavior every rung member must accept and the interval
+forbids (or dually).
+
+**Orientation.** The read-offs `is_recurrence` / `is_persistence`
+transcribe the paper's §2 chain conditions (`m⁺ ≤ 0` resp. `m⁻ ≤ 0`); the
+paper hand-checked the orientation on four examples and the corpus rung
+oracle (`ladder_gate.py`) is the deciding instance — a consistent flip is a
+paper correction (report F5), not a silent reconciliation. The oracle
+compares two *paths*, not two codebases: the violation scan here vs the
+chain DP behind the `.cat` coordinates, both over the shared
+`classify.primitives` H-order (duplicating the primitive was judged not
+worth the maintenance cost — decision 2026-07-11).

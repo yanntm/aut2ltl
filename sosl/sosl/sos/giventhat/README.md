@@ -27,15 +27,26 @@ endpoints.
   freedom classes turned on; `decompose(iv, q)` — its inverse, the index set
   of any legal `q` (or `None` when `q` is not in the interval).
 
+- **The ladder tests.** `exists_safety / exists_cosafety / exists_obligation /
+  exists_recurrence / exists_persistence(iv)` — does the interval contain a
+  member of the rung, decided exactly by one hull each (paper Lemma 4.1):
+  `(bool, member, refusal)` with the least member on Moore rungs (safety,
+  obligation, recurrence), the greatest on kernel rungs (co-safety,
+  persistence), and on no a globally minimal refusal lasso. The chain
+  read-offs `is_recurrence` / `is_persistence` and the closure `rec_hull`
+  are exposed for single-table use; `forced(iv)` names the R-classes the
+  interval pins.
+
 ## Source map
 
 | file | contents |
 |---|---|
 | `interval.py` | GT1: `Interval`, `given_that`, `k_settles_phi` / `k_refutes_phi`, `choose` / `decompose` |
+| `ladder.py` | GT2: the rung existence tests, `forced`, `h_below`, `is_recurrence` / `is_persistence`, `rec_hull` |
 
 Planned (specified in `research_notes/sos_giventhat_spec.md`, not yet built):
-`ladder.py` (GT2, per-rung existence), `stutter.py` (GT3, the two-tier
-stutter test), `degree.py` (GT4, band-minimal Wagner degree).
+`stutter.py` (GT3, the two-tier stutter test), `degree.py` (GT4,
+band-minimal Wagner degree).
 
 ## Layering (hard)
 
