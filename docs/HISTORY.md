@@ -3133,3 +3133,25 @@ burned ~300s/job re-finding known languages (measured: of 390 folders folded int
 flat_canon, most yield was corpus duplicates); controlling against the corpus
 during generation is the biggest efficiency win before spending more cluster time.
 Committed `9bc259d9a` (sample) + `de3ab44ba` (README).
+
+## 2026-07-11 — given-that: paper draft + engineering commission
+- `sos_giventhat.md` promoted from direction memo to pre-paper draft
+  (b5cc0062e). New results over the memo: the interval lattice is exactly
+  2^F with F the conjugacy classes of not-K (Prop 3.1); one interval-test
+  lemma covers the whole safety-progress ladder with polynomial hulls
+  (recurrence/persistence via Horn fixpoints, dual = one flip); the
+  stutter-quotient conjecture is FALSE — four-word counterexample
+  ({(ab)^w} given {(ab)^w,(ba)^w}), the hull escapes every recognizing
+  table (Thm 5.2) — exactness recovered by a polynomial stutter
+  self-alignment (Thm 5.3); band-minimal Wagner degree as a greedy level
+  function (Prop 4.5, sketch); AP-shedding = same congruence move;
+  incremental knowledge lossless. Open flags inline: rung-orientation
+  lifting lemma, Prop 4.5 simultaneity, hull locality map, |C|-min
+  hardness (Gold route).
+- `sos_giventhat_spec.md` (d4183ee4f): GT1 (interval + endpoints +
+  fixture + 700-pair campaign) commissioned at function-level precision;
+  GT2-GT5 specified behind it; corpus rung oracle and brute 2^F oracle
+  as the exactness gates; GT4 doubles as the Prop 4.5 probe; W1 blocked
+  on MCC data.
+- `sos_giventhat_report.md` (329cbd874): finding slots F1-F13 + the
+  To-theory channel.
