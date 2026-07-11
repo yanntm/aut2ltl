@@ -321,3 +321,42 @@ biconditional. Machine reports: `reference/quant/m4_entropy.md`
 regeneration commands in their headers (fixtures:
 `python3 -m tests.quant.fixtures3`). No disagreement between spec
 and paper surfaced.
+
+**Proposal P-M5 (2026-07-11, engineering → theory + corpus keeper) —
+the `.mc` chain format: adopt the state-labelled convention and an
+existing format.** Spec §11 left the sidecar format open ("CSV-shaped,
+no JSON — fix with the corpus keeper"); after surveying what exists
+(PRISM language / PRISM explicit `.tra`+`.lab` / Storm DRN / MRMC
+`.tra` / JANI / GreatSPN nets), engineering proposes to align on the
+ecosystem rather than invent a dialect:
+
+1. *Semantics — Moore convention.* Every probabilistic model checker
+   speaks the **state-labelled DTMC**: APs on states, the run's word =
+   the sequence of state labels. Adopt it for `.mc` (the spec's
+   transition-emitting source is its Mealy presentation; no loss of
+   generality, the corpus generates Moore-form directly). The §11
+   product changes by one line: `letter(q → q') := ℓ(q')`.
+2. *Syntax — a restricted PRISM-language subset* as the corpus `.mc`
+   format: one `dtmc` module, one bounded state variable, exactly one
+   guarded command per state (`[] s=0 -> 1/3:(s'=1) + 2/3:(s'=0);`),
+   APs as `label` definitions over `s`. Probabilities are exact
+   rationals *in source* (`1/3` is legal PRISM), so the `Fraction`
+   ground rule survives interop — unlike PRISM/MRMC explicit `.tra`,
+   whose decimal probabilities cannot express `1/3` at all. The same
+   file runs unmodified in both PRISM and Storm (Storm has a PRISM
+   front-end), which upgrades M5's cross-checks and E4's baseline to
+   "identical input file". The restriction keeps the reader a strict
+   ~100-line parser, not a language front-end. (Storm's DRN kept as an
+   optional later exporter; JANI excluded as JSON; GreatSPN excluded —
+   a GSPN file is a net whose semantics is a *continuous-time* chain
+   on a generated reachability graph, wrong on time, storage, and
+   letter emission, though embedded-DTMC extraction could source E4
+   benchmark families later.)
+3. *One theory-visible decision to ratify.* PRISM/Storm measure the
+   full path word `ℓ(s₀)ℓ(s₁)…` — the initial state's label is the
+   word's deterministic first letter; the Mealy reading drops it. For
+   "same file, same number" against PRISM/Storm, Thm 3.5's setup must
+   include the initial label in the emitted word. Needs a spec §11
+   (and possibly paper §2) remark either way.
+
+M5 implementation waits on this being accepted or amended.
