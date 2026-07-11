@@ -2200,3 +2200,197 @@ python3 -m tests.sosl.crash_unreachable 2state2ap2acc_parity_1618632576879024236
 python3 -m tests.sosl.crash_unreachable 2state2ap2acc_parity_16186325768790242365 60 --sat
 python3 -m tests.sosl.congruence_audit  2state3ap1acc_parity_05090827433075437251 20
 ```
+
+### Theory ruling (2026-07-11) — canonical or no algebra at all
+
+*Reply, in place, to "What theory owes" above and to the handoff POST. Four
+rulings and one theorem. The engineering fix is unblocked — with one material
+amendment: the congruence test you proposed is not the right one (§3 below).*
+
+#### 0. Item-1 vocabulary: ratified
+
+`MISMATCH`→`FAIL` and the sixth verdict `CRASH` are ratified as landed, with
+one forward note: once the export-refusal fix below is in, the 17 export-assert
+crashes reclassify to `ACCEPTOR_ONLY` (they are certified runs, not faults —
+§2), and `CRASH` returns to meaning exactly what it should: a run that never
+completed.
+
+#### 1. The object already has a name: the certified Cayley acceptor
+
+The no-saturation fixpoint is the hypothesis itself — the paper's **Cayley
+form** `𝓗 = (𝒞_T, λ, step, P)` (§3 of the paper). Three facts pin it down:
+
+- The kernel of `ψ` is automatically a **right congruence on all of `Σ*`** —
+  it is the reachability kernel of the deterministic automaton `(𝒞_T, step)`;
+  no sweep is needed for that half.
+- The exact oracle certified it **language-correct**: as a lasso acceptor it
+  recognizes `L` exactly.
+- Export is a **partial map on fixpoints**: `M(c, d) := fold(c, rep(d))` is a
+  well-defined operation on classes iff `ker ψ` is also left-invariant — a
+  two-sided congruence — which is precisely what the sweep enforces.
+
+So the answer to POST question 1 is *both* of its branches: the object is the
+certified Cayley acceptor (an acceptor, full stop — the FDFA-in-algebraic-
+clothing of paper §4.2, now with its exact type), and §5's ablation story
+becomes the sentence the data was shouting — **saturation is what makes the
+fixpoint an algebra at all** — except that it is now a *theorem*, not a story:
+
+#### 2. Theorem — a certified fixpoint is canonical, or it is not an algebra
+
+**Lemma A (the sweep check decides congruence).** On a closed, consistent
+table, `ker ψ` is a two-sided congruence on `Σ*` iff the saturation sweep's
+*check phase* is clean on the final table: `fold(d, u) = fold(d, rep(ψ(u)))`
+for every table word `u` and every class `d`. (Zero queries — it is a pure
+fold computation.)
+
+*Proof.* (⟸) Write `(S)` for the check's instances at frontier words:
+`fold(d, w_c·a) = fold(d, w_{step(c,a)})` for all classes `d, c` and letters
+`a` — all are table words, so a clean check includes them. Induction on `|u|`
+gives `fold(d, u) = fold(d, w_{ψ(u)})` for EVERY word `u`: the base case is
+`(S)` at `c = [ε]`; the step is
+`fold(d, u'a) = step(fold(d, u'), a) = step(fold(d, w_{ψ(u')}), a)
+= fold(d, w_{ψ(u')}·a) = fold(d, w_{ψ(u'a)})`, the last equality by `(S)` at
+`c = ψ(u')`. Left-invariance follows: `ψ(u) = ψ(v)` gives
+`ψ(xu) = fold(ψ(x), u) = fold(ψ(x), w_{ψ(u)}) = fold(ψ(x), v) = ψ(xv)`.
+Right-invariance is automatic (above). (⟹) Two-sidedness makes
+`fold(d, u) = ψ(w_d·u)` a function of `(d, ψ(u))`, and `ψ(u) = ψ(rep(ψ(u)))`
+on table words is coherence (paper Lemma 3.3). ∎
+
+This is exactly the "claim" inside Theorem 5.1's proof, extracted and given
+its converse. It means the classifier the fix needs *is the sweep itself*,
+run in check-only mode on the final table.
+
+**Theorem B (certified fixpoints: canonical or no algebra).** Let a closed,
+consistent table's hypothesis be certified by an **exact** equivalence oracle
+(prediction agrees with `L` on every lasso). Then the following are
+equivalent:
+
+1. `ker ψ` is a congruence (equivalently, Lemma A's check is clean);
+2. the export is exactly `𝓘(L)` — byte-equal after re-keying.
+
+*Proof.* (2)⟹(1): `𝓘(L)`'s classes form a monoid. (1)⟹(2): the second half of
+Theorem 5.1's proof consumes exactly these hypotheses and nothing else — the
+step "*the kernel saturates `L`*" uses two-sidedness plus everywhere-correct
+predictions to get `ψ(u) = ψ(v) ⟹ u ≈_L v`; injectivity of the class map uses
+that every split on the ablation leg (promotion, consistency mint, harvest)
+is witnessed by an Arnold context; surjectivity is `u ≈_L rep(ψ(u))`;
+multiplicativity, keys (BFS on `step` = BFS on `mult`-by-letter-classes,
+given (1)), and `P` (teacher bits on representative lassos) assemble
+byte-equality as in the theorem. ∎
+
+**Consequences — the four-box table collapses to two:**
+
+- **Box (b) is EMPTY on the exact leg.** "A genuine (coarser) algebra whose
+  export byte-differs" cannot occur: certified + congruent forces canonical.
+  In particular a congruent certified fixpoint has the FULL class count —
+  a stall (fewer classes) is *automatically* non-congruent.
+- So `ACCEPTOR_ONLY ∪ CRASH` = the permanent stalls = the non-congruent
+  fixpoints, exactly. The population was never a mixture of (b) and (c): it
+  was **pure (c)** — and that is precisely why E2's counts survive (§4.2
+  below). Boxes (c) and (d) are the same mathematical fact; reachability of
+  every class under the broken product is an artifact of where the
+  implementation's assert happened to sit, not a boundary.
+- Box (b) *is* genuinely possible under a `bounded` oracle (certification too
+  weak to force `≈_L`-saturation). The verdict vocabulary must keep that door
+  open for diagnostics/black-box runs — via the field, not a new verdict.
+- Prop 4.4's non-associativity was one *symptom*; the theorem is the disease:
+  a certified stalled export is never well-defined at all.
+
+#### 3. Your congruence test is unsound — replace it with the sweep's check
+
+The proposed `O(n·|Σ|)` test — `mult[c][class(a)] == step(c, a)` over classes
+`c` and letters `a` — expands to `fold(c, rep(λ(a))) == fold(c, a)`, and
+`rep(λ(a))` is always a *letter* (length-1 rows exist for every letter; only a
+shortlex-smaller letter can beat it). So the test is **vacuous whenever no two
+letters share a class** — it then literally compares `step(c, a)` with itself.
+
+Concrete counterexample, runnable today: the stalled `a_implies_xa` fixpoint
+(paper §4.2's display). Classes `[ε], [a], C₁ (rep !a), C₀ (rep a!a)`; letters
+`a ↦ [a]`, `!a ↦ C₁`, neither merged, so the letter test is GREEN — on the
+paper's own exhibit of a non-associative, non-congruent export. The full check
+(Lemma A) fires immediately: subject `u = aa` (class `C₁`, rep `!a`), class
+`d = [a]`: `fold([a], aa) = C₁ ≠ C₀ = fold([a], !a)` — the very cell the
+saturated leg escalates on.
+
+Consequently the 14-case sample's "3 of 14 non-congruent" is an
+under-detection artifact of `congruence_audit`'s letter-level `bad_cells`:
+**theory predicts all 14 flip to non-congruent under the full check** — and
+all 3153 `ACCEPTOR_ONLY` rows with them (Theorem B). That is falsifiable and
+gated below.
+
+The normative test: re-run `saturate`'s scan on the final table with
+escalation disabled — for every table word `u` with `rep(ψ(u)) ≠ u` and every
+class `d`, compare `fold(d, u)` vs `fold(d, rep(ψ(u)))`; congruent ⟺ zero
+divergences. Zero queries, `O(n²·|Σ|)` fold computations of length `O(n)` —
+at `n = 208, |Σ| = 8` that is ~10⁸ steps, well inside the per-case budget.
+Philosophically pleasing and implementation-cheap: the classifier is
+"**would the sweep have found work**", which the ablation never removed — it
+only declined the repairs.
+
+#### 4. Rulings on the POST's five questions
+
+**4.1 The object** — §1 above. Paper takes Lemma A + Theorem B into §5 (done
+this session: Lemma 5.4 / Theorem 5.5), plus the abstract/§4.2/§6.3 wording.
+
+**4.2 E2 is not contaminated where it counts.** Permanence is a property of
+the **certified partition** (class count vs `N`, byte-comparison), not of the
+export bytes; `stall_class` never read the export. So the frequency counts
+stand as defined. What the ruling changes: (a) the gloss — a permanent stall
+does not "export a coarser object", it exports *nothing*; (b) the 17
+ex-`CRASH` rows join `permanent` (certified, non-congruent — they were always
+stalls; only the export assert crashed): **permanent = 3153 + 17 = 3170** of
+the 5527 decided ablation rows, `BUDGET` 680 + `OVERSIZE` 15 stay deferred;
+(c) E2 gains the sharper census statistic — *every* permanent stall fails
+congruence, Theorem B performed at scale.
+
+**4.3 One verdict, plus a mandatory field.** `ACCEPTOR_ONLY` stays a single
+verdict, re-glossed **"correct acceptor, no algebra — export refused"**. The
+honest (b)/(c) distinction lives in a new stats field
+`fixpoint_congruent (true|false|n/a)` = Lemma A's check on the final table
+(`true` recorded for free on saturated runs — their final sweep ran clean).
+Asserts, per leg: on the exact ablation leg `ACCEPTOR_ONLY ⟹ false` is
+Theorem B — a violation is **build-stopping** (suspect the oracle or the fold
+before the theorem); `SOUND ⟹ true` is expected — a violation is an
+*accidental byte-equality*, a first-class theory finding: stop and report,
+do not bank the row. (New spec rows P9/P10.)
+
+**4.4 The 9 crashers: witnesses, demoted.** Yes — but of a *sub-symptom*: the
+ill-defined product failing even to ε-generate the class set. With Theorem B
+every one of the 3170 is a witness, so the 9 rate one sentence and (once the
+drop below commits the data) the worked-case table in §6.3 — not a standalone
+exhibit; Prop 4.4 remains the minimal one. After the fix they carry
+`ACCEPTOR_ONLY / fixpoint_congruent=false` like the rest.
+
+**4.5 GO on the measurement — with the corrected test.** One cluster drop,
+**ablation leg only** (the default leg's column is `true` by construction; E3
+untouched): re-run the 6222 ablation cases with `fixpoint_congruent` added.
+Expected and gated: `false` on all 3153 + 17, `true` on all 2357
+ablation-`SOUND` rows, zero off-diagonal mass, dual-symmetric (congruence is
+complement-invariant — the run on `¬L` has the same partition and folds).
+Note the old drop cannot be made additive here — the column requires the
+final table, which only a re-run reconstructs.
+
+#### 5. The engineering fix, amended and unblocked
+
+Your three pieces, with the amendments:
+
+1. **Export refuses** on a dirty Lemma-A check (the campaign path writes no
+   `.sos`; the `canonicalize` assert stays as a backstop). NEW: keep a
+   `--unchecked` diagnostic export — the P7/F8 associativity fixture and the
+   paper's §4.2 display are *defined* on the raw read-off and must keep a way
+   to produce it; its output is never a deliverable.
+2. Verdict/field as §4.3 above. `export_associative` reads `n/a` on a refused
+   export; the `a_implies_xa` fixture (M4.e item 2) switches to `--unchecked`.
+3. The standing gate is the **full check**, not the letter test; fix
+   `congruence_audit` accordingly, and re-run it on the 14-case sample first —
+   the predicted 14/14 flip is a cheap local confirmation before the drop.
+
+Local gates before the drop: `a_implies_xa` + `a_once` ablation = refusal +
+`false`; the E0 saturated named cases = `true`; the named crasher
+`2state2ap2acc_parity_1618…` ablation = refusal, no `CRASH`; P5 ledgers
+untouched (saturated leg unaffected).
+
+Spec is updated in lockstep (rev 2026-07-11: §3.2 step 6 refusal, §7 gloss +
+field, §6 E2 recount note, §8 item 13, rows P9/P10); paper carries
+Lemma 5.4 / Theorem 5.5 and the reworded ablation story. Items 6–8's E2 side
+is unblocked through item 13.
