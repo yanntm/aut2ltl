@@ -53,8 +53,11 @@ only the file and section named for the task at hand — nothing else.
    PRISM subset (well-formedness normative), **initial letter
    INCLUDED in the word** — spec §11 rewritten as the full M5 work
    order (fixtures F-M/F-N/F-O, four gates, Bernoulli-embedding law
-   replacing the one-state Mealy cross-check), paper §2.3 embedding
-   remark updated.
+   replacing the one-state Mealy cross-check). Then promoted on user
+   go: the paper's §2.3/§3.5 now state the chain model
+   state-labelled NATIVELY (`(Q, P, ι, ℓ)`, path word, Bernoulli
+   chain `B_p`; Thm 3.4 = the `B_p` case; Mealy is the embedded
+   convention) — proof unchanged, spec already Moore-native.
 2. **Fill the paper's ⟨TBD⟩ slots** from report findings as campaigns
    land (§6 + abstract headline wait on M6; F-M3's census numbers —
    5660/6222 LTL-up-to-null, the 1922 measure-invisible groups — are
