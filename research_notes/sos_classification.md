@@ -1237,12 +1237,18 @@ languages of the `(ω·2, ·)` through `(ω⁴, ·)` rows — needs genuine pari
 So 2384 of 6220 languages sit strictly above the generalized-Büchi
 ceiling, exactly at the co-Büchi and parity degrees: the proposition and
 its converse at catalogue scale. The deep band is reached only through
-the sampled parity shapes — and the derivative regime stays empty. Here
-§7's sharp budget earns a caveat: the floor shape it names — three
-states, two parity colours — is now *in* the corpus, but only as a
-non-exhaustive sample whose draws happen to miss the regime; on a sampled
-tier absence proves nothing, so the regime remains data-free rather than
-provably out of reach.
+the sampled parity shapes — and the derivative regime stays empty, which
+sharpens rather than weakens §7's budget. The floor shape it names —
+three states, two parity colours — is inhabited: encoding §7's routing
+construction as a generator combo of that shape yields a three-state
+max-even parity automaton whose language is `Fork` itself up to renaming
+the atom, classified in the regime at `(1, 1, 0, 0)`. Yet uniform
+sampling never finds it: classifying every language the beyond-wall
+sampling campaign built — 46 596 draws across nine parity shapes, 8 467
+of them at the floor shape — yields zero regime members. The regime is
+exactly where the budget places it and *rare in presentation measure*:
+a corpus that samples presentations uniformly will not stumble into the
+derivative; one must aim.
 
 **Depth and countability are independent, in the numbers.** The non-LTL
 mass does not sit at the deep end: half of the *safety* row (704 of 1430)
