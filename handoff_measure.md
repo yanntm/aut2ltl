@@ -49,7 +49,11 @@ only the file and section named for the task at hand — nothing else.
    candidate §6(iv) material, user-gated).
 2. **References**: PRISM CAV'11 and Chatterjee–Doyen–Henzinger ToCL'10
    still placeholders — get them into `papers/`, read, then cite.
-3. Fenced, deliberately unclaimed: Markov-source analogue of the
+3. **Drop the paper's last alternative-convention mention**: the §2.3
+   parenthetical "(Transition-emitting chains embed: …)". The chain
+   model is state-labelled everywhere else in the corpus of documents;
+   decide whether the embedding remark earns its keep or goes.
+4. Fenced, deliberately unclaimed: Markov-source analogue of the
    essential form; weighted/semiring direction is future work.
 
 ## Work items — Engineering (in order, each gated on the user's go)
