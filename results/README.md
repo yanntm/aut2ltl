@@ -61,8 +61,12 @@ git push                                       # only committed code runs
 cluster/sync_cluster.sh
 python3 -m survey.cluster.plan --folder samples/validation -o logs/cluster/validation.txt
 RUN=$(cluster/oarrun.sh logs/cluster/validation.txt)
-until cluster/reap.sh "$RUN"; do sleep 30; done   # run this in the background
+cluster/reap_until.sh "$RUN"                     # run this in the background
 ```
+
+`reap_until.sh` is how you wait: it ends on all-accounted or on a stall (work the
+cluster lost never gets a status, so it must be watched for, not waited on). See
+[`cluster/README.md`](../cluster/README.md).
 
 A cluster run is an ordinary throwaway run that happened to execute elsewhere: it
 lands in the ignored `logs/cluster/$RUN/`, exactly as a local rerun lands in

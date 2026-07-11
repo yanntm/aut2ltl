@@ -6,23 +6,30 @@ The cluster is deployed and working. Push your code to `master`, then:
 git push                                       # only committed code runs
 cluster/sync_cluster.sh                        # bring master onto the cluster
 RUN=$(cluster/oarrun.sh cmds.txt)              # defaults: 8 jobs, 2 cores each
-until cluster/reap.sh "$RUN"; do sleep 30; done   # run this in the background
+cluster/reap_until.sh "$RUN"                   # run this in the background
 ```
 
 Results arrive in `logs/cluster/$RUN/results.csv`, with `logs/` beside it. That
 is the whole interface. You do not build anything, you do not log into the cluster,
 and you do not need to understand what follows.
 
-`reap.sh` exits 0 only once every command is accounted for, so that `until` loop
-ends by itself, within 30s of the run finishing. Put the whole line in the
-background and be notified on completion rather than waiting on it: no polling by
-hand, no progress-watching. A bare `cluster/reap.sh "$RUN"` still works and is
-still safe at any moment — it collects whatever exists so far and prints the tally.
+`reap_until.sh` is how you wait: it reaps in a loop and turns on the `missing`
+count, so it ends whether the run completes or the cluster loses work — exit 0 when
+every command is accounted for, exit 3 when the counts freeze (a stall), naming the
+resume command. Put it in the background and be notified on completion rather than
+waiting on it: no polling by hand, no progress-watching. It takes several runs at
+once.
 
-The loop turns on *accounted for*, not on *succeeded*: a command that fails or
-times out has a verdict, so the loop ends. Only work the cluster **lost** (walltime
-kill, dead node) has no verdict, and that never arrives — reclaim it with
-`cluster/oarrun.sh --resume "$RUN"`, which re-submits just the gaps.
+A bare `cluster/reap.sh "$RUN"` still works and is still safe at any moment — it
+collects whatever exists so far and prints the tally.
+
+Accounted for is not the same as succeeded: a command that fails or times out has a
+verdict, so it never blocks completion — but it needs a **re-plan**, not a resume
+(`--resume` skips anything with a status file). Only *lost* work is reclaimed, with
+`cluster/oarrun.sh --resume "$RUN"`, which re-submits just the gaps. Resume only
+once a stall is confirmed: re-submitting while the originals still run makes both
+copies write, into different shards, and `reap.sh` concatenates **both** —
+duplicate rows that corrupt every tally.
 
 `cmds.txt` is one shell command per line. Each runs at the repo root with the
 dependencies (Spot, GAP + SgpDec, libDDD/libITS, and `$ROLL_JAR` when deployed)
@@ -134,6 +141,20 @@ Fetches the run into `logs/cluster/<runid>/` (ignored scratch), merges the CSV s
 tally. Exits 0 once every command has a status file, nonzero while any has none.
 Takes no flags: the exit code is what a wait loop needs, and reading files on the
 cluster is safe at any time, so calling it again is how progress is observed.
+
+### `reap_until.sh [--rounds N] [--every S] [--stall K] RUNID...`
+
+The way to **wait** for one or more runs — background it. Reaps in a loop and turns
+on the `missing` count, so lost work ends the wait instead of hanging it:
+
+| exit | |
+|---|---|
+| `0` | `ALL_ACCOUNTED` — every command of every run has a verdict |
+| `3` | `STALLED` — `missing` unchanged for `--stall` rounds (default 4, i.e. past a walltime); prints the resume command |
+| `4` | `--rounds` exhausted |
+
+It never auto-resumes: that is the duplicate-row trap, and reclaiming lost work is
+a decision, not a reflex.
 
 `config.sh` holds every default (host, paths, OAR settings); all of it is
 overridable from the environment.
@@ -247,3 +268,4 @@ root-anchored in `.gitignore`.
 | `oar_worker.sh` | one job: strided shard, `xargs -P <granted cores>` |
 | `oar_one.sh` | one command: cap, capture, atomic status |
 | `reap.sh` | fetch, merge CSV shards, report `done/expected` |
+| `reap_until.sh` | wait for runs: reap in a loop, end on all-accounted or a stall |

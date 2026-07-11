@@ -2102,6 +2102,12 @@ all-accounted OR a 4-round stall**, re-invoking the operator to resume — it do
 N`: timeouts/fails are *accounted*, so only `missing` blocks completion, and a
 `TIMEOUT`/`FAIL` needs a re-plan, not a resume (resume skips it).
 
+_Landed as `cluster/reap_until.sh`_ — the working loop is no longer folklore to be
+re-derived per drop: it is the documented way to wait (`cluster/README.md`), exits
+`0` all-accounted / `3` stalled (naming the resume) / `4` rounds-exhausted, and
+takes several runs at once. The bad loop has been purged from the docs that taught
+it (`cluster/README.md`, `cluster/reap.sh`, `results/README.md`).
+
 **Trap 6 — don't pack a heavy-tailed kind by its average, and don't recompute
 what you already have.** The E3 `ours` kind was packed 145 cases/command on a
 2 s/case guess, but `ours` runs the learner, which has the sweep's slow tail — so

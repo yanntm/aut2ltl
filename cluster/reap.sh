@@ -4,10 +4,11 @@
 # A wrapper around one rsync. It only reads files on the cluster, so it is safe
 # to call at any time; calling it again is how progress is observed.
 #
-# Exits 0 once every command has a status file, nonzero while any has none, so
-# waiting for a run needs no flag:
+# Exits 0 once every command has a status file, nonzero while any has none.
 #
-#     until cluster/reap.sh "$RUN"; do sleep 30; done
+# To *wait* for a run, use `cluster/reap_until.sh "$RUN"`: work the cluster lost
+# never gets a status file, so waiting on this exit code alone can never terminate.
+# reap_until.sh watches the `missing` count and ends on a stall.
 #
 # Usage: cluster/reap.sh <runid>
 
