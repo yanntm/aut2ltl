@@ -313,7 +313,7 @@ iff no power sequence `c, c², c³, …` in `M` cycles with period `> 1` — the
 aperiodicity read-off [SωS26].
 
 **The rotation lemma.** The construction of [SωS26] computes `≈_L` from a
-deterministic automaton via a rotation lemma [SωS26, Lem. 4.4]: the two-sided congruence
+deterministic automaton via a rotation lemma [SωS26, Lem 4.4]: the two-sided congruence
 is the coarsest *right*-invariant refinement of a finite seed — because a left
 factor prepended to a loop merely rotates it, `x·(a·u·y)^ω = x·a·(u·y·a)^ω`, a
 left extension is a right extension read from a shifted start, and left

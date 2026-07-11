@@ -21,7 +21,7 @@ proves nothing there); the acceptance families present are generalized-Büchi
 (`gba`, Inf-conjunction) and parity.
 
 The `.sos` unit **is** the language — structurally, not by convention: `det/`
-and `sos/` are 1:1 and deduplicated by the syntactic key ([SωS26 Thm 5.1],
+and `sos/` are 1:1 and deduplicated by the syntactic key ([SωS26, Thm 5.1],
 byte-equal iff the languages are equal), so §3b's automaton-vs-language
 weighting question is dissolved by the corpus rather than answered by a
 convention. Each language carries a `.cat` category sidecar (its LTL cut and

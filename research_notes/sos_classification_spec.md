@@ -56,7 +56,7 @@ of the language by plain membership queries (one per lasso — the `sosl`
 teacher replays them as-is):
 
 - non-aperiodicity: the class `c` and its power cycle (`key(c)`, period);
-  the replay is the pair of lassos of [SωS26 §7.2]'s group read-off;
+  the replay is the pair of lassos of [SωS26, §7.2]'s group read-off;
 - a chain: `(key(s); key(e_0), …, key(e_m))` plus the `m+1` lassos
   `key(s)·key(e_i)^ω` with their expected alternating bits;
 - a superchain: the chains plus the connecting words `u_i` (shortlex
@@ -188,7 +188,7 @@ shape family × acceptance family (generalized-Büchi `⋀ Inf` / parity
 `Fin`/`Inf` alternation / general EL if emitted), with columns:
 
 - raw enumerated automata, and what "survivor" means (which filters);
-- **distinct languages**, deduplicated by `𝓘`-hash ([SωS26 Thm. 5.1]'s hash
+- **distinct languages**, deduplicated by `𝓘`-hash ([SωS26, Thm 5.1]'s hash
   join) — the shape's automaton-to-language compression ratio is a datum no
   other tool computes;
 - the distribution of `N = |𝒞|` over the shape's distinct languages (min /
@@ -227,7 +227,7 @@ one `𝓘`-bucket, every formula produced by the aut2ltl translation path
 names the same language; a bucket holding non-equivalent formulas convicts
 one of the two paths.
 
-**X2 — The paper table, exercised.** One row per band of [SωS26 §7]'s
+**X2 — The paper table, exercised.** One row per band of [SωS26, §7]'s
 summary table: demonstrate each classification answered on the same one
 object, with its witness, on a named example. Deliverable: the worked
 section feeding the core paper's §7 (and the companion's C§9 extended
@@ -280,7 +280,7 @@ wall_seconds, verdict (SOUND|MISMATCH|PARTIAL|BUDGET)
 
 Non-goals for this iteration: reading the derivative off the invariant
 without a presentation (open, C§8); the sub-LTL fragments (FO², Σ₂,
-until-rank — [SωS26 §7.2] notes they need variety + topology machinery
+until-rank — [SωS26, §7.2] notes they need variety + topology machinery
 beyond this tool); any classification of non-ω-regular inputs.
 
 ---

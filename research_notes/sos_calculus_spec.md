@@ -285,7 +285,7 @@ an `Aligned`.
 - `equivalent(A, B)` on an `Aligned`: one scan of `Val_A ≠ Val_B` — both
   inclusion defects in one pass, least disagreeing cell as counterexample.
   On two *reduced* invariants, byte equality of the `.sos` dumps is the
-  `O(1)`-scan alternative ([SωS26 Thm 5.1]) — expose both;
+  `O(1)`-scan alternative ([SωS26, Thm 5.1]) — expose both;
   `equivalent` must agree with byte equality wherever both apply (harness).
 - `intersecting_word(A, B)` on an `Aligned`: least cell with
   `Val_A ∧ Val_B` — the model-checking-shaped query, witness included.

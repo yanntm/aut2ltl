@@ -82,7 +82,7 @@ structural property of this one object.
 This paper joins the two terms of its title: it supplies the decision
 procedures, each pinned to its source theorem, each a finite search in the
 multiplication table of `𝓘(L)`, polynomial in `N = |𝒞|`. The exponential
-price was paid once, constructing `𝓘(L)` [SωS26 §8]; everything below is
+price was paid once, constructing `𝓘(L)` [SωS26, §8]; everything below is
 a read-off.
 
 Our main result is the paper's organizing statement:
@@ -95,7 +95,7 @@ computed by search in the multiplication table in time polynomial in
 `N = |𝒞|`: no automaton presentation, no auxiliary structure, no external
 tool.*
 
-*Proof.* Assembled over the paper. The identity band is [SωS26, Thm. 5.1]
+*Proof.* Assembled over the paper. The identity band is [SωS26, Thm 5.1]
 read off directly (§3.1). The aperiodic cut is Proposition 3.1. The chain and
 superchain numbers `(m⁺, m⁻, n⁺, n⁻)` are computed exactly on the table by
 Propositions 3.2 and 3.3; every ladder rung and the acceptance index are
@@ -182,7 +182,7 @@ derivative. Every later section builds on these and only these.
 
 ### 2.1 The input invariant
 
-The input is the invariant `𝓘(L) = (𝒞, λ, M, P)` of [SωS26 §5]: the classes
+The input is the invariant `𝓘(L) = (𝒞, λ, M, P)` of [SωS26, §5]: the classes
 `𝒞` of Arnold's syntactic congruence with the fresh identity `[ε]` adjoined,
 the letter map `λ`, the multiplication table `M`, and the accepting
 linked pairs `P ⊆ 𝒞 × 𝒞`. Write `𝒞₊ = 𝒞 \ {[ε]}` for the word classes —
@@ -204,7 +204,7 @@ orbit closes; the orbit's cycle gives the **eventual period** `p(c)` and
 contains exactly one idempotent power `c^k = c^{2k}`, written `c^π`. Write
 `E ⊆ 𝒞₊` for
 the set of idempotents. (The identity `[ε]` is excluded throughout: linked
-pairs range over word classes [SωS26 §5].)
+pairs range over word classes [SωS26, §5].)
 
 **Green's preorders** ([CP97, §6.1]). On `𝒞₊`, with `𝒞¹` allowing the
 empty factor (§2.1):
@@ -220,7 +220,7 @@ of `M`. For **idempotents** the `H`-order has a one-line test
 ([CP97, §6.1]): `e ≤_H f ⟺ e·f = f·e = e`.
 
 **Duality for free.** `𝓘(L̄)` is `𝓘(L)` with `P` complemented against the
-set of all linked pairs [SωS26 §5]. Every procedure below therefore
+set of all linked pairs [SωS26, §5]. Every procedure below therefore
 classifies the complement at no extra cost, and the dualities it must
 satisfy (`m⁺ ↔ m⁻`, `n⁺ ↔ n⁻`, `σ ↔ π` — the quantities and signs
 defined in §§2.3–2.4 and computed in §§3.3–4; [CP97, Props. 6, 10]) are the
@@ -470,7 +470,7 @@ This section runs the classification from the invariant up to the acceptance
 index — every band below the Wagner degree, which §4 treats on its own. Each
 verdict is a finite search in the multiplication table of `𝓘(L)`. §3.1
 fixes the identity band — equality, complement, emptiness, universality — as
-direct read-offs of [SωS26, Thm. 5.1]. §3.2 cuts the aperiodic
+direct read-offs of [SωS26, Thm 5.1]. §3.2 cuts the aperiodic
 (LTL-definable) languages from the rest by a period test on the power orbits of
 `𝒞₊`. §3.3 and §3.4 compute the two combinatorial quantities the
 whole ladder reduces to — the chain numbers `(m⁺, m⁻)` and the
@@ -480,7 +480,7 @@ the deterministic-acceptance index off those four integers as inequalities.
 
 ### 3.1 Band 0 — identity
 
-Read-offs of [SωS26, Thm. 5.1], restated to fix the conventions used
+Read-offs of [SωS26, Thm 5.1], restated to fix the conventions used
 throughout:
 
 - **equality** — two languages over the same `Σ` are equal iff their `𝓘`
@@ -499,7 +499,7 @@ power orbit closes with period 1. By the classical chain of equivalences
 [Sch65, Kam68, Tho79, DG08], aperiodicity of the *syntactic* algebra is
 exactly LTL-definability — in both directions, with no presentation
 artifacts possible, because `𝓘(L)` *is* the syntactic algebra
-[SωS26, Thm. 5.1]. ∎
+[SωS26, Thm 5.1]. ∎
 
 The cut is complement-blind: the test reads only
 `M`, and `𝓘(L̄)` differs only in `P` (§2).
@@ -513,7 +513,7 @@ the portable non-LTL certificate of [SωS26].
 
 *On the examples.* `GF(aa)`: all periods 1 — LTL. `Even` and `EvenBlocks`:
 the orbit `[a] → [a·a] → [a]` has period 2 — not LTL. (Values from the
-tables of [SωS26 §4].)
+tables of [SωS26, §4].)
 
 **Below the cut.** The first-order fragments refine the aperiodic side,
 and are decidable on the algebra too — though not as one-line read-offs.
@@ -577,7 +577,7 @@ sequence. Longest-alternating-sequence by dynamic programming over the DAG,
 once per stem: `m⁺` is the best score over sequences whose top pair is
 accepting, `m⁻` over rejecting tops. `O(N·|E|²)`.
 
-*Worked instance (`GF(aa)`, table in [SωS26 §4]).* `E = {[!a], [!a·a],
+*Worked instance (`GF(aa)`, table in [SωS26, §4]).* `E = {[!a], [!a·a],
 [a·!a], [a·a]}`; `[a·a]` is the two-sided zero, so `[a·a] <_H e` for the
 other three, which are pairwise `H`-incomparable. The only stem linked to
 `[a·a]` is `[a·a]` itself. The pair `([a·a], [a·a])` is the unique accepting
@@ -1071,7 +1071,7 @@ on a shrunken stem set (§4.1, Theorem 4.5). Carton and Perrin note that on
 for Rabin automata, polynomial for Muller and parity ones (results of
 Krishnan–Puri–Brayton and of Wilke–Yoo, reported in [CP97, §7]) — which
 sharpens the division of labor: the hardness lives in getting from a
-presentation to the canonical object ([SωS26 §8], PSPACE-hard already for
+presentation to the canonical object ([SωS26, §8], PSPACE-hard already for
 the aperiodicity coordinate), and once `𝓘(L)` is in hand the entire
 classification tower, Wagner degree included, is a cheap read-off.
 
@@ -1159,7 +1159,7 @@ languages taken in full, minimal representatives per (shape, degree,
 LTL-class) stratum elsewhere. The sweep's redundancies are folded —
 sub-shape inclusion, unused atoms, and renaming/polarity of the atoms
 (the invariant is minimized over its letter-permutation orbit, an operation
-[SωS26, Thm. 5.1] makes exact) — and the result is **closed under
+[SωS26, Thm 5.1] makes exact) — and the result is **closed under
 complement**, a step that is free at the invariant level (§2: same table,
 `P` flipped). The funnel: 5110 languages at a fixed labeling → 3212 up to
 renaming (the **primals**: 1764 exhaustively enumerated, 1448 sampled) →

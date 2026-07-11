@@ -13,7 +13,7 @@ genaut enumerates, for each **shape** `Shape(n, k, c, acc)`, every tiny
 ω-automaton of that shape, reduces it, and carries it through the SoS
 construction to the syntactic ω-semigroup `𝓘(L)` (`.sos`). The syntactic `𝓘` is
 a **complete invariant**: two `.sos` are byte-equal iff the languages are equal
-*over the same AP labeling* ([SωS26, Thm. 5.1]; `sosl/sosl/sos/io/sos_format.md`).
+*over the same AP labeling* ([SωS26, Thm 5.1]; `sosl/sosl/sos/io/sos_format.md`).
 
 But one language is presented, and re-enumerated, many times over. There are
 exactly **three** axes along which the same language recurs in an exhaustive
@@ -89,7 +89,7 @@ canonical automaton, (2) minimizing the alphabet, and (3) folding `B_k`. Each
 step is justified:
 
 - **Completeness of `𝓘`.** After a fixed labeling, `.sos` byte-equality *is*
-  language equality ([SωS26, Thm. 5.1]) — step 3's engine is exact, not a
+  language equality ([SωS26, Thm 5.1]) — step 3's engine is exact, not a
   heuristic. (Contrast `survey.normalize.default_key`, the first-occurrence HOA
   key: it is only a *partial* fold — measured to leave ~1.75× more classes than
   the `B_k` orbit-min — because relabel twins need not have first-occurrence-
