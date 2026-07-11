@@ -1,7 +1,7 @@
-# The measure algorithm (M1)
+# The measure algorithms (M1–M3)
 
 What the code computes and why it is sound, at the level of the paper
-(`research_notes/sos_measure.md`, §3–§4.1). Notation: `𝒞` the classes,
+(`research_notes/sos_measure.md`, §3–§4.2). Notation: `𝒞` the classes,
 `[ε]` the adjoined identity, `S = 𝒞 \ {[ε]}`, `p` a full-support
 rational Bernoulli measure on `Σ`.
 
@@ -121,3 +121,80 @@ Nothing above reads anything but `(𝒞, λ, M)` and membership of pairs in
 *same* table, so on a flipped invariant every `θ_C` negates pointwise
 and the absorption vector is unchanged — hence the M1 gate law
 `μ_p(L) + μ_p(¬L) = 1`, exactly, with no reduction anywhere.
+
+## 7. The distance (`distance.py`)
+
+`d_p(L₁, L₂) := μ_p(L₁ Δ L₂)`. The calculus `align` builds the
+letter-generated product of the two folded languages; `materialize`
+turns it into one table carrying both pair sets. On a shared table,
+membership of a cell in `L₁ Δ L₂` is the xor of the two lookups, so the
+symmetric difference of the *pair sets* presents `L₁ Δ L₂` outright,
+and `μ_p` of that (non-reduced) invariant is the distance — §4's solver
+is reduction-insensitive by construction.
+
+The result carries the xor's θ-profile. By §3's `p`-freeness, the
+profile is all-zero iff `d_p(L₁, L₂) = 0` for *every* full-support `p`
+— the **null-disagreement** read-off (paper §4.2), decided with no
+second measure run.
+
+Pseudometric laws (gate-sampled, all exact): symmetry (`Δ` is
+symmetric), `d_p(L, L) = 0` (empty xor), and the triangle inequality —
+`L₁ Δ L₃ ⊆ (L₁ Δ L₂) ∪ (L₂ Δ L₃)`, and `μ_p` is monotone and
+subadditive.
+
+## 8. The shadow (`shadow.py`)
+
+Paper Prop 4.1: on `L`'s own table, with `D` the union of the `θ = 1`
+bottom SCCs,
+
+```
+P_sh := { (s, e) linked : s ∈ D },
+```
+
+then `reduce`. The result accepts exactly the lassos whose stem class
+already lies in the almost-sure-acceptance region, so
+`d_p(L, shadow(L)) = 0` for every full-support `p`, the operation is
+idempotent, and it is `p`-free outright — the construction never reads
+`p` (no `p` parameter exists).
+
+Shadow equality is *sufficient* for `d_p = 0`, not necessary (paper
+§4.2 warning): two languages can differ by a null set yet have
+byte-different reduced shadows. That gap is the essential form's job.
+
+## 9. The essential form (`essential.py`)
+
+Paper Thm 4.4. The **value vector** extends §4's solve to every class:
+`x(c)` is the θ-weighted absorption row of a transient `c`, and `θ_C`
+on the classes of a bottom SCC `C` (`measure.value_vector`). The
+**congruence**
+
+```
+c ≈ c'  iff  x(M(w, M(c, z))) = x(M(w, M(c', z)))  for all w, z ∈ 𝒞
+```
+
+(`w`, `z` ranging over all classes *including* `[ε]`) is computed by
+grouping classes on their full context signature — `O(n³)` table
+lookups, exact `Fraction` comparisons, no refinement loop needed. It is
+a two-sided congruence by construction (`c ≈ c'` transfers to `c·d` and
+`d·c` by reassociating the contexts); the representative-built quotient
+is asserted against every product anyway.
+
+**Identity convention.** `[ε]` is held out of the quotient and
+re-adjoined fresh, as everywhere in the calculus (`.sos` canonicity).
+Thm 4.4's abstract `≈` may merge `[ε]` with a neutral word class; the
+held-out quotient is finer by exactly that split and presents the same
+language — an `[ε]`-stem cell `([ε], ē)` reads the pair `(ē, ē)` either
+way, and word-class blocks, right-Cayley bottom SCCs, linked pairs and
+`D̄` below are untouched.
+
+On the quotient: `x` descends to `x̄` (asserted constant on blocks);
+Thm 4.4(2) makes `x̄` constant `0` or `1` on every *bottom SCC of the
+quotient* — a violation raises, it convicts the paper, not the input.
+`D̄` := the value-1 bottom classes, the pair set is the shadow read-off
+`{ (s̄, ē) linked : s̄ ∈ D̄ }`, then `reduce`. Prop 4.5 says the result
+does not depend on `p` at all — the gate asserts byte-equality of the
+dumps across `p`'s and a difference is a stop-the-line finding.
+
+`ltl_up_to_null` is aperiodicity of the quotient monoid — the classify
+orbit scan (`is_aperiodic`), run on the quotient before the final
+`reduce`.
