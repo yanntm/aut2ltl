@@ -53,7 +53,7 @@ presentation, not by our teacher's bounded oracle. The deviation is *accepted*
 as the fairer design — both learners now certify exactly, by different
 mechanisms — and this spec is brought into line: the §6 E3 design note and the
 row-F6 text are rewritten accordingly, and the paper's §6.4 states the size
-comparison as competitive-within-`N + N²` (never "smaller", which 5.3(b)
+comparison as competitive-within-`N + N²` (never "smaller", which 5.5(b)
 forbids) with the LTL-definability read-off as the sole capability
 differentiator. Open toward M4 close: census-wide ROLL medians and the
 full-census N-spread for E1's scatter.
@@ -191,8 +191,8 @@ dual-symmetry assertion) land with the completed guarded sweep.
 the congruence gate).** The open defect (`sos_learning_report.md` "Open
 defect" + "Theory ruling (2026-07-11)") is ruled. (1) The no-saturation
 fixpoint is the **certified Cayley acceptor** — the hypothesis itself; export
-is a *partial* map, defined exactly on congruent fixpoints. Paper Lemma 5.4 /
-Theorem 5.5: with an exact oracle a certified fixpoint is canonical **or its
+is a *partial* map, defined exactly on congruent fixpoints. Paper Lemma 5.2 /
+Theorem 5.3: with an exact oracle a certified fixpoint is canonical **or its
 partition is not a congruence** — "export byte-differs while a genuine algebra
 exists" is impossible on that leg, so `ACCEPTOR_ONLY` re-glosses to "correct
 acceptor, no algebra" (one verdict, no split; section 7). (2) The proposed
@@ -570,9 +570,9 @@ Procedures (all query counts logged by phase):
    the congruence test — the saturation sweep's **check phase** on the
    final table: for every table word `p` with `rep(class(p)) != p` and
    every class `d`, compare `fold(d, p)` vs `fold(d, rep(class(p)))`; zero
-   queries; clean ⟺ the partition is a congruence (paper Lemma 5.4). On a
+   queries; clean ⟺ the partition is a congruence (paper Lemma 5.2). On a
    clean check, export as above. On a dirty check there is **no algebra to
-   export** (paper Theorem 5.5): the campaign path REFUSES — no `.sos` is
+   export** (paper Theorem 5.3): the campaign path REFUSES — no `.sos` is
    written, the run records `fixpoint_congruent = false`, verdict
    `ACCEPTOR_ONLY` (section 7) — and the `canonicalize` assertion stays as
    a backstop on its own contract. A separate `--unchecked` diagnostic
@@ -786,7 +786,7 @@ witness lock (blocks the paper's §6.3 claim):**
 *Ruling 2026-07-11 (the recount; unblocks E2 at the 6222 scale).* Permanence
 is a property of the **certified partition** (class count vs `N`,
 byte-comparison), never of the export bytes, so E2's frequency counts stand
-as defined. The ruling sharpens them: by Theorem 5.5 every `permanent` row
+as defined. The ruling sharpens them: by Theorem 5.3 every `permanent` row
 must carry `fixpoint_congruent = false` and every ablation `SOUND` row
 `true` (rows P9/P10). The recount (section 8 item 13): (a) the 17 ex-`CRASH`
 export-assert rows join `permanent` (certified, non-congruent — always
@@ -820,7 +820,7 @@ ours the Cayley transformation-closure product, ROLL's RABIT — so the reported
 asymmetry (row F6) is *mechanism*, not certification level. Because the target is
 presented to ROLL as its own automaton, absolute membership counts are
 presentation-sensitive; the comparison's robust axes are output size (summed FDFA
-states vs `N`, against Proposition 5.3's `N + N²` envelope) and capability
+states vs `N`, against Proposition 5.5's `N + N²` envelope) and capability
 (LTL-definability read-off — ours only). Pin the ROLL version and JVM in the
 manifest.
 
@@ -918,13 +918,13 @@ frequency counts.
 `ACCEPTOR_ONLY` is reserved for `--no-saturation` runs that pass the acceptor
 check but produce no canonical export. Re-glossed 2026-07-11: on the exact
 ablation leg this verdict means **"correct acceptor, no algebra — export
-refused"** — by Theorem 5.5 an exact-certified fixpoint is canonical or
+refused"** — by Theorem 5.3 an exact-certified fixpoint is canonical or
 non-congruent, so "export byte-differs while a genuine (coarser) algebra
 exists" cannot occur there. Under `bounded` oracles (diagnostics, black-box
 teachers) that case IS possible, and the `fixpoint_congruent` field below
 distinguishes it; the verdict is not split.
 
-`fixpoint_congruent (true|false|n/a)` (added 2026-07-11): the Lemma 5.4
+`fixpoint_congruent (true|false|n/a)` (added 2026-07-11): the Lemma 5.2
 congruence check on the final table (section 3.2 step 6). `true` on every
 saturated run (its final sweep ran clean — recorded, not recomputed);
 computed by the check phase on ablation runs; `n/a` when no fixpoint was
@@ -1215,7 +1215,7 @@ sharpest evidence that a stalled export is not an algebra at all.
        split on a fired, non-capped query.)*
     13. **Export refusal + the congruence gate + the E2 recount (2026-07-11
        ruling; unblocks the E2 side of items 6/8).**
-       (a) Implement the Lemma 5.4 check as the final-table classifier
+       (a) Implement the Lemma 5.2 check as the final-table classifier
        (reuse `saturate`'s scan with escalation disabled; zero queries);
        wire `fixpoint_congruent` (section 7). The letter test
        (`mult[c][λ(a)]` vs `step(c,a)`) is REJECTED — it passes
@@ -1288,8 +1288,8 @@ recorded outcome, not a defect.
 | F9 | exact oracle raises `ExactTooLarge` | referenceless fallback (E6), or the closure fallback of a guard-failed census query (F10) | allowed there; on any other census run it is a defect (exact-by-reference builds no closure) | record `OVERSIZE` (section 7); permanence classification deferred, default-leg soundness stands — never `FAIL` |
 | F10 | functionality guard on the aligned graph (section 3.2 point (iii): non-identity node count `= N_R`) fires | any exact-by-reference query | MAY be red — it IS red in practice (2026-07-09b: the factoring conjecture is refuted; mid-run tables, sweep-clean ones included, split syntactic classes beyond their table words); a red is a recorded outcome, not a bug. Exception: a firing on the FINAL certifying query of a `SOUND` run is a defect — a canonical table's fold is the syntactic morphism | record it and fall back to the closure oracle for that query; certification/minimality claims for that query then rest on the fallback (cap-escape per section 3.2 default) |
 
-| P9 | `fixpoint_congruent = false` on every exact-ablation `ACCEPTOR_ONLY` row | M4+ ablation leg | always green (Theorem 5.5: exact-certified + congruent ⟹ byte-equal ⟹ `SOUND`) | build-stopping: an exact-certified congruent non-canonical fixpoint contradicts Theorem 5.5 — suspect the oracle or the fold before the theorem |
-| P10 | `fixpoint_congruent = true` on every exact-ablation `SOUND` row | M4+ ablation leg | expected green (byte-equality from a non-congruent partition has no known mechanism, but is not excluded by Theorem 5.5) | NOT build-stopping: an accidental byte-equality is a first-class theory finding — report the case id to theory, do not bank the row |
+| P9 | `fixpoint_congruent = false` on every exact-ablation `ACCEPTOR_ONLY` row | M4+ ablation leg | always green (Theorem 5.3: exact-certified + congruent ⟹ byte-equal ⟹ `SOUND`) | build-stopping: an exact-certified congruent non-canonical fixpoint contradicts Theorem 5.3 — suspect the oracle or the fold before the theorem |
+| P10 | `fixpoint_congruent = true` on every exact-ablation `SOUND` row | M4+ ablation leg | expected green (byte-equality from a non-congruent partition has no known mechanism, but is not excluded by Theorem 5.3) | NOT build-stopping: an accidental byte-equality is a first-class theory finding — report the case id to theory, do not bank the row |
 
 Two "surprising green" notes, so nobody distrusts a passing run:
 
