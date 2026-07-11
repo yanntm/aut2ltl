@@ -125,15 +125,17 @@ Logs: `tests/cascade/logs/k_e0_sat_*.txt`.
 The K-E7 sandwich scan over ALG-5's idempotent loop classes detects both
 mandatory positive controls:
 
-- **floor witness** (`{6}`, aperiodic): every failing pair is `absorption` —
-  `e·z·e = z <_J e` with `e` an unflagged idempotent, `z=6` the 𝒥-minimal zero
-  (8 fails at k=0, 112 at k=1; 0 group/other/BUG).
+- **floor witness** (`{6}`, aperiodic): `absorption` — `e·z·e = z <_J e`, `e` an
+  unflagged idempotent, `z=6` the zero (6 absorption + 2 non-splitting `other`
+  at k=0; the mandatory absorption control fires).
 - **`EvenBlocks`** (`{6}`, non-aperiodic): every failing pair is `group` —
   `f·z·f = z` (29 fails at k=2, 178 at k=3).
 
-Mechanism turns on the sink: 𝒥-minimal ⟹ absorption, non-aperiodic ⟹ group,
-𝒥-strictly-below-but-not-minimal ⟹ `other` (the K-E2 third-mechanism hunt, none
-seen on the controls). Scan is `O(|E_id|²)` per `(x,F)` — piggybacks K-E1/E2.
+Mechanism (final classifier, K-F8): non-aperiodic ⟹ `group`; aperiodic with the
+idempotent pair 𝒥-**comparable** (one dominates) ⟹ `absorption`; aperiodic with
+the pair 𝒥-**equivalent** yet the sandwich still dropping ⟹ `other` (the
+third-mechanism candidate, meaningful only when verdict-splitting). Scan is
+`O(|E_id|²)` per `(x,F)` — piggybacks K-E1/E2.
 
 Command: `python3 -m tests.cascade.k_e7_controls floor 0|floor 1|evenblocks 2|evenblocks 3`.
 Logs: `tests/cascade/logs/k_e7_*.txt`.
