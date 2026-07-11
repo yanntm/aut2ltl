@@ -14,11 +14,14 @@ parses and joins, it recomputes nothing:
                                 per-language enumeration abundance (median / max),
                                 and the `N = |𝒞|` spread (min / median / max);
                                 gen/canonize.py.
-  corpus/sampled/<tag>__seed<S>/sample.json   a non-exhaustive probe past the
-                                tractability wall: the id-space size, the draws
-                                spent, and the distinct languages found so far
-                                (the folder is authoritative for the live count —
-                                sample.json's `languages` is an in-run checkpoint).
+  corpus/sampled/<tag>__seed<label>/   a non-exhaustive folder past the
+                                tractability wall. A raw probe carries a
+                                sample.json (id-space size, draws spent, cap); a
+                                curated selection adopted from a campaign
+                                (label `curated`) has none, so its row carries
+                                only the language count. The folder is
+                                authoritative for the live count (sample.json's
+                                `languages` is an in-run checkpoint).
 
 The acceptance family is the tag suffix (`_parity`), the bare tag being generalized
 Büchi (`gba`). Output is a Markdown table (SHAPES.md's idiom), written to
@@ -92,22 +95,33 @@ def exhaustive_rows(corpus: str) -> List[Dict[str, object]]:
 
 
 def sample_rows(corpus: str) -> List[Dict[str, object]]:
-    """One row per sampled probe, its live language count read off the folder
-    (authoritative — sample.json's own count is an in-run checkpoint)."""
+    """One row per `sampled/<tag>__seed<label>/` folder, its live language count
+    read off the folder (authoritative — sample.json's own count is an in-run
+    checkpoint). Probe statistics (id-space, draws, cap) come from sample.json
+    when present; a curated selection has no sample.json and keeps only the
+    count."""
     rows: List[Dict[str, object]] = []
-    for path in glob.glob(os.path.join(corpus, "sampled", "*", "sample.json")):
-        j = json.load(open(path))
-        folder = os.path.dirname(path)
-        live = len(glob.glob(os.path.join(folder, "sos", "*.sos")))
-        m = _TAG.match(j["tag"])
-        rows.append({
-            "tag": j["tag"], "seed": j.get("seed"), "acc": acc_family(j["tag"]),
+    for folder in glob.glob(os.path.join(corpus, "sampled", "*")):
+        name = os.path.basename(folder)
+        tag, sep, label = name.partition("__seed")
+        m = _TAG.match(tag)
+        if not (os.path.isdir(folder) and sep and m):
+            continue
+        row: Dict[str, object] = {
+            "tag": tag, "seed": label, "acc": acc_family(tag),
             "n": int(m.group(1)), "k": int(m.group(2)), "c": int(m.group(3)),
-            "combos": j.get("num_combos"), "draws": j.get("draws"),
-            "langs_json": j.get("languages"), "langs_live": live,
-            "capped": j.get("capped"), "exhaustive": j.get("exhaustive"),
-        })
-    rows.sort(key=lambda r: (r["n"], r["k"], r["c"], r["acc"], r["seed"]))
+            "langs_live": len(glob.glob(os.path.join(folder, "sos", "*.sos"))),
+        }
+        sj = os.path.join(folder, "sample.json")
+        if os.path.isfile(sj):
+            j = json.load(open(sj))
+            row.update({
+                "combos": j.get("num_combos"), "draws": j.get("draws"),
+                "langs_json": j.get("languages"), "capped": j.get("capped"),
+                "exhaustive": j.get("exhaustive"),
+            })
+        rows.append(row)
+    rows.sort(key=lambda r: (r["n"], r["k"], r["c"], r["acc"], str(r["seed"])))
     return rows
 
 
@@ -153,9 +167,10 @@ def render(corpus: str) -> str:
             "",
             "## Non-exhaustive samples (past the tractability wall)",
             "",
-            "A uniform random probe of the id space, distinct languages accumulated "
-            "as found — never a complete census (`exhaustive: false`). `langs` is the "
-            "live folder count; extraction may still be running.",
+            "A uniform random probe of the id space (rows with probe stats), or a "
+            "curated selection adopted from a campaign (`seed` = `curated`, no "
+            "probe stats) — never a complete census. `langs` is the live folder "
+            "count.",
             "",
             "| shape | seed | acc | id-space | draws | langs (live) | capped |",
             "|---|---|---|---|---|---|---|",
