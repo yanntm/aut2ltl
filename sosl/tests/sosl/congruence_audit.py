@@ -1,26 +1,27 @@
-"""Audit: is the no-saturation fixpoint a congruence for the algebraic product?
+"""Audit: is the no-saturation fixpoint a two-sided congruence?
 
-    python3 -m tests.sosl.congruence_audit <case_id>
+    python3 -m tests.sosl.congruence_audit <case_id> [budget_s]
 
-`export` reads the raw algebra off the partition as `mult[c][d] = fold(c, rep(d))`
-— folding by a *representative* of `d`. That is only well defined if the partition
-is a congruence for the product, i.e. `mult[c][class(a)] == step(c, a)` for every
-class `c` and letter `a`. Saturation is what forces this; the ablation
-(`--no-saturation`) turns it off.
+The normative test (spec §3.2 step 6, paper Lemma 5.2) is the saturation sweep's
+**check phase** on the final table — `find_left_divergence`, zero queries — and
+it is what `run_case` itself now computes into the `fixpoint_congruent` field;
+this probe reports that field. The letter-level test (`mult[c][class(a)]` vs
+`step(c, a)`) is REJECTED as a classifier — `rep(class(a))` is always a letter,
+so it is vacuous whenever no two letters share a class (it passes the
+non-congruent `a_implies_xa` export) — but it is kept here as a *contrast*
+column, to show its under-detection against the full check.
 
-When the partition is not a congruence, two things can happen, and only one of them
-is loud:
+One line per case:
 
-  * the product's BFS from ε misses classes -> `canonicalize` asserts (a CRASH);
-  * the BFS still covers every class -> **no assertion fires**, and `canonicalize`
-    returns an invariant read off an ill-defined multiplication — a silently wrong
-    algebra, scored `ACCEPTOR_ONLY` as though export merely byte-differed.
+    <case> <verdict> congruent=<full check> classes=<n> \
+        letter_bad_cells=<k> letter_reachable=<bool>
 
-This prints one line per case so a sample can be swept for the silent kind:
+Expected on exact-ablation runs (Theorem 5.3): `ACCEPTOR_ONLY` ⟺
+`congruent=False`, `SOUND` ⟺ `congruent=True`; `letter_bad_cells` may read 0 on
+non-congruent cases — that is the rejected test's blind spot, not a conflict.
 
-    <case> <verdict> congruent=<bool> reachable=<bool> classes=<n> bad_cells=<k>
-
-One case per invocation (the ablation has a slow tail); drive it from a shell loop.
+One case per invocation (the ablation has a slow tail); drive it from a shell
+loop.
 """
 from __future__ import annotations
 
@@ -33,10 +34,11 @@ from sosl.experiment.run import Config, run_case
 from sosl.learn.partition import Partition
 
 
-def congruence_report(p: Partition) -> Dict[str, int]:
-    """`bad_cells` = the (class, letter) cells where the algebraic product disagrees
-    with the partition's own transition; `reached` = classes the product's BFS from
-    ε covers. A congruence has `bad_cells == 0`, and then `reached == n`."""
+def letter_report(p: Partition) -> Dict[str, int]:
+    """The REJECTED letter-level diagnostic, kept for contrast: `bad_cells` =
+    the (class, letter) cells where the algebraic product disagrees with the
+    partition's own transition; `reached` = classes the product's BFS from ε
+    covers. Vacuously clean whenever no two letters share a class."""
     ab = p.table.alphabet
     letters = ab.letters()
     n = p.n
@@ -72,28 +74,30 @@ def main(argv: List[str]) -> int:
         raise SystemExit(f"no such case: {case_id}")
 
     cfg = Config(**{**NOSAT_EXACT.__dict__, "budget_seconds": budget})
+    # Capture the final partition at the run's own check-phase call, so the
+    # contrast diagnostics see exactly the fixpoint the verdict was read from.
     captured: Dict[str, Partition] = {}
-    original = run_mod.export
+    original = run_mod.find_left_divergence
 
-    def spy(p: Partition, member):  # type: ignore[no-untyped-def]
+    def spy(table, p):  # type: ignore[no-untyped-def]
         captured["p"] = p
-        return original(p, member)
+        return original(table, p)
 
-    run_mod.export = spy  # type: ignore[assignment]
+    run_mod.find_left_divergence = spy  # type: ignore[assignment]
     try:
         r = run_case(case.case_id, case.hoa, cfg, reference_sos=case.sos)
     finally:
-        run_mod.export = original  # type: ignore[assignment]
+        run_mod.find_left_divergence = original  # type: ignore[assignment]
 
     p: Optional[Partition] = captured.get("p")
     if p is None:
-        print(f"{case_id} {r.stats.verdict} export-not-reached")
+        print(f"{case_id} {r.stats.verdict} fixpoint-not-reached")
         return 0
-    rep = congruence_report(p)
-    congruent = rep["bad_cells"] == 0
-    reachable = rep["reached"] == rep["n"]
-    print(f"{case_id} {r.stats.verdict} congruent={congruent} "
-          f"reachable={reachable} classes={rep['n']} bad_cells={rep['bad_cells']}")
+    rep = letter_report(p)
+    print(f"{case_id} {r.stats.verdict} "
+          f"congruent={r.stats.fixpoint_congruent == 'true'} "
+          f"classes={rep['n']} letter_bad_cells={rep['bad_cells']} "
+          f"letter_reachable={rep['reached'] == rep['n']}")
     return 0
 
 
