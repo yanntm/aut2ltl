@@ -297,3 +297,79 @@ complement entries). Data: `tests/sos_sdd/reference/e1_census.csv`
 E1's scope is now fully closed. Scatter correlate analysis (which
 covariate predicts compression) is a reading of the two reference CSVs,
 left for the paper integration.
+
+## Theory responses — the E1 escalations (2026-07-11)
+
+- **F23 — the E1 read-offs** (Theory-run; regen
+  `python3 tests/sos_sdd/e1_readoff.py` — joins the two tracked
+  reference CSVs, no engine runs; engineering to adopt the script).
+  - *Upward-closure, stratified* by the name's acc token:
+    0acc 41150/70983 = **58.0 %**, 1acc **71.6 %**, 2acc **62.8 %**,
+    3acc 15/21; pooled **62.2 %**, pooled over acc>0 **64.9 %**.
+    Note to engineering: the census `marks` column disagrees with the
+    name token (all 2733 0acc instances carry `marks=1`; 1acc spreads
+    over `marks ∈ {1,2,3}`) — explain the discrepancy (Spot import
+    normalization?) and re-stratify by the digest's `|C|` (one-line
+    groupby change in the script).
+  - *Compression correlates* (`ratio = nodes_final / cells`; quantiles
+    p5/median/p95 = **0.12 / 0.29 / 0.50**, max 2.0 = the two floor
+    rows). Spearman vs ratio: sharing (`distinct_cells/cells`)
+    **+0.73** (dominant), `|EM¹|` −0.66, depth −0.59, marks −0.51,
+    letter classes −0.41, states −0.30, upward-closed fraction
+    **+0.19** (weak, unfavorable sign — floor-confounded),
+    const. slots +0.16. Reading: per-slot sharing predicts
+    compression; bigger, more-marked algebras compress relatively
+    better; upward-closure is a structure datum, not a predictor.
+  - *Pre-quotient closure depth* (the §5 ⟨TBD⟩): median **6**, p90 11,
+    p99 16, max **27** (at `|EM¹| = 3291`); `depth/|EM¹|` ≤ 0.6
+    always, 0.22 at the median; depth ≤ the *post*-quotient class
+    count on **98.6 %** of rows.
+
+- **F22 response — blessed, with the lemma that grounds it and two
+  adjustments.** The operationalization is right: closure under adding
+  one mark is *equivalent* to upward closure in `2^C`, and fibering
+  per `(slot, dst)` is the correct family (marks co-vary with the
+  destination). What monotonicity actually proves is weaker than the
+  paper's old sentence and now stands in §4.2 as the stabilizer-closure
+  fact: `F(q,d)` is closed under union with the mark sets of `d`'s
+  stabilizers `M(d) = {mk_y(d) : st_y(d) = d}` (immediate from the
+  composition law), hence a union of up-sets in the lattice `M(d)`
+  generates; *full* upward closure holds exactly when stabilizer marks
+  realize every single-mark increment — the 62 % measures that
+  frontier. Adjustments: (1) cite stratified — the paper carries 62 %
+  pooled / 65 % on marked instances, strata in F23; (2) the metric is
+  a structure datum, not a compression predictor (ρ = +0.19 vs
+  sharing's +0.73) — the paper says so explicitly.
+
+- **F19 response, E5 half — the kill histogram is right-censored; the
+  Phase 3 signal is real and now priced.** "Died in phase p" charges
+  an unknown upstream spend to p's bucket: the histogram is a survival
+  statistic, not a cost profile, and cannot edit §5's table by itself.
+  It *does* prove Phases 3 and 5 are macroscopic on tail instances (a
+  phase catches deaths in proportion to the time it occupies near the
+  budget). The structural cause was in the design all along: Phase 3's
+  verdict read is value-indexed (read `st` at slot `q`, then the marks
+  at the slot so named) — the §4.1 third-row shape, a `|Q|`-way case
+  split applied to the π pair space, the largest diagram in the
+  pipeline; one round, never iterated, but crossing-priced per
+  application. §5 row 3 and the E5 prediction are revised accordingly
+  (spec): peaks expected at Phase 2 (building π) and Phase 3
+  (consuming it), Phase 1 where closure itself is the wall, Phases
+  4/6 cheap, Phase 5 intermediate. Protocol in the spec: parse the
+  retained census JSONLs if kept; rerun the 120 kills at bigger
+  budgets for uncensored tail profiles.
+
+- **F19 response, E6 half — the 120 completions are not budget
+  parity.** The corpus `sos/` tier was generated under the corpus
+  generator's own budget on its own runs — it witnesses completion,
+  not completion-within-10 s. E6's protocol is now pinned in the spec:
+  same machine, same per-instance wall budget, both tools, two budget
+  points, all failure kinds reported on both sides. Pre-registered
+  expectations: at 10 s the engine's census loss column is non-empty
+  (the 120 are the candidates) and shrinks sharply at 60 s; the census
+  (`|Q| ≤ 3`, enumerated, `|EM¹| ≤ 12 225`) is the unstructured world
+  where §4.3 predicts no engine win — the bottom line's win column
+  lives on the scaling families and shapes the census does not sample.
+  "Loses nowhere on the census" was flagged low-confidence and is
+  expected to be *refuted* at small budgets; the refutation is a paper
+  edit (the honest two-column table), not a bug.
