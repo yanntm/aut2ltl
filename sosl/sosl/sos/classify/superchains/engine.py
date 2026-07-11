@@ -40,12 +40,18 @@ class Superchain:
 
 @dataclass(frozen=True)
 class SuperchainResult:
-    """The superchain numbers with one maximal witness of each sign."""
+    """The superchain numbers with one maximal witness of each sign.
+    ``tops_plus`` (resp. ``tops_minus``) lists every stem that tops a
+    positive (negative) superchain of the maximal length ``n_plus``
+    (``n_minus``) — the data the degree derivation zones from (C section 8);
+    empty when that sign has no superchain."""
 
     n_plus: int
     n_minus: int
     witness_plus: Optional[Superchain]
     witness_minus: Optional[Superchain]
+    tops_plus: Tuple[int, ...] = ()
+    tops_minus: Tuple[int, ...] = ()
 
 
 def superchains(inv: Invariant,
@@ -124,5 +130,21 @@ def superchains(inv: Invariant,
     wn = witness(False)
     n_plus = wp.length if wp is not None else -1
     n_minus = wn.length if wn is not None else -1
+
+    def tops(start_plus: bool, n: int) -> Tuple[int, ...]:
+        """Every stem topping a maximal (length-``n``) superchain of the given
+        start sign: the sign-carrying members of each R-class whose DP reaches
+        the full node count."""
+        if n < 0:
+            return ()
+        out: List[int] = []
+        for i in range(len(rclasses)):
+            if dp(i, start_plus)[0] == n + 1:
+                out.extend(s for s in rclasses[i]
+                           if carries[s][0 if start_plus else 1])
+        return tuple(sorted(out))
+
     return SuperchainResult(n_plus=n_plus, n_minus=n_minus,
-                            witness_plus=wp, witness_minus=wn)
+                            witness_plus=wp, witness_minus=wn,
+                            tops_plus=tops(True, n_plus),
+                            tops_minus=tops(False, n_minus))
