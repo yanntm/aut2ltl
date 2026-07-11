@@ -57,13 +57,16 @@ their named sections.
   Fixtures live in `sosl/tests/symmetry/fixtures.py`; gates + census
   in `sigma_gate.py`; validated artifacts in `reference/symmetry/`
   (CSV, summary, gate log); report F1–F4 filled from them. SY2/SY3
-  are the open milestones. The corpus is 6 222 cases (2 484 non-LTL;
-  paper/spec still quote 3 938/1 698 — stale until theory sweeps).
-  The report's **To theory** section holds three unanswered items:
-  corpus renumbering; F3 structurally zero (flat_canon is
-  alphabet-minimal by curation, so the fat-kernel census claim needs
-  a decision + spec §3.4 FIX_A build route needs an edit);
-  obstruction fast path closes 97.36 % (lemma-worthy?).
+  are the open milestones. The corpus is 6 222 cases (2 484 non-LTL);
+  paper/spec counts are current. The report's four **To theory**
+  items are ANSWERED (2026-07-11, responses appended in place):
+  counts swept (incl. max `|𝒞|` 121→208, countersign asked); F3
+  decided as (a) — coincidence-of-read-offs is the finding,
+  §3.1/§9 rewritten, spec §3.4 FIX_A now calculus-built; the
+  obstruction is now **Lemma 3.2** (proof + census sharpness);
+  measurement design adopted (b)+(c) — stratified-by-AP mandate
+  (spec §0) + new **Y0s** symmetrized-ground-truth campaign
+  (spec §7), 4-AP sampling named follow-up, not SY5.
 
 ## Next tasks
 
@@ -97,14 +100,10 @@ generator scans find only ~35 % of nontrivial groups at n = 3
 session can run FIG-1/FIG-2 independently (fixtures exist:
 `sosl/tests/symmetry/fixtures.py`).
 
-Theory next, before or alongside: answer the report's FOUR
-To-theory items — (1) corpus renumbering sweep of paper/spec,
-(2) the F3 decision (fat-kernel claim unmeasurable on the
-alphabet-minimal corpus) + spec §3.4 FIX_A build-route edit,
-(3) obstruction-as-lemma, (4) measurement design for larger AP
-sets (census is 64 % 1-AP where symmetry is near-vacuous; report
-recommends symmetrization-manufactured ground truth + stratified
-reporting now, sampled 4-AP corpus campaign later).
+The four To-theory items are DONE (2026-07-11, commit
+3f03c5c46 — see State). Theory next is the queue above, Prop 6.2
+first. One loose end from item 1: engineering should countersign
+max `|𝒞| = 208` in `sy1_summary.md` at the next regen.
 
 ## The one theorem to keep in your head
 
