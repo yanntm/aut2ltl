@@ -35,6 +35,7 @@ from .roundtrip import roundtrip
 from .roundtrip_best import roundtrip_best_recipe
 from .roundtrip_decomp import roundtrip_decomp_recipe
 from .sos2ltl import sos2ltl_recipe
+from .sos2ltl_casc import sos2ltl_casc_recipe
 from .sos2ltl_dg import sos2ltl_dg_recipe
 
 # Public recipe names → builders. `build_portfolio` resolves `--use <name>` here.
@@ -58,6 +59,7 @@ RECIPES: Dict[str, Callable[[Optional[Options]], Translator]] = {
     "roundtrip_best": roundtrip_best_recipe,
     "roundtrip_decomp": roundtrip_decomp_recipe,
     "sos2ltl": sos2ltl_recipe,
+    "sos2ltl_casc": sos2ltl_casc_recipe,
     "sos2ltl_dg": sos2ltl_dg_recipe,
 }
 
@@ -73,4 +75,4 @@ __all__ = ["RECIPES", "best", "best_daisy2", "best_inv", "best_inv_loop",
            "deep_memo", "deep_nobls", "deep_nobls_memo",
            "deep_nobls_sort", "deep_nobls_sort_decomp", "roundtrip",
            "roundtrip_best_recipe", "roundtrip_decomp_recipe",
-           "sos2ltl_recipe", "sos2ltl_dg_recipe"]
+           "sos2ltl_recipe", "sos2ltl_casc_recipe", "sos2ltl_dg_recipe"]
