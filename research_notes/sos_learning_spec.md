@@ -187,6 +187,26 @@ instrumentation-first, gated byte-identical against the unlocalized
 fallback. Item 11's remaining opens (sweep tallies, E2 recount, item-8
 dual-symmetry assertion) land with the completed guarded sweep.
 
+**Revision 2026-07-11 (theory ruling — the ablation's object; export refusal;
+the congruence gate).** The open defect (`sos_learning_report.md` "Open
+defect" + "Theory ruling (2026-07-11)") is ruled. (1) The no-saturation
+fixpoint is the **certified Cayley acceptor** — the hypothesis itself; export
+is a *partial* map, defined exactly on congruent fixpoints. Paper Lemma 5.4 /
+Theorem 5.5: with an exact oracle a certified fixpoint is canonical **or its
+partition is not a congruence** — "export byte-differs while a genuine algebra
+exists" is impossible on that leg, so `ACCEPTOR_ONLY` re-glosses to "correct
+acceptor, no algebra" (one verdict, no split; section 7). (2) The proposed
+`O(n·|Σ|)` letter test is **unsound as a certifier** — vacuous whenever no two
+letters share a class; the stalled `a_implies_xa` export passes it — the
+normative congruence test is the saturation sweep's **check phase** on the
+final table, zero queries (section 3.2 step 6). (3) `export` refuses on a
+non-congruent partition; a `--unchecked` diagnostic export survives for the
+P7/F8 fixtures. New stats field `fixpoint_congruent` (section 7); new rows
+P9/P10 (section 9); new section 8 item 13 (the fix, the congruence-column
+ablation re-run, the E2 recount folding the 17 ex-`CRASH` rows into
+`permanent` = 3170). The 2026-07-10 verdict vocabulary (`MISMATCH`→`FAIL`,
+new `CRASH`) is **ratified**.
+
 **One-line goal.** Build `sos_learn`, an active-learning tool that reconstructs
 the *syntactic omega-semigroup invariant* of an unknown omega-regular language
 from lasso membership queries and equivalence queries — plus the harness that
@@ -543,14 +563,27 @@ Procedures (all query counts logged by phase):
    membership query each (or from cache) on `member(key(s), key(e))` — both
    keys non-empty by section 1.1; emit `.sos`.
 
-   Export soundness caveat: the exported invariant decides lassos by
-   multiplying *classes* (`M` substitutes a representative in the middle of
-   a product), which is meaningful only for a **two-sided** (saturated)
-   congruence. An export taken from a fixpoint reached without saturation
-   may be acceptance-wrong even though the hypothesis's own predictions are
-   all correct (observed on `F(a & Xa)` — see `sos_learning_report.md`). Such
-   exports are diagnostic artifacts, not deliverables; see sections 3.3
-   and 9.
+   Export refusal (normative, 2026-07-11; replaces the former "diagnostic
+   artifact" caveat): the exported invariant decides lassos by multiplying
+   *classes* (`M` substitutes a representative mid-product), which is
+   well-defined only for a **two-sided** congruence. Before emitting, run
+   the congruence test — the saturation sweep's **check phase** on the
+   final table: for every table word `p` with `rep(class(p)) != p` and
+   every class `d`, compare `fold(d, p)` vs `fold(d, rep(class(p)))`; zero
+   queries; clean ⟺ the partition is a congruence (paper Lemma 5.4). On a
+   clean check, export as above. On a dirty check there is **no algebra to
+   export** (paper Theorem 5.5): the campaign path REFUSES — no `.sos` is
+   written, the run records `fixpoint_congruent = false`, verdict
+   `ACCEPTOR_ONLY` (section 7) — and the `canonicalize` assertion stays as
+   a backstop on its own contract. A separate `--unchecked` diagnostic
+   export remains available for the fixtures that display what the
+   assumption would produce (rows P7/F8, the paper's §4.2 display); its
+   output is never a deliverable. On a saturated run the final sweep
+   already ran clean, so `fixpoint_congruent = true` is recorded without
+   recomputation. NOT an acceptable implementation of the test:
+   `mult[c][class(a)] == step(c, a)` over letters only — `rep(class(a))`
+   is always a letter, so the check is vacuous whenever no two letters
+   share a class, and it passes the non-congruent `a_implies_xa` export.
 
 Main loop: `fill; close; consist;` to fixpoint, then `saturate` (restart on
 split), then `equiv`; on counterexample process and restart; on `eq` run
@@ -750,6 +783,19 @@ witness lock (blocks the paper's §6.3 claim):**
   count per shape. This grounds the paper's §6.3 complementary claim:
   prefix-independent permanent stalls first arise beyond the wall.
 
+*Ruling 2026-07-11 (the recount; unblocks E2 at the 6222 scale).* Permanence
+is a property of the **certified partition** (class count vs `N`,
+byte-comparison), never of the export bytes, so E2's frequency counts stand
+as defined. The ruling sharpens them: by Theorem 5.5 every `permanent` row
+must carry `fixpoint_congruent = false` and every ablation `SOUND` row
+`true` (rows P9/P10). The recount (section 8 item 13): (a) the 17 ex-`CRASH`
+export-assert rows join `permanent` (certified, non-congruent — always
+stalls; only the export assert crashed): **permanent = 3170** of 5527
+decided ablation rows, `BUDGET` 680 + `OVERSIZE` 15 deferred; (b) the
+ablation leg is re-run once with the `fixpoint_congruent` column — the
+theorem performed at census scale. Deliverable: the two-way table
+verdict × congruent with zero off-diagonal mass, dual-symmetric.
+
 **E3 — Baseline: FDFA learning (ROLL).** Question: cost and capability
 comparison against the established FDFA learner on identical teachers.
 Procedure: wrap our white-box teacher in ROLL's interface; run ROLL's
@@ -870,7 +916,19 @@ the ablation-leg row only and never folds a saturated-run label into the
 frequency counts.
 
 `ACCEPTOR_ONLY` is reserved for `--no-saturation` runs that pass the acceptor
-check but fail byte-equality.
+check but produce no canonical export. Re-glossed 2026-07-11: on the exact
+ablation leg this verdict means **"correct acceptor, no algebra — export
+refused"** — by Theorem 5.5 an exact-certified fixpoint is canonical or
+non-congruent, so "export byte-differs while a genuine (coarser) algebra
+exists" cannot occur there. Under `bounded` oracles (diagnostics, black-box
+teachers) that case IS possible, and the `fixpoint_congruent` field below
+distinguishes it; the verdict is not split.
+
+`fixpoint_congruent (true|false|n/a)` (added 2026-07-11): the Lemma 5.4
+congruence check on the final table (section 3.2 step 6). `true` on every
+saturated run (its final sweep ran clean — recorded, not recomputed);
+computed by the check phase on ablation runs; `n/a` when no fixpoint was
+reached (`BUDGET`, `CRASH`). Gated by rows P9/P10; E2's recount keys on it.
 
 `OVERSIZE` (added 2026-07-08f) records the exact oracle exceeding its
 transformation-closure work cap (`ExactTooLarge`): an honest "too large to
@@ -887,7 +945,9 @@ fired and whose closure fallback then hit the cap (row F10 → F9) — observed
 cases stay deferred by exactly this path.*
 
 `export_associative` is computed on the exported multiplication table
-(`n/a` when no export was produced): brute-force check of
+(`n/a` when no export was produced — including a 2026-07-11 refusal; the
+`a_implies_xa` display fixture of M4.e item 2 / row F8 computes it on the
+`--unchecked` diagnostic export): brute-force check of
 `M(M(a,b),c) = M(a,M(b,c))` over all class triples — `O(n³)` on tables of
 this size, negligible. On a saturated run it must be `true` (the export is a
 two-sided congruence quotient — section 9 row P7); on an ablation-leg
@@ -1153,6 +1213,34 @@ sharpest evidence that a stalled export is not an algebra at all.
        case, the hypothesis side one split apart between queries),
        decided by one measurement — the closure's build-vs-scan wall-time
        split on a fired, non-capped query.)*
+    13. **Export refusal + the congruence gate + the E2 recount (2026-07-11
+       ruling; unblocks the E2 side of items 6/8).**
+       (a) Implement the Lemma 5.4 check as the final-table classifier
+       (reuse `saturate`'s scan with escalation disabled; zero queries);
+       wire `fixpoint_congruent` (section 7). The letter test
+       (`mult[c][λ(a)]` vs `step(c,a)`) is REJECTED — it passes
+       `a_implies_xa`'s stalled export; fix `congruence_audit` accordingly
+       and re-run it on the report's 14-case sample first: theory predicts
+       **all 14** flip to non-congruent — a cheap local confirmation
+       before the drop.
+       (b) `export` refuses on a dirty check (section 3.2 step 6); the
+       `canonicalize` assert stays; add `--unchecked` for fixtures; adapt
+       the P7/F8 fixture (M4.e item 2) to it.
+       (c) Local gates before the drop: `a_implies_xa` + `a_once` ablation
+       = refusal + `congruent=false`; the E0 saturated named cases `true`;
+       the named crasher `2state2ap2acc_parity_1618…` ablation = refusal,
+       no `CRASH`; P5 ledgers untouched (saturated leg unaffected).
+       (d) One cluster drop: re-run the **ablation leg only** (6222 cases)
+       with the new column — the default leg's column is `true` by
+       construction, E3 untouched, and `--done` cannot apply (the column
+       needs the final table, which only a re-run reconstructs). Expected
+       and gated: `false` on all 3153 `ACCEPTOR_ONLY` + 17 ex-`CRASH`
+       rows; `true` on all 2357 ablation-`SOUND` rows; dual-symmetric
+       (congruence is complement-invariant). An `ACCEPTOR_ONLY ∧ true` row
+       is build-stopping (P9); a `SOUND ∧ false` row is a first-class
+       theory finding (P10) — stop and report, either way.
+       (e) E2 recount off the merged CSV (`permanent = 3170`); then the
+       E2 exhibits, gates, and the paper's ⟨TBD⟩ fills proceed.
     Standing science ask — ANSWERED in the refutation direction
     (2026-07-08f): the flat_canon sweep surfaced two prefix-independent
     permanent stalls (plus complements), and the witness lock (item 7,
@@ -1199,6 +1287,9 @@ recorded outcome, not a defect.
 | P8 | ω-sort discipline on prefix-independent cases: every column ever minted in a default-config run is of the ω-sort (paper Cor. 4.7(b)) | any prefix-independent case (`GF(aa)`, `EvenBlocks`, the E2 witnesses) | always green | a linear mint means the prefix-independence predicate or the sweep is wrong — build-stopping either way; the corollary's proof leaves no third option |
 | F9 | exact oracle raises `ExactTooLarge` | referenceless fallback (E6), or the closure fallback of a guard-failed census query (F10) | allowed there; on any other census run it is a defect (exact-by-reference builds no closure) | record `OVERSIZE` (section 7); permanence classification deferred, default-leg soundness stands — never `FAIL` |
 | F10 | functionality guard on the aligned graph (section 3.2 point (iii): non-identity node count `= N_R`) fires | any exact-by-reference query | MAY be red — it IS red in practice (2026-07-09b: the factoring conjecture is refuted; mid-run tables, sweep-clean ones included, split syntactic classes beyond their table words); a red is a recorded outcome, not a bug. Exception: a firing on the FINAL certifying query of a `SOUND` run is a defect — a canonical table's fold is the syntactic morphism | record it and fall back to the closure oracle for that query; certification/minimality claims for that query then rest on the fallback (cap-escape per section 3.2 default) |
+
+| P9 | `fixpoint_congruent = false` on every exact-ablation `ACCEPTOR_ONLY` row | M4+ ablation leg | always green (Theorem 5.5: exact-certified + congruent ⟹ byte-equal ⟹ `SOUND`) | build-stopping: an exact-certified congruent non-canonical fixpoint contradicts Theorem 5.5 — suspect the oracle or the fold before the theorem |
+| P10 | `fixpoint_congruent = true` on every exact-ablation `SOUND` row | M4+ ablation leg | expected green (byte-equality from a non-congruent partition has no known mechanism, but is not excluded by Theorem 5.5) | NOT build-stopping: an accidental byte-equality is a first-class theory finding — report the case id to theory, do not bank the row |
 
 Two "surprising green" notes, so nobody distrusts a passing run:
 
