@@ -77,3 +77,35 @@ Cost: `O(2^n)` for the rewire plus one keying pass.
 in deterministic order. `all_b_ap(n)` — all `2^n · n!` elements,
 guarded to `n ≤ 3` (48 elements); the larger-`n` policy belongs to
 the group milestone and the guard is not to be lifted.
+
+## Relational read-offs (`relations.py`)
+
+Normative math: the symmetry paper §4. One principle (Thm 4.2): `L`
+is `(u ↔ v)`-closed — membership survives replacing disjoint factor
+occurrences of `u` by `v` — iff `[u] = [v]` in `𝒞`. So `is_closed`
+is one fold comparison, and every service below is a special case.
+
+- `word_class(inv, w)` / `is_closed(inv, u, v)` — the fold and the
+  block equality themselves.
+- `invisible_letters(inv)` — `{ m : λ(m) = [ε] }`, the letters whose
+  class is the unit; `L` tolerates arbitrary insertion/deletion of
+  them. This is a *class* equality; the kernel-level `inert_aps` is a
+  *fiber* equality — neither implies the other.
+- `stutter_rung(inv, k)` — `[v] = [vv]` for every class-word `v` over
+  the quotient alphabet `Σ_λ` (the distinct letter classes) of length
+  **exactly** `k`. Enumerated over `Σ_λ`, not `Σ` (`[v]` depends only
+  on the letter classes), `|Σ_λ|^k` folds, budget-guarded, `k ∈ 1..3`.
+  `k = 1` is exactly `classify.is_stutter_invariant`. The rungs do
+  **not** nest — length-`k` doubling-stability is independent across
+  `k` — which is what makes the entry rung a parameter.
+- `ladder_entry(inv)` — the least rung `k ≤ 3` with `stutter_rung`, or
+  `None` if none of 1–3 holds (paper §4.2, "where a language enters
+  the ladder"). The `{1,2,3,None}` spread follows from non-nesting.
+  (Prose caveat: spec §5 / paper §4.2 write the rung as `|v| ≤ k`; the
+  length-`= k` reading is the one the equation-count, F11 distribution
+  and the `ladder_entry(FIX_A) == 1` gate all agree on — see report
+  To-theory F11.)
+- `independence(inv)` / `independence_letters(inv)` — `Î_L` (Def 4.3,
+  Thm 4.4): the irreflexive-symmetric class pairs `(c, d)` with
+  `[cd] = [dc]`, and their lift to letter pairs through the fibers —
+  the exact adjacent-swap commutation the language tolerates.

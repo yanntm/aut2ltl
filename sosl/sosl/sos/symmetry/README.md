@@ -28,18 +28,27 @@ serializations. No automaton, no language query, no alignment.
 - **Candidate enumeration** — `generators_b_ap(n)` (all
   transpositions and flips) and `all_b_ap(n)` (the full group,
   guarded to `n ≤ 3`).
+- **Relational read-offs** (`relations`) — which factor rewritings
+  `u ↔ v` the language tolerates, all instances of the one block
+  equality `[u] = [v]` (Thm 4.2): `is_closed`; `invisible_letters`
+  (`[c] = 1`, padding letters); `stutter_rung` / `ladder_entry` (the
+  `k`-block stutter ladder, `[v] = [vv]`); `independence` /
+  `independence_letters` (the tolerated commutation relation `Î_L`,
+  `[cd] = [dc]`, Thm 4.4).
 
 Commissioned but not yet built (see the spec): the full group
 computation with asymmetry witnesses and symmetrization (SY2,
-`stabilizer.py`), relational read-offs (SY3, `relations.py`), the
-group spectrum and the LTL hull/kernel (SY4, `spectrum.py` /
-`reflect.py`).
+`stabilizer.py`), the group spectrum and the LTL hull/kernel (SY4,
+`spectrum.py` / `reflect.py`).
 
 ## Orientation map
 
     sigma       SignedPerm and its action; apply_perm; is_symmetry /
                 is_antisymmetry / in_kernel / inert_aps /
                 anti_possible; generator and group enumeration
+    relations   the block-substitution read-offs: is_closed,
+                invisible_letters, stutter_rung / ladder_entry,
+                independence / independence_letters
 
 ## Layering
 
