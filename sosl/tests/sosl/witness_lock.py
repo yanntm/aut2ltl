@@ -29,7 +29,13 @@ from sosl.sos.invariant import Invariant
 FC = "../genaut/corpus/flat_canon"
 OUT = Path("tests/sosl/logs/witness_lock")
 
-# The refutation witnesses (primals); their complements close each under dual.
+# The refutation witnesses. Primals only: the claim is an existence claim,
+# certified on the canonical invariant independently of provenance (spec §8
+# item 7). A complement is the accept-set byte-flip over the same semigroup, so
+# it inherits both prefix-independence (a) and the ω-sort signature (b) and can
+# only pass where its primal passes. Its catalogue name is not addressable
+# either — genaut mints a `<primal>_c` alias only where the enumeration was
+# one-sided, so a dual drawn under its own combo id has no `_c` file.
 WITNESSES: List[str] = [
     "2state1ap2acc_parity_0088836118",
     "2state1ap2acc_parity_1178851077",
@@ -58,7 +64,7 @@ def _paths(case_id: str) -> Tuple[str, str]:
 def main(argv: List[str]) -> int:
     fails: List[str] = []
     index: Dict[Tuple[str, str], RunResult] = {}
-    witness_ids = [w + suf for w in WITNESSES for suf in ("", "_c")]
+    witness_ids = list(WITNESSES)
 
     # (a) + (b) on the witnesses, both legs (coarse for the exhibit, saturated
     # for the ω-sort signature and the canonical prefix-independence check).
@@ -93,8 +99,7 @@ def main(argv: List[str]) -> int:
             fails.append(f"{cid}: {r.stats.n_columns_lin} linear column(s) "
                          f"(row P8 — prefix-independent case must be all ω-sort)")
 
-    # (c) exhibits into the report artifact (primals only — complements are the
-    # byte-flip and add nothing to read).
+    # (c) exhibits into the report artifact.
     OUT.mkdir(parents=True, exist_ok=True)
     lines = ["# Witness lock — prefix-independent permanent stalls", ""]
     lines.append("The refutation of the prefix-dependence necessity conjecture: "
