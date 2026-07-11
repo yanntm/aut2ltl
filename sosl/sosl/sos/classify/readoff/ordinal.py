@@ -6,7 +6,8 @@ positive natural coefficient ``c``. Represented as the tuple of ``(e, c)`` terms
 in strictly descending exponent order (empty tuple = ordinal ``0``). Addition is
 Cantor-normal-form ordinal addition — used by the degree recursion when ``gamma``
 sums ``mu`` with the derivative's degree. Rendering follows the companion's
-notation (``"omega^2*3"``, ``"omega*2 + 1"``, plain ``"1"``).
+notation, spaceless so a rendered ordinal is one `.cat` field token
+(``"omega^2*3"``, ``"omega*2+1"``, plain ``"1"``).
 """
 from __future__ import annotations
 
@@ -65,4 +66,4 @@ class Ordinal:
                 parts.append("omega" if c == 1 else f"omega*{c}")
             else:
                 parts.append(f"omega^{e}" if c == 1 else f"omega^{e}*{c}")
-        return " + ".join(parts)
+        return "+".join(parts)
