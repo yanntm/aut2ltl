@@ -721,6 +721,26 @@ model checker. Planned measurements, in dependency order:
 6. **Formula-level table (§6.3, needs `sos2ltl`).** `¬φ ⇝ ψ` with
    sizes and Manna–Pnueli shapes.
 
+Independently of the MCC data, the census emulates incremental
+verification *with free ground truth*, in three tiers. (a) An
+all-pairs endpoint sweep — one alignment per unordered pair, three
+scan bits (disjointness, both inclusions) — yields the endpoint kill
+matrix plus two reusable artifacts, the inclusion digraph and the
+disjointness graph of the census (the implication matrices of [DR18]
+are a sub-product). (b) The full battery runs on the *asymmetric*
+stratum — complex `¬φ`, fact-shaped `K` (small tables, low rungs, the
+shape of [DPT25]'s gleaned knowledge) — where the simpler-class claims
+earn their keep. (c) Fixing a census language as the "system" `L_S`,
+the inclusion digraph hands over its genuine knowledge candidates
+(`K ⊇ L_S`), the exact verdict `S ⊨ φ` is one scan, and integrating
+facts one at a time measures the knowledge-decides rate against that
+ground truth — while asserting, per step, the two laws §6.2 stakes:
+*monotonicity* (`P_min` only shrinks, `P_max` only grows, so every
+verdict improves monotonically as knowledge accumulates) and
+*losslessness* (the running interval byte-equals the one-shot
+conjunction's after reduce). Both are falsifiable claims of this
+paper, run as campaign assertions.
+
 House rules as in the calculus campaigns (per-case budget, checkpoint
 campaigns, validated outputs to `reference/`, `.cat`/CSV only). First
 fixture before anything else: the §5.2 counterexample pair, ground

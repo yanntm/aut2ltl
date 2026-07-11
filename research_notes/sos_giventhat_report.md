@@ -25,7 +25,7 @@ moment it is found, even mid-milestone.
 | GT2 — ladder tests | *pending* | F5–F8 |
 | GT3 — stutter two-tier | *pending* | F9–F11 |
 | GT4 — band degree probe | *pending* | F12 |
-| GT5/W0 — census campaign | *pending* | F13 |
+| GT5/W0 — census campaigns (W0a/W0b/W0c) | *pending* | F13–F15 |
 | GT5/W1 — MCC benchmark | *blocked on data* | — |
 
 ## GT1 — the interval object + endpoint decisions
@@ -84,9 +84,20 @@ moment it is found, even mid-milestone.
 
 ## GT5 — campaigns
 
-- **F13 — W0 delivered.** *(pending)* `reference/giventhat/w0_census.{md,csv}`
-  committed; the four summary tables (endpoints, bits, rungs, tier
-  gap) present; F2-skip count; regen command.
+- **F13 — W0a: the all-pairs endpoint sweep.** *(pending)* Endpoint
+  kill matrix over all unordered same-stratum pairs; the inclusion
+  digraph and disjointness graph committed as census artifacts (edge
+  counts, density per stratum); sweep wall time and chunk count.
+- **F14 — W0b: simple-on-complex.** *(pending)* On the asymmetric
+  stratum (`¬φ` complex, `K` fact-shaped): bits distribution, per-rung
+  hit and rung-drop rates, tier-gap frequency, band degrees — the
+  realistic-direction numbers the paper's §7 items 2–4 cite.
+- **F15 — W0c: incremental verification with ground truth.** *(pending)*
+  Knowledge-decides rate vs the exact `S ⊨ φ` scan; median facts to
+  decision; running-table growth vs the census ratio prediction; and
+  the two per-step laws (monotonicity, losslessness) — zero violations
+  expected, any violation goes to To theory verbatim (it is a
+  paper-level event, §6.2).
 - **W1** — blocked on the [DPT25] MCC problem set landing in the repo;
   no findings until then.
 
@@ -106,3 +117,5 @@ Standing items the theory thread expects data or answers on:
    and theory wants to know early.
 5. `iv.bits` on the fixture and the campaign extremes (F2, F3) — feeds
    the paper's Q5 discussion of `2^F` enumeration feasibility.
+6. Any W0c law violation (F15) — monotonicity or losslessness breaking
+   falsifies paper §6.2 as stated; the minimal fact sequence, verbatim.

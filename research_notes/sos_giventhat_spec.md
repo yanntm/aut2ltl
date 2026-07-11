@@ -520,23 +520,73 @@ recorded.
 House rules of calculus spec §8.1 apply verbatim (budgets, seeds,
 checkpoints, output headers, CSV+md shape, `reference/` promotion).
 
-- **W0 — census-shaped given-that** (`w0_census.py`): over the GT1
-  campaign pairs (700, seeded), one row per pair: `n_¬φ`, `n_K`,
-  `|nodes|`, ratio, `bits`, `k_settles`, `k_refutes`, per-rung
-  existence bits, tier-1/tier-2 stutter verdicts, band-minimal degree,
-  wall times per stage. Deliverable `reference/giventhat/w0_census.md`
-  + `.csv`: the endpoint kill rate, the `bits` distribution, per-rung
-  hit rates, the tier-gap frequency — paper §7 items 2–4 in
-  census-shaped form. Every number the paper later cites in pure form
-  comes from here; the report carries the reproducibility.
+- **W0a — the all-pairs endpoint sweep** (`w0_endpoints.py`). ALL
+  unordered same-stratum corpus pairs, endpoints ONLY. One alignment
+  serves both orientations, and the four endpoint bits per unordered
+  pair reduce to three facts: `L₁ ∩ L₂ = ∅?`, `L₁ ⊆ L₂?`, `L₂ ⊆ L₁?`
+  — `O(n²)` scans on the aligned table, no `materialize`, no
+  conjugacy pass (`bits` is NOT computed here — that is what makes
+  the full sweep affordable; budget math: millions of pairs at
+  sub-ms each, hours as a checkpointed background campaign — chunk
+  by stratum, checkpoint per chunk). Deliverables: the endpoint kill
+  matrix (paper §7 item 1 census-shaped), and two reusable census
+  artifacts stored as `.csv` edge lists — the **inclusion digraph**
+  and the **disjointness graph** over `flat_canon` (the
+  Dureja–Rozier implication matrix [DR18] is the inclusion digraph
+  restricted to proven facts; say so in the summary). Both feed W0c
+  and [SωSN26].
+- **W0b — simple-on-complex, the realistic direction**
+  (`w0_asym.py`). The full given-that battery (bits, per-rung
+  existence, tier-1/tier-2 stutter, band degree, wall times) on an
+  ASYMMETRIC sample: `¬φ` drawn from the top `|𝒞|` deciles and the
+  high rungs (recurrence and above, non-LTL rows included), `K`
+  drawn from the low deciles and low rungs (safety / obligation /
+  stutter-invariant per `.cat`) — the shape of [DPT25]'s gleaned
+  facts (`G f`, `FG a`, initial-state facts). 500 seeded pairs +
+  the GT1 campaign pairs for continuity. This is the stratum where
+  the paper's "simpler class given knowledge" claim earns its keep:
+  report rung-drop rates ¬φ-rung → best-available-rung.
+- **W0c — incremental verification emulated on the census, with
+  ground truth** (`w0_incremental.py`). The point of the framework.
+  Fix a "system" `L_S` (200 seeded choices, skewed complex); from
+  the W0a inclusion digraph harvest its genuine knowledge
+  candidates `{K : L_S ⊆ L_K}` (facts true of the system, as in
+  real incremental verification); pick targets `φ` (seeded, mixed
+  deciles); the exact verdict `S ⊨ φ` is one inclusion scan —
+  ground truth is free. Then integrate the `K`s one at a time,
+  smallest table first, and per step record: running `|nodes|`,
+  `bits`, both endpoint bits, per-rung existence. Assert two LAWS
+  per step (violation = STOP, report):
+  - **monotonicity** — `P_min` only shrinks, `P_max` only grows,
+    so `bits`, every endpoint kill, and every rung-existence bit
+    are monotone (once yes, never no);
+  - **losslessness** (paper §6.2) — at each step, the running
+    interval byte-equals the one-shot interval of the conjunction
+    so far: `reduce` of both `p_min`s byte-equal, ditto `p_max`
+    (the running table and the one-shot table are different
+    presentations of the same generated product; reduce
+    canonicalizes both).
+  Headline numbers: the knowledge-decides rate (fraction of
+  `(L_S, φ)` where some prefix of the fact sequence settles or
+  refutes — compare against the free ground truth), the median
+  number of facts to decision, and the running-table growth curve
+  vs the census alignment-ratio prediction.
+
+  Deliverables `reference/giventhat/w0_endpoints.md`,
+  `w0_asym.md`, `w0_incremental.md` (+ `.csv` each): every number
+  the paper later cites in pure form comes from here; the report
+  carries the reproducibility (slots F13–F15).
 - **W1 — the MCC benchmark of [DPT25].** BLOCKED: needs the DPT25
   problem set (formulas + knowledge facts per model instance) landed
   in the repo by the user. Do not fetch external artifacts on your
   own initiative; when the data lands, a W1 protocol revision of this
   spec will accompany it. Until then W1 does not exist for you.
 
-**GT5 acceptance (W0):** reference files committed with headers,
-zero unexplained failure rows, the four summary tables present.
+**GT5 acceptance (W0):** the three reference files committed with
+headers, zero unexplained failure rows, zero W0c law violations (or
+the violation filed to theory — a monotonicity or losslessness break
+is a paper-level event), the summary tables present. W0a lands first
+(W0c consumes its digraph); W0b and W0c need GT2–GT4.
 
 ---
 
@@ -592,7 +642,7 @@ zero unexplained failure rows, the four summary tables present.
 ## 10. Report contract
 
 `research_notes/sos_giventhat_report.md` is the channel back to the
-theory thread; its skeleton (with pre-named finding slots F1–F13) is
+theory thread; its skeleton (with pre-named finding slots F1–F15) is
 committed next to this spec. Rules: every milestone acceptance writes
 its findings into the named slots; every to-theory item (E1
 escalations, T1 flips, T2 dossiers, tier-gap statistics, anything
