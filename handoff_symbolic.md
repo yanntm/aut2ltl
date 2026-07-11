@@ -15,7 +15,7 @@ work items + pointers only**; the report is the ledger.
    (C1–C10 components, E0–E9 experiments, M1–M5 milestones); its
    *State of play* block is current.
 3. `research_notes/sos_symbolic_report.md` — the ledger, findings
-   F1–F24 + Theory responses: every measured/green claim, plus
+   F1–F25 + Theory responses: every measured/green claim, plus
    recorded gaps.
 4. `research_notes/sos_symbolic.md` — the paper. Engine + E1 census
    results are integrated (current-state voice, no history); exactly
@@ -42,7 +42,8 @@ work items + pointers only**; the report is the ledger.
   `conformance_test` (C7 byte gate, Spot-backed; `conformance_diff.py`
   = side-by-side probe), `hoa_bridge_test` (C2 parser half: round-trip
   + corpus byte-parity), `slotperm_test` (C9 `slot_perm`:
-  perm-invariant readings, byte-equal `.sos`). Logs →
+  perm-invariant readings, byte-equal `.sos`), `member_test` (C10
+  §6.1: closure-free membership, three-way exact). Logs →
   `tests/sos_sdd/logs/`, never /tmp.
 - **Sweeps are NEVER one process** (OOM'd once, near machine crash:
   libDDD's unique table is never GC'd, diagrams accumulate across
@@ -57,44 +58,55 @@ work items + pointers only**; the report is the ledger.
 **The full pipeline works end to end**: `Engine(...).build(aut,
 until_phase=6)` runs Phases 0–6; `to_sos()` is **byte-identical to the
 explicit reference** on every same-AP instance tried (spec §3
-conformance gate — F14). Per component: C1–C3 (primitives, letter
-classes, layered closure — layers kept, load-bearing), C4 complete
-(pairing π + squaring shortcut, modes `off`/`check`/`on`), C5
-(profiles + residuals, `src/residuals.hh`), C6 (congruence,
-`src/congruence.hh`), C7 (quotient + `.sos`, `sos_sdd/quotient.py`,
-`quotient="explicit"` only), C8 (async product generators, factored +
-flat). Refused loudly, never ignored: `quotient="symbolic"`, products
-at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
-`slot_perm`, non-packed `slot_encoding`, unknown `square` values.
+conformance gate — F14; corpus-scale on 6102 instances — F17). Per
+component: C1–C3 (primitives, letter classes, layered closure —
+layers kept, load-bearing), C4 complete (pairing π + squaring
+shortcut, modes `off`/`check`/`on`), C5 (profiles + residuals,
+`src/residuals.hh`), C6 (congruence, `src/congruence.hh`), C7
+(quotient + `.sos`, `sos_sdd/quotient.py`, `quotient="explicit"`
+only), C8 (async product generators, factored + flat), C9 `slot_perm`
+(indirection rendering, F24), E1 closed (census + covariates +
+read-offs, F17–F23), **C10 started**: §6.1 membership closure-free in
+`sos_sdd/calculus.py` (digest-side, never imports `_core` — F25).
+Refused loudly, never ignored: `quotient="symbolic"`, products at
+Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
+`slot_perm`, non-packed `slot_encoding`, unknown `square` values,
+ambiguous word cubes in membership.
 
 ## Work items — engineering (in order)
 
-1. ✅ **E1 fully done** (F17–F22): bridge `sos_sdd/hoa.py`
-   (`digest_twa`, verbatim; import via standard APIs), driver
-   `tests/sos_sdd/e1_census.py`, covariate pass
-   `tests/sos_sdd/e1_covariates.py`, C5 cross-check
-   `tests/sos_sdd/residual_crosscheck.py`. Data (tracked):
-   `tests/sos_sdd/reference/e1_census.csv` + `e1_covariates.csv`.
-   Conformance green on all 6102 completed corpus instances; |EM¹|
-   corroborated three ways (model count / explicit BFS / byte gate);
-   120 TIME_BUDGET at 10 s (1.9 %, mostly `3state2ap2acc_parity`).
-2. ✅ **E1 wrap-up done:** `tests/sos_sdd/e1_readoff.py` adopted (F23
-   numbers reproduced exactly), name-token stratification pruned.
-3. ✅ **C9's `slot_perm` done** (F24): indirection rendering recorded
-   in the README, gate `slotperm_test` green (perm-invariant readings,
-   byte parity under every perm; block-interleaving a factored product
-   inflates nodes 19→82, block-preserving perms neutral).
-4. ⏳ **C9 remainder / C10** — fp disciplines (`fp1`/`fp5` `chaining` /
+1. ⏳ **C10 remainder** (paper §6 is the spec; E9's gates are the
+   deliverable). §6.1 done (F25). Remaining, in dependency order:
+   - **Same-table Boolean algebra (§6.2):** grounded accept-mask sets
+     are closed under ¬/∧/∨ (single-block), so the ops are mask-set
+     algebra — but honest E9 pricing ("same-table ops are free")
+     needs Phases 3–5 **re-runnable under a different `Acc` on a
+     shared Phase 1–2 core** (today `residuate`/`congruence` run once
+     inside `_core.build`). Core API change to design.
+   - **Alignment (§6.3):** the sync-product slot model (shared-AP
+     letter-class refinement — E4's generator) + Phase 1 on the
+     aligned space + the **per-block π assembly** (Prop 6.1; the
+     spec's assertion: Comp never applied on the aligned space). The
+     π lift rendering is a libDDD design point — settle with the user
+     first (applyRel-style block application vs pairing with
+     block-local case splits).
+   - **§6.4 queries:** `S` projection, `Bad` intersection,
+     included/equiv/empty; **witness** = C7's extraction retargeted
+     at a set (backward preimages + forward least-letter walk).
+   - **§6.5:** rooting = move ι (re-parameterization); inverse
+     substitution = composed letter maps + re-closure (automatically
+     inside EM¹ — generators are old elements).
+   - **E9 gates:** commutation (op-then-reduce byte-equal to
+     reduce-then-op, vs the reference on the operated automaton),
+     witness minimality vs brute-force lasso enumeration,
+     deferred-reduce priced.
+2. ⏳ **C9 remainder** — fp disciplines (`fp1`/`fp5` `chaining` /
    `saturation` — E8's axis; a non-layered Phase 1 must run a costed
    length-reconstruction pass for shortlex), split slot encodings
-   (`split-sm` / `split-il` — E7's axis), and the §6 calculus
-   operators (member / Boolean algebra / align / included / witness /
-   reduce; the `.sos` residuals trailer can ride the witness
-   machinery). Paper §6 is the spec; C10 gates compare against
-   Spot-side oracles, bounded.
-5. ⏳ **E2's second component family** + per-point budget sweeps at
+   (`split-sm` / `split-il` — E7's axis).
+3. ⏳ **E2's second component family** + per-point budget sweeps at
    scale; E3 order sweeps (unblocked — `slot_perm` is live).
-6. **E5/E6 per the spec protocols (read them before running):**
+4. **E5/E6 per the spec protocols (read them before running):**
    E5a = parse the retained census stats JSONLs
    (per-phase time/peak nodes on the 6102 completed; if not retained,
    stratified ~200 rerun); E5b = the 120 TIME_BUDGET rows at 60 s /
@@ -102,9 +114,9 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
    *explicit reference* under the same caps — the corpus `sos/` tier
    is NOT the explicit column. Kill-phase histograms are
    right-censored; never present one as a cost profile.
-7. Optional, cluster-sized: full-corpus C5 cross-check (sample of 25
+5. Optional, cluster-sized: full-corpus C5 cross-check (sample of 25
    done).
-8. Housekeeping when touched: milestones append ledger rows to the
+6. Housekeeping when touched: milestones append ledger rows to the
    report AND sync the spec's *State of play*; paper only when a
    `⟨TBD⟩` becomes measurable.
 
@@ -150,7 +162,8 @@ recorded in the report's Theory-responses section.
 - Assertions of the spec are structural where possible: no orbit walks
   in Phases 3–4 (`residuals.hh`), no ExprHom include in `congruence.hh`
   (the rotation lemma as an include list), squaring divergence decided
-  by the round cap.
+  by the round cap, membership closure-free (`calculus.py` never
+  imports `_core`).
 
 ## Concurrent editors — stay in your sphere
 
