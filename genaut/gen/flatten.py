@@ -239,11 +239,39 @@ def build_canon(corpus: str, out_root: str, exclude: Tuple[str, ...]) -> Dict:
     `<tag>_<id>` name is preserved. Heavier than `flatten` (it runs the sosl
     construction per language), so it imports sosl lazily."""
     sys.path.insert(0, os.path.join(_REPO, "sosl"))
+    import buddy                                           # noqa: E402
     import spot                                            # noqa: E402
     from sosl.sos.build.importer import canonical          # noqa: E402
     from sosl.sos.core.quotient import invariant_of        # noqa: E402
     from sosl.sos.io.serialize import dump_invariant, load_invariant  # noqa: E402
+    from sosl.sos.minimize import free_aps, remove_free_aps  # noqa: E402
     from sosl.sos.relabel import canonical_relabeling      # noqa: E402
+
+    def minimize_alphabet(D: "spot.twa_graph") -> "Tuple[spot.twa_graph, object]":
+        """`D` and its invariant at the language's minimal alphabet.
+        `remove_unused_ap` drops edge-absent APs; then any **free** AP (edge-present
+        but language-irrelevant, `sos.minimize.free_aps` off the invariant) is
+        exist-quantified from every edge and the automaton re-canonicalized —
+        `canonical` determinizes the result — until none remain. Keeping det and
+        `.sos` at the same minimal alphabet is what makes `relabel_hoa` and the
+        complement cross-check below agree."""
+        D.remove_unused_ap()
+        inv = invariant_of(D)
+        while free_aps(inv):
+            for i in free_aps(inv):
+                v = buddy.bdd_ithvar(D.register_ap(spot.formula_ap(inv.alphabet.aps[i])))
+                for e in D.edges():
+                    e.cond = buddy.bdd_exist(e.cond, v)
+            # Quantifying merges the AP's two branches, so the automaton is now
+            # nondeterministic; clear the stale determinism/completeness flags or
+            # `canonical` (spot.postprocess) trusts them and skips re-determinizing.
+            D.prop_deterministic(False)
+            D.prop_universal(False)
+            D.prop_complete(spot.trival_maybe())
+            D = canonical(D)
+            D.remove_unused_ap()
+            inv = invariant_of(D)
+        return D, inv
 
     det_dir = os.path.join(out_root, "flat_canon", "det")
     sos_dir = os.path.join(out_root, "flat_canon", "sos")
@@ -265,15 +293,15 @@ def build_canon(corpus: str, out_root: str, exclude: Tuple[str, ...]) -> Dict:
             if not os.path.isfile(det_src):
                 continue
             # The det, canonicalized and alphabet-minimized, is the ground truth.
-            # `remove_unused_ap` sheds every AP no edge mentions (spot only folds
-            # the all-`t` case on its own; a declared-but-unused AP otherwise
-            # stays — cf. aut2ltl/language.py), so a language recurs at exactly one
-            # alphabet size: `GF a` over `{a}` and over `{a,b}` fold together, and
-            # `universal` collapses to 0 APs. We key off this, never the stored
-            # .sos, which a sampled entry may leave non-minimal.
+            # `minimize_alphabet` sheds every AP the language does not need — both
+            # edge-absent (`remove_unused_ap`) and edge-present-but-free — so a
+            # language recurs at exactly one alphabet size: `GF a` over `{a}` and
+            # over `{a,b}` fold together, `universal` collapses to 0 APs, and a
+            # draw that ignores one of its letters keys at its true alphabet. We key
+            # off this, never the stored .sos, which a sampled entry may leave
+            # non-minimal.
             D0 = canonical(spot.automaton(open(det_src).read()))
-            D0.remove_unused_ap()
-            inv = invariant_of(D0)
+            D0, inv = minimize_alphabet(D0)
             sigma, canon_inv = canonical_relabeling(inv)
             canon_sos = dump_invariant(canon_inv)
             if canon_sos in seen:
