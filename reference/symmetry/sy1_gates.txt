@@ -1,7 +1,11 @@
+FIX_A: |C| = 3  APs = ('a', 'b')  |P| = 1  |linked| = 3  (sosl/tests/symmetry/logs/fixtures/out/FIX_A/sos_ab/fix.sos)
+FIX_B: |C| = 5  APs = ('a', 'b')  |P| = 1  |linked| = 9  (sosl/tests/symmetry/logs/fixtures/out/FIX_B/sos/FIX_B/fix.sos)
+FIX_C: |C| = 3  APs = ('a',)  |P| = 2  |linked| = 4  (sosl/tests/symmetry/logs/fixtures/out/FIX_C/sos/FIX_C/fix.sos)
+FIX_E: |C| = 7  APs = ('a',)  |P| = 2  |linked| = 8  (sosl/tests/symmetry/logs/fixtures/out/FIX_E/sos/FIX_E/fix.sos)
 gate 1 (group law + pin): OK
   FIX_A/f0 not a symmetry; witness lasso stem=() loop=(0,) (letters as ('a', 'b')-masks)
   FIX_A/t01 not a symmetry; witness lasso stem=() loop=(1,) (letters as ('a', 'b')-masks)
-gate 2–4 (FIX_A): OK (0.3s)
+gate 2–4 (FIX_A): OK (0.2s)
   FIX_B/f1 not a symmetry; witness lasso stem=() loop=(2,) (letters as ('a', 'b')-masks)
   FIX_B/f0 not a symmetry; witness lasso stem=() loop=(1,) (letters as ('a', 'b')-masks)
 gate 2–4 (FIX_B): OK (0.2s)

@@ -3,12 +3,14 @@
     python3 -m tests.symmetry.sy1_summary   # reads logs/sy1_generators.csv,
                                             # writes logs/sy1_summary.md
 
-Pure aggregation — no corpus access, no re-checks; regenerating the CSV
+Aggregates the campaign CSV and counts the corpus `.cat` classification
+tags (LTL bit, stutter tag) — no re-checks; regenerating the CSV
 (`sigma_gate --campaign`) then this script reproduces every number in report
-findings F2–F4.
+findings F2–F4 and the report's corpus note.
 """
 from __future__ import annotations
 
+import glob
 import os
 from collections import Counter
 from typing import Dict, List
@@ -16,6 +18,9 @@ from typing import Dict, List
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _CSV = os.path.join(_HERE, "logs", "sy1_generators.csv")
 _OUT = os.path.join(_HERE, "logs", "sy1_summary.md")
+_CORPUS = os.path.abspath(
+    os.path.join(_HERE, "..", "..", "..", "genaut", "corpus", "flat_canon", "sos")
+)
 
 
 def main() -> None:
@@ -74,6 +79,17 @@ def main() -> None:
         out.write(f"- cases: **{n_cases}**")
         out.write(f" (by AP count: {dict(sorted(by_n.items()))})\n")
         out.write(f"- status: {dict(status)}\n")
+        ltl = Counter(); stutter = Counter()
+        for cat in sorted(glob.glob(os.path.join(_CORPUS, "*.cat"))):
+            for line in open(cat):
+                if line.startswith("ltl:"):
+                    ltl[line.split(":", 1)[1].strip()] += 1
+                elif line.startswith("stutter:"):
+                    stutter[line.split(":", 1)[1].strip()] += 1
+        out.write(
+            f"- corpus `.cat` tags: LTL {dict(sorted(ltl.items()))}, "
+            f"stutter {dict(sorted(stutter.items()))}\n"
+        )
         out.write(
             f"- candidate checks with kernel+obstruction law asserted: "
             f"**{checks}** — zero violations (a violation aborts the run)\n"

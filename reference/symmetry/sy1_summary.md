@@ -7,6 +7,7 @@
 
 - cases: **6222** (by AP count: {'0': 2, '1': 4006, '2': 1438, '3': 776})
 - status: {'ok': 6222}
+- corpus `.cat` tags: LTL {'no': 2484, 'yes': 3738}, stutter {'invariant': 896, 'sensitive': 5326}
 - candidate checks with kernel+obstruction law asserted: **69742** — zero violations (a violation aborts the run)
 - wall per case ms: median 5.8, p95 142.9, max 4277.1
 
