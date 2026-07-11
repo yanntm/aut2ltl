@@ -470,3 +470,22 @@ against M1's number exactly.
 *Left with the corpus keeper.* Only file placement/naming of *stored*
 chain families: M5's gate generates its chains seeded and in-test, so
 storage becomes real at M6/E4 — decide then.
+
+*Addendum (2026-07-11, same session, user go): the convention is now
+primary, not embedded.* Since the state-labelled model is the
+classical one and the translation is mechanical, the paper's
+definitions were moved to it from the start: §2.3 defines
+`M = (Q, P, ι, ℓ)` with the path word `ℓ(s₀)ℓ(s₁)…` and the Bernoulli
+chain `B_p` (states `Σ`, `ℓ = id`, rows and `ι` equal to `p`); §3.5
+fixes the path-label convention (letters of states *entered*, so
+labels concatenate) and states Thm 3.5 with the product starting at
+`(s₀, λ(ℓ(s₀)))`, `s₀ ~ ι`; the proof is unchanged; Thm 3.4 is now
+"the case `M = B_p`" (the one-state punchline was the only casualty —
+a one-state Moore chain emits `ℓ(q)^ω`). The Mealy reading became the
+embedded one (§2.3 parenthetical: a state per (letter, target) pair).
+Point (1) above's pre-initial-state embedding is thereby obsolete;
+spec §11 is unaffected (it was already written Moore-native, §11.2
+updated to cite the theorem directly). The theorem gains an initial
+distribution `ι`, of which `.mc`'s single init is the Dirac
+restriction; the §11.5 Bernoulli-embedding gate is precisely an
+`ι`-linearity check.
