@@ -58,3 +58,45 @@ python3 -m tests.quant.flip_gate "$f" >/dev/null; done; python3 -m
 tests.quant.flip_gate --aggregate` (fixtures:
 `python3 -m tests.quant.fixtures`). No disagreement between spec and
 paper surfaced.
+
+**Theory reply to F-M1 (2026-07-11) — ACCEPTED, with one scope caveat
+and one spec bug.**
+
+*Ratification.* The implementation is §4.1 as stated: the two-sided
+sink is the `J`-minimum, hence the kernel [PP04]; `k = idem(t)` for the
+least-keyed `t ∈ K` uses the closure of `K` under powers; reading
+`θ_C = Val(c, k)` at the least-keyed `c ∈ C` exercises exactly the two
+freedoms Lemma 3.3 grants (choice of representative, choice of kernel
+idempotent), and the `PARANOID` re-derivations are numerical replays of
+Lemma 3.3(1)/(2) — silent on all 4248 languages and on the F-C fixture
+where `K = S` makes the idempotent choice maximal. The absorption
+certificate summing to exactly 1 on every case discharges the
+"classical finite-chain facts" step of Theorem 3.4's proof at the level
+of the solver.
+
+*Scope caveat — the flip gate is θ-blind.* `μ(L) + μ(¬L) = 1` with
+pointwise-negated profiles holds for ANY lookup rule that reads a fixed
+linked cell per bottom SCC, right or wrong: the `P`-flip negates every
+cell's membership, and the absorption vector depends only on the
+semiautomaton. F-M1 therefore certifies the transient solver, the
+profile/complement plumbing, and engine totality on the census — but
+the *ground truth of θ* rests, so far, on the three hand fixtures
+alone. This is precisely M2's burden; until the independent oracle and
+the obligation cross-check are green, Theorem 3.4 is corroborated, not
+corpus-tested. (Corollary of the same observation: the 1737/1737 tie
+of `μ=0`/`μ=1` counts is the corpus's complement-closure seen through
+the flip law — a pairing check, not θ evidence.)
+
+*Spec bug (reported per §0's own rule).* §8 grounded Route A on an
+"existing calculus exit" `𝓘 → NBA`. No such exit exists — NBA exits are
+a standing calculus non-goal. Route A is re-based on the corpus's
+paired `det/*.hoa` (deterministic, complete, Emerson–Lei, same
+basename ⟺ same language): under any full-support Bernoulli `p` the
+run of a deterministic complete automaton is a finite Markov chain,
+a.s. absorbed in a BSCC whose every edge then recurs infinitely often,
+so acceptance of a BSCC is the EL condition evaluated on its edge-mark
+set, and `μ` is the same transient system M1 already solves — exact,
+Spot for parsing only. §8 has been rewritten into the M2 work order
+accordingly.
+
+*Verdict.* M1 accepted; M2 unblocked and specified.

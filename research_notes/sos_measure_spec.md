@@ -5,16 +5,17 @@
 | item | state |
 |---|---|
 | **M1: θ-profile + measure + fixture/flip gate (§1–§6)** | **DONE (2026-07-11)** — `sosl/sosl/quant/` (placement provisional), fixtures exact, flip gate 4248/4248 green, `reference/quant/m1_measure.{md,csv}`, finding F-M1 |
-| M2 = QNT2: Route A oracle + full metamorphic harness (§8) | NEXT — unblocked by M1 |
+| M2 = QNT2: Route A oracle + metamorphic harness (§8) | **OPEN — the current work order; §8 is self-contained** |
 | M3 = QNT1c: distance on aligned tables (§9) | LATER — needs M1 |
 | M4 = QNT3: entropy (§10) | LATER — independent of M2/M3 |
 | M5 = QNT4: the Markov product `Pr_M(L)` (§11) | LATER — needs M1+M2 |
 | M6 = QNT5: census campaign + pipeline demo (§12) | LAST |
 | MDPs, semiring-valued `Val`, Hausdorff dimension, performance work | **NON-GOALS** (§13) |
 
-An implementer starting cold for M1 reads: §0–§6 of this file, nothing
-else, then works the order of §2. Do not read `docs/HISTORY.md`. Do not
-start M2–M6.
+An implementer starting cold for M2 reads: §0 and §8 of this file, plus
+the §2 module map for what M1 provides. Do not read `docs/HISTORY.md`.
+Do not start M3–M6. (§1–§6 remain the normative description of the M1
+engine they would be extending.)
 
 **Normative math.** `research_notes/sos_measure.md` (the paper):
 Lemmas 3.1–3.3, Theorem 3.4, and the §4.1 algorithm are what M1
@@ -235,19 +236,94 @@ review — do not begin M2.
 
 ---
 
-## 7. Later milestones — reference only (do NOT start these in M1)
+## 7. Milestone sections — M2 (§8) is the work order; §9–§12 reference only
 
-## 8. M2 (QNT2) — Route A oracle + full metamorphic harness
+## 8. M2 (QNT2) — Route A oracle + metamorphic harness
 
-Independent measure via the exit acceptor: exit `𝓘 → NBA` (existing
-calculus exit), determinize through Spot (bounded-or-skipped, budget
-per case; a skip is a datum, never a wait), then the classical BSCC
-analysis on the deterministic automaton with the same hand-rolled
-`Fraction` solver. Laws beyond the flip: modularity
-`μ(L₁∪L₂) + μ(L₁∩L₂) = μ(L₁) + μ(L₂)` on aligned pairs; inclusion ⟹
-`μ` monotone; trichotomy `p`-freeness under 3 random full-support
-rational `p`; obligation cross-check (θ vs the stem-`R`-class verdict
-of the calculus paper's Thm 3.10 on obligation-band census entries).
+The ground rules of §0 stand (exact `Fraction`s in every verdict path,
+placed scripts, one input per invocation, ≤15s per case, ~500 LOC
+files, context-free docstrings, layering), with one relaxation: **Spot
+is allowed in M2 for parsing and acceptance read-out only** — never for
+construction, always bounded-or-skipped; a skip is a datum, never a
+wait. New code continues in the M1 package (`quant/`), new tests in
+`tests/quant/`.
+
+### 8.1 Scope — one sentence
+
+An independent measure oracle on each census language's paired
+deterministic automaton, plus four exact laws that test θ where the
+flip law is blind (see the F-M1 theory reply in
+`sos_measure_report.md`), corpus-wide.
+
+### 8.2 Work order
+
+1. `quant/routea.py` — the oracle (§8.3).
+2. `tests/quant/oracle_gate.py` — law L1, one corpus `.sos` per
+   invocation (its `det/` mate found by basename).
+3. `tests/quant/law_gate.py` — laws L2–L4 on sampled aligned pairs
+   (argv = two `.sos` paths), law L5 on obligation-band rows (argv =
+   one `.sos` path).
+4. Machine report `reference/quant/m2_oracle.{md,csv}` (date / git-rev
+   / seed / corpus header) and finding row(s) in
+   `sos_measure_report.md`, regeneration commands included. Stop; hand
+   back.
+
+### 8.3 Route A (the oracle)
+
+Substrate: the corpus pairs every `sos/X.sos` with `det/X.hoa` — a
+deterministic, **complete** automaton with Emerson–Lei acceptance on
+transitions, same basename ⟺ same language. On it, under a
+full-support rational `p` on the letter masks:
+
+- The automaton states are the chain states; `δ(q, a)` is unique, so
+  the transition probability `q → q'` is the exact `Fraction`
+  `Σ { p(a) : δ(q, a) = q' }`.
+- Bottom SCCs of that chain (the BSCCs), same pass shape as §3.1.
+- A run absorbed in a BSCC `B` a.s. traverses **every** edge of `B`
+  infinitely often (finite irreducible chain, every edge positive), so
+  the run accepts iff the EL condition evaluates true on the mark set
+  of `B`'s edges: `Inf(m)` ⟺ `m` occurs on some `B`-edge, `Fin(m)` ⟺
+  it occurs on none. One evaluation per BSCC (Spot exposes the parsed
+  acceptance condition; evaluate it on the mark set, e.g.
+  `acc.accepting(marks)`).
+- The §3.4 transient system with these BSCC bits as boundary;
+  `μ_A = x_{init}`. Reuse the M1 solver — do not write a second one.
+
+Spot's role ends at parsing the HOA and exposing the acceptance
+formula. A parse failure or blown budget is a recorded skip.
+Assert the HOA's AP set matches the invariant's alphabet.
+
+### 8.4 The laws
+
+- **L1 — oracle agreement (corpus-wide):** `measure(𝓘(X)).value ==
+  μ_A(det/X.hoa)` exactly, under uniform `p` AND one fixed skewed `p`
+  (`p(a) ∝ 1 + rank(a)`, normalized; rank = letter mask value). Per
+  file, both `p`'s in one invocation.
+- **L2 — modularity (sampled aligned pairs):** on one aligned table,
+  `μ(P₁|P₂) + μ(P₁&P₂) == μ(P₁) + μ(P₂)` exactly (free surgeries `|`
+  and `&`; `measure` runs on the aligned, non-reduced table — M1
+  supports this by construction).
+- **L3 — monotonicity (same aligned pairs):** if the calculus
+  `included` says `L₁ ⊆ L₂` then `μ(L₁) ≤ μ(L₂)`.
+- **L4 — trichotomy `p`-freeness:** 3 random full-support rational
+  `p` per file, fixed seed recorded in the report header: the
+  0 / interior / 1 trichotomy of `μ_p` equals the profile read-off
+  (all-0 / mixed / all-1) for every `p`.
+- **L5 — obligation cross-check:** on census rows whose `.cat` sidecar
+  lies in the obligation band: for every bottom SCC `C`, `θ_C` equals
+  the constant stem verdict of `C`'s linked stems (the calculus
+  paper's Thm 3.10, made numerical) — an independent θ check that
+  needs no automaton at all.
+
+Sampling for L2/L3: the first-1000-uniform-pairs precedent of
+`reference/calculus/v1_*`; one pair per invocation.
+
+### 8.5 M2 is DONE when
+
+L1 is green (or skipped-with-datum, skip rate reported) on the full
+census under both `p`'s; L2–L5 green on their samples; the report
+files exist with regeneration commands; any red row = stop and report.
+Then hand back — do not begin M3/M4.
 
 Fixture additions (F-D, F-E) — promote the paper's two worked examples,
 hand-verified there: **F-D** = "some `a` at infinitely many even
