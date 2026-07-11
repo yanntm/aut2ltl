@@ -13,8 +13,11 @@ the successors ``p.a`` / ``q.a`` moves the letter ``a`` into the column's prefix
 
 Saturation (`sosl.learn.saturate`) turns the right congruence into the syntactic
 two-sided one; it is skipped under ``saturation=False`` (the M2 ablation), which
-still converges but only to an acceptance-correct — not necessarily canonical —
-fixpoint.
+still converges but only to an acceptance-correct fixpoint — the certified
+Cayley acceptor. Export then refuses (`NotCongruent`) unless that fixpoint
+happens to be a congruence, in which case it is canonical (paper Theorem 5.3);
+``unchecked_export`` bypasses the refusal to *display* the raw read-off
+(diagnostic fixtures only, never a deliverable).
 """
 from __future__ import annotations
 
@@ -82,14 +85,16 @@ def _stabilize(table: Table) -> Partition:
 
 def learn(
     teacher: Teacher, alphabet: Alphabet, stats: Optional[Dict[str, int]] = None,
-    saturation: bool = True,
+    saturation: bool = True, unchecked_export: bool = False,
 ) -> Invariant:
     """Learn the canonical invariant of the teacher's language over ``alphabet``.
 
     With ``saturation`` (the default), the two-sided-congruence sweep runs to a
     fixpoint before every equivalence query, so the exported invariant is sound;
-    with it off (the M2 ablation, experiment E2) the learner still converges to an
-    acceptance-correct fixpoint but not necessarily the canonical one.
+    with it off (the M2 ablation, experiment E2) the learner still converges to
+    an acceptance-correct fixpoint, and export refuses (`NotCongruent`) when
+    that fixpoint is not a congruence — unless ``unchecked_export`` asks for the
+    raw read-off (diagnostic display only).
 
     If ``stats`` is given it is populated with basic run counters (learned class
     count, membership queries, equivalence queries, counterexamples, saturation
@@ -115,7 +120,11 @@ def learn(
         if isinstance(result, Equivalent):
             if TRACE_ON:
                 trace("LEARN", f"EQUIVALENT ({result.strategy}) classes={p.n}")
-            inv = export(p, teacher.member)
+            # A saturated run's final sweep just ran clean, so the congruence
+            # check is already done; only the ablation needs it (or skips it,
+            # for the unchecked display).
+            inv = export(p, teacher.member,
+                         check=not saturation and not unchecked_export)
             if stats is not None:
                 stats.update(
                     learned_classes=inv.n,
