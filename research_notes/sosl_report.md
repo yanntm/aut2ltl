@@ -2039,6 +2039,23 @@ sweep came back **clean: 8496 rows (4248×2 legs), 0 duplicates, 0 FAIL, 0 CRASH
 complete (3186/3186 modes OK); only the `ours` kind timed out (see trap 6).
 Recording the operational lessons so the next drop is one pass.
 
+**The committed record (item 9 — corpus is now v2, so these cannot be
+re-derived).** Both load-bearing CSVs, immutable per drop, live under
+`reference/census/` (provenance + per-number reproduce commands in
+`reference/census/README.md`):
+
+- **Sweep tally** — `reference/census/sweep_results.csv` (8496 rows). Reproduce
+  the row count / 0-duplicate / verdict tally above with the one-liner in the
+  README (a direct `csv.DictReader` over `case_id,config_id,…,verdict`); it
+  yields `8496 | distinct 8496 | dups 0` and `SOUND 5897, ACCEPTOR_ONLY 2405,
+  BUDGET 192, OVERSIZE 2` (no `FAIL`/`CRASH` rows).
+- **E3 census** — `reference/census/e3_assembled.csv` (16992 rows = 4248 × 4
+  kinds, `ours` derived from the sweep) + `reference/census/e3_summary.md`.
+  Reproduce with `cd sosl && python3 -m tests.sosl.census_e3 --summary-only
+  --out-csv <copy-of-e3_assembled.csv>` → `median N=15 FDFA={periodic:17,
+  syntactic:24, recurrent:13}; size algebra smaller 1488 / larger 2551 / tied
+  199`.
+
 **The recipe that worked.**
 1. Plan with `cluster_plan` (sweep) and `--e3`, raising the cap via
    `OARRUN_TIMEOUT=300` in the env — it is *sourced* by both the planner (chunk
