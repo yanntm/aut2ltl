@@ -942,20 +942,20 @@ One line per move; `n` is the class count of the relevant table,
 
 | move / query | cost | output |
 |---|---|---|
-| entry: construct `𝓘(L)` from `D` | dominated by `|EM(D)| ≤ (|Q|·2^{|C|})^{|Q|}` [SωS26, §8] | the invariant |
-| align | `O(n₁·n₂·|Σ|)` steps, `≤ n₁·n₂` nodes | shared table + two verdict maps |
-| Boolean surgeries, rooting | `O(|linked|)` | pair set, same table |
-| saturation / legality check | `O(|linked|·n²)` | pair set (run rarely) |
-| inverse substitution | `O(|Σ'|)` + reduce | same table, new letter map; reduce before byte-level use |
-| lasso membership | `O(|u| + |v|)` | bit |
+| entry: construct `𝓘(L)` from `D` | dominated by `\|EM(D)\| ≤ (\|Q\|·2^{\|C\|})^{\|Q\|}` [SωS26, §8] | the invariant |
+| align | `O(n₁·n₂·\|Σ\|)` steps, `≤ n₁·n₂` nodes | shared table + two verdict maps |
+| Boolean surgeries, rooting | `O(\|linked\|)` | pair set, same table |
+| saturation / legality check | `O(\|linked\|·n²)` | pair set (run rarely) |
+| inverse substitution | `O(\|Σ'\|)` + reduce | same table, new letter map; reduce before byte-level use |
+| lasso membership | `O(\|u\| + \|v\|)` | bit |
 | emptiness / universality | `O(n²)` `Val` | bit + minimal lasso |
-| inclusion / equivalence / intersection-word | `O(|nodes|²)` verdicts on the aligned table | bit + minimal lasso |
+| inclusion / equivalence / intersection-word | `O(\|nodes\|²)` verdicts on the aligned table | bit + minimal lasso |
 | equivalence of reduced objects | byte comparison | bit |
-| reduce | `O(n²)` `Val` + `≤ n` rounds × `O(n·|Σ|)` | *the* canonical invariant |
-| stutter-invariance | `O(|Σ|)` | bit (Prop 3.3) |
+| reduce | `O(n²)` `Val` + `≤ n` rounds × `O(n·\|Σ\|)` | *the* canonical invariant |
+| stutter-invariance | `O(\|Σ\|)` | bit (Prop 3.3) |
 | safety hull / interior / liveness part | `O(n²)` | pair sets, same table (Prop 3.5, Cor 3.6–3.7) |
-| obligation test | `O(|linked| + n·|Σ|)` | bit (Thm 3.10: stem-only verdict) |
-| Wagner degree within the obligation band | `O(n·|Σ|)` after SCCs | `(n⁺, n⁻)` = longest alternating DAG paths (Prop 3.11) |
+| obligation test | `O(\|linked\| + n·\|Σ\|)` | bit (Thm 3.10: stem-only verdict) |
+| Wagner degree within the obligation band | `O(n·\|Σ\|)` after SCCs | `(n⁺, n⁻)` = longest alternating DAG paths (Prop 3.11) |
 | ladder / index / Wagner read-offs | polynomial scans of the table | verdicts [SωS26, §7.2] |
 | `W·L`, `W^ω`, `remove_ap` | exponential (exit + re-entry) | §3.4 |
 
