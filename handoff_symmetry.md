@@ -72,11 +72,17 @@ their named sections.
 
 Theory queue, priority order (all are ⟨TBD⟩s in the paper):
 
-1. **Prove Prop 6.2** — the ω-sort of `θ_ap` (least aperiodic
-   congruence compatible with the pair structure; does the
-   collapse-and-close construction generate it exactly?). This is
-   the paper's best contribution and currently unproven;
-   make-or-break for standalone publication.
+1. **Prove Prop 6.2** — DONE (2026-07-11, commit 70ca83a82).
+   Lemma 6.2a: collapse-and-close IS the least aperiodic congruence
+   (proved); Lemma 6.2b: lifting + saturation law (pair set is a
+   language iff conjugacy-closed); full proof of Prop 6.2 incl. a
+   CORRECTION — hull acceptance is the conjugacy closure of `q(P)`
+   after projecting, one-shot `q⁻¹(q(P))` is not presentation-
+   independent — plus duality `kernel = ¬∘hull∘¬`. EvenHead/P5
+   unaffected (closure trivial there, now asserted). Spec §6.2
+   rewritten to match; F14 probe now gates the implementation.
+   Open sub-question kept in the paper as a remark: whether one
+   collapse round always suffices (census datum, F14).
 2. **Literature pass for Thm 3.1's folklore status** (automorphisms
    of syntactic monoids; minimal-DFA relabel-isomorphism is used in
    circuit symmetry detection) — decides how §3 is sold. Blocked
