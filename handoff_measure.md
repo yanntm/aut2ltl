@@ -10,7 +10,7 @@ only the file and section named for the task at hand — nothing else.
 | **paper** (normative math) | `sos_measure.md` | where spec and paper disagree, the paper wins; a disagreement is a finding, reported in the report — never silently "fixed" |
 | **spec** (engineering direction) | `sos_measure_spec.md` | milestones M1–M6; §0 ground rules are mandatory; an implementer reads §0 + the milestone section only |
 | **report** (results interface) | `sos_measure_report.md` | every finding lands here with its regeneration command; the paper cites no artifact — the report carries reproducibility |
-| **figures** | `sos_measure_figures.md` | FIG specs on the toltl model; artifact dir `sos_measure_figs/` (to create) |
+| **figures** | `sos_measure_figures.md` | FIG specs; artifact dir `sos_measure_figs/` — **FIG-1/2/3 built (2026-07-11)**, FIG-4/5 open |
 | memo (the map, historical) | `sos_quantitative.md` | superseded by the paper for math; do not work from it |
 
 ## State (2026-07-11)
@@ -57,8 +57,14 @@ only the file and section named for the task at hand — nothing else.
    chain format fixed with the corpus keeper first.
 3. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
    and abstract ⟨TBD⟩ slots through report findings only.
-4. **Figures** — FIG-1/2/3 buildable NOW on M1, FIG-4 now unblocked by
-   M3 (specs in the figures file; probes under `tests/quant/figs/`);
+4. **Figures** — FIG-1/2/3 **DONE (2026-07-11)**: artifact
+   `research_notes/sos_measure_figs/` (index `figures.md`, `Makefile`,
+   `reproduction.md`, `notes.md`, PNGs in `img/`, canonical `.sos`
+   sources F-D/F-E in `sources/`); probes in `sosl/tests/quant/figs/`
+   (`fig1`, `fig2`+`fig2_draw`, `fig3`, shared `tikz`/`cayley`,
+   `sources.py`). `make -C research_notes/sos_measure_figs` rebuilds
+   tex+png; every value read off the tested `sosl.quant` engine, probes
+   own placement only. FIG-4 now unblocked by M3 (its own session);
    FIG-5 blocked on M4/M6.
 5. Deferred until a user go-ahead: move `sosl/sosl/quant/` under
    `sosl/sosl/sos/`.
