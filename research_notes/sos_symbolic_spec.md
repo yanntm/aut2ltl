@@ -91,17 +91,16 @@ the derived-census driver, the engine's first consumer at scale),
   (`tests/sos_sdd/reference/e1_covariates.csv`, |EM¹| corroborated a
   third way on all 6102 — the monotone-marks metric operationalization
   awaits Theory blessing, F22).
-- **DONE (Theory round, 2026-07-11): the E1 escalations.** F22 blessed
-  with the stabilizer-closure lemma grounding it (report, F22
-  response; paper §4.2 rewritten with the lemma + the pooled 62 %
-  citation); F19 reconciled with E5/E6 — the kill
-  histogram is right-censored, Phase 3's verdict read is
-  crossing-shaped and now priced in §5's table, and E6 requires
-  budget parity (protocols appended to E5/E6 below). The scatter
-  correlates, the F22 strata and the §5 depth question were read off
-  the two tracked CSVs (report **F23**; regen
-  `tests/sos_sdd/e1_readoff.py`) and integrated into the paper (§5,
-  §8, abstract). Remaining paper ⟨TBD⟩: the E8 saturation study only.
+- **DONE (Theory): the E1 escalations + the paper reading.** F22
+  blessed — the stabilizer-closure lemma grounds the metric (paper
+  §4.2, pooled 62 %); Phase 3's verdict read is crossing-shaped and
+  priced in the paper's §5 table; E5/E6 carry their predictions and
+  protocols below (kill histograms are right-censored — never a cost
+  profile; E6 is budget-parity only). The scatter correlates and the
+  §5 depth question are read off the two tracked CSVs (report
+  **F23**; regen `tests/sos_sdd/e1_readoff.py`) and integrated
+  (abstract, §5, §8). Remaining paper ⟨TBD⟩: the E8 saturation study
+  only.
 - **TODO: everything else.** C9–C10 proper, E3–E9, M3–M5 (E2 still
   owes the second component family and per-point budget sweeps at
   scale; M2's E5 first profile still owed). Next candidates: C9
@@ -276,14 +275,13 @@ scatter and its correlates — which structure predicts compression.
 rows, with compression strongest on sparse-mark, letter-symmetric
 inputs.
 
-**Addendum (Theory, post-F22/F23).** The covariate operationalization
-is blessed (report, F22 response): per-`(slot, dst)` families,
-one-mark closure ⟺ upward closure; the paper cites the pooled 62 %,
-unstratified (canonical digests always carry ≥ 1 mark, so no trivial
-stratum exists; instance-name acc tokens are source-GBA provenance
-and must not enter any analysis). The correlate analysis is done
-(report F23): per-slot sharing dominates, algebra size next,
-upward-closure weak — E1 is closed *including* its paper reading.
+**Addendum (Theory).** The covariate operationalization is blessed
+(report, F22 response): per-`(slot, dst)` families, one-mark closure
+⟺ upward closure; the paper cites the pooled 62 %. Instance-name acc
+tokens are source-GBA provenance, never an analysis variable. The
+correlate analysis is done (report F23): per-slot sharing dominates,
+algebra size next, upward-closure weak — E1 is closed *including* its
+paper reading.
 
 ### E2 — asynchronous scaling (Proposition 4.1, measured)
 
@@ -325,18 +323,17 @@ is the point of measuring⟩.
 
 Per instance (census + scaling families): time and peak nodes per
 phase. **Paper deliverable:** the cost table of §5 with measured
-columns. **Prediction (revised by Theory, post-F19):** Phase 3's verdict read
+columns. **Prediction:** Phase 3's verdict read
 is crossing-shaped (a value-indexed slot select against the π pair
 space — §5 row 3 of the paper), so the expected peaks are Phase 2
 (building π) and Phase 3 (consuming it) on crossing-bound instances,
 and Phase 1 where closure itself is the wall; Phases 4 and 6
 negligible (the Phase 4 seed is absorbed by canonicity into `|Q|`
 predicate applications); Phase 5 intermediate (rounds × letter
-classes, slot-local). Phases 3/5 being macroscopic at the tail is now
-*expected*. A different profile is a paper edit (the §5 table's
-narrative).
+classes, slot-local). A different profile is a paper edit (the §5
+table's narrative).
 
-**Protocol (Theory, post-F19).** The census kill histogram is
+**Protocol.** The census kill histogram is
 right-censored — "died in phase p" charges unknown upstream spend to
 p — and cannot populate the cost table. E5a: parse the retained
 per-instance census stats JSONLs (if kept; else a stratified
@@ -353,26 +350,22 @@ verified completion), and the converse (diagram budget blown where
 explicit enumeration walks through — expected on unstructured inputs
 with incompressible monoids). **Paper deliverable:** the headline —
 whether the `|Q|` exponent *moved* from cardinality to diagram width on
-structured inputs. **Prediction:** the engine wins on products and
-loses nowhere on the census ⟨low confidence on the second half⟩.
+structured inputs. **Prediction:** the engine wins on the scaling
+families — include the E2/E3 points and record where the explicit
+tool caps on `16ⁿ` enumeration (find the crossover `n`). The census
+(`|Q| ≤ 3`, enumerated, `|EM¹| ≤ 12 225`) is the unstructured world
+where §4.3 predicts no engine win: expect the engine to lose ≲120
+census rows at 10 s against ~0 for the explicit tool, the loss column
+mostly closing at 60 s — that is the honest census column, not a bug.
 
-**Protocol (Theory, post-F19): budget parity or nothing.** The corpus
-`sos/` tier is NOT the explicit column — it was generated under its
-own budget on its own runs; rerun the explicit reference under the
-same caps. Same machine, same per-instance wall budget for both
-tools; two budget points, 10 s and 60 s (tail optionally 300 s);
-report all cells honestly (per tool: completions, kills by kind —
-engine `TIME_BUDGET`/`DIAGRAM_BUDGET` vs explicit
-`INCONCLUSIVE`/timeout). **Pre-registered:** at 10 s the engine loses
-on ≲120 census rows and the explicit tool on ~0 — the second half of
-the prediction above is expected to be *refuted* at small budgets,
-and the refutation is a paper edit (the honest two-column table), not
-a bug; at 60 s the engine column should mostly close. Framing pinned:
-the census (`|Q| ≤ 3`, enumerated, `|EM¹| ≤ 12 225`) is the
-unstructured world where §4.3 predicts no engine win; the win column
-lives on the scaling families — include the E2/E3 points and record
-where the explicit tool caps on `16ⁿ` enumeration (find the crossover
-`n`). Census extension shapes are the corpus thread's call, not E6's.
+**Protocol: budget parity or nothing.** The corpus `sos/` tier is NOT
+the explicit column — it was generated under its own budget on its
+own runs; rerun the explicit reference under the same caps. Same
+machine, same per-instance wall budget for both tools; two budget
+points, 10 s and 60 s (tail optionally 300 s); report all cells (per
+tool: completions, kills by kind — engine
+`TIME_BUDGET`/`DIAGRAM_BUDGET` vs explicit `INCONCLUSIVE`/timeout).
+Census extension shapes are the corpus thread's call, not E6's.
 
 ### E7 — variable-order sensitivity
 
