@@ -1008,7 +1008,7 @@ dynamic-programming sweep in reverse topological order per polarity).
 `C'_i = (s_i, E_i)` with every pair linked and the stems *strictly*
 `R`-decreasing; with `m(L) = 0` each chain is a single linked pair,
 the alternation of the chains' signs is alternation of
-`Val(s_i, e_i) = θ(s_i)` (Theorem 3.10(3)), and a strictly
+`Val(s_i, e_i) = θ(s_i)` (Theorem 6.6(3)), and a strictly
 `R`-decreasing stem sequence is a path in the DAG of the required
 shape. (≥) Conversely, an alternating path yields a superchain
 directly: take `C_i = ({s_i}, (e_i))` for any loop `e_i` of `s_i` — a
@@ -1028,7 +1028,9 @@ its interior is empty; but it is `cl(L)` minus the closed set
 `(n⁺, n⁻) = (1, 2)` — exactly the values computed by chain-juggling
 in [CP97, Ex. 10], here a two-edge longest-path read-off.
 
-## 4. The ledger against a production toolbox
+## 7. The ledger against a production toolbox
+
+### 7.1 One row per operation
 
 The table below sets the calculus against an automata toolbox, one row
 per everyday entry point, with Spot [DL+16, DL+22] as the reference
@@ -1047,63 +1049,20 @@ returns pair sets one `reduce` away from canonical.
 | lasso membership | run the lasso against the machine | one fold through `λ, M`, one `P` lookup |
 | left quotient | derivative construction | rooting `P_c`, free |
 | relabel / inverse subst. | rebuild | compose `λ`, free |
+| drop unconstrained APs | powerset-flavored `remove_ap` | free-AP read-off + alphabet quotient (§3.2) |
+| equality up to AP renaming | isomorphism-flavored search | relabel + reduce + byte compare, canonicity-pruned (§3.2) |
 | determinize | Safra/Zielonka | *meaningless* — object already canonical-deterministic; the cost sits at entry |
 | degeneralize / to-parity / acc transforms | bespoke constructions | *dissolved* — acceptance is `P`; the needed strength is a read-off |
 | minimize / simulation reductions | heuristic, model-bound (NP-c for DBA [Sch10]) | reduce: the normal form, always, uniquely |
-| stutter-invariance | `cl`/`sl` closures + product emptiness [MD15] | `λ(a)² = λ(a)` scan (Prop 3.3) |
-| safety/obligation/… tests | model-specific checks | safety/co-safety: `P = P̄` / `P = P̊` (Cor 3.6); obligation: stem-only verdict scan (Thm 3.10) |
-| safety closure / liveness split | closure construction (`cl`) | stem-liveness surgery `P̄`, `O(n²)` (Prop 3.5, Cor 3.7) |
+| stutter-invariance | `cl`/`sl` closures + product emptiness [MD15] | `λ(a)² = λ(a)` scan (Prop 5.1) |
+| safety/obligation/… tests | model-specific checks | safety/co-safety: `P = P̄` / `P = P̊` (Cor 6.2); obligation: stem-only verdict scan (Thm 6.6) |
+| safety closure / liveness split | closure construction (`cl`) | stem-liveness surgery `P̄`, `O(n²)` (Prop 6.1, Cor 6.3) |
 | acceptance index / Rabin index | condition transforms + tests | alternating-chain read-off [CP97] |
-| concatenation `W·L`, `W^ω` | native (nondeterminism) | exponential — intrinsic (§3.4) |
-| projection `remove_ap` | subset-flavored | exponential — the QPTL wall (§3.4) |
-| automaton → LTL | absent | [SωSX26] on the aperiodic side |
+| concatenation `W·L`, `W^ω` | native (nondeterminism) | exponential — intrinsic (§4) |
+| projection `remove_ap` | subset-flavored | exponential when constrained (§4); free when the AP is unconstrained (§3.2) |
+| automaton → LTL | absent | aperiodicity read-off (§5); extraction beyond this paper |
 
-**Exit constructions.** The calculus should end where the consumer
-needs. To an NBA: the classical decomposition
-`L = ⋃_{(s,e) ∈ P} X_s·(Y_e)^ω` over accepting pairs [PP04], where
-`X_c = { w : fold(w) = c }` is recognized by the right-Cayley DFA of the
-table (`|𝒞|` states, final state `c`), gives an acceptor polynomial in
-`|𝒞|` — `O(|P|·|𝒞|)` states by the standard stem–loop gadget. To LTL:
-via [SωSX26] when the table is aperiodic. To certificates: the
-witness/replay formats of [SωSX26, §4], always.
-
-**What cannot be simulated.** Anything needing branching semantics
-(games, synthesis) — the invariant is a linear-time object. And
-succinctness: `𝓘(L)` can be exponentially larger than a good
-nondeterministic presentation; the census [SωSN26] measures how often
-canonicity actually costs. The honest positioning: the calculus is not a
-back-end for one-shot translations; it is the substrate for pipelines
-that *keep* a language and work on it.
-
-**Implementation.** The calculus is implemented as a small pure library
-(the companion specification `sos_calculus_spec.md` fixes the package,
-the algorithms, and the milestones; align/operate/reduce and the full
-catalog above are in place). Every decision returns a replayable witness
-object; the soundness harness's deepest gates are (i) *metamorphic
-replay* — for every operation, membership in the result equals the
-corresponding Boolean combination of memberships in the inputs, checked
-exhaustively over all lassos with `|u|, |v| ≤ 3`; (ii) the *saturation
-law* — every catalog output is saturated in the sense of Proposition
-3.1, asserted on every harness case; (iii) a *duality gate* — the census
-corpus is complement-closed, so `reduce(P^c)` must byte-equal the stored
-complement on every corpus language; and (iv) the *corpus as equality
-oracle* — the canonical corpus holds one file per language, so
-`equivalent` must agree with filename identity, and every counterexample
-on a cross-file pair must replay against both sides. Run against Spot
-over the census, the ledger's rows come out as the table predicts, and
-the stutter-invariance read-off agrees with the automata-side check on
-every one of the census languages, with no disagreement — 648 of them
-stutter-invariant, better than a quarter of the LTL-definable class.
-The hull fragment of §3.6 is under the same discipline: the safety
-closure replays as prefix-liveness against each language's
-deterministic acceptor, and the obligation read-off and the band's
-degree (Theorem 3.10, Proposition 3.11) agree, on every census
-language, with the Wagner coordinates computed independently by the
-census's chain and superchain engines — the calculus reading off in
-one SCC pass what the classification side establishes by chain
-juggling.
-
-## 5. Complexity summary
+### 7.2 Cost summary
 
 One line per move; `n` is the class count of the relevant table,
 `linked ⊆ 𝒞²` its linked pairs, and costs count table lookups /
@@ -1121,25 +1080,159 @@ One line per move; `n` is the class count of the relevant table,
 | inclusion / equivalence / intersection-word | `O(\|nodes\|²)` verdicts on the aligned table | bit + minimal lasso |
 | equivalence of reduced objects | byte comparison | bit |
 | reduce | `O(n²)` `Val` + `≤ n` rounds × `O(n·\|Σ\|)` | *the* canonical invariant |
-| stutter-invariance | `O(\|Σ\|)` | bit (Prop 3.3) |
-| safety hull / interior / liveness part | `O(n²)` | pair sets, same table (Prop 3.5, Cor 3.6–3.7) |
-| obligation test | `O(\|linked\| + n·\|Σ\|)` | bit (Thm 3.10: stem-only verdict) |
-| Wagner degree within the obligation band | `O(n·\|Σ\|)` after SCCs | `(n⁺, n⁻)` = longest alternating DAG paths (Prop 3.11) |
+| stutter-invariance | `O(\|Σ\|)` | bit (Prop 5.1) |
+| free-AP test / drop | `O(\|Σ\|)` / + reduce | bit / smaller-alphabet invariant (§3.2) |
+| safety hull / interior / liveness part | `O(n²)` | pair sets, same table (Prop 6.1, Cor 6.2–6.3) |
+| obligation test | `O(\|linked\| + n·\|Σ\|)` | bit (Thm 6.6: stem-only verdict) |
+| Wagner degree within the obligation band | `O(n·\|Σ\|)` after SCCs | `(n⁺, n⁻)` = longest alternating DAG paths (Prop 6.7) |
 | ladder / index / Wagner read-offs | polynomial scans of the table | verdicts [SωS26, §7.2] |
-| `W·L`, `W^ω`, `remove_ap` | exponential (exit + re-entry) | §3.4 |
+| `W·L`, `W^ω`, `remove_ap` (constrained) | exponential (exit + re-entry) | §4 |
 
-The entry row is not an apology but a floor: deciding aperiodicity of an
+The entry row is a floor, not an apology: deciding aperiodicity of an
 ω-regular language — one read-off among the ones the object supports —
 is already PSPACE-complete (hardness from the finite-word case [CH91],
 the ω transfer as in [SωS26, §8] via [DG08]), so *some*
-exponential must sit somewhere in any substrate this complete. The
-calculus's design choice is to sit it at the gate, once, rather than
-inside every operation.
+exponential must sit somewhere in any substrate this complete; the
+calculus sits it at the gate.
 
-## 6. Related work
+### 7.3 Exit constructions
+
+The calculus should end where the consumer needs.
+
+- *To an NBA*: the classical decomposition
+  `L = ⋃_{(s,e) ∈ P} X_s·(Y_e)^ω` over accepting pairs [PP04], where
+  `X_c = { w : fold(w) = c }` is recognized by the right-Cayley DFA of
+  the table (`|𝒞|` states, final state `c`), gives an acceptor
+  polynomial in `|𝒞|` — `O(|P|·|𝒞|)` states by the standard stem–loop
+  gadget.
+- *To a canonical deterministic EL automaton*: the right-Cayley graph
+  of the table [SωS26, Def 5.2], completed by an acceptance condition
+  derived from `P` — a canonical (not minimal) deterministic acceptor,
+  and *counter-free exactly when `L` is LTL-definable*, since the graph
+  is the algebra acting on itself. The transformation is implemented —
+  the corpus of §8 pairs every invariant with the deterministic EL
+  acceptor this exit produces — and its adequacy proposition (the
+  verdict of a run is a function of its recurrent transition set, so an
+  Emerson–Lei condition over the Cayley edges suffices) is
+  ⟨TBD: Proposition 7.x, queued as the next theory increment⟩.
+- *To LTL*: gated by the §5 aperiodicity read-off; formula extraction
+  is beyond this paper.
+- *To certificates*: the witness and replay formats of §3, always.
+
+### 7.4 What the calculus refuses to simulate
+
+Anything needing branching semantics
+(games, synthesis) — the invariant is a linear-time object. And
+succinctness: `𝓘(L)` can be exponentially larger than a good
+nondeterministic presentation. The honest positioning: the calculus is
+not a back-end for one-shot translations; it is the substrate for
+pipelines that *keep* a language and work on it.
+
+## 8. Evaluation
+
+The calculus is implemented as a small pure library; every decision
+returns a replayable witness object. The corpus behind all measurements
+is complement-closed — one canonical invariant per language, each
+paired with the deterministic EL acceptor of the §7.3 exit — and held
+3938 small languages at measurement time. Spot [DL+16, DL+22] is the
+automata-side reference throughout; external calls are budgeted, and a
+blown budget is reported as a datum, never waited out.
+⟨TBD: refresh the corpus-derived numbers after the corpus regeneration
+(now 6222 languages)⟩
+
+### 8.1 The soundness harness
+
+Four gates, from unit-level to corpus-wide: (i) *metamorphic replay* —
+for every operation, membership in the result equals the corresponding
+Boolean combination of memberships in the inputs, checked exhaustively
+over all lassos with `|u|, |v| ≤ 3`; (ii) the *saturation law* — every
+catalog output is saturated in the sense of Proposition 3.1, asserted
+on every harness case; (iii) a *duality gate* — the corpus is
+complement-closed, so `reduce(P^c)` must byte-equal the stored
+complement on every corpus language; (iv) the *corpus as equality
+oracle* — one file per language, so `equivalent` must agree with
+filename identity, and every counterexample on a cross-file pair must
+replay against both sides. All four are green corpus-wide.
+
+### 8.2 The generated product is affordable (§3.3)
+
+Over 5000 uniformly sampled corpus pairs the realized ratio
+`|nodes|/(n₁·n₂)` has median **0.174**, p95 **0.356**, max **0.593** —
+81% of products below a quarter of the rectangle, none above 0.6. The
+two regimes of §3.3 are both visible: on 1000 language/complement
+pairs — related tables — the median falls to **0.063**; on 200 pairs
+drawn from the top-decile class counts, where a rectangle could hurt,
+the median is **0.119**. Cold BFS median below half a millisecond.
+
+### 8.3 The ledger, measured (§7.1)
+
+Warm medians on held objects: a containment decision **0.0083 ms**,
+lasso membership **0.0002 ms**, complement-and-reduce **0.175 ms**.
+Honesty note: the automata side is *faster in raw wall-clock* on these
+tiny deterministic automata (Spot's `dualize` at 0.0008 ms) — the
+inputs are deterministic, so no Safra is ever paid there; the theory
+row stands on the nondeterministic bound [TFVT10], and the ledger's
+argument is the operation *counts* and the normal-form structure, not
+the clock. Normal form and heuristic are never divided: the canonical
+intersection (materialize + pointwise `∧` + reduce, 2.4 ms) is a
+different product from Spot's raw `product` (0.0018 ms) followed by
+heuristic `postprocess` (0.033 ms) — one is byte-comparable and
+canonical, the other a presentation. `align` amortizes as §3.3
+predicts: at `k = 1 / 5 / 10` decisions on a held product the
+per-decision cost is 0.094 / 0.026 / 0.018 ms.
+
+### 8.4 The pipeline (§4)
+
+A four-stage pipeline (`E1 = ¬A`, `E2 = E1 ∩ B`, `E3 = ¬E2`,
+`E4 = E3 ∪ A`) over 20 corpus pairs: entering the calculus — building
+`𝓘(L)` from the deterministic acceptor — is a one-time **0.43 ms**,
+about 15% of the pipeline total; after it, every stage's "did my
+rewrite change the language" re-check is a byte comparison at
+**0.0001 ms** against Spot's `equivalent_to` at 0.0039 ms — and the
+byte compare stays linear in the artifact while the equivalence test
+grows with the machines. Inputs being deterministic, the demonstration
+isolates the normal-form economy, not the exponential entry the
+frontier reserves.
+
+### 8.5 Read-offs against the automata side (§5–§6)
+
+- *Stutter invariance* (Prop 5.1) against Spot's
+  `is_stutter_invariant` [MD15]: agreement on **3938 / 3938**
+  languages, zero disagreements. 648 corpus languages are
+  stutter-invariant — 16.5% of the corpus, 28.9% of its LTL-definable
+  class, and every one of them LTL-definable.
+- *Hulls* (Prop 6.1, Cor 6.2–6.3): closure laws (extensive, monotone,
+  idempotent), duality `int = ¬cl¬`, and the Alpern–Schneider identity
+  replayed corpus-wide; stem-liveness of the hull replays against
+  per-state emptiness of the paired deterministic acceptor.
+- *Obligation and degree* (Thm 6.6, Prop 6.7): the one-scan verdict and
+  the `(n⁺, n⁻)` longest-path read-off agree, on every corpus language,
+  with Wagner coordinates computed independently by chain and
+  superchain search — the calculus reading off in one SCC pass what
+  the classification side establishes by chain juggling.
+  ⟨TBD: head-to-head timing against Spot's own classification battery
+  (`is_obligation` and kin) — V4⟩
+
+### 8.6 The blow-up, empirically (§4)
+
+The `W·L_n` family of Proposition 4.1, built as acceptors and
+re-entered through the gate: `|𝒞(W·L_n)| = 17, 48, 127, 318` for
+`n = 2, …, 5`, each above the proved `2^n − 1`, off acceptors of only
+`2^n + 1` states — the subset construction resurfacing in the algebra
+exactly as the proof predicts. The entry price shows as growth (about
+×8–9 per step), not a wall: the largest case completes in 0.36 s.
+
+### 8.7 The running example, mechanically ⟨TBD⟩
+
+⟨TBD: engineering check E-CAL-EX — confirm the five-class table of
+§2.3 (keys `ε, a, b, ab, ba`), its `P`, and the degree `(1, 2)` from
+the tool; render the invariant and the aligned product of §3.3 as
+figures.⟩
+
+## 9. Related work
 
 **Automata toolboxes.** Spot [DL+16, DL+22] is the reference point
-throughout §4: a mature, carefully-engineered library in which every
+throughout §7–§8: a mature, carefully-engineered library in which every
 language operation is an automaton construction and every classification
 query a construction-plus-test — the stutter-invariance battery of
 [MD15] being the type specimen of the latter. Notably, Spot already
@@ -1169,7 +1262,7 @@ missing precondition was the object itself, constructed [SωS26].
 **Canonical automata.** Carton–Michel's unambiguous (prophetic) Büchi
 automata [CM03] give a canonical *acceptor* — existence and uniqueness,
 of automaton-theoretic rather than operational vocation, and the natural
-exit format for §4's exit constructions on the non-deterministic side.
+exit format for §7.3's exit constructions on the non-deterministic side.
 The residual structure the rooting surgery internalizes (§3.2) is on the
 automata side the subject of the FDFA/family-of-DFAs line
 [AF16, ABF18, AF21]: families of right congruences as acceptors,
@@ -1194,8 +1287,8 @@ implicit.
 computable in the syntactic ω-semigroup is Carton–Perrin [CP97, CP99],
 completed by Selivanov–Wagner's complexity analysis [SW08]; Landweber's
 ladder [Lan69] and its effective characterizations on canonical automata
-[PW13] are the automata-side counterparts. §3.5 claims none of these
-results — it claims their *placement*: on one shared table, as scans
+[PW13] are the automata-side counterparts. §5–§6 claim none of these
+results — they claim their *placement*: on one shared table, as scans
 among other scans, downstream of one entry price.
 
 Position: none of these lines treats the syntactic object as an
@@ -1203,7 +1296,7 @@ Position: none of these lines treats the syntactic object as an
 with the decision procedures, the certificate discipline, and the
 normal-form move packaged as a calculus. That is this paper's claim.
 
-## 7. Conclusion
+## 10. Conclusion
 
 Recognition is usually consumed as a verdict: the algebra accepts, the
 characterization holds, the hierarchy level is such. This paper consumes
@@ -1218,19 +1311,19 @@ projection — and the economy is pay-canonicity-once: a pipeline that
 keeps a language and works on it pays determinization at the door and
 nothing per operation after.
 
-The calculus is the operational face of a program whose other faces are
-already drafted: [SωS26] builds the object, [SωSL26] learns it (and its
-teacher consumes this paper's minimal counterexamples), [SωSX26] is its
-most elaborate derived operation, and the census [SωSN26] counts the
-universe it operates on. The hull section closed its own follow-ups:
-the safety-shaped hierarchy lives on one table as a lattice of
-fixpoints, it generates *exactly* the obligation class (Theorem 3.10),
-and the Wagner degrees inside that band are longest alternating paths
-on the `θ`-labeled `R`-class DAG (Proposition 3.11) — beyond the band,
-loop-sensitivity is intrinsic and the general Wagner read-off takes
-over. The measurements bear the economy out: the alignment ratios, the
-operation ledger, the pipeline, and the concatenation blow-up sit where
-§3 places them.
+The calculus sits one step above the construction that provides its
+object [SωS26]; everything else here is self-contained, and the
+object's other prospects — learning it from queries, extracting
+defining formulas, counting the small universe — are downstream of the
+operations this paper fixes. The hull section closed its own
+follow-ups: the safety-shaped hierarchy lives on one table as a lattice
+of fixpoints, it generates *exactly* the obligation class
+(Theorem 6.6), and the Wagner degrees inside that band are longest
+alternating paths on the `θ`-labeled `R`-class DAG (Proposition 6.7) —
+beyond the band, loop-sensitivity is intrinsic and the general Wagner
+read-off takes over. The measurements (§8) bear the economy out: the
+alignment ratios, the operation ledger, the pipeline, and the
+concatenation blow-up sit where §§3–4 place them.
 
 ---
 
@@ -1292,13 +1385,6 @@ operation ledger, the pipeline, and the concatenation blow-up sit where
 - **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing
   the syntactic ω-semigroup from a deterministic Emerson–Lei automaton.*
   Working draft, 2026.
-- **[SωSL26]** Y. Thierry-Mieg, with Claude (Anthropic). *Learning the
-  syntactic ω-semigroup.* Working draft, 2026.
-- **[SωSN26]** Y. Thierry-Mieg, with Claude (Anthropic). *A census of
-  syntactic ω-semigroups.* Working draft, 2026.
-- **[SωSX26]** Y. Thierry-Mieg, with Claude (Anthropic). *The LTL
-  frontier from the syntactic ω-semigroup: certificates, formulas, and
-  the shape of the cut.* Working draft, 2026.
 - **[TFVT10]** M.-H. Tsai, S. Fogarty, M. Y. Vardi, Y.-K. Tsay. *State
   of Büchi complementation.* CIAA 2010 (full version).
 - **[Wag79]** K. Wagner. *On ω-regular sets.* Information and Control
