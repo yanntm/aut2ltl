@@ -285,6 +285,52 @@ guard it: `tests/sample_decode.py` (the fast decoder equals `Shape.combo_at`) an
 byte-for-byte — 129/129 on `2state1ap1acc`, proving the sampler skips no pipeline
 step).
 
+### Alphabet minimality (free APs)
+
+Both the sampler's language key and `flatten --canon` minimize the alphabet to the
+propositions the language actually depends on. `remove_unused_ap` drops only
+edge-absent APs; a **free** AP — edge-present but language-irrelevant — is caught
+by `sosl.sos.minimize` (`aps[i]` is free iff toggling its bit is inert on the
+invariant's letter map) and projected out. Without this a beyond-the-wall draw
+that ignores one of its letters keys at the wrong alphabet: it dodges the corpus
+match (inflating "new") and, decisively, its stored `.sos` disagrees with the
+complement taken through `spot.dualize`, tripping `flatten`'s closure cross-check.
+The exhaustive corpus is already minimal (no free APs), so the check is a no-op
+there; it bites only the larger sampled shapes.
+
+## Curating a campaign into the corpus
+
+A beyond-the-wall campaign yields far more new languages than the bench should
+absorb (tens of thousands, skewed to the largest shapes). Adoption is a **bounded,
+documented, seed-independent selection** — the *criteria* reproduce even though the
+random draws do not — run by `select_campaign.py` over a `flatten --canon` of
+corpus+campaign:
+
+- **Minimality order** (total, no seed): `(automaton states, algebra size |𝒞|,
+  canonical .sos bytes)`.
+- **Tier A — the Wagner frontier, taken in full.** Every new language whose degree
+  is rare or absent in the pre-campaign corpus: ordinal `γ ∈ {ω·2, ω³, ω⁴, …}` or
+  finite `γ ≥ 3`. (`ω`, `ω²` and the shallow finite levels are common; they are
+  sampled in Tier B, not taken wholesale.)
+- **Tier B — minimal representatives, to the target.** Stratify the rest by
+  `(shape, degree, LTL-class)`; visit strata in priority order — smaller shape
+  (`n·k·2^c`) first, then higher degree, then non-LTL before LTL — and round-robin,
+  each visit taking the next language in minimality order (subject to a per-shape
+  cap), so rare `(shape, degree)` combinations survive before any stratum deepens.
+
+The selected det+`.sos` are written under `corpus/sampled/<shape>__seed<label>/`
+and folded in with `flatten --canon --out genaut/corpus`; the summary generators
+(`shapes_table` / `manifest` / `flat_study`) are then re-run into the corpus.
+
+**Adopted so far.** One campaign (17 beyond-wall parity shapes, corpus-controlled)
+contributed **+1000** languages, chosen 732 frontier + 268 minimal-fill: `flat_canon`
+grew 2212 → **3212** primals (4248 → **6220** complement-closed). It **extends the
+Wagner ceiling** the exhaustive census could not reach — the catalogue now holds
+languages at `ω³` (613/side) and `ω⁴` (34/side), where it previously topped out at
+`ω²` — with the frontier carried by the small `c=2` shapes (`2state2ap2` reaches
+`ω⁴` at two states) and every tiny shape represented. See `flat_canon/STUDY.md` for
+the refreshed degree profile.
+
 ## Polarity / relabeling — a known non-canonicalization
 
 The `𝓘` / `.sos` form is **polarity-sensitive**: `GF(a)` and `GF(!a)` produce
