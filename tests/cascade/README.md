@@ -22,6 +22,13 @@ Probes for the cascade-ladder experiments: spec
 - `k_e0*.py` — the K-E0 gate probes (worked witnesses, saturation, (B)-cross).
 - `k_e1_sweep.py` — (C) over the census-undecided stratum, sandwich scan
   piggybacked (one CSV row per layer).
+- `k_e1_one.py` — the per-language shard of the same sweep (cluster unit:
+  writes `$OARRUN_OUT.csv`, recomputes its census record in-process). Shard
+  the whole stratum with one `cmds.txt` line per language carrying an
+  undecided layer, then `cluster/oarrun.sh` + reap (see `cluster/README.md`;
+  set `--timeout` ≥ 1800 — the heavy layers run many minutes).
+- `k_e1_verify.py` — ALG-7 triage of one raw (C)-conflict (`<id> <layer> <k>`):
+  `find_c_conflict` + `inv.member` toggle + non-conjugacy (Lemma C.11).
 - `k_e2_transfer.py` — the Prop C.19 transfer specimen.
 - `k_e3_sweep.py` / `k_e3_pfxind.py` — one-sidedness statistics / the
   prefix-independence frozen-final-layer scan.

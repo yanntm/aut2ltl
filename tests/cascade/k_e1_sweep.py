@@ -28,6 +28,9 @@ from tests.cascade.sandwich import scan
 
 BUDGET = 150000
 WIDTHS = range(4)
+HEADER = ("id,layer,nC,R,sigma,aperiodic,c3_status,result,pass_k,"
+          "k0,k1,k2,k3,collectedF,max_states,absorption,group,other,"
+          "other_split,bug,time_s")
 
 
 def sweep_layer(inv, R, aperiodic) -> dict:
@@ -90,9 +93,7 @@ def main(argv: List[str]) -> int:
     if limit:
         targets = targets[:limit]
 
-    header = ("id,layer,nC,R,sigma,aperiodic,c3_status,result,pass_k,"
-              "k0,k1,k2,k3,collectedF,max_states,absorption,group,other,"
-              "other_split,bug,time_s")
+    header = HEADER
     os.makedirs(os.path.dirname(out), exist_ok=True)
     n_conflict = n_pass = n_budget = n_other = n_split = 0
     with open(out, "w") as fh:
