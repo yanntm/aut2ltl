@@ -5,9 +5,7 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Working draft — 2026-07-11. Pre-paper shape: theorems stated with proofs
-or proof sketches, open points flagged inline, evaluation planned (§7).
-Supersedes the direction memo of 2026-07-10.*
+*Working draft — 2026-07-11.*
 
 ## Abstract
 
@@ -32,7 +30,7 @@ inside the obligation band, the minimal achievable Wagner degree as a
 greedy read-off. For stutter invariance the story sharpens into the
 paper's technical heart: the natural quotient test is sound but provably
 incomplete — the stutter hull can *escape the table*, a locality
-phenomenon we exhibit on a four-word example — and the exact test is
+phenomenon we exhibit over a two-letter alphabet — and the exact test is
 recovered by a polynomial self-alignment of the table through the
 stutter relation. Shedding atomic propositions is the same
 quotient-and-pull-back move under a different congruence; integrating a
@@ -77,10 +75,11 @@ Boolean bands simplified by Minato's algorithm, closure constructions
 bounded by emptiness checks — each sound, none complete, and the natural
 language-level questions are not even posable: *does there exist a
 safety property equivalent to `¬φ` given `K`? an obligation? a
-stutter-insensitive one?* A "no" from a heuristic means nothing; a "yes"
-comes without a canonical witness; and the interval, an uncountable
-family of ω-regular languages, has no finite representation on that
-side.
+stutter-insensitive one?* Each is decidable in principle — a bespoke
+closure construction followed by a PSPACE containment — but no toolbox
+poses them; a "no" from a heuristic means nothing, a "yes" comes
+without a canonical witness, and the interval, with its infinitely
+many ω-regular members, has no finite representation on that side.
 
 **Canonically.** This paper transposes the framework onto the syntactic
 ω-semigroup — the canonical finite algebra of an ω-regular language,
@@ -117,7 +116,7 @@ the automata side lacks, and the freedom becomes *arithmetic*:
    stutter-invariant languages on a table are exactly those recognized
    through its stutter quotient (a clean recognition proposition), but
    the least stutter-invariant *superset* can escape every table in
-   sight: we exhibit a four-word counterexample where a
+   sight: we exhibit a two-letter counterexample where a
    stutter-insensitive `B` exists in the interval and the quotient test
    must say no. The exact test is recovered by a **stutter
    self-alignment** — a polynomial reachability computation relating
@@ -153,10 +152,11 @@ all lassos [PP04].
 [Arn85], reified as `𝓘(L) = (𝒞, λ, M, P)` [SωS26]: a finite class set
 `𝒞` (with adjoined identity `[ε]`, each class keyed by its
 shortlex-least word), a letter map `λ : Σ → 𝒞`, a multiplication table
-`M`, and the set `P` of **accepting linked pairs** `(s, e)` — `e·e = e`,
-`s·e = s` — such that `u·z^ω ∈ L` for representatives. `fold(w)`
-evaluates a finite word through `λ, M`; `idem(d)` is the unique
-idempotent power of `d`. The **membership oracle** totalizes `P`:
+`M`, and the set `P` of **accepting linked pairs**. A pair `(s, e)` is
+**linked** if `e·e = e`, `s·e = s`, `e ≠ [ε]`; `linked` denotes the set
+of all linked pairs of a table; `(s, e)` is accepting when `u·z^ω ∈ L`
+for representatives. `fold(w)` evaluates a finite word through `λ, M`;
+`idem(d)` is the unique idempotent power of `d`, also written `d^π`. The **membership oracle** totalizes `P`:
 `Val_P(c, d) := (M(c, idem(d)), idem(d)) ∈ P`, and for every lasso
 `u·v^ω ∈ L ⟺ Val_P(fold(u), fold(v))`. The strong form (via Ramsey):
 any ω-word factorized as `w₀·w₁·w₂⋯` with all `w_{j≥1}` folding to one
@@ -180,9 +180,13 @@ any pair set's language. A pair set denotes a language iff it is
 factorization `e = x·y`, the cells `(s, e)` and
 `((s·x)·(y·x)^π, (y·x)^π)` carry one verdict [SωSC26, Prop 3.1];
 saturation is checkable and enforceable by a polynomial fixpoint
-(`sat(·)`, the least saturated superset). Conjugacy preserves the
-stem's `R`-class (the stems divide each other on the right; [SωSC26,
-after Prop 3.5]) — a fact used repeatedly below.
+(`sat(·)`, the least saturated superset), and a saturated `Q` denotes
+the language `L(Q)` its `Val` accepts. Green's preorders on a finite
+monoid: `x ≤_R y` iff `x ∈ y·M¹` (right divisibility), `R` the induced
+equivalence; `x ≤_H y` iff `x ∈ y·M¹ ∩ M¹·y`, `H` the induced
+equivalence [PP04]. Conjugacy preserves the stem's `R`-class (the two
+stems divide each other on the right; [SωSC26, after Prop 3.5]) — a
+fact used repeatedly below.
 
 **Hulls and the ladder** [SωSC26, §3.6]. `Live` is the set of classes
 with nonempty residual (one `O(n²)` scan). The **safety closure** is
@@ -190,7 +194,7 @@ the surgery `P̄ := {(s,e) linked : s ∈ Live}` — the least closed
 (safety) language above `L(P)`, by a proof that is word-semantic and
 therefore valid on any recognizing table (Prop 3.5 there); the
 **interior** `P̊` is the dual kernel; `L` is safety iff `P = P̄`,
-co-safety iff `P = P̊` (Cor 3.6). The **obligation** (Staiger–Wagner)
+co-safety (**guarantee**) iff `P = P̊` (Cor 3.6). The **obligation** (Staiger–Wagner)
 class is characterized by Theorem 3.10 there: `L` is an obligation iff
 `Val_P(s, e)` depends only on the `R`-class of the stem `s` —
 equivalently `P` lies in the Boolean sublattice generated by the closed
@@ -199,11 +203,16 @@ longest alternating paths in the `θ`-labeled `R`-class DAG (Prop 3.11
 there). **Recurrence** (`GF` shape, deterministic-Büchi-realizable,
 `Π₂`) and **persistence** (`FG` shape, `Σ₂`) are the next rungs,
 characterized on the algebra by the chain conditions `m⁺ ≤ 0` and
-`m⁻ ≤ 0` respectively [Lan69, CP99, SW08]: concretely, `L` is a
-recurrence property iff no linked stem `s` carries loops `f ≤_H e`
-with `Val(s,e) = 1` and `Val(s,f) = 0` (verdicts propagate down the
-`H`-order), and persistence is the mirror condition. (We hand-checked
-the orientation on `GFa`, `FGa`, `GFa ∧ GFb`, `FGa ∨ GFb`.)
+`m⁻ ≤ 0` — `m±` the maximal lengths of alternating-verdict chains
+along `≤_H`, by starting polarity [Lan69, CP97, CP99, SW08].
+Concretely: `L` is a recurrence property iff no linked stem `s`
+carries loops `f ≤_H e` with `Val(s,e) = 1` and `Val(s,f) = 0` —
+verdicts propagate down the `H`-order — and persistence is the mirror
+condition. (Orientation anchor: for the recurrence specimen `GFa`,
+the accepting loop `λ(a)` sits `H`-below the rejecting all-`b` loop,
+as the condition demands; `FGa` mirrors it. The transcription is
+re-verified against the census's independently computed chain
+coordinates in §7.)
 
 **Stutter notions.** `destutter(·)` collapses maximal finite blocks of
 equal letters; two ω-words are stutter-equivalent iff they share their
@@ -327,8 +336,10 @@ merely on-table ones*. Dually, a co-safety `B` exists iff
 `P_min ⊆ P̊_max`, with greatest witness `P̊_max`. Both tests are one
 `O(n²)` stem-liveness scan.
 
-*Proof.* Lemma 4.1 with `𝒦` = closed pair sets; `ρ` is the hull `P̄`
-of [SωSC26, Prop 3.5]. Locality — the reason "among all ω-regular
+*Proof.* Lemma 4.1 with `𝒦` = closed pair sets — a Moore family: an
+intersection of closed pair sets recognizes the intersection of their
+languages, closed again, and `linked` recognizes `Σ^ω`; `ρ` is the
+hull `P̄` of [SωSC26, Prop 3.5]. Locality — the reason "among all ω-regular
 languages" is warranted — is Prop 3.5 itself: its proof identifies
 `L(P̄)` with the *topological* closure `cl(L(P_min))`, a
 presentation-independent object, and any safety `B ⊇ L(P_min)` in the
@@ -367,9 +378,9 @@ a pair `(s,e) ∈ B_{forced₁} \ P_max` is a linked pair outside `P_max`
 whose stem class is forced to 1, i.e. a class forced both ways, and
 conversely. Membership of `B_θ` in the obligation class (not merely in
 a formal family) transfers to the unreduced table in both directions:
-(⇐) an `R`-class-constant `B_θ` is a Boolean combination of the closed
-sets `Q_S` of `T`, each a safety language on any recognizing table
-(Prop 3.5), hence an obligation; (⇒) an obligation `B` in the interval
+(⇐) an `R`-class-constant `B_θ` is a Boolean combination of closed
+pair sets of `T` (the hull fixpoints of [SωSC26, §3.6]), each a safety
+language on any recognizing table (Prop 3.5), hence an obligation; (⇒) an obligation `B` in the interval
 has `R`-class-constant verdict on its own syntactic table (Thm 3.10),
 and the reduce morphism `h : T → 𝓘(B)` preserves `R` (`s R s' ⟹
 h(s) R h(s')`), so `Val_B` is `R`-class-constant on `T` as well. ∎
@@ -388,9 +399,10 @@ rule with `sat(·)`, at most `|linked|` rounds, polynomial.
 
 **Proposition 4.4 (sketch).** `∃` recurrence `B` in the interval `⟺`
 `rec-hull(P_min) ⊆ P_max`; `∃` persistence `B` `⟺`
-`rec-hull(P_max^c) ⊆ P_min^c`. The dual costs *one complement flip* —
-where the automata side would pay a complementation before even
-posing the question.
+`rec-hull(P_max^c) ⊆ P_min^c` (complement exchanges the two classes
+and reverses the interval: `B ∈ [P_min, P_max] ⟺ B^c ∈ [P_max^c,
+P_min^c]`). The dual costs *one complement flip* — where the automata
+side would pay a complementation before even posing the question.
 
 *Two points to nail down in the full proof.* (i) The chain
 characterization is stated on the syntactic algebra [CP99]; on the
@@ -419,8 +431,8 @@ polarity. Minimizing over the free classes looks like a search over
 **Proposition 4.5 (sketch — greedy band minimization).** Encode an
 assignment of alternation depths as a *level function*
 `ℓ : R-classes → {0, …, k}`, monotone along the `R`-descent order, with
-the parity of `ℓ(r)` prescribed on forced classes (parity ≡ polarity,
-side handled by the offset convention). A `θ` with maximal alternation
+the parity of `ℓ(r)` prescribed on forced classes (one fixed
+parity–polarity convention per coordinate). A `θ` with maximal alternation
 `≤ k` exists iff such an `ℓ` exists, and the pointwise-least monotone
 parity-respecting `ℓ*` is computed bottom-up over the condensation in
 one pass (take the max of the descendants' levels, bump by one if the
@@ -429,10 +441,11 @@ minimal achievable degree pair is read off `ℓ*`. Polynomial, no
 search; the witness `θ*` is the parity of `ℓ*`.
 
 *Status.* The encoding equivalence (alternation depth ≤ k ⟺ monotone
-parity level function, the classical difference-hierarchy normal form
-transported to the `R`-DAG) and the pointwise-least-solution argument
-are routine; the two-coordinate simultaneity (`n⁺` and `n⁻` minimized
-by one `ℓ*`, or by two one-sided passes) needs the careful write-up.
+parity level function — the Hausdorff difference-hierarchy normal form
+[Wag79] transported to the `R`-DAG) and the pointwise-least-solution
+argument are routine; the two-coordinate simultaneity (`n⁺` and `n⁻`
+minimized by one `ℓ*`, or by two one-sided passes) is the open half
+of the proof.
 Note the free classes are not innocent: a free class sitting above
 forced classes of both polarities *must* create one alternation
 whichever way it is set — the minimum is not "longest forced-only
@@ -464,7 +477,7 @@ separator ⟺ `P̄_{L₁} ∩ P_{L₂} = ∅`. Given-that is the special case
 `L₁ = ℒ(¬φ) ∩ ℒ(K)`, `L₂ = ℒ(φ) ∩ ℒ(K)` — [DPT25, §9] itself notes
 the connection to separation; here the connection is an algorithm.
 
-**The minimization landscape (Q3).** Three tiers. (a) Class existence
+**The minimization landscape.** Three tiers. (a) Class existence
 per rung: polynomial, settled above. (b) Exact minimal Wagner degree:
 polynomial within the obligation band (Prop 4.5); open in general —
 the fine structure above the band mixes loop-sensitivity with the free
@@ -483,9 +496,10 @@ canonical per language.
 The running example of [DPT25, Figs. 2–3]:
 `¬φ = F(a∧c) ∨ (GFb ∧ GF¬b)` given `K = FGb ∧ Gc`, over
 `Σ = 2^{a,b,c}` (we write a letter as the set of propositions it makes
-true: `{abc}`, `{bc}`, …). There, the bounded automaton plus Minato's
-algorithm simplify `A_{¬φ}` to an automaton for `Fa`, observed to be
-"now terminal". Here is the same instance as pair-set arithmetic.
+true: `{abc}`, `{bc}`, …). There, transition-wise Boolean bands
+simplified by Minato's algorithm turn `A_{¬φ}` into an automaton for
+`Fa`, observed to be "now terminal". Here is the same instance as
+pair-set arithmetic.
 
 **The tables.** `𝓘(¬φ)` has 7 classes: a finite word is characterized
 by three monotone bits `(σ, p, q)` — *contains an `a∧c` letter* /
@@ -496,51 +510,57 @@ by three monotone bits `(σ, p, q)` — *contains an `a∧c` letter* /
 `Val_K(s, e) = [k_s ≠ D] ∧ [k_e = BC]`. The generated product has
 **13 classes** — the consistent quadruples `(σ, p, q | k)` — and both
 verdicts ride along. Every letter class is idempotent (both formulas
-are `X`-free), so `T = T/∼` and the §5 tier-1 test is trivially exact
-on this instance; the stutter drama needs §5.2's pair.
+are `X`-free), so `T = T/∼` and the §5 quotient test is trivially
+exact on this instance; the phenomenon of §5 needs a stutter-sensitive
+pair (§5.2).
 
 **Endpoints (§3).** A `P_min` pair's stem absorbs its loop, so
-`σ_s ∨ σ_e` collapses: `P_min = {stems (1,·,·\,|BC/C), loops
-(·,1,0\,|BC)}` — the language `F(a∧c) ∧ FGb ∧ Gc`. Both decisive
+`σ_s ∨ σ_e` collapses: `P_min = {stems (1,·,· | BC/C), loops
+(·,1,0 | BC)}` — the language `F(a∧c) ∧ FGb ∧ Gc`. Both decisive
 checks fail, each with a one-letter-loop minimal witness:
 `k_settles_phi` returns `({abc})^ω` (the shortest behavior `K` leaves
 open to `¬φ`), `k_refutes_phi` returns `({bc})^ω` (the shortest
 `K`-behavior satisfying `φ`).
 
-**No safety `B`, certified (Prop 4.2).** `D` is the only dead class,
-so `P̄_min = {(s,e) : k_s ≠ D}` — the language `Gc` — and the cell
-`(({bc}), ({bc}))` lies in `P̄_min \ P_max`: the scan refuses with the
-minimal lasso `({bc})^ω`. Reading: any safety property containing the
-mandatory behaviors must accept `({bc})^ω` — every prefix of it
-extends into `ℒ(¬φ) ∩ ℒ(K)` — yet `K` allows it and `φ` holds on it.
-No presentation search could have survived this word.
+**No safety `B`, certified (Prop 4.2).** The dead classes are exactly
+those with `k = D`, so `P̄_min = {(s,e) : k_s ≠ D}` — the language
+`Gc` — and the cell of `({bc})^ω` lies in `P̄_min \ P_max`: the scan
+refuses with that minimal lasso. Reading: any safety property
+containing the mandatory behaviors must accept `({bc})^ω` — every
+prefix of it extends into `ℒ(¬φ) ∩ ℒ(K)` — yet `K` allows it and `φ`
+holds on it: a refusal no presentation-side rewrite can emit.
 
 **Co-safety `B` exists; the interval brackets Minato.** The interior:
 `σ` is absorbing, so `Live_{P_max^c} = {σ = 0, k ≠ D}` and
 `P̊_max = {stems with σ = 1 or k = D}` — the language
 `F(a∧c) ∨ F¬c = F(a ∨ ¬c)`. Every `P_min` stem has `σ = 1`, so
 `P_min ⊆ P̊_max`: **yes**, and by the sub-interval clause of
-Lemma 4.1 the guarantee members of the interval are exactly
+Lemma 4.1 the *on-table* guarantee members form exactly the bracket
 
     [ F(a∧c) ,  F(a ∨ ¬c) ]
 
-(the least member is the open set `{σ_s = 1}`: openness forces
-right-closure of the committed stems, and `(1,·,·\,|D)` is reachable
-from every `P_min` stem, so nothing smaller is open on `T`). [DPT25]'s
-`Fa` sits strictly inside this bracket —
+— and every guarantee member, on-table or not, lies below the upper
+hull, since the interior is a semantic object. (Least member: an
+on-table open member keeps its stems under right multiplication —
+membership is decided by a finite prefix — and from any `P_min` stem
+every `σ = 1` class is reachable, so none can omit any of `F(a∧c)`.)
+[DPT25]'s `Fa` sits strictly inside the bracket —
 `F(a∧c) ⊆ Fa ⊆ F(a∨¬c)` — and is itself **off-table**: no class of
-`T` tracks `a` without `c`. The heuristic landed a perfectly legal
-member; the calculus names the canonical endpoints it landed between,
-and certifies that the *class* is guarantee — which is exactly the
-"now terminal" observation of their Figure 3, decided rather than
-noticed.
+`T` tracks `a` without `c`. Off-table members below the lower
+endpoint exist too (e.g. "`a∧c` occurs before any `¬c`"): the bracket
+delimits what the canonical algebra expresses, the upper endpoint
+bounds everything. The heuristic landed a perfectly legal member; the
+calculus names the canonical endpoints it landed between, and
+certifies that the *class* is guarantee — which is exactly the "now
+terminal" observation of their Figure 3, decided rather than noticed.
 
 **The rung drop, read off.** On its own table, `Val_{¬φ}` is monotone
 under adding loop bits, and `H`-descent in an OR-monoid *is* adding
 bits: verdicts propagate down, so `¬φ` is a recurrence property
 (§4.3). It is nothing lower: the stem `(0,1,1)` carries the loops
-`(0,1,1) <_H (0,1,0)` with verdicts `1 > 0` — loop-sensitive (not an
-obligation), bottom-true (not persistence). So the knowledge buys a
+`(0,1,1) <_H (0,1,0)` with verdicts `1 > 0` — loop-sensitive, so not
+an obligation, and accepting below while rejecting above, so not a
+persistence property either. So the knowledge buys a
 drop from recurrence to guarantee — from a full Büchi emptiness check
 to reachability — and §4's tests deliver it with a canonical `B` and
 a certificate at the rung below.
@@ -568,8 +588,10 @@ the ⇐ direction of [SωSC26, Prop 3.3] is valid on any recognizing
 table (§2): every `T/∼`-recognized language is stutter-invariant; its
 pullback is recognized by `T` through `π`. (⊆) Let `L'` be
 stutter-invariant and `T`-recognized. Its syntactic morphism factors
-as `η = h ∘ fold` with `h : T → 𝓘(L')` surjective (T is generated).
-By Prop 3.3 (⇒), `η(a)² = η(a)`, so `h(λ(a)²) = h(λ(a))`: the kernel
+as `η = h ∘ fold` for a morphism `h : T → 𝓘(L')` — well-defined
+because fold-equal words share every `L'`-context through the
+recognizing pair set, surjective because `T` is generated. By
+Prop 3.3 (⇒), `η(a)² = η(a)`, so `h(λ(a)²) = h(λ(a))`: the kernel
 of `h` is a congruence containing the generating pairs of `∼`, hence
 `h` factors through `π`, and `L'` is a pullback. ∎
 
@@ -581,13 +603,15 @@ and the least one above `L(Q)` is computable:
 where `forced_π(Q)` collects the `T/∼`-associated pairs of `L(Q)`'s
 lassos — one pass over `T`'s cells: for each cell `(c,d)` with
 `Val_Q(c,d) = 1`, add the pair `(π(c)·e, e)`, `e = idem(π(d))` — and
-`sat` is the conjugacy-saturation fixpoint. (Every saturated `P'`
-whose pullback contains `L(Q)` must contain each forced pair — the
-associated pair of an accepted lasso is accepted — and must be
-saturated; `sat(forced)` is the least such.)
+`sat` is the conjugacy-saturation fixpoint. (The pullback of
+`sat(forced)` contains `L(Q)` — every lasso of `L(Q)` maps to a
+forced pair, and containment between ω-regular languages is decided
+on lassos; conversely every saturated `P'` whose pullback contains
+`L(Q)` must contain each forced pair, hence `sat(forced)`; pullback
+is monotone, so `sc(Q)` is least.)
 
-The natural conjecture — the memo stage of this paper made it — is
-that `sc(P_min) ⊆ P_max` decides stutterization. It does not.
+The natural conjecture is that `sc(P_min) ⊆ P_max` decides
+stutterization. It does not.
 
 ### 5.2 The hull escapes the table
 
@@ -597,7 +621,7 @@ while `sc(P_min) ⊄ P_max`: the quotient test of §5.1 is sound but not
 complete, because the global stutter closure `SC(L(P_min))` need not
 be recognized by any table aligned from `𝓘(¬φ)` and `𝓘(K)`.
 
-*Proof (the four-word counterexample).* Take
+*Proof (the two-letter counterexample).* Take
 `ℒ(¬φ) = {(ab)^ω}` and `ℒ(K) = {(ab)^ω, (ba)^ω}` — "the system
 alternates, in one of the two phases". The interval is
 `[{(ab)^ω}, Σ^ω \ {(ba)^ω}]`, and `B = SC({(ab)^ω})` — the words
@@ -607,16 +631,20 @@ is **yes**. Now the table: `synt({(ab)^ω})` has six classes — `[ε]`,
 the four classes `A_{xy}` of alternating words by first letter `x` and
 last letter `y`, and the junk class `Z` (any word with a repeated
 adjacent letter; all such words are interchangeable in every context
-of the single word `(ab)^ω`) — and the aligned `T` refines it. Forcing
+of the single word `(ab)^ω`) — and on the aligned `T` the two
+components merge in lockstep (a word repeats an adjacent letter for
+one language iff for the other), so the cascade below runs on `T`
+exactly as written. Forcing
 `λ(a)² ∼ λ(a)` merges `A_{aa} ∼ Z` (since `λ(a) = A_{aa}` and
 `λ(a)² = Z`), then `A_{bb} ∼ Z`, then `A_{ab} = A_{aa}·A_{bb} ∼ Z` and
 `A_{ba} ∼ Z`: `T/∼` collapses to `{[ε], Z}`, every lasso lands on the
 single pair `(Z, Z)`, and `sc(P_min) = Σ^ω ⊄ Σ^ω \ {(ba)^ω}`. The
-quotient test says **no**. The obstruction is semantic, not an
-artifact of the alignment: `SC({(ab)^ω})` separates `aa(ab)^ω` (in)
-from `bb(ab)^ω` (out), while *every* table recognizing `{(ab)^ω}`
-merges `aa` and `bb` — both are junk in all contexts — so no such
-table recognizes `SC`. ∎
+quotient test says **no**. The obstruction is not an artifact of a
+poor alignment: both *syntactic* tables merge `aa` and `bb` — each is
+junk in every context of either language — every table the calculus
+derives from its canonical inputs (generated products, quotients)
+inherits the merge, and `SC({(ab)^ω})` separates `aa(ab)^ω` (in) from
+`bb(ab)^ω` (out). No derived table recognizes `SC`. ∎
 
 Two honest remarks. First, this is a *locality* failure, not
 unsoundness: when the quotient test passes, `sc(P_min)` is a valid,
@@ -628,7 +656,7 @@ quotient — and it can, in polynomial time.
 
 ### 5.3 The exact test: stutter self-alignment
 
-**Theorem 5.3 (exact stutterization; proof to write in full).** A
+**Theorem 5.3 (exact stutterization — sketch).** A
 stutter-invariant ω-regular `B` exists in the interval iff
 `SC(L(P_min)) ⊆ L(P_max)`, iff the **stutter alignment** of `T` with
 itself detects no conflict:
@@ -648,7 +676,8 @@ them, whatever the presentation.
 argument (`SC` is the global least stutter-invariant superset, §2).
 For the second: containment of ω-regular languages is witnessed on
 lassos, and a lasso's stutter class meets an ω-regular set iff it
-meets it in a lasso, so the lasso-level relation suffices. Two
+meets it in a lasso (the intersection is ω-regular and nonempty), so
+the lasso-level relation suffices. Two
 stutter-equivalent lassos admit block-synchronized presentations over
 a common destuttered base — the block-exponent sequence of an
 ultimately periodic word is ultimately periodic — so `α = u·v^ω`,
@@ -663,9 +692,10 @@ fresh letter `b ≠` last, multiply the tracks by chosen elements of
 `⟨λ(b)⟩`; the stem relation is the reachable set from `([ε],[ε])`, the
 loop relation is the same walk with matched first/last boundary
 letters, closed cyclically, followed by the usual idempotent
-renormalization of associated pairs. State space `O(|Σ|·n²)`, edges
-`O(|Σ|·n²)` per state bounded by the cyclic-set sizes: comfortably
-polynomial (`O(|Σ|²·n⁴)`-ish), one self-alignment. ∎(sketch)
+renormalization of associated pairs. State space `O(|Σ|·n²)`, at most
+`O(|Σ|·n²)` transitions per state (the cyclic-set sizes bound the
+choices): polynomial, `O(|Σ|²·n⁴)` transitions in all, one
+self-alignment. ∎(sketch)
 
 **The two-tier algorithm.** Run the quotient test (§5.1) first —
 cheap, witness on-table, stays in the calculus. On failure, run the
@@ -702,9 +732,10 @@ AP-shedding are one move** — pull through a letter-identifying
 congruence and back; only the generating relations differ
 (`λ(a)² ∼ λ(a)` vs `λ(ℓ) ∼ λ(ℓ')`). The locality caveat returns with
 a twist: here the semantic least `p`-blind superset *is* the exact
-projection `∃p.K` — exponential — so the on-table hull is the honest
-cheap tier, and exactness is priced where the frontier says it must
-be. Open comparison (Q4, small and self-contained): `K_p` versus
+projection `∃p.K`, re-expanded over `Σ` — exponential — so the
+on-table hull is the honest cheap tier, and exactness is priced where
+the frontier says it must be. Open comparison
+(small, self-contained): `K_p` versus
 `QE(P,K)` — `QE` loses inter-subformula correlations (the paper's own
 `X(a∧b) ∧ X(ā∧b)` example), `K_p` loses only what the algebra cannot
 see `p`-blindly; conjecture: incomparable in general.
@@ -718,13 +749,15 @@ and interval; integrating `K_{i+1}` is one more align (the only
 product-priced move) plus two pointwise updates,
 `P_min ∩= P_{K_{i+1}}`, `P_max ∪= P_{K_{i+1}}^c`, and every
 intermediate interval is exactly the interval of the conjunction so
-far. No delayed label choice, no precision ledger; the price is table
-growth, and the census measurements give the reason for optimism —
-correlated operands realize a small fraction of the `n₁·n₂` rectangle
-(median 0.17, down to 0.06 for related tables [SωSC26, §3.3]), and
-facts about one system are correlated by construction. Re-`reduce`
-when the endpoints stabilize. The growth curve across a real fact base
-is a headline measurement for §7. After choosing `B`, the product with
+far (the endpoint surgeries are pointwise Boolean and the running
+product is generated by the same factors, so the updates commute with
+conjunction). No delayed label choice, no precision ledger; the price
+is table growth, and the census measurements give the reason for
+optimism — correlated operands realize a small fraction of the
+`n₁·n₂` rectangle (median 0.17, down to 0.06 for related tables
+[SωSC26, §3.3]), and facts about one system are correlated by
+construction. §7 measures the growth curve across real fact bases.
+After choosing `B`, the product with
 `S` is the mixed-product extension of the calculus
 ([SωSC26-ext, §1]): `S` never pays entry either.
 
@@ -747,10 +780,11 @@ Spot has no automaton→LTL path). The §4 ladder makes the choice
 *principled*: minimize the strength class first — each rung caps the
 Manna–Pnueli shape of any defining formula (a safety `B` admits a
 `□`-shaped `ψ`, an obligation a Boolean combination of `□`/`◇`
-shapes) — then size within the rung. Metrics to fix: extracted formula
-size vs `|𝒞|` vs Wagner degree.
+shapes) — then size within the rung. The natural simplification
+metrics — extracted formula size, `|𝒞|`, Wagner degree — are compared
+in §7.
 
-A second, self-standing question falls out (Q5): when `¬φ` comes from
+A second, self-standing question falls out: when `¬φ` comes from
 an automaton and is *not* LTL-definable, is some `B` in the interval
 LTL-definable — **definability given that**? The LTL-definable
 saturated sets form a Boolean subalgebra, so Lemma 4.1 applies
@@ -768,11 +802,12 @@ instances, ~150 knowledge facts each, 97 950 problems), and its
 protocol — measure the property-side integration, not the downstream
 model checker. Planned measurements, in dependency order:
 
-1. **Endpoint reproduction (D1).** The two scans of §3 against Table 1
+1. **Endpoint reproduction.** The two scans of §3 against Table 1
    of [DPT25] (their p.min∃/p.max∃ solve 25 508 + 25 508 of 97 950;
    symmetric by construction here — their reported empty/universal
    asymmetry should vanish). Entry-price accounting per case
-   (spec-sized; the V1c methodology transfers).
+   (spec-sized; measured as in the calculus pipeline demonstration
+   [SωSC26, §3.4]).
 2. **Freedom distribution.** `|F|` in bits per problem (Prop 3.1) — the
    size of the space every other strategy searches; no automata-side
    counterpart exists.
@@ -812,11 +847,12 @@ verdict improves monotonically as knowledge accumulates) and
 conjunction's after reduce). Both are falsifiable claims of this
 paper, run as campaign assertions.
 
-House rules as in the calculus campaigns (per-case budget, checkpoint
-campaigns, validated outputs to `reference/`, `.cat`/CSV only). First
-fixture before anything else: the §5.2 counterexample pair, ground
-against the calculus harness — quotient test "no", self-alignment
-"yes", `sirelax` "yes" — as a three-way agreement check.
+The protocol follows the calculus campaigns: per-case budgets, seeded
+and checkpointed runs, machine-readable outputs promoted to a
+versioned reference tree. The first gate is the counterexample of
+§5.2, run three ways — quotient test, self-alignment, and the
+presentation-side `sirelax` — which must answer
+insufficient / yes / yes.
 
 ## 8. Related work
 
@@ -842,7 +878,7 @@ implication holds. Blahoudek et al.'s refinement under mutual
 exclusion of propositions [BDRS15] is the letter-level shadow of §6.1.
 Assume–guarantee reasoning shares the "given that" phrase but not the
 problem: there `K` is a contract to be discharged, here it is
-established fact spent to simplify a different obligation.
+established fact spent to simplify a different check.
 
 **Separation.** The existence tests of §4 are decision procedures for
 separator synthesis by class over ω-regular languages — the
@@ -887,9 +923,9 @@ The open edges are stated where they live: the locality map of §4.5
 (which semantic hulls stay on-table), the lifting details of Prop 4.4,
 the simultaneity write-up of Prop 4.5, the `|𝒞|`-minimization
 hardness (Gold route, §4.5), the `K_p` vs `QE` comparison (§6.1), and
-definability-given-that (Q5, §6.3). None blocks the evaluation of §7,
-which needs only the calculus package plus an afternoon's
-`given_that` module — and the counterexample fixture first.
+definability-given-that (§6.3). None blocks the evaluation of §7,
+which sits directly on the existing calculus implementation, gated
+first by the counterexample of §5.2.
 
 ---
 
