@@ -2031,88 +2031,70 @@ both cmds lists, reap, run the analyzers (`census_e1`, `census_e2_exhibits`,
 under `reference/`, and hand theory the item-6 tallies (which replace the paper's
 9 `⟨TBD-M4⟩`).
 
-## Cluster run 1 — what worked, the traps, and the recipe (2026-07-11)
+## Cluster ops — how a census drop is run
 
-First full cluster drop of the 4248-language sweep + the ROLL E3 census. The
-sweep came back **clean: 8496 rows (4248×2 legs), 0 duplicates, 0 FAIL, 0 CRASH**
-(SOUND 5897, ACCEPTOR_ONLY 2405, BUDGET 192, OVERSIZE 2). E3's ROLL side is
-complete (3186/3186 modes OK); only the `ours` kind timed out (see trap 6).
-Recording the operational lessons so the next drop is one pass.
+The campaign runs on the OAR cluster (`cluster/README.md` is the interface). This
+section is the standing recipe and the constraints that shape it; it is what a new
+drop follows.
 
-**The committed record (item 9 — corpus is now v2, so these cannot be
-re-derived).** Both load-bearing CSVs, immutable per drop, live under
-`reference/census/` (provenance + per-number reproduce commands in
-`reference/census/README.md`):
+### The recipe
 
-- **Sweep tally** — `reference/census/sweep_results.csv` (8496 rows). Reproduce
-  the row count / 0-duplicate / verdict tally above with the one-liner in the
-  README (a direct `csv.DictReader` over `case_id,config_id,…,verdict`); it
-  yields `8496 | distinct 8496 | dups 0` and `SOUND 5897, ACCEPTOR_ONLY 2405,
-  BUDGET 192, OVERSIZE 2` (no `FAIL`/`CRASH` rows).
-- **E3 census** — `reference/census/e3_assembled.csv` (16992 rows = 4248 × 4
-  kinds, `ours` derived from the sweep) + `reference/census/e3_summary.md`.
-  Reproduce with `cd sosl && python3 -m tests.sosl.census_e3 --summary-only
-  --out-csv <copy-of-e3_assembled.csv>` → `median N=15 FDFA={periodic:17,
-  syntactic:24, recurrent:13}; size algebra smaller 1488 / larger 2551 / tied
-  199`.
+1. **Plan.** `cluster_plan` (learner sweep) or `cluster_plan --e3` (ROLL baseline),
+   with `OARRUN_TIMEOUT=300` in the env — it is *sourced* by both the planner (chunk
+   sizing) and `oarrun.sh` (per-command cap), so the two cannot drift.
+   Pass `--done <prior CSV>` to make the drop **additive** (below).
+2. **Publish.** Only committed code runs: push, then `cluster/sync_cluster.sh`.
+3. **Submit.** `cluster/oarrun.sh --timeout 300 --cores 4 --split K <cmds>`.
+   `--timeout 300` is not optional — without it a multi-case command is cut at the
+   config default of 130 s.
+4. **Wait.** `cluster/reap_until.sh RUN...` in the background. It ends on
+   all-accounted or on a stall; it never auto-resumes.
+5. **Reclaim,** if it stalls: `oarrun.sh --resume RUN --split <bigger> --cores 4
+   --timeout 300`.
+6. **Verify before trusting.** Row count, distinct keys, **0 duplicate keys**,
+   verdict tally.
 
-**The recipe that worked.**
-1. Plan with `cluster_plan` (sweep) and `--e3`, raising the cap via
-   `OARRUN_TIMEOUT=300` in the env — it is *sourced* by both the planner (chunk
-   sizing) and `oarrun.sh` (per-command `--timeout` default), so they agree.
-2. `git push` (user OK) → `cluster/sync_cluster.sh`.
-3. Submit: `cluster/oarrun.sh --timeout 300 --cores C --split K <cmds>`; E3 with
-   `--cores 4`. **`--timeout 300` is mandatory** or a multi-case command is cut at
-   the config default 130 s.
-4. Reap in a **stall-aware background loop** (below), never the bare
-   `until reap; do sleep; done`.
-5. Verify the merged CSV before trusting it: row count, distinct keys,
-   **0 duplicate keys**, verdict tally.
+### The constraints that shape it
 
-**Trap 1 — walltime, not `--timeout`, is the binding constraint.** Jobs get a
-5-minute walltime; a command may run up to `--timeout` (300 s). A small `--split`
-packs many slow commands into one job, which is walltime-killed mid-stride, and
-the unreached commands come back **`missing`**. The sweep at `--split 32` (66
-commands/job, each 2 cases × 2 legs up to ~240 s) cleared only ~26/job → **1293
-of 2124 lost**. Size `--split` so each job's *missing* load ≈ `--cores` (one
-worst-case command < walltime, so ~1/core always finishes).
+**Walltime, not `--timeout`, is the binding constraint.** A job gets 5 minutes; a
+command may run to `--timeout` (300 s). Size `--split` so a job's load is about
+`--cores` commands — they run concurrently (`xargs -P`), so one worst-case command
+still fits the job. Under-splitting packs many slow commands into one job, the job
+is walltime-killed mid-stride, and everything it never reached returns `missing`.
 
-**Trap 2 — `missing` right after submit is not loss.** A command with no status
-file yet is queued or running, reported `missing`. Only treat it as lost once the
-count is **frozen across several reap rounds** (~6 min > the 5-min walltime =
-jobs drained).
+**`missing` is not failure, and not always loss.** `OK`/`TIMEOUT`/`FAIL` are
+*verdicts*; `missing` means no status file — the command is queued, running, or was
+lost (walltime kill, eviction). Only a count that stays frozen past a walltime is
+loss. A `TIMEOUT`/`FAIL` needs a **re-plan**, not a resume: resume skips anything
+that already has a status.
 
-**Trap 3 — resuming before drain duplicates rows.** `--resume` re-submits
-`missing` commands (it skips any with a status file) as new jobs; if the originals
-are still running, both execute the command and write to **different**
-`$OARRUN_OUT` shards, so `reap.sh` concatenates **both** → duplicate rows that
-corrupt every tally. Resume only after a confirmed stall; then verify 0 dup keys
-(this run: the supervised `--split 320` resume produced 0 duplicates).
+**Never resume a run that has not drained.** `--resume` re-submits the missing
+commands into a *new* shard. If the originals are still alive, both copies run and
+both write, and `reap.sh` concatenates both — duplicate rows that corrupt every
+tally. Confirm the stall first, then verify 0 duplicate keys afterwards.
 
-**Trap 4 — resume with a *bigger* `--split`, and re-pass `--timeout`.** Resumed
-jobs stride the same `cmds.txt` skipping done commands; a bigger `--split` gives
-each a thinner slice that fits walltime. `--split 320 --cores 4 --timeout 300`
-cleared all 1293 sweep losses in one pass.
+**Don't pack a heavy-tailed kind by its average, and don't compute what you already
+have.** `ours` (our N/MQ/EQ) *is* the sweep's default leg — `ref_classes` is
+config-independent, and MQ/EQ are `n_member_total`/`n_equiv`. So E3's `ours` column
+is **derived** from the sweep CSV (`census_e3 --from-sweep`) and `cluster_plan --e3`
+does not emit `ours` commands at all.
 
-**Trap 5 — the naive reaper idles forever on loss.** `until reap; do sleep; done`
-never terminates when commands are lost (they never get a status), so it spins
-uselessly. The working loop parses `missing/timeout/fail` per run and **exits on
-all-accounted OR a 4-round stall**, re-invoking the operator to resume — it does
-*not* auto-resume (trap 3). Note `reap.sh` exits 0 when `DONE = OK+TIMEOUT+FAIL =
-N`: timeouts/fails are *accounted*, so only `missing` blocks completion, and a
-`TIMEOUT`/`FAIL` needs a re-plan, not a resume (resume skips it).
+### A drop is additive
 
-_Landed as `cluster/reap_until.sh`_ — the working loop is no longer folklore to be
-re-derived per drop: it is the documented way to wait (`cluster/README.md`), exits
-`0` all-accounted / `3` stalled (naming the resume) / `4` rounds-exhausted, and
-takes several runs at once. The bad loop has been purged from the docs that taught
-it (`cluster/README.md`, `cluster/reap.sh`, `results/README.md`).
+`--done <CSV>` names a prior drop's results. Its rows are already done, so
+`cluster_plan` does not emit a slice made entirely of them, and each command it does
+emit skips them too. Growing the catalogue then costs only its new languages.
 
-**Trap 6 — don't pack a heavy-tailed kind by its average, and don't recompute
-what you already have.** The E3 `ours` kind was packed 145 cases/command on a
-2 s/case guess, but `ours` runs the learner, which has the sweep's slow tail — so
-all 30 `ours` commands hit the 300 s cap while every ROLL command passed. The fix
-is not a finer re-run: **`ours` (our_N/MQ/EQ) is exactly the sweep's default-leg
-`ref_classes`/`n_member_total`/`n_equiv`**, so E3's `ours` column is derived from
-the sweep CSV, and `cluster_plan --e3` should stop emitting `ours` commands
-altogether.
+This matters because resume alone cannot do it: a campaign reads its done set from
+its *output* file, and the cluster contract gives every command a private, empty
+`$OARRUN_OUT.csv` — so a shard would re-run everything it covers. `--done` supplies
+the done set read-only, from a separate committed file, unioned with the output's
+own rows.
+
+### The committed record
+
+Load-bearing outputs are copied out of the ignored `logs/` tree into
+`reference/census/`, immutable per drop, with provenance and a reproduce command per
+number in `reference/census/README.md`. A figure that traces only to `logs/` does not
+enter the paper: the corpus moves, so a re-run is not a reproduction — the committed
+CSV *is* the source.
