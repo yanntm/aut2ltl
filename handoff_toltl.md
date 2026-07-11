@@ -32,12 +32,22 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
 
 ## Todo — Engineering (in order; spec head has the details)
 
-1. **E11 — the decomposition fallback** (spec §4, paper §6): the key
-   item. Both halves end-to-end, scoped per layer, conformance-gated,
-   ledgered vs DG in **DAG size and printed size**. Blockers: none —
-   `aut2ltl/bls` (SgpDec bridge, reach family, `Fin`) exists; the
-   loop half's inputs (K-F12 conflict layers) are in
-   `reference/cascade/`.
+1. **E11 — the decomposition fallback: IMPLEMENTED, measuring now.**
+   `aut2ltl/sos2ltl/cascade/` (algorithm.md there), wired below the
+   engine via `engine.LayerFallback`, exposed as the registered recipe
+   **`sos2ltl_casc`** (hi simplifier at the recipe boundary only).
+   Stem half: Prop 4.14 with the reach family's `τ` as the insertion
+   point (no standalone LTLf pass — deviation from spec wording,
+   user-sanctioned). Loop half: product `D × confined-walk` acceptor →
+   `decompose_aut` → bls member ladder. E0 gate green; default-recipe
+   validation green. **In flight:** `survey --folder
+   samples/validation --use sos2ltl_casc` (background). Next: corpus
+   sweep (`genaut/corpus/flat_canon/det`, same recipe, background),
+   delegate firing stats, stem ledger vs DG. **Open problem:** loop
+   labels are stupid large (floor witness: DAG 3 125, flat ≈ 2.5·10¹¹
+   — at parity with the bare bls floor on the same language), so the
+   Spot equivalence oracle cannot consume them raw; the flat-column
+   risk is confirmed, conformance story on the loop branch pending.
 2. **Census regeneration on the current corpus**: E1, E2, E7, E10,
    frontier counts; report bench + every finding re-based, flips
    flagged `PAPER-EDIT:`. Includes wiring the (C) decider into the
@@ -72,6 +82,14 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
   `cluster/README.md` (60 s/command; TIMEOUT/BUDGET are data).
 - Loading/serialization via `sosl.sos.build` / `sosl.sos.io` /
   `aut2ltl.ltl.twa` — no raw Spot or hand-parsing, probes included.
+- Runs go through `./aut2ltl.sh` (deps env: GAP, Spot, PYTHONPATH).
+  `survey` self-times per example — never wrap it in a shell timeout;
+  background it and wait for completion. Formulas are DAG-only: sizes
+  via `aut2ltl.ltl.metrics`, display via `printers.format_gated`.
+- Simplifier policy (user-set): own-rules freely; Spot's hi simplifier
+  only at critical junctures (the recipe boundary — `Simplify(x,
+  "hi")`); cascade hot loops run `KR_SIMP_OPTS=basics` (the default
+  hybrid stalls >15 s already on 3-level cascades).
 - Roles: theory holds the paper lock, reads `papers/`; engineering
   fills the report (current-state contract). Cite only what was read.
   The paper is science only — no tool names outside §9's oracle
