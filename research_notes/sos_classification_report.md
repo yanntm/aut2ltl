@@ -115,13 +115,19 @@ Honest accounting against the spec, so the gaps are not mistaken for bugs:
     `Fork` uses 4 states (`tests/probes/fork_parity_floor.py`); the
     construction beats it by one, so C§7's three-state, two-colour floor is
     sharp inside the census family too.
-  - **Suggested adoption (the corpus sidequest).** The pair is ready to enter
-    the catalogue as `3state1ap2acc_parity_0009241386589983080592.{hoa,sos}`
-    under a `corpus/sampled/3state1ap2acc_parity__seed<label>/` folder,
-    followed by the `flatten --canon` rebuild and summary regen of
-    `genaut/README.md` — the catalogue then gains its first derivative-regime
-    language (and its complement by closure), and the profile a `(ω+1, δ)`
-    row. Deliberately **not** done in this iteration.
+  - **Adoption: done.** The pair entered the catalogue as
+    `3state1ap2acc_parity_0009241386589983080592.{hoa,sos}`, placed in its own
+    shape's folder `corpus/sampled/3state1ap2acc_parity__seedcurated/` (51 → 52
+    entries) and folded in by `flatten --canon --out genaut/corpus`, with
+    `shapes_table` / `manifest` / `flat_study` re-run into the corpus. `flat`
+    5110 → **5111**, `flat_canon` 3212 → **3213** primals (6220 → **6222**
+    complement-closed); every other catalogue file rebuilt **byte-identical**.
+    The catalogue holds its first derivative-regime language (plus its
+    complement by closure) and `STUDY.md`'s Wagner profile gains the
+    `(ω+1, δ)` row — coords `(1, 1, 0, 0)`, *self-dual, one derivation (Fork)*,
+    2 languages, both LTL and stutter-invariant, 1 primal — the one self-dual
+    `δ` row standing alone, so the profile's duality symmetry holds.
+    `genaut/README.md` records the hand-added-examples convention.
   - **Uniform sampling misses the regime, measurably.** Classifying every
     `.sos` the beyond-wall campaign built (46 596 draws over 9 parity shapes,
     including 8 467 of the floor shape itself) yields **zero** tied cases —
