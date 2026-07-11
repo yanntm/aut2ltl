@@ -23,21 +23,24 @@ only the file and section named for the task at hand — nothing else.
   awaiting E-campaign data. References grounded in `papers/` (two
   placeholders pending: PRISM CAV'11, Chatterjee–Doyen–Henzinger
   ToCL'10 — do not cite them until in library and read).
-- **Engineering: M1, M2, M3 DONE and theory-accepted (F-M1..F-M3).
-  The F-M3 reply requires a cheap assertion-only addendum M3b (spec
-  §9.1: the Thm 4.4(2) biconditional on the existing pair sample),
-  to run with the M4 pass; M4 is unblocked on the REWRITTEN spec §10
-  (per-block Collatz–Wielandt — the old flat loop diverges on
-  reducible Live matrices).** Engine in `sosl/sosl/quant/`
+- **Engineering: M1, M2, M3, M4+M3b DONE (F-M1..F-M4; F-M4 awaiting
+  theory reply).** Engine in `sosl/sosl/quant/`
   (`chain`/`kernel`/`theta`/`measure` + `routea` + `distance`/`shadow`/
-  `essential`; placement provisional, to move under `sosl/sosl/sos/` on
-  some later go-ahead). M1: flip law 4248/4248 (F-M1). M2: Route A
-  oracle exact 4248/4248, laws L2–L5 green (F-M2; accepted, Thm 3.4
-  corpus-tested). M3: fixtures F-D..F-I green (F-G control held);
-  cases 6222/6222 (Prop 4.5 byte-exact on all), pairs 993/1000,
-  triples 497/500, 0 red anywhere (`reference/quant/m3_laws.md` +
-  csvs, finding F-M3). Census data: 5660/6222 LTL-up-to-null, 1922 of
-  them carrying a measure-invisible group; essential trivial on 5164.
+  `essential` + `entropy`; placement provisional, to move under
+  `sosl/sosl/sos/` on some later go-ahead). M1: flip law 4248/4248
+  (F-M1). M2: Route A oracle exact 4248/4248, laws L2–L5 green (F-M2;
+  accepted, Thm 3.4 corpus-tested). M3: fixtures F-D..F-I green (F-G
+  control held); cases 6222/6222 (Prop 4.5 byte-exact on all), pairs
+  993/1000, triples 497/500, 0 red anywhere
+  (`reference/quant/m3_laws.md` + csvs, finding F-M3). Census data:
+  5660/6222 LTL-up-to-null, 1922 of them carrying a measure-invisible
+  group; essential trivial on 5164. M4: fixtures F-J..F-L green
+  (golden mean by rational sign test); cases 6222/6222, 0 red, 0
+  non-converged, 0 budget-blown; monotonicity pairs 1000/1000
+  (`reference/quant/m4_entropy.md` + csvs). M3b: Thm 4.4(2)
+  biconditional green 999/1000 on M3's seed-1 sample, 316
+  null-disagreement = 316 essential-equal
+  (`reference/quant/m3b_thm442.{md,csv}`; both in finding F-M4).
 
 ## Work items — Theory
 
@@ -55,22 +58,17 @@ only the file and section named for the task at hand — nothing else.
 
 ## Work items — Engineering (in order, each gated on the user's go)
 
-1. **M4 (spec §10) + M3b — IN FLIGHT (2026-07-11).** Engine
-   `sosl/sosl/quant/entropy.py` committed (per-block CW enclosure,
-   fixed-point `v` over common denominator 10⁴⁰ — the spec's
-   `limit_denominator` clause realized without lcm blowup, same
-   soundness; `log₂` the only float, ulp-widened); `algorithm.md` §10
-   + README updated. Fixtures F-J/F-K/F-L green (golden mean certified
-   by the fraction sign test, width 7.5e-10). Gates
-   `tests.quant.m4_gate` (cases + inclusion pairs) and
-   `tests.quant.m3b_gate` (Thm 4.4(2) biconditional on M3's seed-1
-   sample) committed, smoke-tested. Corpus campaign running
-   (6222 cases + 1000 m4 pairs + 1000 m3b pairs, 15s timeout each,
-   log `sosl/tests/quant/logs/m4_campaign.log`); then `--aggregate`
-   both → `reference/quant/m4_entropy.*`, `m3b_thm442.*`, finding
-   F-M4 in the report.
+1. ~~M4 (spec §10) + M3b~~ DONE (2026-07-11, finding F-M4): engine
+   `sosl/sosl/quant/entropy.py`, fixtures3, `m4_gate`, `m3b_gate`;
+   all gates green (0 red / 0 non-converged / 0 case budget-kills; 1
+   m3b pair kill, a datum). One spec deviation, soundness-neutral and
+   recorded in F-M4 + `algorithm.md` §10: the CW iterate is fixed
+   point over the COMMON denominator 10⁴⁰ (per-entry
+   `limit_denominator` blows up through the lcm). Awaiting theory
+   reply.
 2. **M5 (spec §11)** — the Markov product `Pr_M(L)`; needs a `.mc`
-   chain format fixed with the corpus keeper first.
+   chain format fixed with the corpus keeper first. NEXT, on the
+   user's go.
 3. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
    and abstract ⟨TBD⟩ slots through report findings only.
 4. **Figures** — FIG-1/2/3 **DONE (2026-07-11)**: artifact
