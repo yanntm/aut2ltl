@@ -2407,3 +2407,57 @@ functionality guard, fallback) now live in §6.1 — the firing exhibit's
 display moved with them — and the companion-calculus citation is dropped
 (the paper is self-contained on the align construction; [SωS26] remains the
 only family citation).
+
+### 2026-07-11 (engineering) — item 13 landed; the witness lock's `_c` was a name, not an identity
+
+Spec §8 item 13 (the amended fix) is **implemented and locally green**. The
+export refuses on a dirty Lemma 5.2 check (`NotCongruent`; `--unchecked` kept
+for the §4.2 display), `fixpoint_congruent` / `export_associative` are recorded
+(spec §7), `congruence_audit` now takes the **full check** as its verdict, and
+the 14-case parity sample flipped exactly as theory predicted: **14/14
+non-congruent** — while the rejected letter test stays green on **13** of the
+14, an under-detection that confirms the ruling's "vacuous without merged
+letters" reading in the data.
+
+New local gates, all green: `congruence_gate` (the two proven-permanent
+specimens + the loudest ex-crasher pair, 4/4: `ACCEPTOR_ONLY`,
+`fixpoint_congruent = false`, no invariant, `export_associative = n/a`, **no
+`CRASH`** — the 17 crashers are cured at the root), the P7/F8 associativity
+fixture (the `a_implies_xa` unchecked export reproduces the paper's §4.2 display
+cell-for-cell, non-associative with witness `([a],[a],[a])`; saturated specimens
+associative **and** congruent), and `campaign_e0` extended to assert both new
+fields at E0 scale (P7/P9). The standing set — `saturation_gate`,
+`even_conformance`, `evenblocks_conformance`, `exact_fixtures`, `exact_ref_gate`,
+`witness_lock`, `fault_verdict_probe`, `campaign_e0` (P5 ledgers byte-stable) —
+is green.
+
+**Finding for theory — the `_c` suffix is not an addressable identity.**
+`witness_lock` built each refutation witness's complement id by string
+concatenation (`<primal>_c`) and CRASHed on a missing file. Cause: genaut mints
+a `<primal>_c` alias **only where the enumeration was one-sided**. The corpus
+regrew (the beyond-wall campaign), the dual of
+`2state1ap2acc_parity_0088836118` was drawn under its own combo id, and the
+alias it no longer needed ceased to exist. (`_1178851077_c` survives — its dual
+was never drawn independently.) The catalogue is still complement-closed; only
+the *name* moved.
+
+Fix taken (user's go): the lock gates the **primals only**. This costs nothing —
+spec §8 item 7 states the refutation as an *existence* claim certified on the
+canonical invariant, "independent of provenance", and a complement is the
+accept-set byte-flip over the same semigroup, so it inherits prefix-independence
+(a) and the ω-sort signature (b) and can only pass where its primal passes. The
+lock is green: 2 witnesses prefix-independent + permanent, **0 linear columns**;
+the 2 named cases conform (P8).
+
+⚠️ **What theory should note:** the spec's recorded outcome (§ E2, "four
+prefix-independent entries — two languages and their complements") and any
+paper text that cites witnesses **by combo id** are exposed to this. The *count*
+is safe — it is a sweep fact over languages, and the E2 recount will re-derive
+it — but a `<id>_c` cited in prose can silently stop resolving whenever the
+corpus grows. Suggest the paper cite the two primals and state the complements
+by duality rather than by name.
+
+**Next (owed):** the ablation-only re-run drop (6222 cases, one column;
+`--done` cannot apply — the column needs the final table, which only a re-run
+reconstructs), then P9/P10 over its output and the E2 recount
+(`permanent = 3170`).
