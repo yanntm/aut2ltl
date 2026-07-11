@@ -20,7 +20,7 @@ outright — the `complement`, a flip of ``P``.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from typing import FrozenSet, List, Tuple
+from typing import FrozenSet, List, Optional, Tuple
 
 from .alphabet import EMPTY, Alphabet, Word
 from .lasso import Lasso
@@ -107,6 +107,24 @@ class Invariant:
         ``P`` block. (`sos.calculus.surgery.complement` is the same operation one
         level down, on a `Table`'s pair sets.)"""
         return replace(self, accept=self.linked_pairs() - self.accept)
+
+    def associativity_witness(self) -> Optional[Tuple[int, int, int]]:
+        """The first class triple ``(a, b, c)`` (scan order: ``a``, then ``b``,
+        then ``c``) with ``M(M(a,b),c) != M(a,M(b,c))``, or ``None`` when the
+        table is associative. A table built from a genuine two-sided congruence
+        is associative by construction; a violation certifies the table is not
+        the multiplication of any algebra (an unchecked stalled export)."""
+        n = self.n
+        m = self.mult
+        for a in range(n):
+            for b in range(n):
+                left = m[m[a][b]]
+                row_b = m[b]
+                row_a = m[a]
+                for c in range(n):
+                    if left[c] != row_a[row_b[c]]:
+                        return a, b, c
+        return None
 
     def validate(self) -> None:
         """Assert the structural laws: identity is the empty word's class and a
