@@ -5,6 +5,7 @@ language under the default (saturation on) and the ablation (`--no-saturation
     python3 -m tests.sosl.census_campaign [--config default|ablate|both]
                                           [--limit N] [--budget S] [--out DIR]
                                           [--cases i:j] [--out-csv FILE]
+                                          [--done CSV]
 
 The source is the flat catalogue `genaut/corpus/flat_canon` (one file per
 language up to AP relabeling, closed under complement — the project standard);
@@ -25,6 +26,13 @@ half-open slice `[i, j)` (either end may be empty: `i:`, `:j`, `:`), and
 `--out-csv FILE` writes that one file instead of `<out>/results.csv`. A cluster
 line is `... --cases 0:50 --out-csv "$OARRUN_OUT.csv"`; `reap.sh` concatenates
 the shards, so a slice covers each language exactly once with no overlap.
+
+Resume reads the done set from the output file, which is exactly wrong under
+fan-out: a private `$OARRUN_OUT.csv` starts empty, so a shard re-runs everything
+it covers. `--done CSV` supplies the done set **read-only, from a separate file**
+— typically a committed record of an earlier drop — and is unioned with whatever
+the output already holds. A sweep of a grown catalogue is then additive: the
+languages of the previous drop are skipped, only the new ones are learned.
 """
 from __future__ import annotations
 
@@ -70,6 +78,7 @@ def main(argv: List[str]) -> int:
     out = OUT
     cases_spec = ""
     out_csv = ""
+    done_csv = ""
     skip = -1
     for i, a in enumerate(argv):
         if i == skip:
@@ -91,6 +100,9 @@ def main(argv: List[str]) -> int:
             skip = i + 1
         elif a == "--out-csv":
             out_csv = argv[i + 1]
+            skip = i + 1
+        elif a == "--done":
+            done_csv = argv[i + 1]
             skip = i + 1
 
     cases = flat_canon_cases()
@@ -119,7 +131,12 @@ def main(argv: List[str]) -> int:
     else:
         out.mkdir(parents=True, exist_ok=True)
         csv_path = out / "results.csv"
+    # The output's own rows resume an interrupted run; `--done` adds a read-only
+    # prior record (a committed earlier drop), which is what makes a fan-out shard
+    # additive — its private output file is always empty.
     done = _done_runs(csv_path)
+    if done_csv:
+        done |= _done_runs(Path(done_csv))
     total = len(cases) * len(configs)
     print(f"flat_canon: {len(cases)} languages x {len(configs)} config(s) "
           f"= {total} runs; {len(done)} already done", file=sys.stderr, flush=True)

@@ -7,6 +7,7 @@ ROLL.
     python3 -m tests.sosl.census_e3 [--limit N] [--cases i:j] [--only KIND]
                                     [--roll-timeout S] [--out-csv FILE]
                                     [--from-sweep SWEEP_CSV] [--summary-only]
+                                    [--done CSV]
 
 Source is the flat catalogue `genaut/corpus/flat_canon` (the project standard).
 Each row is one **kind** of one language, in a long format that concatenates
@@ -26,6 +27,11 @@ often the algebra is smaller / larger / tied against ROLL's smallest FDFA — th
 wash inside the `N+N²` envelope, not a win), and the SoS-category ventilation
 (the LTL cut). Resumable: `(case, kind)` rows already present are skipped.
 Writes `tests/sosl/logs/census_e3/{results.csv, summary.md}` by default.
+
+Resume reads that done set from the output file, which is empty in a fan-out shard
+— so `--done CSV` supplies it **read-only, from a separate file**, typically a
+committed record of an earlier drop, unioned with the output's own rows. A census
+of a grown catalogue is then additive: only the new languages invoke ROLL.
 """
 from __future__ import annotations
 
@@ -170,6 +176,7 @@ def main(argv: List[str]) -> int:
     only = ""
     out_csv = ""
     from_sweep = ""
+    done_csv = ""
     skip = -1
     for i, a in enumerate(argv):
         if i == skip:
@@ -186,6 +193,8 @@ def main(argv: List[str]) -> int:
             out_csv = argv[i + 1]; skip = i + 1
         elif a == "--from-sweep":
             from_sweep = argv[i + 1]; skip = i + 1
+        elif a == "--done":
+            done_csv = argv[i + 1]; skip = i + 1
         elif a == "--summary-only":
             summary_only = True
 
@@ -247,7 +256,12 @@ def main(argv: List[str]) -> int:
     if limit:
         cases = cases[:limit]
 
+    # The output's own rows resume an interrupted run; `--done` adds a read-only
+    # prior record (a committed earlier drop), which is what makes a fan-out shard
+    # additive — its private output file is always empty.
     done = _done_rows(csv_path)
+    if done_csv:
+        done |= _done_rows(Path(done_csv))
     print(f"flat_canon E3: {len(cases)} languages x {len(kinds)} kind(s) "
           f"{kinds}; {len(done)} rows already done", file=sys.stderr, flush=True)
 

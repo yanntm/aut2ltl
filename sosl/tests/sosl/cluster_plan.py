@@ -23,6 +23,12 @@ Walltime stays the runner's 5-minute default; throughput comes from
     python3 -m tests.sosl.cluster_plan --e3       # ROLL-baseline census
     RUN=$(cluster/oarrun.sh sosl/tests/sosl/logs/cluster/sweep.cmds)  # from repo root
 
+`--done CSV` names a prior drop's results: those rows are already done, so a slice
+made entirely of them is not emitted, and every emitted line carries the flag on
+to the command, which skips them too. Growing the catalogue then costs only its
+new languages — the drop is additive rather than a re-sweep. The path is used
+verbatim in the commands, which `cd sosl` first, so name it as they see it.
+
 Most runs finish in milliseconds, so packing to the worst case is nearly free. A
 command cut at the cap keeps every row it flushed; `oarrun.sh --resume` reclaims
 the rest.
@@ -30,14 +36,15 @@ the rest.
 from __future__ import annotations
 
 import argparse
+import csv
 import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Set, Tuple
 
 from sosl.experiment.baseline import MODES
-from sosl.experiment.manifest import flat_canon_cases
+from sosl.experiment.manifest import DEFAULT, NOSAT_EXACT, flat_canon_cases
 
 # Interpreter start plus imports (and the `cd sosl`), once per command, charged
 # against the chunk's share of the per-command cap.
@@ -50,6 +57,23 @@ PER_RUN_S: int = 60
 ROLL_TIMEOUT_S: int = 60
 
 _LEGS = {"default": 1, "ablate": 1, "both": 2}
+
+# The `config_id` each leg writes in the sweep CSV — what a done set is keyed by.
+_LEG_CONFIGS = {
+    "default": (DEFAULT.config_id,),
+    "ablate": (NOSAT_EXACT.config_id,),
+    "both": (DEFAULT.config_id, NOSAT_EXACT.config_id),
+}
+
+
+def _done_pairs(csv_path: Optional[Path], case_col: str, kind_col: str) -> Set[Tuple[str, str]]:
+    """The `(case, kind)` pairs a prior drop's CSV already records, under that
+    file's own column names (`case_id`/`config_id` for the sweep, `case`/`kind`
+    for E3). Absent file, empty set — planning is then unfiltered."""
+    if csv_path is None or not csv_path.exists():
+        return set()
+    with open(csv_path, newline="") as fh:
+        return {(r[case_col], r[kind_col]) for r in csv.DictReader(fh)}
 
 
 def runner_timeout(config: Path) -> int:
@@ -68,45 +92,63 @@ def _chunk(timeout: int, per_run: int) -> int:
     return max(1, (timeout - STARTUP_S) // per_run)
 
 
-def _slices(n: int, chunk: int) -> List[str]:
-    """The `i:j` half-open slice specs tiling `[0, n)` in steps of ``chunk``."""
-    return [f"{i}:{min(i + chunk, n)}" for i in range(0, n, chunk)]
+def _slices(n: int, chunk: int) -> List[Tuple[int, int]]:
+    """The half-open `[i, j)` slice bounds tiling `[0, n)` in steps of ``chunk``."""
+    return [(i, min(i + chunk, n)) for i in range(0, n, chunk)]
 
 
-def _plan_sweep(n: int, timeout: int, legs: str, budget: int) -> List[str]:
+def _plan_sweep(case_ids: List[str], timeout: int, legs: str, budget: int,
+                done: Set[Tuple[str, str]], done_csv: Optional[Path]) -> List[str]:
     """One `census_campaign` line per `--cases` slice, sized so a command's cases
-    (each `len(legs)` runs of ``budget`` s) fit the per-command cap."""
+    (each `len(legs)` runs of ``budget`` s) fit the per-command cap. A slice whose
+    every `(case, config)` is in ``done`` is not emitted at all — the shard would
+    do nothing but pay startup — and each emitted line carries `--done` so the
+    campaign skips the covered languages it already has."""
     per_case = _LEGS[legs] * budget
     if per_case + STARTUP_S > timeout:
         print(f"cluster_plan: one case's budget ({per_case}s for {legs}) plus "
               f"startup ({STARTUP_S}s) exceeds the cap ({timeout}s); commands will "
               f"be cut short — raise OARRUN_TIMEOUT or lower --budget", file=sys.stderr)
     chunk = _chunk(timeout, per_case)
-    return [
-        f'cd sosl && python3 -m tests.sosl.census_campaign '
-        f'--config {legs} --cases {sl} --budget {budget} --out-csv "$OARRUN_OUT.csv"'
-        for sl in _slices(n, chunk)
-    ]
+    configs = _LEG_CONFIGS[legs]
+    done_arg = f' --done {done_csv}' if done_csv else ""
+    lines: List[str] = []
+    for lo, hi in _slices(len(case_ids), chunk):
+        todo = [c for c in case_ids[lo:hi]
+                if any((c, cfg) not in done for cfg in configs)]
+        if not todo:
+            continue
+        lines.append(
+            f'cd sosl && python3 -m tests.sosl.census_campaign '
+            f'--config {legs} --cases {lo}:{hi} --budget {budget} '
+            f'--out-csv "$OARRUN_OUT.csv"{done_arg}')
+    return lines
 
 
-def _plan_e3(n: int, timeout: int, roll_timeout: int) -> List[str]:
+def _plan_e3(case_ids: List[str], timeout: int, roll_timeout: int,
+             done: Set[Tuple[str, str]], done_csv: Optional[Path]) -> List[str]:
     """One `census_e3` line per `(ROLL mode, case-slice)`, each mode packed by its
-    JVM cap. The `ours` kind is NOT planned: it equals the learner sweep's default
-    leg (heavy-tailed, and redundant), so it is derived post-hoc with
-    `census_e3 --from-sweep`, never re-run on the cluster."""
+    JVM cap. A `(mode, slice)` whose every case is already in ``done`` is not
+    emitted, and each emitted line carries `--done`, so a grown catalogue invokes
+    ROLL only on its new languages. The `ours` kind is NOT planned: it equals the
+    learner sweep's default leg (heavy-tailed, and redundant), so it is derived
+    post-hoc with `census_e3 --from-sweep`, never re-run on the cluster."""
     if roll_timeout + STARTUP_S > timeout:
         print(f"cluster_plan --e3: one ROLL run ({roll_timeout}s) plus startup "
               f"({STARTUP_S}s) exceeds the cap ({timeout}s); commands will be cut "
               f"short — raise OARRUN_TIMEOUT or lower --roll-timeout", file=sys.stderr)
     lines: List[str] = []
     roll_chunk = _chunk(timeout, roll_timeout)
+    done_arg = f' --done {done_csv}' if done_csv else ""
     for mode in MODES:
-        lines += [
-            f'cd sosl && python3 -m tests.sosl.census_e3 '
-            f'--cases {sl} --only {mode} --roll-timeout {roll_timeout} '
-            f'--out-csv "$OARRUN_OUT.csv"'
-            for sl in _slices(n, roll_chunk)
-        ]
+        for lo, hi in _slices(len(case_ids), roll_chunk):
+            todo = [c for c in case_ids[lo:hi] if (c, mode) not in done]
+            if not todo:
+                continue
+            lines.append(
+                f'cd sosl && python3 -m tests.sosl.census_e3 '
+                f'--cases {lo}:{hi} --only {mode} --roll-timeout {roll_timeout} '
+                f'--out-csv "$OARRUN_OUT.csv"{done_arg}')
     return lines
 
 
@@ -128,9 +170,15 @@ def main(argv: Optional[List[str]] = None) -> int:
                    help="learner sweep: per-run wall budget (census cap + packing)")
     p.add_argument("--roll-timeout", type=int, default=ROLL_TIMEOUT_S, metavar="S",
                    help="E3: per-(case, mode) ROLL JVM cap and packing figure")
+    p.add_argument("--done", type=Path, default=None, metavar="CSV",
+                   help="a prior drop's results CSV: its rows are already done, so "
+                        "they are neither planned nor re-run (the path is passed "
+                        "through to each command, so name it as the command sees "
+                        "it — the commands `cd sosl` first)")
     args = p.parse_args(argv)
 
-    n = len(flat_canon_cases())
+    case_ids = [c.case_id for c in flat_canon_cases()]
+    n = len(case_ids)
     if not n:
         print("cluster_plan: no flat_canon cases "
               "(is genaut/corpus/flat_canon/det built?)", file=sys.stderr)
@@ -138,13 +186,20 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     timeout = runner_timeout(args.config)
     if args.e3:
-        lines = _plan_e3(n, timeout, args.roll_timeout)
-        what = (f"{n} languages x {len(MODES)} ROLL mode(s) -> {len(lines)} commands "
+        done = _done_pairs(args.done, "case", "kind")
+        lines = _plan_e3(case_ids, timeout, args.roll_timeout, done, args.done)
+        todo = len({c for c in case_ids if any((c, m) not in done for m in MODES)})
+        what = (f"{n} languages ({todo} to run) x {len(MODES)} ROLL mode(s) -> "
+                f"{len(lines)} commands "
                 f"({args.roll_timeout}s/ROLL run; ours derived from the sweep)")
     else:
-        lines = _plan_sweep(n, timeout, args.legs, args.budget)
-        what = (f"{n} languages x {_LEGS[args.legs]} leg(s) -> {len(lines)} commands "
-                f"({args.budget}s/run)")
+        done = _done_pairs(args.done, "case_id", "config_id")
+        lines = _plan_sweep(case_ids, timeout, args.legs, args.budget, done, args.done)
+        configs = _LEG_CONFIGS[args.legs]
+        todo = len({c for c in case_ids
+                    if any((c, cfg) not in done for cfg in configs)})
+        what = (f"{n} languages ({todo} to run) x {_LEGS[args.legs]} leg(s) -> "
+                f"{len(lines)} commands ({args.budget}s/run)")
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text("\n".join(lines) + "\n")
