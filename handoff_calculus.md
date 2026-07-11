@@ -3,7 +3,39 @@
 Bootstraps a fresh session on `research_notes/sos_calculus_spec.md`. Read this,
 then only the spec section for the task at hand.
 
-## State (2026-07-11 pm): E-CAL-EX DONE; engineering queue = spec §9.2 onward
+## State: E-CAL-EX + V4 DONE; engineering queue = spec §9.3 onward
+
+- **V4 (spec §9.2) — DONE**, `sosl/tests/calculus/v4_ladder.py`
+  (`--selftest` / `--one <case>` / `--campaign`; full sweep ~4 min),
+  reference `reference/calculus/v4_ladder.{md,csv}`, report findings
+  **F15–F19**, paper §8.5 filled. **6222/6222 agreement with Spot** on
+  safety, co-safety and obligation; no blown budget. Carry three facts:
+  - **Spot has no automaton-level Manna–Pnueli classifier.**
+    `spot.is_obligation` / `is_persistence` / `mp_class` are
+    formula-level (`tl/hierarchy.hh`: the formula is mandatory, the
+    automaton only an accelerator); `autfilt` offers only *structural*
+    `--is-weak` / `--is-terminal`. And translation is no escape — 2484
+    of the 6222 corpus languages are not LTL-definable, so no formula
+    exists to hand it. The formula-free oracle V4 uses instead:
+    `is_safety_automaton` (language-level per `twaalgos/strength.hh` —
+    "acceptance can be set to `true` without changing the language"),
+    the same on `dualize` for co-safety (exact only on a deterministic
+    *complete* automaton — the script guards the precondition), and
+    `minimize_wdba` + equivalence for obligation (Spot's own
+    `ocheck::via_WDBA`, minus the formula). `--selftest` pins all three
+    against `spot.mp_class` on eight known-class formulas.
+  - `spot.translate(f, "deterministic", ...)` is a *preference*, not a
+    guarantee (`F G p` comes back nondeterministic under Büchi output);
+    pass `"generic"` when you need an actual DELA.
+  - Read Spot's headers under `opt/spot/include/spot/`, not the bindings'
+    docstrings — the Python docstrings are empty, the headers carry the
+    contracts.
+- **Paper §8 is marked STALE.** Its preamble now says corpus = 6222, and
+  every corpus-derived number in §8 *except* §8.5's V4 bullet is
+  report-era 3938. The markers say what to do: re-source each figure from
+  `sos_calculus_report.md`, one by one, matched to the finding that
+  produced it — never re-typed, never left because it looks close. That
+  is spec §9.4's sweep.
 
 - **E-CAL-EX (spec §9.1) — DONE**, `sosl/tests/calculus/example_gate.py`
   (one shot, no argv, ~0.1 s), reference `reference/calculus/example_gate.md`,
@@ -36,11 +68,8 @@ then only the spec section for the task at hand.
   §8 evaluation (all numbers, report-era 3938 corpus, refresh pending —
   corpus now 6222). Figures task: `sos_calculus_figures.md`.
 - **Engineering queue, in order** (spec §9): ~~9.1 E-CAL-EX~~ (done)
-  → **9.2 V4 classification battery vs Spot — NEXT** (fills paper §8.5
-  ⟨TBD⟩; V2's `--one` / `--campaign` pattern; open with a 10-line probe
-  of what Spot 2.14 actually exposes — `mp_class`? `is_obligation`? —
-  and report that surface before using it, bounded-or-skipped) →
-  9.3 CAL6 alphabet hygiene (`free_aps` / `drop_ap` / `rename_equal`;
+  → ~~9.2 V4 classification battery vs Spot~~ (done) →
+  **9.3 CAL6 alphabet hygiene — NEXT** (`free_aps` / `drop_ap` / `rename_equal`;
   the corpus pipeline already has the pieces — `sos.minimize.
   remove_free_aps` and `sos.relabel.canonical_relabeling` — so lift and
   share, do not duplicate) → 9.4 corpus-refresh sweep (BLOCKED on the
