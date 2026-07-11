@@ -168,10 +168,10 @@ def case_refuse() -> None:
             raise AssertionError(f"{reading} on a phase-2 object did not raise")
         except RuntimeError:
             pass
-    # Phases beyond 4 are still refused loudly.
+    # Phases beyond the current ceiling are still refused loudly.
     try:
-        Engine(square="off").build(DUPE, until_phase=5)
-        raise AssertionError("until_phase=5 was not refused")
+        Engine(square="off").build(DUPE, until_phase=6)
+        raise AssertionError("until_phase=6 was not refused")
     except NotImplementedError:
         pass
 
