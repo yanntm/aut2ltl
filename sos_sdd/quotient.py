@@ -70,6 +70,12 @@ class QuotientSoS:
     def __getattr__(self, name: str) -> Any:
         return getattr(self._core, name)
 
+    def member(self, u: Tuple[str, ...], v: Tuple[str, ...]) -> bool:
+        """§6.1 lasso membership — closure-free: delegates to the
+        digest-side calculus, never reads the core."""
+        from .calculus import member as _member
+        return _member(self._aut, u, v)
+
     # -- the table -------------------------------------------------------
 
     def _assemble(self) -> Dict[str, Any]:
