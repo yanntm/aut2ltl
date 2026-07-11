@@ -101,7 +101,9 @@ def _learn_to_fixpoint(
         process_counterexample(table, p, res.lasso)
         cex += 1
     hyp = _build_hypothesis(table, p)
-    inv = export(p, teacher.member)
+    # Unchecked read-off: this legacy census probe classifies by byte-compare
+    # and acceptor checks; refusal semantics live in `sosl.experiment.run`.
+    inv = export(p, teacher.member, check=False)
     assert stall_n is not None
     return stall_n, cex, hyp, p, inv
 

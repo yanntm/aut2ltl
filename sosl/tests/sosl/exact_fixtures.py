@@ -51,7 +51,9 @@ def check_stall_certified(name: str, ref_n: int, stall_n: int) -> None:
     ref = reference_of_hoa(path)
     assert ref.n == ref_n, (name, ref.n, ref_n)
     t = HoaTeacher.of_hoa(path, eq_mode="exact")
-    learned = learn(t, t.alphabet, saturation=False)
+    # A certified stall is non-congruent (Theorem 5.3), so export would refuse;
+    # this fixture asserts on the raw read-off, hence the unchecked display.
+    learned = learn(t, t.alphabet, saturation=False, unchecked_export=True)
     assert learned.n == stall_n, (
         f"{name}: exact returned a counterexample and drove past the stall "
         f"(got {learned.n} classes, expected the {stall_n}-class stall) — "

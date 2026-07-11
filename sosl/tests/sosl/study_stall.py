@@ -44,7 +44,9 @@ def _drive(teacher: HoaTeacher) -> Tuple[Partition, Partition, object]:
             break
         process_counterexample(table, p, res.lasso)
     assert stall is not None
-    return stall, p, export(p, teacher.member)
+    # Unchecked read-off: this probe displays what a stalled fixpoint would
+    # export, congruent or not (never a deliverable).
+    return stall, p, export(p, teacher.member, check=False)
 
 
 def _dump_partition(title: str, teacher: HoaTeacher, p: Partition) -> None:

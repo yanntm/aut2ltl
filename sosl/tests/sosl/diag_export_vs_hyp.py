@@ -37,7 +37,9 @@ def run(formula: str) -> int:
 
     hyp = _build_hypothesis(table, p)
     loops = loop_reps(hyp)
-    inv = export(p, t.member)
+    # Unchecked read-off: the whole point is to compare the raw export against
+    # the hypothesis, congruent or not.
+    inv = export(p, t.member, check=False)
 
     letters = t.alphabet.letters()
     n_hyp_vs_teacher = n_inv_vs_hyp = n_inv_vs_teacher = 0
