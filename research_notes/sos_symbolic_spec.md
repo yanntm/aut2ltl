@@ -93,8 +93,8 @@ the derived-census driver, the engine's first consumer at scale),
   awaits Theory blessing, F22).
 - **DONE (Theory round, 2026-07-11): the E1 escalations.** F22 blessed
   with the stabilizer-closure lemma grounding it (report, F22
-  response; paper §4.2 rewritten with the lemma + the stratified
-  62 % / 65 % citation); F19 reconciled with E5/E6 — the kill
+  response; paper §4.2 rewritten with the lemma + the pooled 62 %
+  citation); F19 reconciled with E5/E6 — the kill
   histogram is right-censored, Phase 3's verdict read is
   crossing-shaped and now priced in §5's table, and E6 requires
   budget parity (protocols appended to E5/E6 below). The scatter
@@ -278,12 +278,12 @@ inputs.
 
 **Addendum (Theory, post-F22/F23).** The covariate operationalization
 is blessed (report, F22 response): per-`(slot, dst)` families,
-one-mark closure ⟺ upward closure. Requirement on any citation
-refresh: stratify by the digest's `|C|` (census `marks` column — first
-resolve why 0acc-named instances carry `marks=1`) and report strata
-alongside the pool. The correlate analysis is done (report F23):
-per-slot sharing dominates, algebra size next, upward-closure weak —
-E1 is closed *including* its paper reading.
+one-mark closure ⟺ upward closure; the paper cites the pooled 62 %,
+unstratified (canonical digests always carry ≥ 1 mark, so no trivial
+stratum exists; instance-name acc tokens are source-GBA provenance
+and must not enter any analysis). The correlate analysis is done
+(report F23): per-slot sharing dominates, algebra size next,
+upward-closure weak — E1 is closed *including* its paper reading.
 
 ### E2 — asynchronous scaling (Proposition 4.1, measured)
 
