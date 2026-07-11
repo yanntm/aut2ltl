@@ -35,19 +35,43 @@ by construction. Mechanism sums over decided rows (K-E7 piggyback):
 absorption 14 050 pairs, group 7 387, non-splitting `other` 3 076,
 **verdict-splitting `other` = 0** (no third mechanism in the decided mass).
 
-## K-E1 pass 2 — conflict hunt on the timeout stratum (SUBMITTED, id lost)
+## K-E1 pass 2 — conflict hunt at k=0 (cluster run `20260711-203139-k_e1v2`)
 
 `tests/cascade/k_e1_verify.py <id> <layer> 0` (early-exit `find_c_conflict`
-+ inline ALG-7: member toggle + non-conjugacy) over the 2 176 missing
-`(id, layer)` pairs — `tests/cascade/logs/cmds_k_e1_verify.txt`, regen:
-join `census_flat_canon.jsonl`'s UNDECIDED readings against
-`k_e1_cluster.csv`. The submission client was killed at its 5-min cap
-**after an unknown number of `oarsub` calls**; the run id
-(`20260711-HHMMSS-k_e1v`, submitted ≈ 19:50–19:55) was never printed.
-Recovery, either: (a) list `$REMOTE_RUNS` for `*k_e1v*` (one ssh, needs
-user's ok) and `cluster/reap_until.sh` it; or (b) resubmit fresh under a
-new name (`--name k_e1v2`) — safe, a fresh id writes its own run dir, the
-only cost is duplicated cluster time.
++ inline ALG-7: member toggle + non-conjugacy, Lemma C.11) over the 2 176
+missing `(id, layer)` pairs — `tests/cascade/logs/cmds_k_e1_verify.txt`,
+regen: join `census_flat_canon.jsonl`'s UNDECIDED readings against
+`k_e1_cluster.csv`. 250 jobs, 60 s/command; 2 176/2 176 accounted after one
+`--resume` for 18 lost commands. (Reading the reap tally: `k_e1_verify`
+exits 2 on BUDGET, which the harness counts as `fail` — those rows are
+data, not failures.) Data: `k_e1v_conflicts_k0.csv`.
+
+| status at k=0 | layers | aperiodic | non-aperiodic |
+|---|--:|--:|--:|
+| CONFLICT — **every one ALG-7-genuine** | 1 021 | **806** | 215 |
+| CLEAN — (C)@0 holds | 625 | | |
+| BUDGET | 530 | | |
+
+**806 aperiodic census layers genuinely fail (C) at width 0.** A width-0
+conflict does not decide floor membership (pass 1 shows 505 layers that
+conflict at k=0 yet decide at k=1/2) — hence the persistence pass:
+
+## K-E1 persistence pass — the same layers at k=1 (`20260711-210851-k_e1w1`)
+
+`k_e1_verify <id> <layer> 1` over the 1 021 k=0-conflict layers
+(`tests/cascade/logs/cmds_k_e1_k1.txt`, regen: CONFLICT rows of
+`k_e1v_conflicts_k0.csv`). 1 021/1 021 accounted (one `--resume`, 4 lost).
+Data: `k_e1w_conflicts_k1.csv`.
+
+| status at k=1 | layers | aperiodic | non-aperiodic |
+|---|--:|--:|--:|
+| CONFLICT — every one ALG-7-genuine | 263 | **246** | 17 |
+| CLEAN — (C)@1 holds (ladder rescues) | 118 | | |
+| BUDGET (cone growth saturates 10⁶ states) | 640 | | |
+
+**The aperiodic floor-track stratum: ≥ 246 in-frame layers genuinely fail
+(C) at widths 0 and 1** (every-width failure still needs the structural
+absorption argument or deeper passes; 640 layers are budget-open at k=1).
 
 ## K-F12 specimen (ALG-7 verified, `kf12_specimen_alg7.txt`)
 
