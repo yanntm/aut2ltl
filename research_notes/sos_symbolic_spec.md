@@ -108,12 +108,18 @@ the derived-census driver, the engine's first consumer at scale),
   datum: block-interleaving a factored product inflates nodes 19→82
   while block-preserving perms are neutral (ledger F24). E3's order
   sweep is unblocked.
+- **DONE (engine-side): C10's first move** — §6.1 lasso membership,
+  closure-free by construction (`sos_sdd/calculus.py` is digest-side
+  and never imports the core — the assertion held structurally); gate
+  three-way exact (explicit lasso simulation, engine Phase 3 read,
+  210-lasso sweeps on seven cases) — ledger F25.
 - **TODO: everything else.** C9's remaining switches (fp disciplines
-  `chaining`/`saturation`, split slot encodings), C10 proper, E3–E9,
-  M3–M5 (E2 still owes the second component family and per-point
-  budget sweeps at scale; M2's E5 first profile still owed). Next
-  candidates: C9 fp disciplines (E8), split encodings (E7); C10
-  calculus.
+  `chaining`/`saturation`, split slot encodings), C10's remainder
+  (same-table Boolean algebra — needs Phases 3–5 re-runnable under a
+  different `Acc` on a shared table; alignment with the per-block π
+  assembly; §6.4 queries + witness; rootings/substitutions; the E9
+  gates), E3–E9, M3–M5 (E2 still owes the second component family and
+  per-point budget sweeps at scale; M2's E5 first profile still owed).
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat
