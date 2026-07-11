@@ -3,11 +3,13 @@
 Two sweeps, one planner. Default plans the **learner sweep** (`census_campaign`):
 one line per half-open `--cases` slice, each learning that slice under the
 selected leg(s). `--e3` plans the **ROLL-baseline census** (`census_e3`): one line
-per `(kind, case-slice)`, kind ∈ {ours} ∪ ROLL's three FDFA modes — each ROLL
-line a single sequential JVM per case. Either way every line writes its private
-`$OARRUN_OUT.csv` (the runner forbids a shared file — `O_APPEND` is not atomic
-over NFS), and `reap.sh` concatenates. Submits nothing, reads nothing on the
-cluster.
+per `(ROLL mode, case-slice)`, one of ROLL's three FDFA modes — each a single
+sequential JVM per case. E3's fourth kind, `ours`, is NOT planned: it equals the
+learner sweep's default leg, so it is derived post-hoc with
+`census_e3 --from-sweep`, never re-run (it is heavy-tailed, and redundant). Either
+way every line writes its private `$OARRUN_OUT.csv` (the runner forbids a shared
+file — `O_APPEND` is not atomic over NFS), and `reap.sh` concatenates. Submits
+nothing, reads nothing on the cluster.
 
 The split is driven by a single run's worst-case wall budget. A chunk holds as
 many runs as the runner's per-command cap can bound at that worst case, so a
@@ -46,8 +48,6 @@ STARTUP_S: int = 10
 PER_RUN_S: int = 60
 # Per-(case, mode) ROLL JVM cap, and the E3 packing figure for a ROLL mode.
 ROLL_TIMEOUT_S: int = 60
-# Per-case budget for the cheap `ours` kind (reference class count + metrics).
-OURS_BUDGET_S: int = 2
 
 _LEGS = {"default": 1, "ablate": 1, "both": 2}
 
@@ -89,9 +89,11 @@ def _plan_sweep(n: int, timeout: int, legs: str, budget: int) -> List[str]:
     ]
 
 
-def _plan_e3(n: int, timeout: int, roll_timeout: int, ours_budget: int) -> List[str]:
-    """One `census_e3` line per `(kind, case-slice)`: each ROLL mode packed by its
-    JVM cap, the cheap `ours` kind packed by its own small budget."""
+def _plan_e3(n: int, timeout: int, roll_timeout: int) -> List[str]:
+    """One `census_e3` line per `(ROLL mode, case-slice)`, each mode packed by its
+    JVM cap. The `ours` kind is NOT planned: it equals the learner sweep's default
+    leg (heavy-tailed, and redundant), so it is derived post-hoc with
+    `census_e3 --from-sweep`, never re-run on the cluster."""
     if roll_timeout + STARTUP_S > timeout:
         print(f"cluster_plan --e3: one ROLL run ({roll_timeout}s) plus startup "
               f"({STARTUP_S}s) exceeds the cap ({timeout}s); commands will be cut "
@@ -105,12 +107,6 @@ def _plan_e3(n: int, timeout: int, roll_timeout: int, ours_budget: int) -> List[
             f'--out-csv "$OARRUN_OUT.csv"'
             for sl in _slices(n, roll_chunk)
         ]
-    ours_chunk = _chunk(timeout, ours_budget)
-    lines += [
-        f'cd sosl && python3 -m tests.sosl.census_e3 '
-        f'--cases {sl} --only ours --out-csv "$OARRUN_OUT.csv"'
-        for sl in _slices(n, ours_chunk)
-    ]
     return lines
 
 
@@ -132,8 +128,6 @@ def main(argv: Optional[List[str]] = None) -> int:
                    help="learner sweep: per-run wall budget (census cap + packing)")
     p.add_argument("--roll-timeout", type=int, default=ROLL_TIMEOUT_S, metavar="S",
                    help="E3: per-(case, mode) ROLL JVM cap and packing figure")
-    p.add_argument("--ours-budget", type=int, default=OURS_BUDGET_S, metavar="S",
-                   help="E3: per-case budget for the cheap `ours` kind")
     args = p.parse_args(argv)
 
     n = len(flat_canon_cases())
@@ -144,9 +138,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     timeout = runner_timeout(args.config)
     if args.e3:
-        lines = _plan_e3(n, timeout, args.roll_timeout, args.ours_budget)
-        what = (f"{n} languages x {len(MODES) + 1} kind(s) -> {len(lines)} commands "
-                f"({args.roll_timeout}s/ROLL run, {args.ours_budget}s/ours case)")
+        lines = _plan_e3(n, timeout, args.roll_timeout)
+        what = (f"{n} languages x {len(MODES)} ROLL mode(s) -> {len(lines)} commands "
+                f"({args.roll_timeout}s/ROLL run; ours derived from the sweep)")
     else:
         lines = _plan_sweep(n, timeout, args.legs, args.budget)
         what = (f"{n} languages x {_LEGS[args.legs]} leg(s) -> {len(lines)} commands "
