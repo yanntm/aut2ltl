@@ -1,10 +1,12 @@
 # The cascade ladder: the loop side beyond windows and parks
 
-**Working note toward a new section of `sos_toltl.md`** — drafted standalone,
-numbered `C.*` throughout so it can land as its own section (proposed
-placement: between §5 and §6, as §5′ "The cascade ladder"; the only touch to
-existing text would be pointer sentences at §4.4, §5.1's residual bullet,
-step 4 of §5.4, the residual row of Table 2, and §9's cascade paragraph).
+**Standalone companion note — cited from `sos_toltl.md` as [Cas26].**
+The main paper's §6 imports the slim load-bearing core (the (C) rung
+stated, the floor example, the decomposition fallback); everything
+else — the completeness apparatus C.12–C.18, the transfer C.19, the
+corollary tier C.8/C.9/C.9′, the mechanism cartography, the K-series
+measurements — lives here and does not transition. This note is
+numbered `C.*` throughout.
 Source construction: U. Boker, K. Lehtinen, S. Sickert, *On the Translation
 of Automata to Linear Temporal Logic*, FoSSaCS 2022 [BLS22] — implemented in
 this repository as `aut2ltl/bls` (reset-cascade via GAP/SgpDec holonomy,
@@ -125,7 +127,7 @@ action a partial identity or a partial constant — is the reset condition on
 `A_R` verbatim, the diagonal case being a reset that is also an identity at
 its own target. (iii) is the displayed reading of the two formulas. ∎
 
-The dictionary, for §9's pending cascade comparison:
+The dictionary (landed compressed in the main paper's §10):
 
 | [BLS22] | this paper |
 |---|---|
@@ -600,7 +602,7 @@ census (Wagner ceiling ω³/ω⁴) populates exactly that stratum (K-F12) —
 width 1, and on the type specimen's frozen singleton the width-0
 (C)-conflict *is* a plain-(B) failure at width 1 by this lemma: a
 genuine in-frame (B)-failing final layer, the `2state2ap` open hunt of
-the main paper's §8 closed. Their every-width persistence is
+the main paper's §9 closed. Their every-width persistence is
 Theorem C.12″'s criterion below. C.10's warning fires, and the
 conjecture is refuted on arrival. It is
 stated anyway, because its *reduction* (C.14–C.18) is unconditionally
@@ -915,7 +917,7 @@ non-conjugate pairs, zero closure artifacts. The type specimen
 layers by verdict-splitting zero absorption over three 𝒥-minimal
 classes; by Lemma C.10 its width-0 (C)-conflict is a plain-(B) failure
 at width 1 — the first in-frame inhabitant of the `2state2ap` shape,
-the main paper's §8 hunt. A width-bounded conflict is not yet floor
+the main paper's §9 hunt. A width-bounded conflict is not yet floor
 membership — the ladder rescues 118 of the width-0 conflicts at
 width 1 — and the promotion instrument is Theorem C.12″'s padded-block
 criterion (K-E8), with 640 layers budget-open at width 1 the remaining
@@ -1120,7 +1122,7 @@ This whole branch is load-bearing, not transitional: the residual
 floor stratum of C.4 lands here — the floor witness's entire loop
 content sits on a frozen layer failing (C) at every width, and
 Proposition C.19 transfers the failure to moving layers — in addition
-to any (A)-failing final layer (§8: expected none in the census frame
+to any (A)-failing final layer (main paper §9: expected none in the census frame
 ⟨TBD: verify this read-off explicitly (K-E5 preflight) — recount the
 (A)-failing stratum on the current corpus and check none of its
 layers is one a run can end in⟩).
@@ -1145,49 +1147,35 @@ transcription wherever the transcription applies. The import is the
 discipline* (per-rung one-sidedness, the last-event idiom), each scoped to
 one layer.
 
-## C.7 Consequences for the assembled paper (if this section lands)
+## C.7 What landed in the main paper, and what stays here
 
-- **§5.4 step 4 rewrite:** `(B) at k′ ⟹ windows; (B̃) ⟹ +parks;
-  (C) at k′ ⟹ config normal form (Prop C.7), one-sided when the family
-  closes (Cor C.8); else the manufactured cascade (C.5) — DG exits the
-  loop side.` Step 3's (A)-fallback swaps DG for C.5's stem half.
-- **Table 2:** the residual row splits — a new "config-transcribable" row
-  (condition (C), atoms `GF(An ∧ X(St U ·))`) above a residual row now
-  proven inhabited: its floor is `GF(a ∧ X(s U a))` (Theorem C.12′),
-  and its census population is K-F12's conflict stratum.
-- **§8:** the extended-corpus measurements (6 222 languages, Wagner
-  ω³/ω⁴) — coverage: of 8 786 census-undecided final-layer readings,
-  6 610 decide under (C), every one at width ≤ 2 (K-F7); conflicts:
-  1 021 genuine at width 0, 263 persisting at width 1, 246 of them
-  aperiodic — the floor track inhabited in-frame (K-F12), the
-  `2state2ap` open-hunt witness found, per-layer promotion to
-  every-width by Theorem C.12″'s scan (K-E8), 640 layers budget-open;
-  the mechanism map: absorption and group only, zero verdict-splitting
-  `other` over the decided mass (K-F8); Prop C.19's specimen the
-  moving-layer floor inhabitant beyond the frame (K-F9); the
-  prefix-independent stratum 1 104/1 104 frozen — Theorem C.9′,
-  census-confirmed (K-F10); one-sidedness balanced 16/16/28/14, the
-  tie structural by complement closure (K-E3); still pending:
-  DG-vs-cascade on the stem stratum (K-E5; the stratum recount on the
-  current corpus is the preflight).
-- **§9:** the cascade paragraph's ⟨TBD⟩ is discharged by Prop C.2 and the
-  dictionary; [BLS22] enters the references.
-- **§10:** the main open problem *stands*, sharpened from both sides:
-  negatively, the bounded-recurrence axis on the canonical walk is
-  exhausted (Theorem C.12′ and C.4's no-go — no (B)/(B̃)/(C)-style
-  condition at any width reaches the floor), so an ω-specific descent
-  must consume what the walk does not carry; positively, the carriers
-  are named (C.5: the chains expansion `A_S`, canonically; or a
-  certified presentation), making the prophetic transcription problem
-  the open problem's concrete form. The sandwich identity — refuted
-  aperiodically, by zero absorption — is the scan-able signature of
-  where the floor extends (K-E7), and Theorem C.12″ turns the
-  signature into a per-layer floor certificate (K-E8).
-- **Implementation note (repo-local, not for the paper):** the decision
+**Landed (main paper §6 + touch points):** condition (C) and the
+config atoms, stated with the worked strictness fact; the floor
+example with the no-completeness statement; the decomposition fallback,
+both halves, with the architecture patch (§5.4 step 3(b) alternative,
+step 4 reads (C) and routes residual to the fallback); Table 2's
+config row and residual re-route; the related-work cascade paragraph
+(the C.1 dictionary, compressed); the conclusion's sharpened open
+problem. All proofs stay here, cited as [Cas26].
+
+**Stays here, does not transition:** the completeness apparatus and
+its refutation in full (C.12–C.18, Theorem C.12′/C.12″), the transfer
+Prop C.19, the corollary tier (C.8 one-sidedness, C.9, Theorem C.9′),
+the mechanism cartography (K-E7/K-F8), and the K-series measurement
+record (the ledger `bls_cascade_report.md` and
+`reference/cascade/`).
+
+**What the main paper still owes the import (its spec's items):** the
+size ledger — DAG and printed size, decomposition fallback vs DG,
+stem stratum — and the conformance sweep of the config emitter over
+the (C)-decided layers; both live in `sos_toltl_spec.md` now, not
+here.
+
+- **Implementation note (repo-local):** the decision
   side of (C) is the existing loop-class closure with its last grouping
   step disabled; the atoms and the normal form are emitters, built
   DAG-only and conformance-gated on the worked witness (K-F11),
-  production wiring into the window engine pending; the C.5 fallback
+  production wiring into the window engine pending; the fallback
   can consume `aut2ltl/bls` (holonomy
   bridge, reach family, `Fin`) nearly as-is, scoped per layer.
 
