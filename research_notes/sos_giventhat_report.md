@@ -22,7 +22,7 @@ moment it is found, even mid-milestone.
 | milestone | state | findings |
 |---|---|---|
 | GT1 — interval + endpoints | **DONE (2026-07-11, git 4c7aa9fb5+)** | F1–F4 |
-| GT2 — ladder tests | **DONE (2026-07-11)** — rung oracle 6222/6222, campaign 700/700, brute 264/264; two E1 escalations (paper §4.6 counts) in To theory | F5–F8 |
+| GT2 — ladder tests | **DONE (2026-07-11)** — rung oracle 6222/6222, campaign 700/700, brute 264/264; §4.6 E1 escalations resolved (To theory) | F5–F8 |
 | GT3 — stutter two-tier | *pending* | F9–F11 |
 | GT4 — band degree probe | *pending* | F12 |
 | GT5/W0 — census campaigns (W0a/W0b/W0c) | *pending* | F13–F15 |
@@ -163,6 +163,9 @@ was obtained by the exact least-open-hull (stems' right ideal), not
 the `2^bits` enumeration — worth a sentence in §4.6 since 4.1's `ρ`
 for co-safety is otherwise implicit. Repro:
 `cd sosl && python3 -m tests.giventhat.ladder_gate --fixture`.
+*(Resolved 2026-07-11: paper §4.6 states 5 / product 10 and derives
+the `σ = 1` merge; the two requested sentences are in; spec §4 item 5
+asserts 5/10. No retrofit — the gates already produce these values.)*
 
 **GT2 (2026-07-11): the "independent transcription" framing was
 dropped by decision.** Duplicating the H-order to keep the rung oracle
@@ -176,6 +179,9 @@ the layering law were edited accordingly. The paper's §2/§7 wording
 coordinates") should be softened to match. Note the oracle was ALSO
 run green (6 222/6 222) with the hand-rolled H-order before the
 rewire, so the independence experiment de facto happened once.
+*(Resolved 2026-07-11: paper §2 states the two-decision-paths
+framing; no independence claim remains. F5–F8 integrated as paper §7
+"First census-shaped data". No retrofit.)*
 
 **GT1 (2026-07-11): no spec/paper disagreement arose.** E1 held
 (`|𝒞(D_ab)| = 6` on the first build), Prop 3.1 zero violations across
@@ -191,8 +197,8 @@ Standing items the theory thread expects data or answers on:
 
 1. Any disagreement between the spec and the paper (spec §8 E1/E2
    escalations included) — smallest case, verbatim. **DELIVERED for
-   GT2 (2026-07-11): the §4.6 class counts, above — awaiting a theory
-   response.**
+   GT2 and RESOLVED (2026-07-11): the §4.6 class counts, above —
+   paper and spec state 5/10.**
 2. The rung-orientation verdict (F5): confirmed or flipped.
    **DELIVERED (2026-07-11): confirmed, 6 222/6 222 (F5).**
 3. The GT4 dossier (F12) if greedy ≠ brute — it decides how Prop 4.5's
