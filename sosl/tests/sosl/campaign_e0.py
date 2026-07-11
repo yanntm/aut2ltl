@@ -9,7 +9,12 @@ Runs the E0 (case, config) matrix via `sosl.experiment.driver`, writes one
   - the E0 gate PASSES (zero FAIL, zero BUDGET, zero CRASH; permanent specimens
     certify ACCEPTOR_ONLY under no-saturation — spec §9 P4/F5);
   - the Even and EvenBlocks split/query ledgers are byte-stable against the M3
-    baselines in `sos_learning_report.md` (spec §9 row P5).
+    baselines in `sos_learning_report.md` (spec §9 row P5);
+  - the 2026-07-11 congruence fields: every saturated run records
+    `fixpoint_congruent = true` and an associative export (row P7); the two
+    no-sat-exact specimen runs refuse their export
+    (`fixpoint_congruent = false`, `export_associative = n/a` — rows P9/F8
+    at E0 scale).
 """
 from __future__ import annotations
 
@@ -70,6 +75,20 @@ def main() -> int:
     gate = e0_gate(campaign)
     if gate is not None:
         problems.append(f"E0 gate FAIL: {gate}")
+
+    # 2026-07-11 congruence fields (rows P7 / P9 at E0 scale): saturated runs
+    # are congruent with an associative export; the no-sat-exact specimens
+    # refuse their export.
+    for res in campaign.results:
+        s = res.stats
+        sat = s.config_id != "no-sat-exact"
+        want_cong, want_assoc = ("true", "true") if sat else ("false", "n/a")
+        if s.fixpoint_congruent != want_cong:
+            problems.append(f"{s.case_id}/{s.config_id}: fixpoint_congruent "
+                            f"expected {want_cong} got {s.fixpoint_congruent}")
+        if s.export_associative != want_assoc:
+            problems.append(f"{s.case_id}/{s.config_id}: export_associative "
+                            f"expected {want_assoc} got {s.export_associative}")
 
     # Row P5: the Even / EvenBlocks default-config ledgers must match M3.
     default = {r.stats.case_id: r for r in campaign.results
