@@ -489,3 +489,23 @@ updated to cite the theorem directly). The theorem gains an initial
 distribution `ι`, of which `.mc`'s single init is the Dirac
 restriction; the §11.5 Bernoulli-embedding gate is precisely an
 `ι`-linearity check.
+
+**Convention-flip doc sweep (2026-07-11, git 6354b7a72, engineering) —
+done, null result.** Handoff work item following the P-M5 addendum
+(state-labelled chain model now primary in the paper). Swept the M1–M4
+engineering docs (`sosl/sosl/quant/algorithm.md`, `README.md`) and the
+`sosl/tests/quant/` probes for paraphrases of the old
+transition-emitting model, "one-state chain emitting all letters", and
+Thm 3.5's old `[ε]` product start (grep over
+Mealy/Moore/Markov/emit/one-state/state-labelled + read-through of both
+docs): **zero stale occurrences**. The docs cite Theorem 3.4 only, and
+its statement in the restated paper (§3.4: generic verdict, transient
+system started at `[ε]`) is unchanged — the paraphrases in
+`algorithm.md` §3–§4 remain accurate verbatim. The only "Markov chain"
+in the package is `routea`'s analysis chain of the automaton run under
+Bernoulli `p` (M2's oracle) — a different object, untouched by the
+model-convention flip. No forward-looking M5 text exists in
+engineering docs yet. Code/gate dependence on the old convention:
+**none** — chains enter only at M5, unimplemented; the
+`μ_p`/Bernoulli path never references the chain model. Matches the
+handoff's prediction of zero code impact; no edits made.
