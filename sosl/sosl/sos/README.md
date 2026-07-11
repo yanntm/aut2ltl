@@ -28,6 +28,14 @@ defined here.
   form (`.sos`) and the Cayley form. Two languages over the same `AP` are equal
   iff their serialized invariants are byte-equal — this equality *is* the
   soundness criterion of the whole tool.
+- **Alphabet minimality** (`minimize`). A proposition can be **free** — one the
+  language does not depend on, yet whose literal survives in a presentation
+  (`spot`'s `remove_unused_ap` drops only edge-absent APs). The invariant records
+  it exactly: `aps[i]` is free iff toggling its bit is inert on `letter_class`.
+  `remove_free_aps` projects the free APs out, giving the canonical invariant at
+  the language's minimal alphabet — the precondition for byte-equality *up to
+  renaming* to be exact, and for `complement` (a flip of `P` on the same algebra)
+  to commute with minimization.
 - **A calculus over invariants** (`calculus/`). Operate on languages directly in
   the algebra: complement and the Boolean operations are set operations on the
   accepting pair set; emptiness, universality, inclusion, equivalence and
@@ -39,6 +47,7 @@ defined here.
     alphabet    letters / Σ = 2^AP; encoding + ordering
     lasso       Lasso(u, v) and lasso algebra (fold, pump)
     invariant   Invariant(C, key, λ, M, P) + membership read-off
+    minimize    drop free APs -> the invariant at its minimal alphabet
     cayley      the Hypothesis (step table + pair-cache) and its prediction
     serialize   .sos (invariant) and Cayley (hypothesis) canonical text I/O
     calculus/   align / operate / reduce over invariants, witness-carrying
