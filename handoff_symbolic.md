@@ -78,9 +78,10 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
    120 TIME_BUDGET at 10 s (1.9 %, mostly `3state2ap2acc_parity`).
 2. **E1 wrap-up (small, do when convenient):** adopt
    `tests/sos_sdd/e1_readoff.py` (Theory-authored bootstrap, committed
-   — the regen for report F23's numbers); re-stratify F22 by the
-   census `marks` column and explain the 0acc-name-vs-`marks=1`
-   discrepancy (spec E1 addendum).
+   — the regen for report F23's numbers) and prune its name-token
+   stratification: instance-name acc tokens are source-GBA provenance,
+   not digest semantics, and must not enter any analysis (report F23
+   note; the paper cites the pooled 62 % only).
 3. ⏳ **C9/C10** — remaining engine switches (fp disciplines `chaining`
    / `saturation`, split slot encodings, slot permutations — E7/E8's
    axes) and the §6 calculus operators (member / Boolean algebra /
@@ -107,8 +108,8 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
 
 **None — all four E1 escalations resolved by the 2026-07-11 Theory
 round** (report "Theory responses" section is the record): F22 blessed
-with the stabilizer-closure lemma (paper §4.2 rewritten, cites 62 %
-pooled / 65 % on marked instances); F19 vs E5 reconciled (histogram is
+with the stabilizer-closure lemma (paper §4.2 rewritten, cites the
+pooled 62 %); F19 vs E5 reconciled (histogram is
 right-censored; Phase 3's read is crossing-shaped and now priced in §5
 — revised prediction + protocol in spec E5); F19 vs E6 → budget-parity
 protocol pinned in spec E6 with pre-registered outcomes; paper
