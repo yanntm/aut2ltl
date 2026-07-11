@@ -87,7 +87,34 @@ certificate; it must sum to exactly 1, and
 Rationality of `μ_p(L)` for rational `p` is a corollary of the
 elimination itself.
 
-## 5. Complement compatibility
+## 5. The Route A oracle (`routea.py`)
+
+An independent computation of `μ_p(L)` from a *deterministic, complete*
+automaton with Emerson–Lei acceptance on transitions (the corpus's
+`det/*.hoa`), sharing nothing with §1–§4 but the linear solver. Under a
+full-support Bernoulli `p`, the automaton's run is a finite Markov
+chain on its states (`δ(q, a)` unique; `Pr[q → q'] = Σ { p(a) :
+δ(q, a) = q' }`, an exact `Fraction`). The run is a.s. absorbed in a
+bottom SCC `B`, inside which every transition has positive probability
+per step, so every edge of `B` recurs infinitely often a.s.; the limit
+set of the run is exactly `B`'s edge set. Acceptance of the run is
+therefore the EL condition evaluated on the marks occurring on `B`'s
+edges — `Inf(m)` true iff `m` sits on some `B`-edge, `Fin(m)` true iff
+on none — one evaluation per bottom SCC, and
+
+```
+μ_A = Σ_{B accepting} Pr[absorption in B]
+```
+
+by the same transient system as §4 (if the initial state already lies
+in a bottom SCC, `μ_A` is that component's bit). Spot's role is
+bounded to parsing the HOA and exposing the acceptance condition; no
+automaton construction, no determinization. Agreement `μ = μ_A`,
+exact, is the M2 gate — it tests the θ bits themselves, which the
+complement flip law of §6 cannot (any consistent per-SCC lookup flips
+pointwise; only an independent oracle convicts a wrong bit).
+
+## 6. Complement compatibility
 
 Nothing above reads anything but `(𝒞, λ, M)` and membership of pairs in
 `P`. The calculus complement flips `P` against the linked pairs on the

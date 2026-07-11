@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from fractions import Fraction
 from typing import Dict, FrozenSet, List, Optional, Tuple
 
-from ..sos.alphabet import Letter
+from ..sos.alphabet import Alphabet, Letter
 from ..sos.invariant import Invariant
 from .chain import bottom_sccs
 from .theta import ThetaProfile, theta_profile
@@ -39,11 +39,11 @@ def uniform(inv: Invariant) -> Dict[Letter, Fraction]:
     return {a: Fraction(1, size) for a in inv.alphabet.letters()}
 
 
-def _validate_p(inv: Invariant, p: Dict[Letter, Fraction]) -> None:
+def _validate_p(alphabet: Alphabet, p: Dict[Letter, Fraction]) -> None:
     """Assert ``p`` is a full-support rational Bernoulli measure: every
     letter of the alphabet present, every value an exact rational > 0
     (no floats), values summing to exactly 1."""
-    letters = inv.alphabet.letters()
+    letters = alphabet.letters()
     assert set(p.keys()) == set(letters), (
         f"p must weight exactly the {len(letters)} alphabet letters"
     )
@@ -98,7 +98,7 @@ def measure(
     theta-weighted sum."""
     if p is None:
         p = uniform(inv)
-    _validate_p(inv, p)
+    _validate_p(inv.alphabet, p)
     bottoms: List[FrozenSet[int]] = bottom_sccs(inv)
     profile = theta_profile(inv)
     scc_of: Dict[int, int] = {

@@ -21,7 +21,9 @@ Theorem 3.4, §4.1); working spec: `research_notes/sos_measure_spec.md`
   being syntactic-minimal, so a `P` flipped by the calculus complement
   works as-is.
 - Numbers are `fractions.Fraction` end to end — no floats, no numpy, no
-  Spot, no subprocess.
+  subprocess. The measure path (`chain`/`kernel`/`theta`/`measure`) never
+  touches Spot; `routea` (the independent oracle) uses Spot for HOA
+  parsing and acceptance read-out only, bounded-or-skipped.
 - Layering: this package imports `sosl.sos` and `sosl.sos.calculus` and
   nothing else in the repo.
 - `PARANOID` (module flag in `theta.py`, on by default) re-derives each
@@ -36,6 +38,7 @@ Theorem 3.4, §4.1); working spec: `research_notes/sos_measure_spec.md`
 | `kernel.py` | two-sided Cayley graph on `S`, its unique sink SCC = the kernel `K`, one idempotent `k ∈ K` |
 | `theta.py` | `ThetaProfile`; `θ_C = Val(c, k)` per bottom SCC; paranoid cross-checks |
 | `measure.py` | `p` validation, transient linear system, exact Gauss–Jordan, `MeasureResult` |
+| `routea.py` | independent oracle: `μ` of a deterministic complete EL automaton (`.hoa`) via BSCC analysis, same solver |
 
 ## Tests
 
@@ -48,3 +51,10 @@ Placed scripts under `sosl/tests/quant/`, run from `sosl/`:
   `μ(L) + μ(¬L) == 1` exactly and pointwise-negated profiles; appends a
   CSV row under `tests/quant/logs/`. `--list` emits the corpus file
   list; `--aggregate` renders `reference/quant/m1_measure.{md,csv}`.
+- `python3 -m tests.quant.oracle_gate PATH.sos` — law L1: `measure`
+  against the Route A oracle on the paired `det/*.hoa`, exact equality
+  under uniform and one skewed `p`; same `--list` / `--aggregate` shape
+  (renders `reference/quant/m2_oracle.{md,csv}`).
+- `python3 -m tests.quant.law_gate A.sos B.sos` (L2/L3 on one aligned
+  pair) and `python3 -m tests.quant.law_gate PATH.sos` (L4 trichotomy,
+  L5 obligation cross-check).
