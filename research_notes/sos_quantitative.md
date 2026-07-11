@@ -132,7 +132,7 @@ vector `(θ_C)` over bottom SCCs — is a canonical, `p`-free invariant of
 the same for every full-support Bernoulli `p` (the absorption distribution
 charges every bottom SCC). Second, the pleasant inversion of the original
 sketch stands but is now subsumed: for *obligation* languages Q1 was
-trivial (verdict an `R`-class function of the stem, Thm 3.10); the general
+trivial (verdict an `R`-class function of the stem, calculus Thm 6.6); the general
 theorem is no harder, so there is no reason to publish the band alone.
 
 *Status: proofs written this session, unrefereed; Q1-B in particular wants
@@ -169,7 +169,7 @@ adjacency matrix restricted to the `Live` classes (attribution: Staiger —
 [Sta97], *chapter still to be acquired*; the growth-rate-of-a-regular-
 language fact itself is classical). On the invariant this is rigorous with
 no pruning subtleties, by a cute collapse: `pref(L) = {u : fold(u) ∈ Live}`
-(liveness is a class property, calculus paper §3.6), and since liveness
+(liveness is a class property, calculus paper §6), and since liveness
 propagates to prefixes, *co-reachability to `Live` equals `Live`* — so the
 number of length-`n` prefixes is exactly the number of length-`n` paths
 staying inside `Live`, and `h(L) = log ρ(A|_Live)`: one Perron eigenvalue

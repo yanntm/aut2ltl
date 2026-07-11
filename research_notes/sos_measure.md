@@ -179,7 +179,7 @@ canonical serialization makes language equality byte equality
 `c → c·λ(a)` for `a ∈ Σ`: a complete deterministic automaton with initial
 state `[ε]`, canonical because the invariant is. Its SCCs are exactly the
 `R`-classes of `𝒞` (mutual right-divisibility), and a *bottom* SCC `C` is
-a closed `R`-class: `c·S ⊆ C` for every `c ∈ C` [SωSC26, §3.6].
+a closed `R`-class: `c·S ⊆ C` for every `c ∈ C` [SωSC26, §6].
 
 ### 2.2 Finite semigroups: kernel and maximal groups
 
@@ -199,7 +199,7 @@ LTL-definable iff its syntactic object is aperiodic [DG08].
 Equip `Σ^ω` with the Cantor topology, whose basic open sets are the
 cylinders `w·Σ^ω`, and with the Borel σ-field they generate. `cl(L)`
 denotes topological closure — the *safety closure* of `L`, computed on
-the invariant by the hull surgery of [SωSC26, Prop 3.5]. A
+the invariant by the hull surgery of [SωSC26, Prop 6.1]. A
 **Bernoulli measure** `p` assigns i.i.d. letters,
 `μ_p(w·Σ^ω) = Π p(w_i)`; it has *full support* if `p(a) > 0` for all
 `a`. A **labeled Markov chain** `M` is a finite-state chain whose
@@ -681,7 +681,7 @@ induced map.
 
 *Proof.* (1) Every member `L''` has residual-measure series `x`
 (Prop 4.3), and the series factors through `L''`'s syntactic morphism
-— Arnold's congruence refines residual equality [SωSC26, §3.6], so
+— Arnold's congruence refines residual equality [SωSC26, §6], so
 `u ↦ μ_p(u⁻¹L'')` depends only on the syntactic class of `u`. Taking
 `≈` on `Σ*` (`u ≈ v` iff `x(w·u·z) = x(w·v·z)` for all finite
 `w, z`), the congruence therefore contains the syntactic congruence of
@@ -785,7 +785,7 @@ calculus refuses.
 Call a class `c ∈ 𝒞` **live** if some word folding to `c` is a prefix
 of a member of `L` — equivalently every such word, prefixhood depending
 only on the class; `Live ⊆ 𝒞` is computed by the `O(n²)` scan of
-[SωSC26, §3.6], and liveness propagates to prefixes (a prefix of a live
+[SωSC26, §6], and liveness propagates to prefixes (a prefix of a live
 word is live).
 
 **Proposition 5.1.** Let `A` be the `Live × Live` letter-count matrix,
@@ -805,7 +805,7 @@ particular one of that block's — is reachable from `[ε]` through live
 classes (every class is the fold of some word, and its prefixes fold
 live), and the path count inside an irreducible block grows as
 `ρ^n` [LM95, Thm 4.3.1]. For the closure: `cl(L)` is the set of words
-all of whose prefixes are live [SωSC26, Prop 3.5], so
+all of whose prefixes are live [SωSC26, Prop 6.1], so
 `pref(cl(L)) = pref(L)` — a live word extends to a member of `cl(L)` by
 König's lemma — and the two entropies are growth rates of one prefix
 set. ∎
