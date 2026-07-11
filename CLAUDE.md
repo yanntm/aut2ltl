@@ -1,71 +1,99 @@
 # aut2ltl — Working Notes for Claude
 
 ## Project layout (nested root package `aut2ltl/`)
-Layering, acyclic: `aut2ltl/contract.py` (LTLResult/Translator floor) +
-`aut2ltl/language.py` ← `aut2ltl/bls` (pure cascade FoSSaCS engine) +
-`aut2ltl/daisy` (pure self-loop peel) + `aut2ltl/partscc` (single-terminal-SCC
-leaf) + `aut2ltl/heur` (extracted heuristics, e.g. `fuse2`) + `aut2ltl/decomp`
-((de)composition approaches, one isolated subpackage each: `scc` / `strength` /
-`acceptance` / `inv`) ← `aut2ltl/portfolio` (combinators: build / builder recipes)
-← `aut2ltl/__main__` + `__init__`. Engine-agnostic helpers in `aut2ltl/ltl`
-(metrics, printers, simplify). Tests under `tests/` (`survey*`, `tests/bls`,
-`tests/heur`, `tests/fixtures`).
+
+Sources :
+
+* aut2ltl/ : the historic route, direct translation, most infrastructure and API
+* sosl/ : the learning sos sources
+* sosl/sos : modern SoS code
+* sos_sdd/ : sos over libDDD
+
+Utilities :
+
+* aut2ltl/ltl  (spot interaction, DAG, twa...) ; sosl/sos/io (SoS and .cat io); ... among others 
+* survey/ : run and collect CSV
+* samples/ : fixtures, examples, benchmark test set
+* genaut/ : generate and host the "corpus"
+* tests/ and sosl/tests : tests, probes, support code.
+* cluster/ : infra for running long jobs
+
+Formal Reasoning :
+
+* research_notes/ : holds paper drafts
+
+Paper drafts :
+
+* Each has 3 files in research_notes :
+
+1. the paper itself. Written up. Depending on advancement, a rough draft to polished.
+As it progresses towards a paper outline : abstract=teaser, 1 : define title, the problem, why its important, contributions, outline of paper. 2. Context : any definition we need to define ourselves but that is not original in this paper, subsections ok. 3+ contributions ~7. related work 8. Conclusion
+papers/ holds our library as both pdf, and .txt extracts of it, we don't cite unless we read the paper we cite.
+2. a spec or experiments file to drive engineering, and in later stages, data collection.
+It is precise and contains milestones for dev, and description of tables/experiments to perform.
+3. a report file with the engineering team response to the specification.
+It bears the reproducibility constraints for the paper, all data in the paper comes from here.
+Data in here is traceable to git tracked machine gen artefacts and reports : it will be the reproducibility artefact submitted with the paper at some point.
+4. Most have a "handoff" to get started, at root
 
 ## Orientation (don't duplicate here — follow the pointers)
-- `README.md` — repo guide / quick start. `STATUS.md` / `TODO.md` — project
-  snapshot / open items.
+- `README.md` — repo guide / quick start. STATUS/TODO are stale ignore.
 - `aut2ltl/bls/README.md` — kr engine entry point: doc map, pipeline, module map,
   testing tools.
-- `docs/HISTORY.md` — construction log (the dated DONE/WIRED/LANDED/reverted
-  record). Reference for the *why/when*; **do NOT read it to start a session** —
-  STATUS.md is the current snapshot.
-- `docs/algorithm.md` — the construction's scope/policy and module mapping.
-  `docs/dag_folding.md` — the size-explosion analysis (open research direction).
+- `docs/HISTORY.md` and docs/ — A sink for older traces : frozen in time with disclaimer "at time of writing". Don't read or write unless prompted to do so.
 - The default translator is whichever recipe `RECIPES["default"]` points at in
   `aut2ltl/portfolio/recipes/` (do not hardcode its name elsewhere — the registry
-  decides); `aut2ltl/portfolio/README.md` maps the package. The kr core stays pure.
+  decides); then --use recipe becomes legal.
+- Every folder bears some form of README.md (source map, overview of services) and/or algorithm.md
+  that provides an abstract description of algo. Always read the readme before using or editing files in a folder.
+  Maintain these docs in sync with code. By repo convention __init__ and __main__ stay small : only reexports and pointers to readme/algorithm ; we cannot maintain both due to churn and prefer doc through readme.
 
-## Discipline (mandatory)
-- One commit per file (preference). The exception is a mechanical bulk change —
-  code moved/renamed, a regex sweep, a baseline-log regeneration — which commits
-  together. Otherwise commit freely without fretting over intermediate states
-  (we are solo on `master`, so intermediate states are private). The commit
-  message explains *the change*.
-- **Committing** needs the user's go-ahead, then walk the files. **Pushing** is
-  separate and ALWAYS asked for every time (no auto-approve): push only once the
-  work is stable and the gates below have passed.
+
+
+Discipline (mandatory)
+- One commit per file by preference if editing an existing file. Especially if its core.
+  Bulk commits of several files ok in one logical commit. Single commit for moved code, new datasets...
+- Use "git commit -F - heredoc" with a terse message to commit
+- We are solo : we only use master, no branches.
+1. Commit order is not important, ignore that intermediate states of git are unstable.
+Just commit your work, regularly as it progresses and reaches new increments.
+Update report and handoff as appropriate when tasks are done.
+2. We are many concurrent editors on the folder, so git add/rm/mv close to git commit, don't leave index open.
+Also means that history of repo wide scope is above your paygrade, don't look.
+You can git diff against previous version your reference files (report, paper, spec...) that's about it.
+
+- **Pushing** : don't ask, don't do it. User will push (or ask to do so) when overall project is stable, above your paygrade.
+
 - Remember that git operations like `git mv` or `git rm` already populate the
   index. So always follow them with a commit *before* attempting to add any
   modified file to index.
 - **Never rewrite history** — no reset/rebase/amend, even on unpushed commits.
   A garbled commit message stands; fix forward with a new commit. (To avoid
   mangled messages: don't put backticks in a double-quoted `-m`; use `-F` with
-  a quoted heredoc file.)
+  a quoted heredoc.)
 - Commit directly to `master` (we do not branch). Never run branch / cross-branch
   diagnostics.
 - `docs/HISTORY.md` is APPEND-ONLY via shell (`cat >>` / `printf >>`) and is
-  NEVER read (it is large — STATUS.md is the snapshot). Record the *why/when* of a
-  landed change there.
+  NEVER read (it is large). Record the *why/when* of a *full* session if asked to do so when nearing session close only.
 - NO persistent "memory" files: the user does not use them (not inspectable in the
-  repo, they bloat unseen). Capture anything durable in STATUS / TODO / a README /
-  this file instead — all git-inspectable.
-- Update STATUS/TODO *before* committing a code change *when the change is a
-  STATUS-level state shift or closes a TODO item*; a one-off bug fix that is
-  neither belongs only in `docs/HISTORY.md`.
-- Test BEFORE commit, via placed scripts under `tests/` only (no /tmp, no
-  `python -c` one-liners), under timeout:
-  - `python3 -m survey --folder samples/validation` → must end **SUCCESS** (no
-    verified non-equivalent answer; spot timeouts / size explosions are not failures)
-- When comparing languages, report containment direction + witness word
-  (`python3 -m survey.diff.ltl_diff`), not just equivalence.
-- Debug method: ground sub-terms against GT automata built from D's semiautomaton
-  (`tests/bls/trace_fin_semantics.py` pattern), find the first diverging sub-term,
-  fix against the construction reference.
+  repo, they bloat unseen). Capture anything durable in documentation.
+  Never edit this file unless prompted by user.
+- Test often, but let user guide how much. Too many unit level tests can be churn on rapidly evolving code base.
+- Avoid using python -c for more than about 5 lines of test/probe. Above that materialize a script in tests/.
+If its really one shot ok, rm after use. Else add/commit. This saves tokens among other things.
+- Work in folder : avoid /tmp, avoid placing files in your scratchpad. If your session crashes, it should leave all traces of work *in* the folder.
+
+
 - Keep files roughly under 500 LOC (a technical core may occasionally exceed this
-  where a split would be artificial).
-- When documenting code, make sure to make the comment context free: this means
+  where a split would be artificial). We like our files small, single responsibility,
+  organized into folders for better documentation.
+- When documenting code, make comments that are context free: this means
   describing the code *in that file*, not its callers, not a specific use case.
-  Source documentation is also not a log.
+  Source documentation is also not a log. Describe code *current state* not its history, that is for git only.
+
+- When starting new code or an algorithm implementation in a new package : the process is doc first.
+  Write the algorithm/Readme before the code. Then use those documents to drive the coding.
+  Algorithm.md are higher level descriptions of the strategy, once written well, the code is simply its transcription to py.
 
 ## Working style (how the user wants me to operate)
 - **Diagnostics self-bound, ≤15s PER EXAMPLE.** Hard cap on any test/diagnostic
@@ -94,3 +122,26 @@ leaf) + `aut2ltl/heur` (extracted heuristics, e.g. `fuse2`) + `aut2ltl/decomp`
   on new/touched functions — the user comes from Java/C++. Use `typing`
   (`Optional`/`Callable`/`Protocol`/forward-ref strings), `TYPE_CHECKING` for
   annotation-only imports; `Protocol` for behavioral contracts (see `Translator`).
+
+We are scientists, we don't cheat or misrepresent data.
+If you find issues or bias in an experiment report it to user.
+
+A session will start with one of two roles :
+
+1. Theory : you will read papers/ and only markdown in research_notes essentially.
+You solve issues on paper, prove, hand work examples, predict outcomes, write the spec that drives engineering.
+Never looks at actual code base, preserves its context from technical detail to do better math.
+Reads engineering reports on its spec, feedbacks on them by appending a response paragraph where necessary, and by revising spec.
+Integrate the report results to the paper. Drive experimentation.
+
+2. Engineering : you will implement the specification, test it, set up experiment campaigns.
+You report in a report file. You can read the paper you are implementing, but in most cases spec should suffice.
+You develop solutions incrementally; if meeting some issue with spec or an unexpected find (error/misprediction...)
+that you are not sure how to deal with, you report it and ask for Theory feedback or spec edit as relevant.
+
+Theory threads typically use the best model we have, engineering a slightly less powerful one.
+So mostly, engineering should trust its specs, and ask if stuck/in doubt.
+And Theory should make allowance for weaker models by being precise in specification, with concrete steps and expected outcomes.
+
+
+
