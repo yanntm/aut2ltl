@@ -42,15 +42,23 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
   into the production window engine for the full K-E1-decided-layer sweep + DG
   size ledger.
 - **⚠ K-F12 — the extended corpus inhabits the floor IN-FRAME.** The corpus
-  grew 4248 → 6222 (campaign tier, Wagner ω³/ω⁴); the K-E1 rerun on it
-  (patched decider, in flight) reports aperiodic CONFLICT layers, and the
-  first is ALG-7-verified **GENUINE** (K-F12 below). K-F7's "0 conflicts" was
-  a property of the old frame, not of the census axis. All K-F7/F8/F10
-  numbers are being re-measured; the draft's "floor empty on the census
-  frame" (C.2/C.19/C.7) is slated for a PAPER-EDIT once the rerun lands.
-- **Next: K-E1 rerun tally + K-F12 conflict triage, reference/cascade data
-  drop**, then K-E4 engine integration / full sweep, K-E5 (DG vs manufactured
-  cascade, needs `aut2ltl/bls` bridge), K-E6 (prophetic `A_S`).
+  grew 4248 → 6222 (campaign tier, Wagner ω³/ω⁴); the first aperiodic
+  conflict is ALG-7-verified **GENUINE** (K-F12 below). K-F7's "0 conflicts"
+  was a property of the old frame, not of the census axis; the PAPER-EDIT on
+  "floor empty on the census frame" (C.2/C.19/C.7) waits on pass 2.
+- **Extended-corpus re-measurement, state (2026-07-11, data:
+  `reference/cascade/k_series.md`).** K-E1 pass 1 (cluster, 60 s/command):
+  6610 of 8786 undecided layers decide, **all at k≤2** (6105/346/159), 0
+  verdict-splitting `other`; the 472-language timeout stratum (2176 layers)
+  holds every potential conflict by construction (a CONFLICT verdict needs
+  four full decides > 60 s). K-E3 rerun: 74 ≥2-class families, 16/16/28/14
+  (up/down tie forced by complement closure); Cor C.9 stratum 0; pfxind
+  1104/1104 frozen. **K-E1 pass 2** (conflict hunt, `k_e1_verify` sharded
+  over the 2176 missing layers) was submitted but the client died before
+  printing the run id — recovery options in `k_series.md`.
+- **Next: recover/rerun pass 2, tally conflicts + genuineness, then the
+  K-F7/F8/F10 rewrite against `reference/cascade/` and the K-F12
+  PAPER-EDIT**; then K-E4 engine integration, K-E5, K-E6.
 
 ---
 
