@@ -23,8 +23,10 @@ in language identity).
 Scope: single `Automaton` digests with canonically ordered APs (sorted
 by name — the `.sos` spine); anything else is refused loudly."""
 
-from typing import Any, Dict, List, Tuple
+import dataclasses
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
+from .accept import accept_masks, masks_to_formula
 from .letters import letter_classes, parse_cube
 from .model import Automaton
 from .slotmodel import SlotModel
@@ -52,12 +54,35 @@ def _render_letter(bits: Bits, ap: Tuple[str, ...]) -> str:
     return "&".join(n if b else f"!{n}" for n, b in zip(ap, bits)) if ap else "t"
 
 
+def same_table(a: Automaton, b: Automaton) -> bool:
+    """Same symbolic table T(D) = same marked semiautomaton and rooting:
+    everything but the acceptance formula (and the name)."""
+    return (a.ap == b.ap and a.states == b.states and a.init == b.init
+            and a.marks == b.marks
+            and frozenset(a.trans) == frozenset(b.trans))
+
+
+# Core readings that consume the Acc-dependent phases (3-5): a derived
+# (pending) object runs them on first touch.
+_ACC_READINGS = frozenset({"profile_rows", "residual_classes", "n_states",
+                           "congruence_count", "congruence_classes"})
+
+
 class QuotientSoS:
     """The Phase 6 object: delegates every core reading to the C++ `SoS`
     and adds the assembled table + `to_sos()`. Built lazily — the table
-    is paid once, on the first Phase 6 reading."""
+    is paid once, on the first Phase 6 reading.
 
-    def __init__(self, core: Any, aut: Automaton, model: SlotModel) -> None:
+    Carries the same-table Boolean algebra (§6.2): `~ & | -` are set
+    operations on the grounded accept-mask table — the predicate's
+    denotation — under a `fork()` of the core sharing Phases 0-2. The
+    op itself moves no diagram; the derived object's Acc-dependent
+    phases (3-5) run on its first verdict-consuming reading ("pay
+    canonicity only when consumed"). Cross-table operands are refused
+    until alignment (§6.3) lands."""
+
+    def __init__(self, core: Any, aut: Automaton, model: SlotModel,
+                 engine: Optional[Any] = None, pending: bool = False) -> None:
         if aut.ap != tuple(sorted(aut.ap)):
             raise NotImplementedError(
                 f"{aut.name}: APs must be canonically ordered for .sos "
@@ -65,9 +90,13 @@ class QuotientSoS:
         self._core = core
         self._aut = aut
         self._model = model
+        self._engine = engine
+        self._pending = pending
         self._table: Dict[str, Any] = {}
 
     def __getattr__(self, name: str) -> Any:
+        if name in _ACC_READINGS:
+            self._ensure()
         return getattr(self._core, name)
 
     def member(self, u: Tuple[str, ...], v: Tuple[str, ...]) -> bool:
@@ -76,11 +105,74 @@ class QuotientSoS:
         from .calculus import member as _member
         return _member(self._aut, u, v)
 
+    # -- same-table Boolean algebra (§6.2) -----------------------------
+
+    def __invert__(self) -> "QuotientSoS":
+        masks = set(self._model.accept[0])
+        return self._derive(f"not_{self._aut.name}",
+                            set(range(1 << self._aut.marks)) - masks)
+
+    def __and__(self, other: "QuotientSoS") -> "QuotientSoS":
+        return self._combine(other, "and", set.intersection)
+
+    def __or__(self, other: "QuotientSoS") -> "QuotientSoS":
+        return self._combine(other, "or", set.union)
+
+    def __sub__(self, other: "QuotientSoS") -> "QuotientSoS":
+        return self._combine(other, "minus", set.difference)
+
+    def reduce(self) -> "QuotientSoS":
+        """Force canonicity: run the pending phases and assemble the
+        quotient table. Idempotent; `to_sos()` calls it implicitly."""
+        self._assemble()
+        return self
+
+    def _combine(self, other: "QuotientSoS", tag: str,
+                 fn: Callable[[Set[int], Set[int]], Set[int]]) -> "QuotientSoS":
+        if not isinstance(other, QuotientSoS):
+            raise TypeError(f"cannot combine with {type(other).__name__}")
+        if not same_table(self._aut, other._aut):
+            raise NotImplementedError(
+                f"{self._aut.name} / {other._aut.name}: cross-table "
+                "operations need alignment (§6.3, not implemented)")
+        return self._derive(
+            f"{self._aut.name}_{tag}_{other._aut.name}",
+            fn(set(self._model.accept[0]), set(other._model.accept[0])))
+
+    def _derive(self, name: str, masks: Set[int]) -> "QuotientSoS":
+        table = tuple(sorted(masks))
+        formula = masks_to_formula(table, self._aut.marks)
+        assert accept_masks(formula, self._aut.marks) == table
+        aut = dataclasses.replace(self._aut, name=name, acceptance=formula)
+        model = dataclasses.replace(
+            self._model, name=name,
+            accept=(table,) * len(self._model.doms))
+        return QuotientSoS(self._core.fork(name), aut, model,
+                           engine=self._engine, pending=True)
+
+    def _ensure(self) -> None:
+        """Run the Acc-dependent phases (3-5) of a derived core, once.
+        Budgets come from the originating engine; a derived run has no
+        stats stream yet (recorded gap — E9's per-op pricing)."""
+        if not self._pending:
+            return
+        nb = self._engine.node_budget if self._engine else 0
+        tb = self._engine.time_budget if self._engine else 0.0
+        marks = list(self._model.mark_bits)
+        base = list(self._model.block_base)
+        self._core.residuate(None, marks, base,
+                             [list(a) for a in self._model.accept],
+                             node_budget=nb, time_budget=tb, until_phase=4)
+        self._core.congruence(None, marks, base,
+                              node_budget=nb, time_budget=tb)
+        self._pending = False
+
     # -- the table -------------------------------------------------------
 
     def _assemble(self) -> Dict[str, Any]:
         if self._table:
             return self._table
+        self._ensure()
         aut, model, core = self._aut, self._model, self._core
         n_ap = len(aut.ap)
         identity: Elem = tuple(model.identity)

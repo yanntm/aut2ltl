@@ -63,7 +63,7 @@ class Engine:
                     f"{aut.name}: .sos emission for products is not "
                     "implemented (single automata only)")
             core = _core().build(model.payload(), self._config(), 5)
-            return QuotientSoS(core, aut, model)
+            return QuotientSoS(core, aut, model, engine=self)
         return _core().build(model.payload(), self._config(), until_phase)
 
     def _config(self) -> Dict[str, Any]:
