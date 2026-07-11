@@ -15,8 +15,8 @@ work items + pointers only**; the report is the ledger.
    (C1–C10 components, E0–E9 experiments, M1–M5 milestones); its
    *State of play* block is current.
 3. `research_notes/sos_symbolic_report.md` — the ledger, findings
-   F1–F23 plus the Theory responses (2026-07-11) to the E1
-   escalations: every measured/green claim, plus recorded gaps.
+   F1–F23 + Theory responses: every measured/green claim, plus
+   recorded gaps.
 4. `research_notes/sos_symbolic.md` — the paper. Engine + E1 census
    results are integrated (current-state voice, no history); exactly
    **1 `⟨TBD⟩` remains** (§3 Phase 1, saturation — waits on E8). Hard
@@ -77,10 +77,9 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
    corroborated three ways (model count / explicit BFS / byte gate);
    120 TIME_BUDGET at 10 s (1.9 %, mostly `3state2ap2acc_parity`).
 2. **E1 wrap-up (small, do when convenient):** adopt
-   `tests/sos_sdd/e1_readoff.py` (Theory-authored bootstrap, committed
-   — the regen for report F23's numbers) and prune its name-token
-   stratification: instance-name acc tokens are source-GBA provenance,
-   not digest semantics, and must not enter any analysis (report F23
+   `tests/sos_sdd/e1_readoff.py` (the regen for report F23's numbers)
+   and prune its name-token stratification — instance-name acc tokens
+   are source-GBA provenance, never an analysis variable (report F23
    note; the paper cites the pooled 62 % only).
 3. ⏳ **C9/C10** — remaining engine switches (fp disciplines `chaining`
    / `saturation`, split slot encodings, slot permutations — E7/E8's
@@ -90,8 +89,8 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
    compare against Spot-side oracles, bounded.
 4. ⏳ **E2's second component family** + per-point budget sweeps at
    scale; E3 order sweeps (needs C9's `slot_perm`).
-5. **E5/E6 per revised spec protocols (Theory, 2026-07-11 — read them
-   before running):** E5a = parse the retained census stats JSONLs
+5. **E5/E6 per the spec protocols (read them before running):**
+   E5a = parse the retained census stats JSONLs
    (per-phase time/peak nodes on the 6102 completed; if not retained,
    stratified ~200 rerun); E5b = the 120 TIME_BUDGET rows at 60 s /
    300 s on the cluster (feeds E6). E6 = budget parity: rerun the
@@ -106,16 +105,8 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
 
 ## To-theory (escalations awaiting a Theory session)
 
-**None — all four E1 escalations resolved by the 2026-07-11 Theory
-round** (report "Theory responses" section is the record): F22 blessed
-with the stabilizer-closure lemma (paper §4.2 rewritten, cites the
-pooled 62 %); F19 vs E5 reconciled (histogram is
-right-censored; Phase 3's read is crossing-shaped and now priced in §5
-— revised prediction + protocol in spec E5); F19 vs E6 → budget-parity
-protocol pinned in spec E6 with pre-registered outcomes; paper
-integration done (census conformance/compression + correlates in
-abstract/§8, §5 depth TBD resolved via report F23). Escalate new items
-here as they arise.
+None open. Escalate new items here as they arise; past rounds are
+recorded in the report's Theory-responses section.
 
 ## Binding engine facts (learned the hard way — do not relearn)
 
