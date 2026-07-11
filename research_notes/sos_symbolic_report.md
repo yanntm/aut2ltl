@@ -305,14 +305,11 @@ left for the paper integration.
   reference CSVs, no engine runs; engineering to adopt the script).
   - *Upward-closure:* pooled **62.2 %** (111 182 / 178 892 non-empty
     `(slot, dst)` families over the 6102 instances) — the paper's
-    citation, unstratified. A stratification worry was raised and
-    dismissed: instance names carry the *source GBA shape*'s
-    acceptance count (generator provenance, not digest semantics —
-    the data rows are the det/canonical automata, whose canonical
-    form writes "any path accepting" with 1 mark), and since digest
-    `|C| ≥ 1` throughout, there is no trivially-closed `|C| = 0`
-    stratum that could inflate the pooled number. Name-based strata
-    are meaningless and not to be used in any analysis.
+    citation. Provenance note: instance names carry the *source GBA
+    shape*'s acceptance count; the data rows are the det/canonical
+    automata, whose canonical form writes "any path accepting" with
+    1 mark (digest `|C| ≥ 1` throughout) — name tokens are
+    provenance, never an analysis variable.
   - *Compression correlates* (`ratio = nodes_final / cells`; quantiles
     p5/median/p95 = **0.12 / 0.29 / 0.50**, max 2.0 = the two floor
     rows). Spearman vs ratio: sharing (`distinct_cells/cells`)
@@ -327,53 +324,44 @@ left for the paper integration.
     always, 0.22 at the median; depth ≤ the *post*-quotient class
     count on **98.6 %** of rows.
 
-- **F22 response — blessed, with the lemma that grounds it and two
-  adjustments.** The operationalization is right: closure under adding
-  one mark is *equivalent* to upward closure in `2^C`, and fibering
-  per `(slot, dst)` is the correct family (marks co-vary with the
-  destination). What monotonicity actually proves is weaker than the
-  paper's old sentence and now stands in §4.2 as the stabilizer-closure
-  fact: `F(q,d)` is closed under union with the mark sets of `d`'s
+- **F22 response — blessed.** The operationalization is right: closure
+  under adding one mark is *equivalent* to upward closure in `2^C`,
+  and fibering per `(slot, dst)` is the correct family (marks co-vary
+  with the destination). The grounding lemma stands in paper §4.2:
+  `F(q,d)` is closed under union with the mark sets of `d`'s
   stabilizers `M(d) = {mk_y(d) : st_y(d) = d}` (immediate from the
   composition law), hence a union of up-sets in the lattice `M(d)`
   generates; *full* upward closure holds exactly when stabilizer marks
   realize every single-mark increment — the 62 % measures that
-  frontier. Adjustments: (1) cite the pooled 62 % — no stratification:
-  canonical digests always carry ≥ 1 mark, so there is no trivial
-  stratum to guard against (see F23's provenance note); (2) the
-  metric is
-  a structure datum, not a compression predictor (ρ = +0.19 vs
-  sharing's +0.73) — the paper says so explicitly.
+  frontier. The paper cites the pooled 62 % and calls the metric what
+  it is: a structure datum, not a compression predictor (ρ = +0.19 vs
+  sharing's +0.73).
 
 - **F19 response, E5 half — the kill histogram is right-censored; the
-  Phase 3 signal is real and now priced.** "Died in phase p" charges
-  an unknown upstream spend to p's bucket: the histogram is a survival
+  Phase 3 signal is real and priced.** "Died in phase p" charges an
+  unknown upstream spend to p's bucket: the histogram is a survival
   statistic, not a cost profile, and cannot edit §5's table by itself.
   It *does* prove Phases 3 and 5 are macroscopic on tail instances (a
   phase catches deaths in proportion to the time it occupies near the
-  budget). The structural cause was in the design all along: Phase 3's
-  verdict read is value-indexed (read `st` at slot `q`, then the marks
-  at the slot so named) — the §4.1 third-row shape, a `|Q|`-way case
-  split applied to the π pair space, the largest diagram in the
-  pipeline; one round, never iterated, but crossing-priced per
-  application. §5 row 3 and the E5 prediction are revised accordingly
-  (spec): peaks expected at Phase 2 (building π) and Phase 3
-  (consuming it), Phase 1 where closure itself is the wall, Phases
-  4/6 cheap, Phase 5 intermediate. Protocol in the spec: parse the
-  retained census JSONLs if kept; rerun the 120 kills at bigger
-  budgets for uncensored tail profiles.
+  budget). The structural cause: Phase 3's verdict read is
+  value-indexed (read `st` at slot `q`, then the marks at the slot so
+  named) — the §4.1 third-row shape, a `|Q|`-way case split applied
+  to the π pair space, the largest diagram in the pipeline; one
+  round, never iterated, but crossing-priced per application. Paper
+  §5 row 3 prices it; spec E5 carries the matching prediction (peaks
+  at Phase 2, building π, and Phase 3, consuming it; Phase 1 where
+  closure itself is the wall; Phases 4/6 cheap; Phase 5 intermediate)
+  and the protocol (parse the retained census JSONLs if kept; rerun
+  the 120 kills at bigger budgets for uncensored tail profiles).
 
 - **F19 response, E6 half — the 120 completions are not budget
   parity.** The corpus `sos/` tier was generated under the corpus
   generator's own budget on its own runs — it witnesses completion,
-  not completion-within-10 s. E6's protocol is now pinned in the spec:
-  same machine, same per-instance wall budget, both tools, two budget
-  points, all failure kinds reported on both sides. Pre-registered
-  expectations: at 10 s the engine's census loss column is non-empty
-  (the 120 are the candidates) and shrinks sharply at 60 s; the census
-  (`|Q| ≤ 3`, enumerated, `|EM¹| ≤ 12 225`) is the unstructured world
-  where §4.3 predicts no engine win — the bottom line's win column
-  lives on the scaling families and shapes the census does not sample.
-  "Loses nowhere on the census" was flagged low-confidence and is
-  expected to be *refuted* at small budgets; the refutation is a paper
-  edit (the honest two-column table), not a bug.
+  not completion-within-10 s. E6's protocol (spec): same machine, same
+  per-instance wall budget, both tools, two budget points, all failure
+  kinds reported on both sides. Pre-registered expectations: at 10 s
+  the engine's census loss column is non-empty (the 120 are the
+  candidates) and shrinks sharply at 60 s; the census (`|Q| ≤ 3`,
+  enumerated, `|EM¹| ≤ 12 225`) is the unstructured world where §4.3
+  predicts no engine win — the bottom line's win column lives on the
+  scaling families and shapes the census does not sample.
