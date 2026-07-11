@@ -10,7 +10,7 @@ the kept `<tag>_<id>` filename traces the language to its minimal setting.
     corpus/flat/det/   the canonical D (HOA) of each distinct language, one file,
                        named for the smallest shape that emits it.
     corpus/flat/sos/   the paired syntactic 𝓘 (.sos), same basename.
-    corpus/flat/census.md + flat.json   the composition report.
+    corpus/flat/census.md               the composition report.
 
 Dedup notion. **Language identity up to a fixed AP labeling**: the `.sos` key of
 `survey.normalize.sos` ([SωS26, Thm. 5.1]: byte-equal ⟺ equal language). `GF(a)`
@@ -30,7 +30,6 @@ contribute only languages no exhaustive shape reached.
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import shutil
@@ -226,8 +225,6 @@ def flatten(corpus: str, out_root: str, exclude: Tuple[str, ...]) -> Dict:
         "by_colours": dict(_tally(rows, "c")),
     }
     _write_census(os.path.join(out_root, "flat"), record)
-    with open(os.path.join(out_root, "flat", "flat.json"), "w") as fh:
-        json.dump(record, fh, indent=2)
     return record
 
 
@@ -365,8 +362,6 @@ def build_canon(corpus: str, out_root: str, exclude: Tuple[str, ...]) -> Dict:
         "by_colours": dict(_tally(rows, "c")),
     }
     _write_canon_census(os.path.join(out_root, "flat_canon"), record)
-    with open(os.path.join(out_root, "flat_canon", "flat_canon.json"), "w") as fh:
-        json.dump(record, fh, indent=2)
     return record
 
 
