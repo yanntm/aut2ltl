@@ -57,8 +57,8 @@ The per-shape tiers language-dedup *within* a shape, but the same language recur
 states / colours / a parity acceptance over the **same** alphabet). `corpus/flat/`
 folds that redundancy into one pool — `flat/det/` + `flat/sos/`, **one file per
 distinct language**, kept from the **smallest** shape that emits it so the
-`<tag>_<id>` name traces the language to its minimal setting — plus a `census.md` +
-`flat.json` composition report. Built by `gen/flatten.py`.
+`<tag>_<id>` name traces the language to its minimal setting — plus a `census.md`
+composition report. Built by `gen/flatten.py`.
 
 The dedup notion is **language identity up to a fixed AP labeling** (the `.sos`
 `𝓘` key; cross-`k` languages never collide, being over different alphabets).
@@ -216,8 +216,8 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
                                      deduped by the syntactic key + census.md.
                        rebuild.py    loop canonize over shapes (skip built; --force).
                        flatten.py    cross-shape union -> corpus/flat/ (det + sos +
-                                     census.md + flat.json), deduped by language;
-                                     ends by writing the .cat sidecars via
+                                     census.md), deduped by language; ends by
+                                     writing the .cat sidecars via
                                      sosl.sos.classify.io.
     analyze_frontier.py
                      one frontier report from a survey CSV (digest + PDF).
@@ -228,7 +228,7 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
     corpus/det/<tag>/    canonical D per language (HOA) + census.md.
     corpus/sos/<tag>/    syntactic 𝓘 per language (.sos) + census.md.
     corpus/flat/         cross-shape union: one det+sos per distinct language,
-                     smallest-shape naming + census.md + flat.json.
+                     smallest-shape naming + census.md.
     corpus/flat_canon/   the irredundant catalogue: one det+sos per language up to
                      AP relabeling + unused-AP dropping (B_k orbit-min of flat/),
                      complement-closed; each language also carries a sos/*.cat
