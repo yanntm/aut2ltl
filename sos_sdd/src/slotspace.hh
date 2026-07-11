@@ -16,6 +16,15 @@
 
 namespace sossdd {
 
+// One letter-behavior class acting on the slot space: a total function
+// on each slot's values, given extensionally (`maps[slot][v] = w` — the
+// packing that produced the values is the Python side's business).
+struct LetterClassRow {
+  std::string least;                   // lex-least letter of the class
+  long long count = 0;                 // number of letters in the class
+  std::vector<std::vector<int>> maps;  // per slot: value -> value
+};
+
 struct SlotSpace {
   std::vector<int> doms;
   std::vector<int> identity_vals;

@@ -6,8 +6,9 @@
 // and the instrumentation hooks on a toy slot space — set algebra and
 // comparison, model counts, single-variable relational apply, and the
 // layered-vs-saturation fixpoint disciplines cross-checked for equality;
-// build(payload, config, until_phase) running phases 0..2 (closure, then
-// the crossing / idempotent-power map) on a numeric digest payload.
+// build(payload, config, until_phase) running phases 0..4 (closure; the
+// crossing / idempotent-power map; profiles and the residual refinement)
+// on a numeric digest payload.
 
 #include <fstream>
 #include <memory>
@@ -147,9 +148,9 @@ void check_config(const py::dict &config) {
 
 SoSCore build(const py::dict &payload, const py::dict &config,
               int until_phase) {
-  if (until_phase < 1 || until_phase > 2)
+  if (until_phase < 1 || until_phase > 4)
     not_implemented("until_phase=" + std::to_string(until_phase) +
-                    " (only phases 1..2 are implemented)");
+                    " (only phases 1..4 are implemented)");
   check_config(config);
 
   SlotSpace space{py::cast<std::vector<int>>(payload["doms"]),
@@ -188,6 +189,11 @@ SoSCore build(const py::dict &payload, const py::dict &config,
     PackInfo pack{py::cast<std::vector<int>>(payload["mark_bits"]),
                   py::cast<std::vector<int>>(payload["block_base"])};
     core.cross(st, pack, node_budget, time_budget);
+    if (until_phase >= 3) {
+      const auto accept =
+          py::cast<std::vector<std::vector<int>>>(payload["accept"]);
+      core.residuate(st, pack, accept, node_budget, time_budget, until_phase);
+    }
   }
   return core;
 }
@@ -224,6 +230,31 @@ PYBIND11_MODULE(_core, m) {
           },
           py::arg("limit") = 100000,
           "Every (x, x^pi) pair as raw slot values (test/debug reading).")
+      .def("n_states", &SoSCore::n_states,
+           "Global automaton states (mixed-radix over the component "
+           "blocks, block 0 most significant).")
+      .def(
+          "residual_classes",
+          [](const SoSCore &s) {
+            py::list out;
+            for (const auto &cls : s.residual_classes())
+              out.append(py::tuple(py::cast(cls)));
+            return out;
+          },
+          "The residual partition: global state ids grouped by language "
+          "equality, classes ordered by least member.")
+      .def(
+          "profile_rows",
+          [](const SoSCore &s, size_t limit) {
+            py::list out;
+            for (const auto &[x, bits] : s.profile_rows(limit))
+              out.append(py::make_tuple(py::tuple(py::cast(x)),
+                                        py::tuple(py::cast(bits))));
+            return out;
+          },
+          py::arg("limit") = 100000,
+          "Every element with its loop-verdict bits A(q, x) per global "
+          "state (test/debug reading).")
       .def_property_readonly("depth", &SoSCore::depth)
       .def_property_readonly(
           "layers", [](const SoSCore &s) { return profile_to_py(s.profile()); })

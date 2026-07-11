@@ -102,6 +102,12 @@ S.layers           # [(k, cardinality, nodes)] — kept layers (C3)
 S.nodes            # (final, peak) live diagram nodes
 S.to_sos()         # the .sos text — canonical, byte-identical to the
                    # reference; forces reduce() (below)
+S.n_states()       # global automaton states (mixed-radix over the
+                   # component blocks, block 0 most significant)
+S.residual_classes()  # Phase 4's ≃-partition: state ids grouped by
+                   # language equality, classes ordered by least member
+S.profile_rows()   # every (x, A(q,x) bits per state) row — a test/debug
+                   # reading exercising the Phase 3 columns
 ```
 
 **Calculus operators (C10)** — each names its paper anchor; built-in
@@ -191,6 +197,16 @@ stream.
   from **libITS' gal component**, which depends only on libITS root
   contracts + libDDD (parsers depend on it, never the reverse). That
   dependency joins at Phase 2; Phases 0–1 are pure libDDD.
+- **Phases 3–4 rendering**: the digest's acceptance formula is grounded
+  Python-side (`accept.py`) into per-slot accepting-mask tables that
+  travel in the payload as numbers (like `PackInfo` — the core never
+  parses formula text). A profile is one predicate application on π's
+  pair space per global state (`S_q = predicate(A_q)(π)`: case-split
+  slot read + mask membership — no orbit walk, no cycle detection);
+  state agreement on all elements is O(1) canonical comparison of the
+  columns, which seeds Phase 4's residual gfp — explicit Moore
+  refinement over the global states (mixed-radix over the component
+  blocks, guarded ≤ 32767 like the slot domains).
 - **Variable order convention**: DDD variable 0 is adjacent to the
   terminal (slot `i` = variable `i`, higher variables on top) — the
   library convention, load-bearing for the expression homomorphisms and

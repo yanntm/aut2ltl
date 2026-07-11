@@ -25,16 +25,11 @@
 #include "crossing.hh"
 #include "findings.hh"
 #include "primitives.hh"
+#include "residuals.hh"
 #include "slotspace.hh"
 #include "stats.hh"
 
 namespace sossdd {
-
-struct LetterClassRow {
-  std::string least;                   // lex-least letter of the class
-  long long count = 0;                 // number of letters in the class
-  std::vector<std::vector<int>> maps;  // per slot: value -> value
-};
 
 class SoSCore {
 public:
@@ -126,6 +121,7 @@ public:
   void cross(Stats &st, const PackInfo &pack, long long node_budget,
              double time_budget) {
     require();
+    const auto t0 = std::chrono::steady_clock::now();
     double remaining = 0.0;
     if (time_budget > 0) {
       remaining = time_budget - close_secs_;
@@ -133,6 +129,24 @@ public:
     }
     cross_ = std::make_shared<Crossing>(name_, space_, pack, em1_);
     cross_->run(st, model_count(em1_), node_budget, remaining, profile_);
+    cross_secs_ =
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - t0)
+            .count();
+  }
+
+  // Phases 3-4: the profile columns on pi's pair space, then (when
+  // until_phase reaches 4) the residual refinement on the global states.
+  void residuate(Stats &st, const PackInfo &pack,
+                 const std::vector<std::vector<int>> &accept,
+                 long long node_budget, double time_budget, int until_phase) {
+    double remaining = 0.0;
+    if (time_budget > 0) {
+      remaining = time_budget - close_secs_ - cross_secs_;
+      if (remaining <= 0) throw BudgetExhausted{true, 3, profile_};
+    }
+    resid_ = std::make_shared<Residuals>(name_, space_, pack, accept, classes_);
+    resid_->profiles(st, crossing().pi(), node_budget, remaining, profile_);
+    if (until_phase >= 4) resid_->refine(st);
   }
 
   // -- shortlex extraction (the C7 mechanism, reused by witnesses) ----
@@ -206,6 +220,14 @@ public:
   std::vector<std::pair<std::vector<int>, std::vector<int>>>
   pi_pairs(size_t limit) const { return crossing().pi_pairs(limit); }
 
+  // -- phase 3-4 readings ----------------------------------------------
+  int n_states() const { return residuals().n_states(); }
+  std::vector<std::vector<int>> residual_classes() const {
+    return residuals().classes();
+  }
+  std::vector<std::pair<std::vector<int>, std::vector<int>>>
+  profile_rows(size_t limit) const { return residuals().profile_rows(limit); }
+
   // -- readings ------------------------------------------------------
   const std::string &name() const { return name_; }
   double em1_count() const { require(); return model_count(em1_); }
@@ -228,6 +250,12 @@ private:
     if (!cross_)
       throw std::logic_error(name_ + ": phase 2 has not been run");
     return *cross_;
+  }
+
+  const Residuals &residuals() const {
+    if (!resid_)
+      throw std::logic_error(name_ + ": phase 3 has not been run");
+    return *resid_;
   }
 
   void check_class(const LetterClassRow &c) const {
@@ -264,8 +292,10 @@ private:
   std::vector<DDD> layers_;
   std::vector<LayerRow> profile_;
   std::shared_ptr<Crossing> cross_;
+  std::shared_ptr<Residuals> resid_;
   int depth_ = -1;
   double close_secs_ = 0.0;
+  double cross_secs_ = 0.0;
   bool built_ = false;
 };
 

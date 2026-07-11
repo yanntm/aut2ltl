@@ -16,6 +16,7 @@ import itertools
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
+from .accept import accept_masks, eval_acceptance
 from .letters import letter_classes
 from .model import Automaton, Product
 
@@ -32,7 +33,10 @@ class SlotModel:
     """`mark_bits` and `block_base` declare the packing to the engine's
     crossing (Phase 2): slot values are (state << mark_bits[q]) | marks
     with a component-local state, and block_base[q] is the global slot
-    index of that component's state 0."""
+    index of that component's state 0. `accept[q]` grounds the slot's
+    component acceptance formula: the mark masks it accepts, sorted —
+    the global condition is the conjunction of these over the component
+    blocks (Phase 3's `Acc` predicate)."""
 
     name: str
     doms: Tuple[int, ...]
@@ -40,6 +44,7 @@ class SlotModel:
     classes: Tuple[SlotClass, ...]
     mark_bits: Tuple[int, ...]
     block_base: Tuple[int, ...]
+    accept: Tuple[Tuple[int, ...], ...]
 
     def payload(self) -> Dict[str, Any]:
         return {
@@ -53,6 +58,7 @@ class SlotModel:
             ],
             "mark_bits": list(self.mark_bits),
             "block_base": list(self.block_base),
+            "accept": [list(a) for a in self.accept],
         }
 
 
@@ -82,6 +88,7 @@ def from_automaton(aut: Automaton) -> SlotModel:
         classes=tuple(classes),
         mark_bits=(aut.marks,) * aut.states,
         block_base=(0,) * aut.states,
+        accept=(accept_masks(aut.acceptance, aut.marks),) * aut.states,
     )
 
 
@@ -100,6 +107,7 @@ def async_factored(p: Product) -> SlotModel:
     offset = 0
     mark_bits: List[int] = []
     block_base: List[int] = []
+    accept: List[Tuple[int, ...]] = []
     for ci, m in enumerate(comps):
         block = len(m.doms)
         for c in m.classes:
@@ -108,9 +116,10 @@ def async_factored(p: Product) -> SlotModel:
             classes.append(SlotClass(f"{ci}:{c.least}", c.count, tuple(maps)))
         mark_bits.extend(m.mark_bits)
         block_base.extend(offset + b for b in m.block_base)
+        accept.extend(m.accept)
         offset += block
     return SlotModel(p.name, doms, identity, tuple(classes),
-                     tuple(mark_bits), tuple(block_base))
+                     tuple(mark_bits), tuple(block_base), tuple(accept))
 
 
 def async_flat(p: Product) -> SlotModel:
@@ -142,9 +151,17 @@ def async_flat(p: Product) -> SlotModel:
                             | marks | (c.marks[q] << offsets[ci]))
             classes.append(SlotClass(f"{ci}:{c.least}", c.count,
                                      (tuple(vmap),) * len(joint_states)))
+    # Joint acceptance: the conjunction of the components' formulas, each
+    # reading its own mark-bit range of the packed union mask.
+    joint_accept = tuple(
+        m for m in range(1 << total_marks)
+        if all(eval_acceptance(a.acceptance,
+                               (m >> offsets[ci]) & ((1 << a.marks) - 1))
+               for ci, a in enumerate(auts)))
     return SlotModel(p.name + "_flat",
                      (dom,) * len(joint_states),
                      tuple(index[js] << total_marks for js in joint_states),
                      tuple(classes),
                      (total_marks,) * len(joint_states),
-                     (0,) * len(joint_states))
+                     (0,) * len(joint_states),
+                     (joint_accept,) * len(joint_states))
