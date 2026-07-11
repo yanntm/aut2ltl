@@ -24,7 +24,7 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 _HERE = Path(__file__).resolve().parent
 _REPO = _HERE.parents[2]
@@ -127,6 +127,63 @@ def build(force: bool = False) -> FixturePair:
     missing = [p for p in pair.paths() if not p.exists()]
     assert not missing, f"canonize did not produce: {missing}"
     return pair
+
+
+# --- the GT2 worked-example fixture (spec §4 gate 5, paper §4.6) --------------
+
+_GT2_TAG = "gt2fix"
+_GT2_FORMULAS = {
+    "negphi": "F(a & c) | (GFb & GF!b)",
+    "k": "FGb & Gc",
+    "ref_open": "F(a | !c)",   # the co-safety kernel's reduce target
+    "ref_least": "F(a & c)",   # the least co-safety member's reduce target
+}
+
+
+@dataclass(frozen=True)
+class Gt2Fixture:
+    """The canonized artifacts of the paper §4.6 worked example, by name
+    (`negphi`, `k`, `ref_open`, `ref_least`). APs are per formula (Spot keeps
+    only the mentioned ones); gates extend to the common alphabet through
+    `inverse_substitution` + `reduce`."""
+
+    sos: Dict[str, Path]
+    det: Dict[str, Path]
+
+    def paths(self) -> List[Path]:
+        return [*self.sos.values(), *self.det.values()]
+
+
+def _gt2_fixture() -> Gt2Fixture:
+    out = _FIX / "out"
+    return Gt2Fixture(
+        sos={n: out / "sos" / _GT2_TAG / f"{n}.sos" for n in _GT2_FORMULAS},
+        det={n: out / "det" / _GT2_TAG / f"{n}.hoa" for n in _GT2_FORMULAS},
+    )
+
+
+def build_gt2(force: bool = False) -> Gt2Fixture:
+    """Build (or reuse) the §4.6 fixture: `ltl2tgba` each formula (bounded),
+    then canonize the tag folder. Same cache discipline as `build`."""
+    fx = _gt2_fixture()
+    if not force and all(p.exists() for p in fx.paths()):
+        return fx
+    src = _FIX / "tgba" / _GT2_TAG
+    src.mkdir(parents=True, exist_ok=True)
+    for name, formula in _GT2_FORMULAS.items():
+        hoa = subprocess.run(
+            ["ltl2tgba", "-D", formula],
+            check=True, timeout=60, capture_output=True, text=True,
+        ).stdout
+        (src / f"{name}.hoa").write_text(hoa)
+    subprocess.run(
+        [sys.executable, str(_CANONIZE), _GT2_TAG,
+         "--in", str(src), "--out", str(_FIX / "out")],
+        check=True, timeout=120, cwd=str(_REPO),
+    )
+    missing = [p for p in fx.paths() if not p.exists()]
+    assert not missing, f"canonize did not produce: {missing}"
+    return fx
 
 
 def main(argv: List[str]) -> int:
