@@ -33,7 +33,7 @@ current corpus, counts recomputed, never hardcoded.
 |---|---|---|
 | SY1 — signed perms, single check, kernel read-off | **DONE** (2026-07-11, gates green, campaign 6 222/6 222) | F1–F4 |
 | SY2 — group, witness, symmetrization | *pending* | F5–F7 |
-| SY3 — relational read-offs | *pending* | F8–F11 |
+| SY3 — relational read-offs | **DONE** (2026-07-11, gates green, F8 oracle 6 222/6 222, campaign 6 222/6 222) | F8–F11 |
 | SY4 — spectrum + hull/kernel | *pending* | F12–F14 |
 | SY5 — Y-series campaigns (Y0a/Y0b/Y0c/Y1) | *pending* | F15–F16 |
 | SY5/Y2 — orbit-folded extraction | *blocked on ToLTL hook* | — |
@@ -125,20 +125,49 @@ current corpus, counts recomputed, never hardcoded.
 
 ## SY3 — relational read-offs
 
-- **F8 — the corpus stutter oracle.** *(pending — run FIRST)*
-  `stutter_rung(·, 1)` vs the `.cat` stutter tag over 3 938:
-  agreement counts; any disagreement escalates to To theory with the
-  smallest case.
-- **F9 — invisible letters on the census.** *(pending)* Frequency of
-  `[c] = 1` letters; contrast with F3 (invisible ≠ inert — state
-  both numbers side by side).
-- **F10 — `Î_L` density.** *(pending)* Distribution of the tolerated
-  independence relation's density over the census; the paper §4.3
-  POR pitch cites this ("how much commuting do real specs
-  tolerate").
-- **F11 — the `k`-ladder entry.** *(pending)* `ladder_entry`
-  distribution (`1 / 2 / 3 / None`) — the paper §4.2 new-parameter
-  claim, census-shaped.
+- **F8 — the corpus stutter oracle.** *(CONFIRMED — 6 222/6 222.)*
+  `stutter_rung(inv, 1)` vs the `.cat` stutter tag over all 6 222
+  rows: **full agreement, zero disagreements**. The read-off's
+  `invariant` count is **896**, byte-for-byte the corpus `.cat`
+  stutter-tag total (896 invariant / 5 326 sensitive) — the algebraic
+  equation (`∀a: [a] = [aa]`) reproduces the semantic ground truth
+  exactly on the syntactic corpus (paper §4.2 / Thm 4.2 special case).
+  Internal cross-check `stutter_rung(1) == classify.is_stutter_invariant`
+  also green on every row. Gate log:
+  `reference/symmetry/sy3_gates.txt` (gate 1); regen
+  `python3 -m tests.symmetry.relations_gate --oracle` (from `sosl/`).
+- **F9 — invisible letters on the census.** *(MEASURED: identically
+  zero — structural, like F3.)* Nonempty `invisible_letters`:
+  **0 / 6 222**. An invisible letter is a **class** equality
+  `[c] = 1`; an inert AP (F3) is a **fiber** equality `λ∘flip = λ` —
+  distinct read-offs (trap #8), and both empty on this corpus. The
+  alphabet-minimal, canonized corpus carries no padding letter, so
+  the census cannot exercise the ≠-side on fixtures; the fixture gate
+  asserts `invisible_letters` empty on FIX_A/B/C and the census
+  frequency (0) is the F9 datum. Data:
+  `reference/symmetry/sy3_summary.md` (F9); regen
+  `relations_gate --campaign` then `sy3_summary`.
+- **F10 — `Î_L` density.** *(MEASURED — steeply AP-stratified.)*
+  Density = fraction of ordered distinct class pairs with
+  `[cd] = [dc]`. Overall mean **0.192**; **4 318 (69.4 %)** cases are
+  fully rigid (`Î_L = ∅`, tolerate no commuting), **744 (11.96 %)**
+  fully commutative (density 1), 1 160 partial. Stratified mean
+  density: **0.014** (1-AP), **0.377** (2-AP), **0.771** (3-AP) — a
+  specification tolerates more adjacent swaps as its alphabet widens
+  (the paper §4.3 POR datum: "how much commuting do real specs
+  tolerate"). Data + strata table: `sy3_summary.md` (F10).
+- **F11 — the `k`-ladder entry.** *(MEASURED — the `{1,2,3,None}`
+  spread is populated.)* `ladder_entry` = least rung `k ≤ 3` with
+  `stutter_rung(k)` (`[v] = [vv]` for all length-`k` class-words):
+  **1 → 896, 2 → 736, 3 → 326, None → 4 264**. The `k=1` bucket (896)
+  is exactly the stutter-invariant set (rung 1 is stutter); rungs 2–3
+  add **1 062 cases that are block-stutter at a deeper window but not
+  letter-stutter** — the "new canonical parameter" of paper §4.2 is
+  non-trivially populated, not vacuous. The `= k` (not `≤ k`) reading
+  of the rung is what makes this a genuine parameter; see To-theory
+  item 5 (a spec/paper prose fix, not a semantic surprise). By AP the
+  deep rungs concentrate in 1-AP counting languages (594 at k=2, 326
+  at k=3). Data: `sy3_summary.md` (F11).
 
 ## SY4 — the spectrum and the LTL hull/kernel
 
@@ -280,6 +309,37 @@ current corpus, counts recomputed, never hardcoded.
    part of SY5; we will commission it to the corpus thread once
    Y0s bounds expectations.
 
+5. **[2026-07-11, SY3] The `k`-block ladder rung reads `= k`, not
+   `≤ k` — a prose fix in spec §5 and paper §4.2.** Both write the
+   rung as "`[v] = [vv]` for all `|v| ≤ k`", but that phrasing is
+   internally inconsistent with the rest of the same passage and with
+   the fixture gate:
+   - It is **nested** (a larger `k` is a strictly stronger
+     requirement), so `ladder_entry` = "least `k` with `stutter_rung`"
+     can only ever be **1 or `None`** — never the 2/3 the F11
+     distribution table names, making the "new canonical parameter"
+     vacuous.
+   - It contradicts the paper's own per-rung count "**each rung is
+     `|Σ_λ|^k` table equations**" (that count is the number of
+     length-**exactly**-`k` class-words; `≤ k` would be
+     `Σ_{j≤k}|Σ_λ|^j`).
+   - It contradicts spec §5 gate 3's expectation
+     `ladder_entry(FIX_A) == 1` only being informative under a
+     non-nested reading (under `≤ k`, *every* stutter language is 1
+     trivially).
+
+   The reading every concrete artifact agrees on is **length
+   `= k`**: rung `k` tests `[v] = [vv]` for class-words of length
+   exactly `k`, the rungs do **not** nest, and `ladder_entry` (least
+   satisfying rung) ranges over `{1, 2, 3, None}`. Implemented that
+   way (`relations.py`, `algorithm.md`), and it yields the F11 spread
+   896 / 736 / 326 / 4 264 with the `k=1` bucket coinciding with the
+   stutter set as required. **Requested:** theory change "`|v| ≤ k`"
+   to "`|v| = k`" in paper §4.2 and spec §5 (one word each); no
+   downstream math moves — `k=1` is still stutter, Thm 4.2 is
+   unaffected. Flagged rather than silently reconciled per the report
+   contract, though the evidence is one-sided.
+
 Standing items the theory thread expects data or answers on:
 
 1. Any disagreement between the spec and the paper (spec §8 E1
@@ -288,7 +348,9 @@ Standing items the theory thread expects data or answers on:
    mismatch after the E1 escalation ladder means the paper's
    arithmetic gets corrected, and theory owns that edit.
 2. The stutter-oracle verdict (F8) and the LTL-bit-oracle verdict
-   (F12): confirmed or the smallest disagreeing case.
+   (F12): confirmed or the smallest disagreeing case. *(F8 CONFIRMED
+   2026-07-11 — 6 222/6 222, read-off count 896 = the `.cat`
+   stutter-tag total; F12 still pending, needs SY4.)*
 3. The leastness probe (F14): any strictly-between aperiodic
    congruence falsifies the reflection-as-`θ_ap` reading of paper
    §6.2 — the dossier decides how Prop 6.2's proof gets written.
