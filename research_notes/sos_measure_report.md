@@ -14,10 +14,12 @@ run from `sosl/`. Spot appears only inside the Route A oracle,
 bounded-or-skipped; a blown per-case budget is a datum, never a wait.
 
 *Status (2026-07-11): M1 (measure), M2 (oracle + laws) and M3
-(distance / shadow / essential) are done and green corpus-wide; F-M1
-and F-M2 are theory-accepted, F-M3 awaits its theory reply. M4
-(entropy), M5 (Markov product) and M6 (the census campaign that fills
-the ⟨TBD⟩ slots below) are not started.*
+(distance / shadow / essential) are done, green corpus-wide, and
+theory-accepted (F-M1, F-M2, F-M3). The F-M3 reply requires one cheap
+gate addendum, M3b (the Thm 4.4(2) biconditional on the existing pair
+sample), to run with the M4 pass. M4 (entropy) is unblocked on the
+rewritten spec §10; M5 (Markov product) and M6 (the census campaign
+that fills the ⟨TBD⟩ slots below) are not started.*
 
 ## Slot map (paper ⟨TBD⟩ → expected finding)
 
@@ -192,3 +194,72 @@ Machine reports: `reference/quant/m3_laws.md`
 (+ `m3_laws_{cases,pairs,triples}.csv`), regeneration commands in the
 header; sample files under `tests/quant/logs/`. No disagreement
 between spec and paper surfaced.
+
+**Theory reply to F-M3 (2026-07-11) — ACCEPTED, with one required gate
+addendum (M3b) and one cross-gate prediction registered; M4 unblocked
+on a revised spec §10.**
+
+*Ratification.* The gates convict exactly the paper's claims:
+`d(L, sh L) = 0` with all-zero xor-profile is Prop 4.1(ii) read
+through §4.2's decidable zero test; shadow idempotence is 4.1(ii)'s
+last clause; `essential(shadow L)` byte-equal `essential(L)` exercises
+Thm 4.4(2)'s "depends only on the class" on the one in-class mate that
+is always constructible (the shadow is in the class by 4.1(ii)); the
+159 corpus F-G pairs confirm at scale the §4.2 warning that the shadow
+is not a complete invariant, and the F-G fixture control holding
+byte-DIFFERENT shadows at distance 0 is precisely the negative result
+the spec demanded. Prop 4.5 byte-exact on all 6222 is the strongest
+single gate of the campaign — measure-independence is now
+corpus-tested, not merely proved — and `aperiodic ⟹ ltl_up_to_null` on
+every row tests the divisor direction of Thm 4.4(1)+(3) (`M_x` divides
+`M(L)`; divisors of aperiodic monoids are aperiodic).
+
+*Arithmetic cross-checks (all pass).* (a) Trivial essential (`n = 2`)
+is *equivalent* to `μ(L) ∈ {0, 1}`: if `μ(L) = 1` the complement is
+null in every cylinder, so every residual measure is `1`, the series
+is constant, and `M_x` is trivial (dually for `μ = 0`); conversely a
+trivial quotient makes `ess(L) ∈ {∅, Σ^ω}`. The census must therefore
+satisfy: interior count `6222 − 5164 = 1058`; the LTL-up-to-null tally
+splits as `5660 = 5164` (every trivial class is LTL) `+ 496` interior,
+leaving `562 = 6222 − 5660` interior non-null-LTL, and
+`496 + 562 = 1058` ✓. (b) Complement on one table flips the pair set
+and sends `x` to `1 − x` pointwise, so `≈` — hence `M_x`, its
+aperiodicity, and its triviality — is complement-invariant; on a
+complement-closed corpus every census count above must be even up to
+self-complementary entries: 3738, 5660, 5164, 5552, 6222 all even ✓.
+
+*The caveat — Thm 4.4(2)'s byte test is not yet corpus-tested as a
+biconditional.* Per `m3_laws.md`, the pair gate asserted symmetry and
+the consistency law (equal shadows ⟹ equal essentials — the 154), but
+not the theorem's crown claim: `d_p(L₁, L₂) = 0` **iff** the reduced
+essentials are byte-equal. On the 159 F-G-shaped pairs the finding's
+"the essential form is the right null-set invariant" is the theorem
+speaking, not the gate. Both halves are free — every scored pair
+already carries the xor-profile verdict and both essentials. **M3b
+(required, cheap):** on the same 1000-pair sample (same seeds), assert
+byte-equal essentials ⟺ all-zero aligned xor-profile, both directions
+— in particular equality on the 159 null-disagreement pairs with
+differing shadows and *in*equality on the ~680 positive-distance
+pairs. A violation in either direction convicts Thm 4.4(2) — stop the
+line. (M6's E3(b) re-exercises the same biconditional exhaustively;
+M3b closes it now, and rides along with the M4 pass.)
+
+*Prediction registered for E1/M6.* By cross-check (a), an E1 rerun on
+the same census snapshot must report exactly **5164** languages with
+`μ ∈ {0, 1}`, split **2582/2582** by complement pairing. A mismatch
+convicts one of the two gates.
+
+*Spec edit (M4 unblocked on it).* §10 as previously written ran one
+Collatz–Wielandt loop on the whole `Live` matrix. That loop does not
+terminate when the matrix is reducible — on `diag(2, 1)` the bracket
+is `[1, 2]` for every positive vector, forever — and reducible is the
+common case (transient live classes feeding bottom blocks). §10 has
+been rewritten around the block decomposition the paper's own proof
+already cites (`ρ(A) = max` over irreducible diagonal blocks,
+[LM95 §4.4]), with per-block primitive shift `I + A_B`, exact
+`Fraction` brackets, and three fixtures including a certified
+irrational case (golden mean, verified by a rational sign test on
+`ρ² = ρ + 1` — no float in the assertion).
+
+*Verdict.* M3 accepted; M3b required with (or before) the M4 pass;
+M4 unblocked on the revised §10.
