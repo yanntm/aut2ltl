@@ -31,12 +31,12 @@ A uniform random probe of the id space (rows with probe stats), or a curated sel
 |---|---|---|---|---|---|---|
 | `1state2ap3acc_parity` | curated | parity | — | — | 5 | — |
 | `1state3ap2acc_parity` | curated | parity | — | — | 8 | — |
-| `2state1ap2acc_parity` | 0 | parity | 4294967296 | 204800 | 591 | 0 |
+| `2state1ap2acc_parity` | 0 | parity | — | — | 591 | — |
 | `2state1ap2acc_parity` | curated | parity | — | — | 3 | — |
 | `2state2ap1acc_parity` | curated | parity | — | — | 57 | — |
 | `2state2ap2acc_parity` | curated | parity | — | — | 325 | — |
 | `2state3ap1acc_parity` | curated | parity | — | — | 156 | — |
-| `3state1ap1acc` | 0 | gba | 68719476736 | 139210 | 500 | 0 |
+| `3state1ap1acc` | 0 | gba | — | — | 500 | — |
 | `3state1ap1acc_parity` | curated | parity | — | — | 70 | — |
 | `3state1ap2acc_parity` | curated | parity | — | — | 51 | — |
 | `3state2ap1acc_parity` | curated | parity | — | — | 42 | — |
