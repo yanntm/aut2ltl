@@ -22,16 +22,29 @@ reproduce, and results come back as findings in `sos_toltl_report.md`
   the FIG-2 trace hook); H3's first hit (`G(a → F b)`, F13); H2/H4
   (all 258 (A)-failing languages are 1 AP, floor `|𝒞| = 15` — F14); E9
   candidates 1, 2, 4 have their smallest specimens.
-- **Todo:** E9 candidates 3, 3a, 3b, 5 (the named 2-AP builds, the
-  `GFa ∧ FGb` conformance, the width exemplar, the showpieces); H7
-  (uncapped (A) fixpoint over the 258); E3 (presentation cross-test,
-  early pass); full E4 and E8 (unblocked — the graded engine renders
-  its stratum); the E10 ledger re-run over the graded stratum; C6 + E5
-  (unblocked — the paper's §2.2
-  Thérien–Wilke read-off is frozen, C6 carries the procedure); H8 (the
-  park-irreparable witness conformance); H6 and smallest-H3 (census-next
-  `2state2ap`); the scoped DG fallback on `𝒜_R` (M3's remaining half,
-  no-width layers only — 258 languages, paper Prop 4.14).
+- **Todo (priority order — the paper's §6 landed and the corpus moved
+  to 6 222 languages; see `handoff_toltl.md`):**
+  1. **E11 — the decomposition fallback** (paper §6, [Cas26]): the key
+     item, both halves end-to-end and ledgered; subsumes M3's
+     remaining half (the scoped fallback on no-width layers, paper
+     Prop 4.14).
+  2. **Census regeneration on the current corpus:** re-run E1, E2, E7,
+     E10 and the frontier counts; the report's bench section and every
+     census number re-based; stale figures evicted, not annotated.
+     (H2/H4/H6/smallest-H3 re-read on the new frame: the `2state2ap`
+     shape is in-corpus and its hunts close against the K-F12 stratum
+     of `reference/cascade/`.)
+  3. **Full E4 — run it, measured:** DAG size and printed (flat) size
+     against the baselines, engine vs DG (portfolio as internal
+     yardstick), over the current corpus — the paper's §7/§9
+     deliverable; E5 rides along once C6 lands.
+  4. Then: E9 candidates 3, 3a, 3b, 5 (the named 2-AP builds, the
+     `GFa ∧ FGb` conformance, the width exemplar, the showpieces); H7
+     (uncapped (A) fixpoint over the recounted (A)-fallback stratum);
+     E3 (early pass); E8; the E10 ledger re-run over the graded
+     stratum; C6 + E5 (the §2.2 Thérien–Wilke read-off is frozen, C6
+     carries the procedure); H8 (the park-irreparable witness
+     conformance).
 
 **One-line goal.** Provide the data for `sos_toltl.md`: per-layer anchoring
 and window-determinacy statistics over the census, the size ledgers against
@@ -255,7 +268,7 @@ paper, computed by hand from [SωS26, Table 3]):
 
 For every LTL specimen of the census: layers, sizes, smallest (A)-width per
 layer, letter classification, frozen-layer count, ladder rung,
-prefix-independence. **Paper deliverable:** the §7 inner-frontier table's
+prefix-independence. **Paper deliverable:** the §8 inner-frontier table's
 empirical column — fraction of layers per stratum, fraction of languages
 fully stem-transcribable at `k ≤ 3`. **Prediction (falsifiable guess):** at
 census sizes a large majority of layers pass (A) at `k = 1`; frozen layers
@@ -314,7 +327,7 @@ wired, run the portfolio on the census's own reference automata instead and
 say so⟩. Record: DAG node count, flat tree size, modal depth, until-nesting
 depth, `FLAT_OVERFLOW` events; Spot-simplified sizes where Spot terminates
 within cap (bounded-or-skipped per repo discipline). **Paper deliverable:**
-the §6/§8 ledgers over (a) vs (b) only; DAG-vs-`|𝒞|` scatter for the
+the §7/§9 ledgers over (a) vs (b) only; DAG-vs-`|𝒞|` scatter for the
 scaling claim. Column (c) is internal diagnostics (the paper does not
 mention automaton-level transcription), kept because a (c)-beats-(a) case
 is a research finding for us. Column (c) is also the standing
@@ -329,7 +342,7 @@ competitive with (c) and canonical where (c) is form-lucky.
 census: per instance the DAG node count and flat tree size (or
 `FLAT_OVERFLOW`), ventilated by `|𝒞|` and per shape (§3b), with
 size-bucket histograms (flat and DAG) and the DAG-vs-`|𝒞|` scatter. This
-is §3/§6's explosion measured as a *distribution* instead of the single
+is §3/§7's explosion measured as a *distribution* instead of the single
 `GF(aa)` exemplar, and it freezes the (b) column before (a) exists.
 **Addendum (split-conjecture measurement):** add the recursion tallies
 per instance — `dgtrace`'s call sites and distinct `(frame, target)`
@@ -410,7 +423,7 @@ notch at a time, smallest-first):
   after Lemma 4.12).
 **Prediction:** H2/H3 do not exist at 2 states / 1 AP; first hits appear
 ⟨TBD: record where⟩. Each hit's `.sos`, layers, and witness go into
-`tests/**/logs/` and the paper's §7 empirical map.
+`tests/**/logs/` and the paper's §8 empirical map.
 
 ### E7 — certificate validation (non-LTL side)
 
@@ -531,7 +544,7 @@ Spot-simplified formula)`:
 5. **Kanchor/daisy showpieces.** From the automaton portfolio's test
    set: two or three large-automaton inputs whose portfolio formula is
    tiny; run them through the SoS path (`𝓘(L)`, layers, engine) and
-   report both formulas side by side — paper material for §8's
+   report both formulas side by side — paper material for §9's
    readability yardstick if the SoS label matches or beats the
    portfolio's.
 
@@ -541,7 +554,7 @@ Constraint reminders: per-example probes single-input ≤ 15 s; ledger to
 source).
 
 ### E10 — branch factoring: guard grouping and residual-indexed exits
-(paper §6, rendering 1)
+(paper §7, rendering 1)
 
 Two sharings on the engine's output, both exactness-preserving by the
 paper's label contract (any exact label for the tail language serves),
@@ -594,6 +607,52 @@ languages residual indexing degenerates (one residual) and the correct
 mechanism is the paper's Lemma 5.2 emit-directly rule, not the memo —
 report those languages under the emit-directly column, not as
 residual-sharing wins.
+
+### E11 — the decomposition fallback (paper §6, [Cas26]) — the key item
+
+Both halves, end to end, ledgered. Raw material: the `aut2ltl/bls`
+package (GAP/SgpDec holonomy bridge `decompose_aut`, the reach-formula
+family, `Fin`), consumed *scoped per layer* — never the global
+pipeline.
+
+**Stem half** ((A) fails at every width; recount the stratum on the
+current corpus first — that recount is also E1-regeneration data):
+
+1. Per failing layer: totalize the within-layer machine with an
+   absorbing exit sink; feed the SgpDec bridge; record cascade height
+   and per-level state counts (paper §6 expects far below `2^{|R|}`).
+2. Emit each `ψ_{r→c}` with the reach family in its finite-word
+   variant ([BLS22, Rem 2]: weak next inside `wsolid` only, strong `X`
+   elsewhere).
+3. Assemble through Prop 4.14's `SAFE`/insertion wrapper unchanged;
+   conformance-gate the assembled label.
+4. Ledger vs DG-on-`𝒜_R` on the same layers: DAG size, printed (flat)
+   size, modal and until depth, wall time. *Preflight:* assert no
+   failing layer is a final candidate (a run can stay forever); one
+   that is also needs the loop half — report it, `PAPER-EDIT` on §6.
+
+**Loop half** ((C) fails at every affordable width, or (A) fails on a
+final layer):
+
+1. Restrict the source deterministic acceptor to the states realizing
+   the layer's tails; KR-decompose; lift acceptance to configurations
+   ([BLS22, Props 7–8]); encode the `Fin(C)` combination per
+   acceptance class. DAG-only throughout — never stringify.
+2. Worked instance first: the floor witness's pendency machine (two
+   states, "last non-`s` letter was an `a`", Büchi on the completion
+   transition) — expect an emission equivalent to
+   `GF(a ∧ X(s U a))`, conformance-gated.
+3. Then the residual-stratum inhabitants (the K-F12 conflict layers,
+   `reference/cascade/`), each conformance-gated — the gate is the
+   *only* correctness authority on this branch (it consults a
+   presentation; exactness is not by construction).
+4. Ledger as in the stem half. No DG comparison column here: the
+   DG-on-tail-algebra route does not shrink its input on this stratum
+   (paper Lemma 5.2(ii)) — record that fact, not a race.
+
+*Decision:* stem half — the ledger picks step 3(b)'s inner extractor
+(`PAPER-EDIT`: §6's ⟨TBD⟩ resolves either way). Loop half — any
+conformance failure is stop-the-line, theory adjudicates.
 
 ## 5. Expected failures (read before filing bugs)
 
