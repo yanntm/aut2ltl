@@ -4,8 +4,8 @@
 
 | item | state |
 |---|---|
-| **M1: θ-profile + measure + fixture/flip gate (§1–§6)** | **OPEN — the current work order; do this first, alone, end to end** |
-| M2 = QNT2: Route A oracle + full metamorphic harness (§8) | LATER — needs M1 |
+| **M1: θ-profile + measure + fixture/flip gate (§1–§6)** | **DONE (2026-07-11)** — `sosl/sosl/quant/` (placement provisional), fixtures exact, flip gate 4248/4248 green, `reference/quant/m1_measure.{md,csv}`, finding F-M1 |
+| M2 = QNT2: Route A oracle + full metamorphic harness (§8) | NEXT — unblocked by M1 |
 | M3 = QNT1c: distance on aligned tables (§9) | LATER — needs M1 |
 | M4 = QNT3: entropy (§10) | LATER — independent of M2/M3 |
 | M5 = QNT4: the Markov product `Pr_M(L)` (§11) | LATER — needs M1+M2 |

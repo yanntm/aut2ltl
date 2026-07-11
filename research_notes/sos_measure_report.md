@@ -37,4 +37,24 @@ agreement counts, Route A skip rate)*
 
 ## Findings
 
-*(none yet)*
+**F-M1 (2026-07-11, git b5cc0062e) — θ-profile + exact measure land; the
+flip law holds corpus-wide.** Engine in `sosl/sosl/quant/` (placement
+provisional, to move later); Theorem 3.4 implemented as specified
+(bottom SCCs → kernel idempotent → one `Val` lookup per component →
+transient system over `Fraction`). The three hand fixtures F-A/F-B/F-C
+pass with exact equality under uniform and `p(a)=1/3`, including the
+Lemma 3.3 idempotent-independence check on F-C and the byte-equal
+complement route on F-B; `PARANOID` re-derivations stayed silent
+throughout. Flip gate `μ(L) + μ(¬L) == 1` (exact) with pointwise-negated
+profiles: **4248/4248 green**, 0 crashes, 0 missing, no reduce anywhere.
+Distribution over the census: 1737 languages with `μ = 0`, 1737 with
+`μ = 1`, 774 strictly interior — the exact 0/1 tie is the corpus's
+complement-closure showing through the measure, an unplanned
+cross-check. Median table 15 classes (max 121); median 1 bottom SCC
+(max 7); worst case 173 ms. Machine report:
+`reference/quant/m1_measure.{md,csv}`; regeneration (from `sosl/`):
+`python3 -m tests.quant.flip_gate --list | while read f; do timeout 15
+python3 -m tests.quant.flip_gate "$f" >/dev/null; done; python3 -m
+tests.quant.flip_gate --aggregate` (fixtures:
+`python3 -m tests.quant.fixtures`). No disagreement between spec and
+paper surfaced.
