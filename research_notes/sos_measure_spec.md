@@ -236,7 +236,7 @@ review — do not begin M2.
 
 ---
 
-## 7. Milestone sections — M3 (§9) is the work order; §8 is DONE (F-M2, accepted); §10–§12 reference only
+## 7. Milestone sections — M4 (§10) is the work order (plus the §9 M3b addendum); §8–§9 are DONE (F-M2, F-M3, accepted); §11–§12 reference only
 
 ## 8. M2 (QNT2) — Route A oracle + metamorphic harness
 
@@ -398,15 +398,96 @@ fixtures:
 - `ltl_up_to_null(F-A) = True` (already aperiodic);
 - consistency: shadow bytes equal ⟹ essential bytes equal, sampled.
 
+### 9.1 M3b — addendum required by the F-M3 theory reply (runs with the M4 pass)
+
+The pair gate above asserted the consistency law one-way; Thm 4.4(2)
+is a biconditional and must be gated as one. On the SAME 1000-pair
+sample (same seeds as `m3_laws.md`), assert **byte-equal reduced
+essentials ⟺ all-zero aligned xor-profile**, both directions — both
+sides are already computed per pair, this is assertion-only. Expected
+outcome: equality on the 159 null-disagreement pairs whose shadows
+differ, inequality on every positive-distance pair (~680). A violation
+in either direction convicts Thm 4.4(2): stop the line, file against
+the paper. Append the tally as a row to the `m3_laws.md` report (or a
+small `m3b` companion) with the usual header.
+
 ## 10. M4 (QNT3) — entropy
 
-Paper Prop 5.1: `A` = letter-count matrix on `Live × Live` (`Live`
-from `calculus.surgery`), `h = log₂ ρ(A)`. Float quarantine: `ρ` via
-power iteration with Collatz–Wielandt bracketing until the enclosure
-is `< 1e-9` wide; report `(h_lo, h_hi)`; certificate = the `Live`
-submatrix. Laws: `h(∅) = 0` convention; `h ≤ log₂|Σ|`; monotone under
-inclusion on aligned pairs; `h(cl(L)) = h(L)` asserted on the
-submatrices (exact structural equality), not on floats.
+Paper Prop 5.1: `h(L) = log₂ ρ(A)` with `A` the letter-count matrix
+on `Live × Live` (`A[c][c'] = |{a : c·λ(a) = c'}|`; `Live` from the
+calculus liveness scan — grep `live` under `calculus/`/`surgery`).
+The only float-bearing milestone; the float is quarantined to the
+final `log₂`.
+
+**Do NOT run one Collatz–Wielandt loop on the whole matrix.** `A` is
+reducible whenever some live class is transient among live classes —
+the common case — and on a reducible matrix the CW bracket never
+tightens (on `diag(2, 1)` every positive `v` gives min-ratio 1,
+max-ratio 2, forever): the flat loop spins to the budget kill. Use
+the block decomposition the paper's proof cites [LM95 §4.4]:
+`ρ(A) = max ρ(A_B)` over irreducible diagonal blocks `B`.
+
+Algorithm (`quant/entropy.py`):
+
+1. `Live = ∅` (iff `L = ∅`): return `h = 0` exactly (paper §5
+   convention), enclosure width 0.
+2. SCC-condense the Live subgraph (edges `c → c·λ(a)` inside `Live`;
+   reuse the SCC routine already in `chain`/`kernel`). Per SCC `B`:
+   - singleton, no self-loop: `ρ_B = 0`, skip;
+   - singleton `c` with self-loops: `ρ_B = A[c][c]` exactly, width 0;
+   - nontrivial: set `B' := I + A_B`. `B'` is primitive (irreducible
+     + positive diagonal) and `ρ(A_B) = ρ(B') − 1` (nonnegative
+     shift). Power-iterate over `Fraction`: `v = (1, …, 1)`; each step
+     `w = B'·v`, bracket `lo = min_j w_j/v_j`, `hi = max_j w_j/v_j`
+     (CW: `ρ(B') ∈ [lo, hi]` for EVERY positive `v` — soundness never
+     depends on convergence; primitivity contracts the bracket
+     geometrically); renormalize `v = w / max(w)`. To cap `Fraction`
+     bit growth, entries of `v` may be rounded
+     (`limit_denominator(10**40)`, kept strictly positive) — rounding
+     `v` only slows convergence, never unsounds the bracket. Stop
+     when `hi − lo < Fraction(1, 10**9)` or at 10 000 iterations; a
+     non-converged bracket is still a valid enclosure, reported as a
+     datum (like a budget kill).
+3. `ρ(A) ∈ [max_B lo_B, max_B hi_B]`, exact `Fraction`s.
+4. `h_lo, h_hi := log₂` of the two bounds, widened one
+   `math.nextafter` ulp outward each side — the ONLY float step.
+   Return `(h_lo, h_hi)` + certificate: the `Live` set, the block
+   list, each block's exact rational bracket (replayable, no floats).
+
+Fixtures (`tests/quant/fixtures3`; assertions exact, no floats):
+
+- **F-J**: `Σ^ω`, `|Σ| = 2` → assert `ρ_lo = ρ_hi = 2` exactly,
+  `h = 1`.
+- **F-K**: `L = a^ω` over `{a, b}` → every live class has exactly one
+  live successor; assert `ρ = 1` exactly, `h = 0`.
+- **F-L (golden mean — the irrational case, certified rationally)**:
+  `L =` "no factor `bb`" over `{a, b}` (a safety language; hand-build
+  the invariant as in `fixtures2`; every nontrivial live block is
+  `[[1,1],[1,0]]`-shaped). `ρ = φ = (1+√5)/2`: assert IN FRACTIONS
+  the sign test on `ρ² = ρ + 1` — `lo² ≤ lo + 1` and
+  `hi² ≥ hi + 1` — plus `hi − lo < 1e-9`; the enclosure provably
+  straddles `φ` with no float in the check.
+
+Laws (gate `m4_gate`, ≤ 15 s per case, machine report
+`m4_entropy.{md,csv}` under `reference/quant/`, usual header):
+
+- `L = ∅ ⟹ h = 0`; `L ≠ ∅ ⟹ ρ_lo ≥ 1` (every live class has a live
+  successor, so the live subgraph has a cycle; a violation convicts
+  the liveness scan — stop the line);
+- `ρ_hi ≤ |Σ|` exactly (hence `h ≤ log₂|Σ|`; with `v₀ = 1` the
+  first `hi` is already a row-sum bound, so this must hold from
+  iteration 0);
+- monotonicity on sampled aligned pairs carrying a real inclusion
+  (reuse M2's L3 inclusion detection): `L₁ ⊆ L₂` ⟹ the
+  enclosure-safe reading `ρ_lo(L₁) ≤ ρ_hi(L₂)`;
+- `h(cl(L)) = h(L)` structurally: `cl` via the calculus safety-hull
+  surgery on the same table; assert `Live(cl(L)) = Live(L)` as sets
+  and the letter-count submatrices identical — never on floats;
+- M3b (§9.1) runs in the same pass.
+
+DONE when: F-J/F-K/F-L green; corpus gate green (0 red; budget kills
+and non-converged brackets are data rows); M3b green; machine report
+filed; finding F-M4 in the report.
 
 ## 11. M5 (QNT4) — the Markov product
 
