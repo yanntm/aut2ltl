@@ -21,13 +21,13 @@ never `logs/`).
   (C)@0-conflicts (806 aperiodic / 215 group)**, each ALG-7-verified; at
   k=1, **263 persist (246 aperiodic)**, 118 ladder-rescued, 640
   budget-open.
-- ⚠ **K-F12 — the floor is inhabited IN-FRAME, at scale**: ≥246 aperiodic
+- **K-F12 — the floor is inhabited IN-FRAME, at scale**: ≥246 aperiodic
   layers genuinely fail (C) at widths 0 and 1. Type specimen
   `2state2ap1acc_parity_3772037665` (13 classes, Wagner (ω³,σ), frozen
   singleton layers, verdict-splitting zero absorption, three 𝒥-minimal
-  classes). The draft's "floor empty on the census frame" (C.2/C.19/C.7)
-  is FALSE and not yet edited. Every-width floor membership (C.12′-style)
-  is open for the whole stratum.
+  classes). The draft edit HAS LANDED (floor reversal everywhere).
+  Every-width membership is reduced to **Theorem C.12″**'s padded-block
+  certificate — a table-only check, specced as **K-E8(a)**, unrun.
 - **K-E7 mechanism map**: over everything decided, absorption + group only,
   **0 verdict-splitting `other`** — still no third mechanism.
 - **K-E3 COMPLETE**: one-sidedness over the 74 ≥2-class families:
@@ -37,51 +37,51 @@ never `logs/`).
 - **K-E2 (K-F9)**: transfer specimen verified — moving-layer floor
   inhabitant beyond the frame. **K-E4 (K-F11)**: emitter conformance-gated
   on the worked witness; production wiring pending.
-- **Paper state**: `bls_cascade.md` carries the K-F7..F11 integration with
-  the OLD 4248-cut numbers — superseded by the above, edit pending (Theory
-  todo 1).
+- **Paper state (2026-07-11)**: `bls_cascade.md` is CURRENT — extended
+  corpus numbers throughout, floor reversal landed, plus two new
+  theorems: **Theorem C.9′** (prefix-independence ⟹ frozen singleton
+  terminal layers; unconditional, kernel-row proof) and **Theorem
+  C.12″** (padded-block every-width floor certificate). Lemma C.5(i)'s
+  second strictness is discharged (degenerately: `GF(aa)`@k=1 via
+  Lemma C.10 + C.9′; moving witness = K-E8(b)). Spec + report synced
+  (Theory response appended to the report).
 
 ## Todo — Theory
 
-1. **PAPER-EDIT (K-F12, unblocked, numbers final).** Sites in
-   `bls_cascade.md`: C.2 remark (~l.240) — coverage 6610/8786 at k≤2 + the
-   conflict stratum; after Cor C.8 (~l.380) — 16/16/28/14 with the
-   complement-closure symmetry stated as structural; Cor C.9 (~l.424) —
-   1104/1104; C.4 map paragraph + "The consequences" (~l.720, ~l.769) —
-   mechanism map + the floor claim reversal; C.19 closing bold — "empty on
-   the census frame" → "inhabited in-frame at scale (K-F12)"; C.7 §8
-   bullet (~l.1003). Also `bls_cascade_spec.md`'s stale stratum
-   descriptions (372/1164) and, when it lands in the main paper, the
-   `sos_toltl.md` §8 open-hunt sentence (the 2state2ap witness now exists).
-2. **Every-width floor membership for the K-F12 stratum**: generalize
-   Theorem C.12′'s growing-gap argument to the type specimen's shape
-   (frozen singleton, verdict-splitting absorption over several 𝒥-minimal
-   classes — 13 classes, hand-tractable). Success = the 246 become floor
-   inhabitants outright, not just width-≤1 failures.
-3. **Promote 1104/1104 to a theorem**: prefix-independence ⟹ frozen final
-   layer (C.4's saturation argument is the candidate proof; settles C.9's
-   scope for good).
-4. **Lemma C.5(i) second strictness** ((C) at a width where (B̃) fails):
-   the hunt is now a data query over `reference/cascade/` CSVs, not a
-   search — worth one pass before declaring it open.
-5. Spec feedback loop: revise `bls_cascade_spec.md` (K-E1/E3/E7 sections)
-   to the extended-corpus frame; respond to this report cycle.
+(2026-07-11 cycle done: K-F12 paper edit, Theorem C.9′, Theorem C.12″,
+C.5(i) strictness, spec/report sync. Next Theory session:)
+
+1. **Respond to K-E8 when it lands**: certified count → K-F12 paragraph
+   update ("N of the 246 outright"); any non-certifying persister is a
+   hand-analysis specimen (longer-block certificate vs a genuinely new
+   every-width mechanism — the latter would be a finding against C.4's
+   two-mechanism map).
+2. Remaining draft ⟨TBD⟩s, long-term: the general lift of Cor C.9
+   (non-prefix-independent recurrence languages), the graded-lift
+   remark of C.3, Prop C.19's full syntactic-product bookkeeping.
+3. When the cascade section lands in the main paper: `sos_toltl.md` §8
+   open-hunt sentence (the 2state2ap witness now exists, K-F12).
 
 ## Todo — Engineering
 
-1. **k=2 pass on the 640 budget-open layers** (`k_e1_verify <id> <layer> 2`
+1. **K-E8 (NEW, run first — cheap, table-only, biggest paper payoff)**:
+   (a) padded-block certificate scan over the K-F12 conflict layers
+   (spec §K-E8; positive control = the type specimen); (b) (B̃) at the
+   rescue width on the moving rescued layers. Land CSV in
+   `reference/cascade/` + `k_series.md` section + report finding.
+2. **k=2 pass on the 640 budget-open layers** (`k_e1_verify <id> <layer> 2`
    sharded; consider `--cores 4 --timeout 300` and/or a raised
    `find_c_conflict` budget arg — cone growth saturates 10⁶ states at k=1
    already). Extend `reference/cascade/` + `k_series.md` with the result.
-2. **K-E4 engine integration**: wire `tests/cascade/emit.py` into
+3. **K-E4 engine integration**: wire `tests/cascade/emit.py` into
    `aut2ltl/sos2ltl/engine.py`; full conformance sweep over the
    (C)-decided layers (rebuild-𝓘 gate on the assembled label) + the DG
    size ledger.
-3. **K-E5**: DG vs manufactured cascade on the (A)-fallback stratum
+4. **K-E5**: DG vs manufactured cascade on the (A)-fallback stratum
    (recount the stratum on the extended corpus first — the "258" is the
    old cut; needs the `aut2ltl/bls` bridge).
-4. **K-E6**: floor-witness pendency machine + prophetic `A_S` cross-check.
-5. Housekeeping: E3's rung-stratified (`P|_R`) one-sidedness recount;
+5. **K-E6**: floor-witness pendency machine + prophetic `A_S` cross-check.
+6. Housekeeping: E3's rung-stratified (`P|_R`) one-sidedness recount;
    `k_e1_verify` exits 2 on BUDGET which reap tallies as `fail` (cosmetic —
    rows are data; consider exit 0 + status column only); the probe-local
    line-json census format is slated for retirement — keep dependencies
