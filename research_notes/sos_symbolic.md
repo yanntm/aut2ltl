@@ -51,11 +51,14 @@ slot coordinates give additive diagrams where the flat state-space vector
 is itself the explosion. The compactness bet is that of symbolic model
 checking, made on the same grounds: engineered inputs are products.
 The engine exists: its exported invariant is byte-identical to the
-explicit reference construction's on every instance both complete, and
-the factored bet is measured where it starts — `9n + 1` diagram nodes
+explicit reference construction's on every instance both complete —
+measured at census scale, 6102 instances byte-identical — and
+the factored bet is measured where it starts: `9n + 1` diagram nodes
 carrying `16ⁿ` elements on the `n`-fold product family, against a flat
-encoding that hits its proven exponential wall at `n = 3` — with the
-census-scale scatter the open column (§8).
+encoding that hits its proven exponential wall at `n = 3`; across the
+census the diagram sits under the explicit cell count on all but two
+floor cases (median 3.4×), with per-slot sharing the covariate that
+predicts the margin (§8).
 
 ---
 
@@ -98,9 +101,9 @@ Four claims organize the paper:
    a runtime value. [SωS26, Lemma 4.4] — the two-sided congruence is
    computable by right moves alone — is, re-read on the encoding, the
    statement that the construction never iterates a slot-crossing
-   relation: the one crossing it needs (idempotent powers) sits outside
-   every fixpoint. The algebraic economy and the symbolic feasibility
-   are one fact.
+   relation: the crossings it needs — idempotent powers, and the
+   verdict read that consumes them — sit outside every fixpoint. The
+   algebraic economy and the symbolic feasibility are one fact.
 3. **Compactness is a structure bet with a precise best case** (§4.2):
    for asynchronous (interleaved) products the enriched monoid factors
    *exactly*, and in factored slot coordinates its diagram is additive
@@ -234,7 +237,8 @@ operation below wants a remark in advance: we will once need a relation
 whose construction is a `|Q|`-way case split (a slot selected by a
 runtime value). It remains a finite relation over the same variables —
 nothing beyond primitive 3 — but its diagram is not slot-local, and the
-design confines it to a single preprocessing phase.
+design confines it to one-shot, never-iterated uses: built in Phase 2,
+consumed once more by Phase 3's verdict read.
 
 ### 2.3 The symbolic input
 
@@ -343,10 +347,16 @@ A(q, x)  =  Acc( mk_{x^π}( st_{x^π}(q) ) )
 with `Acc`, a positive Boolean formula over `C`, applied as a small
 predicate on the mark bits of one slot. No orbit computation, no cycle
 detection, per element or otherwise: the profile relation
-`ProfR(x, q) ∈ {0,1}` is the composition of the `π`-map with a single
-slot selection and the `Acc` predicate. (This is [SωS26, Lemma 4.1]'s
-`A(q, c)` — the walk-the-cycle prose there is the explicit rendering;
-idempotency makes the symbolic rendering a lookup.)
+`ProfR(x, q) ∈ {0,1}` is the composition of the `π`-map with a
+*value-indexed* slot read — slot `q` names the state
+`p = st_{x^π}(q)`, and it is slot `p`'s mark component that `Acc`
+consumes: a `|Q|`-way case split of Phase 2's shape, applied to the π
+pair space. One round, `|Q|` applications, outside every fixpoint —
+but crossing-priced per application, and since the π pair space is
+the largest diagram in the pipeline, this read is the expected second
+cost peak after Phase 2 itself (§5, §8). (This is [SωS26, Lemma
+4.1]'s `A(q, c)` — the walk-the-cycle prose there is the explicit
+rendering; idempotency makes the symbolic rendering a lookup.)
 
 **Phase 4 — residuals, internalized.** Explicit implementations obtain
 `q ≃ q′` (`L(q) = L(q′)`) from an external language-equivalence oracle.
@@ -535,7 +545,9 @@ multiplications stratify exactly:
 A construction that quantified over two-sided contexts — Arnold's
 congruence taken literally — would iterate the third row inside its
 fixpoints. The rotation lemma confines every *iterated* relation to the
-first row; the single third-row use (Phase 2) is preprocessing. That is
+first row; the third-row uses — Phase 2's pairing/squaring and Phase
+3's one-round verdict read — are preprocessing, outside every
+fixpoint. That is
 the precise sense in which "everything is a right move" is not an
 algebraic elegance but the existence condition for this engine. A
 secondary dividend: because the first row is one identical local
@@ -615,8 +627,20 @@ sources are unconditional:
   value in every element — one diagram node, ever; transient states
   reached alike shared across elements likewise.
 - **Monotone marks.** Per slot, the mark set only grows along right
-  extensions, so mark components populate upward-closed families —
-  a classically diagram-friendly shape ⟨TBD: quantify on the corpus⟩.
+  extensions. What that proves is a closure fact, not upward closure
+  outright: write `F(q, d) = { mk_x(q) : x ∈ EM¹, st_x(q) = d }` for
+  the mark family at slot `q` with destination `d`, and
+  `M(d) = { mk_y(d) : y ∈ EM¹, st_y(d) = d }` for the mark sets of
+  `d`'s stabilizers. The composition law gives, for `st_x(q) = d` and
+  `st_y(d) = d`, `(x·y)(q) = (d, mk_x(q) ∪ mk_y(d))` — so `F(q, d)`
+  is closed under union with every member of `M(d)`: a union of
+  up-sets in the lattice the stabilizer marks generate. Full upward
+  closure in `2^C` — the classically diagram-friendly case — holds
+  exactly when the stabilizer marks realize every single-mark
+  increment; measured on the census corpus, 62 % of non-empty
+  `(slot, dst)` families are fully upward-closed (65 % restricted to
+  instances with acceptance marks). A real tendency — though as a
+  *predictor* of compression it ranks well below slot sharing (§8).
 - **Letter symmetry.** Letters the language never distinguishes are
   guard-equal in `Lett` before anything is built: the λ-quotient
   operates at the entry, symbolically.
@@ -651,7 +675,7 @@ diagram width, where structure fights it.
 | 0 | `Lett`, `R` | build from `Δ, Mk` | slot-local, `2k + AP` | — |
 | 1 | `EM¹` + layers | lfp, image | slot-local | closure depth `≤ \|EM\|` |
 | 2 | `π`-map | pairing lfp / squaring | **crossing** (`\|Q\|`-way split) | `O(ℓ)`; `O(log ℓ)` when periods are powers of two |
-| 3 | `ProfR` | compose + predicate | one slot-read + `Acc` | 1 |
+| 3 | `ProfR` | compose + predicate | **crossing-shaped** read (value-indexed slot select) + `Acc` | 1 (× `\|Q\|` applications) |
 | 4 | `≃` | gfp on `Q × Q` | small; seed: `\|Q\|` profile columns + `O(1)` compares | `≤ \|Q\|` |
 | 5 | `~` | gfp refinement | slot-local preimages, `∀α` | `≤ \|EM\|` splits |
 | 6 | `𝓘(L)` | quotient + algebra BFS | small, explicit | `\|𝒞\|·\|Σ\|` table steps |
@@ -660,8 +684,11 @@ Every round is polynomial in the *diagram sizes* of its operands — the
 symbolic contract; the open quantity is the diagrams themselves (§8).
 Two structural notes. The closure depth of Phase 1 equals the length of
 the longest shortlex-minimal representative, `< |𝒞|` *after* quotient
-collapse but up to `|EM|` before it ⟨TBD: is the pre-quotient depth
-small in practice? measure⟩. And Phase 5's split count is bounded by
+collapse but up to `|EM|` before it — and in practice it is small: on
+the census corpus the pre-quotient depth has median 6, p99 16, max 27
+(reached at `|EM¹| = 3291`), never exceeds `0.6·|EM¹|` (0.22 at the
+median), and sits below the *post*-quotient class count on 98.6 % of
+instances. And Phase 5's split count is bounded by
 `|EM|` but its *effective* rounds end at the syntactic partition — the
 same early-stabilization phenomenon symbolic bisimulation minimization
 exploits [BdS92], and signature-based refinement [WHH+06] is the
@@ -988,14 +1015,27 @@ what remains.
 
 **Measured.**
 
-- **Conformance.** On every instance where the explicit reference
-  construction terminates (and shares the input's declared AP set —
-  §7), the engine's exported `.sos` is **byte-identical** to the
-  reference's: the output is the same canonical object, so every
-  downstream classification read-off transfers unchanged.
-- **Compression, first points.** `EvenBlocks`: 10 diagram nodes
+- **Conformance, at census scale.** On every instance where the
+  explicit reference construction terminates (and shares the input's
+  declared AP set — §7), the engine's exported `.sos` is
+  **byte-identical** to the reference's: the output is the same
+  canonical object, so every downstream classification read-off
+  transfers unchanged. Measured across the 6222-instance census
+  corpus: all 6102 instances completing a 10 s budget byte-identical,
+  zero mismatches; the 120 budget kills concentrate on the largest
+  sampled shape and are the bottom line's tail (open column iii).
+- **Compression, at census scale.** `EvenBlocks`: 10 diagram nodes
   against 32 explicit slot cells; the `GF(aa)` run-parity form: 5
-  against 20. The scatter across the census corpus is the open column.
+  against 20. Across the census, the diagram sits at or under the
+  explicit cell count on 6100 of 6102 completed instances (the two
+  exceptions are 1-element algebras against the diagram's 2-node
+  floor); the node-to-cell ratio has quantiles 0.12 / 0.29 / 0.50
+  (p5 / median / p95). The scatter's correlates, by rank correlation:
+  **per-slot sharing dominates** (mean distinct-cells-to-cells ratio
+  0.039 — the sharing source is there to exploit), larger and
+  more-marked algebras compress relatively better, and the
+  monotone-marks fraction is a weak covariate — a structure datum,
+  not a predictor (§4.2).
 - **Factored scaling — Proposition 4.1 as an equality.**
   `EvenBlocks^{⊗n}` in factored coordinates: `|EM¹| = 16ⁿ` exactly at
   every `n ≤ 6`, on a diagram of exactly `9n + 1` nodes — additivity
@@ -1010,17 +1050,27 @@ what remains.
   converges it reaches `π` in 2 rounds on every instance tried,
   against the pairing's 2–5; where it cannot (an orbit period that is
   not a power of two), the cap detects it and the pairing carries.
+  At census scale the only profile signal so far is right-censored —
+  the 10 s budget kills land in Phases 1/3/5/2 at 52/32/21/15 —
+  enough to show the Phase 3 read is macroscopic at the tail (as its
+  crossing shape predicts, §5), not enough to populate the cost
+  table: open column (v).
 
-**Open columns.** (i) the compression scatter over the census corpus;
-(ii) synchronous products — distance of the reachable set from product
-form; (iii) variable-order sensitivity, flat vs factored and the
-split-encoding orders, on the same inputs — the §4.2 lower-bound
-picture empirically; (iv) the bottom line against the explicit
-implementation's closure cap: instances the cap kills that the diagram
-carries, and the converse; (v) the calculus in motion — a worked
+**Open columns.** (i) synchronous products — distance of the reachable
+set from product form; (ii) variable-order sensitivity, flat vs
+factored and the split-encoding orders, on the same inputs — the §4.2
+lower-bound picture empirically; (iii) the bottom line against the
+explicit implementation under *budget parity*: instances the cap kills
+that the diagram carries, and the converse — the census tail already
+warns that the small-budget census column will not flatter the engine
+(the census is the unstructured world of §4.3: `|Q| ≤ 3`, enumerated,
+`|EM¹| ≤ 12 225`, where explicit enumeration is fast and there is no
+product seam to exploit); (iv) the calculus in motion — a worked
 multi-operation pipeline (complement, conjoin, check, re-check)
 measured against per-operation automata constructions, and
-deferred-reduce vs reduce-then-operate on the same sequence.
+deferred-reduce vs reduce-then-operate on the same sequence; (v) the
+uncensored phase profile — per-phase time and peak nodes at census
+scale and on the scaling families.
 
 ## 9. Related work
 
