@@ -2330,7 +2330,7 @@ only declined the repairs.
 #### 4. Rulings on the POST's five questions
 
 **4.1 The object** — §1 above. Paper takes Lemma A + Theorem B into §5 (done
-this session: Lemma 5.4 / Theorem 5.5), plus the abstract/§4.2/§6.3 wording.
+this session: Lemma 5.2 / Theorem 5.3), plus the abstract/§4.2/§6.3 wording.
 
 **4.2 E2 is not contaminated where it counts.** Permanence is a property of
 the **certified partition** (class count vs `N`, byte-comparison), not of the
@@ -2392,5 +2392,18 @@ untouched (saturated leg unaffected).
 
 Spec is updated in lockstep (rev 2026-07-11: §3.2 step 6 refusal, §7 gloss +
 field, §6 E2 recount note, §8 item 13, rows P9/P10); paper carries
-Lemma 5.4 / Theorem 5.5 and the reworded ablation story. Items 6–8's E2 side
+Lemma 5.2 / Theorem 5.3 and the reworded ablation story. Items 6–8's E2 side
 is unblocked through item 13.
+
+#### Addendum (2026-07-11, same session) — §5 renumbered; §2.3 slimmed
+
+The paper's §5 was restructured on the user's go-ahead: the ruling's lemma
+and theorem moved up to follow Theorem 5.1's bounded-oracle remark, and are
+now **Lemma 5.2 / Theorem 5.3**; the former Propositions 5.2/5.3 (complexity,
+sizes) are now **5.4/5.5**. Spec and handoff are updated; ledger entries
+above this line keep the numbering that was current when written (old
+Prop 5.2/5.3 = new 5.4/5.5). Also: §2.3's oracle internals (aligned graph,
+functionality guard, fallback) now live in §6.1 — the firing exhibit's
+display moved with them — and the companion-calculus citation is dropped
+(the paper is self-contained on the align construction; [SωS26] remains the
+only family citation).
