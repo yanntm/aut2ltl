@@ -29,30 +29,39 @@ only the file and section named for the task at hand — nothing else.
   `essential`; placement provisional, to move under `sosl/sosl/sos/` on
   some later go-ahead). M1: flip law 4248/4248 (F-M1). M2: Route A
   oracle exact 4248/4248, laws L2–L5 green (F-M2; accepted, Thm 3.4
-  corpus-tested). M3: fixtures F-D..F-I green (F-D/F-E were owed by M2,
-  built at M3 start; F-G control held); cases 6222/6222 (Prop 4.5
-  byte-exact on all), pairs 993/1000, triples 497/500, 0 red anywhere
-  (`reference/quant/m3_laws.md` + csvs, finding F-M3). Census data:
-  5660/6222 LTL-up-to-null, 1922 of them carrying a measure-invisible
-  group; essential trivial on 5164.
+  corpus-tested). M3: fixtures F-D..F-I green (F-G control held);
+  cases 6222/6222 (Prop 4.5 byte-exact on all), pairs 993/1000,
+  triples 497/500, 0 red anywhere (`reference/quant/m3_laws.md` +
+  csvs, finding F-M3). Census data: 5660/6222 LTL-up-to-null, 1922 of
+  them carrying a measure-invisible group; essential trivial on 5164.
 
-## TODO — the open items, in order
+## Work items — Theory
 
-1. **Theory reply to F-M3** — then M4 becomes the work order.
-2. **M4 (spec §10)** — entropy; the only float-bearing module
+1. **Reply to F-M3** in the report (accept / caveat / spec edit) — M4
+   is gated on it.
+2. **Fill the paper's ⟨TBD⟩ slots** from report findings as campaigns
+   land (§6 + abstract headline wait on M6; F-M3's census numbers —
+   5660/6222 LTL-up-to-null, the 1922 measure-invisible groups — are
+   candidate §6(iv) material, user-gated).
+3. **References**: PRISM CAV'11 and Chatterjee–Doyen–Henzinger ToCL'10
+   still placeholders — get them into `papers/`, read, then cite.
+4. Fenced, deliberately unclaimed: Markov-source analogue of the
+   essential form; weighted/semiring direction is future work.
+
+## Work items — Engineering (in order, each gated on the user's go)
+
+1. **M4 (spec §10)** — entropy; the only float-bearing module
    (certified Collatz–Wielandt enclosure); `h(cl(L)) = h(L)` asserted
-   structurally, not on floats.
-3. **M5 (spec §11)** — the Markov product `Pr_M(L)`; needs a `.mc`
+   structurally, not on floats. Gated on the F-M3 theory reply.
+2. **M5 (spec §11)** — the Markov product `Pr_M(L)`; needs a `.mc`
    chain format fixed with the corpus keeper first.
-4. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
+3. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
    and abstract ⟨TBD⟩ slots through report findings only.
-5. **Figures** — FIG-1/2/3 buildable NOW on M1 (specs in the figures
-   file; probes under `tests/quant/figs/`); FIG-4 blocked on M3, FIG-5
-   on M4/M6.
-6. **Theory follow-ups (user-gated, not self-serve):** fill the paper's
-   ⟨TBD⟩ slots from report findings when campaigns land; Markov-source
-   analogue of the essential form is deliberately unclaimed (paper
-   fences it); the weighted/semiring direction is future work.
+4. **Figures** — FIG-1/2/3 buildable NOW on M1, FIG-4 now unblocked by
+   M3 (specs in the figures file; probes under `tests/quant/figs/`);
+   FIG-5 blocked on M4/M6.
+5. Deferred until a user go-ahead: move `sosl/sosl/quant/` under
+   `sosl/sosl/sos/`.
 
 Implementation starts only on the user's go. One milestone per pass;
 stop and hand back at each DONE (the spec's milestone sections say
