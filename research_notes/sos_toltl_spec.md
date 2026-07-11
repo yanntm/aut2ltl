@@ -650,6 +650,22 @@ final layer):
    DG-on-tail-algebra route does not shrink its input on this stratum
    (paper Lemma 5.2(ii)) — record that fact, not a race.
 
+*Prediction (sizes — the reason this is worth running).* The Muller
+exact-set price never arises on the corpus: gba is an Inf-conjunction
+and parity a Fin/Inf chain, so the lifted acceptance is **linear in
+the number of configurations**; the atoms are reach formulas memoized
+per level (a class-indexed DAG). The inputs are small by construction
+— the residual stratum lives at the `2state2ap` shapes (type specimen:
+6-state canonical acceptor), the old (A)-fallback floor at 3-class
+layers — so expect shallow cascades and small DAGs; the flagship
+expectation stands (step 2 emits the defining formula at its own
+until-rank). The open size risk is the **flat/printed** column — reach
+formulas nest through levels — which is exactly why both columns are
+ledgered; the definitional rendering (paper §7) is the documented
+escape if flat explodes while the DAG stays small. Stem half: no
+prediction — DG-on-`𝒜_R` barely recurses on 3-class layers and may
+win; that is what the ledger is for.
+
 *Decision:* stem half — the ledger picks step 3(b)'s inner extractor
 (`PAPER-EDIT`: §6's ⟨TBD⟩ resolves either way). Loop half — any
 conformance failure is stop-the-line, theory adjudicates.
