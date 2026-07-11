@@ -1,7 +1,7 @@
-# The measure algorithms (M1–M3)
+# The measure algorithms (M1–M4)
 
 What the code computes and why it is sound, at the level of the paper
-(`research_notes/sos_measure.md`, §3–§4.2). Notation: `𝒞` the classes,
+(`research_notes/sos_measure.md`, §3–§4.2, §5). Notation: `𝒞` the classes,
 `[ε]` the adjoined identity, `S = 𝒞 \ {[ε]}`, `p` a full-support
 rational Bernoulli measure on `Σ`.
 
@@ -198,3 +198,64 @@ dumps across `p`'s and a difference is a stop-the-line finding.
 `ltl_up_to_null` is aperiodicity of the quotient monoid — the classify
 orbit scan (`is_aperiodic`), run on the quotient before the final
 `reduce`.
+
+## 10. The entropy (`entropy.py`)
+
+Paper Prop 5.1: `h(L) = log₂ ρ(A)` with `A` the **letter-count matrix**
+on the live classes — `Live` is the calculus liveness scan
+(`live(table, P)`: the classes with a nonempty residual), and
+`A[c][c'] = |{a ∈ Σ : M(c, λ(a)) = c'}|`, restricted to `Live × Live`.
+This is the only float-bearing computation in the package, and the
+float is quarantined to the final `log₂`: everything up to the bracket
+on `ρ(A)` is exact `Fraction` arithmetic, returned as a replayable
+certificate (the live set, the irreducible blocks, each block's exact
+rational bracket).
+
+`A` is reducible whenever some live class is transient among live
+classes — the common case — and on a reducible matrix a single
+Collatz–Wielandt bracket never tightens (on `diag(2, 1)` every positive
+`v` gives min-ratio 1 and max-ratio 2, forever). So the computation is
+per irreducible block [LM95 §4.4]: SCC-condense the live subgraph
+(edges `c → M(c, λ(a))` inside `Live`; `kernel._sccs`, reused) and take
+
+```
+ρ(A) = max over diagonal blocks B of ρ(A_B).
+```
+
+Per block: a singleton with no self-loop is nilpotent (`ρ = 0`,
+skipped); a singleton with self-loops has `ρ = A[c][c]` exactly, width
+0. A nontrivial block `B` is irreducible by construction; `B' := I +
+A_B` is then primitive and `ρ(A_B) = ρ(B') − 1` (a nonnegative shift).
+Power-iterate `v ↦ B'·v` from `v = (1, …, 1)`: for EVERY strictly
+positive `v`, Collatz–Wielandt puts `ρ(B')` in
+`[min_j (B'v)_j/v_j, max_j (B'v)_j/v_j]`, so soundness never depends
+on convergence; primitivity contracts the bracket geometrically. The
+brackets of successive iterations are intersected (each is valid on
+its own `v`). Iteration stops when the width drops under `10⁻⁹` or at
+10 000 steps — a non-converged bracket is still a valid enclosure,
+reported as a datum.
+
+To cap `Fraction` bit growth, `v` is kept in fixed point: strictly
+positive integer numerators over the common denominator `10⁴⁰`
+(renormalized by the max entry and floored each step, clamped `≥ 1`).
+This is the spec's `limit_denominator(10**40)` rounding realized on a
+common denominator — per-entry denominators make the exact products
+`B'·v` blow up through their lcm — and it inherits the same soundness
+argument: rounding only perturbs `v`, which stays strictly positive,
+so every step's bracket is still exact CW on the `v` actually used;
+only convergence speed is affected.
+
+`h_lo, h_hi := log₂` of the exact bracket ends, each widened one
+`math.nextafter` ulp outward — the ONLY float step. `Live = ∅` (iff
+`L = ∅`) short-circuits to `h = 0` exactly with width 0 (paper §5
+convention). If `L ≠ ∅` every live class has a live letter-successor
+(peel one letter off a witnessing continuation; for a stem `c` with
+linked loop `e = fold(a·z')`, `c·λ(a)·fold(z') = c·e = c`), so the
+live subgraph has a cycle and `ρ ≥ 1` — a violation convicts the
+liveness scan, asserted in the gate, not silently absorbed.
+
+The closure law `h(cl(L)) = h(L)` is checked structurally, never on
+floats: `cl` is the calculus `safety_closure` on the same table, and
+the gate asserts `Live(cl(L)) = Live(L)` as sets and the letter-count
+submatrices identical — Prop 5.1's entropy then agrees by
+construction.

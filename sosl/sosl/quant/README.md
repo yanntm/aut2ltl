@@ -14,11 +14,15 @@ From one invariant `I(L) = (C, key, λ, M, P)` this package computes:
   a language at distance 0 from `L` (`shadow`);
 - the **essential form** — the canonical representative of `L` up to
   null sets, and its LTL-up-to-null verdict (`essential`,
-  `ltl_up_to_null`).
+  `ltl_up_to_null`);
+- the **entropy** `h(L) = log₂ ρ(A)` as a certified enclosure: an exact
+  rational bracket on the spectral radius of the live letter-count
+  matrix (per-irreducible-block Collatz–Wielandt), floats only in the
+  final `log₂`, one ulp widened outward (`entropy`).
 
 Normative math: `research_notes/sos_measure.md` (Lemmas 3.1–3.3,
-Theorem 3.4, §4.1–§4.2); working spec: `research_notes/sos_measure_spec.md`
-(M1–M3). The *why it is correct* lives in `algorithm.md` next to this file.
+Theorem 3.4, §4.1–§4.2, §5); working spec: `research_notes/sos_measure_spec.md`
+(M1–M4). The *why it is correct* lives in `algorithm.md` next to this file.
 
 ## Contract
 
@@ -54,6 +58,7 @@ Theorem 3.4, §4.1–§4.2); working spec: `research_notes/sos_measure_spec.md`
 | `distance.py` | `d_p` = measure of the pair-set xor on the materialized aligned product; `DistanceResult` with the null-disagreement bit |
 | `shadow.py` | Prop 4.1 stem-region surgery on the invariant's own table, then `reduce` |
 | `essential.py` | Thm 4.4: value-vector congruence, held-out-identity quotient, shadow read-off, `reduce`; `ltl_up_to_null` aperiodicity verdict |
+| `entropy.py` | Prop 5.1: live letter-count matrix, per-block Collatz–Wielandt enclosure of `ρ(A)`, `EntropyResult` certificate; the quarantined `log₂` |
 
 ## Tests
 
@@ -81,3 +86,15 @@ Placed scripts under `sosl/tests/quant/`, run from `sosl/`:
   consistency), `... A.sos B.sos C.sos` (triangle inequality); same
   `--pairs` / `--triples` / `--list` / `--aggregate` shape (renders
   `reference/quant/m3_laws.{md,csv...}`).
+- `python3 -m tests.quant.fixtures3` — fixtures F-J through F-L
+  (exact `ρ` on `Σ^ω` and `a^ω`; the golden-mean shift certified in
+  fractions by the sign test on `ρ² = ρ + 1`).
+- `python3 -m tests.quant.m4_gate PATH.sos` (per-case entropy laws:
+  emptiness, `1 ≤ ρ_lo`, `ρ_hi ≤ |Σ|`, structural `h(cl(L)) = h(L)`)
+  and `... A.sos B.sos` (monotonicity under detected inclusion); same
+  `--pairs` / `--list` / `--aggregate` shape (renders
+  `reference/quant/m4_entropy.{md,csv...}`).
+- `python3 -m tests.quant.m3b_gate A.sos B.sos` — the Thm 4.4(2)
+  biconditional on one pair: byte-equal reduced essentials ⟺ all-zero
+  aligned xor-profile; `--aggregate` renders
+  `reference/quant/m3b_thm442.{md,csv}` (runs on M3's pair sample).
