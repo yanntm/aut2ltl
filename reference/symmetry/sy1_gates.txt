@@ -1,0 +1,11 @@
+gate 1 (group law + pin): OK
+  FIX_A/f0 not a symmetry; witness lasso stem=() loop=(0,) (letters as ('a', 'b')-masks)
+  FIX_A/t01 not a symmetry; witness lasso stem=() loop=(1,) (letters as ('a', 'b')-masks)
+gate 2–4 (FIX_A): OK (0.3s)
+  FIX_B/f1 not a symmetry; witness lasso stem=() loop=(2,) (letters as ('a', 'b')-masks)
+  FIX_B/f0 not a symmetry; witness lasso stem=() loop=(1,) (letters as ('a', 'b')-masks)
+gate 2–4 (FIX_B): OK (0.2s)
+  FIX_C/f0 not a symmetry; witness lasso stem=() loop=(0,) (letters as ('a',)-masks)
+gate 2–4 (FIX_C): OK (0.0s)
+gate 5–6 (commutation + cross-oracle, 53 cases): OK
+SY1 gates 1–6: ALL OK
