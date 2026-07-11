@@ -862,14 +862,16 @@ Figure 1(a) was pure presentation; Theorem 4.5's quotient is where it dies.
 
 ---
 
-**Definition 5.2 (right Cayley graph).** `Cay(L)` is the rooted labeled graph
-with nodes `𝒞`, root `[ε]`, and an edge `s →ᵃ M(s, λ(a))` for each `s ∈ 𝒞`,
-`a ∈ Σ`. It is a function of `(𝒞, λ, M)` alone; reading `w` from the root ends
-at `[w]`, so every node is reachable (its shortlex key spells a path to it),
-and each node has exactly one out-edge per letter — a deterministic, complete
-automaton structure on the classes, the right regular representation of
-`S(L)₊¹`. Where `M` is the algebra as a table, `Cay(L)` is the same algebra as
-a machine; the procedures of §7 walk it rather than the raw table.
+**Definition 5.2 (right Cayley graph).** `Cay(L)` is the graph with nodes `𝒞`,
+root `[ε]`, and an edge `s →ᵃ M(s, λ(a))` for each `s ∈ 𝒞`, `a ∈ Σ` — the
+right regular representation of `S(L)₊¹`, a function of `(𝒞, λ, M)` alone.
+Every node is reachable from the root (its shortlex key spells the path) and
+carries one out-edge per letter: the algebra of `M`, as a machine.
+
+Rooted, deterministic, and complete, `Cay(L)` is the skeleton of an automaton
+with state set `𝒞`; an Emerson–Lei acceptance on its edges, derived from `P`,
+would complete it into a canonical — not minimal — deterministic automaton for
+`L`. We leave the extraction as a prospect.
 
 **Proposition 5.3 (residuals are derived data).** The residual `u⁻¹L` depends
 only on the class `[u]`; write `L_s` for the residual of `s ∈ 𝒞` (so
