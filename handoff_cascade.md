@@ -17,13 +17,17 @@ that). Mission: `research_notes/bls_cascade_spec.md` (K-E0..E7). Ledger:
   numbers are being re-measured on the extended frame; the draft/ledger
   numbers are STALE until that pass lands.
 - **K-E1 RERUN IN FLIGHT** (extended census, patched decider — the pre-patch
-  closure had a loop bug; its partial rows are suspect). ⚠ The pre-patch
-  partial run showed **56 raw CONFLICTs, 26 on APERIODIC layers**. If any
-  survives ALG-7 verification (member toggle + non-conjugacy, K-F9 style,
-  `k_e7_triage`) it is an **in-frame floor inhabitant** and the
-  "floor empty on the census frame" claim (K-F7/K-F9, draft C.2/C.19/C.7)
-  FALLS. Triage BEFORE editing any claim. Non-aperiodic conflicts are the
-  expected group escape (EvenBlocks-style), unremarkable.
+  closure had a loop bug; its partial rows were discarded). ⚠ **K-F12
+  CONFIRMED on the first specimen**: `2state2ap1acc_parity_3772037665`
+  (13 classes, aperiodic, Wagner (ω³,σ), frozen singleton layers 5/7) has an
+  ALG-7-verified GENUINE width-0 (C)-conflict (= plain-(B) failure in-frame,
+  Lemma C.10) — probe `python3 -m tests.cascade.k_e1_verify <id> <layer> <k>`
+  (committed). The "floor empty on the census frame" claim (K-F7/K-F9, draft
+  C.2/C.19/C.7) FALLS; PAPER-EDIT queued behind the full rerun tally.
+  Remaining aperiodic CONFLICT rows still need per-specimen ALG-7 triage;
+  non-aperiodic ones are the expected group escape (EvenBlocks-style).
+  Every-width failure (full C.12′ floor membership) not yet established
+  (k≥1 BUDGET) — structural analysis TODO.
 - **K-E3 RERUN DONE** (extended): 5050 (C)-decided final layers at k≤3;
   one-sidedness over the 74 ≥2-class-family layers: 16 up / 16 down /
   28 both / 14 neither — still balanced; up=down is forced by complement
