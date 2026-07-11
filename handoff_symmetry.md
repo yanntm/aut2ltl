@@ -48,10 +48,22 @@ their named sections.
   Thomas79, KR65, ES96, CEFJ96, ID96, Pel93, Godefroid-thesis,
   PW97, Straubing94, and (unread, relevant to queue items 2–3)
   Diekert–Gastin 2008, Diekert–Kufleitner 2009, Thérien–Weiss 86,
-  Thérien–Wilke 01. Still to fetch (user grabs; we do not cite
-  without reading): Etessami00, Diekert–Muscholl 94, Gastin–Petit 95
-  (Book of Traces), Straubing–Thérien–Thomas 95, Emerson–Trefler
-  (virtual symmetry — positions §7.4).
+  Thérien–Wilke 01. Fetched 2026-07-11 (renamed + .txt extracted):
+  Etessami_2000_IPL, Diekert_Muscholl_1994_ActaInf (pp. 379–397),
+  Gastin_Petit_1995_BookOfTraces, Sistla_Godefroid_2004_TOPLAS
+  (reduced symmetry — closest prior art to §7.4),
+  Emerson_Havlicek_Trefler_2000_LICS (virtual symmetry),
+  Moeller_Mohnke_Weber_1993_ICCAD, Wilke_1991_ICALP;
+  Straubing_Therien_Thomas_1995_IC.pdf is a bitmap scan — NO text
+  extract yet (user has another route), identity unverified. Still
+  to fetch (user grabs; we do not cite without reading; PREFER
+  PAPERS or single chapters — whole books are hard to get):
+  Baziramwabo–McKenzie–Thérien LICS'99 (modular temporal logic —
+  may settle §6.1's conjecture), Emerson–Trefler CHARME'99 [ET99],
+  Weeg 62 / Fleck 62 / Bavel 68 (automata automorphisms, folklore
+  trail for Thm 3.1), Pin "Syntactic semigroups" (Handbook of
+  Formal Languages ch. 10, 1997 — the paper-sized Eilenberg/Almeida
+  substitute).
 - Engineering: SY1 accepted; `sosl.sos.symmetry` exists (sigma.py:
   SignedPerm, apply_perm, both checks, kernel read-off, obstruction).
   Fixtures live in `sosl/tests/symmetry/fixtures.py`; gates + census
