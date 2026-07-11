@@ -23,26 +23,22 @@ only the file and section named for the task at hand — nothing else.
   awaiting E-campaign data. References grounded in `papers/` (two
   placeholders pending: PRISM CAV'11, Chatterjee–Doyen–Henzinger
   ToCL'10 — do not cite them until in library and read).
-- **Engineering: M1 and M2 DONE, both accepted.** Engine in
-  `sosl/sosl/quant/` (`chain`/`kernel`/`theta`/`measure` + `routea`;
-  placement provisional, to move under `sosl/sosl/sos/` on some later
-  go-ahead). M1: fixtures exact under two `p`'s, flip law 4248/4248
-  (`reference/quant/m1_measure.{md,csv}`, finding F-M1). M2: Route A
-  oracle agrees exactly 4248/4248 under both `p`'s, zero skips (L1);
-  L2/L3 994/1000 pairs green, 0 red, 6 budget-blown (a datum); L4/L5
-  6220/6220 on the grown corpus
-  (`reference/quant/m2_oracle.{md,csv}`, `m2_laws.{md}` + csvs,
-  finding F-M2). Theory reply: accepted, θ-blindness caveat
-  discharged, Theorem 3.4 corpus-tested.
+- **Engineering: M1, M2 DONE and accepted; M3 DONE, F-M3 filed,
+  awaiting theory reply.** Engine in `sosl/sosl/quant/`
+  (`chain`/`kernel`/`theta`/`measure` + `routea` + `distance`/`shadow`/
+  `essential`; placement provisional, to move under `sosl/sosl/sos/` on
+  some later go-ahead). M1: flip law 4248/4248 (F-M1). M2: Route A
+  oracle exact 4248/4248, laws L2–L5 green (F-M2; accepted, Thm 3.4
+  corpus-tested). M3: fixtures F-D..F-I green (F-D/F-E were owed by M2,
+  built at M3 start; F-G control held); cases 6222/6222 (Prop 4.5
+  byte-exact on all), pairs 993/1000, triples 497/500, 0 red anywhere
+  (`reference/quant/m3_laws.md` + csvs, finding F-M3). Census data:
+  5660/6222 LTL-up-to-null, 1922 of them carrying a measure-invisible
+  group; essential trivial on 5164.
 
 ## TODO — the open items, in order
 
-1. **M3 (spec §9) — the current engineering work order.** Distance
-   `d_p` on aligned tables; `shadow`
-   (fixtures F-F positive, F-G negative control — do NOT "fix" F-G);
-   `essential` + `ltl_up_to_null` (fixtures F-H repair, F-I ℤ/2;
-   Prop 4.5 law: byte-equality across `p`'s, stop-the-line if
-   violated).
+1. **Theory reply to F-M3** — then M4 becomes the work order.
 2. **M4 (spec §10)** — entropy; the only float-bearing module
    (certified Collatz–Wielandt enclosure); `h(cl(L)) = h(L)` asserted
    structurally, not on floats.
