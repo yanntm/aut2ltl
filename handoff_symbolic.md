@@ -15,7 +15,7 @@ work items + pointers only**; the report is the ledger.
    (C1–C10 components, E0–E9 experiments, M1–M5 milestones); its
    *State of play* block is current.
 3. `research_notes/sos_symbolic_report.md` — the ledger, findings
-   F1–F16: every measured/green claim, plus recorded gaps.
+   F1–F20: every measured/green claim, plus recorded gaps.
 4. `research_notes/sos_symbolic.md` — the paper. Engine results are
    integrated (current-state voice, no history); 3 `⟨TBD⟩`s remain,
    all waiting on E-series data. Hard data claims belong in the
@@ -39,7 +39,15 @@ work items + pointers only**; the report is the ledger.
   `squaring_test` (C4 shortcut), `residuals_test` (C5; `stem` = the
   seed≠gfp witness), `congruence_test` (C6; ebeb 256→37),
   `conformance_test` (C7 byte gate, Spot-backed; `conformance_diff.py`
-  = side-by-side probe). Logs → `tests/sos_sdd/logs/`, never /tmp.
+  = side-by-side probe), `hoa_bridge_test` (C2 parser half: round-trip
+  + corpus byte-parity). Logs → `tests/sos_sdd/logs/`, never /tmp.
+- **Sweeps are NEVER one process** (OOM'd once, near machine crash:
+  libDDD's unique table is never GC'd, diagrams accumulate across
+  instances). `e1_census.py --isolate` = per-instance subprocess under
+  `aut2ltl.bounded` (unconditional SIGKILL backstop — the C++ core
+  observes no signals), CSV-resume built in; `--shard k/N` = cluster
+  fan-out (~300 jobs, per-shard CSV). The user wants corpus-scale
+  sweeps on the cluster, not the local machine.
 
 ## Current state (all committed, all gates green)
 
@@ -58,15 +66,19 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
 
 ## Work items (in order)
 
-1. ⏳ **E1 census wiring** — HOA→`Automaton` digest bridge, then the
-   census sweep. HOA parsing exists in-repo (`sosl/sosl/sos/build/
-   importer.py` is Spot-backed; a pure parser may be preferable —
-   check `genaut/`); corpus at `genaut/corpus/flat_canon/`. Drivers
-   are placed scripts writing per-instance JSONL + a CSV row per case;
-   budgets per instance, blown budgets are findings with the layer
-   profile. E1 also unlocks the C5 cross-check vs the explicit tool's
-   residual classes (Spot `language_map`) and widens the C7
-   conformance instance set — close both recorded gaps when it lands.
+1. ✅ **E1 census done** (F17–F20): bridge = `sos_sdd/hoa.py`
+   (`digest_twa`, verbatim; import via standard APIs), driver =
+   `tests/sos_sdd/e1_census.py`, data =
+   `tests/sos_sdd/reference/e1_census.csv`. Conformance green on all
+   6102 completed corpus instances (byte-parity vs the precomputed
+   `flat_canon/sos/` tier — det/sos are a self-consistent pair, no
+   reference runs); 120 TIME_BUDGET at 10 s (1.9 %, mostly
+   `3state2ap2acc_parity`; phases 1/3/5/2 = 52/32/21/15 — the
+   Phase-3/5 kills contradict E5's "cheap" prediction, revisit at E5).
+   Left open from E1's scope: the C5 cross-check probe vs the explicit
+   tool's residual classes (Spot `language_map`) — unblocked by the
+   bridge, not written; the constant/shared-slot and
+   mark-upward-closure covariate columns (§4.2) in the CSV.
 2. ⏳ **C9/C10** — remaining engine switches (fp disciplines `chaining`
    / `saturation`, split slot encodings, slot permutations — E7/E8's
    axes) and the §6 calculus operators (member / Boolean algebra /
