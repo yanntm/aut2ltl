@@ -243,6 +243,7 @@ class Decision:
     n_collected: int
     max_states: int
     budget_bases: List[Tuple[int, Node]]
+    closures: Dict[Tuple[int, Node], Closed]  # per-base CL(x), for the K-E7 scan
 
     @property
     def budget(self) -> bool:
@@ -322,6 +323,7 @@ def decide(inv: Invariant, R: FrozenSet[int], k: int,
     verdicts: Dict[FrozenSet[Edge], Set[bool]] = defaultdict(set)
     proj_of: Dict[FrozenSet[Edge], FrozenSet[Tuple[int, ...]]] = {}
     budget_bases: List[Tuple[int, Node]] = []
+    closures: Dict[Tuple[int, Node], Closed] = {}
     max_states = 0
     for c in sorted(R):
         cone = build_cone(inv, R, c, k, sigma)
@@ -331,6 +333,7 @@ def decide(inv: Invariant, R: FrozenSet[int], k: int,
             if cl is None:
                 budget_bases.append((c, x))
                 continue
+            closures[(c, x)] = cl
             max_states = max(max_states, len(cl))
             entry_st = est.get(x, frozenset())
             for F, d in cl:
@@ -349,5 +352,5 @@ def decide(inv: Invariant, R: FrozenSet[int], k: int,
     return Decision(
         k=k, verdicts=dict(verdicts), groups=dict(groups),
         n_collected=len(verdicts), max_states=max_states,
-        budget_bases=budget_bases,
+        budget_bases=budget_bases, closures=closures,
     )
