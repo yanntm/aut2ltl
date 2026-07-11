@@ -256,6 +256,23 @@ stream.
   digest that exceeds it (reachable in flat coordinates on scaling
   families) instead of silently wrapping. Escape hatches, in order: a
   split encoding, or recompiling libDDD with a wider `val_t`.
+- **Slot permutations (C9 `slot_perm`)**: the E3/E7 variable-order
+  switch is an *indirection, never a re-semantics*: slot `i` (the unit
+  of all payload semantics — `block_base` arithmetic, accept tables,
+  class maps) is stored at DDD variable `var_of[i]`; `"natural"` is the
+  identity, `"reverse"` is `n-1-i`, an explicit list is any bijection
+  on the slots. The ExprHom case splits are untouched — they name
+  variables (`x_q`/`y_q`/`r_q`/`w_q`) and resolve through the
+  `GalOrder`, whose label list simply places each name at its permuted
+  variable (the label-list index *is* the DDD variable number). The
+  `Hom_Basic` bricks and diagram builders route through `var_of`; the
+  derived spaces inherit the perm blockwise (pair space: `x_i` at
+  `var_of[i]`, `y_i` at `n + var_of[i]`; squaring space: `w_i`/`r_i`
+  at `2·var_of[i]` / `2·var_of[i]+1` — the dupe gadget stays
+  positional). Every explicit reading un-permutes back to slot order,
+  so the perm is invisible outside node/time measurements and byte
+  parity holds under every perm — the gate asserts exactly that
+  (`tests/sos_sdd/slotperm_test.py`).
 - **Canonical keying**: normative constraints in
   `sosl/sosl/sos/io/sos_format.md` — AP order lexicographic by name,
   letter order = characteristic tuple over the APs with `0 < 1`
