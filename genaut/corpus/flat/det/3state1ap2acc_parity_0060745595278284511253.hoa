@@ -1,0 +1,27 @@
+HOA: v1
+States: 6
+Start: 0
+AP: 1 "a"
+acc-name: parity min odd 3
+Acceptance: 3 Fin(0) & (Inf(1) | Fin(2))
+properties: trans-labels explicit-labels trans-acc complete
+properties: deterministic
+--BODY--
+State: 0
+[t] 1
+State: 1
+[!0] 2
+[0] 1 {0}
+State: 2
+[!0] 3
+[0] 4 {2}
+State: 3
+[!0] 5 {1}
+[0] 1
+State: 4
+[!0] 5 {1}
+[0] 1 {2}
+State: 5
+[!0] 5 {1}
+[0] 4
+--END--

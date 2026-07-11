@@ -1,0 +1,6 @@
+CAT v1
+ltl: yes
+stutter: invariant
+phi: omega,pi
+coords: 1 0 0 -1
+class: properly Fσ — DCA-proper

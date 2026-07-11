@@ -1,0 +1,6 @@
+CAT v1
+ltl: no
+stutter: sensitive
+phi: omega^4,sigma
+coords: 3 4 -1 0
+class: degree (omega^4, sigma)

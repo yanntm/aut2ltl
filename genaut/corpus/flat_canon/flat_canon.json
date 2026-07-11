@@ -3,10 +3,10 @@
   "excluded": [
     "2state2ap0acc"
   ],
-  "sources": 17,
-  "primal_langs": 2212,
-  "dual_langs": 2036,
-  "total_langs": 4248,
+  "sources": 30,
+  "primal_langs": 3212,
+  "dual_langs": 3008,
+  "total_langs": 6220,
   "rows": [
     {
       "source": "1state1ap0acc",
@@ -174,6 +174,28 @@
       "cumulative": 1764
     },
     {
+      "source": "1state2ap3acc_parity__seedcurated",
+      "n": 1,
+      "k": 2,
+      "c": 3,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 5,
+      "new_langs": 5,
+      "cumulative": 1769
+    },
+    {
+      "source": "1state3ap2acc_parity__seedcurated",
+      "n": 1,
+      "k": 3,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 8,
+      "new_langs": 8,
+      "cumulative": 1777
+    },
+    {
       "source": "2state1ap2acc_parity__seed0",
       "n": 2,
       "k": 1,
@@ -182,7 +204,51 @@
       "exhaustive": false,
       "scanned": 591,
       "new_langs": 243,
-      "cumulative": 2007
+      "cumulative": 2020
+    },
+    {
+      "source": "2state1ap2acc_parity__seedcurated",
+      "n": 2,
+      "k": 1,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 3,
+      "new_langs": 3,
+      "cumulative": 2023
+    },
+    {
+      "source": "2state2ap1acc_parity__seedcurated",
+      "n": 2,
+      "k": 2,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 57,
+      "new_langs": 57,
+      "cumulative": 2080
+    },
+    {
+      "source": "2state2ap2acc_parity__seedcurated",
+      "n": 2,
+      "k": 2,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 325,
+      "new_langs": 325,
+      "cumulative": 2405
+    },
+    {
+      "source": "2state3ap1acc_parity__seedcurated",
+      "n": 2,
+      "k": 3,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 156,
+      "new_langs": 156,
+      "cumulative": 2561
     },
     {
       "source": "3state1ap1acc__seed0",
@@ -193,21 +259,98 @@
       "exhaustive": false,
       "scanned": 500,
       "new_langs": 205,
-      "cumulative": 2212
+      "cumulative": 2766
+    },
+    {
+      "source": "3state1ap1acc_parity__seedcurated",
+      "n": 3,
+      "k": 1,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 70,
+      "new_langs": 70,
+      "cumulative": 2836
+    },
+    {
+      "source": "3state1ap2acc_parity__seedcurated",
+      "n": 3,
+      "k": 1,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 51,
+      "new_langs": 51,
+      "cumulative": 2887
+    },
+    {
+      "source": "3state2ap1acc_parity__seedcurated",
+      "n": 3,
+      "k": 2,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 42,
+      "new_langs": 42,
+      "cumulative": 2929
+    },
+    {
+      "source": "3state2ap2acc_parity__seedcurated",
+      "n": 3,
+      "k": 2,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 203,
+      "new_langs": 203,
+      "cumulative": 3132
+    },
+    {
+      "source": "4state1ap1acc_parity__seedcurated",
+      "n": 4,
+      "k": 1,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 40,
+      "new_langs": 40,
+      "cumulative": 3172
+    },
+    {
+      "source": "4state1ap2acc_parity__seedcurated",
+      "n": 4,
+      "k": 1,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 9,
+      "new_langs": 9,
+      "cumulative": 3181
+    },
+    {
+      "source": "4state2ap1acc_parity__seedcurated",
+      "n": 4,
+      "k": 2,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 31,
+      "new_langs": 31,
+      "cumulative": 3212
     }
   ],
   "by_family": {
     "gba": 1949,
-    "parity": 263
+    "parity": 1263
   },
   "by_exhaustive": {
     "exhaustive": 1764,
-    "sampled": 448
+    "sampled": 1448
   },
   "by_colours": {
     "0": 1393,
-    "1": 534,
-    "2": 285,
-    "3": 0
+    "1": 930,
+    "2": 884,
+    "3": 5
   }
 }

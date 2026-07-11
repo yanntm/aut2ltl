@@ -1,0 +1,6 @@
+CAT v1
+ltl: yes
+stutter: invariant
+phi: 3,sigma
+coords: 0 0 2 3
+class: degree (3, sigma)

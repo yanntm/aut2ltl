@@ -3,8 +3,8 @@
   "excluded": [
     "2state2ap0acc"
   ],
-  "sources": 17,
-  "total_langs": 4110,
+  "sources": 30,
+  "total_langs": 5110,
   "rows": [
     {
       "source": "1state1ap0acc",
@@ -172,6 +172,28 @@
       "cumulative": 3326
     },
     {
+      "source": "1state2ap3acc_parity__seedcurated",
+      "n": 1,
+      "k": 2,
+      "c": 3,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 5,
+      "new_langs": 5,
+      "cumulative": 3331
+    },
+    {
+      "source": "1state3ap2acc_parity__seedcurated",
+      "n": 1,
+      "k": 3,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 8,
+      "new_langs": 8,
+      "cumulative": 3339
+    },
+    {
       "source": "2state1ap2acc_parity__seed0",
       "n": 2,
       "k": 1,
@@ -180,7 +202,51 @@
       "exhaustive": false,
       "scanned": 591,
       "new_langs": 464,
-      "cumulative": 3790
+      "cumulative": 3803
+    },
+    {
+      "source": "2state1ap2acc_parity__seedcurated",
+      "n": 2,
+      "k": 1,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 3,
+      "new_langs": 3,
+      "cumulative": 3806
+    },
+    {
+      "source": "2state2ap1acc_parity__seedcurated",
+      "n": 2,
+      "k": 2,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 57,
+      "new_langs": 57,
+      "cumulative": 3863
+    },
+    {
+      "source": "2state2ap2acc_parity__seedcurated",
+      "n": 2,
+      "k": 2,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 325,
+      "new_langs": 325,
+      "cumulative": 4188
+    },
+    {
+      "source": "2state3ap1acc_parity__seedcurated",
+      "n": 2,
+      "k": 3,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 156,
+      "new_langs": 156,
+      "cumulative": 4344
     },
     {
       "source": "3state1ap1acc__seed0",
@@ -191,21 +257,98 @@
       "exhaustive": false,
       "scanned": 500,
       "new_langs": 320,
-      "cumulative": 4110
+      "cumulative": 4664
+    },
+    {
+      "source": "3state1ap1acc_parity__seedcurated",
+      "n": 3,
+      "k": 1,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 70,
+      "new_langs": 70,
+      "cumulative": 4734
+    },
+    {
+      "source": "3state1ap2acc_parity__seedcurated",
+      "n": 3,
+      "k": 1,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 51,
+      "new_langs": 51,
+      "cumulative": 4785
+    },
+    {
+      "source": "3state2ap1acc_parity__seedcurated",
+      "n": 3,
+      "k": 2,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 42,
+      "new_langs": 42,
+      "cumulative": 4827
+    },
+    {
+      "source": "3state2ap2acc_parity__seedcurated",
+      "n": 3,
+      "k": 2,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 203,
+      "new_langs": 203,
+      "cumulative": 5030
+    },
+    {
+      "source": "4state1ap1acc_parity__seedcurated",
+      "n": 4,
+      "k": 1,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 40,
+      "new_langs": 40,
+      "cumulative": 5070
+    },
+    {
+      "source": "4state1ap2acc_parity__seedcurated",
+      "n": 4,
+      "k": 1,
+      "c": 2,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 9,
+      "new_langs": 9,
+      "cumulative": 5079
+    },
+    {
+      "source": "4state2ap1acc_parity__seedcurated",
+      "n": 4,
+      "k": 2,
+      "c": 1,
+      "family": "parity",
+      "exhaustive": false,
+      "scanned": 31,
+      "new_langs": 31,
+      "cumulative": 5110
     }
   ],
   "by_family": {
     "gba": 3608,
-    "parity": 502
+    "parity": 1502
   },
   "by_exhaustive": {
     "exhaustive": 3326,
-    "sampled": 784
+    "sampled": 1784
   },
   "by_colours": {
     "0": 1699,
-    "1": 1864,
-    "2": 546,
-    "3": 1
+    "1": 2260,
+    "2": 1145,
+    "3": 6
   }
 }

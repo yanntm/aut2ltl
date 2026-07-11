@@ -1,0 +1,6 @@
+CAT v1
+ltl: no
+stutter: sensitive
+phi: 1,pi
+coords: 0 0 1 0
+class: properly closed — safety

@@ -1,0 +1,6 @@
+CAT v1
+ltl: yes
+stutter: sensitive
+phi: 4,pi
+coords: 0 0 4 3
+class: degree (4, pi)
