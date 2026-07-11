@@ -307,6 +307,43 @@ PYBIND11_MODULE(_core, m) {
           },
           py::arg("limit") = 100000,
           "Every ~-class as explicit element tuples (test/debug reading).")
+      .def(
+          "fork",
+          [](const SoSCore &s, const std::string &name) {
+            return s.fork(name);
+          },
+          py::arg("name") = "",
+          "A derived core sharing Phases 0-2 with this one, its "
+          "Acc-dependent phases (3-5) unrun (same-table calculus).")
+      .def(
+          "residuate",
+          [](SoSCore &s, const py::object &stats,
+             const std::vector<int> &mark_bits,
+             const std::vector<int> &block_base,
+             const std::vector<std::vector<int>> &accept,
+             long long node_budget, double time_budget, int until_phase) {
+            Stats st = make_stats(stats);
+            s.residuate(st, PackInfo{mark_bits, block_base}, accept,
+                        node_budget, time_budget, until_phase);
+          },
+          py::arg("stats"), py::arg("mark_bits"), py::arg("block_base"),
+          py::arg("accept"), py::arg("node_budget") = 0,
+          py::arg("time_budget") = 0.0, py::arg("until_phase") = 4,
+          "Run Phases 3-4 under an accept table (write-once; fork() to "
+          "derive under another).")
+      .def(
+          "congruence",
+          [](SoSCore &s, const py::object &stats,
+             const std::vector<int> &mark_bits,
+             const std::vector<int> &block_base, long long node_budget,
+             double time_budget) {
+            Stats st = make_stats(stats);
+            s.congruence(st, PackInfo{mark_bits, block_base}, node_budget,
+                         time_budget);
+          },
+          py::arg("stats"), py::arg("mark_bits"), py::arg("block_base"),
+          py::arg("node_budget") = 0, py::arg("time_budget") = 0.0,
+          "Run Phase 5 on the Phase 3-4 products (write-once).")
       .def_property_readonly("depth", &SoSCore::depth)
       .def_property_readonly(
           "layers", [](const SoSCore &s) { return profile_to_py(s.profile()); })

@@ -165,11 +165,32 @@ public:
             .count();
   }
 
+  // A derived core sharing the acceptance-free table (Phases 0-2:
+  // letter homs, EM1 + layers, the crossing's pi) with this one, its
+  // Acc-dependent phases (3-5) unrun — the same-table calculus (§6.2)
+  // re-runs them under a different accept table. Sharing is by
+  // refcount (DDD/Hom) and shared_ptr (the crossing); nothing is
+  // recomputed or copied deeply.
+  SoSCore fork(const std::string &name) const {
+    require();
+    SoSCore c(*this);
+    if (!name.empty()) c.name_ = name;
+    c.resid_.reset();
+    c.cong_.reset();
+    c.resid_secs_ = 0.0;
+    return c;
+  }
+
   // Phases 3-4: the profile columns on pi's pair space, then (when
   // until_phase reaches 4) the residual refinement on the global states.
+  // Write-once: a core carries at most one accept table — fork() first
+  // to derive under another one.
   void residuate(Stats &st, const PackInfo &pack,
                  const std::vector<std::vector<int>> &accept,
                  long long node_budget, double time_budget, int until_phase) {
+    if (resid_)
+      throw std::logic_error(name_ + ": phase 3 already run — fork() to "
+                             "derive under another accept table");
     double remaining = 0.0;
     if (time_budget > 0) {
       remaining = time_budget - close_secs_ - cross_secs_;
@@ -189,6 +210,9 @@ public:
   // per-class reverse letter homs (slot-local only; no Comp).
   void congruence(Stats &st, const PackInfo &pack, long long node_budget,
                   double time_budget) {
+    if (cong_)
+      throw std::logic_error(name_ + ": phase 5 already run — fork() to "
+                             "derive under another accept table");
     double remaining = 0.0;
     if (time_budget > 0) {
       remaining = time_budget - close_secs_ - cross_secs_ - resid_secs_;
