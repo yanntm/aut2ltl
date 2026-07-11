@@ -168,12 +168,8 @@ def case_refuse() -> None:
             raise AssertionError(f"{reading} on a phase-2 object did not raise")
         except RuntimeError:
             pass
-    # Phases beyond the current ceiling are still refused loudly.
-    try:
-        Engine(square="off").build(DUPE, until_phase=6)
-        raise AssertionError("until_phase=6 was not refused")
-    except NotImplementedError:
-        pass
+    # Beyond-ceiling refusals live with the ceiling: phase-6 probes are
+    # conformance_test's (products, non-default quotient switch).
 
 
 CASES = {

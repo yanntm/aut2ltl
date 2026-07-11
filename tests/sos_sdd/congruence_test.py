@@ -104,12 +104,8 @@ def case_refuse() -> None:
             raise AssertionError(f"{reading} on a phase-4 object did not raise")
         except RuntimeError:
             pass
-    # Phase 6 and non-layered fp5 are still refused loudly.
-    try:
-        Engine(square="off").build(DUPE, until_phase=6)
-        raise AssertionError("until_phase=6 was not refused")
-    except NotImplementedError:
-        pass
+    # Non-layered fp5 is still refused loudly (phase-6 refusal probes
+    # are conformance_test's).
     try:
         Engine(square="off", fp5="saturation").build(DUPE, until_phase=5)
         raise AssertionError("fp5=saturation was not refused")
