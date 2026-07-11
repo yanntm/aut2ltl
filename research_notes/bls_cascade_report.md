@@ -12,55 +12,28 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
 
 ## Status
 
-- **K-E0 — gate: DONE, split verdict.** Step 5 (`G(a→F b)`) CONFIRMED; steps 1–3
-  (the floor witness `GF(a∧X((!a∧!b)U a))`) REFUTED — `PAPER-EDIT` on C.3.
-- **The paper edit landed** (theory thread, 2026-07-11): K-F2's read is
-  confirmed — the old C.3 derivation ran in the profile monoid, whose four
-  flagged profiles the syntactic quotient merges into a zero (10 → 7 classes,
-  frozen terminal layer). Consequence drawn on paper: Conjecture C.12 (both
-  halves) and C.17 are **refuted** by the floor witness (draft C.4,
-  Theorem C.12′); `G(a→Fb)` is the new C.3 worked witness; the floor witness
-  is C.5's fallback instance. Revised `bls_cascade.md` (banner, C.3–C.7),
-  `bls_cascade_spec.md` (K-E0 expectations, K-E1/E2/E4/E6/E7
-  re-scoped), main paper `sos_toltl.md` §5.1/§8.
-  **K-E1–K-E5: UNBLOCKED** under the revised spec.
-- **K-E0 COMPLETE** — all six steps green: steps 1–3 (revised expectations, via
-  the K-F2 paper edit), step 3 sandwich (K-F5), step 4 C3 (B)-cross (K-F6),
-  step 5 (K-F1), step 6 saturation (K-F4). The decider is validated five
-  independent ways.
-- **K-E1 DONE + K-E7 census map** — K-F7, K-F8 below. Every C3-undecided layer
-  decides under (C) at k≤3; no new floor inhabitant; no third verdict mechanism.
-- **K-E2 DONE (step 3, the decisive one)** — K-F9: the Prop C.19 transfer
-  specimen yields the **first moving-layer floor inhabitant** (verified genuine
-  (C)-conflicts at k=0,1, ALG-7 toggle + non-conjugate). Floor is empty on the
-  census frame, inhabited beyond it. Steps 1/2 subsumed by K-F7.
-- **K-E3 DONE** — K-F10: Cor C.9 stratum empty (0 of 132 prefix-independent
-  languages have a non-frozen final layer; prefix-independence ⟹ frozen final
-  layer); moving-layer one-sidedness balanced, not upward-dominant.
-- **K-E4 worked example DONE** — K-F11: config atoms match C.3, `Ω` emitted
-  DAG-only and conformance-gated ≡ `G(a→F b)`. Remaining K-E4: wire the emitter
-  into the production window engine for the full K-E1-decided-layer sweep + DG
-  size ledger.
-- **⚠ K-F12 — the extended corpus inhabits the floor IN-FRAME, at scale.**
-  The corpus grew 4248 → 6222 (campaign tier, Wagner ω³/ω⁴). All three
-  cluster passes are DONE (2026-07-11, data + regen:
-  `reference/cascade/k_series.md`): of 8786 census-undecided layers,
-  **6610 decide, all at k≤2** (6105/346/159; 0 verdict-splitting `other`);
-  of the 2176 heavy remainder, **1021 are genuine (C)@0-conflicts — every
-  one ALG-7-verified — 806 aperiodic / 215 group**; at k=1, **263 conflict
-  again (all genuine; 246 aperiodic)**, 118 are ladder-rescued, 640
-  budget-open. So K-F7's "0 conflicts" was a property of the old frame:
-  the aperiodic floor-track stratum is **≥246 in-frame layers failing (C)
-  at widths 0 and 1**. Every-width floor membership still needs the
-  structural absorption argument (or deeper passes). K-E3 rerun: 74
-  ≥2-class families, 16/16/28/14 (up/down tie forced by complement
-  closure); Cor C.9 stratum 0; pfxind 1104/1104 frozen.
-- **Next: the K-F7/F8/F10/F12 entry rewrite against `reference/cascade/`
-  and the K-F12 PAPER-EDIT** (draft C.2 remark, after-C.8 numbers, C.9
-  1104/1104, C.4 map + "floor empty on the census frame" FALLS, C.19
-  closing bold, C.7 §8 bullet; spec's stale input descriptions); then the
-  every-width question (structural absorption argument vs k=2 pass), K-E4
-  engine integration, K-E5, K-E6.
+Frame: `genaut/corpus/flat_canon` (6222 languages). Measurement data +
+regen: `reference/cascade/k_series.md`.
+
+- **K-E0 COMPLETE** (K-F1..F6): decider validated five independent ways;
+  C.12/C.17 refuted (K-F2, Theorem C.12′ on paper).
+- **K-E1 COMPLETE** (K-F7 coverage, K-F12 conflicts): 6610/8786 undecided
+  layers decide at k≤2; 1021 genuine (C)@0-conflicts (806 aperiodic), 263
+  persist at k=1 (246 aperiodic), 640 budget-open at k=1.
+- **K-E7 COMPLETE** (K-F8): absorption + group only, 0 verdict-splitting
+  `other` — no third mechanism.
+- **K-E2 COMPLETE** (K-F9): the C.19 transfer specimen is a moving-layer
+  floor inhabitant (beyond-frame construction).
+- **K-E3 COMPLETE** (K-F10): pfxind ⟹ frozen final layer, 1104/1104;
+  Cor C.9 stratum empty; one-sidedness 16/16/28/14 over 74 (up/down tie
+  structural: complement closure).
+- **K-E4 worked example done** (K-F11): emitter conformance-gated on
+  `G(a→F b)`; production wiring open.
+- **Open PAPER-EDIT (K-F12)**: the draft still says "floor empty on the
+  census frame" (C.2/C.19/C.7) and carries old-cut numbers — sites and
+  final numbers listed in `handoff_cascade.md` Theory todo 1.
+- **Open experiments**: k=2 pass on the 640 budget-open layers; K-E4
+  engine integration; K-E5; K-E6 — `handoff_cascade.md` Engineering todos.
 
 ---
 
@@ -181,46 +154,50 @@ limitation) does not arise on these layers.
 Command: `python3 -m tests.cascade.k_e0_bcross`. Log:
 `tests/cascade/logs/k_e0_bcross.txt`.
 
-## K-F7 — every C3-undecided layer decides under (C) at k≤3 — CONFIRMED
+## K-F7 — (C)-coverage of the census-undecided stratum: everything that decides does so at k≤2 — CONFIRMED
 
-Over the `flat_canon` census (4248 languages), C3 leaves **1164** final-layer
-readings `UNDECIDED` (cap/budget guard tripped). The exact config (C)-decider
-settles **all 1164** at width k≤3, **0 CONFLICT, 0 BUDGET**:
+Over the census (6222 languages), C3 leaves **8786** layer readings
+`UNDECIDED` (cap/budget guard tripped), on 2114 languages. The exact config
+(C)-decider, 60 s per language on the cluster:
 
-| decided width | aperiodic | non-aperiodic |
-|---|---|---|
-| k=0 | 438 | 476 |
-| k=1 |  94 |  62 |
-| k=2 |  94 |   0 |
+| outcome | layers |
+|---|--:|
+| (C) decides at k=0 | 6105 |
+| (C) decides at k=1 | 346 |
+| (C) decides at k=2 | 159 |
+| heavy stratum (language over 60 s; see K-F12) | 2176 |
 
-The stratum is **not** all frozen: 322 have `|R|=1` (frozen), 842 are moving
-(`|R|`=2..5). So dropping C3's window-grouping and running the exact loop-class
-closure relieves the cap everywhere — no census-undecided layer is a genuine
-(C)-conflict, so **Theorem C.12′'s floor is not extended by this stratum**. (Per
-C.7 §8: the coverage bullet is 1164/1164.)
+**Every layer that decides does so at width ≤ 2**; 505 of them conflict at
+k=0 yet decide at k=1/2 — the ladder's rungs doing real work. The heavy
+remainder is *not* undecided noise: K-F12 resolves it into genuine
+conflicts / clean / budget. (The earlier 4248-language cut of this
+experiment decided its whole stratum with zero conflicts; that was a
+property of the frame — its Wagner ceiling was ω² — not of the census
+axis.)
 
-Command: `python3 -m tests.cascade.k_e1_sweep tests/cascade/logs/census_flat_canon.jsonl genaut/corpus/flat_canon/sos --out tests/cascade/logs/k_e1.csv`
-(census regenerable by `python3 -m tests.sos2ltl.census_build genaut/corpus/flat_canon/sos --out tests/cascade/logs/census_flat_canon.jsonl`).
-Output: `tests/cascade/logs/k_e1.csv` (regenerable).
+Data + regen: `reference/cascade/k_series.md` (`k_e1_cluster.csv`; shard
+driver `tests/cascade/k_e1_one.py`, cluster recipe in
+`tests/cascade/README.md`).
 
 ## K-F8 — K-E7 census map: only absorption + group; no third verdict mechanism — CONFIRMED
 
-The sandwich scan piggybacked on every K-E1 layer, with both mandatory controls
-green (K-F5). Over the 1164-layer stratum:
+The sandwich scan piggybacked on every decided K-E1 layer (K-F7's 6610),
+with both mandatory controls green (K-F5). Failure-pair sums: **absorption
+14050** (aperiodic, one idempotent 𝒥-below the other — the floor-witness
+mechanism), **group 7387** (non-aperiodic), `other` 3076 (aperiodic,
+𝒥-equivalent idempotents whose sandwich still drops) — and **0 of the
+`other` are verdict-splitting**. A non-splitting sandwich failure is not a
+(C)-conflict ("the identity is stronger than (C)", draft C.4); these are
+ordinary aperiodic 𝒥-class drops, not a verdict mechanism.
 
-- **absorption** present on 234 layers (aperiodic, one idempotent 𝒥-below the
-  other — the floor-witness mechanism); **group** on 90 (non-aperiodic).
-- **`other`** (aperiodic, 𝒥-equivalent idempotents whose sandwich still drops)
-  present on 234 layers — but **0 of them verdict-splitting**. A non-splitting
-  sandwich failure is not a (C)-conflict ("the identity is stronger than (C)",
-  draft C.4); these are ordinary aperiodic 𝒥-class drops, not a verdict
-  mechanism.
+**No verdict-splitting `other` anywhere ⟹ no third mechanism** —
+consistent with C.4's two known mechanisms (group cancellation, zero
+absorption). The K-F12 conflict stratum confirms the same dichotomy from
+the other side: its aperiodic conflicts carry the verdict-splitting
+absorption signature (type specimen below), its non-aperiodic ones the
+group escape.
 
-**No verdict-splitting `other` anywhere ⟹ no third mechanism in this stratum**
-— consistent with C.4's two known mechanisms (group cancellation, zero
-absorption). The `other_split` column is the third-mechanism flag for K-E2.
-
-Command: same sweep as K-F7 (`other`, `other_split` columns).
+Data: `other`/`other_split` columns of `reference/cascade/k_e1_cluster.csv`.
 Triage: `python3 -m tests.cascade.k_e7_triage <id> <layer> <k> other`.
 
 ## K-F9 — Prop C.19 transfer specimen: first moving-layer floor inhabitant — CONFIRMED
@@ -247,34 +224,38 @@ fixed `G(c→F d)` recurrence, so it persists at every width structurally.
 Command: `python3 -m tests.cascade.k_e2_transfer`. Log:
 `tests/cascade/logs/k_e2_transfer.txt`.
 
-*(K-E2 steps 1/2 — the census frozen/moving stratum — are subsumed by K-F7: 0
-conflicts over the 1164 census-undecided layers. The floor is thus **empty on
-the census frame, inhabited beyond it** by the C.19 construction.)*
+*(K-E2 steps 1/2 — the census frozen/moving stratum — are answered by
+K-F7/K-F12 on the extended frame: the floor-track stratum is inhabited
+**in-frame** (K-F12), and the C.19 construction remains the worked
+beyond-frame **moving-layer** transfer of the mechanism.)*
 
 ## K-F10 — Cor C.9 stratum empty: prefix-independence forces a frozen final layer — CONFIRMED
 
 `PAPER-EDIT` (settles a ⟨TBD⟩, not a refutation): C.3's ⟨TBD⟩ "prefix-independence
 forces the final layer frozen" and Cor C.9's applicability.
 
-Decider-free scan of all 4248 census languages: of the **132 prefix-independent**
-ones, **0 have a non-frozen final layer** — every prefix-independent language's
-terminal layer is a frozen (all-neutral) SCC. So the Cor C.9 gating stratum
-(prefix-independent ∧ terminal 1-anchored **non-frozen** final layer ∧
-upward-closed ∧ parked-rejecting) is **empty on the census**: C.9's global bare-`Π₂`
-form has no instances, and the config ladder's one-sided win (Cor C.8) is
-confined to **non-prefix-independent** languages (e.g. `G(a→F b)`, K-F1). This is
-the K-F2 mechanism generalized: the pending bit cannot survive in a
-prefix-independent language's absorbing class.
+Decider-free scan of all 6222 census languages: of the **1104
+prefix-independent** ones, **0 have a non-frozen final layer** — every
+prefix-independent language's terminal layer is a frozen (all-neutral)
+SCC. So the Cor C.9 gating stratum (prefix-independent ∧ terminal
+1-anchored **non-frozen** final layer ∧ upward-closed ∧ parked-rejecting)
+is **empty on the census**: C.9's global bare-`Π₂` form has no instances,
+and the config ladder's one-sided win (Cor C.8) is confined to
+**non-prefix-independent** languages (e.g. `G(a→F b)`, K-F1). This is the
+K-F2 mechanism generalized: the pending bit cannot survive in a
+prefix-independent language's absorbing class. (Promotion to a theorem is
+Theory todo 3 in `handoff_cascade.md`.)
 
-One-sidedness of the moving final layers that *are* (C)-decided (56 with a
-≥2-class collected `F`): **13 upward, 13 downward, 18 both, 12 neither** —
-**balanced, not "predominantly upward"** as E3/C.8 predicted. (The precise E3
-claim is about the `P|_R` recurrence rung; a rung-stratified recount is TODO,
+One-sidedness of the moving final layers that *are* (C)-decided (74 with a
+≥2-class collected `F`): **16 upward, 16 downward, 28 both, 14 neither** —
+**balanced, not "predominantly upward"** as E3/C.8 predicted; the exact
+up/down tie is **structural** — the catalogue is complement-closed and
+complement swaps the closure direction. (The precise E3 claim is about the
+`P|_R` recurrence rung; a rung-stratified recount is an Engineering todo,
 but the raw distribution does not support upward-dominance.)
 
-Commands: `python3 -m tests.cascade.k_e3_sweep tests/cascade/logs/census_flat_canon.jsonl genaut/corpus/flat_canon/sos --out tests/cascade/logs/k_e3.csv`
-and `python3 -m tests.cascade.k_e3_pfxind tests/cascade/logs/census_flat_canon.jsonl genaut/corpus/flat_canon/sos`.
-Logs: `tests/cascade/logs/k_e3.csv` (regenerable), `tests/cascade/logs/k_e3_pfxind.txt`.
+Data + regen: `reference/cascade/k_series.md` (`k_e3.csv`,
+`k_e3_pfxind.txt`).
 
 ## K-F11 — config normal-form emitter + G(a→F b) conformance (DAG-only) — CONFIRMED
 
@@ -303,41 +284,42 @@ engine.py`) so the existing rebuild-𝓘 gate runs on the assembled whole-langua
 label (Ω is a confined-tail term; `G(a→F b)` gates directly only because its
 final layer is terminal and it carries no safety). Plus the DG-size ledger.
 
-## K-F12 — genuine aperiodic (C)-conflict INSIDE the census frame — CONFIRMED (first specimen; sweep in flight)
+## K-F12 — the floor-track stratum is inhabited INSIDE the census frame, at scale — CONFIRMED
 
-The extended corpus (flat_canon 4248 → **6222**; campaign tier reaching Wagner
-ω³/ω⁴) contains genuine aperiodic (C)-conflicts, overturning K-F7's frame
-claim. First specimen, isolated and ALG-7-verified:
+The census (Wagner ceiling ω³/ω⁴) contains genuine aperiodic (C)-conflicts
+in bulk. Over the 2176 heavy layers of K-F7 (their language over the 60 s
+cap), the early-exit finder + inline ALG-7 (`k_e1_verify`, one CSV row per
+layer, member toggle + non-conjugacy on every conflict):
 
-- `2state2ap1acc_parity_3772037665` — 13 classes, **aperiodic**, LTL, Wagner
-  degree **(ω³, σ)** (`.cat` sidecar), canonical D 6 states / 2 AP /
-  parity-3. Conflicting layers 5 and 7, both **frozen singletons**; the
-  complement `_c` conflicts identically (catalogue closed under complement).
-- **ALG-7 verdict at k=0 on layer 5: GENUINE** — `find_c_conflict` in 27
-  states: two loops share the recurring edge set (|F|=3), loop classes 12
-  (idem, rejects) vs 5 (idem, accepts), `inv.member` toggles, linked pairs
-  non-conjugate (Lemma C.11).
-- **Mechanism**: verdict-splitting **zero absorption** — sandwich scan: 20
-  FAIL of which 16 `absorption`, all verdict-SPLITTING over EntrySt; three
-  𝒥-minimal classes `[5, 8, 11]` (not a single zero: a richer bottom than
-  the floor witness's).
-- Frozen layer ⟹ (C)@0 = (B)@1 (Lemma C.10): this is a genuine **plain-(B)
-  failure in-frame** — the "2 states × 2 AP at once" open-hunt witness of
-  the main paper §8, materialized by the corpus extension. Widths ≥ 1 hit
-  BUDGET, so *every-width* failure (full Theorem C.12′ floor membership) is
-  not yet established; the absorption signature predicts it — structural
-  analysis TODO.
-- The `aut2ltl` portfolio times out (90 s) on the specimen's det HOA —
-  consistent with a residual-stratum inhabitant.
+| width | genuine CONFLICT | of which aperiodic | CLEAN (ladder rescues) | BUDGET |
+|---|--:|--:|--:|--:|
+| k=0 | 1021 | **806** | 625 | 530 |
+| k=1 (on the 1021) | 263 | **246** | 118 | 640 |
 
-Commands: `python3 -m tests.cascade.k_e1_verify 2state2ap1acc_parity_3772037665 5 0`
-(generic ALG-7 triage probe, committed) and
-`python3 -m tests.cascade.k_e7_triage 2state2ap1acc_parity_3772037665 5 0 absorption`.
-Corpus artifacts (git-tracked): `genaut/corpus/flat_canon/sos/2state2ap1acc_parity_3772037665.sos`
-+ `.cat` + `det/…hoa`. Full rerun tallies land in `reference/cascade/` (K-E1
-rerun in flight).
+Every reported conflict is ALG-7-genuine — zero closure artifacts. **The
+aperiodic floor-track stratum is ≥246 in-frame layers genuinely failing
+(C) at widths 0 and 1.** A width-bounded conflict is not yet floor
+membership (Theorem C.12′ needs every width): the structural absorption
+argument, or deeper passes on the 640 budget-open layers, closes that gap
+(Theory todo 2 / Engineering todo 1 in `handoff_cascade.md`).
 
-`PAPER-EDIT` (pending the rerun): draft C.2 remark, C.19 closing bold, C.7 §8
-bullet — every "zero conflicts / floor empty on the census frame" statement;
-K-F9's "inhabited beyond it" weakens to "inhabited beyond *and now within* the
-frame".
+Type specimen `2state2ap1acc_parity_3772037665` — 13 classes, aperiodic,
+Wagner **(ω³, σ)**, canonical D 6 states / 2 AP / parity-3; conflicting
+layers are **frozen singletons**, so (C)@0 = (B)@1 (Lemma C.10): a genuine
+**plain-(B) failure in-frame** — the "2 states × 2 AP at once" open-hunt
+witness of the main paper §8. ALG-7 at k=0: `find_c_conflict` in 27
+states, |F|=3, loop 12 rejects vs loop 5 accepts, non-conjugate.
+Mechanism: verdict-splitting **zero absorption** over three 𝒥-minimal
+classes `[5, 8, 11]` (a richer bottom than the floor witness's single
+zero). The `aut2ltl` portfolio times out (90 s) on its det HOA —
+consistent with a residual-stratum inhabitant.
+
+Data + regen: `reference/cascade/k_series.md` (`k_e1v_conflicts_k0.csv`,
+`k_e1w_conflicts_k1.csv`, `kf12_specimen_alg7.txt`). Specimen replay:
+`python3 -m tests.cascade.k_e1_verify 2state2ap1acc_parity_3772037665 5 0`;
+mechanism: `python3 -m tests.cascade.k_e7_triage … 5 0 absorption`.
+
+`PAPER-EDIT` (open): draft C.2 remark, C.19 closing bold, C.4 map
+paragraph, C.7 §8 bullet — every "zero conflicts / floor empty on the
+census frame" statement; K-F9's "inhabited beyond it" becomes "inhabited
+beyond *and within* the frame".
