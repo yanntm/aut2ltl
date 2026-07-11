@@ -94,3 +94,38 @@ predicate; `until_phase=2` live. The squaring shortcut is deferred
   Arrays (`x[i]` cells + `createArrayAccess`) were dropped with the
   author's direction — the space is fixed-size, scalars + the case
   split are the spec'd rendering (the paper's `Comp` formula verbatim).
+
+## C5 — profiles and residuals (Phases 3–4)
+
+Engine state added: the digest's acceptance formula grounded Python-side
+into per-slot accepting-mask tables (`sos_sdd/accept.py`; numbers in the
+payload, never formula text — the `PackInfo` pattern); Phase 3 profile
+columns `S_q = predicate(A_q)(π)` — one case-split slot read + mask
+membership per global state, **no orbit walk and no cycle detection
+anywhere in the path** (the C5 invariant); the seed by O(1) canonical
+comparison of the columns (two states agree on every element iff their
+columns are the same node — no per-pair quantification); Phase 4 as
+Moore refinement over the explicit global states (mixed-radix over the
+component blocks). `until_phase=4` is the new ceiling
+(`src/residuals.hh`; gate `tests/sos_sdd/residuals_test.py`, streams in
+`tests/sos_sdd/logs/residuals_*.jsonl`).
+
+- **F10 — profiles element-exact everywhere tried.** Every verdict bit
+  `A(q, x)` read off the symbolic columns equals a cycle-walk ground
+  truth (the explicit algorithm the engine must avoid) on every
+  element × state of every case: triptych, mod3, dupe, stem,
+  `EvenBlocks^{⊗2}` factored (multi-block global states crossing
+  `block_base`).
+- **F11 — the residual partition is the gfp, and the seed alone is
+  not.** Engine `≃` equals an explicitly-unwound lockstep gfp on all
+  seven cases; the `stem` case pins why Phase 4 exists: `L(0) =
+  a(!a)^ω` is nonempty yet every pure-loop verdict `A(0, x)` is 0, so
+  the profile columns merge `{0,1,3}` (`distinct_columns=2`) and only
+  the letter-step refinement splits state 0 off (`rounds=2`, classes
+  `{0} | {1,3} | {2}`). On the other six cases the seed already is the
+  gfp (`rounds=1`).
+- **Recorded gap:** the spec's cross-check against the explicit tool's
+  residual classes (`sosl` rides Spot's `language_map` on HOA inputs)
+  waits on E1's HOA→digest bridge; the gate's ground truth is the same
+  gfp computed by a deliberately different explicit algorithm
+  (cycle-walk verdicts + lockstep refinement).

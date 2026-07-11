@@ -43,7 +43,17 @@ the derived-census driver, the engine's first consumer at scale),
   shortcut is deferred** (simultaneous step, pending a 2k-variable
   relation encoding); `square≠"off"` is refused, so C4's check gate
   waits on that encoding.
-- **TODO: everything else.** C4's squaring shortcut, C5–C6, C9–C10,
+- **DONE (engine-side): C5** — Phase 3 profiles as per-state predicate
+  columns on π's pair space (acceptance grounded Python-side into
+  accepting-mask tables; no orbit walk or cycle detection in the code
+  path), Phase 4 residuals as the profile-seeded gfp (column seed by
+  O(1) canonical comparison, Moore refinement over the explicit global
+  states). Gate: verdict bits and partition exact vs an explicit
+  cycle-walk + lockstep-gfp ground truth on seven cases, including one
+  (`stem`) where the seed is strictly coarser than the gfp — ledger
+  rows F10–F11. The spec's cross-check vs the explicit tool's residual
+  classes proper waits on E1's HOA bridge (recorded gap).
+- **TODO: everything else.** C4's squaring shortcut, C6, C9–C10,
   E1/E3–E9, M2–M5 proper (E2 still owes the second component family and
   per-point budget sweeps at scale).
 
