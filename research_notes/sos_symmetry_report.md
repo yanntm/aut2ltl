@@ -182,6 +182,17 @@ current corpus, counts recomputed, never hardcoded.
    the paper's §9 measurement plan is stale. No semantic impact on
    SY1 (counts were recomputed), but the paper's census-shaped
    claims should quote the new totals once they cite this report.
+
+   **Theory response (2026-07-11).** Swept. Spec: §0 corpus block
+   now states 6 222 / 2 484 with the AP breakdown and a
+   recount-at-run-time rule, plus the two structural facts every
+   milestone must respect (alphabet-minimality, 1-AP skew); all
+   SY1/SY3/SY4/SY5 occurrences updated. Paper: §9 `Spec` bullet
+   now 2 484. One further stale number found in the sweep: the
+   paper §3.1 cost remark quoted `|𝒞| ≤ 121` (old corpus); the max
+   `n_classes` over `reference/symmetry/sy1_generators.csv` is
+   **208**, paper updated — engineering: countersign by adding
+   max `|𝒞|` to `sy1_summary.md` at the next regen.
 2. **[2026-07-11, SY1] F3 is structurally zero — spec §3.4/F3 and
    the paper §3.1 "fat kernel" expectation need a decision.** The
    corpus pipeline alphabet-minimizes every case (`remove_free_aps`
@@ -198,12 +209,36 @@ current corpus, counts recomputed, never hardcoded.
    over `{a, b}` cannot be built through canonize.py (it sheds `b`);
    we build it by calculus alphabet-extension + reduce (F1) —
    suggest spec §3.4 be edited to that construction.
+
+   **Theory response (2026-07-11).** Decision: **(a)** — the
+   coincidence of the read-offs is the finding, and the paper now
+   says so: §3.1 Example A states that the curation *is* Example A
+   run at scale (inert propositions structurally absent, 0/6 222),
+   and that kernel fatness lives upstream of any curated corpus, in
+   raw specifications as users write them; the §9 `Sym±` bullet no
+   longer expects kernel measurements from the census. Option (b)
+   (pre-minimization tiers) is NOT commissioned — it measures the
+   corpus generator's habits, not verification practice, so the
+   number would not support the paper's claim anyway; it stays
+   available if a referee asks. Spec edited as you suggest: §3.4
+   FIX_A is now the calculus construction verbatim (your F1 build),
+   trap #7 rewritten to match, SY1 acceptance and Y0a now say
+   assert-zero, not measure.
 3. **[2026-07-11, SY1] The pair-count obstruction is sharper than a
    remark.** `anti_possible` is False on 97.36 % of the census, so
    the count alone refutes *all* anti-candidates nearly everywhere
    (and the 8 realized anti hits are all polarity flips). Item 5 of
    the standing list: on this evidence the obstruction deserves the
    highlighted-lemma treatment in §3.2.
+
+   **Theory response (2026-07-11).** Promoted: it is now **Lemma
+   3.2 (the pair-count obstruction)** in paper §3.2, with a
+   three-line proof (the witnessing automorphism permutes the
+   linked pairs and carries `P` onto its complement) and the census
+   sharpness stated in prose (97.36 % closed by the count; every
+   realized anti-symmetry a polarity flip). The §1.3 contribution
+   bullet and §9 P3 now cite it by number. Standing item 5 is
+   resolved.
 4. **[2026-07-11, SY1] The census is too 1-AP-heavy for the paper's
    symmetry claims — larger AP sets needed (measurement design,
    theory owns).** 64 % of `flat_canon` is 1-AP, where
@@ -226,6 +261,25 @@ current corpus, counts recomputed, never hardcoded.
    of nontrivial groups at `n = 3`), so any larger-`n` campaign
    should budget for group search, not generator scans.
 
+   **Theory response (2026-07-11).** Adopted: **(b) + (c)** now,
+   **(a)** as the follow-up, exactly as recommended. Concretely:
+   (c) — the stratified-by-AP mandate is now spec §0 structural
+   fact (ii), binding on Y0a and every census-shaped table; paper
+   §9's `Sym±` bullet states the stratified baseline (0.80 / 14.05
+   / 50 %) and why pooled rates are mix artifacts. (b) — a new
+   campaign **Y0s (symmetrized ground truth)** is spec'd in §7:
+   150 seeded rows per arity `n ∈ {2, 3}`, planted groups chosen so
+   composite elements are represented (`⟨t01∘f0⟩` order-4 signed
+   swap at `n = 2`; S₃ and the 3-cycle `⟨(012)⟩` at `n = 3` — your
+   F4 under-detection point), degenerate collapses counted and
+   dropped, `G ≤ Sym±(L')` asserted elementwise with strict
+   containment recorded as data, orbit prices fed to F7. The paper
+   §9 gains a matching "symmetrized ground truth" bullet with the
+   lower-bound caveat stated. (a) — the sampled 4-AP corpus
+   campaign is named in the spec as the follow-up, explicitly NOT
+   part of SY5; we will commission it to the corpus thread once
+   Y0s bounds expectations.
+
 Standing items the theory thread expects data or answers on:
 
 1. Any disagreement between the spec and the paper (spec §8 E1
@@ -238,11 +292,14 @@ Standing items the theory thread expects data or answers on:
 3. The leastness probe (F14): any strictly-between aperiodic
    congruence falsifies the reflection-as-`θ_ap` reading of paper
    §6.2 — the dossier decides how Prop 6.2's proof gets written.
-4. Kernel fatness and group-size numbers (F3, F5) — feed the paper
-   §9 expectations ("large kernels, small semantic groups"); if the
-   corpus says otherwise, §3.1's third remark gets rewritten.
-5. The `anti_possible` hit rate (F4) — decides whether the
-   pair-count obstruction is a remark or a highlighted lemma.
+4. Group-size numbers (F5) — feed the paper §9 stratified
+   expectations. *(The kernel-fatness half is closed 2026-07-11:
+   unmeasurable on this corpus by To-theory item 2's resolution;
+   §3.1 and §9 rewritten, Y0a asserts zero.)*
+5. ~~The `anti_possible` hit rate (F4) — decides whether the
+   pair-count obstruction is a remark or a highlighted lemma.~~
+   *(Resolved 2026-07-11: promoted to Lemma 3.2 — To-theory
+   item 3.)*
 6. Any nonabelian/non-solvable spectrum specimen (F13) — a find; the
    paper's §6.1 discussion would gain a concrete witness outside
    `FO+MOD`.

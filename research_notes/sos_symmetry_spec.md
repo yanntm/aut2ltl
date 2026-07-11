@@ -77,11 +77,20 @@ From `sosl.sos.classify`: `is_stutter_invariant(inv)` (the
 `λ(a)² = λ(a)` read-off) and the aperiodicity/definability pass of
 [SωSX26] (SY4 reuses its group `H`-class walk — §6.1).
 
-Corpus: `genaut/corpus/flat_canon/` — 3 938 canonical `.sos`
+Corpus: `genaut/corpus/flat_canon/` — 6 222 canonical `.sos`
 invariants + paired det HOA, `.cat` sidecars carrying the Wagner
-coordinates, the LTL bit, and the `stutter:` tag. Alphabet strata as
-in calculus spec §8.2. Every invariant carries its AP list in a fixed
-order — that order is the indexing convention for everything below.
+coordinates, the LTL bit, and the `stutter:` tag (counts at the
+2026-07-11 regen: 2 484 non-LTL; by AP count 2 / 4 006 / 1 438 / 776
+for 0–3 APs; the corpus regenerates — recount at run time, never
+hardcode). Two structural facts every milestone must respect:
+(i) the pipeline alphabet-minimizes every case (`remove_free_aps`),
+so `inert_aps` is empty on *every* corpus row by construction —
+assert-zero is a sanity gate, not a measurement (report F3);
+(ii) 64 % of rows are 1-AP, so census-shaped symmetry rates are
+reported stratified by AP count, never pooled (report F4). Alphabet
+strata as in calculus spec §8.2. Every invariant carries its AP list
+in a fixed order — that order is the indexing convention for
+everything below.
 
 ---
 
@@ -227,9 +236,13 @@ finding, not a local patch). SY1 uses FIX_A/B/C; FIX_E (`EvenHead`)
 is built here too but consumed by SY4 (§6.3).
 
 - **FIX_A** (paper Example A) — `ℒ = GF a` over `AP = {a, b}`.
-  **Hand-built HOA mandatory** — `ltl2tgba` drops the unused `b`
-  (trap #7). One state `q0`, self-loops on all four minterms, marks
-  `{0}` on `a&b` and `a&¬b`, acceptance `Inf(0)`.
+  **Built in the calculus, never through canonize** — the canonize
+  pipeline sheds free APs (spot label simplification +
+  `remove_free_aps`), so no HOA, hand-built or not, carries the
+  unused `b` through it (trap #7). Construction: canonize the 1-AP
+  `GF a`, then `inverse_substitution` along the projection
+  `2^{a,b} → 2^{a}`, then `reduce` — same language, same 3 classes,
+  `b` free by construction.
 - **FIX_B** (paper Example B) — `ℒ = GF a ∧ GF b`, `AP = {a, b}`.
   Via `ltl2tgba -D 'GFa & GFb'` (bounded); both APs occur, no drop.
 - **FIX_C** (paper Example C) — `ℒ = a·Σ^ω` ("a at the first
@@ -308,8 +321,8 @@ levels of paper §3.1. Pair-count obstruction (P3):
    generators: `is_symmetry(inv, σ) == decide.equivalent(inv,
    apply_perm(inv, σ))`. The align-based route is independent of the
    keying route; disagreement convicts one of them — STOP.
-7. **Corpus campaign (SY1 acceptance body).** Over all 3 938
-   `flat_canon` invariants: per case, run `inert_aps`, plus
+7. **Corpus campaign (SY1 acceptance body).** Over all
+   `flat_canon` invariants (6 222 at the 2026-07-11 regen): per case, run `inert_aps`, plus
    `is_symmetry` and `is_antisymmetry` for every generator from
    `generators_b_ap(n)` (that is `n(n−1)/2 + n` candidates, two
    keying passes each — cheap); at `n ≤ 3` additionally the full
@@ -322,11 +335,12 @@ levels of paper §3.1. Pair-count obstruction (P3):
    §8.1 verbatim).
 
 **SY1 acceptance:** `sigma_gate.py` green on the fixture triple
-(every truth-table cell) and the full 3 938-case campaign with zero
-kernel-law violations and zero unexplained rows; the CSV committed
-under `logs/`; findings F1–F4 of the report filled (the inert-AP
-frequency, F3, is a paper §9 number — carry it verbatim). Nothing in
-`calculus`/`classify` touched.
+(every truth-table cell) and the full-corpus campaign (6 222 cases)
+with zero kernel-law violations and zero unexplained rows; the CSV
+committed under `logs/`; findings F1–F4 of the report filled (F3:
+`inert_aps` is structurally empty on this corpus — the curation
+minimizes alphabets; report the zero and the structural reason, not
+a frequency). Nothing in `calculus`/`classify` touched.
 
 ---
 
@@ -405,7 +419,7 @@ product-free: folds and table lookups only. Entry points in
 Gates (`relations_gate.py`):
 
 1. **The corpus stutter oracle (decisive — run FIRST):** over all
-   3 938 invariants, `stutter_rung(inv, 1) == (.cat stutter tag)`.
+   6 222 invariants, `stutter_rung(inv, 1) == (.cat stutter tag)`.
    The tag is semantic ground truth from the census; a disagreement
    is a real bug or a real theory problem — mixed failures: STOP,
    smallest case to the report (slot F8).
@@ -436,7 +450,7 @@ Gates (`relations_gate.py`):
    construction is SY2 machinery + a ⟨TBD⟩ in the paper §4.3; out of
    scope here).
 
-**SY3 acceptance:** stutter oracle 3 938/3 938 explained; gates green;
+**SY3 acceptance:** stutter oracle 6 222/6 222 explained; gates green;
 `ladder_entry` and `|Î_L|` density distributions recorded to
 `logs/sy3_relations.csv`; findings F8–F11 filled.
 
@@ -507,7 +521,7 @@ true iff `n` is even.
 Gates (`spectrum_gate.py`):
 
 1. **The corpus LTL-bit oracle (decisive — run FIRST):**
-   `spec(inv) == ∅` iff the `.cat` LTL bit, over all 3 938. A
+   `spec(inv) == ∅` iff the `.cat` LTL bit, over all 6 222. A
    disagreement in either direction is a to-theory event (slot F12):
    STOP on the smallest case.
 2. Spectrum sanity: FIX_E per §6.3, and `EvenBlocks` (by census name)
@@ -529,7 +543,7 @@ Gates (`spectrum_gate.py`):
    least: to-theory verbatim, slot F14 — this is the probe the paper
    asked for).
 
-**SY4 acceptance:** LTL-bit oracle 3 938/3 938 explained; laws green;
+**SY4 acceptance:** LTL-bit oracle 6 222/6 222 explained; laws green;
 gap columns recorded to `logs/sy4_gap.csv`; findings F12–F14 filled.
 
 ---
@@ -542,12 +556,34 @@ Deliverables under `reference/symmetry/`, one `.md` + `.csv` each;
 every number the paper later cites in pure form comes from here.
 
 - **Y0a — the `Sym±` column** (`y0_sym.py`; needs SY2). Over all
-  3 938: `|Sym_AP|`, `|anti coset|`, `|inert_aps|`, kernel share.
-  Paper §9 expects fat kernels and small semantic groups — the
-  campaign confirms or corrects (F15). Skip policy per §4; skip rate
-  reported.
+  6 222: `|Sym_AP|`, `|anti coset|`, group-structure summary
+  (element orders suffice; name the group when `n ≤ 3`). Report
+  STRATIFIED BY AP COUNT, never pooled (§0(ii); the SY1 stratified
+  rates 0.80 / 14.05 / 50.00 % at 1/2/3 APs are the baseline this
+  extends from generators to full groups — F15). `inert_aps` and
+  kernel share are structurally zero on this corpus (§0(i)):
+  assert-zero as a sanity gate, do not tabulate them. Skip policy
+  per §4; skip rate reported.
+- **Y0s — symmetrized ground truth** (`y0_stress.py`; needs SY2;
+  paper §9 "symmetrized ground truth"). The census is 1-AP-heavy
+  (F4); this campaign *manufactures* rows with planted symmetry at
+  2–3 APs. Seeds: 150 seeded corpus rows per arity `n ∈ {2, 3}`
+  (seed 20260711). Planted groups, chosen so that composite
+  elements — which generator scans miss (F4) — are represented:
+  `n = 2`: `⟨t01⟩`, `⟨t01∘f0⟩` (signed swap, order 4);
+  `n = 3`: `⟨t01, t12⟩` (≅ S₃), `⟨(012)⟩` (3-cycle, ≅ Z/3, no
+  transposition in it). Per seed × group: `L' = symmetrize(inv,
+  gens(G), ∩)`; drop and count the degenerate collapses (`is_empty`,
+  or complement empty — expected on a fraction of seeds, the rate is
+  a datum); on survivors assert `G ≤ Sym±(L')` elementwise (keying
+  passes) and record `|Sym±(L')|` — strict containment is data, not
+  a bug; record the orbit size paid (feeds F7 alongside SY2).
+  Deliverable: `y0s_stress.csv` + summary; the surviving rows are
+  the known-group population for the paper's larger-`n` claims. A
+  sampled 4-AP corpus campaign (corpus-thread commission, cluster)
+  is the follow-up once Y0s bounds expectations — NOT part of SY5.
 - **Y0b — the `Spec` column** (`y0_spec.py`; needs SY4). Over the
-  1 698 non-LTL rows: spectrum values, cross-tabulated with the
+  2 484 non-LTL rows: spectrum values, cross-tabulated with the
   Wagner coordinates from `.cat`. Expected overwhelmingly `{Z/2}`;
   any nonabelian or non-solvable specimen is a headline find — file
   it the moment it appears, do not wait for campaign end.
@@ -568,9 +604,10 @@ every number the paper later cites in pure form comes from here.
   unblocks, a protocol revision of this spec will accompany it.
   Until then Y2 does not exist for you.
 
-**SY5 acceptance (Y0+Y1):** the four reference files committed with
-headers, zero unexplained failure rows, summary tables present;
-findings F15–F16 filled.
+**SY5 acceptance (Y0+Y1):** the five reference files (Y0a, Y0s, Y0b,
+Y0c, Y1) committed with headers, zero unexplained failure rows,
+summary tables present (Y0a stratified by AP count); findings
+F15–F16 filled.
 
 ---
 
@@ -605,8 +642,10 @@ findings F15–F16 filled.
    §3.5.2 pins it (§3.1).
 6. **`all_b_ap` is guarded at `n ≤ 3` in SY1** — the larger-`n`
    policy belongs to SY2; do not lift the guard for coverage (§3.3).
-7. **`ltl2tgba` drops unused APs, and cannot express FIX_E at all**
-   — FIX_A and FIX_E are hand-built or they are wrong (§3.4, §6.3).
+7. **`ltl2tgba` drops unused APs, canonize sheds free APs, and
+   neither can express FIX_E** — FIX_E is hand-built HOA; FIX_A is
+   built by calculus alphabet-extension (`inverse_substitution` +
+   `reduce`), never through canonize (§3.4, §6.3).
 8. **Invisible letter ≠ inert AP** — `[c] = 1` vs a fiber equality;
    the gates have a case for each; conflating them is the expected
    novice bug of SY3 (§5).

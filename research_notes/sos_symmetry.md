@@ -106,7 +106,9 @@ PSPACE question was never asked of the right object.
   one-pass byte check succeeds; with the two-level fiber structure
   (a kernel of "free" symmetries the invariant has already quotiented
   away), the signed extension to polarity flips, and anti-symmetries
-  (`σ(L) = L^c`) at the same price (§3.2).
+  (`σ(L) = L^c`) at the same price, screened by a one-integer
+  obstruction (Lemma 3.2) that on the census refutes all
+  anti-candidates on 97 % of cases.
 - **The asymmetry witness** (§3.3): on failure, a minimal lasso in
   `L Δ σ(L)` — the actionable artifact syntactic checks cannot
   produce — and **symmetrization** (§3.4), the largest `G`-invariant
@@ -324,7 +326,14 @@ guard of an automaton presentation. Automaton-level detection
 requires a product-with-complement test per proposition; on the
 invariant it is one pass over the fibers. This is the degenerate but
 practically common bottom of the theory: symmetries the invariant has
-already paid for. (Predicted verdicts over `B_2`: symmetric
+already paid for. How common cannot be read off the census, and the
+reason is itself a datum: the census pipeline [SωSN26]
+alphabet-minimizes every case on adoption, and its free-proposition
+test coincides with exactly this read-off — so inert propositions are
+structurally absent there (0 of 6 222 measured). The curation *is*
+Example A run at scale; kernel fatness lives upstream of any curated
+corpus, in the raw specifications as users write them, and can only
+be measured there. (Predicted verdicts over `B_2`: symmetric
 `{id, σ_b}`, no anti-symmetry, `inert = {b}` — §9, P2.)
 
 **Example B (a semantic symmetry — beyond the kernel).**
@@ -345,7 +354,7 @@ before any keying pass. (Predicted over `B_2`: symmetric
 **Cost.** A single check (iii) is one keying pass. The full group is
 the stabilizer above: a backtracking search over candidate generator
 images constrained by `M` — graph-isomorphism-flavored, and trivial
-at invariant sizes (`|𝒞| ≤ 121` on the census). No language-theoretic
+at invariant sizes (`|𝒞| ≤ 208` on the census). No language-theoretic
 query occurs anywhere. Contrast automata: `Sym` is not an invariant
 of a presentation, and each candidate `σ` costs an equivalence
 check.
@@ -367,13 +376,22 @@ byte-equals `𝓘(L^c)`. Define the *signed symmetry group*
 (`L^c = σ(L)`) are common in practice (request/grant dualities) and
 currently invisible to tools.
 
-**The pair-count obstruction.** Any `ρ` witnessing an anti-symmetry
-is a bijection of the linked pairs carrying `P` onto its complement,
-so `L` admits an anti-symmetry only if `|P| = |linked| − |P|` —
-exactly half the linked pairs accept. One integer comparison refutes
-*all* anti-candidates at once, before any keying pass. On Example B,
-`|P| = 1` against nine linked pairs: no anti-symmetry, decided by
-counting alone.
+**Lemma 3.2 (the pair-count obstruction).** If `σ(L) = L^c` for any
+bijection `σ`, then `2·|P| = |linked|` — exactly half the linked
+pairs accept.
+
+*Proof.* `L` and `L^c` share `(𝒞, λ, M)` and hence their linked
+pairs — complement is the `P`-flip within them (§2.4). The
+witnessing `ρ` of Theorem 3.1(ii) preserves products and idempotents,
+so it permutes the linked pairs, and `ρ(P) = P^c = linked ∖ P` gives
+`|P| = |linked| − |P|`. ∎
+
+One integer comparison thus refutes *all* anti-candidates at once —
+every `σ`, before any keying pass. On Example B, `|P| = 1` against
+nine linked pairs: no anti-symmetry, decided by counting alone. The
+obstruction is sharp in practice: on the census the count alone
+closes the anti question negatively on 97.36 % of cases, and every
+realized anti-symmetry among the survivors is a polarity flip.
 
 **Example C (an anti-symmetry).** `L_C = a·Σ^ω` ("a at the first
 instant") over `AP = {a}`. By hand: `𝒞 = {1, T, R}` with `T` = [first
@@ -853,13 +871,26 @@ symmetry was never expensive; it was asked of the wrong object.
 **Measurement plan.** Three columns and one axis, all cheap, for the
 census [SωSN26]:
 
-- **`Sym±(L)`** per language (stabilizer search §3.1–3.2): expect
-  large kernels `K` (fat `λ`-fibers) and small semantic groups;
-  interesting outliers are the self-dual and fully symmetric
+- **`Sym±(L)`** per language (stabilizer search §3.1–3.2), reported
+  *stratified by AP count, never pooled*: 64 % of the census is 1-AP,
+  where `B_1 = {id, flip}` leaves almost nothing to find, and the
+  nontrivial-group rate climbs from 0.80 % (1 AP) through 14.05 %
+  (2 APs) to 50 % (3 APs) — a pooled rate is an artifact of the mix.
+  Kernel fatness is *not* measurable on this corpus: the census is
+  alphabet-minimal by curation (§3.1), so `K` is trivial on every
+  case by construction and the semantic groups are the whole signal.
+  Interesting outliers are the self-dual and fully symmetric
   specimens. Deduplicating the corpus by `B_AP`-orbit (it is closed
   under complement only today) shrinks it and sharpens the
   "exhaustive below the wall" claim.
-- **`Spec(L)`** over the 1 698 non-LTL languages: expected
+- **Symmetrized ground truth** (§3.4): `⋂_{g∈G} g(L)` over corpus
+  seeds is `G`-invariant by construction, at any AP count — a stress
+  set with *planted* groups that counterweights the census skew
+  above. The planted `G` is a lower bound (`G ≤ Sym±`), not an
+  identity: the recovered group may be strictly larger, and how often
+  it is, is itself a datum. A sampled 4-AP corpus campaign is the
+  follow-up, not a prerequisite.
+- **`Spec(L)`** over the 2 484 non-LTL languages: expected
   overwhelmingly `{Z/2}`; any nonabelian or non-solvable specimen is
   a find. Cross-tabulate with the Wagner degree (the
   topological-complexity coordinate the census records per
@@ -886,7 +917,7 @@ findings.
   Example A `{id, σ_b}` / no anti / `inert = {b}`; Example B
   `{id, swap}` / no anti / `inert = ∅`; Example C `{id}` / anti
   `{σ_a}`; `EvenHead` `{id}` / no anti.
-- **P3 — the pair-count obstruction.** Example C satisfies
+- **P3 — the pair-count obstruction (Lemma 3.2).** Example C satisfies
   `2|P| = |linked|` (2 of 4); Examples A (1 of 3) and B (1 of 9) are
   refuted for anti-symmetry by the count alone.
 - **P4 — independence relations.** `Î` total on Example B, empty on
