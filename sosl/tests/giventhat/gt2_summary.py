@@ -1,13 +1,15 @@
-"""GT2 reference summary: the ladder campaign checkpoint + the rung oracle
-checkpoint, aggregated into `reference/giventhat/gt2_ladder.md` (+ csv copies).
+"""GT2 summary: the ladder campaign checkpoint + the rung oracle checkpoint,
+aggregated into `logs/gt2_ladder.md` (+ a sorted csv copy of the campaign).
 
     cd sosl && python3 -m tests.giventhat.gt2_summary [--corpus DIR]
 
 Reads `logs/ladder_campaign.ckpt` and `logs/rung_oracle.ckpt` (both must be
 complete), computes the F8 join — per rung, how often a member exists in the
 interval while the raw `neg_phi` itself sits strictly higher (its own-table
-rung predicate false) — and writes the validated summary with the 4-line
-header. Pure aggregation: nothing here recomputes a gate verdict.
+rung predicate false) — and writes the summary with the 4-line header. Pure
+aggregation: nothing here recomputes a gate verdict. Writes under `logs/`
+ONLY; promotion of a validated file into `reference/giventhat/` is a
+deliberate `cp` by the operator, never done by a script.
 """
 from __future__ import annotations
 
@@ -25,7 +27,6 @@ from sosl.sos.giventhat.ladder import is_persistence, is_recurrence
 
 _HERE = Path(__file__).resolve().parent
 _LOGS = _HERE / "logs"
-_REF = _HERE.parents[2] / "reference" / "giventhat"
 _CORPUS = _HERE.parents[2] / "genaut" / "corpus" / "flat_canon"
 _SEED = 20260711
 
@@ -118,19 +119,16 @@ def main(argv: List[str]) -> int:
              "paper §7 item 3 number.")
     L.append("")
 
-    _REF.mkdir(parents=True, exist_ok=True)
-    (_REF / "gt2_ladder.md").write_text("\n".join(L))
-    for src, dst in ((_LOGS / "ladder_campaign.ckpt", _REF / "gt2_ladder.csv"),
-                     (_LOGS / "rung_oracle.ckpt", _REF / "gt2_rung_oracle.csv")):
-        rows = _rows(src)
-        with open(dst, "w", newline="") as fh:
-            w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
-            w.writeheader()
-            for r in sorted(rows, key=lambda r: (r.get("pop", ""), r.get("case", ""),
-                                                 r.get("neg_phi", ""), r.get("k", ""))):
-                w.writerow(r)
+    (_LOGS / "gt2_ladder.md").write_text("\n".join(L))
+    rows = _rows(_LOGS / "ladder_campaign.ckpt")
+    with open(_LOGS / "gt2_ladder.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+        w.writeheader()
+        for r in sorted(rows, key=lambda r: (r["pop"], r["neg_phi"], r["k"])):
+            w.writerow(r)
     print("\n".join(L))
-    print(f"wrote {_REF / 'gt2_ladder.md'} (+ gt2_ladder.csv, gt2_rung_oracle.csv)")
+    print(f"wrote {_LOGS / 'gt2_ladder.md'} and gt2_ladder.csv (promotion to "
+          f"reference/ is a manual cp)")
     return 0
 
 
