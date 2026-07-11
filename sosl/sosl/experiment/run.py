@@ -30,7 +30,7 @@ from sosl.learn.learner import (
     process_counterexample,
 )
 from sosl.learn.partition import Partition
-from sosl.learn.saturate import saturate
+from sosl.learn.saturate import find_left_divergence, saturate
 from sosl.learn.table import Table
 from sosl.sos import Lasso, dump_invariant, load_invariant
 from sosl.sos.alphabet import Word, shortlex_key
@@ -89,8 +89,9 @@ class Signature:
 
 @dataclass
 class RunResult:
-    """The whole outcome of a run: metrics, the exported invariant (``None`` on a
-    budget/error run), the split ledger, and the final signature matrix."""
+    """The whole outcome of a run: metrics, the exported invariant (``None`` on
+    a budget/error run and on an export refusal), the split ledger, and the
+    final signature matrix."""
 
     stats: RunStats
     invariant: Optional[Invariant] = None
@@ -232,21 +233,31 @@ def run_case(case_id: str, hoa_path: str, config: Config,
         result = _drive(teacher, config, stats)
         table, p, inv, ledger, eq_cert = result
 
-        stats.learned_classes = inv.n
+        # `inv is None` is an export refusal (non-congruent certified fixpoint,
+        # spec §3.2 step 6): the class count is then the fixpoint's own.
+        stats.learned_classes = inv.n if inv is not None else p.n
         stats.eq_certification = eq_cert
         stats.n_guard_firings = len(teacher.guard_firings)
         stats.guard_fired_final = int(teacher.last_query_fired)
         n_lin = sum(isinstance(c, LinCol) for c in table.columns)
         stats.n_columns_lin = n_lin
         stats.n_columns_om = len(table.columns) - n_lin
-        stats.n_splits = inv.n - stats.n_classes_initial
+        stats.n_splits = stats.learned_classes - stats.n_classes_initial
 
-        byte_equal = _norm(ref_dump) == _norm(dump_invariant(inv))
+        assoc_witness = None
+        if inv is not None:
+            assoc_witness = inv.associativity_witness()
+            stats.export_associative = "true" if assoc_witness is None else "false"
+
+        byte_equal = inv is not None and _norm(ref_dump) == _norm(dump_invariant(inv))
         p1_ok = hyp_acceptor_ok(teacher, _build_hypothesis(table, p),
                                 config.acceptor_bound)
         stats.stall_class = _classify_stall(stats, byte_equal, config.saturation)
         stats.verdict, stats.detail = _classify_verdict(
             byte_equal, p1_ok, config, stats)
+        if assoc_witness is not None:
+            stats.detail = (stats.detail + "; " if stats.detail else "") + \
+                f"non-associative export, witness triple {assoc_witness}"
         return RunResult(stats, inv, ledger, _signature(table, p))
     except _Budget:
         stats.verdict = "BUDGET"
@@ -270,8 +281,10 @@ def run_case(case_id: str, hoa_path: str, config: Config,
 
 
 def _drive(teacher: HoaTeacher, config: Config, stats: RunStats):
-    """The instrumented main loop; fills ``stats`` counters in place and returns
-    ``(table, partition, invariant, ledger, eq_certification)``."""
+    """The instrumented main loop; fills ``stats`` counters (and
+    ``fixpoint_congruent``) in place and returns
+    ``(table, partition, invariant-or-None, ledger, eq_certification)`` —
+    ``None`` when the export was refused (non-congruent certified fixpoint)."""
     ab = teacher.alphabet
     counts: Dict[str, int] = defaultdict(int)
     phase = ["fill"]
@@ -325,8 +338,22 @@ def _drive(teacher: HoaTeacher, config: Config, stats: RunStats):
         chain = process_counterexample(table, p, res.lasso)
         pending = ("cex " + _lasso_repr(ab, res.lasso), chain, table.columns[-1], p)
 
-    phase[0] = "pcache"
-    inv = export(p, member)
+    # The Lemma 5.2 congruence classification, then export or refusal (spec
+    # §3.2 step 6). On a saturated run the final sweep just ran clean, so
+    # "true" is recorded without recomputation; on the ablation the check
+    # phase runs once (zero queries) and a dirty check refuses the export —
+    # there is no algebra to read off (Theorem 5.3).
+    if config.saturation:
+        stats.fixpoint_congruent = "true"
+        congruent = True
+    else:
+        congruent = find_left_divergence(table, p) is None
+        stats.fixpoint_congruent = "true" if congruent else "false"
+
+    inv: Optional[Invariant] = None
+    if congruent:
+        phase[0] = "pcache"
+        inv = export(p, member, check=False)
 
     stats.n_classes_initial = n_initial
     stats.n_member_fill = counts.get("fill", 0)
@@ -377,13 +404,19 @@ def _classify_stall(stats: RunStats, byte_equal: bool, saturation: bool) -> str:
 def _classify_verdict(byte_equal: bool, p1_ok: bool, config: Config,
                       stats: RunStats):
     """The run verdict (spec §7): ``SOUND`` on byte-equality; ``ACCEPTOR_ONLY``
-    for a non-saturated run whose Cayley hypothesis is still acceptance-correct;
-    ``FAIL`` otherwise (a P1 failure, or a byte mismatch the config does not
-    excuse). Returns ``(verdict, detail)``."""
+    for a non-saturated run whose Cayley hypothesis is still acceptance-correct
+    (re-glossed 2026-07-11: "correct acceptor, no algebra — export refused" on
+    the exact leg; a congruent-but-byte-different export remains possible only
+    under a ``bounded`` oracle); ``FAIL`` otherwise (a P1 failure, or a byte
+    mismatch the config does not excuse). Returns ``(verdict, detail)``."""
     if byte_equal:
         return ("SOUND", "") if p1_ok else ("FAIL", "byte-equal but P1 red (bug)")
     if not p1_ok:
         return "FAIL", "P1 red: hypothesis predictions disagree with teacher"
     if not config.saturation:
-        return "ACCEPTOR_ONLY", "non-saturated fixpoint: export byte-differs, hypothesis sound"
+        if stats.fixpoint_congruent == "false":
+            return ("ACCEPTOR_ONLY",
+                    "export refused: certified fixpoint is not a congruence (Lemma 5.2)")
+        return ("ACCEPTOR_ONLY",
+                "non-saturated congruent fixpoint: export byte-differs, hypothesis sound")
     return "FAIL", "byte-differs under saturation (expected byte-equal)"
