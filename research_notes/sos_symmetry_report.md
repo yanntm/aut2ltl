@@ -20,9 +20,16 @@ found, even mid-milestone.
 
 ## Status
 
+**Corpus note (2026-07-11).** The corpus was regenerated and extended
+between the spec's writing and SY1's run: `flat_canon` now holds
+**6 222** cases (spec text says 3 938), of which 2 484 are non-LTL
+(spec says 1 698); by AP count: 2 zero-AP, 4 006 one-AP, 1 438
+two-AP, 776 three-AP. All SY1 data below is produced on the current
+corpus, counts recomputed, never hardcoded.
+
 | milestone | state | findings |
 |---|---|---|
-| SY1 — signed perms, single check, kernel read-off | *pending* | F1–F4 |
+| SY1 — signed perms, single check, kernel read-off | **DONE** (2026-07-11, gates green, campaign 6 222/6 222) | F1–F4 |
 | SY2 — group, witness, symmetrization | *pending* | F5–F7 |
 | SY3 — relational read-offs | *pending* | F8–F11 |
 | SY4 — spectrum + hull/kernel | *pending* | F12–F14 |
@@ -32,25 +39,63 @@ found, even mid-milestone.
 ## SY1 — signed permutations, the single check, the kernel read-off
 
 - **F1 — the worked examples behave as the paper computes.**
-  *(pending)* Paper §9 P1–P3 on FIX_A/B/C: class counts (3 / 5 / 3),
-  the full `B_n` truth tables (every cell), the two-level separation
-  (`in_kernel(FIX_A, flip_b)` True vs `in_kernel(FIX_B, swap_ab)`
-  False with the symmetry still holding), the pair-count obstruction
-  verdicts. Record `|P|` / `|linked|` per fixture as data.
-- **F2 — the laws hold as runtime facts.** *(pending)* Kernel law
-  (`in_kernel ⟹ is_symmetry`), `|𝒞|` preservation under
-  `apply_perm`, the direction-pin and metamorphic gates, the
-  anti/complement commutation: case counts, zero violations expected.
-- **F3 — inert APs on the census.** *(pending)* Over 3 938 cases:
-  share of cases with a nonempty `inert_aps`, distribution of
-  `|inert|` by AP count — the paper §3.1 "fat kernel" expectation
-  and the corpus-curation anecdote, quantified. Path:
-  `logs/sy1_generators.csv`.
-- **F4 — generator-level symmetry hits.** *(pending)* Frequency of
-  symmetric transpositions / flips and of anti-symmetric generators
-  over the census; the `anti_possible` fast-path hit rate (how often
-  the count alone closes the anti question — a paper §3.2 talking
-  point).
+  *(CONFIRMED, every cell.)* Paper §9 P1–P3 on FIX_A/B/C: class
+  counts **3 / 5 / 3** (and FIX_E 7); `|P|`/`|linked|` = **1/3,
+  1/9, 2/4** (FIX_E 2/8) — exactly P3, `P` is half the linked pairs
+  precisely on FIX_C. Full `B_n` truth tables asserted cell by cell:
+  symmetric `{id, flip_b}` / `{id, swap_ab}` / `{id}`, anti `∅` /
+  `∅` / `{flip_a}`, inert `{b}` / `∅` / `∅`. Two-level separation
+  as predicted: `in_kernel(FIX_A, flip_b)` **True** while
+  `in_kernel(FIX_B, swap_ab)` **False** with `is_symmetry` True.
+  Pair-count verdicts: `anti_possible` True only on FIX_C. The
+  recorded asymmetry witness for FIX_A/`flip_a` is the loop on the
+  `¬a∧¬b` minterm (`(¬a¬b)^ω ∈ GF a` xor its flip image). Gate log:
+  `reference/symmetry/sy1_gates.txt`; regen
+  `python3 -m tests.symmetry.sigma_gate` (from `sosl/`).
+  **Deviation from spec §3.4, FIX_A build:** the entire canonize
+  pipeline sheds free APs (spot label simplification +
+  `remove_free_aps`; `flat_canon` is alphabet-minimal by
+  construction), so *no* hand HOA can carry the unused `b` through
+  `genaut/gen/canonize.py`. FIX_A over `{a, b}` is instead produced
+  in the calculus: `inverse_substitution` along the projection
+  `2^{a,b} → 2^{a}` of the canonized 1-AP `GF a`, then `reduce` —
+  same language, same 3 classes, `b` free by construction
+  (`tests/symmetry/fixtures.py`). Escalated below.
+- **F2 — the laws hold as runtime facts.** *(CONFIRMED, zero
+  violations.)* Campaign: **69 742** candidate checks, each with the
+  kernel law (`in_kernel ⟹ is_symmetry`), the obstruction law
+  (`is_antisymmetry ⟹ anti_possible`) and the `|𝒞|`-preservation
+  assertion of `apply_perm` — zero violations (any violation aborts
+  the run; exit 0). Gates: group law + convention pin (100 seeded
+  triples × n ∈ 1..5, all involutions, the `n = 2` pin equation);
+  direction pin and metamorphic check exhaustive over all lassos
+  `|u|,|v| ≤ 3` × all of `B_n` on each fixture (≈114 k member pairs
+  per 2-AP fixture); anti/complement commutation both routes and the
+  align cross-oracle on fixtures + 50 seeded corpus cases
+  (seed 20260711) — all green, first run.
+- **F3 — inert APs on the census.** *(MEASURED: identically zero —
+  by curation, not by nature.)* Nonempty `inert_aps`: **0 / 6 222**.
+  This is structural: `genaut/gen/flatten.py` minimizes the alphabet
+  of every adopted case (`remove_free_aps`), so a free AP cannot
+  survive into `flat_canon`. The paper §3.1 "fat kernel" expectation
+  is thus *unmeasurable on this corpus* — the curation already
+  harvested exactly what `inert_aps` detects (the read-off and
+  `sosl.sos.minimize.free_aps` coincide). Escalated below. Data:
+  `reference/symmetry/sy1_generators.csv` (+ `sy1_summary.md`);
+  regen `sigma_gate --campaign` then `sy1_summary`.
+- **F4 — generator-level symmetry hits.** *(MEASURED.)* Over 6 222
+  cases: **206 (3.31 %)** have at least one symmetric generator —
+  per generator: `t01` 82, `t02` 86, `t12` 4, `flip_0` 36, `flip_1`
+  10. Anti-symmetric generators hit on only **8 cases (0.13 %)**,
+  all polarity flips, never a transposition. `anti_possible` is True
+  on **164 cases (2.64 %)**: the pair-count alone closes the anti
+  question negatively on the remaining **97.36 %** of the census — a
+  very sharp fast path (paper §3.2 talking point; see To theory).
+  Full `B_n` sweep (all 6 222 rows have `n ≤ 3`): 5 600 rows have
+  the trivial group `{id}`; the tail: 498 rows with 2 symmetric
+  elements, 52 × 4, 58 × 6, 2 × 8, 8 × 12, 4 × 24 (order-24
+  subgroup of `B_3`, |B_3| = 48 — SY2 material). Wall: median
+  5.8 ms/case, max 4.3 s, zero budget blows.
 
 ## SY2 — the group, the witness, symmetrization
 
@@ -118,7 +163,34 @@ found, even mid-milestone.
 
 ## To theory
 
-*(empty — populate the moment anything below occurs)*
+1. **[2026-07-11, SY1] Corpus renumbering.** `flat_canon` is now
+   6 222 cases (2 484 non-LTL) after regeneration + adoption of the
+   parity sampling campaign; every "3 938" / "1 698" in the spec and
+   the paper's §9 measurement plan is stale. No semantic impact on
+   SY1 (counts were recomputed), but the paper's census-shaped
+   claims should quote the new totals once they cite this report.
+2. **[2026-07-11, SY1] F3 is structurally zero — spec §3.4/F3 and
+   the paper §3.1 "fat kernel" expectation need a decision.** The
+   corpus pipeline alphabet-minimizes every case (`remove_free_aps`
+   in `flatten.py`), and the minimizer's free-AP test *is* the
+   `inert_aps` read-off, so nonempty `inert_aps` is impossible on
+   `flat_canon` by construction: 0/6 222 measured. The
+   corpus-curation anecdote is thereby *confirmed at the pipeline
+   level* (the curation harvests exactly the kernel flips) but the
+   census cannot quantify kernel fatness. Options we see: (a) state
+   the coincidence-of-read-offs as the finding itself (the paper's
+   Example A is what the curation automates), (b) commission a
+   measurement on the *pre-minimization* corpus tiers, or (c) drop
+   the census-shaped version of the claim. Related deviation: FIX_A
+   over `{a, b}` cannot be built through canonize.py (it sheds `b`);
+   we build it by calculus alphabet-extension + reduce (F1) —
+   suggest spec §3.4 be edited to that construction.
+3. **[2026-07-11, SY1] The pair-count obstruction is sharper than a
+   remark.** `anti_possible` is False on 97.36 % of the census, so
+   the count alone refutes *all* anti-candidates nearly everywhere
+   (and the 8 realized anti hits are all polarity flips). Item 5 of
+   the standing list: on this evidence the obstruction deserves the
+   highlighted-lemma treatment in §3.2.
 
 Standing items the theory thread expects data or answers on:
 
