@@ -34,7 +34,7 @@ It is precise and contains milestones for dev, and description of tables/experim
 3. a report file with the engineering team response to the specification.
 It bears the reproducibility constraints for the paper, all data in the paper comes from here.
 Data in here is traceable to git tracked machine gen artefacts and reports : it will be the reproducibility artefact submitted with the paper at some point.
-4. Most have a "handoff" to get started, at root
+4. Most have a `handoff_<thread>.md` at root: the bootstrap document, **current state only** — the TODO queue per role (theory / engineering), next action first, blockers named. Rewritten, never appended to: no dates, no attribution, no session narrative. **A completed item is flushed entirely** — its result belongs in the report, its lesson in the folder's README/algorithm.md, its history in git. The handoff does not grow; length is the signal to evict.
 
 ## Orientation (don't duplicate here — follow the pointers)
 - `README.md` — repo guide / quick start. STATUS/TODO are stale ignore.
