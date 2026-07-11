@@ -30,8 +30,12 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
   independent ways.
 - **K-E1 DONE + K-E7 census map** — K-F7, K-F8 below. Every C3-undecided layer
   decides under (C) at k≤3; no new floor inhabitant; no third verdict mechanism.
-- **Next: K-E2** (floor map incl. the Prop C.19 transfer specimen), K-E3
-  (one-sidedness), K-E4 (emitter, DAG-only).
+- **K-E2 DONE (step 3, the decisive one)** — K-F9: the Prop C.19 transfer
+  specimen yields the **first moving-layer floor inhabitant** (verified genuine
+  (C)-conflicts at k=0,1, ALG-7 toggle + non-conjugate). Floor is empty on the
+  census frame, inhabited beyond it. Steps 1/2 subsumed by K-F7.
+- **Next: K-E3** (one-sidedness stats, reuses the sweep), K-E4 (config-normal-
+  form emitter — DAG-only, never stringify).
 
 ---
 
