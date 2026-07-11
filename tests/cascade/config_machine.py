@@ -231,6 +231,83 @@ def all_closures(inv: Invariant, R: FrozenSet[int], k: int,
 
 
 @dataclass
+class Conflict:
+    """A witnessed (C)-conflict at width `k`: two closed walks sharing the
+    recurring edge set `F` (from bases `(entry, base)`) whose loop classes
+    `d1`,`d2` give opposite verdicts. `status` is 'CONFLICT' | 'CLEAN' | 'BUDGET'
+    ('CLEAN' = no conflict found within budget over a full exploration; 'BUDGET'
+    = the exploration guard tripped, so cleanliness is not established)."""
+
+    status: str
+    k: int
+    F: Optional[FrozenSet[Edge]] = None
+    w1: Optional[Tuple] = None      # (entry c, base x, loop class d, verdict)
+    w2: Optional[Tuple] = None
+    states: int = 0
+
+
+def find_c_conflict(inv: Invariant, R: FrozenSet[int], k: int,
+                    budget: int = 10 ** 6) -> Conflict:
+    """Early-exit (C)-conflict finder: explore the loop-class closure across all
+    entries/bases, tracking each recurring edge set `F`'s verdicts, and return
+    at the first `F` whose `VerdictSet` becomes `{True, False}`. Much cheaper
+    than the full closure when a conflict exists (the covered-set explosion is
+    never realized), which is what the moving/frozen floor hunt needs."""
+    from collections import deque
+    sigma = quotient_letters(inv)
+    one = inv.identity
+    seen_v: Dict[FrozenSet[Edge], bool] = {}      # F -> a verdict already seen
+    wit: Dict[FrozenSet[Edge], Tuple] = {}
+    states = 0
+
+    def loop_word(parent, state) -> Tuple[int, ...]:
+        """Unwind a base-local parent chain to the quotient-letter loop word."""
+        out: List[int] = []
+        while state in parent:
+            state, a = parent[state]
+            out.append(a)
+        return tuple(reversed(out))
+
+    for c in sorted(R):
+        cone = build_cone(inv, R, c, k, sigma)
+        est = entry_stems(inv, cone, sigma)
+        for x in cone.fm_nodes:
+            entry_st = est.get(x, frozenset())
+            start = (x, one, frozenset())
+            seen: Set[Tuple[Node, int, FrozenSet[Edge]]] = {start}
+            parent: Dict[Tuple, Tuple] = {}
+            frontier = deque([start])              # BFS: shortest loops first
+            while frontier:
+                node, d, F = frontier.popleft()
+                for e in cone.out_edges.get(node, ()):
+                    node2 = cone.edge_succ[e]
+                    d2 = inv.mult[d][e[1]]
+                    F2 = F | {e}
+                    st = (node2, d2, F2)
+                    if st in seen:
+                        continue
+                    if states >= budget:
+                        return Conflict("BUDGET", k, states=states)
+                    states += 1
+                    seen.add(st)
+                    parent[st] = ((node, d, F), e[1])
+                    frontier.append(st)
+                    if node2 == x and d2 != one:
+                        e_id = inv.idempotent_power(d2)
+                        for s in entry_st:
+                            v = (inv.mult[s][e_id], e_id) in inv.accept
+                            if F2 not in seen_v:
+                                seen_v[F2] = v
+                                wit[F2] = (c, x, d2, v, loop_word(parent, st))
+                            elif seen_v[F2] != v:
+                                return Conflict(
+                                    "CONFLICT", k, F=F2, w1=wit[F2],
+                                    w2=(c, x, d2, v, loop_word(parent, st)),
+                                    states=states)
+    return Conflict("CLEAN", k, states=states)
+
+
+@dataclass
 class Decision:
     """ALG-6 output for one layer at one width. `verdicts[F]` is `VerdictSet(F)`;
     `groups[proj]` unions verdicts over F's sharing a window projection (the

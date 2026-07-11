@@ -193,3 +193,31 @@ absorption). The `other_split` column is the third-mechanism flag for K-E2.
 
 Command: same sweep as K-F7 (`other`, `other_split` columns).
 Triage: `python3 -m tests.cascade.k_e7_triage <id> <layer> <k> other`.
+
+## K-F9 — Prop C.19 transfer specimen: first moving-layer floor inhabitant — CONFIRMED
+
+The transfer language `π₁⁻¹(GF(a∧X((!a&!b)U a))) ∩ π₂⁻¹(G(c→F d))` — over disjoint
+AP sets, the conjunction `(GF(a∧X((!a&!b)U a))) ∧ (G(c→F d))` over `{a,b,c,d}` —
+builds `𝓘` with 25 classes, aperiodic, and a **moving, 1-anchored terminal
+layer `{21,24}`** (the predicted `{(z,2),(z,4)}`: the floor's frozen `z`
+coordinate times `G(c→F d)`'s moving `{2,4}`).
+
+The (C)-decider **conflicts at width 0 and width 1** (early-exit finder;
+`|F|=2` then `6`, both based at class 21). ALG-7 verification on each: the two
+reconstructed lassos share the recurring edge set yet **`inv.member` toggles**
+(one accepts, one rejects — independent of the closure) and the induced linked
+pairs are **non-conjugate** (Lemma C.11) — a **genuine** (C)-conflict, not a
+closure bug. So the moving layer has no clean (C) width: **the first
+moving-layer floor inhabitant**, confirming Prop C.19 and the transfer of the
+floor witness's zero-absorption onto a moving layer.
+
+k=2,3 hit BUDGET (|Σ_λ|=9, covered-set explosion) — a tooling limit; the
+conflict is the window-blind `a·s^*·a` mechanism (Theorem C.12′) decorated by a
+fixed `G(c→F d)` recurrence, so it persists at every width structurally.
+
+Command: `python3 -m tests.cascade.k_e2_transfer`. Log:
+`tests/cascade/logs/k_e2_transfer.txt`.
+
+*(K-E2 steps 1/2 — the census frozen/moving stratum — are subsumed by K-F7: 0
+conflicts over the 1164 census-undecided layers. The floor is thus **empty on
+the census frame, inhabited beyond it** by the C.19 construction.)*
