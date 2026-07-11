@@ -833,6 +833,88 @@ since a mixed action needs several classes to be mixed *over*, not several
 letters. The degree localisation (every FAIL at `ϕ = (1,σ)/(1,π)`, F6) is
 confirmed by the exhibit's `.cat`.
 
+## E11 — the decomposition fallback: implemented, first measurements
+
+**Status.** Both halves are implemented in `aut2ltl/sos2ltl/cascade/`
+(construction: `cascade/algorithm.md`) and wired *below the engine*
+through a new `engine.LayerFallback` hook: `W(R)` became a per-class
+provider in both brick builders, and `labels()` delegates a no-width
+layer (stem half) or a window-undetermined final-candidate class (loop
+half) instead of declining the whole transcription. The assembly is
+the registered recipe **`sos2ltl_casc`** — `sos2ltl` plus the
+delegate, one `hi` simplification at the recipe boundary and nowhere
+else. Gates: `e0_gate` green (29 cases) after the engine surgery;
+`survey --folder samples/validation --use sos2ltl_casc` **SUCCESS**
+(83 inputs: 70 LTL, 3 not-LTL, 73/73 validated TRUE, 0 FAIL, 0
+declined, 10 self-timed TIMEOUT — the timeout population is data, see
+F16).
+
+**Deviations from the spec §4 wording** (sanctioned: forward the
+implementation).
+
+- *No standalone LTLf pass.* The stem half never materializes
+  `ψ_{r→c}`: the reach family's continuation parameter `τ` **is**
+  Prop 4.14's insertion point (`ρ_c = ⋁_{C covering c}
+  reach_to(ι_R, C, ⋁_d guard(c→d) ∧ X Final(d))` on the totalized
+  machine's cascade). Determinism + the absorbing sink give the
+  first-exit uniqueness of Prop 4.14's proof verbatim, and [BLS22,
+  Rem 2]'s finite-word next semantics is what evaluating the family
+  against a continuation implements.
+- *Loop-half scoping is the product* `D × (confined class walk)`, not
+  per-class state picking: every `D`-state reached by a class-`c` stem
+  realizes `T_c` (residuals factor through the syntactic congruence),
+  so the product is the honest restriction and the per-class entry
+  choice is language-free.
+- *Build order*: loop half first (self-contained worked instance); the
+  stem half's stratum recount rides with the census regeneration.
+
+**Worked instance (loop half, the floor witness).** On
+`GF(a ∧ X((!a∧!b) U a))` the delegate's scoped acceptor is exactly the
+paper's pendency machine (two pendency states + entry transient +
+rejecting sink; Büchi mark on the completion state). Seam:
+`states=4 height=3 levels=[2,2,2] configs=4`, GAP wall 0.56 s, winning
+member `buchi`. Regen: `python3 -m tests.sos2ltl.e11_pendency` (run
+with `KR_SIMP_OPTS=basics`, see F16).
+
+### F16 — loop labels emit at bls-floor parity, and the flat wall is real
+
+Three findings from the worked instance, each a number to hold the
+paper's §6 against:
+
+1. **The emission is huge in the flat dimension**: label DAG
+   **3 125** nodes, flat (unfolded tree) **≈ 2.5·10¹¹** — for a
+   language whose defining formula has 7 nodes. The spec's open size
+   risk ("the flat/printed column") is confirmed on the *first* loop
+   instance, not on an adversarial one.
+2. **This is the floor's own behaviour, not a delegate artifact**: the
+   bare bls cascade translator on the whole language (same normalized
+   3-state acceptor) emits DAG 3 266 / flat ≈ 3.6·10¹¹ under the same
+   policy in 1.4 s. Delegate ≡ peelers' floor, scoped per layer — the
+   integration is at parity; the size problem is [BLS22]'s
+   construction on ≥3-level cascades as implemented.
+3. **The conformance gate cannot consume the raw label**:
+   `spot.are_equivalent` must translate the formula and stalls (>15 s,
+   recorded TIMEOUT). On this branch the gate is the *only*
+   correctness authority, so until the label shrinks (or a DAG-aware
+   oracle route exists) loop-half emissions are **unverified** —
+   stop-the-line material for theory: the paper's §6 size expectation
+   ("linear in configurations") holds for the `Fin(C)` *combination*,
+   but each `Fin(C)` atom's reach expansion is where the volume lives.
+
+*Simplifier policy datum (environment, not code):* the default hybrid
+`_simp_f` (Spot full rules on nodes ≤ 2000 unfolded) stalls the member
+build itself >15 s on this 3-level cascade — both in the delegate and
+in the bare floor. `KR_SIMP_OPTS=basics` completes it in ~1 s. E11
+runs therefore use `basics` in the hot loop; `hi` only at the recipe
+boundary (user-set policy, recorded in `handoff_toltl.md`).
+
+**In flight / next.** Corpus sweep `survey --folder
+genaut/corpus/flat_canon/det --use sos2ltl_casc` (background;
+delegate firing stats, timeout population, sizes). Stem half not yet
+exercised — first specimen is F14's `3state1ap0acc_004260`
+((A)-failing layers `{3,8,12}`, `{6,11,14}`, `{9,10,13}`); the DG
+ledger for step 3(b)'s ⟨TBD⟩ follows it.
+
 ## Reproduction
 
 Every table above is machine-built and audited against a committed output under
