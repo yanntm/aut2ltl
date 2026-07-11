@@ -3184,3 +3184,20 @@ Prop C.19 tool-confirmation paragraph (K-F9, first moving-layer floor
 inhabitant); Cor C.9 TBD settled census-wide (132/132 prefix-independent
 frozen, K-F10) + one-sidedness 13/13/18/12 after Cor C.8; K-F11 emitter
 conformance into C.3 worked witness + C.7 note. Banner updated.
+
+## 2026-07-11 — classifier K4 groundwork: Fork exercised, regime hunted
+- LANDED tests/sosl/classify_fork.py + samples/fixtures/hoa/sos/fork.sos: the
+  derivative-regime fixture, built from the formula, byte-gated, PARTIAL record
+  asserted on both sides (coords (1,1,0,0), mu=omega, LTL + stutter-invariant),
+  CLI exit 2. What detection can assert without dA is green.
+- HUNT: classified every .sos the beyond-wall campaign built (46596 draws, 9
+  parity shapes, 8467 at the floor shape 3state1ap2acc_parity): 0 PARTIAL. The
+  regime is rare in presentation measure.
+- LANDED genaut/probes/derivative_floor.py: the C-paper section 7 routing
+  construction encoded as combo id 9241386589983080592 of 3state1ap2acc_parity
+  classifies PARTIAL and IS Fork up to relabeling — the 3-state 2-colour floor
+  is sharp inside the max-even census family (Spot's own paritization of Fork
+  needs 4 states: tests/probes/fork_parity_floor.py). LANDED genaut/gen/hunt.py
+  (sampling chain + classifier keep-predicate) for future draws.
+- Report section 4 + paper section 8 absorbed the finding: inhabited at the
+  floor, unreachable by uniform draws — "one must aim".
