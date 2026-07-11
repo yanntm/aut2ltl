@@ -66,7 +66,7 @@ def graded_label(inv, cay, layer_id: int) -> "spot.formula":
         final[d] = spot.formula.tt()
     exit_ = engine._Exits(inv, final, residual=False)
     engine._layer_graded(cay, la, layer_id, la.width, lets, final, exit_,
-                         engine.Rendering(residual=False), wterm)
+                         engine.Rendering(residual=False), lambda _c: wterm)
     return final[ENTRY]
 
 
