@@ -29,7 +29,9 @@ of a loop is nothing but a rotation of it — with a binary search in each phase
 a finding of independent interest: an observation table with two-sided columns is
 *still not enough*, because membership's error signal is one-sided — the table can
 stabilize on a correct acceptor coarser than the algebra, an FDFA in algebraic
-clothing, and does so *permanently* on a language as plain as `a → Xa`. What restores two-sidedness is a *left-saturation* sweep over class
+clothing, and does so *permanently* on a language as plain as `a → Xa`; such a
+certified stall is provably never a congruence — a correct acceptor and no
+algebra at all. What restores two-sidedness is a *left-saturation* sweep over class
 representatives whose checks cost no queries at all — the rotation lemma's slot
 collapse transported to the learner's
 side; with it, the fixpoint is exactly `S(L)₊¹`, after at most `|𝒞|` class splits
@@ -128,7 +130,9 @@ Myhill–Nerode's failure at ω seemed to forbid is what this paper is for.
    lemma's slot collapse — restores two-sidedness (§4.2–4.3).
 4. The saturated-fixpoint theorem: termination after at most `|𝒞|` splits, and
    canonicity — the fixpoint *is* `S(L)₊`, exported as `𝓘(L)`; equivalence between
-   hypotheses is invariant equality, replacing product constructions (§5).
+   hypotheses is invariant equality, replacing product constructions — with a
+   converse: an exactly-certified fixpoint is either canonical or carries no
+   algebra at all (Theorem 5.5) (§5).
 5. An implementation as a pure query learner, and an evaluation against the
    canonical target: byte-exact reconstruction across a complement-closed
    census of 3938 languages (`N` past 100, zero mismatches), the query bounds
@@ -830,7 +834,10 @@ the reference.) Canonicity is therefore beyond counterexample-guided
 refinement: the CEGAR loop that carries L\* — and every ω-learner since — has
 no error signal left to react to, and what breaks the stall must be a query
 the learner poses on its own initiative. The repair below is that query — not
-an optimization but the difference between the algebra and an acceptor.
+an optimization but the difference between the algebra and an acceptor. (§5
+closes the account: by Theorem 5.5 *every* exactly-certified stall is like
+these two — its partition is never a congruence, so there is no algebra on
+its classes to mis-export.)
 
 ### 4.3 The repair: left-saturation over class representatives
 
@@ -1321,9 +1328,69 @@ the price of the deliverable. The algebra `L_n` owns *is* that large, every
 definability read-off consumes it, and any route to it — learned here,
 constructed in [SωS26] — pays `N`. Output-polynomial in `N`
 (Proposition 5.2) is the strongest guarantee compatible with delivering the
-object. The unsaturated stall of §4.2, for its part, is not an isolated
-artifact: Proposition 4.4's `a → Xa` is the smallest exhibit an exhaustive
-census of one-atom automata can produce (§6.3).
+object.
+
+One theorem remains, and it closes the unsaturated stall's account: with an
+exact oracle, a stalled fixpoint is not merely *short of* the algebra —
+certified, it cannot carry an algebra at all. The instrument is the sweep's
+own check, which turns out to be a complete congruence test:
+
+**Lemma 5.4 (the sweep check decides congruence).** On a closed, consistent
+table, the kernel of `ψ` on `Σ*` — a right congruence by construction, being
+the reachability kernel of the deterministic automaton `step` — is a
+two-sided congruence iff the saturation sweep's check phase is clean:
+`fold(d, u) = fold(d, w_{ψ(u)})` for every table word `u` and class `d`.
+
+*Proof.* (⟸) Write `(S)` for the check's instances at frontier words:
+`fold(d, w_c·a) = fold(d, w_{step(c,a)})` for all `d, c ∈ 𝒞_T`, `a ∈ Σ` — all
+table words, so a clean check includes them. Induction on `|u|` extends the
+check to every word, `fold(d, u) = fold(d, w_{ψ(u)})`: the base case is `(S)`
+at `c = [ε]`, and the step is
+`fold(d, u'·a) = step(fold(d, u'), a) = step(fold(d, w_{ψ(u')}), a)
+= fold(d, w_{ψ(u')}·a) = fold(d, w_{ψ(u'·a)})`, the last equality by `(S)` at
+`c = ψ(u')`. Left-invariance follows as in Theorem 5.1's proof; right-
+invariance is automatic. (⟹) Two-sidedness makes
+`fold(d, u) = ψ(w_d·u)` a function of `(d, ψ(u))`, and `ψ(u) = ψ(w_{ψ(u)})`
+on table words is coherence (Lemma 3.3). ∎
+
+(The forward direction is the claim inside Theorem 5.1's proof, extracted;
+the lemma adds its converse, making the check a *classifier*: zero queries,
+run on any fixpoint, saturated or not.)
+
+**Theorem 5.5 (certified fixpoints: canonical or no algebra).** Let a
+closed, consistent table's hypothesis be certified by an exact equivalence
+oracle — its prediction agrees with `L` on every lasso. Then the following
+are equivalent: (i) the kernel of `ψ` is a congruence (Lemma 5.4's check is
+clean); (ii) the export of Theorem 5.1 is exactly `𝓘(L)`, byte-equal after
+re-keying. In particular a certified *non-canonical* fixpoint — a permanent
+stall — is never a congruence: its product `M(c, c') = fold(c, w_{c'})`
+genuinely depends on the choice of representatives, and no operation on its
+classes recognizes anything. What the ablation of §6.3 delivers is the
+Cayley hypothesis itself — a correct acceptor — and, provably, nothing more.
+
+*Proof.* (ii)⟹(i): `𝓘(L)`'s classes form a monoid. (i)⟹(ii): the second half
+of Theorem 5.1's proof consumes exactly these hypotheses and nothing else.
+*The kernel saturates `L`* uses two-sidedness plus everywhere-correct
+predictions to give `ψ(u) = ψ(v) ⟹ u ≈_L v`; injectivity of the class map
+uses that every split — promotion, consistency mint, harvest — is witnessed
+by an Arnold context (saturation escalations, absent here, were only ever
+one more witnessed mechanism); surjectivity is `u ≈_L w_{ψ(u)}`, from
+Lemma 5.4's extension of the check to all words at `d = [ε]`. Multiplicati-
+vity, the BFS keys (with (i), `mult` by letter classes *is* `step`, so the
+two BFS orders coincide), and `P` (teacher bits on representative lassos)
+assemble byte-equality as in Theorem 5.1. ∎
+
+Note the asymmetry the exactness buys: under a bounded oracle a congruent
+unsaturated fixpoint may still be a genuine algebra strictly coarser than
+`S(L)₊¹` — a correct-so-far quotient the oracle was too weak to refute.
+Exactness closes that door: congruent and certified *forces* canonical, so
+the two-sided/one-sided divide of §4.2 is also the algebra/no-algebra
+divide. Proposition 4.4's non-associative display is Theorem 5.5 made
+concrete on the smallest specimen — the display shows *how* the product
+breaks; the theorem says it always does. The unsaturated stall of §4.2,
+for its part, is not an isolated artifact: Proposition 4.4's `a → Xa` is
+the smallest exhibit an exhaustive census of one-atom automata can produce,
+and §6.3 measures the family at census scale.
 
 ## 6. Evaluation
 
@@ -1462,8 +1529,13 @@ closed, consistent fixpoint is already canonical; **transient** — a
 non-canonical fixpoint, broken by a counterexample; **permanent** — a
 non-canonical fixpoint the exact oracle certifies, which no counterexample
 breaks. Only the left-context sweep splits a permanent stall; without it the
-learner exports a strict coarsening of the algebra's classes — which, §4.2
-showed, need not even be a semigroup.
+learner stops on the Cayley acceptor and nothing more — by Theorem 5.5 a
+certified stall's partition is never a congruence, so there is no algebra on
+its classes to export: on the ablation leg "export" is a refusal, the
+recorded outcome *correct acceptor, no algebra*. ⟨TBD: the congruence-column
+recount — every permanent stall fails Lemma 5.4's check, Theorem 5.5
+performed at census scale; on a handful of languages the ill-defined product
+cannot even reach every class from `ε`.⟩
 
 Permanent stalls are not rare. Of the 2492 languages the census sweep has
 reached, **1180 stall permanently** ⟨TBD-M4: final counts — the unfinished
@@ -1646,7 +1718,8 @@ lasso queries. On the way we met a finding worth the trip: two-sided columns are
 *not enough*, because membership's error signal is one-sided, and without the
 saturation sweep the table stalls on a correct acceptor strictly coarser than
 the algebra — permanently, already on `a → Xa` (Proposition 4.4), where the
-stalled export is not even associative — a stall beyond counterexample-guided
+stalled export is not even associative; indeed a certified stall never
+carries an algebra at all (Theorem 5.5) — a stall beyond counterexample-guided
 refinement, dissolved by the same slot collapse. The learner's limit is not an acceptor
 chosen from a family but the canonical invariant of the language — the object
 definability questions are read from — so learning and classification cease to
