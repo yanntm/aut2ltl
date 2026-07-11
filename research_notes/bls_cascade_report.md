@@ -1,6 +1,6 @@
 # Cascade ladder — Findings ledger (`bls_cascade_report.md`)
 
-Ledger for `bls_cascade_experiments.md` (K-series). Current-state only; git
+Ledger for `bls_cascade_spec.md` (K-series). Current-state only; git
 holds history. Each finding: id, one-line claim, status
 (`CONFIRMED | REFUTED | BUDGET | BLOCKED`), the exact command, and pointers to
 git-tracked files only. `PAPER-EDIT:` flags a refuted prediction against its
@@ -21,7 +21,7 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
   halves) and C.17 are **refuted** by the floor witness (draft C.4,
   Theorem C.12′); `G(a→Fb)` is the new C.3 worked witness; the floor witness
   is C.5's fallback instance. Revised `bls_cascade.md` (banner, C.3–C.7),
-  `bls_cascade_experiments.md` (K-E0 expectations, K-E1/E2/E4/E6/E7
+  `bls_cascade_spec.md` (K-E0 expectations, K-E1/E2/E4/E6/E7
   re-scoped), main paper `sos_toltl.md` §5.1/§8.
   **K-E1–K-E5: UNBLOCKED** under the revised spec.
 - **K-E0 COMPLETE** — all six steps green: steps 1–3 (revised expectations, via

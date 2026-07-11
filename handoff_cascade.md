@@ -1,7 +1,7 @@
 # Handoff — cascade ladder experiments (K-series)
 
 Bootstrap to current state + todos. NOT history (git + `docs/HISTORY.md` hold
-that). Mission: `research_notes/bls_cascade_experiments.md` (K-E0..E7). Ledger:
+that). Mission: `research_notes/bls_cascade_spec.md` (K-E0..E7). Ledger:
 `research_notes/bls_cascade_report.md` (findings K-F1..). Draft: `bls_cascade.md`.
 
 ## Where things stand (current)

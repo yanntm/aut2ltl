@@ -1,6 +1,6 @@
 """The configuration machine M_k(R) and the condition-(C) decider.
 
-Implements the normative algorithms of `research_notes/bls_cascade_experiments.md`
+Implements the normative algorithms of `research_notes/bls_cascade_spec.md`
 §3 directly (ALG-1 cone build, ALG-2 entry stems, ALG-5 unified closure, ALG-6
 decision), reading its objects off a `sosl.sos.Invariant` and a layer `R` (a
 frozenset of class ids that is an SCC of the Cayley machine).

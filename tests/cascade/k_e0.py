@@ -1,4 +1,4 @@
-"""K-E0 gate: the two cascade-ladder witnesses (bls_cascade_experiments.md §4).
+"""K-E0 gate: the two cascade-ladder witnesses (bls_cascade_spec.md §4).
 
     python3 -m tests.cascade.k_e0 floor      # GF(a & X((!a&!b) U a))
     python3 -m tests.cascade.k_e0 gaFb       # G(a -> F b)
