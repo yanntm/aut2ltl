@@ -78,8 +78,8 @@ C.5(i) strictness, spec/report sync. Next Theory session:)
    (C)-decided layers (rebuild-𝓘 gate on the assembled label) + the DG
    size ledger.
 4. **K-E5**: DG vs manufactured cascade on the (A)-fallback stratum
-   (recount the stratum on the extended corpus first — the "258" is the
-   old cut; needs the `aut2ltl/bls` bridge).
+   (recount the stratum on the current corpus first; needs the
+   `aut2ltl/bls` bridge).
 5. **K-E6**: floor-witness pendency machine + prophetic `A_S` cross-check.
 6. Housekeeping: E3's rung-stratified (`P|_R`) one-sidedness recount;
    `k_e1_verify` exits 2 on BUDGET which reap tallies as `fail` (cosmetic —

@@ -54,9 +54,8 @@ Create the report on first landing a result; thereafter it is the ledger.
   monoid `𝒜_R` as a by-product.
 - **C3** ((B)-tester): the bounded window-determinacy stages and its
   census output table — the source of the `undecided` layers (K-E1's
-  input; 8 786 readings over 2 114 languages on the extended corpus,
-  was 372 on the old ω²-ceiling cut) and of Table 3's semantics, which
-  K-C1's (B)-mode must match.
+  input; 8 786 readings over 2 114 languages) and of Table 3's
+  semantics, which K-C1's (B)-mode must match.
 - The `aut2ltl/bls` package: GAP/SgpDec holonomy bridge
   (`aut2ltl/bls/gap`, `decompose_aut`), the reach-formula family
   (`aut2ltl/bls/operators/`), `Fin` (`fin.py`) — consumed by K-E5.
@@ -322,12 +321,13 @@ depth) recorded against the DG-fallback output the same languages took.
 ### K-E5 — DG vs manufactured cascade on the (A)-fallback stratum
 
 *Hypothesis* (draft C.5, stem side): on the (A)-failing languages
-(258 languages / 1 432 layers on the OLD cut — recount on the extended
-corpus is step 0's first duty), holonomy cascade + finite-word reach
-beats DG-on-`𝒜_R`, and cascade heights sit far below `2^{|R|}`.
+(stratum recount on the current corpus is step 0's first duty),
+holonomy cascade + finite-word reach beats DG-on-`𝒜_R`, and cascade
+heights sit far below `2^{|R|}`.
 
-0. *Preflight (cheap, reported separately):* for each of the 1 432
-   failing layers, record whether it is a final candidate (has an
+0. *Preflight (cheap, reported separately):* recount the (A)-failing
+   stratum on the current corpus, then for each of its failing
+   layers, record whether it is a final candidate (has an
    internal cycle — some run can stay forever). The draft's C.5 asserts
    none is; a final (A)-failing layer would also need the loop-side
    fallback and is a `PAPER-EDIT` on that sentence.

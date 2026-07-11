@@ -174,10 +174,7 @@ Over the census (6222 languages), C3 leaves **8786** layer readings
 **Every layer that decides does so at width ≤ 2**; 505 of them conflict at
 k=0 yet decide at k=1/2 — the ladder's rungs doing real work. The heavy
 remainder is *not* undecided noise: K-F12 resolves it into genuine
-conflicts / clean / budget. (The earlier 4248-language cut of this
-experiment decided its whole stratum with zero conflicts; that was a
-property of the frame — its Wagner ceiling was ω² — not of the census
-axis.)
+conflicts / clean / budget.
 
 Data + regen: `reference/cascade/k_series.md` (`k_e1_cluster.csv`; shard
 driver `tests/cascade/k_e1_one.py`, cluster recipe in
@@ -337,9 +334,10 @@ The report cycle is accepted in full; no number was contested. Four
 outcomes, all on paper (`bls_cascade.md`, same-day commits):
 
 1. **K-F12 integration.** All extended-corpus numbers and the floor
-   reversal are in the draft; the old-cut figures survive only as an
-   explicitly-labeled historical parenthetical (C.2). The spec's stale
-   stratum descriptions are re-based likewise.
+   reversal are in the draft; old-cut figures are evicted outright
+   (repo policy: stale census data leaves the documents, no historical
+   asides). The spec's stale stratum descriptions are re-based
+   likewise.
 2. **K-F10 promoted — Theorem C.9′**: prefix-independence forces every
    terminal layer to be a frozen *singleton* — proved unconditionally
    (no aperiodicity), via the completely-simple minimal ideal: the
