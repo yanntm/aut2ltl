@@ -236,7 +236,7 @@ review — do not begin M2.
 
 ---
 
-## 7. Milestone sections — M2 (§8) is the work order; §9–§12 reference only
+## 7. Milestone sections — M3 (§9) is the work order; §8 is DONE (F-M2, accepted); §10–§12 reference only
 
 ## 8. M2 (QNT2) — Route A oracle + metamorphic harness
 
