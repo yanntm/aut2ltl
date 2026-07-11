@@ -6,7 +6,7 @@ ROLL.
 
     python3 -m tests.sosl.census_e3 [--limit N] [--cases i:j] [--only KIND]
                                     [--roll-timeout S] [--out-csv FILE]
-                                    [--summary-only]
+                                    [--from-sweep SWEEP_CSV] [--summary-only]
 
 Source is the flat catalogue `genaut/corpus/flat_canon` (the project standard).
 Each row is one **kind** of one language, in a long format that concatenates
@@ -16,7 +16,10 @@ count N, its MQ/EQ under the default config) or one of ROLL's three FDFA modes
 single sequential JVM — so `--cases i:j` slices the catalogue and `--only KIND`
 picks one kind, and each shard writes its private `$OARRUN_OUT.csv` (the runner
 forbids a shared file). `reap.sh` concatenates; `--summary-only` pivots the merged
-CSV back per case.
+CSV back per case. The `ours` kind is not run on the cluster: it equals the
+learner sweep's default leg, so `--from-sweep SWEEP_CSV` derives those rows off a
+finished `census_campaign` CSV (`size` = `ref_classes`, `MQ`/`EQ` =
+`n_member_total`/`n_equiv`) instead of recomputing them.
 
 The summary reports the per-metric medians, the size-comparison distribution (how
 often the algebra is smaller / larger / tied against ROLL's smallest FDFA — the
@@ -133,6 +136,22 @@ def _ours_row(case) -> dict:
             "MQ": s.n_member_total, "EQ": s.n_equiv}
 
 
+def _ours_from_sweep(sweep_csv: str) -> List[dict]:
+    """The `ours` long-rows read off a finished `census_campaign` CSV: one per
+    default-leg row, `size` = `ref_classes` (the config-independent class count N),
+    `MQ`/`EQ` = that leg's `n_member_total`/`n_equiv`. This is identical to running
+    the learner again, without the recompute."""
+    out: List[dict] = []
+    with open(sweep_csv, newline="") as fh:
+        for r in csv.DictReader(fh):
+            if r.get("config_id") != "default":
+                continue
+            out.append({"case": r["case_id"], "kind": "ours",
+                        "size": r["ref_classes"], "MQ": r["n_member_total"],
+                        "EQ": r["n_equiv"]})
+    return out
+
+
 def _roll_row(case, mode: str, ba_file: str, roll_timeout: int) -> dict:
     """One ROLL-mode row for a case: FDFA size and MQ/EQ, or `-1`s if the run did
     not produce stats (timeout / parse failure)."""
@@ -150,6 +169,7 @@ def main(argv: List[str]) -> int:
     cases_spec = ""
     only = ""
     out_csv = ""
+    from_sweep = ""
     skip = -1
     for i, a in enumerate(argv):
         if i == skip:
@@ -164,6 +184,8 @@ def main(argv: List[str]) -> int:
             only = argv[i + 1]; skip = i + 1
         elif a == "--out-csv":
             out_csv = argv[i + 1]; skip = i + 1
+        elif a == "--from-sweep":
+            from_sweep = argv[i + 1]; skip = i + 1
         elif a == "--summary-only":
             summary_only = True
 
@@ -179,6 +201,28 @@ def main(argv: List[str]) -> int:
             print(f"no {csv_path}", file=sys.stderr)
             return 2
         _summary(csv_path)
+        return 0
+
+    if from_sweep:
+        # The `ours` kind is exactly the learner sweep's default leg: our class
+        # count N is the config-independent reference count (`ref_classes`), and
+        # its MQ/EQ are that leg's `n_member_total`/`n_equiv`. Derive the rows from
+        # the finished sweep CSV rather than re-running the learner.
+        rows = _ours_from_sweep(from_sweep)
+        fresh = not csv_path.exists()
+        done = _done_rows(csv_path)
+        n = 0
+        with open(csv_path, "a", newline="") as fh:
+            writer = csv.DictWriter(fh, fieldnames=FIELDS)
+            if fresh:
+                writer.writeheader()
+            for row in rows:
+                if (row["case"], "ours") in done:
+                    continue
+                writer.writerow(row)
+                n += 1
+        print(f"ours derived from {from_sweep}: {n} rows -> {csv_path}",
+              file=sys.stderr)
         return 0
 
     kinds = KINDS
