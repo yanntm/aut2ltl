@@ -9,15 +9,17 @@ the first engineering session — contract in §0). Experiment ids are
 namespaced `K-` to avoid collision with `sos_toltl_spec.md`'s
 C/E/H/M series, whose assets this spec consumes.
 
-**Where things stand:** K-E0 is COMPLETE (K-F1..F6); K-E1, K-E2, K-E3
-and K-E7 are COMPLETE **on the extended corpus** (6 222 languages,
-Wagner ω³/ω⁴ — K-F7..K-F10, K-F12; data in `reference/cascade/`);
-K-E4's worked example is gated (K-F11, production wiring open); K-E5
-and K-E6 have not run. The third paper revision has landed
-(Theorem C.9′, Theorem C.12″, the K-F12 floor reversal), and this spec
-is synced to it. **Open runs:** the k=2 pass on K-E1's 640 budget-open
-layers, K-E4 engine integration, K-E5, K-E6, and the new **K-E8**
-(padded-block floor certificates + the (B̃)-strictness probe) below.
+**Where things stand — THREAD PARKED.** The note is the standalone
+companion [Cas26]; the main paper's §6 imports its slim core. K-E0 is
+COMPLETE (K-F1..F6); K-E1, K-E2, K-E3 and K-E7 are COMPLETE **on the
+current corpus** (6 222 languages, Wagner ω³/ω⁴ — K-F7..K-F10, K-F12;
+data in `reference/cascade/`); K-E4's worked example is gated (K-F11).
+**Migrated:** K-E5 and K-E6 are subsumed by `sos_toltl_spec.md`
+**E11** (the decomposition fallback); K-E4's production wiring is the
+toltl thread's census-regeneration item. **Parked here** (reopen only
+if the floor cartography becomes a paper): K-E8 (padded-block floor
+certificates + the (B̃)-strictness probe) and the k=2 pass on K-E1's
+640 budget-open layers.
 
 ---
 
@@ -318,7 +320,10 @@ pendency machine — that is K-E6's item, not this emitter's.)
 Zero verified-non-equivalent. Sizes (final DAG, flat, modal depth, until
 depth) recorded against the DG-fallback output the same languages took.
 
-### K-E5 — DG vs manufactured cascade on the (A)-fallback stratum
+### K-E5 — DG vs manufactured cascade on the (A)-fallback stratum — MIGRATED
+
+*Subsumed by `sos_toltl_spec.md` E11 (stem half); kept below for
+reference only.*
 
 *Hypothesis* (draft C.5, stem side): on the (A)-failing languages
 (stratum recount on the current corpus is step 0's first duty),
@@ -407,8 +412,11 @@ differing failures are (C)-conflicts and also feed K-E2's floor map.
 *Cost note:* `O(|E_id|²)` table products per `(x, F)` group — negligible
 against ALG-5 itself; run it by default in every K-E1/K-E2 invocation.
 
-### K-E6 — the fallback's worked instance + prophetic cross-check
-(promoted from optional: C.5 is load-bearing by C.4's no-go)
+### K-E6 — the fallback's worked instance + prophetic cross-check — MIGRATED
+
+*Step 1 is subsumed by `sos_toltl_spec.md` E11 (loop half, worked
+instance). Step 2 (the prophetic `A_S` cross-check) stays with this
+note's open problem; parked. Kept below for reference.*
 
 1. *Presentation-side config run* (draft C.5's worked paragraph): build
    the pendency machine for the floor witness (two states, "last
@@ -430,7 +438,10 @@ against ALG-5 itself; run it by default in every K-E1/K-E2 invocation.
    Feeds the prophetic transcription problem's first worked instance —
    the open problem's main candidate route (C.4, C.5).
 
-### K-E8 — floor certificates: the padded-block scan (Theorem C.12″)
+### K-E8 — floor certificates: the padded-block scan (Theorem C.12″) — PARKED
+
+*Feeds only this note's K-F12 every-width claim, not the main paper;
+run when the floor cartography reopens.*
 
 *Statement scanned* (draft Theorem C.12″): on a frozen singleton layer
 `{z}`, pick a pad letter `s ∈ Σ_z` and let `σ := π([s])` (ALG-3). For

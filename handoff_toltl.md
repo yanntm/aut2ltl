@@ -1,135 +1,84 @@
 # Handoff — toltl thread (main paper, SoS → LTL)
 
-Bootstrap to current state + todos. NOT history (git holds that).
-Paper: `research_notes/sos_toltl.md`. Spec: `sos_toltl_spec.md` (its
-head is the done/todo map). Ledger: `sos_toltl_report.md` (results in
-force, current-state only). Corpus: `genaut/corpus/flat_canon`.
-Tracked measurement data: `reference/census/` (extend it; reports cite
-only tracked files + regen commands, never `logs/`).
+Paper: `research_notes/sos_toltl.md`. Spec: `sos_toltl_spec.md` (head
+= done/todo map). Ledger: `sos_toltl_report.md`. Corpus:
+`genaut/corpus/flat_canon` — **6 222 languages (3 738 LTL / 2 484
+non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
+(reports cite tracked files + regen commands only, never `logs/`).
 
-## ⚠ THE CORPUS MOVED UNDER THE PAPER — every census number is stale
+## State
 
-The corpus is now **6 222 languages (3 738 LTL / 2 484 non-LTL),
-Wagner ceiling ω³/ω⁴** (the campaign added ~1 000 primals above the
-old ω² ceiling, plus a late pair). The report's bench section still
-says 3 938 (2 240/1 698), and every census-derived figure in the
-report and the paper — E1/E2 tables, E7 dual scan, E10, H2/H4, all of
-§8, Table 3 and every sentence quoting it — was computed on the old
-cut.
+- **§6 "the cascade import" is in the paper** (slim: the (C) rung, the
+  floor example with no completeness claimed, the decomposition
+  fallback); old §§6–10 renumbered §§7–11; [BLS22]/[Cas26] in the
+  references. The companion note `bls_cascade.md` holds all proofs and
+  everything that does not transition.
+- **Every census number in the report and the paper is stale** — the
+  corpus moved under them (report bench still says 3 938). Policy,
+  absolute: stale data is EVICTED, not annotated — no "on the old cut"
+  asides; a number traces to the current corpus through a tracked
+  artifact + regen command, or it leaves the document. Known flips on
+  the new frame (from `reference/cascade/`, ledger K-F7..K-F12):
+  Table 3's "(B) failures: 0" is false; the `2state2ap` shape is
+  in-frame and populated (type specimen
+  `2state2ap1acc_parity_3772037665`); prefix-independent stratum is
+  1 104; the (A)-fallback stratum count is unknown pending recount.
+- Engine sound catalogue-wide on the old cut; `python3 -m
+  tests.sos2ltl.e0_gate` (fixtures, corpus-independent) stays the
+  landing gate, with `python3 -m survey --folder samples/validation`
+  SUCCESS before any code lands.
+- Deferred marks in the paper awaiting the drops below: ⟨TBD: §9
+  re-based⟩ in §5.1 and §8; §6's stem-half ledger ⟨TBD⟩.
 
-**Policy (user-set, absolute): stale data is EVICTED, not annotated.**
-There is no "historical" old census worth keeping: no "on the old cut
-it was X" parentheticals, no old/new contrasts, no stale number kept
-for color. A number either traces to the current corpus through a
-tracked artifact + regen command, or it leaves the document. This
-binds both roles: **Engineering regenerates the report on the new
-corpus; Theory then fixes every number in the paper.**
+## Todo — Engineering (in order; spec head has the details)
 
-Known FLIPS the regeneration will surface (already established by the
-cascade thread on the new corpus — `reference/cascade/k_series.md`,
-ledger `bls_cascade_report.md` K-F7..K-F12; do not re-derive, just
-reconcile):
-
-- **Table 3's "(B) failures: 0" is FALSE on the new frame.** The
-  window decider leaves 8 786 final-layer readings undecided (over
-  2 114 languages); the exact decider finds ≥ 1 021 genuine
-  (C)@0-conflicts, 263 persisting at k=1; frozen-singleton conflicts
-  are plain-(B) failures (Lemma C.10). Type specimen
-  `2state2ap1acc_parity_3772037665`.
-- **§7/§8's "a (B)-failing final layer needs 2 states × 2 AP at once,
-  a shape the frame omits" is FALSE** — the shape is in the frame and
-  populated. The `2state2ap` open-hunt sentences (§7 frontier
-  discussion, §8 census-next axis, §10 hunts) must be rewritten: the
-  witness exists, in-corpus.
-- Prefix-independent stratum: **1 104** languages frame-wide (all with
-  frozen final layers — now Theorem C.9′ in `bls_cascade.md`); every
-  percentage ventilated by Wagner degree needs recomputing.
-- H2/H4's "(A)-failing stratum = 258 languages / 1 432 layers, all
-  1 AP, floor |𝒞| = 15" is unverified on the new frame — recount
-  (also the preflight of the cascade thread's K-E5).
-
-## Where things stand (apart from the corpus)
-
-- Engine theory closed in the paper: Thm 4.10 (width-1), Thm 4.13
-  (graded, seam bricks + `step_th` thread law — seam-only grammar
-  refuted, report F15); window relaxation (B̃) + normal form
-  (Prop 5.7); TW01 until-rank read-off frozen.
-- Engine live and sound catalogue-wide on the OLD cut (0 FAIL,
-  graded stratum included — F8/F15); gate
-  `python3 -m tests.sos2ltl.e0_gate` (29 fixture cases, 15 s each) is
-  corpus-independent and stays the landing gate.
-- Spec head lists the open experiment queue: E9 candidates 3/3a/3b/5,
-  H7, E3, full E4 + E8, E10 graded re-run, C6 + E5, H8. **H6 /
-  smallest-H3 ("census-next 2state2ap") is OBSOLETE** — the shape is
-  in-corpus; re-scope against the K-F12 conflict stratum.
-- The cascade section (`research_notes/bls_cascade.md`, numbered C.*)
-  is drafted to land as §5′; its header lists the touch points. Its
-  data is ALREADY on the new corpus — it is the model to follow.
-
-## Todo — Engineering
-
-1. **Regenerate the report on the current corpus** (the big one; shard
-   on the cluster, 60 s/command, recipe as in `tests/cascade/README.md`,
-   contract `cluster/README.md`):
-   - bench section first (counts, degenerates, shape funnel pointer);
-   - E1/E2 (anchoring + windows by Wagner degree — Table 3's feed);
-   - E7 dual certificate scan (non-LTL side, ω-blind count);
-   - E10 ledger; H2/H4 recount ((A)-fallback stratum);
-   - land per-experiment CSVs under `reference/census/` + regen
-     commands in the report; every finding `Fn` recomputed — a flipped
-     finding is flagged `PAPER-EDIT:` with its paper location, per the
-     report contract (reproduce before correcting).
-2. E0 gate green throughout; `python3 -m survey --folder
-   samples/validation` SUCCESS before landing code.
-3. Then resume the spec queue (E9 3/3a/3b/5, H7, E3, full E4/E8, E10
-   graded re-run, C6+E5, H8) — on new-corpus data only.
+1. **E11 — the decomposition fallback** (spec §4, paper §6): the key
+   item. Both halves end-to-end, scoped per layer, conformance-gated,
+   ledgered vs DG in **DAG size and printed size**. Blockers: none —
+   `aut2ltl/bls` (SgpDec bridge, reach family, `Fin`) exists; the
+   loop half's inputs (K-F12 conflict layers) are in
+   `reference/cascade/`.
+2. **Census regeneration on the current corpus**: E1, E2, E7, E10,
+   frontier counts; report bench + every finding re-based, flips
+   flagged `PAPER-EDIT:`. Includes wiring the (C) decider into the
+   step-4 read-off (machinery in `tests/cascade/config_machine.py`;
+   emitter `tests/cascade/emit.py`, conformance-gated on the worked
+   witness) so the coverage tables speak the paper's widened branch.
+3. **Full E4 — run it, measured**: DAG + printed size, engine vs DG,
+   portfolio as internal yardstick, over the current corpus — the
+   §7/§9 deliverable. E5 rides along once C6 lands.
+4. The spec's item-4 queue (E9 candidates, H7, E3, E8, E10 graded
+   re-run, C6+E5, H8).
 
 ## Todo — Theory
 
-1. **After the data drop: fix every number in `sos_toltl.md`.** Sweep
-   §8 wholesale (corpus paragraph, Table 3 + discussion, percentages,
-   certificate-scan counts), §7's frontier/inner-frontier discussion,
-   and the frontier-hunt sentences (~l.1117, ~l.1395, §7 ~l.2874–2886,
-   §8 ~l.2955–2968, §10 ~l.3111). Rewrite the `2state2ap` open-hunt
-   claims — closed by K-F12's in-frame witness (cite the regenerated
-   census data, reconciled with `reference/cascade/`). Eviction policy
-   above applies: no old-cut residue.
-2. React to any `PAPER-EDIT:` flags from the regeneration (flipped
-   findings are theory's to adjudicate).
-3. Land the cascade section as §5′ when ready (pointer edits listed in
-   `bls_cascade.md`'s header: §4.4, §5.1 residual bullet, §5.4 step 4,
-   Table 2 residual row, §9 cascade paragraph — §9's KR ⟨TBD⟩ is
-   discharged by C.1's dictionary).
-4. Open math carried over: §5.1 width-bound-by-definiteness-degree
-   ⟨TBD⟩; §2.3 arena bound (gated on full E4).
+1. On the census drop: fix every number in the paper — §9 wholesale
+   (bench, Table 3 + discussion, percentages), §8's frontier text,
+   the hunt sentences (§11; the `2state2ap` hunts close against
+   K-F12) — and resolve the ⟨TBD: §9 re-based⟩ markers.
+2. On the E11 drop: resolve §6's stem-half ⟨TBD⟩ (the ledger picks
+   step 3(b)'s inner extractor); adjudicate any conformance
+   stop-the-line.
+3. Open math, unblocked by nothing: §5.1's
+   width-bound-by-definiteness-degree ⟨TBD⟩; §2.3's arena bound
+   (gated on full E4).
 
-## Machinery
+## Machinery / conventions (user-set; keep)
 
-- Pipeline `aut2ltl/sos2ltl/`: `cayley.py` (C1), `anchoring.py` (C2),
-  `windows.py` (C3), `readoffs.py` (C5), `witness/`, `dg/` (E4b
-  baseline), `engine.py` (C4). Probes under `tests/sos2ltl/`
-  (`e0_gate`, `e0_*`, `e7_dualscan`, `seam_gate`, `engine_diff`,
-  `census_build`).
-- Census records: `python3 -m tests.sos2ltl.census_build
-  genaut/corpus/flat_canon/sos --out …` (one jsonl record per
-  language; the cascade thread consumes the same records).
-- Aperiodicity read-off is consumed from
-  `sosl/sosl/sos/classify/aperiodic/`, not duplicated.
-
-## Key facts / conventions (user-set; keep)
-
-- Roles: theory holds the paper lock, does math, reads `papers/`;
-  engineering implements the spec and fills the report
-  (current-state contract). Cite only what was read.
-- The paper is science only: no tool names outside §8's oracle
-  sentence, no probe/provenance talk.
-- The `.sos` unit IS the language (byte-equal iff equal, [SωS26,
-  Thm 5.1]); the catalogue is complement-closed; Wagner degree `ϕ` is
-  the ventilation axis.
-- Timeouts: 15 s/example local, 60 s/command cluster; TIMEOUT/BUDGET
-  are data. Honest failure attribution (ours vs downstream).
-- Library gaps: Thérien–Weiss, *Graph congruences and wreath
-  products*, JPAA 35 (1985); an ω-word locally-testable source.
-- Scope rule vs the classification thread: toltl keeps strata
-  operational with kinship citations; variety-alignment theorems
-  belong to `sos_classification`.
+- Pipeline `aut2ltl/sos2ltl/` (cayley, anchoring, windows, readoffs,
+  witness, dg, engine); probes `tests/sos2ltl/`; census records
+  `python3 -m tests.sos2ltl.census_build genaut/corpus/flat_canon/sos
+  --out …`; cluster recipe `tests/cascade/README.md`, contract
+  `cluster/README.md` (60 s/command; TIMEOUT/BUDGET are data).
+- Loading/serialization via `sosl.sos.build` / `sosl.sos.io` /
+  `aut2ltl.ltl.twa` — no raw Spot or hand-parsing, probes included.
+- Roles: theory holds the paper lock, reads `papers/`; engineering
+  fills the report (current-state contract). Cite only what was read.
+  The paper is science only — no tool names outside §9's oracle
+  sentence.
+- Aperiodicity read-off consumed from
+  `sosl/sosl/sos/classify/aperiodic/`, never duplicated.
+- Library gaps: Thérien–Weiss JPAA 35 (1985); an ω-word
+  locally-testable source.
+- Scope rule: strata stay operational here; variety-alignment theorems
+  belong to the classification thread.
