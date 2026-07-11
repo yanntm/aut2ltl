@@ -71,6 +71,7 @@ from aut2ltl.ltl.twa import clone, dump_hoa             # noqa: E402
 from sosl.sos import dump_invariant                     # noqa: E402
 from sosl.sos.build.importer import canonical           # noqa: E402
 from sosl.sos.core.quotient import invariant_of         # noqa: E402
+from sosl.sos.minimize import remove_free_aps           # noqa: E402
 from sosl.sos.relabel import canonical_relabeling       # noqa: E402
 
 # Where a run writes: ignored scratch, never the tracked corpus. The sampler
@@ -104,18 +105,23 @@ def combo_of(shape: Shape, index: int) -> Tuple[int, ...]:
 
 def canon_key(D: "spot.twa_graph") -> Optional[str]:
     """The language identity `flatten --canon` folds by: alphabet-minimize a
-    canonical det `D` (`remove_unused_ap` — so `GF a` over `{a}` and over `{a,b}`
-    coincide), read its syntactic invariant `𝓘`, take that invariant's `B_k` orbit
-    representative (signed AP permutation), and dump. Byte-equal to a
+    canonical det `D`, read its syntactic invariant `𝓘`, take that invariant's
+    `B_k` orbit representative (signed AP permutation), and dump. Byte-equal to a
     `flat_canon/sos/*.sos` entry iff `D`'s language is already in the corpus **up to
     renaming its symbols**. `None` when `𝓘` is uncomputable (the `capped` gate).
-    Computed on a clone so the written representative keeps its declared alphabet."""
+
+    Minimization is two steps, matching `flatten`: `remove_unused_ap` drops APs no
+    edge mentions, then `remove_free_aps` drops **free** APs (edge-present but
+    language-irrelevant — the invariant records them as inert on the letter map).
+    Both are needed: without the second, a draw that ignores one of its letters
+    keys at the wrong alphabet and dodges the corpus match. Computed on a clone so
+    the written representative keeps its declared alphabet."""
     Dk = clone(D)
     Dk.remove_unused_ap()
     inv = invariant_of(Dk)
     if inv is None:
         return None
-    return dump_invariant(canonical_relabeling(inv)[1])
+    return dump_invariant(canonical_relabeling(remove_free_aps(inv))[1])
 
 
 def load_corpus_keys(sos_dir: str) -> set:
