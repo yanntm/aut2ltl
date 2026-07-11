@@ -37,8 +37,12 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
 - **K-E3 DONE** — K-F10: Cor C.9 stratum empty (0 of 132 prefix-independent
   languages have a non-frozen final layer; prefix-independence ⟹ frozen final
   layer); moving-layer one-sidedness balanced, not upward-dominant.
-- **Next: K-E4** (config-normal-form emitter — DAG-only, never stringify;
-  conformance-gated), then K-E5 (DG vs cascade), K-E6 (prophetic).
+- **K-E4 worked example DONE** — K-F11: config atoms match C.3, `Ω` emitted
+  DAG-only and conformance-gated ≡ `G(a→F b)`. Remaining K-E4: wire the emitter
+  into the production window engine for the full K-E1-decided-layer sweep + DG
+  size ledger.
+- **Next: K-E4 engine integration / full sweep**, then K-E5 (DG vs manufactured
+  cascade, needs `aut2ltl/bls` bridge), K-E6 (prophetic `A_S`).
 
 ---
 
