@@ -41,7 +41,15 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
   DAG-only and conformance-gated ≡ `G(a→F b)`. Remaining K-E4: wire the emitter
   into the production window engine for the full K-E1-decided-layer sweep + DG
   size ledger.
-- **Next: K-E4 engine integration / full sweep**, then K-E5 (DG vs manufactured
+- **⚠ K-F12 — the extended corpus inhabits the floor IN-FRAME.** The corpus
+  grew 4248 → 6222 (campaign tier, Wagner ω³/ω⁴); the K-E1 rerun on it
+  (patched decider, in flight) reports aperiodic CONFLICT layers, and the
+  first is ALG-7-verified **GENUINE** (K-F12 below). K-F7's "0 conflicts" was
+  a property of the old frame, not of the census axis. All K-F7/F8/F10
+  numbers are being re-measured; the draft's "floor empty on the census
+  frame" (C.2/C.19/C.7) is slated for a PAPER-EDIT once the rerun lands.
+- **Next: K-E1 rerun tally + K-F12 conflict triage, reference/cascade data
+  drop**, then K-E4 engine integration / full sweep, K-E5 (DG vs manufactured
   cascade, needs `aut2ltl/bls` bridge), K-E6 (prophetic `A_S`).
 
 ---
@@ -284,3 +292,42 @@ the config emitter wired into the production window engine (`aut2ltl/sos2ltl/
 engine.py`) so the existing rebuild-𝓘 gate runs on the assembled whole-language
 label (Ω is a confined-tail term; `G(a→F b)` gates directly only because its
 final layer is terminal and it carries no safety). Plus the DG-size ledger.
+
+## K-F12 — genuine aperiodic (C)-conflict INSIDE the census frame — CONFIRMED (first specimen; sweep in flight)
+
+The extended corpus (flat_canon 4248 → **6222**; campaign tier reaching Wagner
+ω³/ω⁴) contains genuine aperiodic (C)-conflicts, overturning K-F7's frame
+claim. First specimen, isolated and ALG-7-verified:
+
+- `2state2ap1acc_parity_3772037665` — 13 classes, **aperiodic**, LTL, Wagner
+  degree **(ω³, σ)** (`.cat` sidecar), canonical D 6 states / 2 AP /
+  parity-3. Conflicting layers 5 and 7, both **frozen singletons**; the
+  complement `_c` conflicts identically (catalogue closed under complement).
+- **ALG-7 verdict at k=0 on layer 5: GENUINE** — `find_c_conflict` in 27
+  states: two loops share the recurring edge set (|F|=3), loop classes 12
+  (idem, rejects) vs 5 (idem, accepts), `inv.member` toggles, linked pairs
+  non-conjugate (Lemma C.11).
+- **Mechanism**: verdict-splitting **zero absorption** — sandwich scan: 20
+  FAIL of which 16 `absorption`, all verdict-SPLITTING over EntrySt; three
+  𝒥-minimal classes `[5, 8, 11]` (not a single zero: a richer bottom than
+  the floor witness's).
+- Frozen layer ⟹ (C)@0 = (B)@1 (Lemma C.10): this is a genuine **plain-(B)
+  failure in-frame** — the "2 states × 2 AP at once" open-hunt witness of
+  the main paper §8, materialized by the corpus extension. Widths ≥ 1 hit
+  BUDGET, so *every-width* failure (full Theorem C.12′ floor membership) is
+  not yet established; the absorption signature predicts it — structural
+  analysis TODO.
+- The `aut2ltl` portfolio times out (90 s) on the specimen's det HOA —
+  consistent with a residual-stratum inhabitant.
+
+Commands: `python3 -m tests.cascade.k_e1_verify 2state2ap1acc_parity_3772037665 5 0`
+(generic ALG-7 triage probe, committed) and
+`python3 -m tests.cascade.k_e7_triage 2state2ap1acc_parity_3772037665 5 0 absorption`.
+Corpus artifacts (git-tracked): `genaut/corpus/flat_canon/sos/2state2ap1acc_parity_3772037665.sos`
++ `.cat` + `det/…hoa`. Full rerun tallies land in `reference/cascade/` (K-E1
+rerun in flight).
+
+`PAPER-EDIT` (pending the rerun): draft C.2 remark, C.19 closing bold, C.7 §8
+bullet — every "zero conflicts / floor empty on the census frame" statement;
+K-F9's "inhabited beyond it" weakens to "inhabited beyond *and now within* the
+frame".
