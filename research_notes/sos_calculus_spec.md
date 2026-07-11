@@ -386,6 +386,11 @@ The experiments are specified in full in §8; this is the index.
 | V1c | pipeline demo: normal-form economy + entry price | §8.5 | **DONE** — `reference/calculus/v1_pipeline.md`, 20 pairs / 4 stages, F2=0; re-check byte-compare vs `equivalent_to`, entry-price row |
 | V2 | stutter read-off vs Spot over the census | §8.6 | **DONE** — `reference/calculus/v2_stutter.md`, 3938/3938 agree, 0 disagreements |
 | V3 | Prop 4.1 blow-up check, `W·L_n` for n = 2..5 | §8.7 | **DONE** — `reference/calculus/v3_blowup.md`; bound holds n=2..5 (17/48/127/318 ≥ 3/7/15/31), no timeout (max 33 states, 0.36 s) |
+| E-CAL-EX | running-example gate: machine-check the paper §2.3/§3.3/§6 hand values | §9.1 | **OPEN — do first** |
+| V4 | classification battery vs Spot (safety / co-safety / obligation / degree) | §9.2 | **OPEN** — fills paper §8.5 ⟨TBD⟩ |
+| CAL6 | alphabet hygiene: `free_aps` / `drop_ap` / `rename_equal` | §9.3 | **OPEN** — lift from the corpus pipeline if it already exists there |
+| refresh | rerun V1a–V3 (+V4) on the regenerated corpus; refresh paper §8 numbers | §9.4 | **BLOCKED** on the corpus stream |
+| figures | example figures, ratio histogram, ledger table | `sos_calculus_figures.md` | **OPEN** — after E-CAL-EX |
 
 Reproducibility floor (house rule): validated V-outputs are copied into
 the curated committed `reference/calculus/` tree and cited by path from
