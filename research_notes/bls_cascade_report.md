@@ -253,3 +253,30 @@ but the raw distribution does not support upward-dominance.)
 Commands: `python3 -m tests.cascade.k_e3_sweep tests/cascade/logs/census_flat_canon.jsonl genaut/corpus/flat_canon/sos --out tests/cascade/logs/k_e3.csv`
 and `python3 -m tests.cascade.k_e3_pfxind tests/cascade/logs/census_flat_canon.jsonl genaut/corpus/flat_canon/sos`.
 Logs: `tests/cascade/logs/k_e3.csv` (regenerable), `tests/cascade/logs/k_e3_pfxind.txt`.
+
+## K-F11 — config normal-form emitter + G(a→F b) conformance (DAG-only) — CONFIRMED
+
+The config atoms and `Ω(R,·)` are emitted as `spot.formula` DAGs (spot
+hash-conses; nothing stringified — the conformance gate translates the formula
+object directly), per the K-E4 grammar (Prop C.7 / Cor C.8).
+
+- **Atoms match C.3** on `𝓘(G(a→F b))`: `A_{(2,a)} ≡ b∧X((b∨s)U a)`,
+  `A_{(4,b)} ≡ a∧X((a∨s)U b)` — Spot-equivalent (the quotient letters are
+  `a`=`a&!b`, `b`=`b`, `s`=`!a&!b`; `a&b` folds into the b-class).
+- **Ω assembled**: rec form `GF A_{(2,a)} ∧ GF A_{(4,b)}` (the single minimal
+  ≥2-class accepted set) ∨ park `F(An(2)∧X G St(2))` ∨ entry park `G St(2)`
+  (park verdicts read off the frozen restriction: park-at-2 accepts, park-at-4
+  rejects). No mixed parks.
+- **Conformance**: `Ω ≡ G(a→F b)` (raw and simplified). Sizes: raw dag=27
+  flat=97; `_simp_f` dag=15 flat=24 — the DAG stays tiny; the flat form is
+  bounded (`tree_node_count` limit) and never materialized as a string.
+
+Machinery: `tests/cascade/emit.py` (`atom`, `omega`, `park_verdict`,
+`letterset`). Commands: `python3 -m tests.cascade.k_e4_atoms`,
+`python3 -m tests.cascade.k_e4_gaFb`.
+
+*Remaining K-E4:* the full conformance sweep over every K-E1-decided layer needs
+the config emitter wired into the production window engine (`aut2ltl/sos2ltl/
+engine.py`) so the existing rebuild-𝓘 gate runs on the assembled whole-language
+label (Ω is a confined-tail term; `G(a→F b)` gates directly only because its
+final layer is terminal and it carries no safety). Plus the DG-size ledger.
