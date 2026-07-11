@@ -35,84 +35,48 @@ all re-runs). Therefore:
   with backticks; never rebase/amend; push only with the user's explicit OK
   (asked every time).
 
-## Work items (in order)
+## What holds (the banked record)
 
-1. ✅ **Fault-verdict misfile fixed.** `MISMATCH`→`FAIL` (soundness verdict), new
-   `CRASH` (a run that never completed): leaked `_Budget`→`BUDGET`, other→`CRASH`,
-   in `census_campaign` AND `driver.py`, `run_case`'s catch-all aligned, spec §7
-   updated. Guard: `tests/sosl/fault_verdict_probe.py`. Theory to ratify the vocab.
-2. ✅ **`census_campaign --cases i:j --out-csv FILE`** — private-shard sharding.
-3. ✅ **`cluster_plan`** — cuts the sweep into a `cmds.txt`, packed to
-   `OARRUN_TIMEOUT` sourced from `cluster/config.sh`. Default = learner sweep.
-4. ✅ **`census_e3`** long-format + per-`(case,mode)` sharding; `cluster_plan --e3`
-   plans the ROLL census. Paper-anchored `campaign_e3` untouched.
-5. ✅ **Drops are additive.** `--done <prior CSV>` on `census_campaign` /
-   `census_e3` / `cluster_plan`: a slice already covered is not planned and not
-   re-run. (Resume alone cannot do this — a campaign reads its done set from its
-   *output*, and the cluster gives every command an empty private `$OARRUN_OUT.csv`.)
-   `cluster/reap_until.sh RUN...` is the wait (ends on all-accounted or a stall).
-6. ✅ **v2 drop reaped clean; the record is committed.** Catalogue grew 4248 →
-   **6222** (purely additive — the earlier languages are byte-untouched), so only the
-   new ones were run: sweep `20260711-064811-sweep_v2.cmds` (989 cmds) and E3
-   `20260711-065537-e3_v2.cmds` (1491 cmds), both **fully accounted, 0 timeout,
-   0 fail, 0 missing, 0 duplicate keys**; the late-adopted pair ran locally (4 runs,
-   SOUND). Record: `reference/census/` (sweep 12444 rows, e3 24888 rows).
-   - **default leg: 6222/6222 SOUND**, `N ∈ [2, 208]`, `splits ≤ N` with 0 violations.
-   - ablation leg: SOUND 2357, ACCEPTOR_ONLY 3153, BUDGET 680, OVERSIZE 15,
-     **CRASH 17** → item 7.
-7. ✅ **RULED (2026-07-11, theory).** The ablation's fixpoint is the **certified
-   Cayley acceptor** — an acceptor, never an algebra unless canonical. Paper
-   Lemma 5.2 + Theorem 5.3: with the exact oracle, a certified fixpoint is
-   canonical **or its partition is not a congruence** — box (b) is empty, the
-   `ACCEPTOR_ONLY` population was pure (c), and E2's permanence counts stand
-   (the 17 ex-`CRASH` rows join `permanent` → 3170). The proposed `O(n·|Σ|)`
-   letter test is **REJECTED** (vacuous without merged letters — the stalled
-   `a_implies_xa` export passes it); the normative test is the sweep's check
-   phase, zero queries. Full ruling: report "Theory ruling (2026-07-11)"; spec
-   rev 2026-07-11. Item-1 verdict vocab ratified.
-7b. ✅ **Spec §8 item 13 implemented, all gates green (2026-07-11).** Lemma 5.2
-   check as classifier (`find_left_divergence`), `fixpoint_congruent` +
-   `export_associative` fields, export **refusal** on a dirty check
-   (`NotCongruent`; `--unchecked` kept for the §4.2 display).
-   `congruence_audit` rewritten to the full check: the 14-case sample flipped
-   **14/14 non-congruent** as predicted — the rejected letter test stays green
-   on 13 of them (under-detection confirmed in data). New gates:
-   `congruence_gate` (specimens + the ex-crasher pair, 4/4 refuse, **no
-   `CRASH`** — the 17 crashers cured at the root), the P7/F8 associativity
-   fixture, `campaign_e0` extended (P7/P9 at E0 scale).
-   - **`witness_lock` fixed**: it built complement ids by concatenation
-     (`<primal>_c`) and CRASHed. genaut mints that alias **only where the
-     enumeration was one-sided**, so when the campaign drew the dual of
-     `2state1ap2acc_parity_0088836118` under its own combo id the alias
-     vanished. Lock now gates **primals only** (spec §8 item 7 = an existence
-     claim on the canonical invariant, "independent of provenance"; a
-     complement is the accept-set byte-flip and can only pass where its primal
-     passes). **Never address a corpus dual by `<id>_c`** — resolve it out of
-     `flat_canon_cases()` or rely on duality. Flagged to theory (report).
-7c. 🔴 **NEXT — the ablation-only re-run drop.** 6222 cases, one column
-   (`fixpoint_congruent`); `--done` cannot apply (the column needs the final
-   table, only a re-run reconstructs it). Default leg is `true` by
-   construction, E3 untouched. Then assert **P9** (`false` on every exact-
-   ablation `ACCEPTOR_ONLY` row — build-stopping) and **P10** (`true` on every
-   exact-ablation `SOUND` row — NOT build-stopping; an accidental byte-equality
-   from a non-congruent partition is a first-class theory finding: report the
-   case id, do not bank the row) over its output. Expected: `false` on all
-   3153 + 17, `true` on all 2357, zero off-diagonal, dual-symmetric.
-   Then the E2 recount (`permanent = 3170`).
-8. ⏳ **E1/E3 done; E2 unblocked — waits only on the 7c drop.**
-   `census_e1` and `census_e3 --summary-only` are run
-   and committed (`reference/census/e1_summary.md`, `e3_summary.md`), and the E3
-   reading is **corrected** at full scale: on LTL the algebra is now more often the
-   *larger* object (1524 v 1842) — the old "smaller on LTL" headline was an artifact
-   of a small-shape corpus. What survives is the correlation, not the claim; the
-   aggregate is still a wash.
-   Still owed once 7b lands: `census_e2_exhibits` + the E2 recount, gates
-   (`witness_lock`, dual-symmetry / (d′), `guard_fired_final = 0` on every SOUND row),
-   and the theory deliverables that replace the paper's `⟨TBD⟩` markers (per-leg
+- **The catalogue** is 6222 complement-closed languages; the census record lives
+  in `reference/census/` (sweep 12444 rows, E3 24888 rows), fully accounted.
+- **Default leg: 6222/6222 SOUND**, `N ∈ [2, 208]`, `splits ≤ N`, 0 violations.
+- **Ablation leg**: SOUND 2357, ACCEPTOR_ONLY 3153, BUDGET 680, OVERSIZE 15.
+- **The ablation's fixpoint is the certified Cayley acceptor** — an acceptor,
+  never an algebra unless canonical (paper Lemma 5.2 / Theorem 5.3). With the
+  exact oracle a certified fixpoint is canonical **or** its partition is not a
+  congruence; `ACCEPTOR_ONLY` means "correct acceptor, no algebra". The
+  normative congruence test is the sweep's check phase (`find_left_divergence`,
+  zero queries); the `O(n·|Σ|)` letter test is unsound and is kept only as a
+  contrast diagnostic in `congruence_audit`.
+- **The export refuses** on a dirty check (`NotCongruent`). `--unchecked` is the
+  diagnostic display the paper's §4.2 cell is defined on; its output is never a
+  deliverable. `fixpoint_congruent` / `export_associative` are recorded (spec §7).
+- **E1 / E3 are done and committed** (`reference/census/e1_summary.md`,
+  `e3_summary.md`). E3 at full scale: on LTL the algebra is more often the
+  *larger* object (1524 v 1842); the correlation survives, the aggregate is a
+  wash.
+
+## Open work (in order)
+
+1. 🔴 **The ablation-only re-run drop.** 6222 cases, one added column
+   (`fixpoint_congruent`); the default leg is `true` by construction and E3 is
+   untouched, so only the ablation leg runs. `--done` **cannot** apply: the
+   column needs the final table, which only a re-run reconstructs.
+   Then, over its output:
+   - **P9** — `fixpoint_congruent = false` on every exact-ablation
+     `ACCEPTOR_ONLY` row. Build-stopping (Theorem 5.3).
+   - **P10** — `true` on every exact-ablation `SOUND` row. *Not* build-stopping:
+     a byte-equality out of a non-congruent partition is a first-class theory
+     finding — report the case id, do not bank the row.
+   - Expected: `false` on all 3153 + 17, `true` on all 2357, zero off-diagonal,
+     dual-symmetric (congruence is complement-invariant).
+2. 🔴 **The E2 recount** (`permanent = 3170`) + `census_e2_exhibits`, gates
+   (dual-symmetry / (d′), `guard_fired_final = 0` on every SOUND row), and the
+   theory deliverables that replace the paper's `⟨TBD⟩` markers: per-leg
    `n_guard_firings`, guard-green count, cap-escape count, wall-time line,
-   LTL-agreement count).
-- Parked until after the sweep: the "make the cap cheap to hit" measurement
-  (lowered-cap re-run of the fired cases).
+   LTL-agreement count.
+- Parked: the "make the cap cheap to hit" measurement (lowered-cap re-run of the
+  fired cases).
 
 ## Cluster essentials
 
@@ -125,7 +89,7 @@ caps: `--timeout 130` per command, `--walltime 0:05:00` per job, `--split 8`,
 a JDK host by `deps/build_roll.sh`, copied into the JDK-less checkout —
 `deps/README.md`); `$ROLL_JAR` resolves it, `baseline.py` defaults to `opt/roll`.
 
-## Cluster ops — hard-won (full writeup: report 2026-07-11)
+## Cluster ops — the rules
 
 - **Walltime (5 min), not `--timeout`, is the binding constraint.** Small
   `--split` packs many slow commands/job → walltime kill → mass `missing`. Size
@@ -150,32 +114,22 @@ a JDK host by `deps/build_roll.sh`, copied into the JDK-less checkout —
 From `sosl/`: `saturation_gate`, `even_conformance`, `evenblocks_conformance`,
 `exact_fixtures`, `exact_ref_gate` (one case/invocation), `witness_lock`,
 `fault_verdict_probe`, `congruence_gate`, `campaign_e0` (Even `51 (32/4/7/8)` /
-EvenBlocks `99 (67/4/14/14)` ledgers byte-stable — row P5). All green as of
-2026-07-11. Diagnostics ≤ 15 s/example, one input per argv; long output to
-`tests/sosl/logs/`, never `/tmp`.
+EvenBlocks `99 (67/4/14/14)` ledgers byte-stable — row P5). Diagnostics
+≤ 15 s/example, one input per argv; long output to `tests/sosl/logs/`, never
+`/tmp`.
 
-## The corpus (genaut) — read this before touching a case id
+## The corpus (genaut)
 
-The learner's test set is **`genaut/corpus/flat_canon/` only** (6222 languages,
-complement-closed) — reach it through `manifest.flat_canon_cases()`, never by
-building paths or ids by hand. The genaut session restructured the corpus into
-tiers (`det/`, `sos/`, `tgba/`, `spot_det/`, `flat/`, `flat_canon/`,
-`sampled/`); the other tiers are presentation censuses, not ours. It **grows**
-(beyond-wall campaigns adopt new languages), and growth **renames**: a
-`<primal>_c` complement alias exists only where the enumeration was one-sided,
-so a dual later drawn under its own combo id makes the alias disappear. Any
-hardcoded `<id>_c` is a latent crash (this bit `witness_lock` — item 7b).
+The learner's test set is **`genaut/corpus/flat_canon/` only** — 6222 languages,
+one per language up to AP relabeling, closed under complement. The other tiers
+(`tgba/`, `spot_det/`, `det/`, `sos/`, `flat/`, `sampled/`) are presentation
+censuses and are not ours. Reach cases through `manifest.flat_canon_cases()`.
 
----
+**Never address a case by a name you construct.** In particular a complement:
+genaut mints the `<primal>_c` alias only where the enumeration was one-sided, so
+a dual that some campaign drew under its own combo id has no `_c` file at all.
+The catalogue grows, and growth renames — a hardcoded `<id>_c` is a latent
+crash. Resolve duals out of the catalogue, or rely on duality and don't name
+them.
 
-# POST — ANSWERED (2026-07-11)
-
-The theory ruling is in the report ("Theory ruling (2026-07-11) — canonical or
-no algebra at all") and adopted in spec rev 2026-07-11 + paper Lemma 5.2 /
-Theorem 5.3. One-paragraph summary: the ablation's fixpoint is the certified
-Cayley acceptor; with the exact oracle a certified fixpoint is canonical or
-its partition is not a congruence (box (b) empty — `ACCEPTOR_ONLY` means
-"correct acceptor, no algebra"); E2's counts stand, sharpened; the letter
-test is unsound (use the sweep's check phase, zero queries); GO on the
-congruence-column ablation re-run. Engineering work: item 7b above =
-spec §8 item 13.
+No open POST to theory.
