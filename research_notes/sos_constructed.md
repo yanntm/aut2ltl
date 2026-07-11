@@ -1040,7 +1040,8 @@ up to continuous (Wadge) reducibility — is fixed by the chain and superchain
 structure of `S(L)` [CP97, CP99, SW08]. We claim no economy for a single
 verdict — a dedicated algorithm for one class will usually beat materializing
 the whole algebra — but a unifying one: build the SωS once, and each decision
-is a table search, several of them decisions for which no practical tool
+is a table search — polynomial for the Wagner coordinates [CP97, CP99] and
+every row they project — several of them decisions for which no practical tool
 exists today.
 
 On the running examples the axes visibly decouple: `Even` is an
