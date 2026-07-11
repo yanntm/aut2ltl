@@ -70,14 +70,36 @@ all re-runs). Therefore:
    `a_implies_xa` export passes it); the normative test is the sweep's check
    phase, zero queries. Full ruling: report "Theory ruling (2026-07-11)"; spec
    rev 2026-07-11. Item-1 verdict vocab ratified.
-7b. 🔴 **NEW — implement spec §8 item 13** (the amended fix): the Lemma 5.2
-   check as classifier + `fixpoint_congruent` field; export **refusal** on a
-   dirty check (keep the assert; add `--unchecked` for the P7/F8 fixture);
-   fix `congruence_audit` (full check, not letters) and re-run the 14-case
-   sample (predicted: all 14 flip to non-congruent); local gates; then the
-   one-column **ablation-only** re-run drop (6222 cases; `--done` cannot
-   apply) gated by P9/P10; then the E2 recount (`permanent = 3170`).
-8. ⏳ **E1/E3 done; E2 was blocked on item 7 — now unblocked through 7b.**
+7b. ✅ **Spec §8 item 13 implemented, all gates green (2026-07-11).** Lemma 5.2
+   check as classifier (`find_left_divergence`), `fixpoint_congruent` +
+   `export_associative` fields, export **refusal** on a dirty check
+   (`NotCongruent`; `--unchecked` kept for the §4.2 display).
+   `congruence_audit` rewritten to the full check: the 14-case sample flipped
+   **14/14 non-congruent** as predicted — the rejected letter test stays green
+   on 13 of them (under-detection confirmed in data). New gates:
+   `congruence_gate` (specimens + the ex-crasher pair, 4/4 refuse, **no
+   `CRASH`** — the 17 crashers cured at the root), the P7/F8 associativity
+   fixture, `campaign_e0` extended (P7/P9 at E0 scale).
+   - **`witness_lock` fixed**: it built complement ids by concatenation
+     (`<primal>_c`) and CRASHed. genaut mints that alias **only where the
+     enumeration was one-sided**, so when the campaign drew the dual of
+     `2state1ap2acc_parity_0088836118` under its own combo id the alias
+     vanished. Lock now gates **primals only** (spec §8 item 7 = an existence
+     claim on the canonical invariant, "independent of provenance"; a
+     complement is the accept-set byte-flip and can only pass where its primal
+     passes). **Never address a corpus dual by `<id>_c`** — resolve it out of
+     `flat_canon_cases()` or rely on duality. Flagged to theory (report).
+7c. 🔴 **NEXT — the ablation-only re-run drop.** 6222 cases, one column
+   (`fixpoint_congruent`); `--done` cannot apply (the column needs the final
+   table, only a re-run reconstructs it). Default leg is `true` by
+   construction, E3 untouched. Then assert **P9** (`false` on every exact-
+   ablation `ACCEPTOR_ONLY` row — build-stopping) and **P10** (`true` on every
+   exact-ablation `SOUND` row — NOT build-stopping; an accidental byte-equality
+   from a non-congruent partition is a first-class theory finding: report the
+   case id, do not bank the row) over its output. Expected: `false` on all
+   3153 + 17, `true` on all 2357, zero off-diagonal, dual-symmetric.
+   Then the E2 recount (`permanent = 3170`).
+8. ⏳ **E1/E3 done; E2 unblocked — waits only on the 7c drop.**
    `census_e1` and `census_e3 --summary-only` are run
    and committed (`reference/census/e1_summary.md`, `e3_summary.md`), and the E3
    reading is **corrected** at full scale: on LTL the algebra is now more often the
@@ -127,9 +149,22 @@ a JDK host by `deps/build_roll.sh`, copied into the JDK-less checkout —
 
 From `sosl/`: `saturation_gate`, `even_conformance`, `evenblocks_conformance`,
 `exact_fixtures`, `exact_ref_gate` (one case/invocation), `witness_lock`,
-`fault_verdict_probe`, `campaign_e0` (Even `51 (32/4/7/8)` / EvenBlocks
-`99 (67/4/14/14)` ledgers byte-stable — row P5). Diagnostics ≤ 15 s/example, one
-input per argv; long output to `tests/sosl/logs/`, never `/tmp`.
+`fault_verdict_probe`, `congruence_gate`, `campaign_e0` (Even `51 (32/4/7/8)` /
+EvenBlocks `99 (67/4/14/14)` ledgers byte-stable — row P5). All green as of
+2026-07-11. Diagnostics ≤ 15 s/example, one input per argv; long output to
+`tests/sosl/logs/`, never `/tmp`.
+
+## The corpus (genaut) — read this before touching a case id
+
+The learner's test set is **`genaut/corpus/flat_canon/` only** (6222 languages,
+complement-closed) — reach it through `manifest.flat_canon_cases()`, never by
+building paths or ids by hand. The genaut session restructured the corpus into
+tiers (`det/`, `sos/`, `tgba/`, `spot_det/`, `flat/`, `flat_canon/`,
+`sampled/`); the other tiers are presentation censuses, not ours. It **grows**
+(beyond-wall campaigns adopt new languages), and growth **renames**: a
+`<primal>_c` complement alias exists only where the enumeration was one-sided,
+so a dual later drawn under its own combo id makes the alias disappear. Any
+hardcoded `<id>_c` is a latent crash (this bit `witness_lock` — item 7b).
 
 ---
 
