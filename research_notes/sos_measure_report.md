@@ -13,13 +13,12 @@ header, so any row below is reproducible from that file alone. Commands
 run from `sosl/`. Spot appears only inside the Route A oracle,
 bounded-or-skipped; a blown per-case budget is a datum, never a wait.
 
-*Status (2026-07-11): M1 (measure), M2 (oracle + laws) and M3
-(distance / shadow / essential) are done, green corpus-wide, and
-theory-accepted (F-M1, F-M2, F-M3). The F-M3 reply requires one cheap
-gate addendum, M3b (the Thm 4.4(2) biconditional on the existing pair
-sample), to run with the M4 pass. M4 (entropy) is unblocked on the
-rewritten spec §10; M5 (Markov product) and M6 (the census campaign
-that fills the ⟨TBD⟩ slots below) are not started.*
+*Status (2026-07-11): M1 (measure), M2 (oracle + laws), M3
+(distance / shadow / essential), M4 (entropy) and the M3b addendum are
+done, green corpus-wide, and theory-accepted (F-M1..F-M4). M5 (Markov
+product; spec §11 is the work order, P-M5 ratified) is next, on the
+user's go; M6 (the census campaign that fills the ⟨TBD⟩ slots below)
+follows it.*
 
 ## Slot map (paper ⟨TBD⟩ → expected finding)
 
@@ -38,8 +37,9 @@ that fills the ⟨TBD⟩ slots below) are not started.*
 
 Engine: `sosl/sosl/quant/` (placement provisional) — `chain` / `kernel`
 / `theta` / `measure` (+ `value_vector`) / `routea` / `distance` /
-`shadow` / `essential`; `PARANOID` on; `Fraction` end to end, floats
-nowhere; Spot parse-only inside `routea`. Gates, run from `sosl/` as
+`shadow` / `essential` / `entropy`; `PARANOID` on; `Fraction` end to
+end, the one float quarantined to `entropy`'s final `log₂`; Spot
+parse-only inside `routea`. Gates, run from `sosl/` as
 `python3 -m tests.quant.<name>`, machine reports under
 `reference/quant/`:
 
@@ -354,10 +354,9 @@ positive; the vector's provenance is irrelevant (CW holds for EVERY
 positive `v`). Rounding to the common fixed-point grid `10⁻⁴⁰`
 preserves both, so the change is convergence-speed-only — and 0
 non-converged brackets on 6222 plus width 7.5e-10 on F-L settles
-convergence empirically. The per-entry `limit_denominator` in the
-previous §10 text was a suggestion that defeats its own purpose (the
-entries' lcm blows up inside the exact `B'·v`); §10 now names the
-common-denominator iterate as normative.
+convergence empirically. A per-entry `limit_denominator` defeats its
+own purpose (the entries' lcm blows up inside the exact `B'·v`); spec
+§10 names the common-denominator iterate as normative.
 
 *Prediction registered for E2/M6 (uniform `p`).* For uniform `p`,
 `μ(L) ≤ |pref_n(L)|/|Σ|^n` for every `n`, so `μ_p(L) > 0` forces
@@ -373,139 +372,59 @@ with `ρ = 1` among them) reports `μ = 0`. A violation convicts M1 or
 M4. (The converse is not claimed: `μ = 0` languages may still have
 maximal entropy — "finitely many `b`" has `pref = Σ*`.)
 
-*Verdict.* M4 + M3b accepted; §10 amended; M5 remains gated only on
-P-M5 below.
+*Verdict.* M4 + M3b accepted; §10 amended; M5 is unblocked (user go
+required).
 
-**Proposal P-M5 (2026-07-11, engineering → theory + corpus keeper) —
-the `.mc` chain format: adopt the state-labelled convention and an
-existing format.** Spec §11 left the sidecar format open ("CSV-shaped,
-no JSON — fix with the corpus keeper"); after surveying what exists
-(PRISM language / PRISM explicit `.tra`+`.lab` / Storm DRN / MRMC
-`.tra` / JANI / GreatSPN nets), engineering proposes to align on the
-ecosystem rather than invent a dialect:
+**P-M5 (2026-07-11, engineering → theory, RATIFIED) — the `.mc` chain
+format.** The normative text is spec §11 (the M5 work order); this
+record carries the decisions and their grounds.
 
-1. *Semantics — Moore convention.* Every probabilistic model checker
-   speaks the **state-labelled DTMC**: APs on states, the run's word =
-   the sequence of state labels. Adopt it for `.mc` (the spec's
-   transition-emitting source is its Mealy presentation; no loss of
-   generality, the corpus generates Moore-form directly). The §11
-   product changes by one line: `letter(q → q') := ℓ(q')`.
-2. *Syntax — a restricted PRISM-language subset* as the corpus `.mc`
-   format: one `dtmc` module, one bounded state variable, exactly one
-   guarded command per state (`[] s=0 -> 1/3:(s'=1) + 2/3:(s'=0);`),
-   APs as `label` definitions over `s`. Probabilities are exact
-   rationals *in source* (`1/3` is legal PRISM), so the `Fraction`
-   ground rule survives interop — unlike PRISM/MRMC explicit `.tra`,
-   whose decimal probabilities cannot express `1/3` at all. The same
-   file runs unmodified in both PRISM and Storm (Storm has a PRISM
-   front-end), which upgrades M5's cross-checks and E4's baseline to
-   "identical input file". The restriction keeps the reader a strict
-   ~100-line parser, not a language front-end. (Storm's DRN kept as an
-   optional later exporter; JANI excluded as JSON; GreatSPN excluded —
-   a GSPN file is a net whose semantics is a *continuous-time* chain
-   on a generated reachability graph, wrong on time, storage, and
-   letter emission, though embedded-DTMC extraction could source E4
-   benchmark families later.)
-3. *One theory-visible decision to ratify.* PRISM/Storm measure the
-   full path word `ℓ(s₀)ℓ(s₁)…` — the initial state's label is the
-   word's deterministic first letter; the Mealy reading drops it. For
-   "same file, same number" against PRISM/Storm, Thm 3.5's setup must
-   include the initial label in the emitted word. Needs a spec §11
-   (and possibly paper §2) remark either way.
+- *Model.* `.mc` holds a state-labelled DTMC — `M = (Q, P, ι, ℓ)`,
+  the paper's §2.3 chain model and the one every probabilistic model
+  checker speaks. The measured word is the full path word
+  `ℓ(s₀)ℓ(s₁)…`: the initial state's label is the word's
+  deterministic first letter, which is what PRISM and Storm measure —
+  "same file, same number". Fixture F-M pins the convention (its
+  answer flips from 1 to 1/3 if the initial letter is dropped). The
+  product starts at `(q₀, λ(ℓ(q₀)))` and reads `ℓ(q')` per step
+  (Thm 3.5); `.mc`'s single init is the Dirac restriction of the
+  theorem's `ι`.
+- *Syntax.* A restricted PRISM-language subset: one `dtmc` module, one
+  bounded state variable, exactly one guarded command per state
+  (`[] s=0 -> 1/3:(s'=1) + 2/3:(s'=0);`), APs as `label` definitions
+  over `s`. Probabilities are exact rationals *in source* (`1/3` is
+  legal PRISM) — the property that carries the `Fraction` ground rule
+  through interop, and the deciding argument over `.tra`-style
+  explicit formats, whose decimal probabilities cannot express `1/3`
+  at all. The same file runs unmodified in both PRISM and Storm, so
+  M5's cross-checks and E4's baseline mean "identical input file".
+  The restriction keeps the reader a strict ~100-line parser, not a
+  language front-end.
+- *Well-formedness (normative; the reader rejects, never repairs).*
+  (i) exactly one guarded command per state, branch probabilities
+  rational literals summing to exactly 1 as `Fraction`s; (ii) the
+  letter labels partition the state space — every state satisfies
+  exactly one `label`, whose name is a letter of the paired language's
+  alphabet verbatim (never PRISM's reserved `"init"`/`"deadlock"`);
+  (iii) alphabet equality with the paired `.sos` is checked, not
+  assumed.
+- *The M1 reconciliation gate is the Bernoulli-embedding law* (an
+  `ι`-linearity check of Thm 3.5): states `{q_a}_{a∈Σ}`,
+  `ℓ(q_a) = a`, `P(q_a → q_b) = p(b)`; from initial `q_a` the emitted
+  word is `a·(i.i.d. p)`, so `Pr_{M_a}(L) = μ_p(aΣ^ω ∩ L)/p(a)`, and
 
-M5 implementation waits on this being accepted or amended.
+  ```
+  Σ_a p(a) · Pr_{M_a}(L) = μ_p(L)     (byte-exact against M1)
+  ```
 
-**Theory reply to P-M5 (2026-07-11) — RATIFIED on all three points,
-with normative well-formedness conditions and one corrected
-cross-check; spec §11 rewritten as the M5 work order; paper §2.3
-remark updated. M5 is unblocked (user go still required).**
-
-*(1) Moore convention — accepted.* The paper already carries the
-embedding (§2.3): a state-labelled chain is a transition-labelled one
-after pushing each state's letter onto its incoming transitions. The
-initial-letter decision below needs one refinement of that remark — a
-fresh pre-initial state `ŝ → s₀` with probability 1 emitting `ℓ(s₀)` —
-after which Thm 3.5 applies verbatim, kernel, cycle semigroup and all
-(`ŝ` has no incoming transitions, so no cycle traverses it and `T` is
-untouched). Concretely the product starts its second coordinate at
-`λ(ℓ(q₀))` instead of `[ε]` and reads `ℓ(q')` on each step; no theorem
-changes.
-
-*(2) PRISM-subset syntax — accepted, three conditions normative*
-(the reader rejects, never repairs): (i) exactly one guarded command
-per state, branch probabilities rational literals summing to exactly
-1 as `Fraction`s; (ii) the letter labels partition the state space —
-every state satisfies exactly one `label`, whose name is a letter of
-the paired language's alphabet verbatim (and never PRISM's reserved
-`"init"`/`"deadlock"`); (iii) alphabet equality with the paired `.sos`
-is checked, not assumed. Exact rationals *in source* is the property
-that keeps the `Fraction` ground rule alive through interop — that is
-the deciding argument over `.tra`-style explicit formats, and it is
-ratified. Exclusions (DRN deferred, JANI as JSON, GreatSPN as
-continuous-time) ratified as proposed.
-
-*(3) Initial letter — INCLUDED.* `word(s₀s₁s₂…) := ℓ(s₀)ℓ(s₁)ℓ(s₂)…`
-The deterministic first letter is what PRISM and Storm measure, and
-"same file, same number" is worth more than the one-letter economy of
-the Mealy reading. Spec §11's fixture F-M pins the convention (its
-answer flips from 1 to 1/3 if the initial letter is dropped). Paper
-§2.3's parenthetical now records the embedding; Thm 3.5 itself is
-untouched.
-
-*Cross-check corrected (the proposal inherited a Mealy-ism).* Spec
-§11's old "a one-state `M` emitting all letters reproduces M1" is
-impossible under Moore — a one-state chain emits `ℓ(q)^ω`. Replaced by
-the Bernoulli-embedding law: states `{q_a}_{a∈Σ}`, `ℓ(q_a) = a`,
-`P(q_a → q_b) = p(b)`; from initial `q_a` the emitted word is
-`a·(i.i.d. p)`, so `Pr_{M_a}(L) = μ_p(aΣ^ω ∩ L)/p(a)`, and
-
-```
-Σ_a p(a) · Pr_{M_a}(L) = μ_p(L)     (byte-exact against M1)
-```
-
-— a stronger gate than the one it replaces: it exercises the
-initial-letter convention `|Σ|` times per language and reconciles
-against M1's number exactly.
-
-*Left with the corpus keeper.* Only file placement/naming of *stored*
-chain families: M5's gate generates its chains seeded and in-test, so
-storage becomes real at M6/E4 — decide then.
-
-*Addendum (2026-07-11, same session, user go): the convention is now
-primary, not embedded.* Since the state-labelled model is the
-classical one and the translation is mechanical, the paper's
-definitions were moved to it from the start: §2.3 defines
-`M = (Q, P, ι, ℓ)` with the path word `ℓ(s₀)ℓ(s₁)…` and the Bernoulli
-chain `B_p` (states `Σ`, `ℓ = id`, rows and `ι` equal to `p`); §3.5
-fixes the path-label convention (letters of states *entered*, so
-labels concatenate) and states Thm 3.5 with the product starting at
-`(s₀, λ(ℓ(s₀)))`, `s₀ ~ ι`; the proof is unchanged; Thm 3.4 is now
-"the case `M = B_p`" (the one-state punchline was the only casualty —
-a one-state Moore chain emits `ℓ(q)^ω`). The Mealy reading became the
-embedded one (§2.3 parenthetical: a state per (letter, target) pair).
-Point (1) above's pre-initial-state embedding is thereby obsolete;
-spec §11 is unaffected (it was already written Moore-native, §11.2
-updated to cite the theorem directly). The theorem gains an initial
-distribution `ι`, of which `.mc`'s single init is the Dirac
-restriction; the §11.5 Bernoulli-embedding gate is precisely an
-`ι`-linearity check.
-
-**Convention-flip doc sweep (2026-07-11, git 6354b7a72, engineering) —
-done, null result.** Handoff work item following the P-M5 addendum
-(state-labelled chain model now primary in the paper). Swept the M1–M4
-engineering docs (`sosl/sosl/quant/algorithm.md`, `README.md`) and the
-`sosl/tests/quant/` probes for paraphrases of the old
-transition-emitting model, "one-state chain emitting all letters", and
-Thm 3.5's old `[ε]` product start (grep over
-Mealy/Moore/Markov/emit/one-state/state-labelled + read-through of both
-docs): **zero stale occurrences**. The docs cite Theorem 3.4 only, and
-its statement in the restated paper (§3.4: generic verdict, transient
-system started at `[ε]`) is unchanged — the paraphrases in
-`algorithm.md` §3–§4 remain accurate verbatim. The only "Markov chain"
-in the package is `routea`'s analysis chain of the automaton run under
-Bernoulli `p` (M2's oracle) — a different object, untouched by the
-model-convention flip. No forward-looking M5 text exists in
-engineering docs yet. Code/gate dependence on the old convention:
-**none** — chains enter only at M5, unimplemented; the
-`μ_p`/Bernoulli path never references the chain model. Matches the
-handoff's prediction of zero code impact; no edits made.
+  — it exercises the initial-letter convention `|Σ|` times per
+  language and reconciles against M1's number exactly.
+- *Excluded formats.* Storm DRN deferred (an optional later exporter);
+  JANI excluded as JSON; PRISM/MRMC explicit `.tra` excluded (decimal
+  probabilities); GreatSPN excluded — a GSPN's semantics is a
+  *continuous-time* chain on a generated reachability graph, wrong on
+  time, storage, and letter emission (embedded-DTMC extraction could
+  source E4 benchmark families later).
+- *With the corpus keeper.* Only file placement/naming of *stored*
+  chain families: M5's gate generates its chains seeded and in-test,
+  so storage becomes real at M6/E4 — decide then.
