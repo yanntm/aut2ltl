@@ -385,7 +385,7 @@ The experiments are specified in full in §8; this is the index.
 | V1b | operation costs, calculus vs Spot, counts + warm timings | §8.4 | **DONE** — `reference/calculus/v1_ops.md`, 8100 rows over 1000 pairs / 1550 langs, F2=0; intersection object via new `calculus.product` |
 | V1c | pipeline demo: normal-form economy + entry price | §8.5 | **DONE** — `reference/calculus/v1_pipeline.md`, 20 pairs / 4 stages, F2=0; re-check byte-compare vs `equivalent_to`, entry-price row |
 | V2 | stutter read-off vs Spot over the census | §8.6 | **DONE** — `reference/calculus/v2_stutter.md`, 3938/3938 agree, 0 disagreements |
-| V3 | Prop 3.4 blow-up check, `W·L_n` for n = 2..5 | §8.7 | **DONE** — `reference/calculus/v3_blowup.md`; bound holds n=2..5 (17/48/127/318 ≥ 3/7/15/31), no timeout (max 33 states, 0.36 s) |
+| V3 | Prop 4.1 blow-up check, `W·L_n` for n = 2..5 | §8.7 | **DONE** — `reference/calculus/v3_blowup.md`; bound holds n=2..5 (17/48/127/318 ≥ 3/7/15/31), no timeout (max 33 states, 0.36 s) |
 
 Reproducibility floor (house rule): validated V-outputs are copied into
 the curated committed `reference/calculus/` tree and cited by path from
@@ -415,8 +415,8 @@ the paper.
   text below, found at implementation time: the corpus gate condition is
   `max(m⁺, m⁻) ≤ 0`, not `m⁺ = m⁻ = 0` — a `-1` coordinate (no chain of that
   polarity at all, the empty/universal convention) still is an obligation.
-  `surgery.py` additions, all `O(n²)`, normative math Prop 3.5 and
-  Cor 3.6–3.7 of the paper:
+  `surgery.py` additions, all `O(n²)`, normative math Prop 6.1 and
+  Cor 6.2–6.3 of the paper:
   - `live(table, P) -> FrozenSet[int]` — the classes `c` whose row
     `{M(c, x) : x ∈ 𝒞} ∪ {c}` meets `stems(P) = {s : (s, e) ∈ P}`
     (build the stems bitmask once, one pass over `M`);
@@ -426,13 +426,13 @@ the paper.
   - read-offs `is_safety(P) := P == safety_closure(P)` and
     `is_cosafety(P) := P == interior(P)` (exact tests — fixpoint
     equations, not approximations);
-  - `is_obligation(table, P) -> bool` (paper Thm 3.10): bucket linked
+  - `is_obligation(table, P) -> bool` (paper Thm 6.6): bucket linked
     pairs by stem and check each bucket's verdict constant; then check
     the stem verdict constant on each `R`-class (`R`-classes = the
     strongly connected components of the right-Cayley graph
     `c → M(c, λ(a))`, one Tarjan/Kosaraju pass, `O(n·|Σ|)`); true iff
     both hold. Cost `O(|linked| + n·|Σ|)`.
-  - `obligation_degree(table, P) -> Tuple[int, int]` (paper Prop 3.11;
+  - `obligation_degree(table, P) -> Tuple[int, int]` (paper Prop 6.7;
     precondition `is_obligation`, assert it): condense the right-Cayley
     graph by its SCCs, label each SCC containing a linked stem with its
     `θ`; `(n⁺, n⁻)` = longest `θ`-alternating path starting at a
@@ -456,10 +456,10 @@ the paper.
   equality gate, no Spot involved. Likewise `obligation_degree` must
   equal the sidecar `(n⁺, n⁻)` on every such corpus row (worked
   reference case: `a*·b^ω` gives `(1, 2)`, per [CP97, Ex. 10] and
-  paper Prop 3.11).
+  paper Prop 6.7).
 
 Non-goals for this iteration: the exponential frontier (`W·L`, `W^ω`,
-`remove_ap` — §3.4 of the paper; do not implement, do not stub); exit
+`remove_ap` — §4 of the paper; do not implement, do not stub); exit
 constructions to NBA; any CLI; any learner integration (that is a
 *separate* commission, specified on the learner's side, once this
 package stands).
@@ -474,7 +474,7 @@ package stands).
 | P1 | corpus equality oracle (harness 7) | green | if `equivalent` disagrees with filename identity, suspect the calculus first, the corpus dedup second — report, do not "fix" the corpus |
 | F1 | Spot cross-checks (V1/V2) | MAY disagree | dictionary/naming first; only a failed witness replay makes it a bug |
 | F2 | Spot timeout in V1/V2 | allowed | skip and record, never wait (repo discipline) |
-| E1 | V3 bound `\|𝒞(W·L_n)\| ≥ 2^n − 1` | must hold | suspect the HOA encoding (§8.8 trap 9) first; only then escalate to theory (Prop 3.4) — never patch the numbers |
+| E1 | V3 bound `\|𝒞(W·L_n)\| ≥ 2^n − 1` | must hold | suspect the HOA encoding (§8.8 trap 9) first; only then escalate to theory (Prop 4.1) — never patch the numbers |
 | E2 | V3 construction timeout at n ≥ 4 | allowed, publishable | it IS the entry price — record as a datum and stop (§8.8 trap 10) |
 
 ---
@@ -570,7 +570,7 @@ min / p25 / median / p75 / p95 / max of ratio; fraction of pairs with
 ratio < 0.25, < 0.5, < 0.9, ≈ 1.0; median BFS time. One sentence
 comparing `related` vs `uniform` medians.
 
-### 8.4 V1b — operation costs, calculus vs Spot (fills the §4 ledger TBD)
+### 8.4 V1b — operation costs, calculus vs Spot (fills the paper §7 ledger; §8.3 there)
 
 **Framing decision (write it into the summary, verbatim if need be).**
 The corpus automata are *deterministic*, so Spot's complement is
@@ -616,7 +616,7 @@ in-process: rely on the checkpoint file so a stall loses one case
 (restart skips it, mark F2), and keep the campaign in a background
 task.
 
-### 8.5 V1c — the pipeline demo (fills the §3.4 entry-price TBD)
+### 8.5 V1c — the pipeline demo (fills the paper §4 entry price; §8.4 there)
 
 **Honest scope (trap #14).** On this corpus everything is deterministic
 and small, so the demo CANNOT exhibit "Spot pays Safra k times" — that
@@ -648,11 +648,11 @@ Spot states after simplification / Spot time; a cumulative row; the
 entry-price row on top. Plus three sentences of interpretation, written
 against trap #14.
 
-### 8.6 V2 — the stutter read-off vs Spot (fills the §4 V2 TBD)
+### 8.6 V2 — the stutter read-off vs Spot (fills the paper §8.5)
 
 **Package addition first (DONE — landed in `classify`, not `calculus`):**
 `is_stutter_invariant(inv) -> bool` in `sosl.sos.classify` —
-`all(M(λ(a), λ(a)) == λ(a) for a in Σ)`, Prop 3.3 of the calculus paper —
+`all(M(λ(a), λ(a)) == λ(a) for a in Σ)`, Prop 5.1 of the calculus paper —
 the X-free refinement of the LTL cut, carried on `Record` and the `.cat`
 sidecar (`stutter: invariant|sensitive`) beside the LTL bit. V2 therefore
 *consumes* the tag from `.cat` rather than recomputing it. Gate
@@ -700,7 +700,7 @@ destuttered form; the first divergence convicts the scan (a calculus
 bug), no divergence + Spot still disagreeing ⟹ F1 report with the
 enumeration attached.
 
-### 8.7 V3 — Prop 3.4, empirically (fills the blow-up check deferred by the paper)
+### 8.7 V3 — Prop 4.1, empirically (fills the blow-up check deferred by the paper)
 
 **Goal.** Confirm `|𝒞(W·L_n)| ≥ 2^n − 1` on real constructions for
 `n = 2, 3, 4, 5`, and exhibit the operand sizes next to it.
@@ -740,7 +740,7 @@ record it as such and stop at the last n that finishes.
 **Deliverable table:** n | `|𝒞(L_n)|` | `|𝒞(W·L_n)|` | bound `2^n − 1` |
 construction time (or TIMEOUT). Values must satisfy the bound; a
 violation convicts either the automaton (first suspect: the encoding
-trap) or Prop 3.4 (escalate to theory, do not patch).
+trap) or Prop 4.1 (escalate to theory, do not patch).
 
 ### 8.8 The trap list (read before coding; each traces to a section)
 
@@ -785,17 +785,17 @@ Each item names the paper TBD it fills and the reference file that
 carries it (all under `reference/calculus/`, each with the §8.1
 header):
 
-1. **`v1_align_ratio.md`** → paper §3.3 TBD: ratio percentiles per
+1. **`v1_align_ratio.md`** → paper §3.3 (§8.2 there): ratio percentiles per
    population, the `related` vs `uniform` contrast, median BFS time.
-2. **`v1_ops.md`** → paper §4 implementation TBD (ledger rows): per
+2. **`v1_ops.md`** → paper §7.1 + §8.3 (ledger rows): per
    operation, median calculus time + abstract counts vs median Spot
    time; the align-amortized figures; F2 skip counts.
-3. **`v1_pipeline.md`** → paper §3.4 entry-price TBD: the stage table
+3. **`v1_pipeline.md`** → paper §4 + §8.4 entry price: the stage table
    with the entry-price row, cumulative totals, three framed sentences.
-4. **`v2_stutter.md`** → paper §4 V2 TBD + a census datum for
+4. **`v2_stutter.md`** → paper §8.5 + a census datum for
    [SωSN26]: agreement table, stutter-invariant count and share, split
    by the LTL bit, disagreement dossier (target: zero unexplained).
-5. **`v3_blowup.md`** → paper §3.4 Prop 3.4 deferred check: the n-table
+5. **`v3_blowup.md`** → paper §4 Prop 4.1 (§8.6 there): the n-table
    with the bound column; if a TIMEOUT row exists, one sentence
    presenting it as the entry price made visible.
 6. **Headline sentence inputs** → paper abstract + contribution 4: the
@@ -820,7 +820,7 @@ split is deliberate:
   reports alone. (Sibling works each have such a report:
   `sos_classification_report.md`, `sos_learning_report.md`, ….)
 
-The hull conjecture (§3.5 of the paper) is NOT part of CAL4; it stays a
+The hull work (§6 of the paper, delivered as CAL5) is NOT part of CAL4; it stays a
 theory item.
 
 ### 8.10 Milestone restated
@@ -841,3 +841,105 @@ Acceptance for the whole of CAL4 **(met)**: the five reference files
 committed, the paper carrying their numbers in pure form, the report
 answering this spec, and every F1/F2 row in the files explained (the
 campaigns ran F2-free; V3 finished without a timeout).
+
+## 9. Post-restructure work orders (2026-07-11)
+
+The paper was restructured 2026-07-11 into ten sections; results were
+renumbered (map: Prop 3.3→5.1, Prop 3.4→4.1, Prop 3.5→6.1, Cor 3.6/3.7→
+6.2/6.3, Thm 3.10→6.6, Prop 3.11→6.7; Props 3.1/3.2 and §§3.1–3.3
+unchanged; measurements now live in paper §8). Ground rules of §8.1
+apply throughout (budgets, logs, `reference/` headers, one file per
+invocation). Four work orders, in priority order.
+
+### 9.1 E-CAL-EX — mechanical check of the running example (small; first)
+
+Paper §2.3 hand-computes `𝓘(a*·b^ω)` (over `Σ = {a, b}`; with one AP
+`p`, take `a = ¬p`, `b = p`, so the language is `(¬p) U (G p)`); §3.3
+hand-computes its alignment with `GF a` (= `GF ¬p`); §6 reads its hulls
+and degree. Theory wants a machine counter-signature on every value.
+Script: `sosl/tests/calculus/example_gate.py` (one shot, no argv), gate
+asserts ALL of:
+
+1. `𝓘(a*·b^ω)`: **5 classes** + identity conventionally counted in
+   (`[ε], A, B, C, D`); table shape `A²=A`, `B²=B`, `A·B=C`, `C·B=C`,
+   `B·A = C·A = C² = D`, `D` absorbing; 6 linked pairs;
+   `P = {(B,B), (C,B)}` (letter naming per the encoding — assert shape,
+   not key strings).
+2. Stutter read-off true (both letter classes idempotent).
+3. Rootings: `P_A = P` (`a⁻¹L = L`); `P_B = {(B,B)}` (`= {b^ω}`).
+4. `Live = 𝒞 \ {D}`; hull adds exactly `(A,A)`; interior pair set `= ∅`;
+   A–S liveness factor `= P ∪ {(D,A),(D,B),(D,D)}`.
+5. `is_obligation` true; `obligation_degree = (1, 2)`; cross-check the
+   `.cat` coords if this language is a corpus row.
+6. `𝓘(GF a)`: 3 classes + identity; `P₂ = {(α, α)}` shape (all cells
+   with an `a`-containing loop accept).
+7. Align: exactly **5 nodes** (identity included), ratio 5/15;
+   intersection EMPTY (no witness); inclusion `a*·b^ω ⊆ FG ¬a` HOLDS;
+   reverse inclusion FAILS with minimal counterexample `ba·b^ω`
+   (theory's discipline-order prediction — report the tool's witness
+   verbatim if it differs, that is a finding).
+
+Any disagreement is STOP-and-report (finding F-EX in the report); do
+not adjust the paper — theory reviews. Deliverable:
+`reference/calculus/example_gate.md`; then flip the paper §8.7 `⟨TBD⟩`
+to point at it (that one edit to the paper is sanctioned).
+
+### 9.2 V4 — the classification battery vs Spot (paper §8.5 TBD)
+
+V2's pattern, for the CAL5 read-offs. Full corpus sweep
+(`--one <case>` / `--campaign`, per-case watchdog, checkpoint in
+`tests/calculus/logs/`):
+
+- Ours, from the held invariant (warm, median of 7): `is_safety` /
+  `is_cosafety` (Cor 6.2 fixpoints), `is_obligation` (Thm 6.6),
+  `obligation_degree` where applicable (Prop 6.7).
+- Spot's, on the paired det HOA: FIRST a 10-line API probe — what does
+  Spot 2.14 expose on automata (`spot.mp_class(aut)`?
+  `is_obligation(aut)`? `is_safety_automaton`?) — report the surface
+  found, then use it bounded-or-skipped (§8.1 budget; blown budget is
+  an F2 datum, never a wait).
+- Agreement must be 100% where Spot renders a verdict; any
+  disagreement: STOP, dossier with replayable witnesses (V2
+  discipline).
+- Timings: per-class medians, ours vs Spot's — the paper §8.5 head-to-
+  head sentence.
+
+Deliverable: `reference/calculus/v4_ladder.{md,csv}`; report section
+with findings F15+; fills the paper §8.5 `⟨TBD⟩`.
+
+### 9.3 CAL6 — alphabet hygiene (paper §3.2 catalog additions)
+
+Implement in `calculus.surgery` (typed signatures; context-free doc):
+
+- `free_aps(inv) -> Set[str]` — `p` is free iff
+  `λ(a[p↦1]) = λ(a[p↦0])` for every valuation `a`.
+- `drop_ap(inv, p) -> Invariant` — precondition `p` free (raise
+  otherwise); merge the letter pairs (λ factors), reduce.
+- `rename_equal(inv1, inv2) -> Optional[Dict[str, str]]` — a
+  permutation `π` of `AP` with `π(L₁) = L₂`, or `None`; prune by
+  canonical statistics (class count, `|P|`, letter-class profile
+  multiset) before trying any `π`; per candidate: relabel + reduce +
+  byte compare.
+
+NOTE: the corpus pipeline reportedly already carries similar logic
+(dropping unused/free APs; comparing AP orders for
+equality-up-to-renaming). Locate it first; lift/share rather than
+duplicate, and report where it lives. Gates (harness style):
+metamorphic — after `drop_ap`, membership equals membership of the
+projected lasso, exhaustively on small lassos; `rename_equal(inv,
+permuted(inv))` recovers the permutation; corpus data for the paper —
+how many corpus languages have ≥ 1 free AP, how many rename-equal
+pairs in a stratified sample.
+
+### 9.4 Corpus refresh (blocked; coordinate with the user)
+
+The corpus moved 3938 → 6222 during/after CAL4–5. Before any
+submission pass: freeze the regenerated corpus, rerun
+V1a/V1b/V1c/V2/V3 (+ V4), refresh the paper §8 numbers in one sweep.
+Do not start until the corpus stream declares the regeneration stable.
+
+### 9.5 Figures
+
+Figure requests are specified in `sos_calculus_figures.md` (sibling of
+`sos_constructed_figures.md`); artifacts follow that file's
+conventions.
