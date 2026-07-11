@@ -4,7 +4,7 @@ Companion to `algorithm.md`. That document constructs; this one positions:
 the papers the construction stands on or beside, what each establishes, and
 our exact relationship to it — why we even cite it. Claims here follow
 first-hand reading; the investigation notebook, with per-paper line pointers
-into the sources, is `research_notes/definability.md` at the repo root.
+into the sources, is `notes/definability.md` at the repo root.
 
 ## 1. The foundations the oracle computes on
 

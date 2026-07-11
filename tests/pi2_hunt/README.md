@@ -1,11 +1,11 @@
 # tests/pi2_hunt — the Π₂ recurrence hunt
 
 Self-contained harness for the experiment posed in
-[`research_notes/experiment_pi2_hunt.md`](../../research_notes/experiment_pi2_hunt.md):
+[`notes/experiment_pi2_hunt.md`](../../notes/experiment_pi2_hunt.md):
 find a **state-minimal** deterministic ω-automaton whose **language is star-free**
 but which has a recurrence sub-question `Inf(C)` that is **not** star-free. The
 outcome and analysis are written up in
-[`research_notes/pi2_hunt_report.md`](../../research_notes/pi2_hunt_report.md) —
+[`notes/pi2_hunt_report.md`](../../notes/pi2_hunt_report.md) —
 **start there**; the conjecture is refuted, and the witnesses are committed under
 [`samples/fixtures/hoa/definability/`](../../samples/fixtures/hoa/definability/)
 (`gf_abb_min_z2.hoa`, `gf_ab_anb_min_z2.hoa`).

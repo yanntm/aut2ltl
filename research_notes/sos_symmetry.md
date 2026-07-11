@@ -530,7 +530,7 @@ certificates.
 **From heuristic to read-off.** The translator suite behind
 [ToLTL26] includes a leaf strategy that searches, heuristically, for
 a *determining alphabet* on an SCC of an automaton presentation (the
-project note `stutterquotient.md`). On the invariant the analogous
+project note `notes/stutterquotient.md`). On the invariant the analogous
 split is canonical: the don't-care letters of a layer are its
 neutral letters (the `St`-structure of [ToLTL26] §4.2), and the
 global padding letters are the `[c] = 1` read-off — the search

@@ -233,7 +233,7 @@ The pipeline is being built bottom-up; this maps the code to the design above.
   factor)`. With `complete=True` it also synthesises `u` (BFS to a state on the
   `v`-orbit) and `x` (a phase-discriminating lasso from
   `product(L_q, complement(L_q'))`). Built, unit-tested, and validated on real
-  kinska non-LTL inputs (see `research_notes/witness_log.md`).
+  kinska non-LTL inputs (see `notes/witness_log.md`).
 - **Right-action order pin (§4 gotcha).** `aut2ltl/bls/definability/witness/pin.py` —
   `check_action_order(lang)` → `PinResult`, driven by `aut2ltl/bls/gap/witness_eval.py`
   (`eval_word`, GAP's right-action product as an independent oracle). Confirms the
@@ -252,7 +252,7 @@ The pipeline is being built bottom-up; this maps the code to the design above.
   `(v, p)` from GAP, lift to letters, replay `u·vⁿ·x` membership on the input
   automaton (toggles `10101` on the counter).
 
-**What remains.** (Experiment log: `research_notes/witness_log.md`.)
+**What remains.** (Experiment log: `notes/witness_log.md`.)
 
 - **Pin the GAP right-action order** (§4 gotcha) — **done.** A mod-3 fixture
   (`samples/fixtures/hoa/various/mod3_a.hoa`, `L = a^{3k}(!a)ᵒ`) yields a genuine

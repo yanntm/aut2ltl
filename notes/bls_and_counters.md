@@ -1388,7 +1388,7 @@ actual guard). This is the precise shape of "min state is not enough."
 
 # Experiment in: Π₂ conjecture REFUTED — and it refines the gap exactly as hoped
 
-The hunt (research_notes/pi2_hunt_report.md) returned a triply-verified
+The hunt (notes/pi2_hunt_report.md) returned a triply-verified
 counterexample: GF(a & X(b & Xb)) is star-free, its form is state-minimal at 3
 states, yet its recurrence sub-question Inf(C) at configs (1,1,1),(2,1,1) counts
 mod 2 (non-star-free). The form's transition monoid carries a Z2 (letter {a,b}

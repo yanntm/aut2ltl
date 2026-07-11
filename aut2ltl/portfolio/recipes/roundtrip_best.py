@@ -1,6 +1,6 @@
 """roundtrip_best — the never-regress round trip, a shared seed, three bricks.
 
-The combo of `roundtrip_status.md` direction 3, built from three bricks each with
+The combo of `notes/roundtrip_status.md` direction 3, built from three bricks each with
 one concern:
 
     best_of([ Memo(C), Roundtrip(Memo(C)) ])

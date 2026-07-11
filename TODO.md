@@ -44,7 +44,7 @@ and the `kr → bls` engine reorg all landed — see HISTORY 2026-06-17.)
   half of this item is still open: run `gate_count.py` / the counting inputs against
   `--use deep_memo` and read the hit rates.
 - **Finer per-Spot-call control (decouple construction-translate from verify).**
-  Surfaced by the `deep_nobls` @1000 genaut run (research_notes/roundtrip_log.md): the
+  Surfaced by the `deep_nobls` @1000 genaut run (notes/roundtrip_log.md): the
   round trip's `ltl2tgba` calls are guarded only by a *flat-size* proxy
   (`language.translate_tree_limit`), never *time*-bounded per call. So one runaway Spot
   translate inside the round trip blows the whole-survey 15 s build budget and kills an
