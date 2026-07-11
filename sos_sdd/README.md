@@ -46,7 +46,16 @@ Automaton(name="evenblocks",
 ```
 
 Guards are DNF cube strings over the declared APs (`a&!b`); a multi-cube
-guard is several `trans` entries. Product families (C8) are structured, the
+guard is several `trans` entries. `sos_sdd.hoa.digest_twa` is the parser
+half of C2: a Spot `twa_graph` becomes this digest verbatim — states, AP
+order, marks and the acceptance formula carried as-is, guards rendered
+as irredundant DNF cubes (minato-isop per edge). Obtaining the graph is
+the caller's business via the standard APIs (`spot.automaton` on the
+already-canonical corpus `det/` tiers; `sosl.sos.build.canonical` /
+`import_hoa` to normalize anything else — that route may renumber states
+and drop unused APs, the recorded AP-support exclusion). The pipeline is
+defined over the deterministic complete form D; other graphs are refused
+loudly. Product families (C8) are structured, the
 global automaton never expanded on the Python side:
 
 ```python
