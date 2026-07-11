@@ -53,9 +53,18 @@ the derived-census driver, the engine's first consumer at scale),
   (`stem`) where the seed is strictly coarser than the gfp — ledger
   rows F10–F11. The spec's cross-check vs the explicit tool's residual
   classes proper waits on E1's HOA bridge (recorded gap).
-- **TODO: everything else.** C4's squaring shortcut, C6, C9–C10,
+- **DONE (engine-side): C6** — Phase 5 as symbolic partition refinement
+  on the erased pair space (profile-column + residual-signature seed,
+  letter-class preimage gfp; the rotation lemma held structurally —
+  `congruence.hh` is pure `Hom_Basic`, no `Comp` reachable inside the
+  fixpoint). Partition element-exact vs an explicit right-translation
+  GT on seven cases (ledger F12–F13); `gf_aa_parity`'s 6 classes match
+  the explicit tool's `gfaa` fixture. `fp5` is now a checked switch
+  (only `"layered"`; others refused).
+- **TODO: everything else.** C4's squaring shortcut, C9–C10,
   E1/E3–E9, M2–M5 proper (E2 still owes the second component family and
-  per-point budget sweeps at scale).
+  per-point budget sweeps at scale). Next: C7 completion (Phase 6
+  quotient + `.sos` emission — the conformance gate).
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat

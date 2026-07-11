@@ -129,3 +129,33 @@ component blocks). `until_phase=4` is the new ceiling
   waits on E1's HOA→digest bridge; the gate's ground truth is the same
   gfp computed by a deliberately different explicit algorithm
   (cycle-walk verdicts + lockstep refinement).
+
+## C6 — the congruence (Phase 5)
+
+Engine state added: symbolic partition refinement on the pair space
+with the y-block erased to zero (`setVarConst` sweep — the Phase 3
+columns project onto the closure's space); seed by the erased profile
+columns (~ω) and residual-class slot selections (~lin, over the global
+states); gfp by letter-class *preimage* splits using the closure's
+per-class reverse homs. The rotation-lemma invariant is structural:
+`src/congruence.hh` is pure `Hom_Basic` and never includes the ExprHom
+machinery — no `Comp`-shaped relation can appear inside the fixpoint.
+`until_phase=5` is the new ceiling; `fp5≠"layered"` is now checked and
+refused (gate `tests/sos_sdd/congruence_test.py`, streams in
+`tests/sos_sdd/logs/congruence_*.jsonl`).
+
+- **F12 — the syntactic partition is exact everywhere tried.** Engine
+  `EM¹/~` equals an explicit right-translation-refinement ground truth
+  (sosl-style, seeded by cycle-walk verdict + residual signatures) on
+  all seven cases — element-for-element, not just counts:
+  `gf_aa_parity` 10→6, `even` 7→5, `evenblocks` 16→7 (the identity
+  class absorbs `⟦aa⟧`, [SωS26, Table 2(c)]), `mod3` 6→2, `dupe` 4→2,
+  `stem` 7→4, `EvenBlocks^{⊗2}` factored 256→37. The `gf_aa_parity`
+  count of 6 also matches the explicit tool's `gfaa` fixture
+  (`sosl/tests/sos/logs/_core_gfaa.sos`, `classes: 6`) — a cross-tool
+  corroboration ahead of C7's byte gate.
+- **F13 — compression note.** The 256-element factored product
+  quotients to 37 classes with the whole refinement running on DDD
+  blocks (the partition never exists as an explicit element list on
+  the engine side); the largest class (156 elements) is one diagram
+  block throughout.
