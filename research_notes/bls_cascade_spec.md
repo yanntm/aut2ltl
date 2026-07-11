@@ -9,13 +9,15 @@ the first engineering session — contract in §0). Experiment ids are
 namespaced `K-` to avoid collision with `sos_toltl_spec.md`'s
 C/E/H/M series, whose assets this spec consumes.
 
-**Where things stand:** K-E0 ran (findings K-F1–K-F3 in the report):
-step 5 confirmed, steps 1–3 refuted the draft's floor-witness model
-(profile monoid vs. syntactic quotient), steps 4/6 pending. The paper
-edit the decision rule demanded has landed — draft banner, C.3–C.7
-(Conjecture C.12/C.17 refuted, Theorem C.12′, Prop C.19), main paper
-§5.1/§8 — and this spec is synced to it: **K-E1–K-E5 are unblocked**
-under the revised predictions below.
+**Where things stand:** K-E0 is COMPLETE (K-F1..F6); K-E1, K-E2, K-E3
+and K-E7 are COMPLETE **on the extended corpus** (6 222 languages,
+Wagner ω³/ω⁴ — K-F7..K-F10, K-F12; data in `reference/cascade/`);
+K-E4's worked example is gated (K-F11, production wiring open); K-E5
+and K-E6 have not run. The third paper revision has landed
+(Theorem C.9′, Theorem C.12″, the K-F12 floor reversal), and this spec
+is synced to it. **Open runs:** the k=2 pass on K-E1's 640 budget-open
+layers, K-E4 engine integration, K-E5, K-E6, and the new **K-E8**
+(padded-block floor certificates + the (B̃)-strictness probe) below.
 
 ---
 
@@ -51,8 +53,10 @@ Create the report on first landing a result; thereafter it is the ledger.
   (`neutral | reset(t) | mixed`), passing widths, and the layer action
   monoid `𝒜_R` as a by-product.
 - **C3** ((B)-tester): the bounded window-determinacy stages and its
-  census output table — the source of the 372 `undecided` layers (K-E1's
-  input) and of Table 3's semantics, which K-C1's (B)-mode must match.
+  census output table — the source of the `undecided` layers (K-E1's
+  input; 8 786 readings over 2 114 languages on the extended corpus,
+  was 372 on the old ω²-ceiling cut) and of Table 3's semantics, which
+  K-C1's (B)-mode must match.
 - The `aut2ltl/bls` package: GAP/SgpDec holonomy bridge
   (`aut2ltl/bls/gap`, `decompose_aut`), the reach-formula family
   (`aut2ltl/bls/operators/`), `Fin` (`fin.py`) — consumed by K-E5.
@@ -202,31 +206,41 @@ on C.3; K-E1–K-E5 stopped). The edit has landed and the gate is
 re-opened; steps 4 and 6 complete it. A mismatch against the *revised*
 expectations is a new `PAPER-EDIT`.
 
-### K-E1 — (C) on the (B)-undecided stratum
+### K-E1 — (C) on the (B)-undecided stratum — COMPLETE (K-F7/K-F12); one pass open
 
-*Hypothesis (revised):* the 372 layers C3 left `undecided` (budget
-gaps, Table 3) are all frozen final layers, where (C) at `k` is
-exactly (B) at `k+1` (Lemma C.10) — so the run's value is procedural,
-not logical: dropping the grouping step relieves the budget, and the
-piggybacked K-E7 scan maps absorption. Expect decisions where the
-budget was the binder; any `CONFLICT` is a new floor inhabitant, not a
-C.12 falsifier (C.12 is already refuted — Theorem C.12′).
+*Outcome (extended corpus; data `reference/cascade/k_series.md`):* the
+old-cut hypothesis ("all frozen, zero conflicts") was a frame
+artifact. Of the 8 786 undecided layers, 6 610 decide at k ≤ 2
+(6 105/346/159), 505 of them after a k=0 conflict; the 2 176 heavy
+layers resolve into 1 021 genuine (C)@0-conflicts (806 aperiodic),
+263 persisting at k=1 (246 aperiodic), 118 ladder-rescued, 640
+budget-open — every conflict ALG-7-verified. The floor track is
+inhabited in-frame (K-F12, type specimen
+`2state2ap1acc_parity_3772037665`).
 
-*Input:* C3's census output table, rows with status `undecided`.
-*Run:* ALG-1..6 per layer, entries = all `c ∈ R`, widths `k = 0..3`,
-budget as in §3; stop at first passing width.
-*Output CSV columns:* `language id, layer id, |𝒞|, |R|, |Σ_λ|, C3
-status, (C) width | CONFLICT | BUDGET, #collected F, max states, time`.
-*Decision:* `CONFLICT` rows → ALG-7 then K-E2 escalation. Pass rows →
-coverage numbers for the draft's C.7 §8-bullet. `BUDGET` rows → record
-which coordinate blew (`F`-count vs state count) — sizing data for the
-width growth on frozen layers.
+*Remaining run:* the **k=2 pass on the 640 budget-open layers**
+(`k_e1_verify <id> <layer> 2`, sharded; consider `--cores 4
+--timeout 300` and/or a raised `find_c_conflict` budget — cone growth
+saturates 10⁶ states at k=1 already). Extend `reference/cascade/` and
+`k_series.md` with the result: each row lands as CONFLICT (feeds
+K-E8), CLEAN (ladder rescue at k=2), or BUDGET (stays open).
 
-### K-E2 — the floor map (was: C.12 falsification — settled on paper)
+*(Original procedure, kept for reference: ALG-1..6 per layer, entries
+= all `c ∈ R`, widths ascending, stop at first passing width; CSV
+columns as in `k_e1_cluster.csv`; CONFLICT → ALG-7; BUDGET → record
+which coordinate blew.)*
+
+### K-E2 — the floor map — COMPLETE (K-F9; steps 1–2 subsumed by K-F7/K-F12)
 
 *Question (revised):* C.12 is refuted (Theorem C.12′); the scan now
 measures how far the floor extends and whether any failure mechanism
 beyond zero absorption exists (draft C.4's mechanisms paragraph).
+*Outcome:* steps 1–2 are answered on the extended corpus by
+K-F7/K-F12 (the floor-track stratum is inhabited in-frame; the
+`2state2ap` shape is in the frame and populated); step 3 confirmed
+Prop C.19 (K-F9, the moving-layer transfer specimen); step 4's ALG-7
+discipline is now inlined in `k_e1_verify`. Every-width promotion of
+the in-frame conflicts moves to **K-E8**.
 
 1. *Frozen layers* (class coordinate trivial — (C) at `k` = (B) at
    `k+1`): all frozen final layers of the census, widths ascending under
@@ -252,21 +266,21 @@ transcript; otherwise scanned-clean statistics per stratum.
 (no conflict on the transfer specimen) refutes Prop C.19 →
 `PAPER-EDIT` on C.4/C.19.
 
-### K-E3 — one-sidedness statistics (scope of Cor C.8/C.9)
+### K-E3 — one-sidedness statistics (scope of Cor C.8/C.9) — COMPLETE (K-F10); recount open
 
-Over every final layer where (B) or (C) passed at `k ≤ 3` (census +
-K-E1 output): during ALG-6, restrict to collected `F` spanning ≥ 2
-classes; test monotonicity of the verdict under `F ⊆ F′` (pairwise scan
-per entry). Classify `upward | downward | neither`; cross-tabulate with
-the ladder rung of `P|_R` (the strength stratification read-off) and
-count the languages meeting all of Cor C.9's hypotheses
-(prefix-independent, terminal 1-anchored final layer with anchors,
-upward-closed, parked verdicts rejecting) — the guaranteed-Π₂ stratum.
-*Prediction:* recurrence-rung layers predominantly `upward`; the C.9
-count may well be **zero** — the revised draft suspects
-prefix-independence forces the final layer frozen (C.3's ⟨TBD⟩). A
-non-zero count settles that question negatively and hands C.9 its
-first instance — report any hit prominently.
+*Outcome (extended corpus):* over the 74 (C)-decided final layers with
+a ≥ 2-class collected family: 16 upward / 16 downward / 28 both / 14
+neither — the up/down tie is structural (complement-closed catalogue).
+The "predominantly upward" prediction is NOT supported at the raw
+level. Cor C.9 gating stratum: **0**; prefix-independent languages:
+1 104/1 104 with frozen final layers — now **Theorem C.9′** on paper
+(prefix-independence ⟹ frozen singleton terminal layers, proved
+unconditionally; the census is its confirmation, not its evidence).
+
+*Remaining run:* the rung-stratified recount — cross-tabulate the
+74-layer one-sidedness with the ladder rung of `P|_R` (the strength
+stratification read-off); the precise E3/C.8 prediction lives at the
+recurrence rung, and only this recount can still support or refute it.
 
 ### K-E4 — config normal form emitter + conformance
 
@@ -307,9 +321,10 @@ depth) recorded against the DG-fallback output the same languages took.
 
 ### K-E5 — DG vs manufactured cascade on the (A)-fallback stratum
 
-*Hypothesis* (draft C.5, stem side): on the 258 (A)-failing languages
-(1 432 layers), holonomy cascade + finite-word reach beats DG-on-`𝒜_R`,
-and cascade heights sit far below `2^{|R|}`.
+*Hypothesis* (draft C.5, stem side): on the (A)-failing languages
+(258 languages / 1 432 layers on the OLD cut — recount on the extended
+corpus is step 0's first duty), holonomy cascade + finite-word reach
+beats DG-on-`𝒜_R`, and cascade heights sit far below `2^{|R|}`.
 
 0. *Preflight (cheap, reported separately):* for each of the 1 432
    failing layers, record whether it is a final candidate (has an
@@ -334,7 +349,14 @@ and cascade heights sit far below `2^{|R|}`.
 step 3(b) of the architecture (`PAPER-EDIT` on §5.4 via C.7); DG wins ⟹
 C.5's stem half is demoted to a remark.
 
-### K-E7 — sandwich scan (the absorption map; C.17 refuted on paper)
+### K-E7 — sandwich scan (the absorption map; C.17 refuted on paper) — COMPLETE (K-F8)
+
+*Outcome (extended corpus):* both positive controls green; over the
+6 610 decided layers: absorption 14 050 pairs / group 7 387 /
+non-splitting `other` 3 076, **verdict-splitting `other` = 0** — no
+third mechanism; the conflict stratum shows the same dichotomy from
+the failing side (K-F12). The scan stays enabled by default in every
+K-E1-machinery run (including the open k=2 pass).
 
 *Statement scanned* (draft C.4): the sandwich identities
 `e·e′·e J e`, `e′·e·e′ J e′` for idempotent loop classes at a common
@@ -408,6 +430,60 @@ against ALG-5 itself; run it by default in every K-E1/K-E2 invocation.
    Feeds the prophetic transcription problem's first worked instance —
    the open problem's main candidate route (C.4, C.5).
 
+### K-E8 — floor certificates: the padded-block scan (Theorem C.12″)
+
+*Statement scanned* (draft Theorem C.12″): on a frozen singleton layer
+`{z}`, pick a pad letter `s ∈ Σ_z` and let `σ := π([s])` (ALG-3). For
+a block set `B` (non-empty words over `Σ_z`) and a covering sequence
+`w₁ … w_r` of `B`, let `ε(w₁…w_r) := π([w₁]·σ·[w₂]·σ ⋯ [w_r]·σ)`
+(plain `M`-products). **Two covering sequences of the same `B` whose
+`Val(z, ·)` verdicts differ certify that `{z}` fails (C) at every
+width** — a floor inhabitant outright. The check consumes only the
+multiplication table and `P`: no cone, no closure, no budget.
+
+*(a) Certificate scan.*
+```
+for each CONFLICT layer (id, layer) in k_e1w_conflicts_k1.csv   # the 263 first,
+        then the 1021 k=0 conflicts, then k=2 output as it lands:
+    require R = {z} frozen singleton (every within-layer letter neutral);
+        count and skip the rest (they go to a Theory follow-up)
+    for s in Σ_z:
+        σ := π([s])
+        pass 1: blocks = single quotient letters, B ⊆ Σ_z \ {s}, |B| ∈ {1, 2}
+        pass 2 (only if no hit): blocks of length 2 over Σ_z, |B| ≤ 2
+        for each B, enumerate covering sequences of length ≤ |B| + 1
+            (e.g. B = {a,b}: (a,b), (b,a), (a,a,b), (a,b,b), …);
+            compare all pairs: ε via M-products, verdicts via Val(z, ε)
+        verdict split ⟹ CERTIFICATE: emit (id, layer, s, B, seq, seq′, ε, ε′)
+            and stop for this layer
+```
+*Cost:* table products only — trivially local, no cluster. *Output
+CSV:* `id, layer, aperiodic, certified, s, B, seq, seq', time`; lands
+in `reference/cascade/` + a `k_series.md` section.
+*Expected:* the type specimen `2state2ap1acc_parity_3772037665`
+certifies (its conflict is the `a·s^*·a` shape; mandatory positive
+control — if it does not certify with pass-1 blocks, widen to pass 2
+before concluding anything). The headline number is **how many of the
+246 aperiodic k=1-persisters certify**.
+*Decision:* certified count → `PAPER-EDIT` on the draft's K-F12
+paragraphs ("N of the 246 are floor inhabitants outright"). A
+persister that does NOT certify under both passes is a Theory specimen
+— either a longer-block certificate exists or a genuinely different
+every-width mechanism does; dump its idempotent loop classes and
+verdicts at `z` for hand analysis.
+
+*(b) (B̃) strictness at the rescue width* (Lemma C.5(i), the moving
+witness). Frozen-singleton rescues are automatic witnesses and already
+on paper (`GF(aa)`, K-F6 + Lemma C.10 — degenerate). The open hunt is
+a **moving** layer (C)-determined at a width where (B̃) fails: over
+the ladder-rescued conflict layers (118 CLEAN-at-k=1 rows of
+`k_e1w_conflicts_k1.csv`, plus pass-1's 505 k=0-conflict-but-decided
+layers), restrict to *moving* layers and run the (B̃)/window decider
+at the rescue width. Any FAIL row is the witness — report it
+prominently (`PAPER-EDIT`: C.5(i)'s remark gets its non-degenerate
+witness). All-PASS is also data: (B̃) and (C) coincide at the rescue
+width on every census moving layer — record and move on.
+
 ## 5. Dependency graph
 
 ```
@@ -416,7 +492,8 @@ K-E0 ──▶ K-E1 ──▶ K-E2      (ALG-5/6/7: one machinery)
            │        └─ K-E7  (sandwich scan: piggybacks on every
            │                  K-E1/K-E2 run — enable by default)
            ├──▶ K-E3         (same enumeration, extra classification)
-           └──▶ K-E4         (first emitter; conformance-gated)
+           ├──▶ K-E4         (first emitter; conformance-gated)
+           └──▶ K-E8         (table-only: consumes K-E1's conflict CSVs)
 K-E5                         (independent: bls bridge plumbing)
 K-E6                         (independent; promoted — the fallback's
                               worked instance, C.5)
