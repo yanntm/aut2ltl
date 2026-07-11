@@ -62,7 +62,7 @@ all re-runs). Therefore:
      **CRASH 17** → item 7.
 7. ✅ **RULED (2026-07-11, theory).** The ablation's fixpoint is the **certified
    Cayley acceptor** — an acceptor, never an algebra unless canonical. Paper
-   Lemma 5.4 + Theorem 5.5: with the exact oracle, a certified fixpoint is
+   Lemma 5.2 + Theorem 5.3: with the exact oracle, a certified fixpoint is
    canonical **or its partition is not a congruence** — box (b) is empty, the
    `ACCEPTOR_ONLY` population was pure (c), and E2's permanence counts stand
    (the 17 ex-`CRASH` rows join `permanent` → 3170). The proposed `O(n·|Σ|)`
@@ -70,7 +70,7 @@ all re-runs). Therefore:
    `a_implies_xa` export passes it); the normative test is the sweep's check
    phase, zero queries. Full ruling: report "Theory ruling (2026-07-11)"; spec
    rev 2026-07-11. Item-1 verdict vocab ratified.
-7b. 🔴 **NEW — implement spec §8 item 13** (the amended fix): the Lemma 5.4
+7b. 🔴 **NEW — implement spec §8 item 13** (the amended fix): the Lemma 5.2
    check as classifier + `fixpoint_congruent` field; export **refusal** on a
    dirty check (keep the assert; add `--unchecked` for the P7/F8 fixture);
    fix `congruence_audit` (full check, not letters) and re-run the 14-case
@@ -136,8 +136,8 @@ input per argv; long output to `tests/sosl/logs/`, never `/tmp`.
 # POST — ANSWERED (2026-07-11)
 
 The theory ruling is in the report ("Theory ruling (2026-07-11) — canonical or
-no algebra at all") and adopted in spec rev 2026-07-11 + paper Lemma 5.4 /
-Theorem 5.5. One-paragraph summary: the ablation's fixpoint is the certified
+no algebra at all") and adopted in spec rev 2026-07-11 + paper Lemma 5.2 /
+Theorem 5.3. One-paragraph summary: the ablation's fixpoint is the certified
 Cayley acceptor; with the exact oracle a certified fixpoint is canonical or
 its partition is not a congruence (box (b) empty — `ACCEPTOR_ONLY` means
 "correct acceptor, no algebra"); E2's counts stand, sharpened; the letter
