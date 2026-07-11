@@ -98,6 +98,17 @@ current corpus, counts recomputed, never hardcoded.
   elements, 52 × 4, 58 × 6, 2 × 8, 8 × 12, 4 × 24 (order-24
   subgroup of `B_3`, |B_3| = 48 — SY2 material). Wall: median
   5.8 ms/case, max 4.3 s, zero budget blows.
+  **Stratified by AP count** (the load-bearing view — see
+  `sy1_summary.md` "Stratified"): nontrivial signed groups on
+  **0.80 %** of 1-AP rows, **14.05 %** of 2-AP, **50.00 %** of 3-AP
+  (622 = 10.0 % overall). Two structural reads: (i) symmetry
+  prevalence grows steeply with the AP count, and 64 % of the census
+  is 1-AP where `B_1 = {id, flip}` leaves almost nothing to find;
+  (ii) generator screening under-detects — at `n = 2` only 38 of
+  the 202 nontrivial-group rows show a generator hit, at `n = 3`
+  only 136 of 388: most symmetric elements are composite (signed
+  swaps, 3-cycles), which is empirical justification for SY2's full
+  group computation. Escalated below (measurement-design question).
 
 ## SY2 — the group, the witness, symmetrization
 
@@ -193,6 +204,27 @@ current corpus, counts recomputed, never hardcoded.
    (and the 8 realized anti hits are all polarity flips). Item 5 of
    the standing list: on this evidence the obstruction deserves the
    highlighted-lemma treatment in §3.2.
+4. **[2026-07-11, SY1] The census is too 1-AP-heavy for the paper's
+   symmetry claims — larger AP sets needed (measurement design,
+   theory owns).** 64 % of `flat_canon` is 1-AP, where
+   `B_1 = {id, flip}` makes the symmetry question nearly vacuous
+   (0.80 % nontrivial); prevalence climbs to 14.05 % at 2 APs and
+   **50 %** at 3 APs (stratified table in `sy1_summary.md`). The
+   group-spectrum, `Sym±`-distribution and orbit-dedup measurements
+   (SY2/SY4/SY5, paper §9) will be shaped by this skew. Options:
+   (a) commission the corpus thread to *sample* 4-AP (and heavier
+   3-AP) shapes on the cluster — exhaustive enumeration at 4 APs is
+   out of reach, and note random sampling may find symmetry rare;
+   (b) manufacture ground-truth cases by symmetrization (§3.4 /
+   SY2): `⋂_{σ∈G} σ(L)` over corpus seeds is `G`-invariant *by
+   construction* at any `n`, giving a stress set with known groups;
+   (c) keep the census as-is but state all census-shaped claims
+   stratified by AP count, never pooled. We recommend (b) + (c)
+   now (no new corpus dependency, SY2 builds symmetrization anyway)
+   with (a) as the follow-up campaign. Related F4 datum: most
+   symmetric elements are composite (generator screening finds 35 %
+   of nontrivial groups at `n = 3`), so any larger-`n` campaign
+   should budget for group search, not generator scans.
 
 Standing items the theory thread expects data or answers on:
 
