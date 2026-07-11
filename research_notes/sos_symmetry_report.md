@@ -22,10 +22,12 @@ found, even mid-milestone.
 
 **Corpus note (2026-07-11).** The corpus was regenerated and extended
 between the spec's writing and SY1's run: `flat_canon` now holds
-**6 222** cases (spec text says 3 938), of which 2 484 are non-LTL
-(spec says 1 698); by AP count: 2 zero-AP, 4 006 one-AP, 1 438
-two-AP, 776 three-AP. All SY1 data below is produced on the current
-corpus, counts recomputed, never hardcoded.
+**6 222** cases (spec text says 3 938), of which **2 484** are
+non-LTL by the `.cat` bit (spec says 1 698); by AP count: 2 zero-AP,
+4 006 one-AP, 1 438 two-AP, 776 three-AP; stutter tags 896 invariant
+/ 5 326 sensitive. All counts from
+`reference/symmetry/sy1_summary.md` — SY1 data is produced on the
+current corpus, counts recomputed, never hardcoded.
 
 | milestone | state | findings |
 |---|---|---|
@@ -85,8 +87,8 @@ corpus, counts recomputed, never hardcoded.
   regen `sigma_gate --campaign` then `sy1_summary`.
 - **F4 — generator-level symmetry hits.** *(MEASURED.)* Over 6 222
   cases: **206 (3.31 %)** have at least one symmetric generator —
-  per generator: `t01` 82, `t02` 86, `t12` 4, `flip_0` 36, `flip_1`
-  10. Anti-symmetric generators hit on only **8 cases (0.13 %)**,
+  per generator (CSV naming, `t<i><j>` transposition / `f<i>` flip):
+  `t01` 82, `t02` 86, `t12` 4, `f0` 36, `f1` 10. Anti-symmetric generators hit on only **8 cases (0.13 %)**,
   all polarity flips, never a transposition. `anti_possible` is True
   on **164 cases (2.64 %)**: the pair-count alone closes the anti
   question negatively on the remaining **97.36 %** of the census — a
