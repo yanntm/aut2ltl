@@ -86,7 +86,7 @@ all re-runs). Therefore:
    aggregate is still a wash.
    Still owed once 7b lands: `census_e2_exhibits` + the E2 recount, gates
    (`witness_lock`, dual-symmetry / (d′), `guard_fired_final = 0` on every SOUND row),
-   and the theory deliverables that replace the paper's 9 `⟨TBD-M4⟩` (per-leg
+   and the theory deliverables that replace the paper's `⟨TBD⟩` markers (per-leg
    `n_guard_firings`, guard-green count, cap-escape count, wall-time line,
    LTL-agreement count).
 - Parked until after the sweep: the "make the cap cheap to hit" measurement
