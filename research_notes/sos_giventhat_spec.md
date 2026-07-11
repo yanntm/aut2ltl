@@ -5,7 +5,7 @@
 | item | state |
 |---|---|
 | GT1: the interval object + endpoint decisions (§3) | **DONE (2026-07-11)** — `sosl/sosl/sos/giventhat/interval.py`, `conjugacy_classes` in `calculus.surgery`, gates `sosl/tests/giventhat/interval_gate.py` green on the fixture + 700-pair campaign (699 scored, 1 F2, zero unexplained rows); data `reference/giventhat/gt1_interval.md`, report F1–F4 filled. |
-| GT2: the ladder tests (§4) | SPECIFIED — **next up** (GT1 acceptance passed) |
+| GT2: the ladder tests (§4) | **DONE (2026-07-11)** — `ladder.py` + `r_classes` in `calculus.surgery`; rung oracle 6 222/6 222 (orientation confirmed, F5), campaign 700/700 with brute oracle exact on all 264 `bits ≤ 12` cases (F6–F8); paper §4.6 class counts escalated E1 (report To theory) |
 | GT3: stutterization, two tiers (§5) | SPECIFIED — tier 2 is the hard one; tier 1 first |
 | GT4: band-minimal Wagner degree (§6) | SPECIFIED — doubles as a theory probe; blocked on GT2 |
 | GT5: the W-series campaigns (§7) | W0 (census-shaped) specified; W1 (MCC data) **blocked on data provisioning — do not go fetch it yourself** |
@@ -33,8 +33,9 @@ persistence / stutter-invariant `B`; and at what minimal Wagner degree.
 
 **Layering law (hard).** `sosl.sos.giventhat` imports `sosl.sos`
 (objects, io), `sosl.sos.calculus` (Table, align, materialize, surgery,
-decide, reduce, witness), `sosl.sos.classify` (the stutter read-off) —
-and NOTHING else in the repo. Never `sosl.learn`, `sosl.teacher`,
+decide, reduce, witness), `sosl.sos.classify` (the stutter read-off and
+the `primitives` toolkit — Green's orders, idempotents; reuse over
+re-derivation, 2026-07-11) — and NOTHING else in the repo. Never `sosl.learn`, `sosl.teacher`,
 `sosl.experiment`, `tests.*`. Test scripts under `sosl/tests/giventhat/`
 may import anything they need (spot, replay hooks), like the calculus
 gates do. One cross-package addition is commissioned in GT1
@@ -319,9 +320,12 @@ green (run it — you touched the package).
 Normative math: paper §4 (Lemma 4.1, Props 4.2–4.4). Entry points in
 `ladder.py`, all taking an `Interval`, all returning
 `(bool, Optional[PairSet] least_witness, Optional[Witness] refusal)` —
-on yes, the least (and where cheap, greatest) member; on no, the
-minimal lasso certificate (the first hull pair pushed past `p_max`,
-rendered as its canonical lasso).
+on yes, the least member (greatest on the kernel-side rungs co-safety
+and persistence); on no, the minimal lasso certificate: the first
+*cell* of the normative scan order whose linked pair was pushed past
+the constraining endpoint — the globally minimal lasso (calculus
+Prop W discipline; as-built 2026-07-11, matches the paper's §4.6
+rendering).
 
 - `exists_safety(iv)`: `safety_closure(p_min) ⊆ p_max` — reuse CAL5's
   `safety_closure`, subset test is one pass; least witness the closure
@@ -336,10 +340,15 @@ rendered as its canonical lasso).
   the least member is θ = forced₁ exactly (no closure beyond it);
   greatest is θ = ¬forced₀. Assert both are saturated and in the
   interval, and `is_obligation` (CAL5) holds on both.
-- **H-order helper** (in `ladder.py`, memoized per table):
-  `h_below(table) -> relation on idempotents`: `f ≤_H e` iff
-  `∃x: M(e,x) = f` and `∃y: M(y,e) = f` — two boolean row/column
-  sweeps per idempotent pair, `O(|E|²·n)`; fine at census sizes.
+- **H-order helper** (in `ladder.py`):
+  `h_below(table) -> relation on idempotents` — the ladder-shaped view
+  of `classify.primitives`' H-order (`idempotents` / `leq_h_idem`, the
+  one-line `f·e = e·f = f` test, equivalent to `∃x: M(e,x) = f ∧
+  ∃y: M(y,e) = f` on idempotents). REUSE the primitive, do not
+  re-derive it: code duplication in the name of oracle independence
+  was rejected 2026-07-11 — a *different decision path* over shared
+  primitives is the accepted cross-check standard. `O(|E|²)`, computed
+  per call; fine at census sizes.
 - `rec_hull(table, Q) -> PairSet`: least fixpoint alternating
   (a) the Horn rule — for `(s,e) ∈ Q` and `f ≤_H e` with `(s,f)`
   linked, add `(s,f)` — with (b) `saturate`, until stable (≤ `|linked|`
@@ -355,16 +364,19 @@ rendered as its canonical lasso).
 Gates (`ladder_gate.py`):
 
 1. **The corpus rung oracle** (the decisive one — run it FIRST, before
-   any interval work): over all 3 938 corpus invariants,
+   any interval work): over every corpus invariant,
    `is_recurrence(P) == (m⁺ ≤ 0)` and `is_persistence(P) == (m⁻ ≤ 0)`
-   against the `.cat` sidecar coordinates. **The paper hand-checked the
-   orientation on four examples; the corpus decides it.** If the gate
-   fails *consistently flipped* (agreement rate ≈ 0 under one
-   orientation, ≈ 1 under the swap), implement the swap and file the
-   flip as a prominent to-theory finding (report slot F5) — the paper's
-   §2 paragraph must then be corrected. If it fails *mixed*, that is a
-   real bug or a real theory problem: STOP, report the smallest
-   disagreeing case.
+   against the `.cat` sidecar coordinates. The two sides share
+   `classify.primitives`' H-order but decide by different paths (the
+   ladder's violation scan vs the chain DP of `classify.chains`) —
+   that, not code-level independence, is the cross-check (2026-07-11).
+   **The paper hand-checked the orientation on four examples; the
+   corpus decides it.** If the gate fails *consistently flipped*
+   (agreement rate ≈ 0 under one orientation, ≈ 1 under the swap),
+   implement the swap and file the flip as a prominent to-theory
+   finding (report slot F5) — the paper's §2 paragraph must then be
+   corrected. If it fails *mixed*, that is a real bug or a real theory
+   problem: STOP, report the smallest disagreeing case.
 2. **Hull laws**: `rec_hull` extensive / monotone / idempotent on
    random saturated pair sets; output saturated; `is_recurrence(rec_hull(Q))`
    true; `rec_hull(Q) == Q` iff `is_recurrence(Q)`.
@@ -392,15 +404,22 @@ Gates (`ladder_gate.py`):
    as `({bc})^ω`; `exists_cosafety` YES with kernel witness whose
    reduce is the invariant of `F(a ∨ ¬c)` and least member the
    invariant of `F(a∧c)` (byte-compare against canonized DELAs for
-   those two formulas); `is_recurrence(P_¬φ)` true,
+   those two formulas; as-built 2026-07-11: the fixture band is
+   `bits = 25`, so the least member comes from the exact
+   least-open-hull — all linked pairs whose stem is a right multiple
+   of a `P_min` stem — not from a `2^bits` enumeration);
+   `is_recurrence(P_¬φ)` true,
    `is_persistence(P_¬φ)` and `is_obligation(P_¬φ)` false. Any
    mismatch: E1 discipline (spec §8) — first the encoding, then
    canonize, then the paper's §4.6 arithmetic; escalations go to the
-   report verbatim.
+   report verbatim. *Outcome (2026-07-11): everything semantic green;
+   the two class counts failed (5 vs 7; product 10 vs 13) and are
+   escalated in the report's To theory.*
 
-**GT2 acceptance:** rung oracle 3 938/3 938 explained (green or a
-filed orientation flip); ladder gates green on the GT1 campaign pairs;
-brute oracle zero disagreements on every `bits ≤ 12` case.
+**GT2 acceptance (met 2026-07-11):** rung oracle every corpus case
+explained (6 222/6 222 green); ladder gates green on the GT1 campaign
+pairs (700/700); brute oracle zero disagreements on every `bits ≤ 12`
+case (264).
 
 ---
 
