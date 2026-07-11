@@ -627,8 +627,8 @@ sources are unconditional:
   value in every element — one diagram node, ever; transient states
   reached alike shared across elements likewise.
 - **Monotone marks.** Per slot, the mark set only grows along right
-  extensions. What that proves is a closure fact, not upward closure
-  outright: write `F(q, d) = { mk_x(q) : x ∈ EM¹, st_x(q) = d }` for
+  extensions, and the growth pins a closure fact: write
+  `F(q, d) = { mk_x(q) : x ∈ EM¹, st_x(q) = d }` for
   the mark family at slot `q` with destination `d`, and
   `M(d) = { mk_y(d) : y ∈ EM¹, st_y(d) = d }` for the mark sets of
   `d`'s stabilizers. The composition law gives, for `st_x(q) = d` and
