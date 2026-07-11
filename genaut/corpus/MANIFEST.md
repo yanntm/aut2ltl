@@ -25,9 +25,22 @@ Parsed from the corpus census reports by `python3 genaut/manifest.py` (recompute
 
 ## Non-exhaustive samples (past the tractability wall)
 
-A uniform random probe of the id space, distinct languages accumulated as found — never a complete census (`exhaustive: false`). `langs` is the live folder count; extraction may still be running.
+A uniform random probe of the id space (rows with probe stats), or a curated selection adopted from a campaign (`seed` = `curated`, no probe stats) — never a complete census. `langs` is the live folder count.
 
 | shape | seed | acc | id-space | draws | langs (live) | capped |
 |---|---|---|---|---|---|---|
+| `1state2ap3acc_parity` | curated | parity | — | — | 5 | — |
+| `1state3ap2acc_parity` | curated | parity | — | — | 8 | — |
 | `2state1ap2acc_parity` | 0 | parity | 4294967296 | 204800 | 591 | 0 |
+| `2state1ap2acc_parity` | curated | parity | — | — | 3 | — |
+| `2state2ap1acc_parity` | curated | parity | — | — | 57 | — |
+| `2state2ap2acc_parity` | curated | parity | — | — | 325 | — |
+| `2state3ap1acc_parity` | curated | parity | — | — | 156 | — |
 | `3state1ap1acc` | 0 | gba | 68719476736 | 139210 | 500 | 0 |
+| `3state1ap1acc_parity` | curated | parity | — | — | 70 | — |
+| `3state1ap2acc_parity` | curated | parity | — | — | 51 | — |
+| `3state2ap1acc_parity` | curated | parity | — | — | 42 | — |
+| `3state2ap2acc_parity` | curated | parity | — | — | 203 | — |
+| `4state1ap1acc_parity` | curated | parity | — | — | 40 | — |
+| `4state1ap2acc_parity` | curated | parity | — | — | 9 | — |
+| `4state2ap1acc_parity` | curated | parity | — | — | 31 | — |

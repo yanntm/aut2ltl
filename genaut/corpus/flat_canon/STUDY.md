@@ -90,7 +90,7 @@ Each language's **category**, read off its syntactic invariant `𝓘(L)` into a 
 | (ω^4, σ) | (3, 4, -1, 0) | degree (omega^4, sigma) | 34 | 27 | 0 | 34 |
 | (ω^4, π) | (4, 3, 0, -1) | degree (omega^4, pi) | 34 | 27 | 0 | 0 |
 
-Degrees span `(0, σ)` (trivial) up to `(ω², ·)` (parity-`{0,1,2}`); no language reaches Wagner's derivative (`γ = μ` throughout, Prop. 11.1). The degree is a language invariant — a `.cat` says the same for a language however many shapes, states, or colours presented it.
+Degrees span `(0, σ)` (weakest) up to `(ω^4, ·)` (the strongest degree the catalogue holds); no language reaches Wagner's derivative (`γ = μ` throughout, Prop. 11.1). The degree is a language invariant — a `.cat` says the same for a language however many shapes, states, or colours presented it.
 
 ## By origin shape
 
