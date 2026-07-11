@@ -38,7 +38,7 @@ that regime.
 | **K2** chains | engine 3.2, C§3.3, `m`-rungs, parity lengths | **done** — `chains/`; triptych `(m⁺,m⁻)` exact |
 | **K3** superchains + degree (non-derived) | engine 3.3, C§3.4–3.5, `µ`/`s`, `γ` on `m=0 ∨ n⁺≠n⁻` | **done** — `superchains/`, `readoff/`, `record/`; full triptych `ϕ` reproduced |
 | **X0/X1** validation + profile | census + `.cat` materialization + study | **done (iter. 4)** — the whole widened catalogue classified (6220 languages), one `.cat` per language, aggregated into `STUDY.md`; internal laws + duality symmetry + Spot spectrum gate green on the widened corpus |
-| **K4** derivation | component 3.4, C§4, `Fork` fixture | **open** — PARTIAL emitted correctly; `∂𝒜` not wired. Still no catalogue language in the derivative regime (§4); the `Fork` specimen (C§5) is the dedicated exercise, still to build |
+| **K4** derivation | component 3.4, C§4, `Fork` fixture | **open** — PARTIAL emitted correctly; `∂𝒜` not wired. The `Fork` fixture is now **built and exercised** (`classify_fork`, fixture `samples/fixtures/hoa/sos/fork.sos`), and a constructed combo inhabits the floor shape (§4); wiring `∂𝒜` is the remaining work |
 
 Every band above is a pure table search on `𝓘(L)` (C§6): power orbits `O(N²)`,
 the Green preorders as one-shot principal ideals, chains a longest-alternating-path
@@ -102,18 +102,34 @@ Honest accounting against the spec, so the gaps are not mistaken for bugs:
 - **The derivative recursion (K4, C§4 / component 3.4).** Only the case
   `m ≥ 1 ∧ n⁺ = n⁻` needs `∂X`. The tool detects it and emits `gamma_partial`
   with `sign = "PARTIAL"`, `gamma = None`, exit code 2 (spec F2, by design).
-  **No catalogue language reaches this regime** (0 PARTIAL of 6220). The
-  statement is sharper than in iteration 3 and needs care: C§7's budget puts the
-  regime's floor at the three-state, two-colour parity shape, and that shape
-  (`3state1ap2acc_parity`) **is now in the corpus — but only as a sample**
-  (51 curated languages of an id-space the wall forbids exhausting), and the
-  sample happens to miss the regime. So the regime is no longer "past the
-  corpus's reach by construction"; it is *unhit by the draws taken*, and absence
-  on a sampled tier proves nothing. The `Fork` specimen
-  `(a ∧ GF a) ∨ (¬a ∧ FG ¬a)`, coordinates `(1,1,0,0)`, `ϕ = (ω+1, δ)` (C§5),
-  remains the dedicated exercise; wiring `∂𝒜` against it is the next unit of
-  work, and a targeted hunt for a derivative-regime language in the
-  `3state1ap2acc_parity` id-space would give it a second, corpus-native fixture.
+  **No catalogue language reaches this regime** (0 PARTIAL of 6220), and the
+  hunt for one is now a measured story rather than a conjecture:
+
+  - **The `Fork` fixture is built and exercised.** `tests.sosl.classify_fork`
+    constructs `Fork = (a ∧ GF a) ∨ (¬a ∧ FG ¬a)` from the formula, byte-gates
+    the committed fixture `samples/fixtures/hoa/sos/fork.sos`, and asserts the
+    full C§5 record on both `Fork` and its complement — coordinates
+    `(1,1,0,0)`, `µ = ω`, aperiodic *and* stutter-invariant, degree tail
+    PARTIAL, CLI exit 2. What PARTIAL detection can assert without `∂𝒜` is
+    green end to end.
+  - **The regime inhabits the corpus's floor shape — by construction, not by
+    draw.** The probe `genaut/probes/derivative_floor.py` encodes the C§7
+    routing construction as a combo of `3state1ap2acc_parity` (max-even
+    parity, the census family): combo id **9241386589983080592** classifies
+    PARTIAL at `(1,1,0,0)` and its language *is* `Fork` up to AP relabeling.
+    So C§7's three-state, two-colour floor is sharp inside the census family
+    too (Spot's own max-even paritization of `Fork` uses 4 states —
+    `tests/probes/fork_parity_floor.py` — the construction beats it by one).
+  - **Uniform sampling misses it, measurably.** Classifying every `.sos` the
+    beyond-wall campaign built (46 596 draws over 9 parity shapes, including
+    8 467 of the floor shape itself) yields **zero** PARTIAL — the regime's
+    presentation density is below ~1/8 000 at its floor. `genaut/gen/hunt.py`
+    (the census sampling chain with the classifier as keep-predicate) is the
+    placed tool for future draws; the constructed witness makes such a hunt
+    optional rather than blocking.
+
+  Wiring `∂𝒜` against the `Fork` fixture is the next unit of work; the
+  constructed floor-shape witness doubles as its corpus-native second fixture.
 
 - **The `.cat` is `.sos`-only.** The sidecar records the language's degree, cut,
   stutter bit, and coordinates — everything the read-off yields from the
