@@ -33,11 +33,11 @@ def check_ordinal() -> None:
     assert str(Ordinal.term(2, 1)) == "omega^2"
     assert str(Ordinal.term(1, 3)) == "omega*3"
     assert str(Ordinal.finite(1)) == "1"
-    # omega + 1, and omega*2 + omega = omega*3 (equal leading exponents merge).
-    assert str(Ordinal.term(1, 1) + Ordinal.finite(1)) == "omega + 1"
+    # omega+1, and omega*2 + omega = omega*3 (equal leading exponents merge).
+    assert str(Ordinal.term(1, 1) + Ordinal.finite(1)) == "omega+1"
     assert str(Ordinal.term(1, 2) + Ordinal.term(1, 1)) == "omega*3"
-    # omega^2 + omega (kept, strictly larger exponent survives).
-    assert str(Ordinal.term(2, 1) + Ordinal.term(1, 1)) == "omega^2 + omega"
+    # omega^2+omega (kept, strictly larger exponent survives).
+    assert str(Ordinal.term(2, 1) + Ordinal.term(1, 1)) == "omega^2+omega"
     print("OK Ordinal arithmetic + rendering")
 
 
