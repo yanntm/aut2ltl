@@ -273,6 +273,30 @@ stream.
   so the perm is invisible outside node/time measurements and byte
   parity holds under every perm — the gate asserts exactly that
   (`tests/sos_sdd/slotperm_test.py`).
+- **Same-table calculus rendering (§6.2)**: the Boolean moves are set
+  operations on the **grounded accept-mask table** — mask sets are the
+  predicates' denotations and are closed under `¬ ∧ ∨`, so no formula
+  trees exist; `accept.masks_to_formula` renders the canonical DNF
+  back for the derived digest. The derived object rides a
+  `SoSCore.fork()` sharing Phases 0–2 by refcount (DDD/Hom) and
+  `shared_ptr` (the crossing); `residuate`/`congruence` are
+  write-once per core and exposed through the binding, and a derived
+  object runs them **lazily on first verdict-consuming reading** —
+  the operator itself moves no diagram, which is exactly E9's
+  "same-table operations are free" measured honestly. Recorded gap:
+  derived runs carry no stats stream yet (E9's per-op pricing needs a
+  per-object stream design).
+- **Alignment rendering (§6.3, settled with the user)**: align is the
+  **ordinary build over the sync-product slot model** — shared-AP
+  letter-class refinement, then Phases 1–2 as usual. The paper's
+  "Comp is never applied on the aligned space" targets the abstract
+  monolithic 3k-relation, which this engine never builds *anywhere*:
+  the crossing has always been per-slot brick case splits, so on the
+  aligned model every hom application is additive by construction.
+  Prop 6.1's per-block π assembly is therefore an *optimization* (to
+  revisit if E9 prices aligned re-pairing as dominant), not a
+  correctness prerequisite; the proposition is validated end to end
+  through the readings and byte gates instead.
 - **Canonical keying**: normative constraints in
   `sosl/sosl/sos/io/sos_format.md` — AP order lexicographic by name,
   letter order = characteristic tuple over the APs with `0 < 1`
