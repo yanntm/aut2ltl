@@ -84,14 +84,18 @@ the derived-census driver, the engine's first consumer at scale),
   concentrated in `3state2ap2acc_parity`) — ledger F17–F20, data in
   `tests/sos_sdd/reference/e1_census.csv`. Recorded operational rule:
   corpus sweeps run process-isolated (`--isolate` / cluster
-  `--shard k/N`) — libDDD's unique table is never GC'd. Still open from
-  E1's scope: the C5 explicit-tool residual cross-check (unblocked, not
-  run) and the constant/shared-slot + mark-upward-closure covariate
-  columns.
+  `--shard k/N`) — libDDD's unique table is never GC'd. E1's scope is
+  now fully closed (ledger F21–F22): the C5 cross-check vs
+  `spot.language_map` matches on the classic six + a 25-instance corpus
+  spread, and the §4.2 covariates are measured
+  (`tests/sos_sdd/reference/e1_covariates.csv`, |EM¹| corroborated a
+  third way on all 6102 — the monotone-marks metric operationalization
+  awaits Theory blessing, F22).
 - **TODO: everything else.** C9–C10 proper, E3–E9, M3–M5 (E2 still
   owes the second component family and per-point budget sweeps at
-  scale; M2's E5 first profile still owed). Next candidates: the C5
-  cross-check probe; C9 switches (unlocks E3/E7/E8); C10 calculus.
+  scale; M2's E5 first profile still owed). Next candidates: C9
+  switches (unlocks E3/E7/E8); C10 calculus; the scatter correlate
+  analysis is a reading of the two reference CSVs (paper-side).
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat
