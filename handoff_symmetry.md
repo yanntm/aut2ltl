@@ -88,12 +88,23 @@ Theory queue, priority order (all are ⟨TBD⟩s in the paper):
    Emerson–Trefler positioning of §7.4 once fetched.
 
 Engineering next (separate session, weaker model, spec-driven):
-**SY2** (group, witness, symmetrization) and/or **SY3** (relational
-read-offs — its stutter oracle F8 runs FIRST) per the spec §4/§5;
-SY1 is done and its acceptance passed (see report F1–F4). Theory
-should first answer the report's three To-theory items — the F3
-decision may edit spec §3.4/F3. Figures session can run FIG-1/FIG-2
-independently (fixtures now exist: `tests/symmetry/fixtures.py`).
+**SY2** (group, witness, symmetrization — spec §4) and/or **SY3**
+(relational read-offs — spec §5; its corpus stutter oracle F8 runs
+FIRST). SY1 is done, acceptance passed (report F1–F4). Note for
+SY2: the census says most symmetric elements are composite —
+generator scans find only ~35 % of nontrivial groups at n = 3
+(report F4) — so the full group walk is not optional. Figures
+session can run FIG-1/FIG-2 independently (fixtures exist:
+`sosl/tests/symmetry/fixtures.py`).
+
+Theory next, before or alongside: answer the report's FOUR
+To-theory items — (1) corpus renumbering sweep of paper/spec,
+(2) the F3 decision (fat-kernel claim unmeasurable on the
+alphabet-minimal corpus) + spec §3.4 FIX_A build-route edit,
+(3) obstruction-as-lemma, (4) measurement design for larger AP
+sets (census is 64 % 1-AP where symmetry is near-vacuous; report
+recommends symmetrization-manufactured ground truth + stratified
+reporting now, sampled 4-AP corpus campaign later).
 
 ## The one theorem to keep in your head
 
