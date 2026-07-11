@@ -43,7 +43,9 @@ work items + pointers only**; the report is the ledger.
   = side-by-side probe), `hoa_bridge_test` (C2 parser half: round-trip
   + corpus byte-parity), `slotperm_test` (C9 `slot_perm`:
   perm-invariant readings, byte-equal `.sos`), `member_test` (C10
-  §6.1: closure-free membership, three-way exact). Logs →
+  §6.1: closure-free membership, three-way exact), `boolean_test`
+  (C10 §6.2: mask-set ops on forked cores, commutation gates vs fresh
+  builds and vs the reference). Logs →
   `tests/sos_sdd/logs/`, never /tmp.
 - **Sweeps are NEVER one process** (OOM'd once, near machine crash:
   libDDD's unique table is never GC'd, diagrams accumulate across
@@ -76,30 +78,25 @@ ambiguous word cubes in membership.
 ## Work items — engineering (in order)
 
 1. ⏳ **C10 remainder** (paper §6 is the spec; E9's gates are the
-   deliverable). §6.1 done (F25). Remaining, in dependency order:
-   - **Same-table Boolean algebra (§6.2):** grounded accept-mask sets
-     are closed under ¬/∧/∨ (single-block), so the ops are mask-set
-     algebra — but honest E9 pricing ("same-table ops are free")
-     needs Phases 3–5 **re-runnable under a different `Acc` on a
-     shared Phase 1–2 core** (today `residuate`/`congruence` run once
-     inside `_core.build`). Core API change to design.
-   - **Alignment (§6.3):** the sync-product slot model (shared-AP
-     letter-class refinement — E4's generator) + Phase 1 on the
-     aligned space + the **per-block π assembly** (Prop 6.1; the
-     spec's assertion: Comp never applied on the aligned space). The
-     π lift rendering is a libDDD design point — settle with the user
-     first (applyRel-style block application vs pairing with
-     block-local case splits).
+   deliverable). §6.1 done (F25); §6.2 done (F26 — fork + lazy mask
+   algebra, commutation gates green). Remaining, in dependency order:
+   - **Alignment (§6.3), design settled with the user:** the ordinary
+     build over the **sync-product slot model** (shared-AP
+     letter-class refinement — E4's generator, `Product mode="sync"`
+     in `slotmodel.py`); no per-block π assembly (README records why:
+     the engine never builds a monolithic Comp, so the spec assertion
+     holds structurally; the assembly is a measured optimization to
+     revisit only if E9 prices aligned re-pairing as dominant).
+     Prop 6.1 validated end to end via readings + byte gates.
    - **§6.4 queries:** `S` projection, `Bad` intersection,
      included/equiv/empty; **witness** = C7's extraction retargeted
      at a set (backward preimages + forward least-letter walk).
    - **§6.5:** rooting = move ι (re-parameterization); inverse
      substitution = composed letter maps + re-closure (automatically
      inside EM¹ — generators are old elements).
-   - **E9 gates:** commutation (op-then-reduce byte-equal to
-     reduce-then-op, vs the reference on the operated automaton),
-     witness minimality vs brute-force lasso enumeration,
-     deferred-reduce priced.
+   - **E9 remainder:** witness gate vs brute-force lasso enumeration;
+     deferred-reduce priced; per-op stats for derived/forked runs
+     (recorded gap — derived runs stream no stats yet).
 2. ⏳ **C9 remainder** — fp disciplines (`fp1`/`fp5` `chaining` /
    `saturation` — E8's axis; a non-layered Phase 1 must run a costed
    length-reconstruction pass for shortlex), split slot encodings
@@ -122,8 +119,12 @@ ambiguous word cubes in membership.
 
 ## To-theory (escalations awaiting a Theory session)
 
-None open. Escalate new items here as they arise; past rounds are
-recorded in the report's Theory-responses section.
+- **Spec C10 alignment bullet reword** (recorded deviation, report F26
+  block, user-settled): drop the mandated per-block π assembly — the
+  engine's brick rendering satisfies "Comp never on the aligned space"
+  structurally, and alignment is the ordinary build over the
+  sync-product slot model; Prop 6.1 becomes an end-to-end-validated
+  theorem + optional optimization.
 
 ## Binding engine facts (learned the hard way — do not relearn)
 
