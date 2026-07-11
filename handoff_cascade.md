@@ -16,18 +16,32 @@ that). Mission: `research_notes/bls_cascade_spec.md` (K-E0..E7). Ledger:
   not pfxind, no undecided layers, frozen final layers). All K-F7/F8/F10
   numbers are being re-measured on the extended frame; the draft/ledger
   numbers are STALE until that pass lands.
-- **K-E1 RERUN IN FLIGHT** (extended census, patched decider — the pre-patch
-  closure had a loop bug; its partial rows were discarded). ⚠ **K-F12
-  CONFIRMED on the first specimen**: `2state2ap1acc_parity_3772037665`
-  (13 classes, aperiodic, Wagner (ω³,σ), frozen singleton layers 5/7) has an
-  ALG-7-verified GENUINE width-0 (C)-conflict (= plain-(B) failure in-frame,
-  Lemma C.10) — probe `python3 -m tests.cascade.k_e1_verify <id> <layer> <k>`
-  (committed). The "floor empty on the census frame" claim (K-F7/K-F9, draft
-  C.2/C.19/C.7) FALLS; PAPER-EDIT queued behind the full rerun tally.
-  Remaining aperiodic CONFLICT rows still need per-specimen ALG-7 triage;
-  non-aperiodic ones are the expected group escape (EvenBlocks-style).
-  Every-width failure (full C.12′ floor membership) not yet established
-  (k≥1 BUDGET) — structural analysis TODO.
+- **K-E1 PASS 1 DONE on the cluster** (`20260711-190325-k_e1`, 500 jobs,
+  60 s/command, 17 min): 6610/8786 undecided layers decide, **all at k≤2**
+  (6105/346/159), 0 verdict-splitting `other`; 1642 languages ok, **472
+  TIMEOUT** (2176 layers) = the heavy stratum. No CONFLICT row can appear in
+  pass 1 (`sweep_layer` needs 4 full decides > 60 s) — **every potential
+  conflict sits in the timeout stratum.** Data + provenance committed:
+  `reference/cascade/k_series.md` (+ `k_e1_cluster.csv`).
+- **K-E1 PASS 2 = the conflict hunt — SUBMITTED, RUN ID LOST.** Sharded
+  `python3 -m tests.cascade.k_e1_verify <id> <layer> 0` (early-exit finder +
+  inline ALG-7, CSV per cluster contract) over the 2176 missing pairs:
+  `tests/cascade/logs/cmds_k_e1_verify.txt` (regen: join the census jsonl's
+  UNDECIDED readings against `reference/cascade/k_e1_cluster.csv`). The
+  `oarrun.sh --name k_e1v --split 500 --timeout 60 --walltime 0:15:00`
+  client was killed at a 5-min cap after an unknown number of `oarsub`s;
+  id pattern `20260711-HHMMSS-k_e1v`, submitted ≈19:50–19:55. **Recovery:**
+  (a) list `$REMOTE_RUNS` for `*k_e1v*` (one ssh — ask the user first) and
+  `cluster/reap_until.sh` it; or (b) resubmit fresh as `--name k_e1v2` —
+  safe (fresh id ⇒ own run dir; cost = duplicated cluster time only).
+- ⚠ **K-F12 CONFIRMED on the first specimen**:
+  `2state2ap1acc_parity_3772037665` (13 classes, aperiodic, Wagner (ω³,σ),
+  frozen singleton layers 5/7) has an ALG-7-verified GENUINE width-0
+  (C)-conflict (= plain-(B) failure in-frame, Lemma C.10) — ledger K-F12,
+  log `reference/cascade/kf12_specimen_alg7.txt`. The "floor empty on the
+  census frame" claim (K-F7/K-F9, draft C.2/C.19/C.7) FALLS; PAPER-EDIT
+  queued behind the pass-2 tally. Every-width failure (full C.12′ floor
+  membership) not yet established — structural analysis TODO.
 - **K-E3 RERUN DONE** (extended): 5050 (C)-decided final layers at k≤3;
   one-sidedness over the 74 ≥2-class-family layers: 16 up / 16 down /
   28 both / 14 neither — still balanced; up=down is forced by complement
@@ -36,13 +50,14 @@ that). Mission: `research_notes/bls_cascade_spec.md` (K-E0..E7). Ledger:
   prefix-independent (was 132), **0** with a non-frozen final layer.
 - **K-E2 (K-F9) / K-E4 (K-F11)** unchanged: transfer specimen verified;
   emitter conformance-gated on `G(a→F b)`; K-E4 production wiring pending.
-- **Data discipline (new)**: reports may cite only git-tracked data. Once
-  K-E1 lands: create `reference/cascade/` (k_e1.csv, k_e3.csv,
-  k_e3_pfxind.txt + `k_series.md` in the style of `reference/quant/m2_laws.md`
-  — date, git hash, corpus, regen commands, rendered tables), commit, and
-  re-point the ledger at it. READMEs added to `tests/cascade/` +
-  `tests/sos2ltl/` (the line-json census format is probe-local, may be
-  retired — depend on nothing outside those folders).
+- **Data discipline**: reports cite only git-tracked data —
+  **`reference/cascade/` is committed** (k_e1_cluster.csv, k_e3.csv,
+  k_e3_pfxind.txt, kf12_specimen_alg7.txt, `k_series.md` with provenance +
+  regen commands); extend it with pass-2 results, never cite `logs/`.
+  READMEs added to `tests/cascade/` + `tests/sos2ltl/` (the line-json census
+  format is probe-local, may be retired — depend on nothing outside those
+  folders). Timeout convention: 15 s/example local, 60 s/command cluster;
+  TIMEOUT is data.
 
 ## Machinery (all under `tests/cascade/`)
 
@@ -73,18 +88,21 @@ that). Mission: `research_notes/bls_cascade_spec.md` (K-E0..E7). Ledger:
 
 ## Todo (next)
 
-1. **K-E1 rerun lands** → tally (coverage/width histogram, conflicts by
-   aperiodicity, K-E7 mechanism columns). **Triage every aperiodic CONFLICT
-   with ALG-7** (`k_e7_triage <id> <layer> <k>`): verified-genuine ⟹ in-frame
-   floor inhabitant ⟹ rewrite the floor claim (draft C.2 remark, C.19
-   closing bold, C.4 map paragraph, C.7 §8 bullet); artifacts ⟹ claim
-   survives, numbers only.
-2. Create + commit `reference/cascade/` (see Where-things-stand); re-point
-   `bls_cascade_report.md` K-F7/F8/F10 (and K-F9 subsumption note) at the
-   tracked files with the extended-corpus numbers; sync `bls_cascade.md`
-   (sites: C.2 remark ~l.240, after Cor C.8 ~l.380, Cor C.9 ~l.424, C.4
-   ~l.720+769, C.7 bullet ~l.1003), `bls_cascade_spec.md` (stale "372"
-   input descriptions), this handoff.
+1. **Recover or resubmit K-E1 pass 2** (see Where-things-stand: reap the
+   lost `*k_e1v*` run, or resubmit `cmds_k_e1_verify.txt` as `k_e1v2`);
+   reap per `cluster/README.md`. Its results.csv rows carry
+   `status ∈ CONFLICT|CLEAN|BUDGET` and a `genuine` bit (ALG-7 inline) —
+   tally conflicts by `aperiodic`; genuine aperiodic rows = in-frame floor
+   inhabitants (K-F12 stratum); non-aperiodic = the group escape.
+2. Append pass-2 CSV + updated tables to `reference/cascade/` (extend
+   `k_series.md`), then rewrite `bls_cascade_report.md` K-F7/F8/F10/F12
+   (and K-F9's subsumption note) against the tracked files, and sync
+   `bls_cascade.md` — sites: C.2 remark ~l.240 (coverage + conflicts), after
+   Cor C.8 ~l.380 (16/16/28/14, note the complement-closure symmetry),
+   Cor C.9 ~l.424 (1104/1104), C.4 ~l.720+769 (mechanism map + "floor empty
+   on the census frame" FALLS — K-F12), C.19 closing bold ~l.769, C.7 §8
+   bullet ~l.1003; `bls_cascade_spec.md` (stale "372"/"1164" input
+   descriptions); this handoff.
 3. **K-E4 engine integration**: wire the emitter into
    `aut2ltl/sos2ltl/engine.py`, full conformance sweep over K-E1-decided
    layers + DG size ledger.
