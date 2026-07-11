@@ -928,7 +928,10 @@ distinguishes it; the verdict is not split.
 congruence check on the final table (section 3.2 step 6). `true` on every
 saturated run (its final sweep ran clean — recorded, not recomputed);
 computed by the check phase on ablation runs; `n/a` when no fixpoint was
-reached (`BUDGET`, `CRASH`). Gated by rows P9/P10; E2's recount keys on it.
+reached (`BUDGET`, `CRASH`) and on `OVERSIZE` (a fixpoint without
+certification — Theorem 5.3 does not apply, and the row is deferred
+anyway). Expected census tallies: `true` 2357, `false` 3170, `n/a` 695.
+Gated by rows P9/P10; E2's recount keys on it.
 
 `OVERSIZE` (added 2026-07-08f) records the exact oracle exceeding its
 transformation-closure work cap (`ExactTooLarge`): an honest "too large to
