@@ -6,18 +6,25 @@ slot, permanent-stall specimen, alternate presentation). A `Config` (see
 `sosl.experiment.run`) is one learner configuration. `e0_runs` is the ordered
 (case, config) matrix the E0 validation campaign executes.
 
-The census tier (`genaut/corpus/`) is intentionally *not* wired here yet: it is
-being curated elsewhere. `census_cases` is the single guarded entry point a
-later revision points at that folder; until then it returns nothing and E0 runs
-the named cases alone.
+The corpus (`genaut/corpus/`) is reached through three entry points, never by
+building paths or ids by hand. `flat_canon_cases` is the sweep's test set — the
+flat, complement-closed catalogue, one language per file up to AP relabeling;
+`dual_index` resolves a language's complement *by language*, the only sound way
+(a `<primal>_c` file exists only where the enumeration was one-sided);
+`census_shapes` / `census_cases` expose the per-shape presentation tiers, which
+the learner sweep does not use.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from sosl.experiment.run import Config
+from sosl.sos.io.serialize import dump_invariant, load_invariant
+
+if TYPE_CHECKING:
+    from sosl.sos.invariant import Invariant
 
 MANIFEST_VERSION = "m4a-2026-07-08"
 
@@ -224,3 +231,30 @@ def flat_canon_cases(corpus_root: str = FLAT_CANON_ROOT) -> List[Case]:
         sos = str(cand) if cand.exists() else None
         cases.append(Case(p.stem, str(p), sos=sos, tags=("flat_canon",)))
     return cases
+
+
+def dual_index(corpus_root: str = FLAT_CANON_ROOT) -> Dict[str, str]:
+    """Map each catalogue case id to the case id of its **complement**, resolved
+    by language rather than by name: `Invariant.complement` flips `P` against the
+    linked pairs and leaves the algebra alone, and `dump_invariant` is
+    byte-canonical, so the dual's dump *is* the lookup key into the catalogue.
+
+    A dual must never be addressed as `<primal>_c`. That alias exists only where
+    the enumeration was one-sided; a dual some campaign drew under its own combo
+    id has no `_c` file, and a constructed name then resolves to nothing (102 of
+    the 3111 pairs are so named). The catalogue is complement-closed, so on a
+    well-formed corpus every id is a key here and the map is an involution —
+    a caller may assert that as a corpus check."""
+    sos = Path(corpus_root) / "sos"
+    by_key: Dict[str, str] = {}
+    invs: Dict[str, "Invariant"] = {}
+    for p in sorted(sos.glob("*.sos")):
+        inv = load_invariant(p.read_text(encoding="utf-8"))
+        invs[p.stem] = inv
+        by_key[dump_invariant(inv).strip()] = p.stem
+    out: Dict[str, str] = {}
+    for case_id, inv in invs.items():
+        dual = by_key.get(dump_invariant(inv.complement()).strip())
+        if dual is not None:
+            out[case_id] = dual
+    return out
