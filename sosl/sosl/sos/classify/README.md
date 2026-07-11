@@ -3,11 +3,11 @@
 Reads one `Invariant` `(𝒞, λ, M, P)` and emits the complete classification
 record of the language: LTL-definability, stutter-invariance (the X-free
 refinement of LTL), the safety–progress / topological rung, the chain and
-superchain numbers, the parity/Rabin index, and the Wagner degree — every
-verdict carrying a replayable witness. Each classification is a
-polynomial table search; no automaton and no external tool is consulted (the
-one exception, the derivative recursion of the degree tail, is not yet wired —
-see below). Normative math: `research_notes/sos_classification.md` (procedures
+superchain numbers, the parity/Rabin index, and the Wagner degree — the
+derivative recursion of the degree tail included — every verdict carrying a
+replayable witness. Each classification is a polynomial table search; no
+automaton and no external tool is consulted.
+Normative math: `research_notes/sos_classification.md` (procedures
 and sources, referenced here as C§n); tool shape and experiment plan:
 `research_notes/sos_classifier_spec.md`; what is answered today:
 `research_notes/sos_classifier_report.md`.
@@ -40,17 +40,29 @@ and sources, referenced here as C§n); tool shape and experiment plan:
     readoff/      C§7-8 — pure arithmetic on the four integers: the rung table
                   (open/closed/weak/dba/dca), the parity/co-parity/boolean
                   lengths, and the Wagner data mu / sign / gamma. Carries an
-                  Ordinal < omega^omega (Cantor normal form, CNF addition). The
-                  m>=1 & n+=n- case is left PARTIAL (needs the derivative).
+                  Ordinal < omega^omega (Cantor normal form, CNF addition,
+                  spaceless rendering). The m>=1 & n+=n- (tied) case is flagged
+                  needs_derivative and handed to derive/.
+
+    derive/       C§8 — the degree derivation as restricted table recursion
+                  (Theorem 4.5): zone from the maximal superchain tops
+                  (B = T+ n T-), rerun chains/superchains on the kept stems
+                  with the marking unchanged, fold the two virtual sinks, and
+                  CNF-sum the per-level mu terms into gamma (the trace is the
+                  Cantor normal form); the sign is read at the first untied
+                  level. At most m(X) levels, one engine pass each.
 
     witness.py    Renders each verdict as lassos over class keys (spec §1):
                   chain lassos key(s).key(e_i)^omega with expected bits,
                   superchain connecting words u_i by BFS in the right Cayley
                   graph, and the group carrier.
 
-    record.py     classify(inv) -> Record: runs the bands + read-off, asserts
-                  the always-on internal laws (4.1) and self-replays each chain
-                  witness through Invariant.member, and packages the flat record.
+    record.py     classify(inv) -> Record: runs the bands + read-off (+ the
+                  derivation when the read-off is tied), asserts the always-on
+                  internal laws (4.1) and self-replays each chain witness
+                  through Invariant.member, and packages the flat record; a
+                  derived record carries its level trace in
+                  witnesses["derivation"].
 
     emit.py       Record -> compact human text (spec §1 output shape).
 
@@ -68,18 +80,19 @@ and sources, referenced here as C§n); tool shape and experiment plan:
 
 ## Not yet wired
 
-The derivative recursion of C§8 (the `m>=1 & n+=n-` degree tail), the
-certificate replay against a `--hoa` presentation (3.5 / harness item 5), and
-the census campaign (X1-X3). The record reports `gamma_partial` with
-`sign="PARTIAL"` and `gamma=None` on the derivative case rather than resolving
-it; `--hoa`/`--certificates` are accepted but reserved. See the report for the
-current coverage.
+The certificate replay against a `--hoa` presentation (3.5 / harness item 5):
+`--hoa`/`--certificates` are accepted but reserved. `gamma_partial` remains in
+the `Record` shape (and the CLI keeps its exit-2 path) for consumers, but the
+assembly never sets it — the derivation resolves every tied case. See the
+report for the current coverage.
 
 ## Tests
 
 Under `sosl/tests/sosl/`, each self-bound and run from the `sosl/` subtree:
 `classify_primitives`, `classify_chains`, `classify_superchains`,
 `classify_readoff`, `classify_record` (all assert against the C§9 triptych
-values), `classify_aperiodic` (band 1 on one `.sos`), and `classify_fork`
-(the derivative regime detected: the `Fork` fixture's PARTIAL record on both
-sides, and the CLI's exit code 2).
+values), `classify_aperiodic` (band 1 on one `.sos`), `classify_fork` (the
+derivative regime resolved: `(omega+1, delta)` on the `Fork` fixture, its
+complement, and the floor-shape twin `fork_floor.sos`, with the level trace
+asserted), and `classify_escape` (the derivation's non-empty kept core and
+sink-resolved sign: `(omega+1, sigma)` / dual `pi` on C§4's running example).
