@@ -236,7 +236,7 @@ review — do not begin M2.
 
 ---
 
-## 7. Milestone sections — M4 (§10) is the work order (plus the §9 M3b addendum); §8–§9 are DONE (F-M2, F-M3, accepted); §11–§12 reference only
+## 7. Milestone sections — M5 (§11) is the work order; §8–§10 are DONE (F-M2, F-M3, F-M4+M3b, accepted); §12 reference only
 
 ## 8. M2 (QNT2) — Route A oracle + metamorphic harness
 
@@ -442,9 +442,12 @@ Algorithm (`quant/entropy.py`):
      (CW: `ρ(B') ∈ [lo, hi]` for EVERY positive `v` — soundness never
      depends on convergence; primitivity contracts the bracket
      geometrically); renormalize `v = w / max(w)`. To cap `Fraction`
-     bit growth, entries of `v` may be rounded
-     (`limit_denominator(10**40)`, kept strictly positive) — rounding
-     `v` only slows convergence, never unsounds the bracket. Stop
+     bit growth, keep `v` in fixed point over the COMMON denominator
+     `10**40` (round each entry to that grid, kept strictly positive;
+     per-entry `limit_denominator` is a trap — the entries' lcm blows
+     up inside the exact `B'·v`) — rounding `v` only slows
+     convergence, never unsounds the bracket (CW holds for every
+     positive `v`, whatever its provenance). Stop
      when `hi − lo < Fraction(1, 10**9)` or at 10 000 iterations; a
      non-converged bracket is still a valid enclosure, reported as a
      datum (like a budget kill).
@@ -491,17 +494,101 @@ filed; finding F-M4 in the report.
 
 ## 11. M5 (QNT4) — the Markov product
 
-Paper Thm 3.5. Chain reader (`.mc` sidecar, CSV-shaped, no JSON — fix
-the format with the corpus keeper first). Product chain on reachable
-`states(M) × 𝒞`; bottom SCCs; per component `B`: base state `q̂` =
-least occurring in `B`; cycle semigroup `T` = folds of labels of
-`M`-cycles at `q̂`, computed by BFS over `(M-state, class)` pairs from
-`(q̂, [ε])`, collecting the class at each return to `q̂`, iterated to a
-fixpoint; kernel of `T` by the two-sided sink routine of §3.2
-parameterized by generator set; `θ_B := Val(c, k)` for the least
-`(q̂, c) ∈ B`; linear system over the product. Cross-checks: a
-one-state `M` emitting all letters reproduces M1 exactly; `θ_B` from a
-different base state agrees; Route A product-side on small chains.
+Paper Thm 3.5. Scope, one sentence: compute `Pr_M(L)` exactly for a
+state-labelled chain `M`, the spec side held as the invariant, with a
+`.mc` reader in the ratified P-M5 format (report, 2026-07-11).
+
+### 11.1 The `.mc` format (P-M5, ratified — the reader rejects, never repairs)
+
+A restricted PRISM-language subset, state-labelled (Moore), the same
+file loadable unmodified by PRISM and Storm:
+
+- one `dtmc` model, one module, one state variable
+  `s : [0..N-1] init i;` — a single initial state;
+- exactly one guarded command per state:
+  `[] s=k -> 1/3:(s'=k1) + 2/3:(s'=k2);` — probabilities are rational
+  literals (`1/3`, `1`); assert each command's branches sum to exactly
+  1 as `Fraction`s;
+- one `label "a" = s=…|…;` per letter: label names are the letters of
+  the paired language's alphabet VERBATIM (never PRISM's reserved
+  `"init"`/`"deadlock"`); the letter labels must PARTITION the state
+  space — every state satisfies exactly one; `ℓ(q)` = that letter;
+- alphabet equality with the paired `.sos` is checked, not assumed;
+- keep the parser a strict ~100-line reader of this subset, not a
+  PRISM front-end (no constants, no formulas, no multiple modules).
+
+The reader API takes an optional initial-state override (the gates
+below run the same chain from several starts; no file rewriting).
+
+### 11.2 Word semantics (ratified decision — do not drop the first letter)
+
+`word(s₀s₁s₂…) := ℓ(s₀)·ℓ(s₁)·ℓ(s₂)…` — the initial state's label IS
+the word's first letter, matching PRISM/Storm path semantics
+("same file, same number"). Paper §2.3 records the embedding under
+which Thm 3.5 applies verbatim; in the engine it is one line: the
+product starts at `(q₀, λ(ℓ(q₀)))` and each step reads `ℓ(q')`.
+
+### 11.3 Algorithm (`quant/product.py`)
+
+1. Product on the reachable part of `states(M) × 𝒞` from
+   `(q₀, λ(ℓ(q₀)))`; step `(q, c) —P(q,q')→ (q', c·λ(ℓ(q')))`.
+2. Bottom SCCs of the product (reuse the Tarjan already in
+   `chain`/`kernel`). Per bottom SCC `B`: base state `q̂` = least
+   `M`-state occurring in `B`; cycle semigroup `T` = folds of labels
+   of `M`-cycles at `q̂`, by BFS over `(M-state, class)` pairs from
+   `(q̂, [ε])` collecting the class at each return to `q̂`, iterated to
+   a fixpoint (cycle labels read `ℓ(q')` per step — the label of `q̂`
+   itself closes the cycle, opens the next); kernel of `T` by the
+   two-sided sink routine of §3.2 parameterized by generator set; `k`
+   any kernel idempotent; `θ_B := Val(c, k)` for the least
+   `(q̂, c) ∈ B`.
+3. Absorption probabilities by one linear system over `Fraction`
+   (reuse M1's solver); `Pr_M(L) = Σ_B θ_B · Pr[absorption in B]`.
+4. PARANOID (in-engine, flag on): `θ_B` unchanged under a second base
+   state of `B` (when one exists) and a second kernel idempotent.
+
+### 11.4 Fixtures (`tests/quant/fixtures4`; assertions exact)
+
+- **F-M (pins §11.2 — the discriminating fixture).** `Σ = {a, b}`;
+  states `q_a, q_b`, `ℓ` as named; every state moves `1/3 : q_a`,
+  `2/3 : q_b`; initial `q_a`. `L = a·Σ^ω`: assert `Pr = 1` exactly
+  (the word opens with `a` deterministically; the dropped-letter
+  reading would give `1/3` — a red here convicts the convention, stop
+  the line). `L = b·Σ^ω`: assert `Pr = 0`.
+- **F-N (deterministic, periodic).** `q_a → q_b → q_a`, both
+  probability 1, initial `q_a`. `L = (ab)^ω`: `Pr = 1`;
+  `L = (ba)^ω`: `Pr = 0`.
+- **F-O (real absorption split).** `q₀` (`ℓ = a`) with
+  `1/3 : q₁, 2/3 : q₂`; `q₁` (`ℓ = a`) and `q₂` (`ℓ = b`) absorbing
+  self-loops. `L =` "finitely many `b`": `Pr = 1/3`; `L =`
+  "infinitely many `b`": `Pr = 2/3`. Two bottom SCCs, exercises the
+  linear system.
+
+### 11.5 Gates (`m5_gate`, ≤ 15 s per case, report `m5_product.{md,csv}` under `reference/quant/`, usual header)
+
+- **Bernoulli-embedding law (all census languages, both `p`'s of M3
+  — uniform and skewed).** Chain `{q_a}_{a∈Σ}`, `ℓ(q_a) = a`,
+  `P(q_a → q_b) = p(b)`; run once per initial state:
+  `Σ_a p(a)·Pr_{M_a}(L) = μ_p(L)` byte-exact against M1. (Each
+  `Pr_{M_a}(L) = μ_p(aΣ^ω ∩ L)/p(a)`; the sum telescopes to `μ_p(L)`.
+  Exercises §11.2 `|Σ|` times per language.)
+- **Complement flip.** On each corpus complement pair, one seeded
+  random chain (exact rational probabilities, small denominators):
+  `Pr_M(L) + Pr_M(L̄) = 1` exactly (`Val` flips per verdict; the
+  absorption system is shared).
+- **Route A product-side oracle** on a seeded sample (≥ 200
+  languages): paired det DELA × the same chain, per-BSCC acceptance
+  bit by M2's Emerson–Lei evaluation on the BSCC's transition set,
+  same absorption linear system — assert byte-equal `Pr`. Spot only
+  for what M2 already uses; bounded-or-skipped, a skip is a datum.
+- **Reader round-trip.** Every gate chain is written to `.mc` text,
+  re-read, asserted identical (the parser is exercised in-gate, not
+  only on fixtures). PRISM/Storm same-file runs are E4 territory, not
+  M5.
+
+DONE when: F-M/F-N/F-O green; all four gates green (0 red; budget
+kills and skips are data rows); machine report filed; finding F-M5 in
+the report.
 
 ## 12. M6 (QNT5) — the census campaign
 
