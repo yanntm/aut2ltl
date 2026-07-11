@@ -178,6 +178,12 @@ def gate_fixtures() -> None:
                     None,
                 )
                 _check(cex is not None, f"{name}/{sigma}: no disagreeing lasso found")
+                if sigma in generators_b_ap(n):
+                    u, v = cex
+                    print(
+                        f"  {name}/{_gen_name(sigma)} not a symmetry; witness "
+                        f"lasso stem={u} loop={v} (letters as {inv.alphabet.aps}-masks)"
+                    )
         # the two-level separation (§3.4)
         if name == "FIX_A":
             _check(in_kernel(inv, _FLIP_B2), "FIX_A: flip_b not in kernel")
