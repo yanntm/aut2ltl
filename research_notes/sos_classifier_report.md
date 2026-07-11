@@ -20,13 +20,14 @@ origin shape).
 classification record — the **LTL / non-LTL cut** (aperiodicity), the
 **stutter-invariant** (X-free) refinement, `(m±, n±)`, the safety–progress /
 topological rung, the parity/Rabin index, and the Wagner degree `ϕ = (γ, s)` —
-with a replayable witness on every non-trivial verdict, **for every language whose
-degree does not require Wagner's derivative** (all of the triptych, and every one
-of the 6220 catalogue languages, now spanning degrees up to `(ω⁴, ·)`). The
-derivative tail (C§4) is detected and reported as PARTIAL rather than resolved;
-that is the single spec field not yet computed, and no catalogue language reaches
-it (0 PARTIAL) — see §4 for what the widened corpus does and does not say about
-that regime.
+**derivative recursion included** — with a replayable witness on every
+non-trivial verdict, **for every ω-regular language**. The derivative tail
+(C§4) is resolved on the table itself (K4, this iteration): a tied read-off
+recurses through the restricted-stem engines, the level trace is the Cantor
+normal form of `γ`, and the record carries it — exercised on the `Fork`
+fixture (`(ω+1, δ)`), its floor-shape twin, and C§4's escape language
+(`(ω+1, σ)` / dual `π`). No catalogue language needs it (0 tied cases in
+6220), so every `.cat` byte is unchanged.
 
 ---
 
@@ -38,7 +39,7 @@ that regime.
 | **K2** chains | engine 3.2, C§3.3, `m`-rungs, parity lengths | **done** — `chains/`; triptych `(m⁺,m⁻)` exact |
 | **K3** superchains + degree (non-derived) | engine 3.3, C§3.4–3.5, `µ`/`s`, `γ` on `m=0 ∨ n⁺≠n⁻` | **done** — `superchains/`, `readoff/`, `record/`; full triptych `ϕ` reproduced |
 | **X0/X1** validation + profile | census + `.cat` materialization + study | **done (iter. 4)** — the whole widened catalogue classified (6220 languages), one `.cat` per language, aggregated into `STUDY.md`; internal laws + duality symmetry + Spot spectrum gate green on the widened corpus |
-| **K4** derivation | component 3.4, C§4, `Fork` fixture | **open** — PARTIAL emitted correctly; `∂𝒜` not wired. The `Fork` fixture is now **built and exercised** (`classify_fork`, fixture `samples/fixtures/hoa/sos/fork.sos`), and a constructed combo inhabits the floor shape (§4); wiring `∂𝒜` is the remaining work |
+| **K4** derivation | component 3.4, C§4, `Fork` fixture | **done** — `derive/` runs Theorem 4.5 on the table (zones from superchain tops, restricted engines, virtual sinks, CNF trace); green on `Fork` + complement + floor twin (`classify_fork`) and on the escape language + dual (`classify_escape`); catalogue `.cat` byte-identical (no language is tied) |
 
 Every band above is a pure table search on `𝓘(L)` (C§6): power orbits `O(N²)`,
 the Green preorders as one-shot principal ideals, chains a longest-alternating-path
@@ -85,6 +86,7 @@ iteration); ledger under `sosl/tests/sosl/logs/classify_census/flat_canon_wide/`
 | **4.2** duality gate | `L` and `L̄` swap `m⁺↔m⁻`, `n⁺↔n⁻`, `σ↔π`, open↔closed, dba↔dca; `γ` equal | **green — and structural**: the catalogue is complement-closed, so the degree profile is **exactly** duality-symmetric (every `(γ,σ)` row equals its `(γ,π)` dual, all ten mirror pairs; §6.3). The per-record gate also ran in `classify_census`: 6220/6220 |
 | **4.6** spectrum law (C§7, Prop. 7.1) | a language whose *canonical* presentation is generalized-Büchi classifies with `m⁺ ≤ 0` — Spot's determinization vs. the chain algebra, two independent engines | **green** — `classify_census` over `flat_canon/det`: **6220 SOUND, 0 MISMATCH, 0 BUDGET**. The per-family ventilation (`classify_profile`) exhibits the law *and* its converse: canonical gen-Büchi presentations occupy exactly the `m⁺ ≤ 0` degrees, co-Büchi presentations sit at `(ω, π)`, and every deeper band is carried by parity presentations alone (§6.4) |
 | **4.3** triptych fixtures | records byte-equal to C§5 | **green** — `classify_record`, `classify_readoff` |
+| — derivation worked checks (C§4–5) | derived `ϕ` equals the hand computations on both sides: `Fork` + complement + floor twin `(ω+1, δ)`; escape language `(ω+1, σ)` / dual `π`, kept core and level trace asserted | **green** — `classify_fork`, `classify_escape` |
 | **4.5** witness replay (vs `--hoa`) | replay against a presentation's teacher | **not wired** — `--certificates` reserved |
 | **4.4** Spot rung/index cross-checks | full rung-by-rung dictionary vs Spot | **partial** — the spectrum law (4.6) is the one Spot cross-check wired; the rung dictionary reconciliation is deferred |
 
@@ -99,37 +101,34 @@ and the census ledger agrees with the `.cat` aggregation number for number.
 
 Honest accounting against the spec, so the gaps are not mistaken for bugs:
 
-- **The derivative recursion (K4, C§4 / component 3.4).** Only the case
-  `m ≥ 1 ∧ n⁺ = n⁻` needs `∂X`. The tool detects it and emits `gamma_partial`
-  with `sign = "PARTIAL"`, `gamma = None`, exit code 2 (spec F2, by design).
-  **No catalogue language reaches this regime** (0 PARTIAL of 6220), and the
-  hunt for one is now a measured story rather than a conjecture:
+- **The derivative recursion (K4) is closed** — see §1 and the harness rows;
+  what remains of the K4 story is corpus, not code:
 
-  - **The `Fork` fixture is built and exercised.** `tests.sosl.classify_fork`
-    constructs `Fork = (a ∧ GF a) ∨ (¬a ∧ FG ¬a)` from the formula, byte-gates
-    the committed fixture `samples/fixtures/hoa/sos/fork.sos`, and asserts the
-    full C§5 record on both `Fork` and its complement — coordinates
-    `(1,1,0,0)`, `µ = ω`, aperiodic *and* stutter-invariant, degree tail
-    PARTIAL, CLI exit 2. What PARTIAL detection can assert without `∂𝒜` is
-    green end to end.
-  - **The regime inhabits the corpus's floor shape — by construction, not by
-    draw.** The probe `genaut/probes/derivative_floor.py` encodes the C§7
-    routing construction as a combo of `3state1ap2acc_parity` (max-even
-    parity, the census family): combo id **9241386589983080592** classifies
-    PARTIAL at `(1,1,0,0)` and its language *is* `Fork` up to AP relabeling.
-    So C§7's three-state, two-colour floor is sharp inside the census family
-    too (Spot's own max-even paritization of `Fork` uses 4 states —
-    `tests/probes/fork_parity_floor.py` — the construction beats it by one).
-  - **Uniform sampling misses it, measurably.** Classifying every `.sos` the
-    beyond-wall campaign built (46 596 draws over 9 parity shapes, including
-    8 467 of the floor shape itself) yields **zero** PARTIAL — the regime's
-    presentation density is below ~1/8 000 at its floor. `genaut/gen/hunt.py`
-    (the census sampling chain with the classifier as keep-predicate) is the
-    placed tool for future draws; the constructed witness makes such a hunt
-    optional rather than blocking.
-
-  Wiring `∂𝒜` against the `Fork` fixture is the next unit of work; the
-  constructed floor-shape witness doubles as its corpus-native second fixture.
+  - **The regime's fixtures and where they live.** Three committed specimens
+    under `samples/fixtures/hoa/sos/`: `fork.sos` (from the formula
+    `(a ∧ GF a) ∨ (¬a ∧ FG ¬a)`, C§5) and the **floor-shape twin pair
+    `fork_floor.sos` + `fork_floor.hoa`** — the C§7 routing construction
+    encoded as combo id **9241386589983080592** of `3state1ap2acc_parity`
+    (max-even parity, the census family), whose language is `Fork` up to AP
+    relabeling; both byte-gated by their probes (`classify_fork`,
+    `genaut/probes/derivative_floor.py`). Spot's own max-even paritization of
+    `Fork` uses 4 states (`tests/probes/fork_parity_floor.py`); the
+    construction beats it by one, so C§7's three-state, two-colour floor is
+    sharp inside the census family too.
+  - **Suggested adoption (the corpus sidequest).** The pair is ready to enter
+    the catalogue as `3state1ap2acc_parity_0009241386589983080592.{hoa,sos}`
+    under a `corpus/sampled/3state1ap2acc_parity__seed<label>/` folder,
+    followed by the `flatten --canon` rebuild and summary regen of
+    `genaut/README.md` — the catalogue then gains its first derivative-regime
+    language (and its complement by closure), and the profile a `(ω+1, δ)`
+    row. Deliberately **not** done in this iteration.
+  - **Uniform sampling misses the regime, measurably.** Classifying every
+    `.sos` the beyond-wall campaign built (46 596 draws over 9 parity shapes,
+    including 8 467 of the floor shape itself) yields **zero** tied cases —
+    the regime's presentation density is below ~1/8 000 at its floor.
+    `genaut/gen/hunt.py` (the census sampling chain with the classifier as
+    keep-predicate) is the placed tool for future draws; the constructed
+    witness makes such a hunt optional rather than blocking.
 
 - **The `.cat` is `.sos`-only.** The sidecar records the language's degree, cut,
   stutter bit, and coordinates — everything the read-off yields from the
@@ -160,7 +159,7 @@ Honest accounting against the spec, so the gaps are not mistaken for bugs:
 | 3.2 chain engine (C§3.3) | `sosl/…/classify/chains/engine.py` |
 | 3.3 superchain engine (C§3.4) | `sosl/…/classify/superchains/engine.py` |
 | — read-off table (C§2.4–2.5, C§3.5) | `sosl/…/classify/readoff/` (`table.py`, `ordinal.py`) |
-| 3.4 degree assembly (C§4, derived) | *(open — see §4)* |
+| 3.4 degree derivation (C§4, Thm. 4.5) | `sosl/…/classify/derive/engine.py` |
 | §1 record / emit | `sosl/…/classify/record.py`, `emit.py`, `__main__.py` |
 | **`.cat` io** (writer + batch tagging, reader, Wagner vocabulary) | `sosl/…/classify/io/` — CLI `python3 -m sosl.sos.classify.io <sos-folder>`; also invoked at the end of `flatten.py --canon`, so a corpus rebuild tags itself |
 | **auto-report** (LTL cut + stutter + degree profile) | `genaut/flat_study.py` → `flat_canon/STUDY.md` |
