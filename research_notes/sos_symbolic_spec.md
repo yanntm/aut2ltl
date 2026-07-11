@@ -113,13 +113,23 @@ the derived-census driver, the engine's first consumer at scale),
   and never imports the core — the assertion held structurally); gate
   three-way exact (explicit lasso simulation, engine Phase 3 read,
   210-lasso sweeps on seven cases) — ledger F25.
+- **DONE (engine-side): C10 §6.2** — the same-table Boolean algebra as
+  mask-set operations over a forked core (Phases 0–2 shared, 3–5
+  write-once and lazily re-run per accept table); the E9 commutation
+  gate green in both formulations (fresh-build bytes on four cases ×
+  four ops; against the explicit reference on two) — ledger F26.
+  Recorded deviation awaiting a Theory spec edit: alignment will be
+  the ordinary build over the sync-product slot model — the engine
+  never builds a monolithic `Comp`, so the C10 alignment bullet's
+  assertion holds structurally and Prop 6.1's per-block assembly is
+  demoted to a measured optimization (report, F26 block).
 - **TODO: everything else.** C9's remaining switches (fp disciplines
   `chaining`/`saturation`, split slot encodings), C10's remainder
-  (same-table Boolean algebra — needs Phases 3–5 re-runnable under a
-  different `Acc` on a shared table; alignment with the per-block π
-  assembly; §6.4 queries + witness; rootings/substitutions; the E9
-  gates), E3–E9, M3–M5 (E2 still owes the second component family and
-  per-point budget sweeps at scale; M2's E5 first profile still owed).
+  (alignment = the sync-product slot model, E4's generator; §6.4
+  queries + witness; rootings/substitutions; E9's witness and
+  deferred-reduce columns + per-op stats for derived runs), E3–E9,
+  M3–M5 (E2 still owes the second component family and per-point
+  budget sweeps at scale; M2's E5 first profile still owed).
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat
