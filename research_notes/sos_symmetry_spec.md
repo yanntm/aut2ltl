@@ -4,11 +4,11 @@
 
 | item | state |
 |---|---|
-| SY1: signed permutations, the single-symmetry check, the kernel read-off (§3) | **OPEN — the commissioned milestone.** Specified to the function level; start here and stop here. |
-| SY2: the group computation, asymmetry witness, symmetrization (§4) | SPECIFIED — do not start before SY1 acceptance |
-| SY3: relational read-offs (invisible letters, stutter, `k`-ladder, `Î_L`) (§5) | SPECIFIED — needs only SY1's fold helpers; do not start before SY1 acceptance |
-| SY4: group spectrum + LTL hull/kernel (§6) | SPECIFIED — doubles as a theory probe (the paper flags `θ_ap` as ⟨TBD⟩); after SY1 |
-| SY5: the Y-series campaigns (§7) | Y0a/Y1 need SY2; Y0b/Y0c need SY4; **Y2 is BLOCKED on a ToLTL engine hook — do not start it, do not build the hook yourself** |
+| SY1: signed permutations, the single-symmetry check, the kernel read-off (§3) | **DONE** — accepted, findings F1–F4. |
+| SY2: the group computation, asymmetry witness, symmetrization (§4) | **OPEN — a commissioned milestone.** Specified to the function level; unblocks the Y-series. |
+| SY3: relational read-offs (invisible letters, stutter, `k`-ladder, `Î_L`) (§5) | **DONE** — accepted, findings F8–F11. |
+| SY4: group spectrum + LTL hull/kernel (§6) | **OPEN — a commissioned milestone.** Specified; doubles as the `θ_ap` probe (paper Lemma 6.2a). |
+| SY5: the Y-series campaigns (§7) | Y0a/Y0s/Y1 need SY2; Y0b/Y0c need SY4; **Y2 is BLOCKED on a ToLTL engine hook — do not start it, do not build the hook yourself** |
 
 An implementer starting cold reads, in order: this header, §0–§2, the
 section for the milestone at hand, §8 (expected failures) before filing
@@ -487,7 +487,7 @@ Disagreements land in the report, not in silent workarounds.
   stutter quotient, calculus side — reuse the shared shortlex
   re-keying), re-detect groups, repeat until aperiodic. Assert the
   fixpoint is aperiodic. **This IS the least aperiodic congruence
-  `θ_ap`** (paper Lemma 6.2a — proved 2026-07-11), so the leastness
+  `θ_ap`** (paper Lemma 6.2a), so the leastness
   probe (gate 5) now gates the *implementation*: a strictly-between
   congruence convicts this function, not the theory. Record the
   iteration count (F14 datum; whether one round always suffices is
