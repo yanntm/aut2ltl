@@ -163,6 +163,18 @@ idempotent `e`, membership is decided by the associated pair,
 verdict, the conjugate renormalizing to the linked pair
 `((s·x)·f, f)`, `f = (y·x)^π`.
 
+Three conventions complete the kit. Each class carries a canonical
+**key**, the shortlex-least word folding to it; "least-keyed" always
+refers to this order. We write `1` for `[ε]` in algebraic
+computations, and `T¹ := T ∪ {1}` for a subsemigroup `T ⊆ S`. A pair
+set `P'` on the table is **saturated** if it is closed under the
+renormalized conjugacy moves; a saturated pair set denotes an
+ω-regular language `L(P')`, with `Val_{P'}` as its membership oracle,
+and **reduce** re-quotients the table by the congruence `Val_{P'}`
+induces, returning *the* syntactic invariant of `L(P')` — whose
+canonical serialization makes language equality byte equality
+[SωSC26, §3.1; SωS26, Thm 5.1].
+
 **The right-Cayley graph** of the invariant has vertex set `𝒞` and edges
 `c → c·λ(a)` for `a ∈ Σ`: a complete deterministic automaton with initial
 state `[ε]`, canonical because the invariant is. Its SCCs are exactly the
@@ -176,7 +188,11 @@ Every finite semigroup `S` has a unique minimal two-sided ideal, the
 `k ∈ K`, the set `H(k) = k·S·k = k·K·k` is a finite group with identity
 `k` (Suschkewitsch; see [PP04]). We freely use `k·t·k ∈ H(k)` for
 `t ∈ S¹` and the existence, for any `t ∈ K`, of the idempotent
-`t^π ∈ K`.
+`t^π ∈ K`. A monoid **divides** another if it is a quotient of a
+submonoid; division is transitive. `S` is **aperiodic** if it contains
+no nontrivial group — equivalently `t^m = t^{m+1}` for some `m`, for
+every `t` — a property inherited by divisors; an ω-regular language is
+LTL-definable iff its syntactic object is aperiodic [DG08].
 
 ### 2.3 Measures on `Σ^ω` and the probabilistic verification problem
 
@@ -299,7 +315,9 @@ entry class within `C` nor on the choice of `k`:
 2. for `c ∈ C` and idempotents `k, k' ∈ K`, set `g := k·k'·k ∈ H(k)` and let
    `g^{-1}` be its group inverse. With `x := g^{-1}·k'` and `y := k'·k`:
    `x·y = g^{-1}·(k·k'·k) = g^{-1}·g = k` (using `g^{-1}·k = g^{-1}`),
-   while `y·x = k'·g^{-1}·k' ∈ H(k')` has idempotent power `k'`. The
+   while `y·x = (k'·k)·(g^{-1}·k') = k'·g^{-1}·k' ∈ H(k')` (using
+   `k·g^{-1} = g^{-1}`) has idempotent power `k'`, the identity of the
+   group `H(k')`. The
    conjugacy law transports the cell `(c·k, k)` to a cell with loop `k'`
    and stem `c·g^{-1}·k' ∈ Stems(c, k')`, where Lemma 3.2 applies. ∎
 
@@ -334,7 +352,8 @@ disjoint) absorption events and the linear system for absorption
 probabilities are classical finite-chain facts. ∎
 
 Two corollaries are worth displaying. **Rationality**: `μ_p(L) ∈ ℚ` for
-rational `p`, by Gaussian elimination — re-proved rather than imported.
+rational `p`, by Gaussian elimination — a by-product of the read-off
+rather than a quotation from the automata-side theory.
 **Measure-freeness of the profile**: the bit vector `(θ_C)` over bottom
 SCCs — the **θ-profile** of `L` — is computed without any reference to
 `p`; since every full-support `p` charges every bottom SCC positively,
@@ -346,18 +365,18 @@ mixed.
 forgets them).** Over `Σ = {a, b}`, let
 `L` = "some `a` occurs at infinitely many even positions". Its
 syntactic invariant has eight non-identity classes, transparently coded
-as pairs `(p, E)` — `p ∈ ℤ/2` the word's length parity, `E ⊆ ℤ/2` the
+as pairs `(r, E)` — `r ∈ ℤ/2` the word's length parity, `E ⊆ ℤ/2` the
 set of parities of offsets carrying an `a` — with `λ(a) = (1, {0})`,
 `λ(b) = (1, ∅)` and
 
 ```
-(p, E) · (q, F)  =  (p + q,  E ∪ (F + p)).
+(r, E) · (r', F)  =  (r + r',  E ∪ (F + r)).
 ```
 
-(Each coordinate is observable — `p` by a sliding loop, each flag of
+(Each coordinate is observable — `r` by a sliding loop, each flag of
 `E` by a shifted loop — so no two classes merge.) The idempotents are
-exactly the `(0, F)`, and a linked pair `((p, E), (0, F))` is accepting
-iff `p ∈ F`: the stem's parity decides which of the loop's `a`-offsets
+exactly the `(0, F)`, and a linked pair `((r, E), (0, F))` is accepting
+iff `r ∈ F`: the stem's parity decides which of the loop's `a`-offsets
 land on even global positions, and `E` is irrelevant — `L` is
 prefix-independent. The kernel is
 
@@ -378,7 +397,7 @@ hold at `e'`. On the kernel loop the phase is forgotten, exactly as
 Lemma 3.2 forces: the achievable stems `(0,{0,1})` and `(1,{0,1})`
 differ by `m = (1,{0,1}) ∈ H(k)` with `m·m = k`, and the conjugacy
 `k = m·m^{-1}` is, in words, the re-bracketing
-`u·(aa)^ω = (u·a)·(aa)^ω`. Indeed `Val((p, E), k) = (p ∈ {0,1})` is
+`u·(aa)^ω = (u·a)·(aa)^ω`. Indeed `Val((r, E), k) = (r ∈ {0,1})` is
 identically true: `θ_K = 1` and `μ_p(L) = 1` for every full-support
 `p`. A word like `(ba)^ω`, which threads its `a`'s onto odd positions
 forever, lives precisely in the null set that avoids the doubled word
@@ -431,7 +450,8 @@ first visit of the product run to first coordinate `q̂` after
 absorption, `σ_{i+1}` the first such visit at least `2|w|` steps after
 `σ_i` — each a.s. finite by recurrence. By the strong Markov property
 the events `A_i` = "the run traverses `γ·γ` starting at `σ_i`" satisfy
-`Pr[A_i | F_{σ_i}] = δ`, so by the conditional Borel–Cantelli lemma
+`Pr[A_i | F_{σ_i}] = δ` (`F_{σ_i}` the σ-field of the run up to
+`σ_i`), so by the conditional Borel–Cantelli lemma
 a.s. infinitely many `A_i` occur; each success emits `w·w` from first
 coordinate `q̂`, and the successes are disjoint.
 
@@ -448,9 +468,9 @@ cuts makes the inter-`J` blocks fold to `k` exactly.
 *(iv) Stem invariance.* At a `J`-cut the product run sits at `(q̂, s)`,
 where `s` is the fold of the entire emitted prefix, and `s·k = s`
 (the prefix ends with `w`). So every achievable stem lies in
-`Σ_B := { s : (q̂, s) ∈ B, s·k = s }`, and the run's verdict is
+`Stems_B := { s : (q̂, s) ∈ B, s·k = s }`, and the run's verdict is
 `Val(s, k)` by the strong factoring theorem. `Val(·, k)` is constant on
-`Σ_B`: for `s, s' ∈ Σ_B`, strong connectivity of `B` gives a product
+`Stems_B`: for `s, s' ∈ Stems_B`, strong connectivity of `B` gives a product
 path `(q̂, s) → (q̂, s')`, whose emitted word `z` labels a cycle of `M`
 at `q̂`; hence `fold(z) ∈ T` and
 
@@ -460,7 +480,7 @@ s' = s'·k = s·fold(z)·k = s·(k·fold(z)·k) = s·m,      m ∈ H_T(k),
 
 and the conjugacy law with `k = m·m^{-1}` transports `(s, k)` to
 `(s', k)` as in Lemma 3.2. Finally, for any `(q̂, c) ∈ B`, traversing
-`γ` from `(q̂, c)` shows `(q̂, c·k) ∈ B`, so `c·k ∈ Σ_B` and
+`γ` from `(q̂, c)` shows `(q̂, c·k) ∈ B`, so `c·k ∈ Stems_B` and
 `θ_B = Val(c·k, k) = Val(c, k)` — the displayed one-lookup formula.
 
 *(v) Well-definedness.* Two choices of the data `(q̂, k, γ)`
@@ -541,7 +561,9 @@ d_p(L₁, L₂) := μ_p(L₁ Δ L₂)
 is computable by §4.1 on the same table. `d_p` is a **pseudometric**
 (symmetry and triangle inequality from measure additivity), not a
 metric: ω-regular null sets exist, and `d_p(L₁, L₂) = 0` iff the
-θ-profile of the aligned `xor` is all-zero — a decidable, `p`-free
+θ-profile of the aligned `xor` is all-zero — by Theorem 3.4, a
+language has measure zero iff its θ-profile is all-zero, every bottom
+component being charged — a decidable, `p`-free
 characterization of "the disagreement is measure-null". That is a
 feature, not a defect: exact separation remains the byte comparison of
 the reduced invariants, while `d_p` measures the *mass* of the
@@ -588,6 +610,11 @@ every full-support `p`. Idempotence: on the same table, the θ-bits of
 `P_sh` are `[C ⊆ D] = θ_C`, so the shadow of the shadow has the same
 `D`. (iii) `|1_{L₁} − 1_{L₂}| = |1_{sh(L₁)} − 1_{sh(L₂)}|` a.e., and
 equal reduced invariants denote equal languages. ∎
+
+Part (i)'s argument uses only that `D` is a union of bottom SCCs of
+the graph at hand — closed under right multiplication — not where its
+bits came from; Theorem 4.4 will reuse it verbatim on a quotient of
+the table.
 
 **Corollary 4.2 (measure-blind topology).** Every ω-regular language
 differs by a null set from an *open* — co-safety — ω-regular language
@@ -644,20 +671,22 @@ induced map.
 
    — the shadow construction of Proposition 4.1, performed on the
    quotient — is a member of the null-class, its syntactic monoid is
-   exactly `M_x`, and it depends only on the class:
-   `μ_p(L₁ Δ L₂) = 0` iff the reduced invariants of `ess(L₁)` and
-   `ess(L₂)` are byte-equal.
+   exactly `M_x`, and it depends only on the class: for any ω-regular
+   `L₁, L₂`, `μ_p(L₁ Δ L₂) = 0` iff the reduced invariants of
+   `ess(L₁)` and `ess(L₂)` are byte-equal.
 3. *(the measure-blind LTL frontier is decidable)* The null-class of
    `L` contains an LTL-definable language iff `M_x` is aperiodic — a
    `p`-free condition — and in that case `ess(L)` is itself an LTL
    witness.
 
 *Proof.* (1) Every member `L''` has residual-measure series `x`
-(Prop 4.3), and the series factors through `L''`'s syntactic morphism;
-taking `≈` on `Σ*` (`u ≈ v` iff `x(w·u·z) = x(w·v·z)` for all finite
-`w, z`), the congruence contains the syntactic congruence of `L''`,
-so `Σ*/≈` is a quotient of `M(L'')`; and `Σ*/≈ = 𝒞/≈ = M_x` because
-`x` already factors through `𝒞`.
+(Prop 4.3), and the series factors through `L''`'s syntactic morphism
+— Arnold's congruence refines residual equality [SωSC26, §3.6], so
+`u ↦ μ_p(u⁻¹L'')` depends only on the syntactic class of `u`. Taking
+`≈` on `Σ*` (`u ≈ v` iff `x(w·u·z) = x(w·v·z)` for all finite
+`w, z`), the congruence therefore contains the syntactic congruence of
+`L''`, so `Σ*/≈` is a quotient of `M(L'')`; and `Σ*/≈ = 𝒞/≈ = M_x`
+because `x` already factors through `𝒞`.
 
 (2) *Constancy.* Let `C̄` be a bottom SCC of the quotient graph and
 `[c] ∈ C̄`. The upstairs walk from `c` reaches some bottom SCC `C` of
@@ -666,16 +695,18 @@ so `Σ*/≈` is a quotient of `M(L'')`; and `Σ*/≈ = 𝒞/≈ = M_x` because
 reachable from `[c']`, say as `[c'·t]`, with `c'·t ∈ C` by
 closedness, so `x̄ = θ_C` there. Hence `x̄ ≡ θ_C ∈ {0, 1}` on all of
 `C̄` (and every original bottom SCC mapping into `C̄` carries the
-same bit). *Membership.* `x̄` is harmonic on the quotient chain
-(inherited from `x` termwise) and agrees with the `{0,1}` boundary on
-the quotient-bottom SCCs, so on the transients it satisfies the same
-nonsingular system as the absorption probability into `D̄`:
-`x̄([c]) = Pr[the quotient walk from [c] enters D̄]`. Proposition 4.1
-applied on the quotient table makes `ess(L)` an open ω-regular
+same bit). *Membership.* `x̄` is harmonic on the quotient chain —
+`x̄([c]) = Σ_a p(a)·x̄([c]·[λ(a)])`, inherited from `x` termwise — and
+agrees with the `{0,1}` boundary on the quotient-bottom SCCs, so on
+the transients it satisfies the same nonsingular system as the
+absorption probability into `D̄`:
+`x̄([c]) = Pr[the quotient walk from [c] enters D̄]`. The portability
+remark after Proposition 4.1 makes `ess(L)` an open ω-regular
 language with pair set `{(s̄, ē) linked : s̄ ∈ D̄}`, recognized by
-`M_x`, whose residual measures are exactly
-`u ↦ x̄([fold(u)]) = x(fold(u))` — the series of `L` — so `ess(L)`
-is in the class by Prop 4.3. Its syntactic monoid divides `M_x`
+`M_x`; its residual measures are exactly
+`u ↦ x̄([fold(u)]) = x(fold(u))` — the residual at `u` is the
+absorption event restarted at `[fold(u)]`, `D̄` being closed — i.e.
+the series of `L`, so `ess(L)` is in the class by Prop 4.3. Its syntactic monoid divides `M_x`
 (recognition) and is divided by it (part 1), hence equals it.
 Canonicality: `ess(L)` is built from the series alone, and the series
 is a complete invariant of the class (Prop 4.3).
@@ -729,7 +760,7 @@ The mechanism deserves the one-line reading: an accidental coincidence
 at one measure would mint a class member whose monoid is too small to
 carry the series at any other measure, contradicting least
 recognition there. With this, the essential form is *unconditionally*
-canonical, and the null-class story is closed: a complete
+canonical, and the account of the null-class is complete: a
 byte-comparable canonical form, its least recognizer, and its decided
 LTL frontier, all measure-free. The construction is also the promised
 beachhead of the weighted direction (§7): `M_x` is precisely the
@@ -877,7 +908,10 @@ kernel of the syntactic ω-semigroup: one canonical bit per absorbing
 component, one lookup each. Everything a probabilistic toolbox asks of a
 specification then rides the invariant — measure, model-checking
 probability, distance, entropy — in exact arithmetic, with certificates,
-on an object that never needs re-simplification. The exponential
+on an object that never needs re-simplification. The distance layer
+goes further than a number: every null-class carries a canonical least
+member, the essential form, so measure-equivalence is a byte test and
+the measure-blind LTL frontier a decided question. The exponential
 frontier of the calculus is untouched (entry still costs
 determinization; MDP optimization stays refused), and the quantitative
 layer inherits the same honesty: every quantity is a read-off precisely
@@ -885,7 +919,7 @@ because the qualitative object already paid for canonicity. Open
 directions: the weighted invariant (semiring-valued `Val` under the
 conjugacy law), Hausdorff dimension and finer fractal data alongside
 entropy, and the census geometry as an instrument for conjecture-hunting
-on the LTL frontier.
+on the exact — not measure-blind — LTL frontier.
 
 ## References
 
