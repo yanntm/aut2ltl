@@ -73,8 +73,8 @@ moment it is found, even mid-milestone.
   no mixed cases, zero F2 skips. The two sides share
   `classify.primitives`' H-order but decide by different paths (the
   ladder's violation scan vs `classify.chains`' alternating-path DP).
-  Summary `reference/giventhat/gt2_rung_oracle.csv` +
-  `tests/giventhat/logs/rung_oracle.md`; regen:
+  Summary (incl. the per-aps table)
+  `reference/giventhat/gt2_rung_oracle.md`; regen:
   `cd sosl && python3 -m tests.giventhat.ladder_gate --rung-oracle`.
 - **F6 — hull laws.** *(confirmed)* Over the 700-pair GT1 campaign
   populations (seed 20260711, 700/700 scored, zero F2): `rec_hull`
@@ -147,12 +147,11 @@ wrong; everything semantic in the worked example holds.** With
 `¬φ = F(a∧c) ∨ (GFb ∧ GF¬b)` and `K = FGb ∧ Gc` over `AP = {a,b,c}`
 (ltl2tgba → canonize; encoding vetted by lasso probes on the det HOA):
 `|𝒞(¬φ)| = 5`, paper says 7; product table 10 classes, paper says 13.
-`|𝒞(K)| = 4` as stated. The count is machine-traceable: `𝓘(¬φ)` is
-canonize's syntactic-key dedup of the ltl2tgba automaton, and the
-fixture gate prints its full class census — per class, the shortlex
-key, its loops and the accepting pairs (5 classes: keys `ε`, `{}`,
-`{b}`, `{a,c}`, `{}{b}`; 9 linked pairs) — that the §4.6 arithmetic
-must reproduce or refute. Every *semantic*
+`|𝒞(K)| = 4` as stated. **Edit paper §4.6 to match
+`reference/giventhat/gt2_fixture.md`** — the tracked, generated
+artifact carrying the full machine census of `𝓘(¬φ)` (per class:
+shortlex key, loops, accepting pairs; 5 classes, 9 linked pairs) and
+the complete prediction-vs-machine table. Every *semantic*
 §4.6 prediction is machine-checked green: both endpoints inconclusive
 with minimal witnesses `({abc})^ω` and `({bc})^ω`; `exists_safety` NO
 with refusal `({bc})^ω`; `exists_cosafety` YES with kernel reducing to
