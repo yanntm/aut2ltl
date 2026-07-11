@@ -17,7 +17,13 @@ the residual floor witness itself, whose canonical invariant is not
 what the first draft's hand derivation (run in the profile monoid, not
 its syntactic quotient) said it was. C.3's worked witness is now
 `G(a → F b)`; the floor witness moves to C.5 as the fallback's worked
-instance; C.4 states the refutation and the no-go it yields.*
+instance; C.4 states the refutation and the no-go it yields. Second
+revision: the K-E1–E4/E7 measurements are integrated (K-F7–K-F11) —
+the census sweep (every undecided layer decides under (C), zero
+conflicts), the two-mechanism map (no third mechanism), the C.19
+transfer specimen verified (the first moving-layer floor inhabitant),
+the prefix-independent read-off (Cor C.9 empty on the census), and the
+config emitter's conformance on the worked witness.*
 
 ---
 
@@ -227,16 +233,22 @@ window-projection grouping removed. ∎
 Two remarks. First, the asymmetry of the ladder is now stated exactly:
 windows are the *class-blind* projection of the configuration machine, parks
 restore the class coordinate on parked tails only, and (C) restores it
-everywhere. Second, (v) has a practical consequence, to be claimed
-precisely: any future (B)-conflict on a *moving* layer is to be re-read
+everywhere. Second, (v) has a practical consequence, now measured
+(K-E1): any (B)-conflict on a *moving* layer is to be re-read
 under (C) first — a (B)-conflict between two subgraphs with *different*
 edge sets is no (C)-conflict at all, and the existing closure
-implementation decides this with the grouping step disabled. On the 372
-(B)-undecided census layers (§8) the gain is procedural only: all are
-frozen final layers, where Lemma C.10 makes (C) at width `k` exactly
-(B) at width `k+1` — dropping the grouping step relieves the budget,
-it adds no logical power. The logical gain of (C) lives on moving
-layers alone.
+implementation decides this with the grouping step disabled. On the
+census (4 248 languages — the extended frame; Table 3's earlier cut
+counted 372, all frozen) the window decider leaves 1 164 final-layer
+readings undecided — cap/budget gaps, not conflicts, and no longer all
+frozen: 322 are, 842 are moving. The exact (C)-decider settles **all
+1 164**, at widths 0/1/2 (914/156/94), zero conflicts, zero budget. On
+the frozen 322 the decision is Lemma C.10's bookkeeping — (C) at `k`
+is (B) at `k+1`, the grouping cost relieved, no logical power added;
+on the moving 842 the decision is (C)'s own. That none of the 1 164
+conflicts means the census stratum adds no inhabitant to C.4's floor.
+The logical gain of (C) still lives on moving layers alone — and every
+census moving layer decides.
 
 ## C.3 The transcription: anchored edge atoms and the config normal form
 
@@ -376,8 +388,12 @@ upward closure. ∎
 This is the analog of [BLS22, Thm 2]'s matching-fragment guarantee, per
 layer; it also applies at `(C) = (B)` strength, where it strictly improves
 Proposition 5.4(iv)'s remark by making the one-sidedness *decided* rather
-than observed. The prefix-independent case lifts to the whole label at
-once:
+than observed. Measured (K-E3): of the 56 census moving final layers
+(C)-decided with a ≥ 2-class collected family, 13 are upward-closed,
+13 downward-closed, 18 both, 12 neither — the two one-sided encodings
+are equally common, and no upward skew appears at the raw level (the
+recurrence-rung stratified recount is pending). The prefix-independent
+case lifts to the whole label at once:
 
 **Corollary C.9 (global one-sided form, prefix-independent case).** Let
 `L` be prefix-independent with a terminal final layer `R*` (no class of
@@ -404,9 +420,16 @@ carries an accepting factor, no context separates its variants — the
 mechanism worked in C.4), collapsing the phase-bearing classes into an
 absorbing zero, and a frozen layer has no anchors, no anchor-recurring
 tails, and an empty accepting family — the corollary is vacuous there.
-Whether prefix-independence *forces* the final layer frozen is open
-⟨TBD: settle it; K-E3's census columns measure the stratum either
-way⟩. The corollary's live scope is thus the general lift — recurrence
+Whether prefix-independence *forces* the final layer frozen is now
+census-settled in the affirmative (K-E3): of the 132 prefix-independent
+census languages, **zero** have a non-frozen final layer — the
+corollary's gating stratum is empty on the whole frame, and Cor C.8's
+one-sided win is confined to non-prefix-independent languages
+(`G(a → F b)`, K-F1, is the worked one). This is K-F2's mechanism
+generalized: the pending bit cannot survive in a prefix-independent
+language's absorbing class. ⟨TBD: promote 132/132 to a theorem —
+prefix-independence ⟹ frozen final layer; C.4's saturation argument is
+the candidate proof.⟩ The corollary's live scope is thus the general lift — recurrence
 languages that are not prefix-independent, where the peel above the
 final layer wraps the `Π₂` leaf in reach chains — which remains open
 ⟨TBD: the semantic recurrence class absorbs the wrappers; the
@@ -436,9 +459,13 @@ minimal set, so Corollary C.8's pure-`GF` term plus the parks give
 
 with `A_{(2,a)} = b ∧ X( (b∨s) U a )` and `A_{(4,b)} = a ∧ X( (a∨s) U b )`
 (carried form, `k = 0`) — equivalent on confined tails to
-Proposition 5.7's width-1 output `(GF(a∧!b) ∧ GF b) ∨ …` (K-E4 checks
-the containment both ways). The point of the rung is visible in the
-width: 5.7 needed width 1 because at width 0 the window vocabulary is
+Proposition 5.7's width-1 output `(GF(a∧!b) ∧ GF b) ∨ …`, and the
+emitter is built and gated (K-F11): the atoms come out Spot-equivalent
+to the displayed forms, and the assembled `Ω(R, 2)`, emitted as a
+shared DAG (27 nodes raw, 15 simplified), is equivalent to
+`G(a → F b)` outright — the layer being terminal with no safety, the
+window contract here is the whole language. The point of the rung is
+visible in the width: 5.7 needed width 1 because at width 0 the window vocabulary is
 *empty* — no window can even say "anchor-recurring". The config atoms
 say it at width 0, the class coordinate supplying what the first
 window letter did: the determinacy is the same, the *transcription*
@@ -685,13 +712,18 @@ profiles stay distinct, no zero exists, and
 `(f,l,1)·(f′,l′,1)·(f,l,1) = (f,l,1)` does hold. A correct computation
 in the wrong algebra: the syntactic quotient merges the flagged
 profiles and reverses the outcome. K-E0's sandwich scan on the true
-invariant must dump exactly this failure — the aperiodic positive
-control, beside `EvenBlocks`' group control.) The identity remains
-machine-checkable on every output of the closure — per collected
-`(F, base)` group, pairwise over the idempotent loop classes — and
-K-E7 runs it census-wide, re-aimed: no longer falsification of a
-conjecture but cartography — where aperiodic absorption lives, and
-whether any third mechanism appears.
+invariant dumps exactly this failure — the aperiodic positive control
+fires at the zero, beside `EvenBlocks`' group control (K-F5).) The
+identity is machine-checkable on every output of the closure — per
+collected `(F, base)` group, pairwise over the idempotent loop
+classes — and K-E7 ran it census-wide, re-aimed from falsification to
+cartography. The map is two-colored (K-F8): over the 1 164-layer
+stratum, absorption on 234 layers (aperiodic, one idempotent 𝒥-below
+the other — the floor witness's mechanism), group on 90
+(non-aperiodic), and among the aperiodic 𝒥-equivalent sandwich drops
+**none is verdict-splitting** — a non-splitting drop is an ordinary
+𝒥-class fall, not a (C)-conflict. No third mechanism appears anywhere
+in the frame.
 
 **Post-mortem of the dichotomy, and the transfer to moving layers.**
 The first draft's argument for C.17 was a dichotomy: a pattern
@@ -722,8 +754,20 @@ merges exactly as in §5.1, so on the layer the walk sees only the
 tails differ only at the `a`/`b` swap positions, whose two-non-silent
 windows never recur, so `RecE_k` agree at every `k`; the verdicts
 split on the `L₁` conjunct. ⟨TBD: the full syntactic-product
-bookkeeping; the tool build of this specimen is K-E2's transfer
-item.⟩ ∎
+bookkeeping.⟩ ∎
+
+Tool-confirmed (K-E2, K-F9): the specimen's invariant has 25 classes,
+aperiodic, terminal layer `{(z, 2), (z, 4)}` — moving, 1-anchored,
+exactly as predicted — and the (C)-decider conflicts at widths 0
+and 1, each conflict verified genuine (ALG-7): the two reconstructed
+lassos share their recurring edge set, membership toggles on the
+language itself, and the induced linked pairs are non-conjugate
+(Lemma C.11). Widths ≥ 2 exceed the tool's covered-set budget (nine
+quotient letters); the conflict is Theorem C.12′'s window-blind
+`a·s^*·a` mechanism decorated by a fixed recurrence, so it persists at
+every width structurally. **The floor is thus empty on the census
+frame (K-E1: zero conflicts over its 1 164 undecided layers) and
+inhabited one product beyond it.**
 
 Consequence: no re-scoping of Conjecture C.12 by layer shape survives —
 "frozen" is where the failure is native, not where it is confined.
@@ -795,10 +839,11 @@ pendency, as R-chain data) or a KR-decomposed presentation
 ladder keeps unconditionally: (C) at width `k` is decidable
 (Lemma C.5(v), the closure with grouping disabled), strictly beats
 plain (B) at equal width with real transcription gains (C.3), and the
-sandwich scan is a census-wide instrument (K-E7) — the map of
-aperiodic absorption starts at the 372 undecided layers and the frozen
-strata (K-E1, K-E2), with Proposition C.19's transfer specimen as the
-first moving-layer target.
+sandwich scan is a census-wide instrument whose first map is drawn
+(K-E7/K-F8): absorption and group are the only mechanisms in the
+frame, and Proposition C.19's transfer specimen — built and verified
+(K-F9) — is the first moving-layer floor inhabitant, one product
+beyond the census.
 
 ## C.5 The manufactured cascade: the fallback that retires DG
 
@@ -954,10 +999,16 @@ one layer.
 - **Table 2:** the residual row splits — a new "config-transcribable" row
   (condition (C), atoms `GF(An ∧ X(St U ·))`) above a residual row now
   proven inhabited: its floor is `GF(a ∧ X(s U a))` (Theorem C.12′).
-- **§8:** three new measurements — (C) over the 372 undecided and the
-  frozen strata (procedural relief only; Lemma C.10 fixes the logical
-  content); the absorption map (K-E7) with Prop C.19's transfer
-  specimen (K-E2); DG-vs-cascade on the 258-language stem stratum.
+- **§8:** three new measurements, two of them in — coverage: (C)
+  settles all 1 164 census-undecided final-layer readings at widths
+  ≤ 2, zero conflicts (K-F7; 322 frozen, relief procedural per
+  Lemma C.10; 842 moving, the decision (C)'s own); the mechanism map:
+  absorption on 234 layers, group on 90, no verdict-splitting third
+  pattern (K-F8), Prop C.19's specimen the first floor inhabitant
+  beyond the frame (K-F9), the prefix-independent stratum 132/132
+  frozen (K-F10 — Cor C.9 empty on the census, one-sidedness balanced
+  13/13/18/12); still pending: DG-vs-cascade on the 258-language stem
+  stratum (K-E5).
 - **§9:** the cascade paragraph's ⟨TBD⟩ is discharged by Prop C.2 and the
   dictionary; [BLS22] enters the references.
 - **§10:** the main open problem *stands*, sharpened from both sides:
@@ -972,8 +1023,10 @@ one layer.
   where the floor extends (K-E7).
 - **Implementation note (repo-local, not for the paper):** the decision
   side of (C) is the existing loop-class closure with its last grouping
-  step disabled; the atoms and the normal form are new emitters in the
-  window engine; the C.5 fallback can consume `aut2ltl/bls` (holonomy
+  step disabled; the atoms and the normal form are emitters, built
+  DAG-only and conformance-gated on the worked witness (K-F11),
+  production wiring into the window engine pending; the C.5 fallback
+  can consume `aut2ltl/bls` (holonomy
   bridge, reach family, `Fin`) nearly as-is, scoped per layer.
 
 ## References (additions)
