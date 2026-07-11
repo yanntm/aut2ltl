@@ -132,7 +132,7 @@ Myhill–Nerode's failure at ω seemed to forbid is what this paper is for.
    canonicity — the fixpoint *is* `S(L)₊`, exported as `𝓘(L)`; equivalence between
    hypotheses is invariant equality, replacing product constructions — with a
    converse: an exactly-certified fixpoint is either canonical or carries no
-   algebra at all (Theorem 5.5) (§5).
+   algebra at all (§5, Theorem 5.5).
 5. An implementation as a pure query learner, and an evaluation against the
    canonical target: byte-exact reconstruction across a complement-closed
    census of 3938 languages (`N` past 100, zero mismatches), the query bounds
@@ -376,7 +376,7 @@ membership is one deterministic run, and an equivalence query is decided
 *exactly*, against the language's own invariant `𝓘(L)` — constructed once,
 after which the automaton leaves the equivalence loop. The hypothesis's fold
 automaton is *aligned* with `𝓘(L)`: the letter-generated graph of pairs
-`(ψ(w), ψ_L(w))` — hypothesis fold against syntactic morphism — is built
+`(ψ(w), ψ_L(w))` — the hypothesis's fold (§3) against the syntactic morphism — is built
 lazily (the generated-product move of the companion calculus [SωSC26]), and
 on every cell (stem node, loop node) two verdicts are compared: the
 hypothesis's prediction on the cell's keyed lasso, and the invariant's
@@ -396,7 +396,7 @@ classes), so a mid-run hypothesis is not merely coarser than the algebra
 (§4.2) but incomparable with it: the oracle asserts functionality on the
 built graph at every query ⟨TBD-M4: the sweep-wide firing tally⟩, and a
 firing hands the query to the product of the automaton with the
-hypothesis's transformation closure, which needs no such hypothesis. Keys being shortlex-least and
+hypothesis's transformation closure, which needs no such assumption. Keys being shortlex-least and
 cells scanned in lasso order, the returned counterexample is the globally
 *minimal* one (shortest stem, then shortest loop, then shortlex) — which
 makes runs deterministic and the worked examples reproducible; §6 measures
@@ -495,7 +495,7 @@ consistency gives `u·a ≡_T w_c·a`, i.e. `class(u·a) = step(c, a)`.
 definition. Step: every non-empty table word is `u = p·a` with `p` a row —
 a frontier word extends a row by definition, and a non-empty row was created
 as a one-letter extension of a row (Definition 3.2's access discipline) — and
-`p`, a shorter table word, is covered by the hypothesis:
+`p`, a shorter table word, is covered by the induction hypothesis:
 `ψ(u) = step(ψ(p), a) = step([p], a) = class(p·a) = [u]`, the third equality
 by agreement. *Right congruence:* for rows `u ≡_T v` and a letter `a`,
 agreement twice gives `[u·a] = step([u], a) = step([v], a) = [v·a]`. ∎
@@ -716,7 +716,7 @@ hides in `[a]`, which is §4.3's catch.
 The harvest reacts to *membership* disagreements — and membership's error signal
 is structurally one-sided. Predictions fold the **literal** words of the queried
 lasso; they never consult the class of a row *embedded under a left context*. So
-if two rows with `u ≉_L v` are merged, and no harvested column happens to carry
+if two rows `u, v` with `u ≉_L v` are merged, and no harvested column happens to carry
 the separating prefix `x`, nothing observable ever goes wrong: every prediction
 is computed from literal prefixes, every lasso verdict can be correct, the
 equivalence oracle assents — and the learner stops with a table **coarser than
@@ -1375,8 +1375,8 @@ predictions to give `ψ(u) = ψ(v) ⟹ u ≈_L v`; injectivity of the class map
 uses that every split — promotion, consistency mint, harvest — is witnessed
 by an Arnold context (saturation escalations, absent here, were only ever
 one more witnessed mechanism); surjectivity is `u ≈_L w_{ψ(u)}`, from
-Lemma 5.4's extension of the check to all words at `d = [ε]`. Multiplicati-
-vity, the BFS keys (with (i), `mult` by letter classes *is* `step`, so the
+Lemma 5.4's extension of the check to all words at `d = [ε]`.
+Multiplicativity, the BFS keys (with (i), `mult` by letter classes *is* `step`, so the
 two BFS orders coincide), and `P` (teacher bits on representative lassos)
 assemble byte-equality as in Theorem 5.1. ∎
 
@@ -1636,7 +1636,11 @@ aperiodic languages the algebra is more often the smaller object (862
 smaller / 534 larger / 89 tied); on non-LTL languages the FDFA usually is
 (240 / 705 / 61): the group structure that blocks LTL-definability is also
 what inflates the algebra against an acceptor — Proposition 5.3(b)'s
-mechanism, already visible at census scale.
+mechanism, already visible at census scale. ⟨TBD-M4: restate this paragraph
+from the committed 6222-scale `e3_summary` — the LTL-cut direction *inverts*
+there (on LTL the algebra is more often the larger object, 1524 v 1842); the
+old headline was a small-shape artifact — keep the correlation, drop the
+direction claim.⟩
 
 The comparison's result is capability. From the learned invariant,
 LTL-definability is a read-off — the aperiodicity/group test of §2.2 — computed
@@ -1718,7 +1722,7 @@ lasso queries. On the way we met a finding worth the trip: two-sided columns are
 *not enough*, because membership's error signal is one-sided, and without the
 saturation sweep the table stalls on a correct acceptor strictly coarser than
 the algebra — permanently, already on `a → Xa` (Proposition 4.4), where the
-stalled export is not even associative; indeed a certified stall never
+stalled export is not even associative — indeed a certified stall never
 carries an algebra at all (Theorem 5.5) — a stall beyond counterexample-guided
 refinement, dissolved by the same slot collapse. The learner's limit is not an acceptor
 chosen from a family but the canonical invariant of the language — the object
