@@ -5,7 +5,7 @@ interface between the paper (`sos_symbolic.md`) and the implementation
 sessions: the paper's §8 evaluation plan and its ⟨TBD⟩ measurements are
 fed by the experiment ids below, per the family discipline
 (`sos_learning_report.md` ledger style).
-Companion specs: `sos_census_experiments.md` (the measurement corpus and
+Companion specs: `sos_census_spec.md` (the measurement corpus and
 the derived-census driver, the engine's first consumer at scale),
 `sos_toltl_spec.md` (downstream consumer of the emitted quotient).
 
@@ -96,7 +96,7 @@ output invariant is byte-identical to the reference's.
   format, with its closure cap / `INCONCLUSIVE` exit *(exists)* — the
   conformance oracle and the E6 baseline.
 - **The census corpus** — machine census + triptych + intrinsic rows
-  once `sos_census_experiments.md` M3 lands — the compression scatter's
+  once `sos_census_spec.md` M3 lands — the compression scatter's
   x-axis population.
 - **The triptych**, `EvenBlocks` in particular: `|Q| = 2`, `C = {0,1}`,
   slot domain of 8 values, `|EM¹| = 16` identity included
@@ -382,7 +382,7 @@ small-space passes).
 - **M3** — C8 + E2/E3/E4 (the scaling story — the paper's headline
   measurements); Proposition 4.1 verified at every affordable `n`.
 - **M4** — C9 + E7/E8 studies; E6 bottom line; hand the derived-census
-  driver to `sos_census_experiments.md` C6 as its at-scale backend.
+  driver to `sos_census_spec.md` C6 as its at-scale backend.
 - **M5** — C10 + E9 (the calculus): commutation and witness gates
   green, the deferred-reduce column measured. Depends on M2 (the
   pipeline) and C8 (aligned pairs at scale); independent of M4's
