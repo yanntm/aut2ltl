@@ -2408,56 +2408,48 @@ display moved with them — and the companion-calculus citation is dropped
 (the paper is self-contained on the align construction; [SωS26] remains the
 only family citation).
 
-### 2026-07-11 (engineering) — item 13 landed; the witness lock's `_c` was a name, not an identity
+### 2026-07-11 (engineering) — spec §8 item 13 delivered
 
-Spec §8 item 13 (the amended fix) is **implemented and locally green**. The
-export refuses on a dirty Lemma 5.2 check (`NotCongruent`; `--unchecked` kept
-for the §4.2 display), `fixpoint_congruent` / `export_associative` are recorded
-(spec §7), `congruence_audit` now takes the **full check** as its verdict, and
-the 14-case parity sample flipped exactly as theory predicted: **14/14
-non-congruent** — while the rejected letter test stays green on **13** of the
-14, an under-detection that confirms the ruling's "vacuous without merged
-letters" reading in the data.
+**Item 13 is implemented and green.** The export refuses on a dirty Lemma 5.2
+check (`NotCongruent`; `--unchecked` retained for the §4.2 display, never a
+deliverable); `fixpoint_congruent` and `export_associative` are recorded (spec
+§7); `congruence_audit` takes the **full check** as its verdict, the letter test
+demoted to a contrast diagnostic.
 
-New local gates, all green: `congruence_gate` (the two proven-permanent
-specimens + the loudest ex-crasher pair, 4/4: `ACCEPTOR_ONLY`,
-`fixpoint_congruent = false`, no invariant, `export_associative = n/a`, **no
-`CRASH`** — the 17 crashers are cured at the root), the P7/F8 associativity
-fixture (the `a_implies_xa` unchecked export reproduces the paper's §4.2 display
-cell-for-cell, non-associative with witness `([a],[a],[a])`; saturated specimens
-associative **and** congruent), and `campaign_e0` extended to assert both new
-fields at E0 scale (P7/P9). The standing set — `saturation_gate`,
-`even_conformance`, `evenblocks_conformance`, `exact_fixtures`, `exact_ref_gate`,
-`witness_lock`, `fault_verdict_probe`, `campaign_e0` (P5 ledgers byte-stable) —
-is green.
+**The prediction is confirmed in data.** On the 14-case parity sample the full
+check returns **14/14 non-congruent**, as ruled — while the rejected letter test
+stays **green on 13 of the 14**. That gap is the ruling's "vacuous without
+merged letters" reading, measured: the letter test under-detects on all but one
+case, so nothing but the check phase can carry P9.
 
-**Finding for theory — the `_c` suffix is not an addressable identity.**
-`witness_lock` built each refutation witness's complement id by string
-concatenation (`<primal>_c`) and CRASHed on a missing file. Cause: genaut mints
-a `<primal>_c` alias **only where the enumeration was one-sided**. The corpus
-regrew (the beyond-wall campaign), the dual of
-`2state1ap2acc_parity_0088836118` was drawn under its own combo id, and the
-alias it no longer needed ceased to exist. (`_1178851077_c` survives — its dual
-was never drawn independently.) The catalogue is still complement-closed; only
-the *name* moved.
+Gates green: `congruence_gate` (the two proven-permanent specimens plus an
+`ACCEPTOR_ONLY` pair drawn from the catalogue — 4/4 certify the stall and refuse
+the export: `fixpoint_congruent = false`, no invariant, `export_associative =
+n/a`); the P7/F8 associativity fixture (the `a_implies_xa` unchecked export
+reproduces the paper's §4.2 display cell-for-cell, non-associative with witness
+`([a],[a],[a])`; saturated specimens associative **and** congruent);
+`campaign_e0` asserting both fields at E0 scale (P7/P9), P5 ledgers byte-stable;
+and the rest of the standing set. The ablation leg's 17 `CRASH` rows are gone at
+the root: those runs classify `ACCEPTOR_ONLY`, which is what the ruling says
+they are.
 
-Fix taken (user's go): the lock gates the **primals only**. This costs nothing —
-spec §8 item 7 states the refutation as an *existence* claim certified on the
-canonical invariant, "independent of provenance", and a complement is the
+⚠️ **For theory — do not cite a witness's complement by combo id.** genaut mints
+the `<primal>_c` alias **only where the enumeration was one-sided**, so a dual
+that a later campaign draws under its own combo id has no `_c` name at all. The
+catalogue remains complement-closed; the names move as it grows. This touches the
+spec's E2 recorded outcome ("four prefix-independent entries — two languages and
+their complements", `2state1ap2acc_parity_0088836118` / `_1178851077`) and any
+paper prose naming a `<id>_c`. The **count** is safe — a sweep fact over
+languages, re-derived by the E2 recount. The **names** are not. Suggest the paper
+cite the two primals and state their complements by duality; `witness_lock` now
+does exactly that — the refutation is an existence claim on the canonical
+invariant, "independent of provenance" (spec §8 item 7), and a complement is the
 accept-set byte-flip over the same semigroup, so it inherits prefix-independence
-(a) and the ω-sort signature (b) and can only pass where its primal passes. The
-lock is green: 2 witnesses prefix-independent + permanent, **0 linear columns**;
-the 2 named cases conform (P8).
+(a) and the ω-sort signature (b) and can only pass where its primal passes. Lock
+green: 2 witnesses prefix-independent + permanent, **0 linear columns**; the 2
+named prefix-independent cases conform (P8).
 
-⚠️ **What theory should note:** the spec's recorded outcome (§ E2, "four
-prefix-independent entries — two languages and their complements") and any
-paper text that cites witnesses **by combo id** are exposed to this. The *count*
-is safe — it is a sweep fact over languages, and the E2 recount will re-derive
-it — but a `<id>_c` cited in prose can silently stop resolving whenever the
-corpus grows. Suggest the paper cite the two primals and state the complements
-by duality rather than by name.
-
-**Next (owed):** the ablation-only re-run drop (6222 cases, one column;
-`--done` cannot apply — the column needs the final table, which only a re-run
-reconstructs), then P9/P10 over its output and the E2 recount
+**Owed next:** the ablation-only re-run drop (6222 cases, one column; `--done`
+cannot apply — the column needs the final table, which only a re-run
+reconstructs), then P9/P10 over its output, then the E2 recount
 (`permanent = 3170`).
