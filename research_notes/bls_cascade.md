@@ -25,10 +25,8 @@ revision (the extended corpus — 6 222 languages, Wagner ceiling
 Theorem C.9′ (prefix-independence freezes the terminal layers — no
 aperiodicity needed); the every-width criterion Theorem C.12″ added;
 the Lemma C.5(i) second-strictness ⟨TBD⟩ discharged; and the floor
-claim REVERSED (K-F12): the earlier cut's "zero conflicts" was a
-property of its ω² Wagner ceiling, not of the census axis — the
-extended frame inhabits the floor track in bulk, type specimen on
-paper.*
+claim REVERSED (K-F12): the census inhabits the floor track in bulk,
+type specimen on paper.*
 
 ---
 
@@ -268,9 +266,7 @@ therefore *does* populate C.4's floor track, at scale — the reversal
 is K-F12's, worked in C.4. (On frozen layers a (C)-decision is
 Lemma C.10's bookkeeping — (C) at `k` is (B) at `k+1`, the grouping
 cost relieved, no logical power added; the logical gain of (C) lives
-on moving layers alone. The earlier 4 248-language cut of this
-experiment decided its whole 1 164-layer stratum with zero conflicts —
-a property of that frame's ω² Wagner ceiling, not of the census axis.)
+on moving layers alone.)
 
 ## C.3 The transcription: anchored edge atoms and the config normal form
 
@@ -597,17 +593,16 @@ Determinacy over one data set is determinacy over the other. ∎
 The lemma cuts the other way from what the first draft hoped: §5.1
 exhibits precisely such a layer. The floor witness's final layer *is*
 frozen — the singleton `{z}` — and its window question fails at every
-width on the growing-gap pair. Table 3's 0 failures over 12 516
-final-candidate layers were bounded-width and in-frame — a (B)-failing
-final layer needs two states and two propositions at once, a shape
-that cut omitted. The extended census (Wagner ceiling ω³/ω⁴) contains
-the shape and populates it at once (K-F12): 1 021 of its heavy layers
-genuinely fail (C) at width 0, 263 still at width 1, and on the type
-specimen's frozen singleton the width-0 (C)-conflict *is* a plain-(B)
-failure at width 1 by this lemma — a genuine in-frame (B)-failing
-final layer, the `2state2ap` open hunt of the main paper's §8 closed.
-Their every-width persistence is Theorem C.12″'s criterion below.
-C.10's warning fires, and the conjecture is refuted on arrival. It is
+width on the growing-gap pair. Nor is the shape exotic: a (B)-failing
+final layer needs two states and two propositions at once, and the
+census (Wagner ceiling ω³/ω⁴) populates exactly that stratum (K-F12) —
+1 021 of its heavy layers genuinely fail (C) at width 0, 263 still at
+width 1, and on the type specimen's frozen singleton the width-0
+(C)-conflict *is* a plain-(B) failure at width 1 by this lemma: a
+genuine in-frame (B)-failing final layer, the `2state2ap` open hunt of
+the main paper's §8 closed. Their every-width persistence is
+Theorem C.12″'s criterion below. C.10's warning fires, and the
+conjecture is refuted on arrival. It is
 stated anyway, because its *reduction* (C.14–C.18) is unconditionally
 correct and turns the refutation into an explicit algebraic identity
 failure one can exhibit in seven elements and scan for census-wide.
@@ -919,8 +914,8 @@ non-conjugate pairs, zero closure artifacts. The type specimen
 (ω³, σ), canonical acceptor 6 states / 2 AP) fails on frozen singleton
 layers by verdict-splitting zero absorption over three 𝒥-minimal
 classes; by Lemma C.10 its width-0 (C)-conflict is a plain-(B) failure
-at width 1 — the first in-frame inhabitant of the `2state2ap` shape
-Table 3's cut omitted. A width-bounded conflict is not yet floor
+at width 1 — the first in-frame inhabitant of the `2state2ap` shape,
+the main paper's §8 hunt. A width-bounded conflict is not yet floor
 membership — the ladder rescues 118 of the width-0 conflicts at
 width 1 — and the promotion instrument is Theorem C.12″'s padded-block
 criterion (K-E8), with 640 layers budget-open at width 1 the remaining
@@ -1033,9 +1028,8 @@ height — up to `2^{|R|}` levels of up to `2^{|R|}` states
 [BLS22, Prop 6], every reset cascade re-normalizable to `n·log j` levels
 of two states each [BLS22, §4.1] — and expected far below the bound in
 practice ⟨TBD: measure both routes on the (A)-fallback stratum — K-E5;
-258 languages on the old cut, recount on the extended corpus is the
-preflight; the floor specimens are 3-class layers, where the
-comparison is by hand⟩.
+the stratum recount on the current corpus is the preflight; the floor
+specimens are 3-class layers, where the comparison is by hand⟩.
 Alternatively the levels, being 1-anchored, admit this paper's own width-1
 brick grammar with combined-letter triggers — the phase of each lower level
 letter-recoverable by its own anchors, which is precisely what [BLS22]'s
@@ -1127,10 +1121,9 @@ floor stratum of C.4 lands here — the floor witness's entire loop
 content sits on a frozen layer failing (C) at every width, and
 Proposition C.19 transfers the failure to moving layers — in addition
 to any (A)-failing final layer (§8: expected none in the census frame
-⟨TBD: verify this read-off explicitly (K-E5 preflight) — the old
-cut's 258 languages' failing layers are all at Wagner depth 1; recount
-on the extended corpus, then check none is a layer a run can end
-in⟩).
+⟨TBD: verify this read-off explicitly (K-E5 preflight) — recount the
+(A)-failing stratum on the current corpus and check none of its
+layers is one a run can end in⟩).
 
 ## C.6 What does not transfer
 
@@ -1175,8 +1168,8 @@ one layer.
   prefix-independent stratum 1 104/1 104 frozen — Theorem C.9′,
   census-confirmed (K-F10); one-sidedness balanced 16/16/28/14, the
   tie structural by complement closure (K-E3); still pending:
-  DG-vs-cascade on the stem stratum (K-E5; the 258-language count is
-  the old cut, recount first).
+  DG-vs-cascade on the stem stratum (K-E5; the stratum recount on the
+  current corpus is the preflight).
 - **§9:** the cascade paragraph's ⟨TBD⟩ is discharged by Prop C.2 and the
   dictionary; [BLS22] enters the references.
 - **§10:** the main open problem *stands*, sharpened from both sides:
