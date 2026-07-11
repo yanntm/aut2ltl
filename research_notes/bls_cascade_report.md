@@ -29,11 +29,15 @@ regen: `reference/cascade/k_series.md`.
   structural: complement closure).
 - **K-E4 worked example done** (K-F11): emitter conformance-gated on
   `G(a→F b)`; production wiring open.
-- **Open PAPER-EDIT (K-F12)**: the draft still says "floor empty on the
-  census frame" (C.2/C.19/C.7) and carries old-cut numbers — sites and
-  final numbers listed in `handoff_cascade.md` Theory todo 1.
-- **Open experiments**: k=2 pass on the 640 budget-open layers; K-E4
-  engine integration; K-E5; K-E6 — `handoff_cascade.md` Engineering todos.
+- **PAPER-EDIT (K-F12) LANDED** (Theory, 2026-07-11): the draft now
+  carries the extended-corpus numbers and the floor reversal
+  everywhere; K-F10's promotion is **Theorem C.9′**, the every-width
+  promotion instrument is **Theorem C.12″** (see Theory response at
+  the end of this file).
+- **Open experiments**: **K-E8** (padded-block certificates +
+  (B̃)-strictness probe — new in the spec, cheap, run first); k=2 pass
+  on the 640 budget-open layers; K-E4 engine integration; K-E5; K-E6 —
+  `handoff_cascade.md` Engineering todos.
 
 ---
 
@@ -243,8 +247,9 @@ is **empty on the census**: C.9's global bare-`Π₂` form has no instances,
 and the config ladder's one-sided win (Cor C.8) is confined to
 **non-prefix-independent** languages (e.g. `G(a→F b)`, K-F1). This is the
 K-F2 mechanism generalized: the pending bit cannot survive in a
-prefix-independent language's absorbing class. (Promotion to a theorem is
-Theory todo 3 in `handoff_cascade.md`.)
+prefix-independent language's absorbing class. (Promoted:
+**Theorem C.9′** on paper, proved unconditionally — see the Theory
+response below.)
 
 One-sidedness of the moving final layers that *are* (C)-decided (74 with a
 ≥2-class collected `F`): **16 upward, 16 downward, 28 both, 14 neither** —
@@ -319,7 +324,44 @@ Data + regen: `reference/cascade/k_series.md` (`k_e1v_conflicts_k0.csv`,
 `python3 -m tests.cascade.k_e1_verify 2state2ap1acc_parity_3772037665 5 0`;
 mechanism: `python3 -m tests.cascade.k_e7_triage … 5 0 absorption`.
 
-`PAPER-EDIT` (open): draft C.2 remark, C.19 closing bold, C.4 map
-paragraph, C.7 §8 bullet — every "zero conflicts / floor empty on the
-census frame" statement; K-F9's "inhabited beyond it" becomes "inhabited
-beyond *and within* the frame".
+`PAPER-EDIT` LANDED (2026-07-11): draft C.2 remark, C.10 remark, C.4
+map paragraph, C.19 closing, C.7 bullets — every "zero conflicts /
+floor empty on the census frame" statement reversed; K-F9's "inhabited
+beyond it" is now "inhabited beyond *and within* the frame".
+
+---
+
+## Theory response — 2026-07-11 cycle (K-F7..K-F12 integrated)
+
+The report cycle is accepted in full; no number was contested. Four
+outcomes, all on paper (`bls_cascade.md`, same-day commits):
+
+1. **K-F12 integration.** All extended-corpus numbers and the floor
+   reversal are in the draft; the old-cut figures survive only as an
+   explicitly-labeled historical parenthetical (C.2). The spec's stale
+   stratum descriptions are re-based likewise.
+2. **K-F10 promoted — Theorem C.9′**: prefix-independence forces every
+   terminal layer to be a frozen *singleton* — proved unconditionally
+   (no aperiodicity), via the completely-simple minimal ideal: the
+   verdict is a function of the kernel row (R-equivalent idempotents
+   are conjugate, stems wash), rows are preserved by both context
+   sides, so the reduced prefix-independent congruence cannot separate
+   two elements of a row and each collapses to one all-neutral class.
+   The census 1 104/1 104 is confirmation, not evidence; Cor C.9's
+   bare-Π₂ form is vacuous *everywhere*, not just in-frame.
+3. **Every-width promotion — Theorem C.12″** (the K-F12 gap named in
+   this report): C.12′'s growing-gap argument generalized to any
+   frozen singleton — two `σ`-padded covering sequences of the same
+   block set whose `Val(z, ·)` differ certify failure at *every*
+   width. This is a table-only check; **K-E8(a)** in the spec turns it
+   into the scan that upgrades the 246 persisters to floor
+   inhabitants outright (type specimen = mandatory positive control).
+4. **Lemma C.5(i) second strictness — discharged from existing data**:
+   on a frozen singleton (B̃) collapses to (B) while (C)@k = (B)@(k+1)
+   (Lemma C.10), so K-F6's `GF(aa)` layer `{5}` ((B)@1 FAIL, (B)@2
+   PASS; frozen by Theorem C.9′) already witnesses it, degenerately.
+   The non-degenerate (moving-layer) witness is **K-E8(b)**.
+
+Priority for the next engineering session: **K-E8(a) first** (hours,
+no cluster, biggest paper payoff), then the k=2 pass on the 640, then
+K-E4 wiring.
