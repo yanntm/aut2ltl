@@ -383,6 +383,11 @@ fixtures:
 
 - `d_p(L, essential(L)) = 0` and `essential(essential(L))` byte-equal
   `essential(L)`, fixtures + corpus samples;
+- **measure-independence (paper Prop 4.5, executable)**:
+  `essential(inv, uniform)` byte-equal `essential(inv, p_a = 1/3)` on
+  fixtures and corpus samples — the `p` parameter provably does not
+  matter; a byte difference here is a stop-the-line finding against
+  Prop 4.5, not something to normalize away;
 - **F-H (the repair)**: `essential(Σ*·b·Σ^ω)` and `essential(Σ^ω)`
   are byte-EQUAL (both `= Σ^ω`'s invariant) — exactly where F-G's
   shadows differ;

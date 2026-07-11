@@ -704,13 +704,37 @@ position" is not null-LTL: `≈` merges `[ε]` with the neutral class
 and is not aperiodic. The direct argument agrees: an aperiodic `L'`
 has `fold(a^j)` eventually constant, while
 `μ_p((a^{j}·b)⁻¹L)` must alternate between `1` and `0`.
-**What stays open is only a refinement**: whether `≈` itself (not
-just the frontier bit) is independent of `p` — an accidental rational
-coincidence at one `p` could in principle coarsen the quotient; `ess`
-is canonical at the fixed conventional `p` regardless. The
-construction is also the promised beachhead of the weighted direction
-(§7): `M_x` is precisely the syntactic object of a `ℚ`-weighted
-series, arrived at from purely Boolean questions.
+**And the last apparent parameter is not one** — an accidental
+coincidence of values at one measure could in principle coarsen `≈`;
+it cannot:
+
+**Proposition 4.5 (measure-independence).** `≈` is the same congruence
+for every full-support Bernoulli measure. Hence `M_x`, `ess(L)`, and
+the byte test of Theorem 4.4 do not depend on the chosen `p` — uniform
+is a convention, not a parameter.
+
+*Proof.* Write `≈_p, ≈_{p'}` for the congruences at two full-support
+measures and `≈∧ := ≈_p ∩ ≈_{p'}`, a congruence of `𝒞` with quotient
+`M∧`. For every member `L''` of the null-class, *both* residual-measure
+series factor through `L''`'s syntactic morphism, so — as in the proof
+of Theorem 4.4(1), run at the two measures at once — `M∧` divides
+`M(L'')`. Apply this to the member `ess_p(L)`, whose syntactic monoid
+is exactly `M_{x^p}` (Theorem 4.4(2)): `M∧` divides `M_{x^p}`, so
+`|M∧| ≤ |M_{x^p}|`. But `≈∧ ⊆ ≈_p` makes `M_{x^p}` a quotient of
+`M∧`, so `|M_{x^p}| ≤ |M∧|`. The sizes are equal, the canonical
+surjection `M∧ ↠ M_{x^p}` is therefore a bijection, and `≈∧ = ≈_p`;
+symmetrically `≈∧ = ≈_{p'}`. ∎
+
+The mechanism deserves the one-line reading: an accidental coincidence
+at one measure would mint a class member whose monoid is too small to
+carry the series at any other measure, contradicting least
+recognition there. With this, the essential form is *unconditionally*
+canonical, and the null-class story is closed: a complete
+byte-comparable canonical form, its least recognizer, and its decided
+LTL frontier, all measure-free. The construction is also the promised
+beachhead of the weighted direction (§7): `M_x` is precisely the
+syntactic object of a `ℚ`-weighted series, arrived at from purely
+Boolean questions.
 
 ### 4.3 The verification pipeline
 
