@@ -2098,3 +2098,60 @@ Load-bearing outputs are copied out of the ignored `logs/` tree into
 number in `reference/census/README.md`. A figure that traces only to `logs/` does not
 enter the paper: the corpus moves, so a re-run is not a reproduction — the committed
 CSV *is* the source.
+
+## Open defect — the no-saturation raw algebra can carry classes unreachable from ε
+
+**Status: open, under investigation. Flagged for the theory thread: the fix may be
+a paper-level patch, not just an engineering one.**
+
+The v2 drop (6220 languages) crashes on the ablation leg
+(`--no-saturation --eq-mode exact`):
+
+```
+AssertionError: raw algebra has classes unreachable from eps   (sosl/sos/core/canonical.py:72)
+```
+
+`canonicalize()` re-indexes the raw algebra by a shortlex BFS from ε under
+letter-multiplication, and asserts the BFS reaches every class
+(`len(order) == len(mult)`). On these cases it does not: the raw algebra the
+ablation hands it contains classes that ε cannot reach by multiplying letters.
+
+### What the data says
+
+| | |
+|---|---|
+| crashing rows | 17, **all on `no-sat-exact`**; the default leg is **1972/1972 SOUND** |
+| distinct languages | 9, every one a **parity** shape (the family v2 added) |
+| complement symmetry | **holds** — 8 of 9 crash as closed `(L, L̄)` pairs; the 9th's complement only escapes by hitting `BUDGET` first, so it is masked, not exempt |
+| default-leg verdict on all 17 | **SOUND** — the same languages learn cleanly with saturation on |
+
+So the defect is confined to the saturation-off path, is complement-symmetric (as
+the P-flip construction demands), and is invisible to the default leg.
+
+### Why it matters beyond a crash
+
+E2's claim is that *with exact equivalence, every surviving stall is provably
+permanent*. That claim quantifies over the ablation leg — the very leg that
+crashes. Nine languages currently drop out of E2 rather than being classified, so
+the experiment's universe is silently smaller than the catalogue. This is a
+correctness question, not a robustness one: an unreachable class means the object
+the ablation calls "the algebra" is not the algebra the theory describes, and the
+assertion is the only thing that noticed.
+
+### The question for the theory thread
+
+Saturation is what closes the class set under multiplication. With it off, the
+learner's table can hold classes discovered by counterexample that are *not*
+products of letters from ε. The paper's `𝓘(L)` is by definition ε-generated, so:
+is the saturation-off object a different (larger) algebra that merely *contains*
+`𝓘(L)`, and if so, what is E2 actually measuring on it? Either the ablation must
+close the class set before canonicalizing (an engineering fix, and the assertion
+stays), or the ablation's object needs its own definition in the paper (a
+paper-level patch, and §5's ablation story changes).
+
+Reproduce (from `sosl/`), one case per invocation:
+
+```
+python3 -m tests.sosl.census_campaign --cases <i>:<i+1> --config ablate --budget 60
+# e.g. 2state2ap2acc_parity_16186325768790242365 (and its _c mate)
+```
