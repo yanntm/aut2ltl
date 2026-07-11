@@ -25,8 +25,10 @@ Probes for the cascade-ladder experiments: spec
 - `k_e1_one.py` — the per-language shard of the same sweep (cluster unit:
   writes `$OARRUN_OUT.csv`, recomputes its census record in-process). Shard
   the whole stratum with one `cmds.txt` line per language carrying an
-  undecided layer, then `cluster/oarrun.sh` + reap (see `cluster/README.md`;
-  set `--timeout` ≥ 1800 — the heavy layers run many minutes).
+  undecided layer, then `cluster/oarrun.sh` + reap (see `cluster/README.md`).
+  The cluster is large — split wide, e.g. for the ~2100-command stratum:
+  `--split 500 --timeout 1800 --walltime 3:00:00` (≈ 4–5 commands per
+  2-core job; the walltime covers a job drawing several heavy layers).
 - `k_e1_verify.py` — ALG-7 triage of one raw (C)-conflict (`<id> <layer> <k>`):
   `find_c_conflict` + `inv.member` toggle + non-conjugacy (Lemma C.11).
 - `k_e2_transfer.py` — the Prop C.19 transfer specimen.
