@@ -23,8 +23,7 @@ only the file and section named for the task at hand — nothing else.
   awaiting E-campaign data. References grounded in `papers/` (two
   placeholders pending: PRISM CAV'11, Chatterjee–Doyen–Henzinger
   ToCL'10 — do not cite them until in library and read).
-- **Engineering: M1, M2, M3, M4+M3b DONE (F-M1..F-M4; F-M4 awaiting
-  theory reply).** Engine in `sosl/sosl/quant/`
+- **Engineering: M1, M2, M3, M4+M3b DONE (F-M1..F-M4, all accepted).** Engine in `sosl/sosl/quant/`
   (`chain`/`kernel`/`theta`/`measure` + `routea` + `distance`/`shadow`/
   `essential` + `entropy`; placement provisional, to move under
   `sosl/sosl/sos/` on some later go-ahead). M1: flip law 4248/4248
@@ -47,11 +46,15 @@ only the file and section named for the task at hand — nothing else.
 1. ~~Reply to F-M3~~ DONE (2026-07-11): accepted in the report with
    the M3b addendum (spec §9.1) and a rewritten §10; E1 prediction
    registered (5164 with μ∈{0,1}, split 2582/2582).
-1b. **Reply to F-M4** (entropy + M3b, all green; one recorded spec
-   deviation: common-denominator fixed point in the CW iterate) and
-   **ratify/amend proposal P-M5** (the `.mc` format: Moore convention,
-   PRISM-language subset, initial-letter-in-word decision — see the
-   report; M5 engineering is gated on it).
+1b. ~~Reply to F-M4 + ratify P-M5~~ DONE (2026-07-11): F-M4 accepted
+   (CW common-denominator deviation ratified, spec §10 amended; E2
+   prediction registered: zero census rows with `μ > 0` and
+   `ρ < |Σ|`); P-M5 RATIFIED on all three points — Moore convention,
+   PRISM subset (well-formedness normative), **initial letter
+   INCLUDED in the word** — spec §11 rewritten as the full M5 work
+   order (fixtures F-M/F-N/F-O, four gates, Bernoulli-embedding law
+   replacing the one-state Mealy cross-check), paper §2.3 embedding
+   remark updated.
 2. **Fill the paper's ⟨TBD⟩ slots** from report findings as campaigns
    land (§6 + abstract headline wait on M6; F-M3's census numbers —
    5660/6222 LTL-up-to-null, the 1922 measure-invisible groups — are
@@ -72,14 +75,13 @@ only the file and section named for the task at hand — nothing else.
    `limit_denominator` blows up through the lcm). Awaiting theory
    reply.
 2. **M5 (spec §11)** — the Markov product `Pr_M(L)`. NEXT, on the
-   user's go, and gated on **proposal P-M5 in the report** (pending
-   theory + corpus-keeper ratification): `.mc` = a restricted
-   PRISM-language subset, state-labelled (Moore) DTMC — letter of a
-   step = labels of the state entered, product reads `ℓ(q')`; exact
-   rationals in source; same file runs in PRISM and Storm. Theory
-   must also fix whether the initial state's label is the word's
-   first letter (PRISM/Storm say yes; needed for same-file-same-number
-   cross-checks) — a spec §11 / paper §2 remark either way.
+   user's go; P-M5 is RATIFIED (2026-07-11) and spec §11 is the
+   complete work order: `.mc` = restricted PRISM-language subset,
+   state-labelled (Moore), exact rationals in source, word INCLUDES
+   the initial state's letter (`word = ℓ(s₀)ℓ(s₁)…`; product starts
+   at `(q₀, λ(ℓ(q₀)))`, reads `ℓ(q')` per step). Fixture F-M pins
+   the convention. Stored-chain placement stays with the corpus
+   keeper (only needed at M6/E4).
 3. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
    and abstract ⟨TBD⟩ slots through report findings only.
 4. **Figures** — FIG-1/2/3 **DONE (2026-07-11)**: artifact
