@@ -32,39 +32,67 @@ the normative math you consult when the spec points at it.
   gate on GT1 / GT3 / W0. Probes call the package, never re-implement
   it (the drift rule there).
 
-## State (2026-07-11): GT1 DONE — GT2 is the commissioned milestone
+## State (2026-07-11): GT1 and GT2 DONE — GT3 is the next engineering milestone
 
 - **GT1 (DONE, accepted):** `sosl/sosl/sos/giventhat/interval.py`
   (`Interval`, `given_that`, `k_settles_phi`/`k_refutes_phi`,
-  `choose`/`decompose`), `conjugacy_classes` landed in
-  `calculus.surgery` (explicit `_conjugacy` memo slot on `Table`),
-  gates `sosl/tests/giventhat/interval_gate.py`
-  (`--fixture` / `--one a b` / `--campaign`) green on the fixture and
+  `choose`/`decompose`), `conjugacy_classes` in `calculus.surgery`.
+  Gates `tests/giventhat/interval_gate.py` green on the fixture and
   the 700-pair campaign (699 scored, 1 explained F2). Data:
   `reference/giventhat/gt1_interval.md` + `gt1_bits.csv`; report
   F1–F4 filled. Fixture facts: `|𝒞(D_ab)| = 6` (E1 held),
   `|𝒞(D_K)| = 6`, `iv.bits = 2`.
-- **GT2 (OPEN — start and stop here):** spec §4, paper §4. Sequencing
-  is deliberate: **run the corpus rung oracle FIRST** (spec §4 gate 1
-  — `is_recurrence == (m⁺ ≤ 0)` etc. against every `.cat` sidecar;
-  a consistent flip is finding F5 + a paper correction, a mixed result
-  is a STOP), before any interval work. Then `ladder.py` (per-rung
-  existence, `forced`, `rec_hull`, H-order helper), `ladder_gate.py`
-  (hull laws, `bits ≤ 12` brute lattice oracle — never raise the cap,
-  witness discipline, the §4.6 worked-example fixture). Part of the
-  GT2 landing: promote the SCC pass to `r_classes(table)` in
-  `calculus.surgery` (spec §2 — reuse `is_obligation`'s Tarjan, do
-  NOT write a second one). Acceptance at spec §4 end; report slots
-  F5–F8.
-- **GT3–GT5:** specified, sequenced, do not start early. GT4 is
-  deliberately a theory probe (greedy vs brute may disagree; that is
-  the experiment working). GT5/W1 is blocked on external data — do
-  not fetch it.
+- **GT2 (DONE, accepted):** `sosl/sosl/sos/giventhat/ladder.py` (the
+  five `exists_*` rung tests, `forced`, `h_below`, `is_recurrence` /
+  `is_persistence`, `rec_hull`), `r_classes` promoted into
+  `calculus.surgery`. Gates: `tests/giventhat/ladder_gate.py`
+  (`--rung-oracle` / `--one` / `--fixture` / `--pair` / `--campaign`)
+  + `tests/giventhat/gt2_summary.py`. Rung oracle **6 222/6 222**
+  (paper orientation confirmed, F5); campaign 700/700 with zero gate
+  violations; brute lattice oracle exact on all 264 `bits ≤ 12`
+  cases; §4.6 fixture green on every semantic prediction — but the
+  paper's class counts are wrong (5 vs 7; product 10 vs 13), filed E1
+  with a hand census. Data: `reference/giventhat/gt2_ladder.md` + two
+  csvs; report F5–F8 filled.
+- **Policy (2026-07-11):** code duplication in the name of oracle
+  "independence" is rejected — `h_below` reuses `classify.primitives`
+  (`idempotents` / `leq_h_idem`); the accepted cross-check standard is
+  a *different decision path* over shared primitives. Spec §4 and the
+  layering law carry the edit.
 - Prerequisites all DONE and harness-green: the calculus package
   (CAL1–CAL5, see `research_notes/sos_calculus_spec.md` status table)
   including the hull surgeries, `is_obligation`, `obligation_degree`;
-  `sosl.sos.classify.is_stutter_invariant`; and now GT1's interval
-  core. Reuse, never reimplement (spec §0 lists exactly what you get).
+  `sosl.sos.classify` (stutter read-off + primitives). Reuse, never
+  reimplement (spec §0 lists exactly what you get).
+
+## TODO — engineering (next session starts here)
+
+1. **GT3 (spec §5, paper §5) — the commissioned milestone.** Tier 1
+   first (the stutter-quotient test; verdict type is YES/UNKNOWN,
+   trap #11), then tier 2 (the stutter self-alignment — two
+   normal-form cases, trap #9; do NOT build `SC`'s automaton,
+   trap #12). Fixture regression E2: tier 1 UNKNOWN, tier 2 YES —
+   if tier 2 says NO there, tier 2 is wrong. Report slots F9–F11.
+2. **GT4 (spec §6) — after GT3; now unblocked by GT2.** Greedy vs
+   brute band-degree probe; a disagreement is the experiment working
+   (T2) — dossier to F12, do not patch.
+3. **GT5/W0 (spec §7)** — after GT3/GT4. W1 stays **blocked on
+   external data — do not fetch it**.
+
+## TODO — theory (reads the report's To theory, owes back)
+
+1. **Paper §4.6 corrections (E1, filed 2026-07-11):** `|𝒞(¬φ)| = 5`
+   (not 7), product table 10 classes (not 13) — engineering's hand
+   census is in the report; re-do the §4.6 arithmetic or refute the
+   census. Also worth a sentence there: the §4.6 band is `bits = 25`,
+   and the least co-safety member comes from the least-open-hull
+   (stems' right ideal), which §4.1 leaves implicit.
+2. **Soften the paper's §2/§7 "independently computed" wording** to
+   match the shared-primitives policy above (report To theory has the
+   exact framing).
+3. **Integrate F5–F8 into the paper** (orientation confirmed; hull
+   laws + brute exactness; the per-rung strict-drop rates for §7
+   item 3 — safety drops available on ~21% of census pairs).
 
 ## The one theorem to keep in your head
 
@@ -84,7 +112,7 @@ as an always-on assertion — if it fires, the bug is upstream
   complement-closed), `det/*.hoa` (same basename, det complete DELA),
   `sos/*.cat` sidecars (`sosl.sos.classify.io.parse_cat`; `coords:`
   is `m⁺ m⁻ n⁺ n⁻` — GT2's oracle reads these). Counts keep moving
-  under a concurrent regeneration (6220 `.sos` at last look) —
+  under a concurrent regeneration (6 222 `.sos` at the GT2 run) —
   recompute, do not hardcode.
 - Reuse pointers: `_Corpus` in `sosl/tests/calculus/v1_align.py`
   (invariant/table cache, alphabet strata, content-hash complement
@@ -115,9 +143,9 @@ as an always-on assertion — if it fires, the bug is upstream
   learner, figs). Unfamiliar modified files are NOT yours — commit
   ONLY your files by explicit path, never `git add -A`, never touch
   history (no reset/rebase/amend, ever).
-- Commit style: `git commit -F -` heredoc, terse; committing needs the
-  user's go-ahead, pushing is always asked separately. Do NOT append
-  to `docs/HISTORY.md` for this track.
+- Git usage: the repo-wide CLAUDE.md rules apply verbatim (commit your
+  work as it progresses, one file per commit preferred, `-F` heredoc,
+  never push, never rewrite history). No track-specific git rules.
 - Layering law (spec header) is hard: `sosl.sos.giventhat` imports
   `sosl.sos`, `sosl.sos.calculus`, `sosl.sos.classify` — nothing else.
   Test scripts may import anything.
