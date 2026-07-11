@@ -336,13 +336,35 @@ the first `b` is at an even position" (paper §4.1 example: 5 classes,
 kernel spans two bottom SCCs, `μ = p_b/(1−p_a²)`: exactly
 `Fraction(2, 3)` at uniform, `Fraction(3, 4)` at `p_a = 1/3`).
 
-## 9. M3 (QNT1c) — distance
+## 9. M3 (QNT1c) — distance + the measure shadow
 
 `d_p(L₁, L₂)`: align (calculus), `xor` the carried pair sets, run M1's
 `measure` on the aligned table. Return `Fraction` plus the aligned
 xor's θ-profile (all-zero ⟺ null disagreement — paper §4.2).
 Pseudometric laws sampled: symmetry exact, triangle on sampled
 triples, `d_p(L, L) = 0`.
+
+**Shadow surgery** (paper Prop 4.1): `shadow(inv) -> Inv` replaces the
+pair set by `P_sh := {(s, e) ∈ linked : s ∈ D}`, `D` = union of the
+θ=1 bottom SCCs (M1 already computes both ingredients), then `reduce`.
+Laws, all exact:
+
+- `d_p(L, shadow(L)) = 0` (aligned xor-profile all-zero), on fixtures
+  and corpus samples;
+- idempotence: `shadow(shadow(L))` byte-equal `shadow(L)`;
+- `p`-freeness: shadow bytes identical under 3 random full-support `p`
+  (trivially true — the construction never reads `p`; assert anyway);
+- **F-F (positive)**: `shadow` of F-A ("infinitely many `a`'s") is
+  byte-equal to the reduced invariant of `Σ*·a·Σ^ω` ("some `a`
+  occurs") — build the latter as a fixture (three classes: `[ε]`;
+  absorbing `T = fold(a)`; `B = fold(b)`; `P = {(T, T), (T, B)}`);
+- **F-G (negative control, do NOT "fix" it)**: over `{a, b}`,
+  `L = Σ*·b·Σ^ω` vs `Σ^ω`: their `d_p` is `0` (aligned xor-profile
+  all-zero — the difference is `{a^ω}`) YET their reduced shadows are
+  byte-DIFFERENT (`shadow(L) = L`, `shadow(Σ^ω) = Σ^ω`). Shadow
+  equality is sufficient for `d_p = 0`, not necessary (paper §4.2
+  warning); an implementation that makes F-G "pass" by equating the
+  shadows is wrong.
 
 ## 10. M4 (QNT3) — entropy
 
@@ -373,9 +395,16 @@ different base state agrees; Route A product-side on small chains.
 Machine reports under `reference/quant/` (one `.md` + one `.csv` per
 experiment, date / git-rev / seed / corpus header; `.cat`/CSV sidecar
 columns, no JSON). E1 measure+θ-profile columns (distribution per
-Wagner degree / safety band); E2 entropy column; E3 distance geometry
-sampled per alphabet slice (diameter, clustering, nearest-LTL-neighbor
-per non-LTL language); E4 pipeline demo (one spec, a family of chains,
+Wagner degree / safety band); E2 entropy column; E3 the *exact* metric
+geometry per alphabet slice — NOT sampled: (a) all μ=0 languages are
+one `d_p = 0` class and all μ=1 languages another (skip their pairs
+entirely); (b) among the strictly-interior languages, dedup by reduced
+shadow bytes (free), then decide the exact `d_p = 0` classes by the
+aligned xor-profile on the survivors; (c) exhaustive all-pairs `d_p`
+between class representatives (the M1 census counts make this a few
+`10^5` alignments at worst) — report diameter, distance distribution,
+clustering by Wagner degree, nearest-LTL-neighbor per non-LTL
+language; E4 pipeline demo (one spec, a family of chains,
 baseline = Route A route; wall-clock + spec-side artifact stability).
 Per-case budget 15s; blown budget is a datum. Every number destined
 for the paper lands first as a finding row in `sos_measure_report.md`

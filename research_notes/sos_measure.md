@@ -33,7 +33,10 @@ computation on a product chain: the classical probabilistic-verification
 algorithm with the deterministic automaton replaced by the canonical
 algebra, normal-formed and shared across a whole verification campaign.
 On an aligned table, measure turns the free `xor` into a computable
-pseudometric whose null pairs are exactly characterized. Topological
+pseudometric whose null pairs are exactly characterized — and a
+one-surgery *shadow* renders every language null-equivalent to a
+canonical open one: up to measure, all of ω-regularity is co-safety,
+and the topological hierarchies live entirely on null sets. Topological
 entropy is one Perron eigenvalue over the live classes — the class set
 that already carries the safety hull, so the classical invariance of
 entropy under safety closure is visible in the object itself. Each quantity
@@ -107,7 +110,11 @@ Contributions:
 4. **Distance and entropy as read-offs** (§4.2, §5): on an aligned table,
    `d_p(L₁, L₂) = μ_p(L₁ Δ L₂)` is computable exactly, is a pseudometric
    whose null pairs are characterized by an all-zero θ-profile of the
-   aligned `xor`; topological entropy is `log ρ` of the letter-count
+   aligned `xor`; a one-surgery **measure shadow** `sh(L)` gives every
+   language a canonical open null-equivalent representative — up to
+   measure, every ω-regular language is co-safety — and the null-class
+   itself is characterized by the residual-measure series; topological
+   entropy is `log ρ` of the letter-count
    matrix restricted to the live classes — one Perron eigenvalue on top
    of the calculus's liveness scan — with Staiger's closure identity
    `h(cl(L)) = h(L)` recovered structurally.
@@ -541,6 +548,81 @@ the census ("the closest LTL-definable language to this non-LTL one" is
 a scan); weighting of counterexamples (the minimal witness of
 [SωSC26, Prop 3.2] is the *shortest* disagreement, `d_p` its mass).
 
+**The measure shadow.** The zero set of `d_p` has a canonical witness.
+On the invariant of `L`, let `D := ∪ { C bottom SCC : θ_C = 1 }` — a
+union of closed `R`-classes, itself closed under right multiplication —
+and
+
+```
+P_sh := { (s, e) ∈ linked : s ∈ D },        sh(L) := L(P_sh).
+```
+
+**Proposition 4.1 (the shadow).** (i) `P_sh` is saturated, and
+`sh(L) = W_D·Σ^ω` with `W_D = { u ∈ Σ⁺ : fold(u) ∈ D }`: an *open*
+ω-regular language on the same table. (ii) `μ_p(L Δ sh(L)) = 0` for
+every full-support `p`; the construction is `p`-free and idempotent.
+(iii) `d_p(L₁, L₂) = d_p(sh(L₁), sh(L₂))`, and byte-equality of the
+reduced shadows implies `d_p(L₁, L₂) = 0` — a sufficient zero test
+needing no alignment.
+
+*Proof.* (i) Let `C_D := { α : some finite prefix of α folds into D }`
+— evidently `W_D·Σ^ω` and open. We show `C_D` is pair-determined with
+pair set `P_sh`; this yields the language identity and saturation at
+once, membership being word-semantic. Take a Ramsey factorization
+`α = w₀·w₁·⋯` with idempotent block image `e` and associated pair
+`(s, e)`, `s = fold(w₀)·e`; every boundary prefix `w₀⋯w_k` (`k ≥ 1`)
+folds to `s`. If `s ∈ D`, the boundary prefixes witness `α ∈ C_D`.
+Conversely, if some prefix `q` folds into `D`, extend `q` to a boundary
+prefix: its fold `s` is a right multiple of `fold(q)`, and `D` is
+closed, so `s ∈ D`. (ii) For a.e. `α`, absorbed in bottom SCC `C₀`:
+`1_L(α) = θ_{C₀}` (Theorem 3.4). If `θ_{C₀} = 1`, then `C₀ ⊆ D` and
+the walk enters `D`. If `θ_{C₀} = 0`, the walk never enters `D`:
+entering the closed set `D` means being absorbed inside it,
+contradicting `C₀ ⊄ D`. So `1_{sh(L)} = θ_{C₀} = 1_L` a.e., under
+every full-support `p`. Idempotence: on the same table, the θ-bits of
+`P_sh` are `[C ⊆ D] = θ_C`, so the shadow of the shadow has the same
+`D`. (iii) `|1_{L₁} − 1_{L₂}| = |1_{sh(L₁)} − 1_{sh(L₂)}|` a.e., and
+equal reduced invariants denote equal languages. ∎
+
+**Corollary 4.2 (measure-blind topology).** Every ω-regular language
+differs by a null set from an *open* — co-safety — ω-regular language
+on its own table (its shadow), and dually from a closed one (flip,
+shadow, flip). Up to measure, the safety-progress ladder and the
+Wagner hierarchy collapse to their first rung: topological hardness is
+carried entirely by null sets.
+
+A warning: `sh` is canonical *given* `L`, but it is not a complete
+invariant of the null-class. Over `Σ = {a, b}`, the languages
+`Σ*·b·Σ^ω` and `Σ^ω` differ by the null set `{a^ω}` yet have distinct
+reduced shadows — the never-absorbed words form a null set that
+depends on the table, and `sh` excludes them. The *exact* zero test
+remains the aligned xor-profile above. What does characterize the
+null-class is one level more quantitative:
+
+**Proposition 4.3 (the null-class is the residual-measure series).**
+For ω-regular `L₁, L₂` and a full-support Bernoulli `p`:
+`μ_p(L₁ Δ L₂) = 0` iff `μ_p(u⁻¹L₁) = μ_p(u⁻¹L₂)` for every `u ∈ Σ*`.
+Moreover `μ_p(u⁻¹L) = x_{fold(u)}`, the solution vector of Theorem 3.4
+extended by `x_c := θ_C` on bottom classes — so the null-class of `L`
+is carried by a `ℚ`-weighted word series realized on `L`'s own table.
+
+*Proof.* (⇒) `u⁻¹L₁ Δ u⁻¹L₂ = u⁻¹(L₁ Δ L₂)`, and
+`p(u)·μ_p(u⁻¹(L₁ Δ L₂)) = μ_p((L₁ Δ L₂) ∩ u·Σ^ω) = 0` with
+`p(u) > 0`. (⇐) The finite measures `E ↦ μ_p(L_i ∩ E)` agree on the
+π-system of cylinders (`μ_p(L_i ∩ u·Σ^ω) = p(u)·μ_p(u⁻¹L_i)`), hence
+on all Borel sets; taking `E = L₁^c` gives
+`μ_p(L₂ ∩ L₁^c) = μ_p(L₁ ∩ L₁^c) = 0`, and symmetrically — so
+`μ_p(L₁ Δ L₂) = 0`. For the rooted measure: `u⁻¹L` is the rooting
+`P_{fold(u)}` on the same table, and Theorem 3.4 started at `fold(u)`
+is the same chain. ∎
+
+The series view is the first concrete beachhead of the weighted
+direction (§7): the null-class quotient is carried by a canonical
+`ℚ`-weighted object. Whether a null-class contains an LTL-definable
+member — the *measure-blind LTL frontier* — we leave open; note that
+`sh(L)` aperiodic is sufficient but, by the warning above, not
+necessary.
+
 ### 4.3 The verification pipeline
 
 The applied shape of Theorem 3.5: a specification held once as `𝓘(L)`,
@@ -609,10 +691,16 @@ degree — do higher degrees concentrate at full entropy?⟩
 ⟨TBD: (i) measure and θ-profile columns over the census, distribution
 per Wagner degree and per safety-progress band; (ii) the conjectured
 concentration of measure-0/1 in the safety/co-safety rungs, tested;
-(iii) entropy distribution per degree; (iv) sampled distance geometry —
-diameter, clustering by degree, nearest-LTL-neighbor for the non-LTL
-languages; (v) the pipeline demonstration of §4.3 with its baseline
-comparison.⟩
+(iii) entropy distribution per degree; (iv) the *exact* metric geometry
+of the census: the `d_p = 0` quotient computed in full (all μ-0
+languages collapse to one point and all μ-1 languages to another —
+`μ(L) = μ(L') = 1` forces `μ(L Δ L') = 0` — so only the
+strictly-interior languages can separate; dedup by shadow bytes, then
+the aligned xor-profile for the exact classes), followed by exhaustive
+all-pairs distances between class representatives per alphabet slice —
+diameter, distance distribution, clustering by degree,
+nearest-LTL-neighbor; (v) the pipeline demonstration of §4.3 with its
+baseline comparison.⟩
 
 ## 7. Related work
 
@@ -634,7 +722,9 @@ theorem showing the canonical object suffices, deterministically, with
 certificates. Measure-1 satisfaction as a notion of correctness
 ("fairly correct systems") is studied in [VV06]; the θ-profile gives
 that notion a canonical carrier (all-1 profile ⟺ fairly correct under
-every full-support noise model).
+every full-support noise model), and the shadow of §4.2 gives every
+specification a canonical open representative that is fairly
+equivalent to it.
 
 **Measure and entropy of ω-languages.** The entropy machinery is
 symbolic dynamics: block-growth entropy and its Perron-eigenvalue
