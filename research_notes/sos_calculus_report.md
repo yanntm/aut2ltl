@@ -266,12 +266,36 @@ with the others until §9.4 refreshes them.
   automata (obligation, the one that determinizes and minimizes, is the one where
   it loses). The paper should not sell a speed claim off these numbers.
 
+## For theory — paper §8 is on the wrong corpus, and §8.5 is waiting on F15–F19
+
+Two integration items, neither of which engineering touches (the paper is
+theory's file):
+
+1. **§8.5's V4 ⟨TBD⟩ is answered**, by F15–F19 above. The numbers are in pure
+   form there; the head-to-head timing the ⟨TBD⟩ asks for is F19, and it is a
+   *non-*claim — Python against C++ on microsecond-scale objects; the paper
+   should not sell speed off it. The two results worth the paper's space are
+   F16 (6222/6222 agreement, three verdicts, empty dossier) and F15 (Spot has no
+   automaton-level Manna–Pnueli classifier at all, and translation is no escape
+   because 2484 corpus languages have no formula — so the comparison had to be
+   built, and what it compares against is stated exactly). F17b is the one that
+   may deserve a sentence in the paper's own voice: the obligation rung is
+   nearly half non-LTL, which is why the algebraic route is not a convenience.
+2. **Every other corpus-derived number in §8 is stale.** They are report-era
+   **3938**; the corpus is now **6222**, and V4 is the first V-number measured on
+   it (so §8.5's stutter bullet and its classification bullet would otherwise sit
+   side by side on different corpora — do not let them). No figure in §8 should
+   be trusted, copied forward, or left in place because it looks close: each one
+   needs re-sourcing from the finding here that produced it, one by one. Spec
+   §9.4 is the sweep that regenerates them on the frozen corpus; until it runs,
+   this report — not the paper — is the source of truth for every measured value.
+
 ## Status
 
-All five V-experiments delivered, plus E-CAL-EX and V4; the paper's measurement
-placeholders are filled in pure form and cite this report's territory. The
-remaining CAL4 line is housekeeping only. The `flat_canon` census, the seeds, and
-the git revisions in each `reference/calculus/*.md` header make every finding
+All five V-experiments delivered, plus E-CAL-EX and V4. V4 is on the 6222 corpus;
+V1a/V1b/V1c/V2/V3 are on the report-era 3938 and are pending the §9.4 refresh.
+The remaining CAL4 line is housekeeping only. The `flat_canon` census, the seeds,
+and the git revisions in each `reference/calculus/*.md` header make every finding
 above regenerable.
 
 ## Status addendum (2026-07-11, theory)
