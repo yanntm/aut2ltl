@@ -139,10 +139,8 @@ The monoid is a reachability set, closure a least fixpoint, the congruence a
 greatest-fixpoint partition refinement; on an abstract decision-diagram engine
 the whole pipeline is native.
 
-*Files:* `sos_symbolic.md`, `sos_symbolic_spec.md`, `sos_symbolic_report.md`;
-companion `sos_symbolic_hom.md` (the same seven phases re-expressed in the
-homomorphism/saturation idiom of libDDD/libITS — equations only, no repeated
-justification). Cited as **[SωSD26]**.
+*Files:* `sos_symbolic.md`, `sos_symbolic_spec.md`, `sos_symbolic_report.md`.
+Cited as **[SωSD26]**.
 
 ### `sos_census` — A Census of Syntactic ω-Semigroups: Enumerating the Small ω-Regular Languages
 
