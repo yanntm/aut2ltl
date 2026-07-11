@@ -13,9 +13,11 @@ header, so any row below is reproducible from that file alone. Commands
 run from `sosl/`. Spot appears only inside the Route A oracle,
 bounded-or-skipped; a blown per-case budget is a datum, never a wait.
 
-*Status (2026-07-10): no findings yet — QNT1–QNT4 not started. This file
-is the interface: findings land here as the milestones close, keyed to
-the paper's ⟨TBD⟩ slots.*
+*Status (2026-07-11): M1 (measure), M2 (oracle + laws) and M3
+(distance / shadow / essential) are done and green corpus-wide; F-M1
+and F-M2 are theory-accepted, F-M3 awaits its theory reply. M4
+(entropy), M5 (Markov product) and M6 (the census campaign that fills
+the ⟨TBD⟩ slots below) are not started.*
 
 ## Slot map (paper ⟨TBD⟩ → expected finding)
 
@@ -30,10 +32,26 @@ the paper's ⟨TBD⟩ slots.*
 | §6 (iv) distance geometry, nearest-LTL-neighbor | E3 | ⟨F3⟩ |
 | §6 (v) pipeline + baseline | E4 | ⟨F4⟩ |
 
-## Harness state (QNT2)
+## Harness state
 
-*(to be filled: law-by-law green/red table, corpus coverage, oracle
-agreement counts, Route A skip rate)*
+Engine: `sosl/sosl/quant/` (placement provisional) — `chain` / `kernel`
+/ `theta` / `measure` (+ `value_vector`) / `routea` / `distance` /
+`shadow` / `essential`; `PARANOID` on; `Fraction` end to end, floats
+nowhere; Spot parse-only inside `routea`. Gates, run from `sosl/` as
+`python3 -m tests.quant.<name>`, machine reports under
+`reference/quant/`:
+
+| gate | laws | machine report | state |
+|---|---|---|---|
+| `fixtures`, `fixtures2` | F-A..F-C, F-D..F-I hand ground truth | (in-test, exact) | green |
+| `flip_gate` | μ(L)+μ(¬L)=1, profile negation | `m1_measure.{md,csv}` | green 4248/4248 |
+| `oracle_gate` | L1 oracle agreement, both `p`'s | `m2_oracle.{md,csv}` | green 4248/4248, 0 skips |
+| `law_gate` | L2–L5 modularity/monotonicity/trichotomy/obligation | `m2_laws.md` + csvs | green, 0 red |
+| `m3_gate` | shadow/essential case laws, symmetry, consistency, triangle, Prop 4.5 | `m3_laws.md` + csvs | green 6222 cases / 993 pairs / 497 triples, 0 red |
+
+Budget kills (15 s per case) are recorded as data in each aggregate;
+the corpus is concurrently regenerated, so gate counts are dated
+snapshots — rerun rather than trust totals.
 
 ## Findings
 
@@ -145,15 +163,15 @@ rows), `distance` (pair-set xor on the materialized aligned product +
 `shadow` (Prop 4.1 stem-region read-off, reduced), `essential` +
 `ltl_up_to_null` (Thm 4.4 value-congruence quotient, identity held out
 per calculus canonicity — `algorithm.md` §9 records why that is
-language-neutral; aperiodicity via the classify orbit scan). Fixtures:
-F-D and F-E — **owed by M2's §8.5 and found unimplemented at M3
-start** — now built and green (F-D's non-kernel idempotent convicted as
-specified, F-E exact at `2/3` and `3/4`), plus F-F/F-G/F-H/F-I
-(`tests/quant/fixtures2`): the F-G negative control HELD (distance 0,
-all-zero xor profile, shadows byte-DIFFERENT) and F-H repaired it
-(essential forms byte-equal); F-I's congruence merged `[ε]` with the
-neutral class only, ℤ/2 retained, `ltl_up_to_null(F-E) = False`.
-Corpus campaign (`tests/quant/m3_gate`, corpus grew again 6220 → 6222):
+language-neutral; aperiodicity via the classify orbit scan). Fixtures
+(`tests/quant/fixtures2`): F-D and F-E (the §8.5 additions, first
+materialized here — M2 had closed without them) green with F-D's
+non-kernel idempotent convicted as specified and F-E exact at `2/3`
+and `3/4`; F-F/F-G/F-H/F-I green: the F-G negative control HELD
+(distance 0, all-zero xor profile, shadows byte-DIFFERENT) and F-H
+repaired it (essential forms byte-equal); F-I's congruence merged `[ε]`
+with the neutral class only, ℤ/2 retained, `ltl_up_to_null(F-E) =
+False`. Corpus campaign (`tests/quant/m3_gate`, census at 6222):
 **cases 6222/6222 green, zero budget-blown** (worst 6.0 s at n = 208) —
 `d(L, shadow L) = d(L, essential L) = 0` with all-zero profiles,
 idempotence byte-exact, `essential(shadow L)` byte-equal
@@ -173,5 +191,4 @@ reduced) input on 5552/6222, trivial (`n = 2`: a.s. or null) on 5164.
 Machine reports: `reference/quant/m3_laws.md`
 (+ `m3_laws_{cases,pairs,triples}.csv`), regeneration commands in the
 header; sample files under `tests/quant/logs/`. No disagreement
-between spec and paper surfaced; the one spec-process finding is the
-F-D/F-E carry-over noted above.
+between spec and paper surfaced.
