@@ -1,6 +1,6 @@
 """genaut/manifest.py — the bench manifest, parsed from the corpus census reports.
 
-The rev.2 classifier report (`research_notes/sos_classifier_spec.md` §5) requires a
+The rev.2 classifier report (`research_notes/sos_classification_spec.md` §5) requires a
 **bench manifest**: one row per censused shape × acceptance family, tracing the
 reduction funnel and carrying the enumeration abundance and the algebra-size
 spread. Every number here is already exported at build time — this script only

@@ -9,8 +9,8 @@ replayable witness. Each classification is a polynomial table search; no
 automaton and no external tool is consulted.
 Normative math: `research_notes/sos_classification.md` (procedures
 and sources, referenced here as C§n); tool shape and experiment plan:
-`research_notes/sos_classifier_spec.md`; what is answered today:
-`research_notes/sos_classifier_report.md`.
+`research_notes/sos_classification_spec.md`; what is answered today:
+`research_notes/sos_classification_report.md`.
 
 ## Map
 

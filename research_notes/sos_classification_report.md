@@ -1,6 +1,6 @@
 # SoS Classifier — Report on What Is Answered
 
-**Status:** progress report against `sos_classifier_spec.md` **rev. 2**,
+**Status:** progress report against `sos_classification_spec.md` **rev. 2**,
 2026-07-11. **Iteration 4:** the reference catalogue has **widened** — a curated
 beyond-the-wall sampling campaign (17 parity shapes, corpus-aware; selection
 criteria in `genaut/README.md` §"Curating a campaign") added ~1000 languages and

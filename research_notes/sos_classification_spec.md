@@ -1,7 +1,7 @@
 # SoS Classifier — Implementation and Experimentation Specification
 
 **Status:** rev. 3, 2026-07-09. Rev. 1 was the declaration of intent; the
-iteration-1 report (`sos_classifier_report.md`) lands K1–K3 and X0/X1.
+iteration-1 report (`sos_classification_report.md`) lands K1–K3 and X0/X1.
 Rev. 2 binds the next iteration: K4 with its designed fixture (`Fork`,
 C§9), the acceptance-family spectrum law (C§11), and the reporting
 requirements on the census — bench manifest, per-shape ventilation, degree
