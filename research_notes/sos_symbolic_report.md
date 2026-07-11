@@ -419,3 +419,48 @@ letter-behavior class, ambiguity refused loudly.
   membership query, so Phase 1 cannot run on this code path. Cost
   shape as the paper claims: |u|+|v| map applications plus
   orbit-length packed compositions, no diagram built.
+
+## C10 — same-table Boolean algebra (§6.2) and the first commutation gates
+
+Engine state added: `SoSCore.fork()` (a derived core sharing Phases 0–2
+by refcount, its Acc-dependent phases unrun; `residuate`/`congruence`
+write-once and exposed through the binding) and the `~ & | -` operators
+on `QuotientSoS` as **set operations on the grounded accept-mask
+table** — mask sets are the predicates' denotations, closed under the
+Boolean operations, so no formula trees exist anywhere
+(`masks_to_formula` renders the canonical DNF back for the derived
+digest, asserted equivalent by re-grounding). Derived Phases 3–5 run
+lazily on the first verdict-consuming reading; `reduce()` forces.
+Cross-table operands are refused until §6.3. Recorded rendering +
+gap (derived runs have no stats stream yet — E9 pricing needs a
+per-object stream design) in the README's backend decisions.
+
+- **F26 — the §6.2 moves are free, lazy, and commutation-exact.** Gate
+  `tests/sos_sdd/boolean_test.py`: (i) `masks_to_formula` exact on
+  every mask subset at 1–3 marks; (ii) complement on
+  gf_aa_parity / evenblocks / mod3 / stem — `~S` negates membership on
+  all 210 lassos per case, `(~S).to_sos()` is **byte-identical to the
+  from-scratch build** of the complemented digest (the Prop 6.0
+  commutation gate, fresh-build formulation) and `~~S` round-trips to
+  `S`'s bytes; (iii) `& | -` on two conditions over the evenblocks
+  semiautomaton — membership Booleans and fresh-build byte parity all
+  three; (iv) the commutation gate closed **against the explicit
+  reference itself** on stem and gf_aa_parity (`~S` byte-identical to
+  the reference of the complemented HOA); (v) laziness observed (a
+  derived object stays pending across Phase 1 readings, runs on
+  `n_states()`), the core's write-once guard fires, cross-table and
+  non-SoS operands refuse loudly. Class counts as expected on the
+  derived quotients (e.g. `~evenblocks` = 8, `evenblocks ∧ Inf(0)` = 2).
+
+**Recorded deviation (user-settled 2026-07-12, for Theory to fold into
+the spec):** spec C10's alignment bullet mandates "the aligned π-map
+assembled per block (Prop 6.1)" with the assertion "Comp is never
+applied on the aligned space". The engine's rendering never builds the
+abstract monolithic Comp anywhere — Phase 2 is per-slot brick case
+splits (F8) — so on the sync-product slot model every hom application
+is additive by construction and the assertion is satisfied
+structurally, not by a dedicated assembly. Alignment will therefore be
+the ordinary build over the sync-product model; Prop 6.1's per-block
+assembly is demoted to a measured optimization (revisit if E9 prices
+aligned re-pairing as dominant), and the proposition is validated end
+to end through readings and byte gates. Spec bullet reword requested.
