@@ -425,6 +425,20 @@ def run_fixture(argv: List[str]) -> int:
             "{" + ",".join(alph.true_aps(a)) + "}" for a in word)
         return f"{render(w.stem)}({render(w.loop)})^w"
 
+    render_w = lambda word: "".join(
+        "{" + ",".join(alph.true_aps(a)) + "}" for a in word) or "eps"
+    np = inv["negphi"]
+    t_np = Table.of(np)
+    print("== machine census of I(neg_phi) over {a,b,c} "
+          "(the count the paper's §4.6 arithmetic must reproduce) ==")
+    for c in range(np.n):
+        loops = sorted(e for (s, e) in t_np.linked if s == c)
+        acc = sorted(e for e in loops if (c, e) in np.accept)
+        idem = "  idem" if np.mult[c][c] == c else ""
+        print(f"  class {c}: key {render_w(np.keys[c])}{idem}  "
+              f"loops {loops}  accepting {acc}")
+    print(f"  linked pairs: {len(t_np.linked)}; accept: {sorted(np.accept)}")
+
     print("== paper §4.6 predictions ==")
     expect("|C(neg_phi)|", inv["negphi"].n, 7)
     expect("|C(K)|", inv["k"].n, 4)
