@@ -2030,3 +2030,66 @@ both cmds lists, reap, run the analyzers (`census_e1`, `census_e2_exhibits`,
 `guard_fired_final = 0` on every SOUND row) off the merged CSVs, commit the drop
 under `reference/`, and hand theory the item-6 tallies (which replace the paper's
 9 `⟨TBD-M4⟩`).
+
+## Cluster run 1 — what worked, the traps, and the recipe (2026-07-11)
+
+First full cluster drop of the 4248-language sweep + the ROLL E3 census. The
+sweep came back **clean: 8496 rows (4248×2 legs), 0 duplicates, 0 FAIL, 0 CRASH**
+(SOUND 5897, ACCEPTOR_ONLY 2405, BUDGET 192, OVERSIZE 2). E3's ROLL side is
+complete (3186/3186 modes OK); only the `ours` kind timed out (see trap 6).
+Recording the operational lessons so the next drop is one pass.
+
+**The recipe that worked.**
+1. Plan with `cluster_plan` (sweep) and `--e3`, raising the cap via
+   `OARRUN_TIMEOUT=300` in the env — it is *sourced* by both the planner (chunk
+   sizing) and `oarrun.sh` (per-command `--timeout` default), so they agree.
+2. `git push` (user OK) → `cluster/sync_cluster.sh`.
+3. Submit: `cluster/oarrun.sh --timeout 300 --cores C --split K <cmds>`; E3 with
+   `--cores 4`. **`--timeout 300` is mandatory** or a multi-case command is cut at
+   the config default 130 s.
+4. Reap in a **stall-aware background loop** (below), never the bare
+   `until reap; do sleep; done`.
+5. Verify the merged CSV before trusting it: row count, distinct keys,
+   **0 duplicate keys**, verdict tally.
+
+**Trap 1 — walltime, not `--timeout`, is the binding constraint.** Jobs get a
+5-minute walltime; a command may run up to `--timeout` (300 s). A small `--split`
+packs many slow commands into one job, which is walltime-killed mid-stride, and
+the unreached commands come back **`missing`**. The sweep at `--split 32` (66
+commands/job, each 2 cases × 2 legs up to ~240 s) cleared only ~26/job → **1293
+of 2124 lost**. Size `--split` so each job's *missing* load ≈ `--cores` (one
+worst-case command < walltime, so ~1/core always finishes).
+
+**Trap 2 — `missing` right after submit is not loss.** A command with no status
+file yet is queued or running, reported `missing`. Only treat it as lost once the
+count is **frozen across several reap rounds** (~6 min > the 5-min walltime =
+jobs drained).
+
+**Trap 3 — resuming before drain duplicates rows.** `--resume` re-submits
+`missing` commands (it skips any with a status file) as new jobs; if the originals
+are still running, both execute the command and write to **different**
+`$OARRUN_OUT` shards, so `reap.sh` concatenates **both** → duplicate rows that
+corrupt every tally. Resume only after a confirmed stall; then verify 0 dup keys
+(this run: the supervised `--split 320` resume produced 0 duplicates).
+
+**Trap 4 — resume with a *bigger* `--split`, and re-pass `--timeout`.** Resumed
+jobs stride the same `cmds.txt` skipping done commands; a bigger `--split` gives
+each a thinner slice that fits walltime. `--split 320 --cores 4 --timeout 300`
+cleared all 1293 sweep losses in one pass.
+
+**Trap 5 — the naive reaper idles forever on loss.** `until reap; do sleep; done`
+never terminates when commands are lost (they never get a status), so it spins
+uselessly. The working loop parses `missing/timeout/fail` per run and **exits on
+all-accounted OR a 4-round stall**, re-invoking the operator to resume — it does
+*not* auto-resume (trap 3). Note `reap.sh` exits 0 when `DONE = OK+TIMEOUT+FAIL =
+N`: timeouts/fails are *accounted*, so only `missing` blocks completion, and a
+`TIMEOUT`/`FAIL` needs a re-plan, not a resume (resume skips it).
+
+**Trap 6 — don't pack a heavy-tailed kind by its average, and don't recompute
+what you already have.** The E3 `ours` kind was packed 145 cases/command on a
+2 s/case guess, but `ours` runs the learner, which has the sweep's slow tail — so
+all 30 `ours` commands hit the 300 s cap while every ROLL command passed. The fix
+is not a finer re-run: **`ours` (our_N/MQ/EQ) is exactly the sweep's default-leg
+`ref_classes`/`n_member_total`/`n_equiv`**, so E3's `ours` column is derived from
+the sweep CSV, and `cluster_plan --e3` should stop emitting `ours` commands
+altogether.
