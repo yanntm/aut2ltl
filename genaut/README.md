@@ -331,6 +331,17 @@ languages at `ω³` (613/side) and `ω⁴` (34/side), where it previously topped
 `ω⁴` at two states) and every tiny shape represented. See `flat_canon/STUDY.md` for
 the refreshed degree profile.
 
+**Hand-added examples on top of the selection.** A `corpus/sampled/<shape>__seed*/`
+folder may also carry languages that no campaign drew — a *constructed* witness of a
+regime uniform sampling misses, dropped into the folder of **its own shape** (same
+`<tag>_<id>` naming, the id being its real combo id, so the census chain reproduces
+it) and folded in by the same `flatten --canon` rebuild. Just one so far: the
+derivative-regime floor `3state1ap2acc_parity_0009241386589983080592` (the fixture
+`samples/fixtures/hoa/sos/fork_floor.{hoa,sos}`, built by
+`probes/derivative_floor.py`), which gives the catalogue its only `(ω+1, δ)` row —
+uniform sampling of that shape finds no inhabitant of the regime. It takes the
+totals to **3213** primals / **6222** complement-closed.
+
 ## Polarity / relabeling — a known non-canonicalization
 
 The `𝓘` / `.sos` form is **polarity-sensitive**: `GF(a)` and `GF(!a)` produce
