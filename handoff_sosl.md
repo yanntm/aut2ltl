@@ -58,16 +58,23 @@ all re-runs). Therefore:
 
 ## Open work (in order)
 
-1. 🔴 **The ablation-only re-run drop.** 6222 cases, one added column
-   (`fixpoint_congruent`); the default leg is `true` by construction and E3 is
-   untouched, so only the ablation leg runs. `--done` **cannot** apply: the
-   column needs the final table, which only a re-run reconstructs.
-   Then, over its output:
-   - **P9** — `fixpoint_congruent = false` on every exact-ablation
-     `ACCEPTOR_ONLY` row. Build-stopping (Theorem 5.3).
-   - **P10** — `true` on every exact-ablation `SOUND` row. *Not* build-stopping:
-     a byte-equality out of a non-congruent partition is a first-class theory
-     finding — report the case id, do not bank the row.
+1. 🟡 **The ablation-only re-run drop — IN FLIGHT.**
+   `RUN=20260711-220435-sweep.cmds` (3111 commands, `--split 256`; planned by
+   `cluster_plan --legs ablate`, 2 cases/command, 60 s/run under the 130 s cap).
+   The ablation leg only: the default leg's column is `true` by construction and
+   E3 is untouched. `--done` **cannot** apply — the column needs the final table,
+   which only a re-run reconstructs. `--split 256` (not the default 8) because
+   the leg's cost is the 680 BUDGET cases burning their full budget; a small
+   split walltime-kills the jobs and mass-`missing`s.
+   - Wait: `cluster/reap_until.sh 20260711-220435-sweep.cmds` (never resume
+     before drain; verify 0 duplicate keys in the merged CSV).
+   - Merged output: `logs/cluster/$RUN/results.csv`. Promote to
+     `reference/census/` once graded.
+   - Grade: `python3 -m tests.sosl.congruence_column <merged CSV>` — asserts
+     **P9** (`ACCEPTOR_ONLY ⇒ false`; build-stopping, Theorem 5.3), **P10**
+     (`SOUND ⇒ true`; exit 2, NOT build-stopping — a byte-equality out of a
+     non-congruent partition is a theory finding: report the case ids, do not
+     bank the rows), and dual symmetry over `manifest.dual_index`.
    - Expected: `false` on all 3153 + 17, `true` on all 2357, zero off-diagonal,
      dual-symmetric (congruence is complement-invariant).
 2. 🔴 **The E2 recount** (`permanent = 3170`) + `census_e2_exhibits`, gates
