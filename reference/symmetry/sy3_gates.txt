@@ -1,0 +1,7 @@
+gate 1 (stutter oracle F8): OK — 6222/6222 agree
+gate 3 (FIX_A): OK — |Î_L|=2, ladder_entry=1
+gate 3 (FIX_B): OK — |Î_L|=12, ladder_entry=1
+gate 3 (FIX_C): OK — |Î_L|=0, ladder_entry=1
+gate 2 (metamorphic): OK — 749 closed, 3251 open pairs
+gate 4 (independence swap): OK — 144 Î_L-kept, 208 non-Î_L distinguished, 214 non-Î_L not-found-in-bound (recorded, not asserted)
+SY3 gates 1–4: ALL OK
