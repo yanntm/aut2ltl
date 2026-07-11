@@ -239,11 +239,12 @@ is built here too but consumed by SY4 (§6.3).
 Expected facts to assert (each failure = STOP and report, §8/E1):
 
 - `|𝒞(FIX_A)| == 3` — `[ε]`, [contains an `a`-letter] (absorbing),
-  [contains none]. Paper predicts `P = {(F, F)}` in its class names —
-  record `|P|` and `|linked|` as data.
+  [contains none]. Paper predicts `|P| == 1` of `|linked| == 3`
+  (P3); assert both — if your linked-pair convention disagrees,
+  that is an E1 escalation, not a silent recount.
 - `|𝒞(FIX_B)| == 5` — `[ε]` plus the four (seen `a`?, seen `b`?)
   flag combinations; the table is componentwise OR; paper predicts
-  `|P| == 1`.
+  `|P| == 1` of `|linked| == 9` (P3).
 - `|𝒞(FIX_C)| == 3` — `[ε]`, [first letter `a`], [first letter `¬a`]
   (the class of a nonempty word is its first letter's class); paper
   predicts 4 linked pairs of which `P` is exactly half (P3).
@@ -443,7 +444,7 @@ Gates (`relations_gate.py`):
 
 ## 6. SY4 — the group spectrum and the LTL hull/kernel
 
-Normative math: paper §6 (Spec, Prop 6.4) — **§6.2 carries explicit
+Normative math: paper §6 (Spec, Prop 6.2) — **§6.2 carries explicit
 ⟨TBD⟩s; this milestone is deliberately their experimental probe.**
 Disagreements land in the report, not in silent workarounds.
 

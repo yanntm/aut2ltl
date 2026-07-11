@@ -131,7 +131,7 @@ Standing items the theory thread expects data or answers on:
    (F12): confirmed or the smallest disagreeing case.
 3. The leastness probe (F14): any strictly-between aperiodic
    congruence falsifies the reflection-as-`θ_ap` reading of paper
-   §6.2 — the dossier decides how Prop 6.4's proof gets written.
+   §6.2 — the dossier decides how Prop 6.2's proof gets written.
 4. Kernel fatness and group-size numbers (F3, F5) — feed the paper
    §9 expectations ("large kernels, small semantic groups"); if the
    corpus says otherwise, §3.1's third remark gets rewritten.
