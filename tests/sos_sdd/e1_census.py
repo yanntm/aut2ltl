@@ -25,6 +25,19 @@ Usage (from the repo root):
     --shard <k>/<N>      with --all: slice k of N (cluster runs fan the
                          corpus over ~300 such jobs; each shard appends
                          to its own census_<k>of<N>.csv, no write races)
+    --isolate            fresh subprocess per instance under the repo's
+                         bounded runner (aut2ltl.bounded: timeout
+                         --signal=INT --kill-after=1 — the SIGKILL is
+                         unconditional, the C++ core observes no
+                         signals), hard-killed at budget + 5s; names
+                         already in the CSV are skipped (resume). A hard
+                         kill that outran the engine's own TimeBudget is
+                         ledgered as a KILLED row. MANDATORY for big
+                         in-machine sweeps: libDDD's unique table is
+                         never GC'd, so one process accumulates every
+                         instance's diagrams and OOMs at corpus scale.
+    --out <csv>          override the CSV name (internal: isolate/shard
+                         children write where their parent points)
 Outputs under tests/sos_sdd/logs/e1/: census.csv (or the shard CSV)
 + <name>.jsonl per instance.
 """
@@ -85,6 +98,41 @@ def run_one(name: str, budget: float, nodes: int) -> dict:
     return row
 
 
+def run_isolated(names: List[str], out: Path, out_name: str,
+                 budget: float, nodes: int) -> None:
+    """One bounded subprocess per instance; the child appends its own CSV
+    row, the parent ledgers only hard kills and crashes."""
+    from aut2ltl import bounded
+    done: set = set()
+    if out.exists():
+        with out.open() as fh:
+            done = {r["name"] for r in csv.DictReader(fh)}
+    todo = [n for n in names if n not in done]
+    print(f"isolate: {len(todo)} to run ({len(done)} already in {out.name})")
+    counts: dict = {}
+    with out.open("a", newline="") as fh:
+        w = csv.DictWriter(fh, FIELDS)
+        if not done and todo:
+            w.writeheader()
+            fh.flush()
+        for k, name in enumerate(todo):
+            res = bounded.run([sys.executable, str(Path(__file__).resolve()),
+                               name, "--budget", str(budget),
+                               "--nodes", str(nodes), "--out", out_name],
+                              int(budget) + 5)
+            if res.timed_out or res.rc != 0:
+                status = "KILLED" if res.timed_out else f"CRASH_rc{res.rc}"
+                w.writerow({"name": name, "status": status,
+                            "ms": round(res.wall_s * 1e3, 1)})
+                fh.flush()
+            else:
+                status = "child"
+            counts[status] = counts.get(status, 0) + 1
+            if (k + 1) % 25 == 0:
+                print(f"[{k + 1}/{len(todo)}] {counts}")
+    print(f"done: {len(todo)} instances, {counts} -> {out}")
+
+
 def main() -> None:
     args = sys.argv[1:]
     budget, nodes = 10.0, 0
@@ -98,7 +146,13 @@ def main() -> None:
     if "--shard" in args:
         i = args.index("--shard")
         shard = args[i + 1]; del args[i:i + 2]
+    isolate = "--isolate" in args
+    if isolate:
+        args.remove("--isolate")
     out_name = "census.csv"
+    if "--out" in args:
+        i = args.index("--out")
+        out_name = args[i + 1]; del args[i:i + 2]
     if args == ["--all"]:
         names: List[str] = sorted(p.stem for p in (CORPUS / "det").glob("*.hoa"))
         if shard is not None:
@@ -113,6 +167,9 @@ def main() -> None:
 
     OUT.mkdir(parents=True, exist_ok=True)
     out = OUT / out_name
+    if isolate:
+        run_isolated(names, out, out_name, budget, nodes)
+        return
     fresh = not out.exists()
     counts: dict = {}
     with out.open("a", newline="") as fh:
