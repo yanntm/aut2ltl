@@ -330,6 +330,48 @@ whether `μ_p(L)` is `0`, `1`, or strictly interior is the same for all
 full-support `p`, decided by the profile being all-`0`, all-`1`, or
 mixed.
 
+**Example (a kernel with a group: phases, and why only the kernel
+forgets them).** Over `Σ = {a, b}`, let
+`L` = "some `a` occurs at infinitely many even positions". Its
+syntactic invariant has eight non-identity classes, transparently coded
+as pairs `(p, E)` — `p ∈ ℤ/2` the word's length parity, `E ⊆ ℤ/2` the
+set of parities of offsets carrying an `a` — with `λ(a) = (1, {0})`,
+`λ(b) = (1, ∅)` and
+
+```
+(p, E) · (q, F)  =  (p + q,  E ∪ (F + p)).
+```
+
+(Each coordinate is observable — `p` by a sliding loop, each flag of
+`E` by a shifted loop — so no two classes merge.) The idempotents are
+exactly the `(0, F)`, and a linked pair `((p, E), (0, F))` is accepting
+iff `p ∈ F`: the stem's parity decides which of the loop's `a`-offsets
+land on even global positions, and `E` is irrelevant — `L` is
+prefix-independent. The kernel is
+
+```
+K = { (0, {0,1}), (1, {0,1}) } ≅ ℤ/2,
+```
+
+a single closed `R`-class, hence the unique bottom SCC; its idempotent
+is `k = (0, {0,1}) = fold(aa)`, and `H(k) = K` is a genuine group.
+
+The stem-phase worry that Lemma 3.2 dissolves is *real* for non-kernel
+loops. The class `e' = (0, {1}) = fold(ba)` is idempotent, and
+`Val(·, e')` is exactly the stem's parity: `b·(ba)^ω ∈ L` (its `a`'s
+sit at positions 2, 4, …) while `bb·(ba)^ω ∉ L` (positions 3, 5, …) —
+although `fold(b)` and `fold(bb)` are `R`-equivalent. So `Val(·, e')`
+is not an `R`-class function, and no generic-verdict statement could
+hold at `e'`. On the kernel loop the phase is forgotten, exactly as
+Lemma 3.2 forces: the achievable stems `(0,{0,1})` and `(1,{0,1})`
+differ by `m = (1,{0,1}) ∈ H(k)` with `m·m = k`, and the conjugacy
+`k = m·m^{-1}` is, in words, the re-bracketing
+`u·(aa)^ω = (u·a)·(aa)^ω`. Indeed `Val((p, E), k) = (p ∈ {0,1})` is
+identically true: `θ_K = 1` and `μ_p(L) = 1` for every full-support
+`p`. A word like `(ba)^ω`, which threads its `a`'s onto odd positions
+forever, lives precisely in the null set that avoids the doubled word
+`aaaa`; and the complement flips `P`, hence the bit: `μ_p(L^c) = 0`.
+
 ### 3.5 The product form: Markov chains and Markov sources
 
 Theorem 3.4 relativizes to the product with a finite labeled Markov
@@ -446,6 +488,34 @@ On the held invariant, computing `μ_p(L)`:
 
 The certificate is the θ-labeled bottom-SCC map plus the linear system
 itself; a checker replays steps 3–4 independently of steps 1–2.
+
+**Example (the read-off, end to end).** Over `Σ = {a, b}`, let
+`L` = "`b` occurs, and the first `b` is at an even position". Five
+classes: `[ε]`; the `b`-free classes `A₁ = fold(a)`, `A₀ = fold(aa)`
+(odd/even length); and the absorbing classes `F₀ = fold(b)`,
+`F₁ = fold(ab)` (first `b` at even/odd position; `F_i·x = F_i`), with
+`P = {(F₀, A₀), (F₀, F₀), (F₀, F₁)}`. The steps of the algorithm:
+
+1. Bottom SCCs: `{F₀}` and `{F₁}`; the pair `{A₀, A₁}` is a transient
+   SCC (the two classes exchange under `a` and exit under `b`).
+2. The two-sided graph's unique sink is `K = {F₀, F₁}` — the kernel
+   here *spans both bottom SCCs*, which are its two `R`-classes. Both
+   elements are idempotent; the least-keyed is `k = F₀`.
+3. `θ_{F₀} = Val(F₀, F₀) = 1` and `θ_{F₁} = Val(F₁, F₀) =
+   ((F₁, F₀) ∈ P) = 0`: one global `k` serves both components, each
+   lookup staying inside its own closed `R`-class (`F₁·F₀ = F₁`).
+4. With letter probabilities `(p_a, p_b)` the transient system is
+   `x_{A₁} = p_a·x_{A₀}`, `x_{A₀} = p_a·x_{A₁} + p_b`,
+   `x_{[ε]} = p_a·x_{A₁} + p_b`, giving
+
+   ```
+   μ_p(L)  =  x_{[ε]}  =  p_b / (1 − p_a²)
+   ```
+
+   — `2/3` at uniform — matching the direct series
+   `Σ_j p_a^{2j}·p_b`. The certificate is the labeled map
+   `{F₀} ↦ 1, {F₁} ↦ 0` together with the `2×2` system; a checker
+   replays it without re-deriving the SCC structure.
 
 ### 4.2 Distance on an aligned table
 

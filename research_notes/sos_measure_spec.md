@@ -249,6 +249,17 @@ analysis on the deterministic automaton with the same hand-rolled
 rational `p`; obligation cross-check (θ vs the stem-`R`-class verdict
 of the calculus paper's Thm 3.10 on obligation-band census entries).
 
+Fixture additions (F-D, F-E) — promote the paper's two worked examples,
+hand-verified there: **F-D** = "some `a` at infinitely many even
+positions" (paper §3.4 example: 8 non-identity classes `(p, E)`,
+kernel `≅ ℤ/2`, `k = fold(aa)`, `μ = 1` for every full-support `p`;
+also assert the *negative control*: for the non-kernel idempotent
+`e' = fold(ba)`, `Val(fold(b), e') = 1 ≠ 0 = Val(fold(bb), e')` — the
+engine must NOT use non-kernel idempotents). **F-E** = "`b` occurs and
+the first `b` is at an even position" (paper §4.1 example: 5 classes,
+kernel spans two bottom SCCs, `μ = p_b/(1−p_a²)`: exactly
+`Fraction(2, 3)` at uniform, `Fraction(3, 4)` at `p_a = 1/3`).
+
 ## 9. M3 (QNT1c) — distance
 
 `d_p(L₁, L₂)`: align (calculus), `xor` the carried pair sets, run M1's
