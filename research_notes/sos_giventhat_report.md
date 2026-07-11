@@ -22,7 +22,7 @@ moment it is found, even mid-milestone.
 | milestone | state | findings |
 |---|---|---|
 | GT1 — interval + endpoints | **DONE (2026-07-11, git 4c7aa9fb5+)** | F1–F4 |
-| GT2 — ladder tests | *pending* | F5–F8 |
+| GT2 — ladder tests | **DONE (2026-07-11)** — rung oracle 6222/6222, campaign 700/700, brute 264/264; two E1 escalations (paper §4.6 counts) in To theory | F5–F8 |
 | GT3 — stutter two-tier | *pending* | F9–F11 |
 | GT4 — band degree probe | *pending* | F12 |
 | GT5/W0 — census campaigns (W0a/W0b/W0c) | *pending* | F13–F15 |
@@ -64,19 +64,42 @@ moment it is found, even mid-milestone.
 
 ## GT2 — the ladder tests
 
-- **F5 — the corpus rung oracle.** *(pending — run FIRST)*
-  `is_recurrence == (m⁺ ≤ 0)` and `is_persistence == (m⁻ ≤ 0)` over
-  3 938 sidecars: agreement counts. If the orientation flipped, this
-  slot carries the flip and the paper's §2 correction request.
-- **F6 — hull laws.** *(pending)* `rec_hull` extensive / monotone /
-  idempotent / saturated / fixpoint-iff-recurrence, case counts.
-- **F7 — exactness vs the brute lattice oracle.** *(pending)* On every
-  `bits ≤ 12` case: per-rung existence bits equal the `2^bits`
-  enumeration; leastness of returned witnesses; number of probed
-  cases and skips.
-- **F8 — per-rung hit rates.** *(pending)* Over the campaign: how often
-  each rung's `B` exists where the raw `¬φ` sat strictly higher —
-  paper §7 item 3, census-shaped.
+- **F5 — the corpus rung oracle.** *(confirmed — the paper's
+  orientation holds)* `is_recurrence == (m⁺ ≤ 0)` and
+  `is_persistence == (m⁻ ≤ 0)` over the full corpus (6 222 sidecars at
+  run time — the corpus has grown past the spec's 3 938 under
+  regeneration): **6 222/6 222 agreement as stated**, 4 914/6 222
+  under the swapped orientation — decisively the stated one, no flip,
+  no mixed cases, zero F2 skips. The two sides share
+  `classify.primitives`' H-order but decide by different paths (the
+  ladder's violation scan vs `classify.chains`' alternating-path DP).
+  Summary `reference/giventhat/gt2_rung_oracle.csv` +
+  `tests/giventhat/logs/rung_oracle.md`; regen:
+  `cd sosl && python3 -m tests.giventhat.ladder_gate --rung-oracle`.
+- **F6 — hull laws.** *(confirmed)* Over the 700-pair GT1 campaign
+  populations (seed 20260711, 700/700 scored, zero F2): `rec_hull`
+  extensive / monotone / idempotent / output-saturated /
+  `is_recurrence`-on-output / fixpoint-iff-recurrence, 6 seeded random
+  saturated pair sets per product table — **zero violations**; the
+  `r_classes` one-liner (partition of the linked stems) zero
+  violations. Witness discipline (spec §4 gate 4): every refusal lasso
+  replayed via table `member` AND against both det HOAs — zero
+  violations. Regen: `cd sosl && python3 -m tests.giventhat.ladder_gate
+  --campaign`; summary `reference/giventhat/gt2_ladder.md`.
+- **F7 — exactness vs the brute lattice oracle.** *(confirmed)* On the
+  **264** campaign cases with `bits ≤ 12` (436 skipped, recorded): all
+  `2^bits` choices enumerated; per-rung existence equals the
+  enumeration verdict, the returned member is literally the
+  intersection (Moore rungs) resp. union (kernel rungs) of the
+  enumerated members and is itself enumerated — **zero disagreements**
+  across all five rungs. Rows `reference/giventhat/gt2_ladder.csv`.
+- **F8 — per-rung hit rates.** *(measured)* Over 700 scored pairs —
+  interval has a member / raw `¬φ` already on the rung / strict drop
+  available: safety **318 / 169 / 149**, co-safety **321 / 164 /
+  157**, obligation **453 / 347 / 106**, recurrence **516 / 424 /
+  92**, persistence **529 / 429 / 100**. Read: on a fifth of census
+  pairs, knowledge buys a strict drop to safety — the paper §7 item 3
+  number, census-shaped. Table `reference/giventhat/gt2_ladder.md`.
 
 ## GT3 — stutterization, two tiers
 
@@ -119,6 +142,40 @@ moment it is found, even mid-milestone.
 
 ## To theory
 
+**GT2 (2026-07-11): E1 escalation — the paper §4.6 class counts are
+wrong; everything semantic in the worked example holds.** With
+`¬φ = F(a∧c) ∨ (GFb ∧ GF¬b)` and `K = FGb ∧ Gc` over `AP = {a,b,c}`
+(ltl2tgba → canonize; encoding vetted by lasso probes on the det HOA):
+`|𝒞(¬φ)| = 5`, paper says 7; product table 10 classes, paper says 13.
+`|𝒞(K)| = 4` as stated. Hand census supporting 5: `[ε]`; the absorbing
+"has seen a∧c" class; and the no-a∧c classes split only by
+`(has-b, has-¬b) ∈ {(1,0),(0,1),(1,1)}` — nothing else about a no-a∧c
+word is future-relevant, as stem or as loop. Every *semantic*
+§4.6 prediction is machine-checked green: both endpoints inconclusive
+with minimal witnesses `({abc})^ω` and `({bc})^ω`; `exists_safety` NO
+with refusal `({bc})^ω`; `exists_cosafety` YES with kernel reducing to
+`𝓘(F(a ∨ ¬c))` and least member reducing to `𝓘(F(a∧c))` (both
+byte-compared); `is_recurrence(P_¬φ)` true, `is_persistence` and
+`is_obligation` false. Two §4.6 corrections requested: the counts, and
+note the fixture band is `bits = 25`, so the "least co-safety member"
+was obtained by the exact least-open-hull (stems' right ideal), not
+the `2^bits` enumeration — worth a sentence in §4.6 since 4.1's `ρ`
+for co-safety is otherwise implicit. Repro:
+`cd sosl && python3 -m tests.giventhat.ladder_gate --fixture`.
+
+**GT2 (2026-07-11): the "independent transcription" framing was
+dropped by decision.** Duplicating the H-order to keep the rung oracle
+"totally independent" was judged bad engineering (unmaintainable) for
+the price of one experiment: `ladder.h_below` now reuses
+`classify.primitives` (`idempotents` / `leq_h_idem`), and the oracle's
+value is re-framed as two *decision paths* over shared primitives
+(violation scan vs chain DP). Spec §4 (gate 1, the H-order bullet) and
+the layering law were edited accordingly. The paper's §2/§7 wording
+("re-verified against the census's independently computed chain
+coordinates") should be softened to match. Note the oracle was ALSO
+run green (6 222/6 222) with the hand-rolled H-order before the
+rewire, so the independence experiment de facto happened once.
+
 **GT1 (2026-07-11): no spec/paper disagreement arose.** E1 held
 (`|𝒞(D_ab)| = 6` on the first build), Prop 3.1 zero violations across
 the fixture and 699 campaign pairs. Standing item 5's data is in:
@@ -132,8 +189,11 @@ sizes.
 Standing items the theory thread expects data or answers on:
 
 1. Any disagreement between the spec and the paper (spec §8 E1/E2
-   escalations included) — smallest case, verbatim.
+   escalations included) — smallest case, verbatim. **DELIVERED for
+   GT2 (2026-07-11): the §4.6 class counts, above — awaiting a theory
+   response.**
 2. The rung-orientation verdict (F5): confirmed or flipped.
+   **DELIVERED (2026-07-11): confirmed, 6 222/6 222 (F5).**
 3. The GT4 dossier (F12) if greedy ≠ brute — it decides how Prop 4.5's
    proof gets written.
 4. The tier-gap frequency (F10) — the paper argues the two-tier design
@@ -141,5 +201,7 @@ Standing items the theory thread expects data or answers on:
    and theory wants to know early.
 5. `iv.bits` on the fixture and the campaign extremes (F2, F3) — feeds
    the paper's Q5 discussion of `2^F` enumeration feasibility.
+   **DELIVERED with GT1 (see the GT1 note below); the §4.6 pair adds
+   `bits = 25` as a mid-scale data point.**
 6. Any W0c law violation (F15) — monotonicity or losslessness breaking
    falsifies paper §6.2 as stated; the minimal fact sequence, verbatim.
