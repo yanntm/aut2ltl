@@ -11,6 +11,14 @@ the caller re-stabilizes and calls again until it returns False — the certific
 that the partition is a two-sided congruence, so the exported invariant's
 class-substituting multiplication is sound.
 
+The scan itself is exposed as `find_left_divergence` — the sweep's *check phase*,
+a pure fold computation with zero queries. On a certified fixpoint it decides
+congruence outright (paper Lemma 5.2): clean scan ⟺ ``ker psi`` is a two-sided
+congruence — so it doubles as the export-refusal classifier of spec §3.2 step 6.
+The letter-level test (``mult[c][class(a)]`` vs ``step(c, a)``) is NOT a valid
+substitute: ``rep(class(a))`` is always a letter, so it is vacuous whenever no
+two letters share a class.
+
 Scan order (normative, so transcripts are byte-reproducible): subject words in
 shortlex order, classes ``d`` in class-id order; escalate on the FIRST divergence.
 
@@ -30,7 +38,7 @@ Either branch mints one column that splits a class on the next stabilization.
 """
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Tuple
 
 from sosl.learn.chains import _find_flip
 from sosl.learn.columns import Column, LinCol, OmCol
@@ -131,15 +139,17 @@ def _escalate(table: Table, p: Partition, subj: Word, r0: Word,
     return "frozen"
 
 
-def saturate(table: Table, p: Partition) -> Optional[str]:
-    """One saturation escalation, or ``None`` if the partition is already
-    two-sided.
+def find_left_divergence(
+    table: Table, p: Partition,
+) -> Optional[Tuple[Word, Word, int, int, int]]:
+    """The sweep's check phase: the first left-context fold divergence
+    ``(subj, r0, d, c_a, c_b)`` in normative scan order (subjects shortlex,
+    classes ``d`` in id order), or ``None`` if the scan is clean.
 
-    Scans subjects in shortlex order and classes in id order; on the first
-    left-context fold mismatch it mints one column (via `_escalate`) and returns
-    the branch that fired (``"branch1"`` / ``"frozen"``) — the caller must
-    re-stabilize before calling again. ``None`` is the certificate that the table
-    is a full two-sided congruence."""
+    Zero queries — a pure fold computation on the table's own classes. On a
+    closed, consistent table ``None`` certifies that ``ker psi`` is a two-sided
+    congruence (paper Lemma 5.2), which is the exact premise the exported
+    multiplication needs to be well-defined."""
     for subj in sorted(table.domain(), key=shortlex_key):
         c_subj = p.class_of[subj]
         r0 = p.rep[c_subj]
@@ -149,5 +159,20 @@ def saturate(table: Table, p: Partition) -> Optional[str]:
             c_a = p.fold_from(d, subj)
             c_b = p.fold_from(d, r0)
             if c_a != c_b:
-                return _escalate(table, p, subj, r0, d, c_a, c_b)
+                return subj, r0, d, c_a, c_b
     return None
+
+
+def saturate(table: Table, p: Partition) -> Optional[str]:
+    """One saturation escalation, or ``None`` if the partition is already
+    two-sided.
+
+    Runs `find_left_divergence`; on a divergence it mints one column (via
+    `_escalate`) and returns the branch that fired (``"branch1"`` / ``"frozen"``)
+    — the caller must re-stabilize before calling again. ``None`` is the
+    certificate that the table is a full two-sided congruence."""
+    div = find_left_divergence(table, p)
+    if div is None:
+        return None
+    subj, r0, d, c_a, c_b = div
+    return _escalate(table, p, subj, r0, d, c_a, c_b)
