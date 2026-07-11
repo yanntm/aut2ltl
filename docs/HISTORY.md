@@ -3155,3 +3155,21 @@ Committed `9bc259d9a` (sample) + `de3ab44ba` (README).
   on MCC data.
 - `sos_giventhat_report.md` (329cbd874): finding slots F1-F13 + the
   To-theory channel.
+
+## 2026-07-11 — classifier: widened catalogue absorbed; json side-metadata dropped
+- WHY: the flat_canon catalogue grew 3938 -> 6220 (curated beyond-wall campaign,
+  Wagner ceiling omega^2 -> omega^4); the classifier report and paper section 8
+  still carried the iteration-3 numbers and a dead procedure (categorize.py).
+- Rerun, all green on 6220: .cat re-tag byte-identical (~2s, internal laws +
+  witness replay corpus-wide), STUDY.md byte-identical, classify_census over
+  flat_canon/det 6220 SOUND / 0 MISMATCH (duality + Spot spectrum), ledger at
+  sosl/tests/sosl/logs/classify_census/flat_canon_wide/.
+- LANDED: flat_study.py + flatten.py json-free (counts derived from corpus
+  filenames; STUDY byte-identical proves equivalence); flat.json /
+  flat_canon.json / 2x sample.json git-rm'd (probe stats readable in history;
+  MANIFEST regen'd with blank probe columns); genaut/README json mentions out.
+- LANDED: sos_classifier_report.md iteration 4 (numbers, procedures, C-section
+  refs re-aimed); sos_classification.md section 8 + abstract/contribs/conclusion
+  recomputed. New honesty point in both: the derivative-regime floor shape
+  (3state1ap2acc_parity) is now sampled yet 0 PARTIAL — absence on a probe
+  proves nothing; Fork stays the K4 exercise.
