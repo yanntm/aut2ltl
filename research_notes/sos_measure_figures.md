@@ -11,11 +11,23 @@ below is unbuildable as stated, report back rather than improvising.*
 
 | figure | subject | state |
 |---|---|---|
-| FIG-1 | the worked read-off: chain, θ, absorption for "first `b` at even position" | **buildable now** (M1 engine) |
-| FIG-2 | the doubled-word cut, run on a sampled word | **buildable now** (M1 componentry + small probe) |
-| FIG-3 | the kernel group and the phase contrast | **buildable now** (M1 componentry) |
-| FIG-4 | the null-class tower: `L → sh(L) → ess(L)` on the warning pair | blocked on M3 (`shadow`/`essential`) |
+| FIG-1 | the worked read-off: chain, θ, absorption for "first `b` at even position" | **DONE** — `sos_measure_figs/img/fig1_readoff.png` |
+| FIG-2 | the doubled-word cut, run on a sampled word | **DONE** — `sos_measure_figs/img/fig2_cut.png` |
+| FIG-3 | the kernel group and the phase contrast | **DONE** — `sos_measure_figs/img/fig3_kernel.png` |
+| FIG-4 | the null-class tower: `L → sh(L) → ess(L)` on the warning pair | blocked on M3 (`shadow`/`essential`) — engine has since landed, needs F-G/F-H fixtures |
 | FIG-5 | census data: measure per Wagner degree, entropy per degree, quotient distance heatmap | blocked on M4/M6 (E1–E3) |
+
+**Built 2026-07-11.** Artifact `sos_measure_figs/` (index `figures.md`,
+regeneration `reproduction.md`, build notes `notes.md`, `Makefile`);
+probes in `sosl/tests/quant/figs/` (`fig1`, `fig2`+`fig2_draw`, `fig3`,
+the shared `tikz`/`cayley`, and `sources.py`). The two source languages
+F-E (§4.1) and F-D (§3.4) are canonicalized `.sos` under
+`sos_measure_figs/sources/`, built and paper-verified by `sources.py`
+(the same worked examples as the M3 `fixtures2.py` F-D/F-E, here
+materialized as self-contained figure inputs). Every node, edge, tag,
+verdict and x-value is read off the tested `sosl.quant` engine and the
+calculus `Table`; probes own placement only. `make -C
+research_notes/sos_measure_figs` regenerates tex + png from scratch.
 
 ## Ground rules (every figure)
 
