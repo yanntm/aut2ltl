@@ -211,8 +211,11 @@ verdicts propagate down the `H`-order — and persistence is the mirror
 condition. (Orientation anchor: for the recurrence specimen `GFa`,
 the accepting loop `λ(a)` sits `H`-below the rejecting all-`b` loop,
 as the condition demands; `FGa` mirrors it. The transcription is
-re-verified against the census's independently computed chain
-coordinates in §7.)
+confirmed against the census's chain coordinates (§7) — not by an
+independent reimplementation but by two distinct decision paths over
+the calculus's shared `H`-order primitives, a violation scan against
+an alternating-chain dynamic program, in agreement on all 6 222
+census languages.)
 
 **Stutter notions.** `destutter(·)` collapses maximal finite blocks of
 equal letters; two ω-words are stutter-equivalent iff they share their
@@ -345,6 +348,15 @@ languages" is warranted — is Prop 6.1 itself: its proof identifies
 presentation-independent object, and any safety `B ⊇ L(P_min)` in the
 semantic interval satisfies `cl(L(P_min)) ⊆ B` by minimality of the
 closure. ∎
+
+Both families are also union-closed, so the sub-interval clause of
+Lemma 4.1 hands each test its other endpoint; in particular, on a
+co-safety "yes" the **least** member is the open hull `ρ̊(P_min)`,
+and it is concrete: an open verdict is decided by a finite stem
+prefix, so an open pair set is one whose stem set is a right ideal,
+and `ρ̊(Q)` is the set of linked pairs whose stem is a right multiple
+of a stem of `Q` (a set conjugacy already saturates, since conjugacy
+preserves the stem's `R`-class, §2).
 
 Reading: *given `K`, the model check reduces to a safety check* —
 decided exactly, canonical checker handed over. On "no", the first
@@ -501,22 +513,33 @@ simplified by Minato's algorithm turn `A_{¬φ}` into an automaton for
 `Fa`, observed to be "now terminal". Here is the same instance as
 pair-set arithmetic.
 
-**The tables.** `𝓘(¬φ)` has 7 classes: a finite word is characterized
-by three monotone bits `(σ, p, q)` — *contains an `a∧c` letter* /
-*a `b` letter* / *a `¬b` letter* — multiplying by bitwise OR, with
-`Val_{¬φ}((σ_s,·,·),(σ_e,p_e,q_e)) = σ_s ∨ σ_e ∨ (p_e ∧ q_e)`.
-`𝓘(K)` has 4: `[ε]`, `BC` (all letters `b∧c`), `C` (all `c`, some
-`¬b`), and the absorbing dirty class `D` (some `¬c`), with
+**The tables.** A finite word carries three monotone bits `(σ, p, q)`
+— *contains an `a∧c` letter* / *a `b` letter* / *a `¬b` letter* —
+multiplying by bitwise OR, with
+`Val_{¬φ}((σ_s,·,·),(σ_e,p_e,q_e)) = σ_s ∨ σ_e ∨ (p_e ∧ q_e)`. The
+bit table — `[ε]` plus the six consistent triples (a nonempty word
+has `p ∨ q = 1`) — *recognizes* `¬φ` but is not syntactic: `σ` is
+absorbing and `Val` reads nothing else once it is set (`σ_s` alone
+from the stem, `σ_e` overriding `(p_e, q_e)` in the loop), so a
+`σ = 1` word has verdict 1 in every context and the three `σ = 1`
+triples are one class. `𝓘(¬φ)` has **5 classes** — `[ε]`, `(0,0,1)`,
+`(0,1,0)`, `(0,1,1)`, and the accepting sink `⊤` — with 9 linked
+pairs. `𝓘(K)` has 4: `[ε]`, `BC` (all letters `b∧c`), `C` (all `c`,
+some `¬b`), and the absorbing dirty class `D` (some `¬c`), with
 `Val_K(s, e) = [k_s ≠ D] ∧ [k_e = BC]`. The generated product has
-**13 classes** — the consistent quadruples `(σ, p, q | k)` — and both
-verdicts ride along. Every letter class is idempotent (both formulas
-are `X`-free), so `T = T/∼` and the §5 quotient test is trivially
-exact on this instance; the phenomenon of §5 needs a stutter-sensitive
-pair (§5.2).
+**10 classes** — the consistent quadruples, the `⊤` row contributing
+one class per `k`-coordinate where the unreduced bit table would
+contribute six (and 13 in all); both verdicts ride along. Every
+letter class is idempotent (both formulas are `X`-free), so
+`T = T/∼` and the §5 quotient test is trivially exact on this
+instance; the phenomenon of §5 needs a stutter-sensitive pair (§5.2).
+(Both counts and every semantic claim of this section are
+machine-checked against the canonical construction; an earlier draft
+counted the bit presentation — 7 and 13.)
 
 **Endpoints (§3).** A `P_min` pair's stem absorbs its loop, so
-`σ_s ∨ σ_e` collapses: `P_min = {stems (1,·,· | BC/C), loops
-(·,1,0 | BC)}` — the language `F(a∧c) ∧ FGb ∧ Gc`. Both decisive
+`σ_s ∨ σ_e` collapses: `P_min = {stems (⊤ | BC/C), loops with
+k = BC}` — the language `F(a∧c) ∧ FGb ∧ Gc`. Both decisive
 checks fail, each with a one-letter-loop minimal witness:
 `k_settles_phi` returns `({abc})^ω` (the shortest behavior `K` leaves
 open to `¬φ`), `k_refutes_phi` returns `({bc})^ω` (the shortest
@@ -540,10 +563,13 @@ Lemma 4.1 the *on-table* guarantee members form exactly the bracket
     [ F(a∧c) ,  F(a ∨ ¬c) ]
 
 — and every guarantee member, on-table or not, lies below the upper
-hull, since the interior is a semantic object. (Least member: an
-on-table open member keeps its stems under right multiplication —
-membership is decided by a finite prefix — and from any `P_min` stem
-every `σ = 1` class is reachable, so none can omit any of `F(a∧c)`.)
+hull, since the interior is a semantic object. (Least member: the
+open hull of §4.1 — the right ideal of the `P_min` stems — and from
+any `P_min` stem every `⊤`-row class is reachable, so the hull is all
+of `F(a∧c)`. The route matters even on this toy: the instance's
+freedom is `|F| = 25` bits, so the `2^F` enumeration behind any naive
+search is already out of reach — the hull is the algorithm, not a
+shortcut.)
 [DPT25]'s `Fa` sits strictly inside the bracket —
 `F(a∧c) ⊆ Fa ⊆ F(a∨¬c)` — and is itself **off-table**: no class of
 `T` tracks `a` without `c`. Off-table members below the lower
@@ -846,6 +872,36 @@ verdict improves monotonically as knowledge accumulates) and
 *losslessness* (the running interval byte-equals the one-shot
 conjunction's after reduce). Both are falsifiable claims of this
 paper, run as campaign assertions.
+
+**First census-shaped data.** The interval core (§3) and the ladder
+(§4) are implemented, gated, and campaign-run on 700 same-stratum
+census pairs; the numbers are census-shaped — random pairs, none of
+the MCC's realistic bias toward fact-shaped `K` — but already
+load-bearing. *Freedom* (item 2): `|F|` min 0 / median 20 / p95 124 /
+max 458 bits, and the point interval `|F| = 0` occurs (a pair where
+`K` settles `φ` outright). The median already puts `2^F ≈ 10⁶` at the
+edge of enumeration and the tail far beyond it: at census sizes the
+hulls of §4 are the only route, not an optimization. *Endpoints*
+(item 1's shape): settles ≈ 7% and refutes 4–6% per direction on
+random pairs; settles is measured identical under operand swap, the
+symmetry §3 predicts; and the complement-partner stratum settles
+100%, as it must. *Ladder* (item 3), per rung — a member exists / raw
+`¬φ` already on the rung / a strict drop is available, out of 700:
+safety 318/169/149, co-safety 321/164/157, obligation 453/347/106,
+recurrence 516/424/92, persistence 529/429/100. Read: on ~21% of
+random census pairs, knowledge buys a strict drop to safety — a
+Büchi-emptiness-to-reachability discount before any realistic
+asymmetry is dialed in. *Validation riding along:* the
+recurrence/persistence orientation of §2 agrees with the census chain
+coordinates on all 6 222 languages (and decisively disagrees under
+the swapped orientation — 4 914 of 6 222); the Horn hull of Prop 4.4
+passes the closure-operator laws (extensive, monotone, idempotent,
+saturated output, fixpoint iff recurrence) with zero violations; and
+on all 264 campaign cases with `|F| ≤ 12`, exhaustive enumeration of
+the `2^F` lattice reproduces every rung verdict, the returned
+canonical member equal to the intersection (Moore rungs) resp. union
+(kernel rungs) of the enumerated members. Every refusal certificate
+replayed on both source automata.
 
 The protocol follows the calculus campaigns: per-case budgets, seeded
 and checkpointed runs, machine-readable outputs promoted to a
