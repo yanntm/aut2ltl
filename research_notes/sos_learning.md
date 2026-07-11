@@ -132,11 +132,11 @@ Myhill–Nerode's failure at ω seemed to forbid is what this paper is for.
    canonicity — the fixpoint *is* `S(L)₊`, exported as `𝓘(L)`; equivalence between
    hypotheses is invariant equality, replacing product constructions — with a
    converse: an exactly-certified fixpoint is either canonical or carries no
-   algebra at all (§5, Theorem 5.5).
+   algebra at all (§5, Theorem 5.3).
 5. An implementation as a pure query learner, and an evaluation against the
    canonical target: byte-exact reconstruction across a complement-closed
    census of 3938 languages (`N` past 100, zero mismatches), the query bounds
-   of Proposition 5.2 confirmed (harvest logarithmic in counterexample
+   of Proposition 5.4 confirmed (harvest logarithmic in counterexample
    length), saturation shown indispensable on a family of over a thousand
    permanent stalls whose canonical algebras are provably beyond
    counterexample-guided refinement — prefix-independent languages among
@@ -374,34 +374,14 @@ poses is one.
 In our experiments the teacher is built on the construction of [SωS26]:
 membership is one deterministic run, and an equivalence query is decided
 *exactly*, against the language's own invariant `𝓘(L)` — constructed once,
-after which the automaton leaves the equivalence loop. The hypothesis's fold
-automaton is *aligned* with `𝓘(L)`: the letter-generated graph of pairs
-`(ψ(w), ψ_L(w))` — the hypothesis's fold (§3) against the syntactic morphism — is built
-lazily (the generated-product move of the companion calculus [SωSC26]), and
-on every cell (stem node, loop node) two verdicts are compared: the
-hypothesis's prediction on the cell's keyed lasso, and the invariant's
-algebraic verdict `(s·e^π, e^π) ∈ P`. A flagged cell's keyed lasso is a
-genuine counterexample outright — both verdicts are evaluated on that
-concrete lasso. That one keyed lasso per cell also *decides* the cell —
-the certification and minimality claims — because both verdicts are constant
-on cells: the invariant's is, since membership factors through `ψ_L` of stem
-and loop; the hypothesis's is *provided the aligned graph is functional* —
-no two nodes share their `𝓘(L)`-component, i.e. the fold never splits a
-syntactic class — for then the loop orbit, the stabilization power, and the
-predicting pair are all determined by the cell. Functionality is not
-assumed, and it genuinely fails mid-run — the fold of a closed, consistent
-table can *split* a syntactic class beyond its table words (realized on a
-census language: `!a·!a·a ≈_L a·!a·!a`, yet the two words fold to different
-classes), so a mid-run hypothesis is not merely coarser than the algebra
-(§4.2) but incomparable with it: the oracle asserts functionality on the
-built graph at every query ⟨TBD-M4: the sweep-wide firing tally⟩, and a
-firing hands the query to the product of the automaton with the
-hypothesis's transformation closure, which needs no such assumption. Keys being shortlex-least and
-cells scanned in lasso order, the returned counterexample is the globally
-*minimal* one (shortest stem, then shortest loop, then shortlex) — which
-makes runs deterministic and the worked examples reproducible; §6 measures
-what non-minimal policies cost. Nothing in the learner's correctness depends
-on this realization.
+after which the automaton leaves the equivalence loop. The realization — an
+align-and-scan of the hypothesis against `𝓘(L)`, with a functionality guard
+and a fallback — is detailed with the experimental protocol (§6.1); two of
+its properties are used before then. The returned counterexample is the
+globally *minimal* one (shortest stem, then shortest loop, then shortlex) —
+which makes runs deterministic and the worked examples reproducible; §6
+measures what non-minimal policies cost. And nothing in the learner's
+correctness depends on this realization.
 
 ## 3. The observation table
 
@@ -835,7 +815,7 @@ refinement: the CEGAR loop that carries L\* — and every ω-learner since — h
 no error signal left to react to, and what breaks the stall must be a query
 the learner poses on its own initiative. The repair below is that query — not
 an optimization but the difference between the algebra and an acceptor. (§5
-closes the account: by Theorem 5.5 *every* exactly-certified stall is like
+closes the account: by Theorem 5.3 *every* exactly-certified stall is like
 these two — its partition is never a congruence, so there is no algebra on
 its classes to mis-export.)
 
@@ -1138,6 +1118,66 @@ genuine `≈_L`-separation, so the export is a well-defined finite algebra with
 `≈_L`-distinct classes — but its coincidence with `S(L)₊¹` is certified only
 as far as the oracle checked.
 
+The dual question — the fixpoint an exact oracle *did* certify, but the
+sweep never touched — closes the unsaturated stall's account: such a
+fixpoint is not merely short of the algebra; certified, it cannot carry an
+algebra at all. The instrument is the sweep's own check, which turns out to
+be a complete congruence test:
+
+**Lemma 5.2 (the sweep check decides congruence).** On a closed, consistent
+table, the kernel of `ψ` on `Σ*` — a right congruence by construction, being
+the reachability kernel of the deterministic automaton `step` — is a
+two-sided congruence iff the saturation sweep's check phase is clean:
+`fold(d, u) = fold(d, w_{ψ(u)})` for every table word `u` and class `d`.
+
+*Proof.* (⟸) Write `(S)` for the check's instances at frontier words:
+`fold(d, w_c·a) = fold(d, w_{step(c,a)})` for all `d, c ∈ 𝒞_T`, `a ∈ Σ` — all
+table words, so a clean check includes them. Induction on `|u|` extends the
+check to every word, `fold(d, u) = fold(d, w_{ψ(u)})`: the base case is `(S)`
+at `c = [ε]`, and the step is
+`fold(d, u'·a) = step(fold(d, u'), a) = step(fold(d, w_{ψ(u')}), a)
+= fold(d, w_{ψ(u')}·a) = fold(d, w_{ψ(u'·a)})`, the last equality by `(S)` at
+`c = ψ(u')`. Left-invariance follows as in Theorem 5.1's proof; right-
+invariance is automatic. (⟹) Two-sidedness makes
+`fold(d, u) = ψ(w_d·u)` a function of `(d, ψ(u))`, and `ψ(u) = ψ(w_{ψ(u)})`
+on table words is coherence (Lemma 3.3). ∎
+
+(The forward direction is the claim inside Theorem 5.1's proof, extracted;
+the lemma adds its converse, making the check a *classifier*: zero queries,
+run on any fixpoint, saturated or not.)
+
+**Theorem 5.3 (certified fixpoints: canonical or no algebra).** Let a
+closed, consistent table's hypothesis be certified by an exact equivalence
+oracle — its prediction agrees with `L` on every lasso. Then the following
+are equivalent: (i) the kernel of `ψ` is a congruence (Lemma 5.2's check is
+clean); (ii) the export of Theorem 5.1 is exactly `𝓘(L)`, byte-equal after
+re-keying. In particular a certified *non-canonical* fixpoint — a permanent
+stall — is never a congruence: its product `M(c, c') = fold(c, w_{c'})`
+genuinely depends on the choice of representatives, and no operation on its
+classes recognizes anything. What the ablation of §6.3 delivers is the
+Cayley hypothesis itself — a correct acceptor — and, provably, nothing more.
+
+*Proof.* (ii)⟹(i): `𝓘(L)`'s classes form a monoid. (i)⟹(ii): the second half
+of Theorem 5.1's proof consumes exactly these hypotheses and nothing else.
+*The kernel saturates `L`* uses two-sidedness plus everywhere-correct
+predictions to give `ψ(u) = ψ(v) ⟹ u ≈_L v`; injectivity of the class map
+uses that every split — promotion, consistency mint, harvest — is witnessed
+by an Arnold context (saturation escalations, absent here, were only ever
+one more witnessed mechanism); surjectivity is `u ≈_L w_{ψ(u)}`, from
+Lemma 5.2's extension of the check to all words at `d = [ε]`.
+Multiplicativity, the BFS keys (with (i), `mult` by letter classes *is* `step`, so the
+two BFS orders coincide), and `P` (teacher bits on representative lassos)
+assemble byte-equality as in Theorem 5.1. ∎
+
+Note the asymmetry the exactness buys: under a bounded oracle a congruent
+unsaturated fixpoint may still be a genuine algebra strictly coarser than
+`S(L)₊¹` — a correct-so-far quotient the oracle was too weak to refute.
+Exactness closes that door: congruent and certified *forces* canonical, so
+the two-sided/one-sided divide of §4.2 is also the algebra/no-algebra
+divide. Proposition 4.4's non-associative display is Theorem 5.3 made
+concrete on the smallest specimen — the display shows *how* the product
+breaks; the theorem says it always does.
+
 *Example (the run, completed, on `Even`).* After §4.3's split the table is
 Table 6, and the next sweep and equivalence query are clean. The whole run,
 Tables 1 → 3(b) → 6: five classes from **two splits — one per mechanism** (the
@@ -1228,7 +1268,7 @@ classes of `S(EvenBlocks)₊¹`:
 | `!a·a·!a` | `0` | `0` | `0` | `0` |
 | `a·!a·a` | `1` | `0` | `0` | `0` |
 
-The per-phase membership ledgers of the two runs ground Proposition 5.2's
+The per-phase membership ledgers of the two runs ground Proposition 5.4's
 itemization in the two small instances (`fill` — table entries; `harvest` —
 junction and chain probes; `saturation` — escalation probes and frozen
 chains; `P` — the pair cache):
@@ -1242,7 +1282,7 @@ Both runs finish on a *single* counterexample — every other split is the
 sweep's, two-probe escalations in place of whole equivalence rounds — and
 both exported invariants are byte-equal to the reference construction.
 
-**Proposition 5.2 (query complexity).** Write `N = |S(L)₊¹|` and `ℓ` for the
+**Proposition 5.4 (query complexity).** Write `N = |S(L)₊¹|` and `ℓ` for the
 longest counterexample returned. The learner poses at most `N` equivalence
 queries and `O(N²·|Σ| + N·log(N·ℓ))` membership queries, itemized by
 mechanism:
@@ -1266,7 +1306,7 @@ All queried words have length polynomial in `N`, `ℓ`, and the column
 lengths — themselves harvested substrings of counterexamples, or `O(N)`-long
 segments contributed by saturation. Output-polynomial in the canonical
 target `N` is the honest yardstick — `N` can be exponentially larger than a
-smallest acceptor (Proposition 5.3 makes both directions of the size
+smallest acceptor (Proposition 5.5 makes both directions of the size
 comparison exact), and §6 measures exactly that.
 
 The converse of the yardstick is the selling point: on languages with trivial or
@@ -1281,7 +1321,7 @@ for its failure — this one replaces the seed rather than patching it.
 The size relationship between the two kinds of target can be settled exactly
 rather than empirically, and it cuts one way:
 
-**Proposition 5.3 (sizes cut one way).** Write `N = |S(L)₊¹|`. (a) Every
+**Proposition 5.5 (sizes cut one way).** Write `N = |S(L)₊¹|`. (a) Every
 canonical FDFA of `L` — periodic, syntactic, or recurrent [AF16] — has at
 most `N + N²` states. (b) The converse fails exponentially: for every `n`
 there is a co-safety `L_n` over a fixed five-letter alphabet with a
@@ -1319,7 +1359,7 @@ leading class (false on uncommitted and doomed, true on committed), giving
 `O(1)` progress states each; the syntactic congruence reduces to its
 `uv ~_L uv'` clause, giving at most `n + 2` each. ∎
 
-Read as economics, Proposition 5.3 settles the size question in both directions:
+Read as economics, Proposition 5.5 settles the size question in both directions:
 an FDFA never pays more than a quadratic premium over the algebra, while the
 algebra can cost exponentially more than any acceptor — on `L_n`, an FDFA
 learner spends queries polynomial in `n` where ours spends queries
@@ -1327,70 +1367,11 @@ polynomial in `(n+1)^n`. That is not an inefficiency to engineer away; it is
 the price of the deliverable. The algebra `L_n` owns *is* that large, every
 definability read-off consumes it, and any route to it — learned here,
 constructed in [SωS26] — pays `N`. Output-polynomial in `N`
-(Proposition 5.2) is the strongest guarantee compatible with delivering the
-object.
-
-One theorem remains, and it closes the unsaturated stall's account: with an
-exact oracle, a stalled fixpoint is not merely *short of* the algebra —
-certified, it cannot carry an algebra at all. The instrument is the sweep's
-own check, which turns out to be a complete congruence test:
-
-**Lemma 5.4 (the sweep check decides congruence).** On a closed, consistent
-table, the kernel of `ψ` on `Σ*` — a right congruence by construction, being
-the reachability kernel of the deterministic automaton `step` — is a
-two-sided congruence iff the saturation sweep's check phase is clean:
-`fold(d, u) = fold(d, w_{ψ(u)})` for every table word `u` and class `d`.
-
-*Proof.* (⟸) Write `(S)` for the check's instances at frontier words:
-`fold(d, w_c·a) = fold(d, w_{step(c,a)})` for all `d, c ∈ 𝒞_T`, `a ∈ Σ` — all
-table words, so a clean check includes them. Induction on `|u|` extends the
-check to every word, `fold(d, u) = fold(d, w_{ψ(u)})`: the base case is `(S)`
-at `c = [ε]`, and the step is
-`fold(d, u'·a) = step(fold(d, u'), a) = step(fold(d, w_{ψ(u')}), a)
-= fold(d, w_{ψ(u')}·a) = fold(d, w_{ψ(u'·a)})`, the last equality by `(S)` at
-`c = ψ(u')`. Left-invariance follows as in Theorem 5.1's proof; right-
-invariance is automatic. (⟹) Two-sidedness makes
-`fold(d, u) = ψ(w_d·u)` a function of `(d, ψ(u))`, and `ψ(u) = ψ(w_{ψ(u)})`
-on table words is coherence (Lemma 3.3). ∎
-
-(The forward direction is the claim inside Theorem 5.1's proof, extracted;
-the lemma adds its converse, making the check a *classifier*: zero queries,
-run on any fixpoint, saturated or not.)
-
-**Theorem 5.5 (certified fixpoints: canonical or no algebra).** Let a
-closed, consistent table's hypothesis be certified by an exact equivalence
-oracle — its prediction agrees with `L` on every lasso. Then the following
-are equivalent: (i) the kernel of `ψ` is a congruence (Lemma 5.4's check is
-clean); (ii) the export of Theorem 5.1 is exactly `𝓘(L)`, byte-equal after
-re-keying. In particular a certified *non-canonical* fixpoint — a permanent
-stall — is never a congruence: its product `M(c, c') = fold(c, w_{c'})`
-genuinely depends on the choice of representatives, and no operation on its
-classes recognizes anything. What the ablation of §6.3 delivers is the
-Cayley hypothesis itself — a correct acceptor — and, provably, nothing more.
-
-*Proof.* (ii)⟹(i): `𝓘(L)`'s classes form a monoid. (i)⟹(ii): the second half
-of Theorem 5.1's proof consumes exactly these hypotheses and nothing else.
-*The kernel saturates `L`* uses two-sidedness plus everywhere-correct
-predictions to give `ψ(u) = ψ(v) ⟹ u ≈_L v`; injectivity of the class map
-uses that every split — promotion, consistency mint, harvest — is witnessed
-by an Arnold context (saturation escalations, absent here, were only ever
-one more witnessed mechanism); surjectivity is `u ≈_L w_{ψ(u)}`, from
-Lemma 5.4's extension of the check to all words at `d = [ε]`.
-Multiplicativity, the BFS keys (with (i), `mult` by letter classes *is* `step`, so the
-two BFS orders coincide), and `P` (teacher bits on representative lassos)
-assemble byte-equality as in Theorem 5.1. ∎
-
-Note the asymmetry the exactness buys: under a bounded oracle a congruent
-unsaturated fixpoint may still be a genuine algebra strictly coarser than
-`S(L)₊¹` — a correct-so-far quotient the oracle was too weak to refute.
-Exactness closes that door: congruent and certified *forces* canonical, so
-the two-sided/one-sided divide of §4.2 is also the algebra/no-algebra
-divide. Proposition 4.4's non-associative display is Theorem 5.5 made
-concrete on the smallest specimen — the display shows *how* the product
-breaks; the theorem says it always does. The unsaturated stall of §4.2,
-for its part, is not an isolated artifact: Proposition 4.4's `a → Xa` is
-the smallest exhibit an exhaustive census of one-atom automata can produce,
-and §6.3 measures the family at census scale.
+(Proposition 5.4) is the strongest guarantee compatible with delivering the
+object. The unsaturated stall of §4.2, for its part, is not an isolated
+artifact: Proposition 4.4's `a → Xa` is the smallest exhibit an exhaustive
+census of one-atom automata can produce, and §6.3 measures the family at
+census scale.
 
 ## 6. Evaluation
 
@@ -1404,13 +1385,13 @@ The algorithm of §3–5 is implemented as a pure query learner: its only source
 of truth is the teacher interface, and no automaton is ever visible to it. The
 evaluation answers three questions, each measured against the canonical target
 `N = |S(L)₊¹|`. **Q1 — cost:** do measured queries track the
-output-polynomial bounds of Proposition 5.2? **Q2 — the ablation:** how often
+output-polynomial bounds of Proposition 5.4? **Q2 — the ablation:** how often
 does the learner without saturation stall, and are the stalls §4.2's — is
 saturation doing real work across a corpus, not only on Proposition 4.4's two
 specimens? **Q3 — the baseline:** against an established FDFA learner on
 identical teachers, what does the algebra cost, and what does it buy? A
 fourth, smaller question calibrates a constant: how sensitive is the cost to
-the teacher's counterexample policy — the `log(N·ℓ)` term of Proposition 5.2.
+the teacher's counterexample policy — the `log(N·ℓ)` term of Proposition 5.4.
 Across a complement-closed census of 3938 languages the learner returns every
 canonical invariant exactly; saturation is indispensable on over a thousand of
 them, prefix-independent languages included — no counterexample can deliver
@@ -1421,12 +1402,33 @@ does.
 
 **Teacher.** As fixed in §2.3: membership is one deterministic run,
 `O(|u| + |Q|·|v|)`; equivalence is a cheap representative audit followed by
-the exact align-and-scan of §2.3, the functionality guard asserted at each
-query and guard-fired queries decided by the fallback product — so
-certification stays exact except on the handful of runs where the fallback
-exceeds its work cap ⟨TBD-M4: the guard and cap tallies⟩: those certify by
-bounded enumeration on the default leg, standing on byte-equality, and are
-recorded as deferred on the ablation leg. The ablation leg of §6.3 leans
+an exact *align-and-scan* against the reference invariant. The hypothesis's
+fold automaton is aligned with `𝓘(L)`: the letter-generated graph of pairs
+`(ψ(w), ψ_L(w))` — the hypothesis's fold against the syntactic morphism —
+is built lazily and memoized, and on every cell (stem node, loop node) two
+verdicts are compared: the hypothesis's prediction on the cell's keyed
+lasso, and the invariant's algebraic verdict `(s·e^π, e^π) ∈ P`. A flagged
+cell's keyed lasso is a genuine counterexample outright — both verdicts are
+evaluated on that concrete lasso. That one keyed lasso per cell also
+*decides* the cell — the certification and minimality claims — because both
+verdicts are constant on cells: the invariant's is, since membership
+factors through `ψ_L` of stem and loop; the hypothesis's is *provided the
+aligned graph is functional* — no two nodes share their `𝓘(L)`-component,
+i.e. the fold never splits a syntactic class — for then the loop orbit, the
+stabilization power, and the predicting pair are all determined by the
+cell. Functionality is not assumed, and it genuinely fails mid-run — the
+fold of a closed, consistent table can *split* a syntactic class beyond its
+table words (realized on a census language: `!a·!a·a ≈_L a·!a·!a`, yet the
+two words fold to different classes), so a mid-run hypothesis is not merely
+coarser than the algebra (§4.2) but incomparable with it. The oracle
+therefore asserts functionality on the built graph at every query, and a
+firing hands the query to the fallback — the product of the automaton with
+the hypothesis's transformation closure, which needs no such assumption —
+so certification stays exact except on the handful of runs where the
+fallback exceeds its work cap ⟨TBD-M4: the guard and cap tallies⟩: those
+certify by bounded enumeration on the default leg, standing on
+byte-equality, and are recorded as deferred on the ablation leg. The
+ablation leg of §6.3 leans
 hardest on that exactness — a permanence verdict certifies a *non-canonical*
 fixpoint, the one claim byte-equality cannot re-validate — while every other
 reported run is additionally validated end-to-end by byte-equality of the
@@ -1435,7 +1437,9 @@ oracle and the byte-equality validation now share their trust anchor, the
 constructed `𝓘(L)`; independence from the automaton is retained through the
 teacher self-check, which cross-checks `D`-simulation against the invariant
 read-off on 10⁴ random lassos per case. Counterexamples are minimal
-(shortest stem, then shortest loop, then shortlex). One lasso membership is
+(shortest stem, then shortest loop, then shortlex) — keys being
+shortlex-least and cells scanned in lasso order, the least disagreeing cell
+yields exactly that. One lasso membership is
 one query; equivalence queries are counted separately (§2.1).
 
 **Corpus.** The census is a flat, complement-closed catalogue: **3938**
@@ -1529,11 +1533,11 @@ closed, consistent fixpoint is already canonical; **transient** — a
 non-canonical fixpoint, broken by a counterexample; **permanent** — a
 non-canonical fixpoint the exact oracle certifies, which no counterexample
 breaks. Only the left-context sweep splits a permanent stall; without it the
-learner stops on the Cayley acceptor and nothing more — by Theorem 5.5 a
+learner stops on the Cayley acceptor and nothing more — by Theorem 5.3 a
 certified stall's partition is never a congruence, so there is no algebra on
 its classes to export: on the ablation leg "export" is a refusal, the
 recorded outcome *correct acceptor, no algebra*. ⟨TBD: the congruence-column
-recount — every permanent stall fails Lemma 5.4's check, Theorem 5.5
+recount — every permanent stall fails Lemma 5.2's check, Theorem 5.3
 performed at census scale; on a handful of languages the ill-defined product
 cannot even reach every class from `ε`.⟩
 
@@ -1579,15 +1583,14 @@ invariant — acceptance invariant under every left multiplication of the
 stem class — and every column their saturated runs mint is an ω-column
 (4.7(b)), the recovering left contexts acting inside the loop, where no
 prefix exists to delete. Both witnesses come from the census's sampled
-tier, and necessarily so: no exhaustively enumerated shape can supply
-one. Every completed exhaustive shape carries no prefix-independent
-permanent stall, and the one shape whose sweep is unfinished recognizes
-only safety languages — its trivial acceptance makes every run accepting
-— which Lemma 4.8 bars from nontrivial prefix-independence outright. The
-refutation loses nothing to sampling: an existence claim is carried by
-its per-language certificate, not by the enumeration that found it. What
-exhaustion contributes is the complementary negative — prefix-independent
-permanent stalls first arise beyond the census's enumeration wall. Between
+tier — necessarily: every exhaustively enumerated shape either is
+completely swept with zero prefix-independent permanent stalls, or
+carries trivial acceptance and so recognizes only safety languages, which
+Lemma 4.8 bars from nontrivial prefix-independence. The refutation loses
+nothing to sampling — an existence claim is carried by its per-language
+certificate — and what exhaustion contributes is the complementary
+negative: prefix-independent permanent stalls first arise beyond the
+enumeration wall. Between
 Lemma 4.8's floor and the witnesses' three-priority degree the territory
 stays open: no witness has appeared at deterministic-Büchi, co-Büchi, or
 single-Rabin-pair power. ⟨TBD-M4: the completed sweep's per-shape
@@ -1625,17 +1628,17 @@ leading plus progress DFAs):
 | `a → Xa` | 5 (43/1) | 12 | 14 | 9 |
 | `a ∧ XG¬a` | 4 (35/2) | 8 | 10 | 7 |
 
-Every entry lies inside Proposition 5.3(a)'s `N + N²` envelope, and within it
+Every entry lies inside Proposition 5.5(a)'s `N + N²` envelope, and within it
 the two objects trade places. Across the census the median class count is
 `N = 12`, against FDFA-size medians 14 / 18 / 11 (periodic / syntactic /
 recurrent); against each language's smallest FDFA the algebra is smaller on
 1102, larger on 1239, tied on 150. Size is comparable; the exponential
-separation of Proposition 5.3(b) needs larger shapes than the census
+separation of Proposition 5.5(b) needs larger shapes than the census
 reaches. But the trade is not noise — it correlates with the LTL cut. On
 aperiodic languages the algebra is more often the smaller object (862
 smaller / 534 larger / 89 tied); on non-LTL languages the FDFA usually is
 (240 / 705 / 61): the group structure that blocks LTL-definability is also
-what inflates the algebra against an acceptor — Proposition 5.3(b)'s
+what inflates the algebra against an acceptor — Proposition 5.5(b)'s
 mechanism, already visible at census scale. ⟨TBD-M4: restate this paragraph
 from the committed 6222-scale `e3_summary` — the LTL-cut direction *inverts*
 there (on LTL the algebra is more often the larger object, 1524 v 1842); the
@@ -1651,7 +1654,7 @@ acceptor, from which it is not.
 
 ### 6.5 Counterexample sensitivity
 
-Proposition 5.2 depends on the teacher only through the `log(N·ℓ)` harvest
+Proposition 5.4 depends on the teacher only through the `log(N·ℓ)` harvest
 term. The counterexample-bearing named cases are re-run under counterexample
 policies — minimal (the default) and adversarially padded, stem and loop
 pumped by factors 2 to 32 — comparing total and harvest-only membership
@@ -1723,7 +1726,7 @@ lasso queries. On the way we met a finding worth the trip: two-sided columns are
 saturation sweep the table stalls on a correct acceptor strictly coarser than
 the algebra — permanently, already on `a → Xa` (Proposition 4.4), where the
 stalled export is not even associative — indeed a certified stall never
-carries an algebra at all (Theorem 5.5) — a stall beyond counterexample-guided
+carries an algebra at all (Theorem 5.3) — a stall beyond counterexample-guided
 refinement, dissolved by the same slot collapse. The learner's limit is not an acceptor
 chosen from a family but the canonical invariant of the language — the object
 definability questions are read from — so learning and classification cease to
@@ -1777,8 +1780,6 @@ algebra is reached only by the saturation sweep, the two-example finding of
 - **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing the
   syntactic ω-semigroup from a deterministic Emerson–Lei automaton.* Working
   draft, 2026.
-- **[SωSC26]** Y. Thierry-Mieg, with Claude (Anthropic). *A calculus on the
-  syntactic ω-semigroup: align, operate, reduce.* Working draft, 2026.
 - **[US20]** H. Urbat, L. Schröder. *Automata learning: an algebraic approach.*
   LICS 2020.
 - **[Vaa17]** F. Vaandrager. *Model learning.* Commun. ACM 60(2) (2017)
