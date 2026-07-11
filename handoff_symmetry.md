@@ -1,153 +1,151 @@
 # Handoff — SoS symmetry
 
-Bootstraps a session continuing the symmetry thread. This thread is
-**theory**: it owns the paper and works on markdown only — no probes,
-no code, no browsing the tree (concurrent sessions own the code side).
-Read this, then the paper's header + §1; open the spec/report only at
-their named sections.
+Bootstraps a session on the symmetry thread. The thread has two roles:
+**theory** owns the paper and works markdown-only (no code, no probes,
+no browsing the tree); **practice** (engineering) implements the spec,
+gates it, reports numbers. Read this, then jump to your role's TODO
+list below; open the paper/spec/report only at their named sections.
 
-## The four documents and their roles
+## The documents and their roles
 
-- **Paper (this thread's product):** `research_notes/sos_symmetry.md`
-  — pre-paper draft, 2026-07-11. Three kinds of symmetry on
-  `𝓘(L) = (𝒞, λ, M, P)`: outer (Thm 3.1 symmetry=automorphism, signed
-  group `Sym±`, anti-symmetries + pair-count obstruction, witness,
-  symmetrization), relational (Thm 4.2 block substitution → stutter,
-  invisible letters, `k`-ladder, `Î_L` Thm 4.4), inner (group
-  spectrum, Prop 6.2 LTL hull/kernel `L♭ ⊆ L ⊆ L♯`), workflows
-  (§7, incl. Prop 7.4 the symmetric envelope — sound quotient
-  checking for ANY `G`, no symmetry assumed). Four hand-worked
-  examples (A `GFa`, B `GFa∧GFb`, C `a·Σ^ω`, `EvenHead a^{2n}b^ω`)
-  are restated as machine-checkable predictions §9 P1–P5. Every
-  unproven leap is flagged ⟨TBD⟩ — the TBDs ARE the theory queue.
-- **Spec (engineering work order, NOT ours to execute):**
-  `research_notes/sos_symmetry_spec.md` — milestones SY1–SY5; SY1
-  (signed perms, single check, kernel read-off) is commissioned to
-  the function level, nothing built yet. We revise it when theory
-  changes; disagreements found by engineering come back via the
-  report, and we own the resolution.
-- **Report (engineering's channel to us):**
-  `research_notes/sos_symmetry_report.md` — slots F1–F16 all
-  *pending*; its **To theory** section is what we must answer when
-  it fills.
-- **Figures (separate commission):**
-  `research_notes/sos_symmetry_figures.md` — FIG-1 (kernel vs `Aut`),
-  FIG-2 (`EvenHead` gap triptych), FIG-3 (envelope schema); 1–2 are
-  buildable now (canonize + small probe), for a figure session.
+- **Paper — theory's product:** `research_notes/sos_symmetry.md`.
+  Pre-paper draft. Three kinds of symmetry on `𝓘(L) = (𝒞, λ, M, P)`:
+  *outer* (Thm 3.1 symmetry=automorphism, signed group `Sym±`,
+  Lemma 3.2 pair-count obstruction, witness, symmetrization),
+  *relational* (Thm 4.2 block substitution → stutter / invisible
+  letters / `k`-ladder, Thm 4.4 the tolerated independence relation
+  `Î_L`), *inner* (group spectrum, Prop 6.2 LTL hull/kernel
+  `L♭ ⊆ L ⊆ L♯`), and the workflows (§7, incl. Prop 7.4 the symmetric
+  envelope). Worked examples A–C + `EvenHead` are restated as
+  machine-checkable predictions in §9 P1–P5. **Every unproven leap is
+  flagged ⟨TBD⟩ — the ⟨TBD⟩s ARE the theory queue.**
+- **Spec — engineering work order:** `research_notes/sos_symmetry_spec.md`.
+  Milestones SY1–SY5, function-level. SY1 and SY3 are DONE; SY2, SY4,
+  SY5 are OPEN (SY2/SY4 commissioned, SY5 after them, Y2 blocked). The
+  paper is normative math; where spec and paper disagree, STOP and
+  report — do not reconcile silently.
+- **Report — engineering's channel to theory:**
+  `research_notes/sos_symmetry_report.md`. Findings F1–F16; F1–F4
+  (SY1) and F8–F11 (SY3) are filled, the rest pending. Its **To
+  theory** section is what theory answers; it is current-state (open
+  asks only — resolved items are removed once their outcome lands in
+  the paper).
+- **Figures — separate commission:** `research_notes/sos_symmetry_figures.md`.
+  FIG-1 (kernel vs `Aut`), FIG-2 (`EvenHead` gap triptych), FIG-3
+  (envelope schema). FIG-1/2 are buildable now (fixtures exist).
+- **Code:** `sosl/sosl/sos/symmetry/` — `sigma.py` (SY1: `SignedPerm`,
+  `apply_perm`, the checks, kernel read-off), `relations.py` (SY3:
+  block-substitution read-offs). Gates + summary generators in
+  `sosl/tests/symmetry/`; validated artifacts in `reference/symmetry/`
+  (CSV + summary + gate log per milestone).
 
-## State (2026-07-11)
+## State
 
-- Paper: skeleton complete, examples integrated, one editorial pass
-  done (proof gaps of Thm 3.1 closed, log-speak scrubbed, numbering
-  consistent — Prop is **6.2**, not 6.4). Citation-verified against
-  the library: every referenced entry we hold has been read
-  (Arnold's congruence stated in his original form + context-form
-  equivalence; KR65 divisor fact = proof of Cor. 3.2(b); Str94
-  Thm VII.2.1; ID96 is scalarsets NOT a formula check).
-- Library: `papers/` (gitignored, never pushed) holds Arnold85,
-  Thomas79, KR65, ES96, CEFJ96, ID96, Pel93, Godefroid-thesis,
-  PW97, Straubing94, and (unread, relevant to queue items 2–3)
-  Diekert–Gastin 2008, Diekert–Kufleitner 2009, Thérien–Weiss 86,
-  Thérien–Wilke 01. Fetched 2026-07-11 (renamed + .txt extracted):
-  Etessami_2000_IPL, Diekert_Muscholl_1994_ActaInf (pp. 379–397),
-  Gastin_Petit_1995_BookOfTraces, Sistla_Godefroid_2004_TOPLAS
-  (reduced symmetry — closest prior art to §7.4),
-  Emerson_Havlicek_Trefler_2000_LICS (virtual symmetry),
-  Moeller_Mohnke_Weber_1993_ICCAD, Wilke_1991_ICALP;
-  Straubing_Therien_Thomas_1995_IC.pdf is a bitmap scan — NO text
-  extract yet (user has another route), identity unverified. Still
-  to fetch (user grabs; we do not cite without reading; PREFER
-  PAPERS or single chapters — whole books are hard to get):
-  Baziramwabo–McKenzie–Thérien LICS'99 (modular temporal logic —
-  may settle §6.1's conjecture), Emerson–Trefler CHARME'99 [ET99],
-  Weeg 62 / Fleck 62 / Bavel 68 (automata automorphisms, folklore
-  trail for Thm 3.1), Pin "Syntactic semigroups" (Handbook of
-  Formal Languages ch. 10, 1997 — the paper-sized Eilenberg/Almeida
-  substitute).
-- Engineering: SY1 accepted; `sosl.sos.symmetry` exists (sigma.py:
-  SignedPerm, apply_perm, both checks, kernel read-off, obstruction).
-  Fixtures live in `sosl/tests/symmetry/fixtures.py`; gates + census
-  in `sigma_gate.py`; validated artifacts in `reference/symmetry/`
-  (CSV, summary, gate log); report F1–F4 filled from them. SY2/SY3
-  are the open milestones. The corpus is 6 222 cases (2 484 non-LTL);
-  paper/spec counts are current. The report's four **To theory**
-  items are ANSWERED (2026-07-11, responses appended in place):
-  counts swept (incl. max `|𝒞|` 121→208, countersign asked); F3
-  decided as (a) — coincidence-of-read-offs is the finding,
-  §3.1/§9 rewritten, spec §3.4 FIX_A now calculus-built; the
-  obstruction is now **Lemma 3.2** (proof + census sharpness);
-  measurement design adopted (b)+(c) — stratified-by-AP mandate
-  (spec §0) + new **Y0s** symmetrized-ground-truth campaign
-  (spec §7), 4-AP sampling named follow-up, not SY5.
+- **Milestones:** SY1 accepted (F1–F4), SY3 accepted (F8–F11: the F8
+  stutter oracle is 6 222/6 222, read-off count 896 = the `.cat`
+  stutter-tag total). SY2, SY4, SY5 open.
+- **Proofs landed:** Prop 6.2 (LTL hull/kernel) has a full proof —
+  Lemma 6.2a (collapse-and-close is the least aperiodic congruence
+  `θ_ap`), Lemma 6.2b (hull acceptance is the conjugacy closure of
+  `q(P)`; `kernel = ¬∘hull∘¬`). The pair-count obstruction is
+  Lemma 3.2.
+- **Corpus:** `genaut/corpus/flat_canon/` — 6 222 canonical cases,
+  2 484 non-LTL; by AP count 2 / 4 006 / 1 438 / 776 (0–3 APs). Two
+  structural facts every census claim respects: alphabet-minimal (so
+  `inert_aps` and invisible letters are 0 by construction, F3/F9), and
+  64 % 1-AP (so symmetry rates are reported stratified by AP, never
+  pooled).
+- **Library** (`papers/`, gitignored — never pushed):
+  - *Read and cited:* Arnold85, Thomas79, KR65, ES96, CEFJ96, ID96,
+    Pel93, Godefroid-thesis, PW97, Straubing94, Etessami 2000,
+    Diekert–Muscholl 1994, Gastin–Petit 1995, Sistla–Godefroid 2004
+    (closest prior art to §7.4), Emerson–Havlicek–Trefler 2000
+    (virtual symmetry), Moeller–Mohnke–Weber 1993, Wilke 1991.
+  - *Held, unread — relevant to theory TODO 3–4:* Diekert–Gastin 2008,
+    Diekert–Kufleitner 2009, Thérien–Weiss 86, Thérien–Wilke 01;
+    Straubing–Thérien–Thomas 1995 (bitmap scan, no text extract,
+    identity unverified — user has another route).
 
-## Next tasks
+## TODO — theory (priority order)
 
-Theory queue, priority order (all are ⟨TBD⟩s in the paper):
-
-1. **Prove Prop 6.2** — DONE (2026-07-11, commit 70ca83a82).
-   Lemma 6.2a: collapse-and-close IS the least aperiodic congruence
-   (proved); Lemma 6.2b: lifting + saturation law (pair set is a
-   language iff conjugacy-closed); full proof of Prop 6.2 incl. a
-   CORRECTION — hull acceptance is the conjugacy closure of `q(P)`
-   after projecting, one-shot `q⁻¹(q(P))` is not presentation-
-   independent — plus duality `kernel = ¬∘hull∘¬`. EvenHead/P5
-   unaffected (closure trivial there, now asserted). Spec §6.2
-   rewritten to match; F14 probe now gates the implementation.
-   Open sub-question kept in the paper as a remark: whether one
-   collapse round always suffices (census datum, F14).
-2. **Literature pass for Thm 3.1's folklore status** (automorphisms
-   of syntactic monoids; minimal-DFA relabel-isomorphism is used in
-   circuit symmetry detection) — decides how §3 is sold. Blocked
-   partly on fetches; Eilenberg vol. A and Almeida are candidates.
-3. **The ω-trace question** (§4.3): does `Î_L`-closure under
-   disjoint swaps imply full ω-trace closure for recognizable `L`?
-   Needs Diekert–Muscholl / Gastin–Petit. Decides the POR claim's
-   strength.
-4. Smaller: PW97-equivalence of Def 4.1's stutter closure; the
-   deletion corollary (§4.2); Thm 5.1's renderer clause (needs a
+1. **Confirm the `k`-ladder rung prose fix** (report open ask): change
+   "`|v| ≤ k`" to "`|v| = k`" in paper §4.2 and spec §5. The `≤ k`
+   reading is nested and makes the ladder parameter vacuous; `= k` is
+   what the per-rung count, the F11 data, and the fixture gate all
+   agree on. One word each, no math moves — cheap, do it first.
+2. **Integrate SY3 into the paper.** F8 (stutter read-off = semantic
+   tag, 6 222/6 222), F10 (`Î_L` density stratified 0.014 / 0.377 /
+   0.771 at 1/2/3 APs — the §4.3 POR datum), F11 (the `k`-ladder is
+   populated: 896 / 736 / 326 / 4 264). Numbers enter the paper in
+   pure form only after they appear in the report — they now do.
+3. **Thm 3.1 folklore status** (§3): the literature pass on
+   automorphisms of syntactic monoids / minimal-DFA relabel-isomorphism
+   (used in circuit symmetry detection) — decides how §3 is sold.
+   Partly blocked on fetches (below).
+4. **The ω-trace question** (§4.3): does `Î_L`-closure under disjoint
+   swaps imply full ω-trace closure for recognizable `L`? Decides the
+   POR claim's citation weight. Needs the Diekert–Muscholl /
+   Gastin–Petit reading (both now held).
+5. **Smaller ⟨TBD⟩s:** PW97-equivalence of Def 4.1's stutter closure;
+   the deletion corollary (§4.2); Thm 5.1's renderer clause (needs a
    look at the ToLTL renderer — coordinate, don't wander);
-   Emerson–Trefler positioning of §7.4 once fetched.
+   Emerson–Trefler positioning of §7.4.
 
-Engineering next (separate session, weaker model, spec-driven):
-**SY2** (group, witness, symmetrization — spec §4) and/or **SY3**
-(relational read-offs — spec §5; its corpus stutter oracle F8 runs
-FIRST). SY1 is done, acceptance passed (report F1–F4). Note for
-SY2: the census says most symmetric elements are composite —
-generator scans find only ~35 % of nontrivial groups at n = 3
-(report F4) — so the full group walk is not optional. Figures
-session can run FIG-1/FIG-2 independently (fixtures exist:
-`sosl/tests/symmetry/fixtures.py`).
+**Fetches the user still grabs** (we never cite unread; PREFER papers
+or single chapters — whole books are hard to get): Baziramwabo–
+McKenzie–Thérien LICS'99 (modular temporal logic — may settle §6.1's
+conjecture), Emerson–Trefler CHARME'99, Weeg 62 / Fleck 62 / Bavel 68
+(automata automorphisms, the folklore trail for Thm 3.1), Pin
+"Syntactic semigroups" (Handbook of Formal Languages ch. 10, 1997).
 
-The four To-theory items are DONE (2026-07-11, commit
-3f03c5c46 — see State). Theory next is the queue above, Prop 6.2
-first. One loose end from item 1: engineering should countersign
-max `|𝒞| = 208` in `sy1_summary.md` at the next regen.
+## TODO — practice (priority order)
+
+1. **SY2 — the group, witness, symmetrization** (spec §4). Unblocks
+   the entire Y-series. Note from F4: generator scans under-detect —
+   they find only ~35 % of nontrivial groups at `n = 3` (most
+   symmetric elements are composite signed swaps / 3-cycles), so the
+   full group walk is not optional. Fills F5–F7.
+2. **SY4 — spectrum + LTL hull/kernel** (spec §6). Highest theory
+   value: F12 (the LTL-bit oracle — run FIRST, the §6 twin of F8),
+   F13 (**any nonabelian/non-solvable spectrum specimen is a headline
+   find — file the moment it appears**), F14 (the leastness probe now
+   gates the `aperiodic_reflection` implementation of Lemma 6.2a).
+   One commissioned `classify` change only: promote the group
+   `H`-class walk to a shared helper (§6.1). Fills F12–F14.
+3. **SY5 — the Y-series campaigns** (spec §7), after SY2/SY4. Y0a/Y0s/
+   Y1 need SY2; Y0b/Y0c need SY4. **Y2 is BLOCKED on a ToLTL engine
+   hook — do not start it, do not build the hook.** Fills F15–F16.
+4. **Loose end:** countersign `max |𝒞| = 208` into `sy1_summary.md`
+   at the next SY1 regen (the paper's §3.1 cost remark cites it).
+5. **Figures:** FIG-1/FIG-2 can run independently now — fixtures live
+   in `sosl/tests/symmetry/fixtures.py`.
+
+Recommended next round: **practice — SY4** (its F12/F13/F14 feed open
+theory items, and theory's own TODO 3–4 is fetch-blocked). SY2 is the
+alternative if you would rather build toward the Y-series.
 
 ## The one theorem to keep in your head
 
 Thm 3.1 (iii): `σ(L) = L` iff the canonical keying of
 `(𝒞, λ∘σ, M, P)` is byte-equal to `𝓘(L)` — one free λ-rewire, one
-keying pass, one byte comparison; no product, no language query.
-Its runtime shadow (the kernel law): `λ∘σ = λ` cellwise forces the
-full check true; a violation is an upstream keying bug, never a fact
-about `L`.
+keying pass, one byte comparison; no product, no language query. Its
+runtime shadow (the kernel law): `λ∘σ = λ` cellwise forces the full
+check true; a violation is an upstream keying bug, never a fact about
+`L`.
 
 ## Gotchas
 
 - Concurrent sessions commit to this repo. Commit ONLY your files by
   explicit path; never `git add -A`; never rewrite history. Commit
-  style: `git commit -F -` heredoc, terse. Current standing
-  authorization (this thread): commit as you go without asking;
-  pushing is ALWAYS asked separately.
-- `papers/` is gitignored deliberately (copyright — never push
-  content from it). Reference entries in the paper carry the library
-  filename of everything read.
+  style: `git commit -F -` heredoc, terse. Standing authorization:
+  commit as you go without asking; pushing is ALWAYS asked separately.
+- `papers/` is gitignored deliberately (copyright — never push its
+  content). The paper's reference entries carry the library filename
+  of everything read.
 - The paper states results in pure form and cites no artifact paths;
-  numbers enter the paper only after they appear in the report.
-- Spec/report/paper must move together: renumbering or renaming in
-  one propagates to the other two in the same commit (grep for the
-  old name — "Prop 6.4" was one such sweep).
-- Worked-example arithmetic in the paper is load-bearing (spec
-  fixture gates assert it). If you touch an example, re-derive by
-  hand and update §9 P1–P5 and the spec's §3.4/§6.3 expectations
-  together.
+  numbers enter it only after they appear in the report.
+- Spec/report/paper move together: renumbering or renaming in one
+  propagates to the other two in the same commit (grep the old name).
+- Worked-example arithmetic in the paper is load-bearing (spec fixture
+  gates assert it). If you touch an example, re-derive by hand and
+  update §9 P1–P5 and the spec's §3.4/§6.3 expectations together.
