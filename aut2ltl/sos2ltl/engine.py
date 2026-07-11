@@ -103,7 +103,8 @@ from __future__ import annotations
 import os
 import sys
 from dataclasses import dataclass
-from typing import Callable, Dict, FrozenSet, List, Optional, Sequence, Tuple
+from typing import (Callable, Dict, FrozenSet, List, Optional, Protocol,
+                    Sequence, Tuple)
 
 import spot
 
@@ -386,7 +387,7 @@ def _leave(cay: Cayley, la: anchoring.LayerAnchoring, lets: _Letters,
 def _layer_flat(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
                 lets: _Letters, final: Dict[int, "spot.formula"],
                 exit_: "_Exits", rend: Rendering,
-                wterm: "spot.formula") -> None:
+                wt: Callable[[int], "spot.formula"]) -> None:
     """The width-1 bricks of Theorem 4.10 (§4.2)."""
     layer = la.layer
     sojourn = {c: _sojourn(la, lets, c) for c in layer}
@@ -405,7 +406,7 @@ def _layer_flat(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
             _and([lets.set_(la.anchors[c2]), _x(leave[c2])])
             for c2 in layer if la.anchors[c2]])
         big_leave = _or([leave[c], _and([sojourn[c], _u(step, relay)])])
-        stay = _and([sojourn[c], _g(step), wterm])
+        stay = _and([sojourn[c], _g(step), wt(c)])
         final[c] = _or([stay, big_leave])
         if _TRACE:
             _trace(layer_id, "STAY", c, stay)
@@ -425,7 +426,7 @@ def _seam(arms: Sequence[Tuple[anchoring.AnchorWindow, "spot.formula"]],
 def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
                   k: int, lets: _Letters, final: Dict[int, "spot.formula"],
                   exit_: "_Exits", rend: Rendering,
-                  wterm: "spot.formula") -> None:
+                  wt: Callable[[int], "spot.formula"]) -> None:
     """The graded bricks of Theorem 4.13 (§4.3) for a `k`-anchored layer,
     operating at window width `κ = k + 1`."""
     layer = la.layer
@@ -484,7 +485,7 @@ def _layer_graded(cay: Cayley, la: anchoring.LayerAnchoring, layer_id: int,
             _trace(layer_id, "step_th", c, step_th[c])
         _trace(layer_id, "step_kappa", None, step)
     for c in layer:
-        stay = _and([tr[c], _g(step), wterm])                # STAY∞_κ(R, c)
+        stay = _and([tr[c], _g(step), wt(c)])                # STAY∞_κ(R, c)
         final[c] = _or([stay, tl[c]])                        # Final(c)
         if _TRACE:
             _trace(layer_id, f"TR_{k}", c, tr[c])
@@ -519,18 +520,39 @@ def _committed(cay: Cayley, c: int) -> bool:
 # ------------------------------------------------------------------ #
 # The transcription.
 # ------------------------------------------------------------------ #
-def labels(inv: Invariant, k_b_max: int = 3,
-           rend: Rendering = DEFAULT) -> Optional[Dict[int, "spot.formula"]]:
+class LayerFallback(Protocol):
+    """The per-layer delegate below the engine (paper §6, the decomposition
+    fallback — implemented in `cascade/`). `omega` supplies the confined-tail
+    acceptance term of a layer class when no window term is computable (the
+    loop half); `stem_finals` supplies the whole layer's `Final(c)` map when
+    the layer anchors at no width (the stem half, Prop 4.14 with a swapped
+    inner extractor). Either returns None to decline — the engine then
+    declines as before."""
+
+    def omega(self, cay: Cayley, layer_id: int,
+              cls: int) -> Optional["spot.formula"]: ...
+
+    def stem_finals(self, cay: Cayley, layer_id: int,
+                    la: anchoring.LayerAnchoring,
+                    final: Dict[int, "spot.formula"], guards: Guards,
+                    om: Callable[[int], Optional["spot.formula"]],
+                    ) -> Optional[Dict[int, "spot.formula"]]: ...
+
+
+def labels(inv: Invariant, k_b_max: int = 3, rend: Rendering = DEFAULT,
+           fallback: Optional[LayerFallback] = None,
+           ) -> Optional[Dict[int, "spot.formula"]]:
     """The full class-indexed memo `Final(c)` — an exact label of the tail
     language `T_c` for every class `c` — or None when a precondition fails:
-    some layer anchors at no width (condition (A) fails — the scoped
-    fallback is not built here), or some final-candidate layer has no
-    computable window term within width `k_b_max`. `transcribe` is the
-    root-only wrapper; the memo itself is the grounding surface for
-    per-class diagnostics."""
+    some layer anchors at no width (condition (A) fails), or some
+    final-candidate layer has no computable window term within width
+    `k_b_max`. With a `fallback`, those layers are delegated (stem half /
+    loop half) instead, and None only on the delegate's own decline.
+    `transcribe` is the root-only wrapper; the memo itself is the grounding
+    surface for per-class diagnostics."""
     cay: Cayley = build(inv)
     anch = anchoring.analyze(cay)
-    if any(la.width is None for la in anch):
+    if fallback is None and any(la.width is None for la in anch):
         return None
     lets = _Letters(inv, minimize=rend.guards)
 
@@ -538,7 +560,7 @@ def labels(inv: Invariant, k_b_max: int = 3,
     for i in range(len(cay.layers)):
         rep = windows.analyze_layer(cay, i, k_max=k_b_max)
         wterm.append(_window_term(cay, i, rep, lets))
-    if any(t is None for t in wterm):
+    if fallback is None and any(t is None for t in wterm):
         return None
 
     final: Dict[int, "spot.formula"] = {}
@@ -547,18 +569,38 @@ def labels(inv: Invariant, k_b_max: int = 3,
     # Deepest layers first: exits only ever point strictly down the R-order.
     for layer_id in reversed(range(len(cay.layers))):
         la = anch[layer_id]
-        assert la.width is not None  # guarded above
         term = wterm[layer_id]
-        assert term is not None
         _trace(layer_id, "window", None, term)
         committed = [c for c in la.layer if _committed(cay, c)]
         if len(committed) < len(la.layer):
-            if la.width == 1:
-                _layer_flat(cay, la, layer_id, lets, final, exit_, rend,
-                            term)
+            # The class's acceptance term: the window term where computed,
+            # else the loop half's per-class label.
+            def om(c: int, _t=term, _i=layer_id) -> Optional["spot.formula"]:
+                return _t if _t is not None else fallback.omega(cay, _i, c)
+
+            if la.width is None:
+                stems = fallback.stem_finals(cay, layer_id, la, final,
+                                             lets.guards, om)
+                if stems is None:
+                    return None
+                final.update(stems)
             else:
-                _layer_graded(cay, la, layer_id, la.width, lets, final,
-                              exit_, rend, term)
+                if term is None:
+                    # A committed class's brick is overwritten below — a ⊥
+                    # placeholder spares it a needless delegate call.
+                    wt_map = {c: (_FF if c in committed else om(c))
+                              for c in la.layer}
+                    if any(t is None for t in wt_map.values()):
+                        return None
+                    wt: Callable[[int], "spot.formula"] = wt_map.__getitem__
+                else:
+                    wt = {c: term for c in la.layer}.__getitem__
+                if la.width == 1:
+                    _layer_flat(cay, la, layer_id, lets, final, exit_, rend,
+                                wt)
+                else:
+                    _layer_graded(cay, la, layer_id, la.width, lets, final,
+                                  exit_, rend, wt)
         # A committed-accepting class takes Final = true directly, its
         # reachable region being entirely in P (the co-safety base case,
         # paper §4.3); the constant outranks any brick, flat or graded.
@@ -571,9 +613,12 @@ def labels(inv: Invariant, k_b_max: int = 3,
 
 
 def transcribe(inv: Invariant, k_b_max: int = 3,
-               rend: Rendering = DEFAULT) -> Optional["spot.formula"]:
+               rend: Rendering = DEFAULT,
+               fallback: Optional[LayerFallback] = None,
+               ) -> Optional["spot.formula"]:
     """The defining formula of an aperiodic invariant on the anchored
     stratum — the root of the `labels` memo — or None when a precondition
-    fails (see `labels`)."""
-    memo = labels(inv, k_b_max, rend)
+    fails (see `labels`; a `fallback` widens the stratum to the delegated
+    layers)."""
+    memo = labels(inv, k_b_max, rend, fallback)
     return None if memo is None else memo[inv.identity]
