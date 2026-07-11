@@ -11,16 +11,29 @@ report back rather than improvising.*
 
 | figure | subject | state |
 |---|---|---|
-| FIG-1 | the two-level structure: kernel vs `Aut` (Examples A and B) | specified — ready to build (data needs only canonize + a table dump) |
-| FIG-2 | `EvenHead`: spectrum, reflection, hull/kernel/gap (Prop 6.2) | specified — ready to build (same toolchain) |
-| FIG-3 | the symmetric envelope (§7.4) | specified — conceptual schema, buildable now |
+| FIG-1 | the two-level structure: kernel vs `Aut` (Examples A and B) | ready to build — data from `fixtures.load` + `sosl.sos.symmetry` (SY1, built) |
+| FIG-2 | `EvenHead`: spectrum, reflection, hull/kernel/gap (Prop 6.2) | ready to build — data from `fixtures.load("FIX_E")`; spectrum/reflection/hull/kernel from SY4 once built, else a trap-13 collapse probe |
+| FIG-3 | the symmetric envelope (§7.4) | ready to build — conceptual schema, no data |
 
 ## Ground rules (every figure)
 
-- Inputs are language-canonical `.sos` invariants, produced by
-  `genaut/gen/canonize.py` from the fixture DELAs of
-  `sos_symmetry_spec.md` §3.4/§6.3 (FIX_A/FIX_B/FIX_E); bundle the
-  sources under `sos_symmetry_figs/sources/`.
+- Inputs are the canonical `.sos` fixtures, already built, canonized
+  and cached by `sosl/tests/symmetry/fixtures.py` — a probe does
+  `from tests.symmetry import fixtures; inv = fixtures.load("FIX_A")`
+  (names `FIX_A/FIX_B/FIX_C/FIX_E`). Do NOT re-invoke `canonize.py`
+  or rebuild the DELAs; FIX_A is the calculus alphabet-extension build
+  and FIX_E the hand HOA (spec §3.4/§6.3), both handled there. Bundle
+  the loaded sources under `sos_symmetry_figs/sources/`.
+- **Reuse these implementations — do not reinvent** (spec §9 trap 13):
+  the symmetry read-offs live in `sosl.sos.symmetry`. SY1 (built):
+  `SignedPerm`, `apply_perm`, `is_symmetry`, `is_antisymmetry`,
+  `in_kernel`, `inert_aps`, `anti_possible`. SY3 (built):
+  `stutter_rung`, `independence`, `invisible_letters`, … Membership
+  for gap dots: `Invariant.member`. SY4 (spectrum / reflection /
+  hull / kernel — `spectrum.py`, `reflect.py`) is NOT yet built; FIG-2
+  calls it once it lands and, until then, computes the collapse with
+  the shared shortlex re-keying + the `classify` group walk, never a
+  fresh hand-rolled union-find.
 - Every node, edge, tag and label of FIG-1/FIG-2 is data produced by a
   probe (place probes in `sosl/tests/symmetry/figs/`, single-input,
   ≤ 15 s, long output to logs), not drawn by hand; placement is the
@@ -64,10 +77,14 @@ Two panels over the 2-AP minterm square (vertices `ab, a¬b, ¬ab,
    `ρ(A·B) ≠ ρ(A)·ρ(B)`, red-crossed (tag: dies on one cell, no
    keying pass).
 
-Probe data: classes, `λ`, `M`, `P` dumped from the canonized `.sos`
-of FIX_A and FIX_B; the candidate images computed by the probe from
-the `SignedPerm` action (or, before SY1 lands, by ten lines of probe
-arithmetic on minterm bitvectors — do not wait on the package).
+Probe data: classes, `λ`, `M`, `P` from `fixtures.load("FIX_A")` and
+`fixtures.load("FIX_B")`; the candidate images and verdicts from
+`sosl.sos.symmetry` (SY1, built) — `SignedPerm` + `apply_perm`,
+`in_kernel` (the `λ∘σ_b = λ` tag, left panel), `is_symmetry` /
+`is_antisymmetry` (`σ_a` crosses fibers and fails), and the one-cell
+multiplicativity failure read off `apply_perm`'s rewired table. Do not
+re-derive the action on minterm bitvectors — the package is the
+implementation of record.
 
 ## FIG-2 — `EvenHead`: the counting content confined to the gap (paper §6.2, Prop 6.2)
 
@@ -93,11 +110,15 @@ Three aligned panels, left to right:
    caption line is Prop 6.2's: on the gap, and only there, `L` is
    decided by counting.
 
-Probe data: panels 1–2 from the canonized FIX_E `.sos` (classes,
-`M`, `P`) and the collapse computed by the probe (union-find over
-the one merge, then congruence closure — ~20 lines; assert 5 classes
-and the two forced merges, per §9 P5); panel 3's dots from `member`
-folds (or the same fold arithmetic inline).
+Probe data: panels 1–2 from `fixtures.load("FIX_E")` (classes, `M`,
+`P`). The maximal subgroup / `Spec`, the one-round collapse, and the
+hull/kernel come from `sosl.sos.symmetry.spectrum` and `.reflect`
+(SY4 — `maximal_subgroups`, `spec`, `aperiodic_reflection`, `hull`,
+`kernel`) once that milestone lands. **Until SY4 is built, do not
+hand-roll the collapse** — reuse the shared shortlex re-keying and the
+`classify` group walk (spec §9 trap 13) for the ~20-line probe, and
+assert 5 classes + the two forced merges per §9 P5. Panel 3's dots
+from `Invariant.member` folds.
 
 ## FIG-3 — the symmetric envelope (paper §7.4)
 
