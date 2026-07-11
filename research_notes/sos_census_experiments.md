@@ -7,7 +7,7 @@ be implemented; nothing below exists yet except where explicitly marked
 ⟨TBD⟩ tables cite the experiment ids below, and every number printed in
 the paper is a *prediction or measurement* the tool must reproduce, per
 the family discipline (`sos_learning_report.md` ledger style). Companion specs:
-`sos_toltl_experiments.md` (strata testers, hunts), the symbolic spec
+`sos_toltl_spec.md` (strata testers, hunts), the symbolic spec
 (derived-census driver at scale).
 
 **One-line goal.** Provide the data for `sos_census.md`: the intrinsic
@@ -37,7 +37,7 @@ proving ground.
   the Wagner-degree read-off is expected missing and is its own work
   item, C7⟩.
 - **The strata testers** of the extraction — condition (A) widths,
-  condition (B) widths, layer statistics — are `sos_toltl_experiments.md`
+  condition (B) widths, layer statistics — are `sos_toltl_spec.md`
   C1–C3; this spec *consumes* them as ventilation columns, never
   reimplements them.
 - **The learner** [SωSL26] *(exists per project notes)* — cross-validation
@@ -98,7 +98,7 @@ its spec's M2 lands.
 ladder rung; acceptance index; Wagner degree ⟨implement; the read-off
 is specified in [SωS26, §7] but not yet coded — its own work item⟩;
 prefix-independence (residual count); (A)/(B) widths and layer stats
-(import `sos_toltl_experiments.md` C1–C3); until-rank ⟨blocked on
+(import `sos_toltl_spec.md` C1–C3); until-rank ⟨blocked on
 [SωSX26] C6, which is blocked on the Thérien–Wilke source — the column
 ships empty until then⟩.
 

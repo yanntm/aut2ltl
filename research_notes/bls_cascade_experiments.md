@@ -6,7 +6,7 @@ draft's ⟨TBD⟩s cite the `K-` ids below, every derivation printed in the
 draft is a *prediction* the tool must reproduce, and results come back as
 findings in **`research_notes/bls_cascade_report.md`** (to be created by
 the first engineering session — contract in §0). Experiment ids are
-namespaced `K-` to avoid collision with `sos_toltl_experiments.md`'s
+namespaced `K-` to avoid collision with `sos_toltl_spec.md`'s
 C/E/H/M series, whose assets this spec consumes.
 
 **Where things stand:** K-E0 ran (findings K-F1–K-F3 in the report):
@@ -42,7 +42,7 @@ Create the report on first landing a result; thereafter it is the ledger.
   `python3 -m survey --folder samples/validation` must end SUCCESS before
   any code lands.
 
-## 1. Objects consumed (all exist — see `sos_toltl_experiments.md` §1–§2)
+## 1. Objects consumed (all exist — see `sos_toltl_spec.md` §1–§2)
 
 - The invariant `𝓘(L) = (𝒞, λ, M, P)` in `.sos` format; the census with
   ground truth; the triptych and fixtures.

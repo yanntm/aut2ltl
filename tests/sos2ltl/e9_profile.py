@@ -5,7 +5,7 @@
     python3 -m tests.sos2ltl.e9_profile --ltl "G(a -> F b)"
     python3 -m tests.sos2ltl.e9_profile ... [--json] [--no-stack]
 
-Prints the tuple `research_notes/sos_toltl_experiments.md` E9 asks of every
+Prints the tuple `research_notes/sos_toltl_spec.md` E9 asks of every
 candidate: the `.sos` id or source, `|𝒞|`, the layer list with `|R|` and entry
 classes, letter-kind tables, (A)/(B) widths per layer, the ladder rung,
 prefix-independence, the emitted DAG size, and the emitted label stack (raw)

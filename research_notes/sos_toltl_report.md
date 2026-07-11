@@ -1,6 +1,6 @@
 # SoS → LTL — results
 
-The answer to `research_notes/sos_toltl_experiments.md`: the `aut2ltl/sos2ltl/`
+The answer to `research_notes/sos_toltl_spec.md`: the `aut2ltl/sos2ltl/`
 construction run against the paper's worked traces (`research_notes/sos_toltl.md`)
 and evaluated over the reference bench. Each section answers one experiment id
 and states the results **in force**; each finding `Fn` is a fact the census

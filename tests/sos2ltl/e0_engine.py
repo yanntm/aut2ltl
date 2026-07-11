@@ -3,7 +3,7 @@
     python3 -m tests.sos2ltl.e0_engine <file.sos> [--expect <ltl>|decline]
 
 Transcribes the invariant on the flat-brick stratum and runs the
-conformance gate of `research_notes/sos_toltl_experiments.md` §3: the
+conformance gate of `research_notes/sos_toltl_spec.md` §3: the
 reference invariant of the emitted formula must be byte-equal to the
 input. With ``--expect <ltl>`` additionally asserts Spot-equivalence to
 the expected formula; ``--expect decline`` asserts the stratum

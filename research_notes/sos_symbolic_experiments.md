@@ -7,7 +7,7 @@ fed by the experiment ids below, per the family discipline
 (`sos_learning_report.md` ledger style).
 Companion specs: `sos_census_experiments.md` (the measurement corpus and
 the derived-census driver, the engine's first consumer at scale),
-`sos_toltl_experiments.md` (downstream consumer of the emitted quotient).
+`sos_toltl_spec.md` (downstream consumer of the emitted quotient).
 
 **State of play.**
 - **DONE (exists in-repo, consumed as-is):** the explicit reference

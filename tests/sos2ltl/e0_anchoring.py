@@ -4,7 +4,7 @@
 
 Per layer: the smallest anchoring width (or FAIL), the width-1 letter
 classification, the anchor sets, and |𝒜_R|. With ``--expect gfaa`` asserts
-the E0 predictions of `research_notes/sos_toltl_experiments.md`: layers
+the E0 predictions of `research_notes/sos_toltl_spec.md`: layers
 {1,3} and {2,4} pass at k = 1 with the predicted reset tables, layer {5} is
 frozen (both letters neutral). With ``--expect even|evenblocks`` asserts the
 group's layer fails (A) at every width — the E1 denominator record.

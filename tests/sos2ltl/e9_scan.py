@@ -3,7 +3,7 @@
     python3 -m tests.sos2ltl.e9_scan <corpus/sos/DIR> [--out <file.jsonl>]
 
 One streamed JSON record per language, carrying the three structural questions
-the E9 gallery asks of the catalogue (`research_notes/sos_toltl_experiments.md`):
+the E9 gallery asks of the catalogue (`research_notes/sos_toltl_spec.md`):
 
   * **`peel`** (candidate 1) — every layer a singleton, R-depth ≥ 3, not
     prefix-independent: the `leave` chain and the reach shape both survive.

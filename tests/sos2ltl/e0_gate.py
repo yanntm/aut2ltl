@@ -5,7 +5,7 @@ plus the graded-band gates (the seam witness and the step_th exhibit).
 
 Runs each probe as a subprocess under a per-case timeout and stops on the
 first failure. Green means: the E0 predictions of
-`research_notes/sos_toltl_experiments.md` hold end to end — read-offs,
+`research_notes/sos_toltl_spec.md` hold end to end — read-offs,
 layers, (A)/(B) widths, certificates byte-exact, dg synthesis equivalent,
 translator verdicts, canonicity — and Theorem 4.13's band bricks are
 load-bearing on their census exhibits.

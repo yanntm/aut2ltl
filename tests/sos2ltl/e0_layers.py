@@ -6,7 +6,7 @@ Prints the Cayley layer structure (R-classes in topological order, with the
 R-order edges), the λ-quotient blocks, prefix-independence, and the absorbing
 classes. The Lemma 5.3 assertion (SCCs = R-classes) runs inside `build` on
 every input. With ``--expect``, asserts the triptych predictions of
-`research_notes/sos_toltl_experiments.md` E0.
+`research_notes/sos_toltl_spec.md` E0.
 """
 from __future__ import annotations
 
