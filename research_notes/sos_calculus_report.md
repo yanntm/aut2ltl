@@ -36,7 +36,7 @@ membership, all witness-carrying), `reduce` (the canonical re-quotient),
 
 ## CAL4a / V1a — the alignment-ratio distribution
 
-Substantiates paper §3.3 ("the realized ratio is a datum … over census pairs").
+Substantiates paper §3.3 (the realized-ratio datum; numbers now live in paper §8.2).
 `reference/calculus/v1_align_ratio.{md,csv}` —
 `python3 -m tests.calculus.v1_align --campaign` (seed 20260709; 6200 pairs
 sampled within alphabet strata; `F2=0`).
@@ -56,7 +56,7 @@ sampled within alphabet strata; `F2=0`).
 
 ## CAL4a / V1b — the operation ledger, calculus vs Spot
 
-Substantiates paper §4 (the ledger rows) and Contribution 4.
+Substantiates paper §7.1 (the ledger rows), §8.3, and Contribution 4.
 `reference/calculus/v1_ops.{md,csv}` —
 `python3 -m tests.calculus.v1_ops --campaign` (first 1000 uniform pairs of V1a +
 their 1550 distinct languages; 8100 rows; `F2=0`). Held-object economy: inputs
@@ -83,7 +83,7 @@ wall clock carries the abstract count (`|nodes|`, cells, `|linked|`).
 
 ## CAL4b / V1c — the pipeline demo
 
-Substantiates paper §3.4 (the entry-price / "pay canonicity once" claim).
+Substantiates paper §4 (the entry-price / "pay canonicity once" claim); numbers in paper §8.4.
 `reference/calculus/v1_pipeline.{md,csv}` —
 `python3 -m tests.calculus.v1_pipeline --campaign` (seed 20260712; 20
 same-alphabet pairs, middle `|𝒞|` decile; pipeline
@@ -105,7 +105,7 @@ same-alphabet pairs, middle `|𝒞|` decile; pipeline
 
 ## CAL4c / V2 — the stutter read-off vs Spot
 
-Substantiates paper §3.5 (Prop 3.3 read-off) and §4, and a census datum for
+Substantiates paper §5 (Prop 5.1 read-off) and §8.5, and a census datum for
 [SωSN26]. `reference/calculus/v2_stutter.{md,csv}` —
 `python3 -m tests.calculus.v2_stutter --campaign` (full sweep, 3938 languages).
 Our verdict is the `.cat` `stutter:` tag (`classify`'s `λ(a)²=λ(a)` read-off);
@@ -118,9 +118,9 @@ Spot's is `is_stutter_invariant` on the paired HOA.
   of the census, **28.9%** of the 2240 LTL-definable ones; every one is
   LTL-definable (0 non-LTL stutter-invariant), the X-free refinement of the cut.
 
-## CAL4d / V3 — the concatenation blow-up (Prop 3.4)
+## CAL4d / V3 — the concatenation blow-up (Prop 4.1)
 
-Substantiates paper §3.4 (Proposition 3.4). `reference/calculus/v3_blowup.{md,csv}`
+Substantiates paper §4 (Proposition 4.1); numbers in paper §8.6. `reference/calculus/v3_blowup.{md,csv}`
 — `python3 -m tests.calculus.v3_blowup --campaign` (per-case budget 15 s).
 Deterministic `L_n` and `W·L_n` acceptors are built by hand (the known result of
 the concatenation, not an implementation) and re-entered through the gate.
@@ -132,7 +132,7 @@ the concatenation, not an implementation) and re-entered through the gate.
 - **F13 — the encoding trap (#9) does not weaken the proof.** Two APs give four
   valuations; the increment class carries two of them
   (`a := (¬p∧¬q)|(p∧q)`, `b := p∧¬q`, `# := ¬p∧q`), the fourth a genuine second
-  increment letter rather than an alias, and Prop 3.4 survives verbatim.
+  increment letter rather than an alias, and Prop 4.1 survives verbatim.
 - **F14 — the entry price shows as growth, not a wall.** The construction
   finished for every n (max **0.36 s** at n = 5, 33 states) — no timeout was
   needed; the enriched-monoid entry price is visible in the ~8–9× per-step time
@@ -144,3 +144,15 @@ All five V-experiments delivered; the paper's measurement placeholders are
 filled in pure form and cite this report's territory. The remaining CAL4 line is
 housekeeping only. The `flat_canon` census, the seeds, and the git revisions in
 each `reference/calculus/*.md` header make every finding above regenerable.
+
+## Status addendum (2026-07-11, theory)
+
+The paper was restructured into ten sections (new title; results
+renumbered — Prop 3.3→5.1, 3.4→4.1, 3.5→6.1, Cor 3.6/3.7→6.2/6.3,
+Thm 3.10→6.6, Prop 3.11→6.7); all measured numbers now sit in paper §8
+in pure form, sourced from this report unchanged. Open engineering
+items are spec §9: E-CAL-EX (running-example gate), V4 (classification
+battery vs Spot — fills paper §8.5's ⟨TBD⟩), CAL6 (alphabet hygiene),
+and the corpus-refresh sweep (corpus moved 3938 → 6222; all §8 numbers
+to be regenerated on the frozen new corpus before submission). Figure
+requests: `sos_calculus_figures.md`.
