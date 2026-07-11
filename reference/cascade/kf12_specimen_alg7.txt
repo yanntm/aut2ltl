@@ -1,0 +1,8 @@
+# 2state2ap1acc_parity_3772037665 layer 5 R={5} k=0 aperiodic=True nC=13
+  find_c_conflict: CONFLICT (states=27)
+  shared recurring edge set |F|=3
+  ALG-7 verify (k=0): base class 5
+    loop1 classes d1=12 (idem 12) member=False
+    loop2 classes d2=5 (idem 5) member=True
+    membership TOGGLES: True   linked pairs conjugate: False
+    => GENUINE floor inhabitant

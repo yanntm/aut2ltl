@@ -1,0 +1,3 @@
+K-E3 pfxind check: 6220 languages, 1104 prefix-independent
+  prefix-independent with NON-frozen final layer: 0
+  => C.9 gating stratum empty on the census: prefix-independence forces a frozen final layer (C.3 ⟨TBD⟩ settled)
