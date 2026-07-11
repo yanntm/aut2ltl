@@ -147,10 +147,12 @@ wrong; everything semantic in the worked example holds.** With
 `¬φ = F(a∧c) ∨ (GFb ∧ GF¬b)` and `K = FGb ∧ Gc` over `AP = {a,b,c}`
 (ltl2tgba → canonize; encoding vetted by lasso probes on the det HOA):
 `|𝒞(¬φ)| = 5`, paper says 7; product table 10 classes, paper says 13.
-`|𝒞(K)| = 4` as stated. Hand census supporting 5: `[ε]`; the absorbing
-"has seen a∧c" class; and the no-a∧c classes split only by
-`(has-b, has-¬b) ∈ {(1,0),(0,1),(1,1)}` — nothing else about a no-a∧c
-word is future-relevant, as stem or as loop. Every *semantic*
+`|𝒞(K)| = 4` as stated. The count is machine-traceable: `𝓘(¬φ)` is
+canonize's syntactic-key dedup of the ltl2tgba automaton, and the
+fixture gate prints its full class census — per class, the shortlex
+key, its loops and the accepting pairs (5 classes: keys `ε`, `{}`,
+`{b}`, `{a,c}`, `{}{b}`; 9 linked pairs) — that the §4.6 arithmetic
+must reproduce or refute. Every *semantic*
 §4.6 prediction is machine-checked green: both endpoints inconclusive
 with minimal witnesses `({abc})^ω` and `({bc})^ω`; `exists_safety` NO
 with refusal `({bc})^ω`; `exists_cosafety` YES with kernel reducing to

@@ -82,9 +82,11 @@ the normative math you consult when the spec points at it.
 ## TODO — theory (reads the report's To theory, owes back)
 
 1. **Paper §4.6 corrections (E1, filed 2026-07-11):** `|𝒞(¬φ)| = 5`
-   (not 7), product table 10 classes (not 13) — engineering's hand
-   census is in the report; re-do the §4.6 arithmetic or refute the
-   census. Also worth a sentence there: the §4.6 band is `bits = 25`,
+   (not 7), product table 10 classes (not 13) — the fixture gate
+   prints the machine census (per class: shortlex key, loops,
+   accepting pairs; regen `cd sosl && python3 -m
+   tests.giventhat.ladder_gate --fixture`); re-do the §4.6 arithmetic
+   against it. Also worth a sentence there: the §4.6 band is `bits = 25`,
    and the least co-safety member comes from the least-open-hull
    (stems' right ideal), which §4.1 leaves implicit.
 2. **Soften the paper's §2/§7 "independently computed" wording** to
