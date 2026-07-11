@@ -68,11 +68,13 @@ the derived-census driver, the engine's first consumer at scale),
   (`quotient="explicit"`, the recorded fallback; `"symbolic"` refused);
   recorded exclusions: unused-AP languages (Spot import drops the AP),
   products (refused at Phase 6).
-- **TODO: everything else.** C4's squaring shortcut, C9–C10 proper,
-  E1/E3–E9, M2–M5 (E2 still owes the second component family and
-  per-point budget sweeps at scale). Next: E1 census wiring (HOA →
-  digest bridge; corpus at `genaut/corpus/flat_canon/`), which also
-  unlocks the C5 explicit-tool cross-check.
+- **TODO: everything else.** C4's squaring shortcut (**design pinned**
+  with the libDDD author — recorded in `sos_sdd/README.md`, "The
+  squaring shortcut (C4 completion)"; implementation next), C9–C10
+  proper, E1/E3–E9, M2–M5 (E2 still owes the second component family
+  and per-point budget sweeps at scale). After C4: E1 census wiring
+  (HOA → digest bridge; corpus at `genaut/corpus/flat_canon/`), which
+  also unlocks the C5 explicit-tool cross-check.
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat
@@ -133,7 +135,14 @@ the layer profile attached, never a silent abort. Cardinality
 idempotent-power map `π`, and the aperiodic squaring shortcut
 (`O(log ℓ)` applications of `Sq`), with the guard the paper specifies:
 squaring is a shortcut, never a verdict — on inputs where the shortcut
-and the general pairing disagree, that is a stop-the-line bug.
+and the general pairing disagree, that is a stop-the-line bug. ⟨The
+squaring rendering is pinned (settled with the libDDD author): the
+interleaved 2k-variable relation `R = {(z ⧉ z·z)}` built once by a
+renumbering dupe gadget + the Comp case split reading only pre
+variables, iterated by a relational-product homomorphism; full recorded
+design in `sos_sdd/README.md`, "The squaring shortcut (C4 completion)".
+The loop's termination theorem: convergence iff every orbit period is a
+power of two.⟩
 
 **C5 — profiles and residuals (Phases 3–4).** `ProfR` as π-composition
 + one slot-read + the `Acc` predicate (no cycle detection anywhere —

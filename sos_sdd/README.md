@@ -266,12 +266,87 @@ stream.
 - No standalone CLI for now: the drivers are Python, the API is the tool. If
   profiling ever needs a pure-C++ entry point, a thin `main.cpp` replaying a
   digest dump can be added without touching this contract.
-- The C4 squaring shortcut is **deferred**: `y ← y·y` rewrites every slot
-  while reading the others, a genuinely simultaneous step — planned as a
-  2k-variable relation encoding rather than `syncAssignExpr`. Until it
-  lands only `square="off"` is implemented; `"check"`/`"on"` are refused
+- The C4 squaring shortcut has its **design pinned** (next section,
+  settled with the libDDD author) but is not yet implemented: until it
+  lands only `square="off"` is accepted; `"check"`/`"on"` are refused
   loudly (never silently ignored), and Phase 2 runs the general pairing,
   which is the always-correct path.
+
+## The squaring shortcut (C4 completion) — recorded design
+
+`y ← y·y` rewrites every slot while reading the others, a genuinely
+simultaneous step; `syncAssignExpr` is ruled out. The recorded rendering
+is a **2k-variable relation encoding**: materialize the squaring map as
+an interleaved relation diagram once, then iterate it with a relational
+product — simultaneity becomes vacuous because the relation's input and
+output live on distinct variables.
+
+- **The relation space.** A dedicated 2n-variable space holding only the
+  relation: slot `q` becomes the adjacent pair `r_q = var 2q+1` (pre,
+  read-only) above `w_q = var 2q` (post, write-only). Variable 0 stays
+  adjacent to the terminal; the numbering is collision-free, so a
+  `GalOrder` over it is well-defined. Pre-above-post is chosen so the
+  product matches before it emits. (The transparent `DoubleVars`
+  doubling of `libITS bin/ToTransRel.cpp` — colliding numbers, homs
+  hitting the curried first occurrence — was considered and rejected
+  *for this step*: it is correct for GAL's sequential read-after-write
+  semantics, but `Comp`'s cross-slot reads need the OLD values, and the
+  colliding numbers make the frozen copies unaddressable by any
+  `GalOrder`.)
+- **The dupe gadget.** A ten-line renumbering variant of `DoubleVars`:
+  `phi(q, v) = GDDD(2q+1, v) ^ GDDD(2q, v) ^ GHom(this)`, taking EM¹ to
+  the diagonal `D = {(z ⧉ z)}` on the relation space.
+- **The step.** The paper's case split verbatim on the interleaved
+  order: `H_q = Σ_p [w_q := r_{base_q+p} | (r_q & mask_q)] ∘
+  [r_q >> C_q == p]`. Every guard and rhs mentions only r-variables,
+  every write targets a w-variable — written set ∩ read set = ∅, so the
+  composition `∘_q H_q` equals the simultaneous `Comp` **by
+  construction** (order-independence is syntactic, not a semantic
+  argument). Cross-slot reads sit either side of the written variable;
+  `assignExpr` handles rhs support above and below the lhs (author's
+  confirmation). `R = (∘_q H_q)(D) = {(z ⧉ z·z)}` is built **once** —
+  every power `x^{2^j}` stays in EM¹ — at the cost of about one pairing
+  round.
+- **The product.** `applyRel(R)`: a GHom carrying the R sub-diagram (the
+  `Apply2k` pattern, cached by hash on the carried DDD), applied to the
+  pair set on the *crossing's* block-stacked space. It travels **two
+  R-levels per set variable** while descending the z-block: match the
+  set value against R's pre arcs (no match ⇒ null), emit each post
+  value as `GDDD(var, w′) ^ applyRel(grandson)`, summed; the factory
+  maps `GDDD::one ↦ GHom::id`, so R exhausts exactly where the x-block
+  begins and the x-block passes through untouched. Matching is by
+  depth — R's own variable numbers are irrelevant to the product — and
+  the set never leaves the crossing pair space.
+- **The loop.** `P_0 = diag`, `P_{j+1} = applyRel(R)(P_j)`. R is total
+  and functional on EM¹, so `|P_j| = |EM¹|` every round (asserted; a
+  violation is StopTheLine, a defect). P holds one pair per x, so the
+  O(1) set fixpoint `P_{j+1} == P_j` is equivalent to pointwise
+  `z = z·z`, i.e. every z idempotent — the fixpoint IS the idempotence
+  test, and the result is `{(x, x^π)}` by the unique-idempotent
+  argument. Cap: `⌈log₂|EM¹|⌉ + 1` rounds — an orbit of index `i`,
+  period `d` has `x^{2^j}` stable iff `2^j ≥ i` and `d | 2^j`, both
+  settled by the cap if ever, so squaring converges **iff every orbit
+  period is a power of two** (the "detects powers of two, not
+  aperiodicity" note, now the loop's termination theorem).
+- **Modes.** `"check"`: pairing and squaring both run; convergence ⇒
+  one O(1) comparison against the pairing's π, disagreement raises
+  StopTheLine; divergence is a recorded finding (expected on
+  non-power-of-two periods; mod3 is the canonical case) with the
+  pairing's π standing. `"on"`: squaring only (the `O(log ℓ)` payoff);
+  divergence raises StopTheLine ("shortcut trusted but did not
+  converge") so a sweep can never mislabel a periodic instance.
+  `"off"`: pairing only.
+- **Placement and gate.** `src/squaring.hh` (dupe, interleaved order,
+  step, R, product, loop); `Crossing` stays frozen, `SoSCore`
+  orchestrates the check-mode comparison. Gate cases: the triptych
+  under `"check"` (converges, agrees with the `"off"` build), mod3
+  (must diverge under `"check"`, must StopTheLine under `"on"`), a
+  period-2 counter (converges despite periodicity), `EvenBlocks^{⊗2}`
+  factored (`block_base` offsets in the interleaved space). Ground
+  truth: the pairing π, itself F8-validated against explicit power
+  orbits. Implementation order: dupe + R probed against explicit
+  `z·z` first, then the product probed by `applyRel(R)(diag) ==
+  step(diag)`, then the loop and modes.
 
 ## Build
 
