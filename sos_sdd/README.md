@@ -112,6 +112,7 @@ S.congruence_count()    # |EM¹/~| — the syntactic class count (Phase 5)
 S.congruence_classes()  # every ~-class as explicit element tuples — a
                    # test/debug reading; Phase 6 consumes the blocks
                    # symbolically
+S.n_classes()      # invariant classes incl. the fresh [eps] (Phase 6)
 ```
 
 **Calculus operators (C10)** — each names its paper anchor; built-in
@@ -220,6 +221,21 @@ stream.
   slot-local `Hom_Basic` — `congruence.hh` never includes the ExprHom
   machinery, which is the rotation-lemma code invariant (no `Comp`
   inside the fixpoint).
+- **Phase 6 rendering** (`quotient.py`, the `quotient="explicit"` route —
+  the recorded small-side fallback; `"symbolic"` is refused): word
+  classes are the ~-classes of non-empty-word images with `[eps]`
+  adjoined fresh (the reference's normative identity convention —
+  `sosl.sos.core.quotient`: a quotient over elements alone would merge
+  `!a` into `[eps]` for GF a and break byte parity); mult folds packed
+  representative values (never `Comp`); ids/keys by shortlex BFS over
+  the small quotient algebra itself (mirroring
+  `sosl.sos.core.canonical.shortlex_bfs`); verdicts off the Phase 3
+  profile rows at the initial state. `to_sos()` emits the core sections
+  only (the optional residuals trailer does not participate in language
+  identity). Recorded limits: single `Automaton` digests with sorted
+  APs (products refused); languages whose reference import drops unused
+  APs (Spot postprocess, e.g. the empty language) sit outside the
+  same-AP byte-parity instance set.
 - **Variable order convention**: DDD variable 0 is adjacent to the
   terminal (slot `i` = variable `i`, higher variables on top) — the
   library convention, load-bearing for the expression homomorphisms and

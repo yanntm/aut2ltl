@@ -9,6 +9,7 @@ from typing import Any, Callable, Dict, Literal, Optional, Sequence, Union
 
 from .contract import SoS
 from .model import Input, Product
+from .quotient import QuotientSoS
 from .slotmodel import async_factored, async_flat, from_automaton
 
 Discipline = Literal["layered", "chaining", "saturation"]
@@ -50,6 +51,19 @@ class Engine:
                      else async_flat(aut))
         else:
             model = from_automaton(aut)
+        # Phase 6 (quotient + exports) is assembled on this side from the
+        # core's phase 1-5 readings — quotient="explicit", the recorded
+        # small-side fallback; single automata only for now.
+        if until_phase >= 6:
+            if self.quotient != "explicit":
+                raise NotImplementedError(
+                    f"quotient={self.quotient} (only explicit is implemented)")
+            if isinstance(aut, Product):
+                raise NotImplementedError(
+                    f"{aut.name}: .sos emission for products is not "
+                    "implemented (single automata only)")
+            core = _core().build(model.payload(), self._config(), 5)
+            return QuotientSoS(core, aut, model)
         return _core().build(model.payload(), self._config(), until_phase)
 
     def _config(self) -> Dict[str, Any]:
