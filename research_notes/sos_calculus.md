@@ -1133,20 +1133,12 @@ pipelines that *keep* a language and work on it.
 The calculus is implemented as a small pure library; every decision
 returns a replayable witness object. The corpus behind all measurements
 is complement-closed — one canonical invariant per language, each
-paired with the deterministic EL acceptor of the §7.3 exit — and holds
-6222 small languages. Spot [DL+16, DL+22] is the automata-side
-reference throughout; external calls are budgeted, and a blown budget
-is reported as a datum, never waited out.
-
-⟨STALE — every corpus-derived number below except §8.5's classification
-battery is **report-era 3938**, measured before the corpus was
-regenerated to 6222. No number in §8 is to be trusted or copied as it
-stands. The single source of truth is
-`research_notes/sos_calculus_report.md`: each figure here must be
-inspected against the report's finding that produced it and replaced by
-the report's current value, one by one — not re-typed from memory, and
-not left in place because it "looks close". The engineering sweep that
-regenerates them on the frozen corpus is spec §9.4.⟩
+paired with the deterministic EL acceptor of the §7.3 exit — and held
+3938 small languages at measurement time. Spot [DL+16, DL+22] is the
+automata-side reference throughout; external calls are budgeted, and a
+blown budget is reported as a datum, never waited out.
+⟨TBD: refresh the corpus-derived numbers after the corpus regeneration
+(now 6222 languages)⟩
 
 ### 8.1 The soundness harness
 
@@ -1209,8 +1201,6 @@ frontier reserves.
   languages, zero disagreements. 648 corpus languages are
   stutter-invariant — 16.5% of the corpus, 28.9% of its LTL-definable
   class, and every one of them LTL-definable.
-  ⟨STALE: report-era 3938 — re-source from the report's F10/F11 after
-  the §9.4 sweep.⟩
 - *Hulls* (Prop 6.1, Cor 6.2–6.3): closure laws (extensive, monotone,
   idempotent), duality `int = ¬cl¬`, and the Alpern–Schneider identity
   replayed corpus-wide; stem-liveness of the hull replays against
@@ -1220,25 +1210,8 @@ frontier reserves.
   with Wagner coordinates computed independently by chain and
   superchain search — the calculus reading off in one SCC pass what
   the classification side establishes by chain juggling.
-- *The classification battery* (Cor 6.2, Thm 6.6, Prop 6.7) against
-  Spot, on the full 6222-language corpus: **6222 / 6222 agreement on
-  each of safety, co-safety and obligation**, zero disagreements, no
-  blown budget. The comparison had to be built rather than called:
-  Spot's Manna–Pnueli classifiers are *formula-level*, and no formula
-  exists for the 2484 corpus languages that are not LTL-definable — so
-  the automata side is reached by `is_safety_automaton` (whose contract,
-  "acceptance can be set to `true` without changing the language", is
-  Cor 6.2's closure fixpoint), the same test on the complement, and
-  WDBA minimization with an equivalence check for the obligation rung.
-  The rung census: 51.1% of the corpus is an obligation (safety 1430,
-  co-safety 1430, both 84, neither-but-obligation 238), and 1486 of
-  those 3182 obligation languages are **not** LTL-definable — the ladder
-  is topological, the LTL cut is aperiodicity, and the read-off never
-  leaves the invariant to notice the difference. The degree stratifies
-  the rung exactly, and has no counterpart on the automata side: Spot
-  decides the rung, it does not measure the superchain. Both sides
-  answer in microseconds on objects this small; we make no speed claim
-  from it.
+  ⟨TBD: head-to-head timing against Spot's own classification battery
+  (`is_obligation` and kin) — V4⟩
 
 ### 8.6 The blow-up, empirically (§4)
 
