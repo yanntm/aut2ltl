@@ -3173,3 +3173,14 @@ Committed `9bc259d9a` (sample) + `de3ab44ba` (README).
   recomputed. New honesty point in both: the derivative-regime floor shape
   (3state1ap2acc_parity) is now sampled yet 0 PARTIAL — absence on a probe
   proves nothing; Fork stays the K4 exercise.
+
+## 2026-07-11 — cascade draft: K-F7..K-F11 integrated (theory thread)
+DONE: research_notes/bls_cascade.md second revision — measured results in:
+C.2 remark corrected (extended census 4248 langs: 1164 undecided, 322
+frozen + 842 moving, all decide under (C) at widths 0/1/2, 0 conflicts —
+the old "372 all frozen, procedural only" read was Table 3's cut); K-E7
+map (absorption 234 / group 90 / 0 verdict-splitting other) into C.4;
+Prop C.19 tool-confirmation paragraph (K-F9, first moving-layer floor
+inhabitant); Cor C.9 TBD settled census-wide (132/132 prefix-independent
+frozen, K-F10) + one-sidedness 13/13/18/12 after Cor C.8; K-F11 emitter
+conformance into C.3 worked witness + C.7 note. Banner updated.
