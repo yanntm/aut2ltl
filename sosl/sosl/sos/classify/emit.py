@@ -25,4 +25,8 @@ def render_text(rec: Record) -> str:
         f"phi = ({rec.phi[0]}, {rec.phi[1]})"
         + ("   [PARTIAL: derivative needed]" if rec.gamma_partial else ""),
     ]
+    if "derivation" in rec.witnesses:
+        trace = rec.witnesses["derivation"]
+        lines.append(f"derivation: {len(trace) - 1} level(s), mu trace = "
+                     + ", ".join(lv["mu"] for lv in trace))
     return "\n".join(lines)
