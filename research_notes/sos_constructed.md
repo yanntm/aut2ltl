@@ -231,7 +231,8 @@ A word is **accepted** — a member of `L(D)` — exactly when its run from `ι`
 is the ω-language `L(q) = { α ∈ Σ^ω : the run of D from q on α satisfies Acc }` — what
 `D` would accept were `q` the start. Determinism ties residuals to the language: a
 finite prefix `u` read from `ι` lands in one state, so `L(ι·u) = u⁻¹L` for every
-`u ∈ Σ*`.
+`u ∈ Σ*`. We write `Reach = δ(ι, Σ*) ⊆ Q` for the set of states some finite
+prefix reaches.
 
 *Example (Figure 1).* The three running automata instantiate `Acc` across the
 Emerson–Lei range. `GF(aa)` reads `Inf(0)` for a single mark `0` placed on the
@@ -519,9 +520,13 @@ function of `st_x(ι)` and `c` only, namely `A(st_x(ι), c)`. ∎
 **Definition 4.2.** For `e, f ∈ EM(D)` (images of non-empty words) let
 
 ```
-    e ~lin f   ⟺   ∀ q ∈ Q :   L(st_e(q)) = L(st_f(q)),
-    e ~ω  f    ⟺   ∀ b ∈ EM(D) :   Aprof(e·b) = Aprof(f·b),        where  Aprof(c) = (q ↦ A(q, c)).
+    e ~lin f   ⟺   ∀ q ∈ Reach :   L(st_e(q)) = L(st_f(q)),
+    e ~ω  f    ⟺   ∀ b ∈ EM(D) :   Aprof(e·b) = Aprof(f·b),        where  Aprof(c) = (q ∈ Reach ↦ A(q, c)).
 ```
+
+The slots are `Reach`, not `Q`: a slot names the state a left context lands on
+(Proposition 4.3), and an unreachable state names no context — letting it
+separate would over-refine the quotient on a non-trim `D`.
 
 Here `b` ranges over all of `EM(D)`, the identity **included**: `b = ⟦ε⟧` is the
 ω-power context with empty right padding `y = ε`, whose loop is `e` itself — a case
@@ -543,7 +548,7 @@ exactly this per-state loop verdict, one bit per state.
 
 *Proof.* *Linear shape.* By Lemma 4.1, `x·e·y·t^ω ∈ L ⟺ A(st_{x·e·y}(ι), t)`, and
 `st_{x·e·y}(ι) = st_y(st_e(st_x(ι)))`. As `x` ranges over `EM(D)`, `st_x(ι)` ranges over
-exactly the reachable states; fix such a `q`. The linear condition then reads
+exactly `Reach`; fix such a `q`. The linear condition then reads
 `∀ y, t : A(st_y(st_e(q)), t) = A(st_y(st_f(q)), t)`, i.e. the states `st_e(q)` and
 `st_f(q)` accept the same ultimately-periodic words, i.e. (agreement on
 ultimately-periodic words being language equality) `L(st_e(q)) = L(st_f(q))`. Over all
@@ -877,7 +882,7 @@ reconstructs languages — finite or ω — from finite observations.
 final states in place of marks. Then (i) the enrichment is vacuous and `EM(D)` is
 the plain transition monoid of `D`; (ii) the ω-power shape disappears with the
 ω-words it quantified over, and the whole congruence is the linear half:
-`e ~ f ⟺ ∀ reachable q : L(st_e(q)) = L(st_f(q))`, with finite-word residuals
+`e ~ f ⟺ ∀ q ∈ Reach : L(st_e(q)) = L(st_f(q))`, with finite-word residuals
 `L(q) ⊆ Σ*`; (iii) the quotient is the syntactic monoid of `L`, equal to the
 transition monoid of the minimal DFA.
 
