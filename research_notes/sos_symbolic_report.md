@@ -303,14 +303,16 @@ left for the paper integration.
 - **F23 — the E1 read-offs** (Theory-run; regen
   `python3 tests/sos_sdd/e1_readoff.py` — joins the two tracked
   reference CSVs, no engine runs; engineering to adopt the script).
-  - *Upward-closure, stratified* by the name's acc token:
-    0acc 41150/70983 = **58.0 %**, 1acc **71.6 %**, 2acc **62.8 %**,
-    3acc 15/21; pooled **62.2 %**, pooled over acc>0 **64.9 %**.
-    Note to engineering: the census `marks` column disagrees with the
-    name token (all 2733 0acc instances carry `marks=1`; 1acc spreads
-    over `marks ∈ {1,2,3}`) — explain the discrepancy (Spot import
-    normalization?) and re-stratify by the digest's `|C|` (one-line
-    groupby change in the script).
+  - *Upward-closure:* pooled **62.2 %** (111 182 / 178 892 non-empty
+    `(slot, dst)` families over the 6102 instances) — the paper's
+    citation, unstratified. A stratification worry was raised and
+    dismissed: instance names carry the *source GBA shape*'s
+    acceptance count (generator provenance, not digest semantics —
+    the data rows are the det/canonical automata, whose canonical
+    form writes "any path accepting" with 1 mark), and since digest
+    `|C| ≥ 1` throughout, there is no trivially-closed `|C| = 0`
+    stratum that could inflate the pooled number. Name-based strata
+    are meaningless and not to be used in any analysis.
   - *Compression correlates* (`ratio = nodes_final / cells`; quantiles
     p5/median/p95 = **0.12 / 0.29 / 0.50**, max 2.0 = the two floor
     rows). Spearman vs ratio: sharing (`distinct_cells/cells`)
@@ -336,8 +338,10 @@ left for the paper integration.
   composition law), hence a union of up-sets in the lattice `M(d)`
   generates; *full* upward closure holds exactly when stabilizer marks
   realize every single-mark increment — the 62 % measures that
-  frontier. Adjustments: (1) cite stratified — the paper carries 62 %
-  pooled / 65 % on marked instances, strata in F23; (2) the metric is
+  frontier. Adjustments: (1) cite the pooled 62 % — no stratification:
+  canonical digests always carry ≥ 1 mark, so there is no trivial
+  stratum to guard against (see F23's provenance note); (2) the
+  metric is
   a structure datum, not a compression predictor (ρ = +0.19 vs
   sharing's +0.73) — the paper says so explicitly.
 
