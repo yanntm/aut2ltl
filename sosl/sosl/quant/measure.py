@@ -83,21 +83,18 @@ def _solve(
     return b
 
 
-def measure(
-    inv: Invariant, p: Optional[Dict[Letter, Fraction]] = None
-) -> MeasureResult:
-    """The measure of ``inv``'s language under the Bernoulli measure ``p``
-    (default uniform), as an exact `Fraction` with its certificate.
+def _absorption_rows(
+    inv: Invariant, p: Dict[Letter, Fraction]
+) -> Tuple[List[FrozenSet[int]], ThetaProfile, Dict[int, int], List[List[Fraction]]]:
+    """The transient absorption system, solved: bottom SCCs, θ-profile,
+    the ``transient class -> row index`` map, and per transient class its
+    absorption-probability row (one column per bottom SCC, summing to
+    exactly 1 — asserted per row).
 
     Unknowns are the transient classes (those in no bottom SCC — always
     including the identity); each satisfies ``x_c = sum_a p(a) *
     rhs(M(c, lambda(a)))`` where ``rhs`` is the unknown of a transient
-    successor and the per-SCC boundary indicator otherwise. Solved once
-    with one column per bottom SCC, giving the absorption probabilities
-    from the identity; these must sum to exactly 1, and the value is the
-    theta-weighted sum."""
-    if p is None:
-        p = uniform(inv)
+    successor and the per-SCC boundary indicator otherwise."""
     _validate_p(inv.alphabet, p)
     bottoms: List[FrozenSet[int]] = bottom_sccs(inv)
     profile = theta_profile(inv)
@@ -120,15 +117,53 @@ def measure(
                 a[i][idx[d]] -= weight
             else:
                 b[i][scc_of[d]] += weight
-    x = _solve(a, b)
-    root = x[idx[inv.identity]]
-    assert sum(root, zero) == 1, (
-        f"absorption probabilities sum to {sum(root, zero)}, not 1"
-    )
+    rows = _solve(a, b)
+    for c in transient:
+        total = sum(rows[idx[c]], zero)
+        assert total == 1, (
+            f"absorption probabilities from class {c} sum to {total}, not 1"
+        )
+    return bottoms, profile, idx, rows
+
+
+def measure(
+    inv: Invariant, p: Optional[Dict[Letter, Fraction]] = None
+) -> MeasureResult:
+    """The measure of ``inv``'s language under the Bernoulli measure ``p``
+    (default uniform), as an exact `Fraction` with its certificate: the
+    θ-weighted sum of the identity's absorption row (see
+    `_absorption_rows`)."""
+    if p is None:
+        p = uniform(inv)
+    _, profile, idx, rows = _absorption_rows(inv, p)
+    root = rows[idx[inv.identity]]
+    nb = len(profile.entries)
     absorption = tuple(
         (profile.entries[j][0], root[j]) for j in range(nb)
     )
     value = sum(
-        (root[j] for j in range(nb) if profile.entries[j][1]), zero
+        (root[j] for j in range(nb) if profile.entries[j][1]), Fraction(0)
     )
     return MeasureResult(value=value, profile=profile, absorption=absorption)
+
+
+def value_vector(
+    inv: Invariant, p: Optional[Dict[Letter, Fraction]] = None
+) -> Tuple[Fraction, ...]:
+    """The per-class measure vector ``x``: ``x[c]`` is the measure of the
+    language read from class ``c`` — the θ-weighted absorption row of a
+    transient ``c``, and ``θ_C`` (as ``Fraction`` 0 or 1) on the classes
+    of a bottom SCC ``C``. ``x[identity]`` equals ``measure(inv, p).value``."""
+    if p is None:
+        p = uniform(inv)
+    bottoms, profile, idx, rows = _absorption_rows(inv, p)
+    bits = [bit for (_, bit) in profile.entries]
+    x: List[Fraction] = [Fraction(0)] * inv.n
+    for j, scc in enumerate(bottoms):
+        for c in scc:
+            x[c] = Fraction(1) if bits[j] else Fraction(0)
+    for c, i in idx.items():
+        x[c] = sum(
+            (rows[i][j] for j in range(len(bottoms)) if bits[j]), Fraction(0)
+        )
+    return tuple(x)
