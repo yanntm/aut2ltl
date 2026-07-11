@@ -211,11 +211,10 @@ verdicts propagate down the `H`-order — and persistence is the mirror
 condition. (Orientation anchor: for the recurrence specimen `GFa`,
 the accepting loop `λ(a)` sits `H`-below the rejecting all-`b` loop,
 as the condition demands; `FGa` mirrors it. The transcription is
-confirmed against the census's chain coordinates (§7) — not by an
-independent reimplementation but by two distinct decision paths over
-the calculus's shared `H`-order primitives, a violation scan against
-an alternating-chain dynamic program, in agreement on all 6 222
-census languages.)
+confirmed against the census's chain coordinates (§7) by two distinct
+decision paths over the calculus's shared `H`-order primitives — a
+violation scan against an alternating-chain dynamic program — in
+agreement on all 6 222 census languages.)
 
 **Stutter notions.** `destutter(·)` collapses maximal finite blocks of
 equal letters; two ω-words are stutter-equivalent iff they share their
@@ -527,15 +526,13 @@ triples are one class. `𝓘(¬φ)` has **5 classes** — `[ε]`, `(0,0,1)`,
 pairs. `𝓘(K)` has 4: `[ε]`, `BC` (all letters `b∧c`), `C` (all `c`,
 some `¬b`), and the absorbing dirty class `D` (some `¬c`), with
 `Val_K(s, e) = [k_s ≠ D] ∧ [k_e = BC]`. The generated product has
-**10 classes** — the consistent quadruples, the `⊤` row contributing
-one class per `k`-coordinate where the unreduced bit table would
-contribute six (and 13 in all); both verdicts ride along. Every
-letter class is idempotent (both formulas are `X`-free), so
-`T = T/∼` and the §5 quotient test is trivially exact on this
-instance; the phenomenon of §5 needs a stutter-sensitive pair (§5.2).
-(Both counts and every semantic claim of this section are
-machine-checked against the canonical construction; an earlier draft
-counted the bit presentation — 7 and 13.)
+**10 classes** — `[ε]` and the consistent quadruples: over `BC` the
+letters force `(p,q) = (1,0)`, giving `(0,1,0)` and `⊤`; over `C`,
+`q = 1`, giving `(0,0,1)`, `(0,1,1)` and `⊤`; over `D`, all four
+nonempty `¬φ`-classes — and both verdicts ride along. Every letter
+class is idempotent (both formulas are `X`-free), so `T = T/∼` and
+the §5 quotient test is trivially exact on this instance; the
+phenomenon of §5 needs a stutter-sensitive pair (§5.2).
 
 **Endpoints (§3).** A `P_min` pair's stem absorbs its loop, so
 `σ_s ∨ σ_e` collapses: `P_min = {stems (⊤ | BC/C), loops with
