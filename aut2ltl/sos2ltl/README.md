@@ -73,15 +73,25 @@ Language ──bridge──► Invariant 𝓘(L) ──classify.aperiodic──�
 - **`dg/`** — the Diekert–Gastin local-divisor synthesis, consuming the
   invariant natively; the baseline and the fallback below the engine.
   See `dg/algorithm.md`.
+- **`cascade/`** — the decomposition fallback (paper §6, spec E11): the
+  per-layer KR-cascade delegate the engine consumes through its
+  `LayerFallback` hook — the stem half on no-width layers (Prop 4.14,
+  cascade extractor), the loop half on window-undetermined
+  final-candidate layers (tail-restricted acceptor, `Fin(C)`). See
+  `cascade/algorithm.md`.
 - **`translator.py`** — the `Translator`: bridge, step-0 witness scan on
   `𝓘(L)` itself, then the engine behind its conformance gate (the
   emitted formula's reference invariant must be byte-equal to the
   input), dg where the stratum's preconditions fail. Faithful-or-NOK,
-  like every translator. Registered as the portfolio recipe `sos2ltl`.
+  like every translator. Registered as the portfolio recipe `sos2ltl`;
+  `sos2ltl_casc` is the same assembly with the `cascade/` delegate
+  below the engine.
 
 ## Layering
 
 Depends on `sosl.sos` (the invariant floor — alphabet, lasso, invariant,
 serialization, reference builder, the `classify` scans) and the `aut2ltl`
 contract floor (`Language`, `LTLResult`, `Translator`, `Witness`). Imports
-nothing from `aut2ltl.bls`. Tests live under `tests/sos2ltl/`.
+nothing from `aut2ltl.bls` — except `cascade/`, the single sanctioned
+import point (the delegate consumes the bls gap bridge, operators and
+member ladder). Tests live under `tests/sos2ltl/`.
