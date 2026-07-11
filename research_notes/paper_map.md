@@ -171,17 +171,6 @@ aperiodic.
 
 *Files:* `prophetic_counterfree.md`.
 
-### `syntactic_omega_semigroup_ltl` — Deciding and Constructing LTL over the Syntactic ω-Semigroup
-
-The original single-engine draft: compute the syntactic ω-semigroup, decide
-LTL-definability by aperiodicity, extract a replayable counting certificate on
-the negative side, run Diekert–Gastin synthesis on the materialized quotient on
-the positive side.
-Largely superseded — its construction half became `sos_constructed`, its LTL half
-`sos_toltl`; kept as the lineage record.
-
-*Files:* `syntactic_omega_semigroup_ltl.md`.
-
 ### `bls_cascade` — The cascade ladder: the loop side beyond windows and parks
 
 A section draft toward `sos_toltl.md` (proposed §5′, numbered `C.*` throughout),
