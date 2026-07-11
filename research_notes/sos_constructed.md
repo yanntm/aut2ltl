@@ -827,7 +827,8 @@ res-step:
 **Figure 2.** The exportable artifact `𝓘(GF(aa))` — a "semantic HOA" listing the keyed
 classes, letter map, multiplication table, and saturated accepting-pair set (this core
 is the complete language invariant), plus an optional residuals block (here a single
-state, `GF(aa)` being prefix-independent) that does not enter the equality test;
+state, `GF(aa)` being prefix-independent) that does not enter the equality test —
+derived data, recomputable from the core (Proposition 5.3);
 reproduced byte-for-byte from the tool's export. To test
 membership of `u·z^ω`: fold `u, z` to class ids, iterate `z` to an idempotent `e`, set
 `s = u·e`, and accept iff `(s, e)` is listed under `accept`. For `(a·!a)^ω`: `z = a·!a`
@@ -858,6 +859,35 @@ transition monoids disagree even on whether a group is present, and their
 enriched monoids have different sizes — yet the construction returns the
 byte-identical six-class `𝓘(GF(aa))` of Figure 2 from both. The `Z₂` of
 Figure 1(a) was pure presentation; Theorem 4.5's quotient is where it dies.
+
+---
+
+**Definition 5.2 (right Cayley graph).** `Cay(L)` is the rooted labeled graph
+with nodes `𝒞`, root `[ε]`, and an edge `s →ᵃ M(s, λ(a))` for each `s ∈ 𝒞`,
+`a ∈ Σ`. It is a function of `(𝒞, λ, M)` alone; reading `w` from the root ends
+at `[w]`, so every node is reachable (its shortlex key spells a path to it),
+and each node has exactly one out-edge per letter — a deterministic, complete
+automaton structure on the classes, the right regular representation of
+`S(L)₊¹`. Where `M` is the algebra as a table, `Cay(L)` is the same algebra as
+a machine; the procedures of §7 walk it rather than the raw table.
+
+**Proposition 5.3 (residuals are derived data).** The residual `u⁻¹L` depends
+only on the class `[u]`; write `L_s` for the residual of `s ∈ 𝒞` (so
+`L_{[ε]} = L`, and every residual of `L` is an `L_s`). Membership is one fold
+and one lookup — `y·t^ω ∈ L_s ⟺ (s·[y]·e, e) ∈ P`, `e` the idempotent power of
+`[t]` — and residual equality `L_s = L_{s'}` is right-invariant, so the
+residual automaton is the quotient of `Cay(L)` by it. Everything the residuals
+block of Figure 2 carries is thus recomputable from `(𝒞, λ, M, P)`: it is
+shipped for convenience, and rightly enters no equality test.
+
+*Proof.* If `u ≈_L v`, Arnold's linear shape at `x = ε` gives
+`u·y·t^ω ∈ L ⟺ v·y·t^ω ∈ L` for all `y, t`; two regular ω-languages agreeing
+on all lassos are equal (§2), so `u⁻¹L = v⁻¹L` and the residual is a function
+of `[u]`. The membership formula is Theorem 5.1's fold started at `s` (`e` is
+a word class, never `[ε]`, the identity being fresh — §2). Right-invariance:
+`L_s = L_{s'}` gives `L_{s·λ(a)} = a⁻¹L_s = a⁻¹L_{s'} = L_{s'·λ(a)}`, so
+quotienting `Cay(L)` by residual equality yields again a deterministic,
+complete letter-graph — the residuals block. ∎
 
 ---
 
