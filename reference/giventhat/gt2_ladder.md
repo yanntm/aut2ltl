@@ -1,5 +1,5 @@
 date: 2026-07-11
-git: 0137f6a63
+git: 6354b7a72
 seed: 20260711 (campaign pairs), full sweep (rung oracle)
 corpus: genaut/corpus/flat_canon
 
