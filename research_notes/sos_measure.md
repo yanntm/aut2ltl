@@ -207,8 +207,14 @@ the invariant by the hull surgery of [SωSC26, Prop 6.1]. A
 transitions emit letters (every present transition with positive
 probability); a run of `M` emits an ω-word, and `Pr_M(L)` is the
 probability that the emitted word lies in `L`. (State-labeled chains,
-as in [CY95], embed by pushing each state's letter onto its incoming
-transitions.) Both `μ_p(L)` (the case of a
+as in [CY95] and the input languages of the probabilistic model
+checkers, embed by pushing each state's letter onto its incoming
+transitions and prepending a fresh pre-initial state whose single
+probability-1 transition emits the initial state's letter: the
+emitted word of a run `s₀s₁s₂…` is then the full path word
+`ℓ(s₀)ℓ(s₁)ℓ(s₂)…`, the object those tools measure. The pre-initial
+state has no incoming transitions, so it lies on no cycle and leaves
+the cycle structure used in §3.5 untouched.) Both `μ_p(L)` (the case of a
 one-state chain emitting all letters) and `Pr_M(L)` are measurable for
 ω-regular `L`, and
 computable in polynomial time from a *deterministic* ω-automaton for `L`
