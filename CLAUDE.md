@@ -11,7 +11,7 @@ Sources :
 
 Utilities :
 
-* aut2ltl/ltl  (spot interaction, DAG, twa...) ; sosl/sos/io (SoS and .cat io); ... among others 
+* To load and serialize, use these over raw Spot or hand-parsing, in probes too: `sosl.sos.build` (`import_hoa` / `import_ltl` / `reference_of_ltl`), `sosl.sos.io` (`load_invariant` / `dump_invariant`), `sosl.sos.classify.io` (`parse_cat`), `aut2ltl.ltl.twa` (twa/HOA).
 * survey/ : run and collect CSV
 * samples/ : fixtures, examples, benchmark test set
 * genaut/ : generate and host the "corpus"
