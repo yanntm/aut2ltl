@@ -50,6 +50,9 @@ nowhere; Spot parse-only inside `routea`. Gates, run from `sosl/` as
 | `oracle_gate` | L1 oracle agreement, both `p`'s | `m2_oracle.{md,csv}` | green 4248/4248, 0 skips |
 | `law_gate` | L2–L5 modularity/monotonicity/trichotomy/obligation | `m2_laws.md` + csvs | green, 0 red |
 | `m3_gate` | shadow/essential case laws, symmetry, consistency, triangle, Prop 4.5 | `m3_laws.md` + csvs | green 6222 cases / 993 pairs / 497 triples, 0 red |
+| `fixtures3` | F-J..F-L entropy hand ground truth (golden mean by rational sign test) | (in-test, exact) | green |
+| `m4_gate` | entropy case laws + monotonicity under inclusion | `m4_entropy.md` + csvs | green 6222 cases / 1000 pairs, 0 red, 0 non-converged |
+| `m3b_gate` | Thm 4.4(2) biconditional: essentials ⟺ null xor-profile | `m3b_thm442.{md,csv}` | green 999/1000, 0 red |
 
 Budget kills (15 s per case) are recorded as data in each aggregate;
 the corpus is concurrently regenerated, so gate counts are dated
@@ -263,3 +266,58 @@ irrational case (golden mean, verified by a rational sign test on
 
 *Verdict.* M3 accepted; M3b required with (or before) the M4 pass;
 M4 unblocked on the revised §10.
+
+**F-M4 (2026-07-11, git efcc54a2b) — entropy lands with certified
+enclosures; every law green, zero non-converged brackets; M3b closes
+the Thm 4.4(2) biconditional.** Engine `sosl/sosl/quant/entropy.py`
+(Prop 5.1, spec §10 as rewritten): `Live` from the calculus liveness
+scan, letter-count matrix `A` on `Live × Live`, SCC condensation of
+the live subgraph (the kernel module's Tarjan, reused), and
+`ρ(A) = max_B ρ(A_B)` per irreducible diagonal block — singletons
+exact, nontrivial blocks by Collatz–Wielandt on the primitive shift
+`B' = I + A_B` with per-step brackets intersected (each is valid for
+its own positive iterate, so soundness never rests on convergence).
+The result is an exact rational bracket plus a replayable certificate
+(live set, blocks, per-block enclosures); `log₂` is the only float,
+widened one ulp outward per side. *One implementation note (spec §10
+deviation, soundness-neutral):* the iterate is kept in fixed point
+over the **common** denominator 10⁴⁰ rather than per-entry
+`limit_denominator(10**40)` — per-entry denominators blow up through
+their lcm inside the exact products `B'·v`; the spec's own argument
+(rounding a strictly positive `v` only slows convergence) carries
+over verbatim, and `algorithm.md` §10 records it. Fixtures
+(`tests/quant/fixtures3`) green: F-J `ρ = 2` exact / `h = 1`; F-K
+`ρ = 1` exact / `h = 0`; F-L (golden mean, hand-built 6-class "no
+factor bb") has exactly the two predicted `[[1,1],[1,0]]`-shaped live
+blocks and its bracket straddles `φ` by the fraction sign test
+(`lo² ≤ lo + 1` and `hi² ≥ hi + 1`) at width 7.5e-10 — no float in
+the check. Corpus campaign
+(`tests/quant/m4_gate`, census at 6222): **cases 6222/6222 green, 0
+red, 0 budget-blown, 0 non-converged brackets** (worst case 21 ms —
+entropy is the cheapest gate of the campaign); laws held exactly:
+emptiness (the corpus's 1 empty language gives `h = 0` at width 0),
+`ρ_lo ≥ 1` on every nonempty row (the liveness scan stands),
+`ρ_hi ≤ |Σ|`, and the structural closure law `h(cl(L)) = h(L)`
+(equal live sets, identical live letter-count matrices under
+`safety_closure` on the same table) on all 6222. Monotonicity pairs:
+**1000/1000 green** (seed-1 sample, 110 pairs carrying a real
+inclusion; `ρ_lo(L₁) ≤ ρ_hi(L₂)` on every detected `L₁ ⊆ L₂`, both
+directions). Census texture for §6: 195 nonempty languages with
+`ρ = 1` (`h = 0`), largest live part 208 classes, up to 31 blocks,
+`h` up to `log₂ 8 = 3` on the 3-AP slice. **M3b (spec §9.1), same
+seed-1 1000-pair sample as `m3_laws.md`: 999/1000 scored (1
+budget-blown at 15 s, an alignment/essential-cost datum), 0 red — on
+every scored pair, byte-equal reduced essentials ⟺ all-zero aligned
+xor-profile, both directions: 316 null-disagreement pairs = 316
+essential-equal pairs, and all 683 positive-distance pairs have
+byte-different essentials.** (M3's pair run scored 993 with 313 null
+pairs; m3b's cheaper per-pair work loses only 1 to the budget, and
+the 6 extra scored pairs carry 3 more null-disagreements — the 313
+are a subset of the 316.) The theory reply's expected split (159
+shadow-differing + 154 shadow-equal among the nulls) is confirmed on
+the shared subset; Thm 4.4(2) is now corpus-tested as a
+biconditional. Machine reports: `reference/quant/m4_entropy.md`
+(+ `m4_entropy_{cases,pairs}.csv`), `reference/quant/m3b_thm442.{md,csv}`,
+regeneration commands in their headers (fixtures:
+`python3 -m tests.quant.fixtures3`). No disagreement between spec
+and paper surfaced.
