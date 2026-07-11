@@ -23,17 +23,18 @@ that). Mission: `research_notes/bls_cascade_spec.md` (K-E0..E7). Ledger:
   pass 1 (`sweep_layer` needs 4 full decides > 60 s) — **every potential
   conflict sits in the timeout stratum.** Data + provenance committed:
   `reference/cascade/k_series.md` (+ `k_e1_cluster.csv`).
-- **K-E1 PASS 2 = the conflict hunt — SUBMITTED, RUN ID LOST.** Sharded
+- **K-E1 PASS 2 = the conflict hunt — RUNNING as `20260711-203139-k_e1v2`**
+  (250 jobs, 60 s/command, submitted 07-11 20:31; reap:
+  `cluster/reap_until.sh 20260711-203139-k_e1v2`, results land in
+  `logs/cluster/20260711-203139-k_e1v2/results.csv`). Sharded
   `python3 -m tests.cascade.k_e1_verify <id> <layer> 0` (early-exit finder +
   inline ALG-7, CSV per cluster contract) over the 2176 missing pairs:
   `tests/cascade/logs/cmds_k_e1_verify.txt` (regen: join the census jsonl's
-  UNDECIDED readings against `reference/cascade/k_e1_cluster.csv`). The
-  `oarrun.sh --name k_e1v --split 500 --timeout 60 --walltime 0:15:00`
-  client was killed at a 5-min cap after an unknown number of `oarsub`s;
-  id pattern `20260711-HHMMSS-k_e1v`, submitted ≈19:50–19:55. **Recovery:**
-  (a) list `$REMOTE_RUNS` for `*k_e1v*` (one ssh — ask the user first) and
-  `cluster/reap_until.sh` it; or (b) resubmit fresh as `--name k_e1v2` —
-  safe (fresh id ⇒ own run dir; cost = duplicated cluster time only).
+  UNDECIDED readings against `reference/cascade/k_e1_cluster.csv`).
+  NB an earlier submission of the same cmds (`*-k_e1v`, ≈19:50) lost its
+  run id when the submit client was killed mid-oarsub; whatever partial
+  jobs it fielded die at their 15-min walltime and its orphan remote run
+  dir is harmless — ignore it, `k_e1v2` is authoritative.
 - ⚠ **K-F12 CONFIRMED on the first specimen**:
   `2state2ap1acc_parity_3772037665` (13 classes, aperiodic, Wagner (ω³,σ),
   frozen singleton layers 5/7) has an ALG-7-verified GENUINE width-0
