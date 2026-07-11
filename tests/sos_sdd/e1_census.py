@@ -22,7 +22,11 @@ Usage (from the repo root):
     python3 tests/sos_sdd/e1_census.py --all          # the whole corpus
     --budget <seconds>   engine time budget per instance (default 10)
     --nodes <n>          engine node budget (default 0 = unlimited)
-Outputs under tests/sos_sdd/logs/e1/: census.csv + <name>.jsonl.
+    --shard <k>/<N>      with --all: slice k of N (cluster runs fan the
+                         corpus over ~300 such jobs; each shard appends
+                         to its own census_<k>of<N>.csv, no write races)
+Outputs under tests/sos_sdd/logs/e1/: census.csv (or the shard CSV)
++ <name>.jsonl per instance.
 """
 
 import csv
@@ -90,8 +94,17 @@ def main() -> None:
     if "--nodes" in args:
         i = args.index("--nodes")
         nodes = int(args[i + 1]); del args[i:i + 2]
+    shard: Optional[str] = None
+    if "--shard" in args:
+        i = args.index("--shard")
+        shard = args[i + 1]; del args[i:i + 2]
+    out_name = "census.csv"
     if args == ["--all"]:
         names: List[str] = sorted(p.stem for p in (CORPUS / "det").glob("*.hoa"))
+        if shard is not None:
+            k, n = (int(x) for x in shard.split("/"))
+            names = names[k::n]
+            out_name = f"census_{k}of{n}.csv"
     else:
         names = args
     if not names:
@@ -99,7 +112,7 @@ def main() -> None:
         return
 
     OUT.mkdir(parents=True, exist_ok=True)
-    out = OUT / "census.csv"
+    out = OUT / out_name
     fresh = not out.exists()
     counts: dict = {}
     with out.open("a", newline="") as fh:
