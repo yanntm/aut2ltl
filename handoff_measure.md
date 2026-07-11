@@ -55,12 +55,20 @@ only the file and section named for the task at hand — nothing else.
 
 ## Work items — Engineering (in order, each gated on the user's go)
 
-1. **M4 (spec §10, rewritten 2026-07-11)** — entropy; the only
-   float-bearing module (per-irreducible-block certified
-   Collatz–Wielandt enclosure — do NOT run the flat whole-matrix
-   loop, it diverges on reducible Live matrices); `h(cl(L)) = h(L)`
-   asserted structurally, not on floats. UNBLOCKED; the M4 pass also
-   runs M3b (spec §9.1, assertion-only, same pair sample).
+1. **M4 (spec §10) + M3b — IN FLIGHT (2026-07-11).** Engine
+   `sosl/sosl/quant/entropy.py` committed (per-block CW enclosure,
+   fixed-point `v` over common denominator 10⁴⁰ — the spec's
+   `limit_denominator` clause realized without lcm blowup, same
+   soundness; `log₂` the only float, ulp-widened); `algorithm.md` §10
+   + README updated. Fixtures F-J/F-K/F-L green (golden mean certified
+   by the fraction sign test, width 7.5e-10). Gates
+   `tests.quant.m4_gate` (cases + inclusion pairs) and
+   `tests.quant.m3b_gate` (Thm 4.4(2) biconditional on M3's seed-1
+   sample) committed, smoke-tested. Corpus campaign running
+   (6222 cases + 1000 m4 pairs + 1000 m3b pairs, 15s timeout each,
+   log `sosl/tests/quant/logs/m4_campaign.log`); then `--aggregate`
+   both → `reference/quant/m4_entropy.*`, `m3b_thm442.*`, finding
+   F-M4 in the report.
 2. **M5 (spec §11)** — the Markov product `Pr_M(L)`; needs a `.mc`
    chain format fixed with the corpus keeper first.
 3. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
