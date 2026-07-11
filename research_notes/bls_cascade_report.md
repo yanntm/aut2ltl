@@ -28,8 +28,10 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
   the K-F2 paper edit), step 3 sandwich (K-F5), step 4 C3 (B)-cross (K-F6),
   step 5 (K-F1), step 6 saturation (K-F4). The decider is validated five
   independent ways.
-- **Next: K-E1** — (C) on the 372 (B)-undecided census layers, with K-E7
-  piggybacked.
+- **K-E1 DONE + K-E7 census map** — K-F7, K-F8 below. Every C3-undecided layer
+  decides under (C) at k≤3; no new floor inhabitant; no third verdict mechanism.
+- **Next: K-E2** (floor map incl. the Prop C.19 transfer specimen), K-E3
+  (one-sidedness), K-E4 (emitter, DAG-only).
 
 ---
 
@@ -147,3 +149,45 @@ limitation) does not arise on these layers.
 
 Command: `python3 -m tests.cascade.k_e0_bcross`. Log:
 `tests/cascade/logs/k_e0_bcross.txt`.
+
+## K-F7 — every C3-undecided layer decides under (C) at k≤3 — CONFIRMED
+
+Over the `flat_canon` census (4248 languages), C3 leaves **1164** final-layer
+readings `UNDECIDED` (cap/budget guard tripped). The exact config (C)-decider
+settles **all 1164** at width k≤3, **0 CONFLICT, 0 BUDGET**:
+
+| decided width | aperiodic | non-aperiodic |
+|---|---|---|
+| k=0 | 438 | 476 |
+| k=1 |  94 |  62 |
+| k=2 |  94 |   0 |
+
+The stratum is **not** all frozen: 322 have `|R|=1` (frozen), 842 are moving
+(`|R|`=2..5). So dropping C3's window-grouping and running the exact loop-class
+closure relieves the cap everywhere — no census-undecided layer is a genuine
+(C)-conflict, so **Theorem C.12′'s floor is not extended by this stratum**. (Per
+C.7 §8: the coverage bullet is 1164/1164.)
+
+Command: `python3 -m tests.cascade.k_e1_sweep tests/cascade/logs/census_flat_canon.jsonl genaut/corpus/flat_canon/sos --out tests/cascade/logs/k_e1.csv`
+(census regenerable by `python3 -m tests.sos2ltl.census_build genaut/corpus/flat_canon/sos --out tests/cascade/logs/census_flat_canon.jsonl`).
+Output: `tests/cascade/logs/k_e1.csv` (regenerable).
+
+## K-F8 — K-E7 census map: only absorption + group; no third verdict mechanism — CONFIRMED
+
+The sandwich scan piggybacked on every K-E1 layer, with both mandatory controls
+green (K-F5). Over the 1164-layer stratum:
+
+- **absorption** present on 234 layers (aperiodic, one idempotent 𝒥-below the
+  other — the floor-witness mechanism); **group** on 90 (non-aperiodic).
+- **`other`** (aperiodic, 𝒥-equivalent idempotents whose sandwich still drops)
+  present on 234 layers — but **0 of them verdict-splitting**. A non-splitting
+  sandwich failure is not a (C)-conflict ("the identity is stronger than (C)",
+  draft C.4); these are ordinary aperiodic 𝒥-class drops, not a verdict
+  mechanism.
+
+**No verdict-splitting `other` anywhere ⟹ no third mechanism in this stratum**
+— consistent with C.4's two known mechanisms (group cancellation, zero
+absorption). The `other_split` column is the third-mechanism flag for K-E2.
+
+Command: same sweep as K-F7 (`other`, `other_split` columns).
+Triage: `python3 -m tests.cascade.k_e7_triage <id> <layer> <k> other`.

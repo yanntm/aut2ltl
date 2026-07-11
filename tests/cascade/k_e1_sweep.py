@@ -38,13 +38,16 @@ def sweep_layer(inv, R, aperiodic) -> dict:
     collected = 0
     max_states = 0
     mech = {"absorption": 0, "group": 0, "other": 0, "BUG": 0}
+    other_split = 0  # verdict-splitting 'other' — the genuine third-mechanism flag
     for k in WIDTHS:
         dec = decide(inv, R, k, budget=BUDGET, assert_sc=False)
         collected = max(collected, dec.n_collected)
         max_states = max(max_states, dec.max_states)
-        fails, _ = scan(inv, dec.closures, aperiodic)
+        fails, _ = scan(inv, dec.closures, aperiodic, dec.entryst)
         for f in fails:
             mech[f.mechanism] = mech.get(f.mechanism, 0) + 1
+            if f.mechanism == "other" and f.splits:
+                other_split += 1
         if dec.budget:
             per_k.append("B")
         elif dec.c_holds:
@@ -65,7 +68,7 @@ def sweep_layer(inv, R, aperiodic) -> dict:
     return {
         "result": result, "pass_k": pass_k if pass_k is not None else "",
         "per_k": per_k, "collectedF": collected, "max_states": max_states,
-        "mech": mech,
+        "mech": mech, "other_split": other_split,
     }
 
 
@@ -88,9 +91,10 @@ def main(argv: List[str]) -> int:
         targets = targets[:limit]
 
     header = ("id,layer,nC,R,sigma,aperiodic,c3_status,result,pass_k,"
-              "k0,k1,k2,k3,collectedF,max_states,absorption,group,other,bug,time_s")
+              "k0,k1,k2,k3,collectedF,max_states,absorption,group,other,"
+              "other_split,bug,time_s")
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    n_conflict = n_pass = n_budget = n_other = 0
+    n_conflict = n_pass = n_budget = n_other = n_split = 0
     with open(out, "w") as fh:
         fh.write(header + "\n")
         for lang_id, layer_id in targets:
@@ -106,17 +110,20 @@ def main(argv: List[str]) -> int:
             row = [lang_id, layer_id, inv.n, len(R), len(quotient_letters(inv)),
                    int(ap), "UNDECIDED", r["result"], r["pass_k"],
                    *r["per_k"], r["collectedF"], r["max_states"],
-                   m["absorption"], m["group"], m["other"], m["BUG"], f"{dt:.2f}"]
+                   m["absorption"], m["group"], m["other"], r["other_split"],
+                   m["BUG"], f"{dt:.2f}"]
             fh.write(",".join(map(str, row)) + "\n")
             fh.flush()
             n_pass += r["result"].startswith("C@")
             n_conflict += r["result"] == "CONFLICT"
             n_budget += r["result"] == "BUDGET"
             n_other += m["other"] > 0
+            n_split += r["other_split"] > 0
 
     print(f"K-E1: {len(targets)} undecided layers -> {out}")
     print(f"  pass(C@k)={n_pass}  conflict={n_conflict}  budget={n_budget}")
-    print(f"  layers with sandwich 'other' (third mechanism): {n_other}")
+    print(f"  layers with any 'other' sandwich fail: {n_other}")
+    print(f"  layers with verdict-SPLITTING 'other' (third mechanism): {n_split}")
     return 0
 
 

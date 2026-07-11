@@ -244,6 +244,7 @@ class Decision:
     max_states: int
     budget_bases: List[Tuple[int, Node]]
     closures: Dict[Tuple[int, Node], Closed]  # per-base CL(x), for the K-E7 scan
+    entryst: Dict[Node, FrozenSet[int]]        # EntrySt(x) unioned over entries
 
     @property
     def budget(self) -> bool:
@@ -324,6 +325,7 @@ def decide(inv: Invariant, R: FrozenSet[int], k: int,
     proj_of: Dict[FrozenSet[Edge], FrozenSet[Tuple[int, ...]]] = {}
     budget_bases: List[Tuple[int, Node]] = []
     closures: Dict[Tuple[int, Node], Closed] = {}
+    entryst: Dict[Node, Set[int]] = defaultdict(set)
     max_states = 0
     for c in sorted(R):
         cone = build_cone(inv, R, c, k, sigma)
@@ -336,6 +338,7 @@ def decide(inv: Invariant, R: FrozenSet[int], k: int,
             closures[(c, x)] = cl
             max_states = max(max_states, len(cl))
             entry_st = est.get(x, frozenset())
+            entryst[x] |= entry_st
             for F, d in cl:
                 if assert_sc:
                     assert edge_set_strongly_connected(F, cone), (c, x, F)
@@ -353,4 +356,5 @@ def decide(inv: Invariant, R: FrozenSet[int], k: int,
         k=k, verdicts=dict(verdicts), groups=dict(groups),
         n_collected=len(verdicts), max_states=max_states,
         budget_bases=budget_bases, closures=closures,
+        entryst={x: frozenset(s) for x, s in entryst.items()},
     )

@@ -11,7 +11,7 @@ controls are mandatory (K-E0 step 3): the floor witness's frozen layer
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, FrozenSet, List, Tuple
+from typing import Dict, FrozenSet, List, Optional, Tuple
 
 from sosl.sos import Invariant
 
@@ -63,10 +63,17 @@ class SandwichFail:
     s: int          # e·e′·e
     sp: int         # e′·e·e′
     mechanism: str  # 'absorption' | 'group' | 'other' | 'BUG'
+    splits: bool    # e, e′ give different verdicts over EntrySt(base)
+
+
+def _val(inv: Invariant, s: int, e: int) -> bool:
+    return (inv.mult[s][e], e) in inv.accept
 
 
 def scan(inv: Invariant, closures: Dict[Tuple[int, Node], Closed],
-         aperiodic: bool) -> Tuple[List[SandwichFail], int]:
+         aperiodic: bool,
+         entryst: Optional[Dict[Node, FrozenSet[int]]] = None
+         ) -> Tuple[List[SandwichFail], int]:
     """Run the sandwich test over every `(base x, covered set F)` idempotent
     pair. Returns the failures and the PASS count. `s = e·e′·e` is always
     𝒥-below `e` (and `sp = e′·e·e′` below `e′`), so the mechanism turns on where
@@ -109,11 +116,17 @@ def scan(inv: Invariant, closures: Dict[Tuple[int, Node], Closed],
                     jf1 = not j_equiv(s, e, ideals)
                     jf2 = not j_equiv(sp, ep, ideals)
                     if jf1 or jf2:
-                        sink = s if jf1 else sp
-                        mech = "absorption" if j_minimal(sink, ideals) else "other"
+                        # 𝒥-comparable idempotents: the lower dominates the
+                        # product (zero absorption, the floor witness's `z <_J e`).
+                        # 𝒥-equivalent idempotents that still drop below are the
+                        # genuine third-mechanism candidate.
+                        mech = ("other" if j_equiv(e, ep, ideals)
+                                else "absorption")
                     else:
                         mech = "BUG"
-                fails.append(SandwichFail(x, F, e, ep, s, sp, mech))
+                est = entryst.get(x, frozenset()) if entryst else frozenset()
+                splits = any(_val(inv, st, e) != _val(inv, st, ep) for st in est)
+                fails.append(SandwichFail(x, F, e, ep, s, sp, mech, splits))
     return fails, passes
 
 
