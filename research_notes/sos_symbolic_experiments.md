@@ -61,10 +61,18 @@ the derived-census driver, the engine's first consumer at scale),
   GT on seven cases (ledger F12–F13); `gf_aa_parity`'s 6 classes match
   the explicit tool's `gfaa` fixture. `fp5` is now a checked switch
   (only `"layered"`; others refused).
-- **TODO: everything else.** C4's squaring shortcut, C9–C10,
-  E1/E3–E9, M2–M5 proper (E2 still owes the second component family and
-  per-point budget sweeps at scale). Next: C7 completion (Phase 6
-  quotient + `.sos` emission — the conformance gate).
+- **DONE (engine-side): C7** — Phase 6 quotient + `.sos` emission,
+  **conformance gate green**: byte-identical to the reference on every
+  same-AP instance tried (ledger F14; the identity convention was the
+  one divergence found and fixed — F15). Explicit quotient route
+  (`quotient="explicit"`, the recorded fallback; `"symbolic"` refused);
+  recorded exclusions: unused-AP languages (Spot import drops the AP),
+  products (refused at Phase 6).
+- **TODO: everything else.** C4's squaring shortcut, C9–C10 proper,
+  E1/E3–E9, M2–M5 (E2 still owes the second component family and
+  per-point budget sweeps at scale). Next: E1 census wiring (HOA →
+  digest bridge; corpus at `genaut/corpus/flat_canon/`), which also
+  unlocks the C5 explicit-tool cross-check.
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat

@@ -159,3 +159,37 @@ refused (gate `tests/sos_sdd/congruence_test.py`, streams in
   blocks (the partition never exists as an explicit element list on
   the engine side); the largest class (156 elements) is one diagram
   block throughout.
+
+## C7 — quotient and `.sos` emission (Phase 6, the conformance gate)
+
+Engine state added: `sos_sdd/quotient.py` — the `quotient="explicit"`
+route (the recorded small-side fallback; `"symbolic"` refused): word
+classes over non-empty-word images with `[eps]` adjoined fresh, mult by
+folding packed representative values (never `Comp`), saturated accept
+pairs with verdicts off the Phase 3 profile rows at the initial state,
+ids/keys by shortlex BFS over the small quotient algebra (mirroring the
+reference's `canonical.shortlex_bfs`). `Engine.build(..., until_phase=6)`
+returns the Phase 6 object; `to_sos()` emits the core sections in the
+reference serializer's exact layout (gate
+`tests/sos_sdd/conformance_test.py`; probe
+`tests/sos_sdd/conformance_diff.py`).
+
+- **F14 — the conformance gate is green.** The emitted `.sos` is
+  **byte-identical** to the reference construction's
+  (`sosl.sos.build.reference_of_hoa` → `dump_invariant`, Spot-backed)
+  on every same-AP instance tried: `gf_aa_parity` (6 classes), `even`
+  (5), `evenblocks` (8), `mod3` (3), `stem` (4).
+- **F15 — the identity convention was the one real divergence.** The
+  first cut quotiented EM¹ wholesale and came out one class short
+  wherever a non-empty word folds onto the identity element (`mod3`:
+  `⟦!a⟧ = 1` merged `[!a]` into `[eps]`, 2 classes vs the reference's
+  3; `evenblocks`: 7 vs 8). The reference's convention is normative
+  and now mirrored: the congruence runs on all of EM¹ (Phase 5
+  unchanged), but word classes are read off the non-empty-word images
+  and `[eps]` is a fresh class no word can collide with.
+- **Recorded exclusion (AP support).** For languages where Spot's
+  import postprocess drops unused APs (e.g. the empty language of
+  `dupe`), the reference answers a different-AP presentation and byte
+  parity is out of scope by the format's own same-AP equality clause —
+  asserted as such in the gate. Products are refused at Phase 6
+  (`.sos` for product digests is not defined yet).
