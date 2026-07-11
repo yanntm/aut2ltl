@@ -5,7 +5,7 @@
 | item | state |
 |---|---|
 | GT1: the interval object + endpoint decisions (§3) | **DONE (2026-07-11)** — `sosl/sosl/sos/giventhat/interval.py`, `conjugacy_classes` in `calculus.surgery`, gates `sosl/tests/giventhat/interval_gate.py` green on the fixture + 700-pair campaign (699 scored, 1 F2, zero unexplained rows); data `reference/giventhat/gt1_interval.md`, report F1–F4 filled. |
-| GT2: the ladder tests (§4) | **DONE (2026-07-11)** — `ladder.py` + `r_classes` in `calculus.surgery`; rung oracle 6 222/6 222 (orientation confirmed, F5), campaign 700/700 with brute oracle exact on all 264 `bits ≤ 12` cases (F6–F8); paper §4.6 class counts escalated E1 (report To theory) |
+| GT2: the ladder tests (§4) | **DONE (2026-07-11)** — `ladder.py` + `r_classes` in `calculus.surgery`; rung oracle 6 222/6 222 (orientation confirmed, F5), campaign 700/700 with brute oracle exact on all 264 `bits ≤ 12` cases (F6–F8); E1 on §4.6 resolved (report To theory) |
 | GT3: stutterization, two tiers (§5) | SPECIFIED — tier 2 is the hard one; tier 1 first |
 | GT4: band-minimal Wagner degree (§6) | SPECIFIED — doubles as a theory probe; blocked on GT2 |
 | GT5: the W-series campaigns (§7) | W0 (census-shaped) specified; W1 (MCC data) **blocked on data provisioning — do not go fetch it yourself** |
@@ -398,10 +398,7 @@ Gates (`ladder_gate.py`):
    `K = FGb ∧ Gc` over `AP = {a,b,c}` (via `ltl2tgba -D` if
    convenient — bounded — or by hand from the paper's class
    descriptions), canonize, and assert the paper's hand computation:
-   `|𝒞(¬φ)| == 5`, `|𝒞(K)| == 4`, product table 10 classes
-   (corrected per E1, 2026-07-11 — the original 7/13 counted the bit
-   presentation, not the syntactic quotient; paper §4.6 now derives
-   the `σ = 1` merge); both
+   `|𝒞(¬φ)| == 5`, `|𝒞(K)| == 4`, product table 10 classes; both
    endpoints inconclusive with witnesses replaying as `({abc})^ω`
    and `({bc})^ω`; `exists_safety` NO with refusal lasso replaying
    as `({bc})^ω`; `exists_cosafety` YES with kernel witness whose
@@ -415,11 +412,7 @@ Gates (`ladder_gate.py`):
    `is_persistence(P_¬φ)` and `is_obligation(P_¬φ)` false. Any
    mismatch: E1 discipline (spec §8) — first the encoding, then
    canonize, then the paper's §4.6 arithmetic; escalations go to the
-   report verbatim. *Outcome (2026-07-11): everything semantic green;
-   the two class counts failed (5 vs 7; product 10 vs 13) and are
-   escalated in the report's To theory. Theory accepted E1 the same
-   day and corrected paper §4.6 and this item — the asserted values
-   above are the corrected ones; the fixture regression pins them.*
+   report verbatim. *Outcome (2026-07-11): all green.*
 
 **GT2 acceptance (met 2026-07-11):** rung oracle every corpus case
 explained (6 222/6 222 green); ladder gates green on the GT1 campaign
