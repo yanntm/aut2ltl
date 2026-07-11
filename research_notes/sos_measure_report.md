@@ -136,3 +136,42 @@ its machinery (xor on a materialized aligned table + M1 `measure`) is
 exactly what L2 already exercised, so §9 is promoted to the work order
 with pseudometric laws and the null-disagreement read-off as its
 gates.
+
+**F-M3 (2026-07-11, git b94404abe) — distance, shadow, essential land;
+every law green, Prop 4.5 corpus-tested.** Engine additions in
+`sosl/sosl/quant/`: `value_vector` (per-class measure, the M1 solver's
+rows), `distance` (pair-set xor on the materialized aligned product +
+`measure`; the xor θ-profile carries the null-disagreement bit),
+`shadow` (Prop 4.1 stem-region read-off, reduced), `essential` +
+`ltl_up_to_null` (Thm 4.4 value-congruence quotient, identity held out
+per calculus canonicity — `algorithm.md` §9 records why that is
+language-neutral; aperiodicity via the classify orbit scan). Fixtures:
+F-D and F-E — **owed by M2's §8.5 and found unimplemented at M3
+start** — now built and green (F-D's non-kernel idempotent convicted as
+specified, F-E exact at `2/3` and `3/4`), plus F-F/F-G/F-H/F-I
+(`tests/quant/fixtures2`): the F-G negative control HELD (distance 0,
+all-zero xor profile, shadows byte-DIFFERENT) and F-H repaired it
+(essential forms byte-equal); F-I's congruence merged `[ε]` with the
+neutral class only, ℤ/2 retained, `ltl_up_to_null(F-E) = False`.
+Corpus campaign (`tests/quant/m3_gate`, corpus grew again 6220 → 6222):
+**cases 6222/6222 green, zero budget-blown** (worst 6.0 s at n = 208) —
+`d(L, shadow L) = d(L, essential L) = 0` with all-zero profiles,
+idempotence byte-exact, `essential(shadow L)` byte-equal
+`essential(L)`, **Prop 4.5 byte-equality under uniform vs skewed `p` on
+all 6222** (no stop-the-line), and aperiodic ⟹ ltl-up-to-null on every
+row. Pairs **993/1000 green, 0 red, 7 budget-blown** (aligned-product
+tail, a datum): symmetry exact under both `p`'s; 313 sampled pairs
+differ by a null set, of which 154 have byte-equal shadows (consistency
+law held on all) and **159 are corpus F-G instances** — distance 0 with
+byte-different shadows, so the shadow really is too fine and the
+essential form is the right null-set invariant. Triples **497/500
+green, 0 red, 3 budget-blown** (triangle inequality exact). Census
+data for the paper's §6: **5660/6222 languages are LTL up to null sets
+(3738 aperiodic outright — so 1922 carry a group that is measure-
+invisible)**; the essential form is strictly smaller than the (already
+reduced) input on 5552/6222, trivial (`n = 2`: a.s. or null) on 5164.
+Machine reports: `reference/quant/m3_laws.md`
+(+ `m3_laws_{cases,pairs,triples}.csv`), regeneration commands in the
+header; sample files under `tests/quant/logs/`. No disagreement
+between spec and paper surfaced; the one spec-process finding is the
+F-D/F-E carry-over noted above.
