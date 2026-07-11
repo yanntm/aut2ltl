@@ -1222,12 +1222,29 @@ re-entered through the gate: `|𝒞(W·L_n)| = 17, 48, 127, 318` for
 exactly as the proof predicts. The entry price shows as growth (about
 ×8–9 per step), not a wall: the largest case completes in 0.36 s.
 
-### 8.7 The running example, mechanically ⟨TBD⟩
+### 8.7 The running example, mechanically
 
-⟨TBD: engineering check E-CAL-EX — confirm the five-class table of
-§2.3 (keys `ε, a, b, ab, ba`), its `P`, and the degree `(1, 2)` from
-the tool; render the invariant and the aligned product of §3.3 as
-figures.⟩
+Every value hand-computed for `a*·b^ω` carries a machine counter-signature:
+`reference/calculus/example_gate.md` (gate:
+`sosl/tests/calculus/example_gate.py`). The invariant is *not* the one the
+calculus builds — it is Spot's determinization of `(¬p) U (G p)`, quotiented to
+canonical form; the multiplication table is regenerated from the word model
+`{ε, a⁺, b⁺, a⁺b⁺, dead}` rather than transcribed; and the Wagner coordinates
+are read from the independent classifier *and* from the committed `.cat` sidecar
+of the corpus row that holds this language (`2state1ap1acc_16898` — the census
+catalogues it at the smallest shape that emits it).
+
+The five-class table of §2.3 (keys `ε, a, b, ab, ba`), its six linked pairs and
+its `P = {(B,B), (C,B)}` are confirmed cell by cell, as are the stutter
+read-off, the two rootings, the hulls of §6 (`Live = 𝒞 \ {D}`, closure adds
+exactly `(A,A)`, empty interior, the Alpern–Schneider factor) and the degree
+`(1, 2)` — both the classifier and the corpus sidecar independently report
+coordinates `(m⁺, m⁻, n⁺, n⁻) = (0, 0, 1, 2)`. The alignment of §3.3 generates 5 nodes of
+the possible `5 × 3`, the intersection with `GF a` is empty, `a*·b^ω ⊆ FG ¬a`
+holds, and the reverse inclusion is refuted by exactly the predicted minimal
+counterexample `ba·b^ω`.
+
+⟨TBD: render the invariant and the aligned product of §3.3 as figures.⟩
 
 ## 9. Related work
 

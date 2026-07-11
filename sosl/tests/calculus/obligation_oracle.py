@@ -33,18 +33,21 @@ from sosl.sos.classify.io import parse_cat
 
 def astar_bomega() -> Invariant:
     """The syntactic invariant of ``a*.b^omega`` (letter ``a`` = mask 0, ``b`` =
-    mask 1, one AP): classes ``[eps]``, A = a-only stems, B = legal stems that
-    reached ``b``, D = dead (an ``a`` after a ``b``); the single accepting pair
-    is ``(B, B)``."""
+    mask 1, one AP): five classes ``[eps]``, A = ``a+``, B = ``b+``, C = ``a+b+``
+    and D = dead (an ``a`` after a ``b``, absorbing); the accepting pairs are
+    ``(B, B)`` and ``(C, B)``. ``A.B = C`` is a class of its own: merging it into
+    B would accept ``(ab)^omega``, which is not in the language.
+    `tests.calculus.example_gate` counter-signs this table against Spot."""
     inv = Invariant(
         alphabet=Alphabet.of(["p"]),
-        keys=((), (0,), (1,), (1, 0)),
+        keys=((), (0,), (1,), (0, 1), (1, 0)),
         letter_class=(1, 2),
-        mult=((0, 1, 2, 3),
-              (1, 1, 2, 3),
-              (2, 3, 2, 3),
-              (3, 3, 3, 3)),
-        accept=frozenset({(2, 2)}),
+        mult=((0, 1, 2, 3, 4),
+              (1, 1, 3, 3, 4),
+              (2, 4, 2, 4, 4),
+              (3, 4, 3, 4, 4),
+              (4, 4, 4, 4, 4)),
+        accept=frozenset({(2, 2), (3, 2)}),
         identity=0,
     )
     inv.validate()

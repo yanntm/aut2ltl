@@ -138,6 +138,60 @@ the concatenation, not an implementation) and re-entered through the gate.
   needed; the enriched-monoid entry price is visible in the ~8–9× per-step time
   growth (0.7 → 4 → 36 → 320 ms) rather than a budget blow-up.
 
+## E-CAL-EX — the running example, mechanically (spec §9.1)
+
+Answers spec §9.1; fills paper §8.7. `reference/calculus/example_gate.md` —
+`python3 -m tests.calculus.example_gate` (one shot, ~2 s, no argv). All seven
+spec items green, in nine printed checks. The answer key is deliberately not
+ours: both invariants are built by `sos.build.reference_of_ltl` (Spot
+determinizes, `core.quotient` canonicalizes — the calculus reads off an algebra
+it did not build), the 25 table cells are regenerated from the word model
+`{ε, a⁺, b⁺, a⁺b⁺, dead}` rather than transcribed from the paper, classes are
+located by role (identity, the two letter classes, `A·B`, `B·A`) and never by
+key string, and the Wagner coordinates are checked twice — against `sos.classify`
+(independent of `calculus.surgery`) and against the committed `.cat` sidecar of
+the corpus row that holds the language.
+
+- **F-EX — theory's hand computation is confirmed on every value.** 5 classes;
+  the full multiplication table matches the word model; 6 linked pairs;
+  `P = {(B,B), (C,B)}`; stutter read-off true; `P_A = P` and `P_B = {(B,B)}`;
+  `Live = 𝒞 \ {D}`, closure adds exactly `(A,A)`, interior `= ∅`, A–S factor
+  `= P ∪ {(D,A),(D,B),(D,D)}`; obligation of degree `(1, 2)`, with `classify`
+  independently reporting coords `(m⁺, m⁻, n⁺, n⁻) = (0, 0, 1, 2)`;
+  `𝓘(GF a)` has 3 classes with `P₂ = {(α, α)}`; the alignment generates 5 nodes
+  of `5 × 3`; the intersection is empty; `a*·b^ω ⊆ FG ¬a` holds and the reverse
+  fails. **The minimal counterexample is `ba·b^ω`, exactly as predicted** —
+  witness verbatim `included cell=(4,2) stem=p;!p loop=p bit=1`, replaying
+  positive on `FG ¬a` and negative on `a*·b^ω`. Nothing for theory to adjudicate.
+
+- **F-EX1 — a bug on our side, found by the gate (fixed).** The hand-built
+  reference that `tests/calculus/obligation_oracle.py` opened with carried only
+  **4** classes: it merged `A·B` into `B`. That morphism is a legal ω-semigroup
+  but it does not recognize `a*·b^ω` — it accepts `(ab)^ω`, whose loop class
+  `C` is not idempotent in the true algebra (`C² = D`). Verified by `member` on
+  both tables. Corrected in place to the 5-class table (now counter-signed
+  against Spot by `example_gate`). **No CAL5 number moves**: the corpus sweep
+  never touched the hand table, and the degree read-off is `(1, 2)` on the wrong
+  algebra as well as the right one — the error was invisible to the check it sat
+  in. This is why §9.1 asked for an independent construction.
+
+- **F-EX2 — the corpus row is `2state1ap1acc_16898`, and finding it is a trap
+  worth recording.** The spec's conditional `.cat` cross-check applies: the
+  language *is* catalogued, at the smallest shape that emits it (2 states, 1 AP,
+  1 acceptance set — a nondeterministic-or-not TGBA of exactly the shape one
+  would guess), sidecar `phi: 2,sigma | coords: 0 0 1 2 | class: properly Σ₂`.
+  Its coords confirm both read-offs (`max(m⁺, m⁻) = 0 ≤ 0`, degree `(1, 2)`).
+
+  A first pass wrongly reported the language **absent**, by comparing raw `𝓘`
+  dumps against the corpus files. Two things defeat that, and `corpus_row` in the
+  gate now encodes both: `flat_canon` stores one file per language **up to
+  renaming its symbols**, as the `B_k` orbit-min of the invariant (genaut's
+  `canon_key`: `remove_free_aps` → orbit representative → dump — *not* the raw
+  syntactic dump); and those canonical bytes carry the **AP's name**, which the
+  corpus spells `a` and the paper spells `p`. Either mistake alone turns a
+  present language into an absent one. The key function is now validated as a
+  fixpoint on all 6222 rows before it is trusted to say "absent".
+
 ## Status
 
 All five V-experiments delivered; the paper's measurement placeholders are
