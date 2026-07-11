@@ -292,6 +292,14 @@ Standing items the theory thread expects data or answers on:
 3. The leastness probe (F14): any strictly-between aperiodic
    congruence falsifies the reflection-as-`θ_ap` reading of paper
    §6.2 — the dossier decides how Prop 6.2's proof gets written.
+   *(Update 2026-07-11: leastness is now PROVED — paper Lemma 6.2a —
+   and Prop 6.2 has a full proof; the probe stays but now gates the
+   `aperiodic_reflection` implementation, not the theory. The proof
+   also corrected the saturation: hull acceptance is the conjugacy
+   closure of `q(P)` (Lemma 6.2b), and `kernel :=
+   complement∘hull∘complement` (Prop 6.2(v)) — spec §6.2 rewritten
+   accordingly; the iteration count remains an F14 datum since
+   whether one collapse round always suffices is open.)*
 4. Group-size numbers (F5) — feed the paper §9 stratified
    expectations. *(The kernel-fatness half is closed 2026-07-11:
    unmeasurable on this corpus by To-theory item 2's resolution;

@@ -486,16 +486,22 @@ Disagreements land in the report, not in silent workarounds.
   close to a congruence (the union-find + worklist pattern of the
   stutter quotient, calculus side — reuse the shared shortlex
   re-keying), re-detect groups, repeat until aperiodic. Assert the
-  fixpoint is aperiodic. **Whether this is the LEAST aperiodic
-  congruence `θ_ap` is the paper's ⟨TBD⟩** — do not claim it; name
-  the function honestly and record the iteration count (F14 datum).
-  The ω-sort: after each collapse round, saturate the pair structure
-  (`linked_pair_of` renormalization) so the quotient is an
-  ω-congruence; forgetting this yields non-language pair sets and
-  the saturation law convicts you.
-- `hull(inv) -> Invariant` / `kernel(inv) -> Invariant`: `P♯ =
-  q⁻¹(q(P))`, `P♭ = {p : q⁻¹(q(p)) ⊆ P}` computed on the quotient,
-  then `reduce`.
+  fixpoint is aperiodic. **This IS the least aperiodic congruence
+  `θ_ap`** (paper Lemma 6.2a — proved 2026-07-11), so the leastness
+  probe (gate 5) now gates the *implementation*: a strictly-between
+  congruence convicts this function, not the theory. Record the
+  iteration count (F14 datum; whether one round always suffices is
+  open — EvenHead closes in one).
+- `hull(inv) -> Invariant`: acceptance is the **conjugacy closure**
+  of `q(P)` over the quotient table (paper Lemma 6.2b / Prop 6.2):
+  fixpoint — for `(t, f)` in the set and every decomposition
+  `f = x·y` in the quotient, add `(t·x, y·x)`; then `reduce`.
+  Componentwise saturation `q⁻¹(q(P))` alone is NOT enough (pairs
+  can become conjugate only in the quotient); an unclosed set is
+  not a language and the saturation law convicts you.
+- `kernel(inv) -> Invariant` := `complement(hull(complement(inv)))`
+  — paper Prop 6.2(v); both complements are free `P`-flips. One
+  implementation; do not write a separate `P♭` computation.
 
 ### 6.3 FIX_E — the worked non-LTL fixture (`EvenHead`, paper §6.2 / §9 P5)
 
@@ -511,6 +517,8 @@ Expected facts (each is paper §9 P1/P2/P5; failure = §8/E1
 escalation): `|𝒞| == 7`; over `B_1`: symmetric `{id}`, anti `∅`,
 `anti_possible` recorded; `spec == {"Z/2"}`; the reflection has
 exactly 5 classes and stabilizes in one collapse round (assert both);
+the conjugacy closure of the hull acceptance is trivial here —
+`conj(q(P)) == q(P)`, assert it (paper §9 P5);
 `hull(FIX_E)` byte-equals the canonized invariant of
 `ltl2tgba -D 'FG!a & G(!a -> G!a)'` and `kernel(FIX_E)` that of
 `ltl2tgba -D 'G!a'` (bounded calls, E1 escalation on mismatch);
@@ -539,9 +547,10 @@ Gates (`spectrum_gate.py`):
    leastness of the reflection cheaply. Record instead, per non-LTL
    case: `|𝒞/θ|` vs `|𝒞|` and whether a SECOND aperiodic congruence
    strictly between exists among the ≤ 64-class quotients found by
-   single-collapse variants (if one is found, the reflection was not
-   least: to-theory verbatim, slot F14 — this is the probe the paper
-   asked for).
+   single-collapse variants. Leastness is now a THEOREM (paper Lemma
+   6.2a), so a find convicts `aperiodic_reflection` or the probe
+   itself, never the math: file the case as a bug dossier to F14 and
+   STOP — do not patch either side to dodge it.
 
 **SY4 acceptance:** LTL-bit oracle 6 222/6 222 explained; laws green;
 gap columns recorded to `logs/sy4_gap.csv`; findings F12–F14 filled.
