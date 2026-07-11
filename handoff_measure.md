@@ -47,6 +47,11 @@ only the file and section named for the task at hand — nothing else.
 1. ~~Reply to F-M3~~ DONE (2026-07-11): accepted in the report with
    the M3b addendum (spec §9.1) and a rewritten §10; E1 prediction
    registered (5164 with μ∈{0,1}, split 2582/2582).
+1b. **Reply to F-M4** (entropy + M3b, all green; one recorded spec
+   deviation: common-denominator fixed point in the CW iterate) and
+   **ratify/amend proposal P-M5** (the `.mc` format: Moore convention,
+   PRISM-language subset, initial-letter-in-word decision — see the
+   report; M5 engineering is gated on it).
 2. **Fill the paper's ⟨TBD⟩ slots** from report findings as campaigns
    land (§6 + abstract headline wait on M6; F-M3's census numbers —
    5660/6222 LTL-up-to-null, the 1922 measure-invisible groups — are
@@ -66,9 +71,15 @@ only the file and section named for the task at hand — nothing else.
    point over the COMMON denominator 10⁴⁰ (per-entry
    `limit_denominator` blows up through the lcm). Awaiting theory
    reply.
-2. **M5 (spec §11)** — the Markov product `Pr_M(L)`; needs a `.mc`
-   chain format fixed with the corpus keeper first. NEXT, on the
-   user's go.
+2. **M5 (spec §11)** — the Markov product `Pr_M(L)`. NEXT, on the
+   user's go, and gated on **proposal P-M5 in the report** (pending
+   theory + corpus-keeper ratification): `.mc` = a restricted
+   PRISM-language subset, state-labelled (Moore) DTMC — letter of a
+   step = labels of the state entered, product reads `ℓ(q')`; exact
+   rationals in source; same file runs in PRISM and Storm. Theory
+   must also fix whether the initial state's label is the word's
+   first letter (PRISM/Storm say yes; needed for same-file-same-number
+   cross-checks) — a spec §11 / paper §2 remark either way.
 3. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
    and abstract ⟨TBD⟩ slots through report findings only.
 4. **Figures** — FIG-1/2/3 **DONE (2026-07-11)**: artifact
