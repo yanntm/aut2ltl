@@ -44,21 +44,26 @@ their named sections.
   (Arnold's congruence stated in his original form + context-form
   equivalence; KR65 divisor fact = proof of Cor. 3.2(b); Str94
   Thm VII.2.1; ID96 is scalarsets NOT a formula check).
-- Library: `papers/` (gitignored, never pushed) gained Arnold85,
+- Library: `papers/` (gitignored, never pushed) holds Arnold85,
   Thomas79, KR65, ES96, CEFJ96, ID96, Pel93, Godefroid-thesis,
-  PW97, Straubing94 (djvu+pdf+txt). Still to fetch (user grabs;
-  we do not cite without reading): Etessami00, Diekert–Muscholl 94,
-  Gastin–Petit 95 (Book of Traces), Straubing–Thérien–Thomas 95,
-  Emerson–Trefler (virtual symmetry — positions §7.4).
-- Engineering: **SY1 DONE** (2026-07-11): `sosl.sos.symmetry` (sigma.py)
-  built, gates 1–6 green first run, census campaign 6 222/6 222 with zero
-  law violations; artifacts in `reference/symmetry/`, report F1–F4 filled.
-  NOTE the corpus grew: census is now **6 222** cases (2 484 non-LTL) —
-  every 3 938/1 698 in paper/spec is stale. The report's **To theory**
-  section is no longer empty: three items (corpus renumbering, F3
-  structurally zero — the curation IS the kernel read-off, obstruction
-  fast path closes 97.36 % → lemma-worthy). SY2/SY3 are the next open
-  engineering milestones (SY1 acceptance passed).
+  PW97, Straubing94, and (unread, relevant to queue items 2–3)
+  Diekert–Gastin 2008, Diekert–Kufleitner 2009, Thérien–Weiss 86,
+  Thérien–Wilke 01. Still to fetch (user grabs; we do not cite
+  without reading): Etessami00, Diekert–Muscholl 94, Gastin–Petit 95
+  (Book of Traces), Straubing–Thérien–Thomas 95, Emerson–Trefler
+  (virtual symmetry — positions §7.4).
+- Engineering: SY1 accepted; `sosl.sos.symmetry` exists (sigma.py:
+  SignedPerm, apply_perm, both checks, kernel read-off, obstruction).
+  Fixtures live in `sosl/tests/symmetry/fixtures.py`; gates + census
+  in `sigma_gate.py`; validated artifacts in `reference/symmetry/`
+  (CSV, summary, gate log); report F1–F4 filled from them. SY2/SY3
+  are the open milestones. The corpus is 6 222 cases (2 484 non-LTL;
+  paper/spec still quote 3 938/1 698 — stale until theory sweeps).
+  The report's **To theory** section holds three unanswered items:
+  corpus renumbering; F3 structurally zero (flat_canon is
+  alphabet-minimal by curation, so the fat-kernel census claim needs
+  a decision + spec §3.4 FIX_A build route needs an edit);
+  obstruction fast path closes 97.36 % (lemma-worthy?).
 
 ## Next tasks
 
