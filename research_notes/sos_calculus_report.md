@@ -192,12 +192,87 @@ the corpus row that holds the language.
   present language into an absent one. The key function is now validated as a
   fixpoint on all 6222 rows before it is trusted to say "absent".
 
+## V4 — the classification battery vs Spot (spec §9.2)
+
+Answers spec §9.2; fills paper §8.5. `reference/calculus/v4_ladder.{md,csv}` —
+`python3 -m tests.calculus.v4_ladder --campaign` (full sweep, 6222 languages,
+per-case budget 10 s, no blown budget). Ours: the `surgery` scans on the held
+invariant, warm, median of 7 (`is_safety` / `is_cosafety` — Cor 6.2;
+`is_obligation` — Thm 6.6; `obligation_degree` — Prop 6.7). Spot's: the paired
+deterministic HOA. **Note this run is on the 6222-row corpus, not the report-era
+3938 of V1–V3** — it is the first V-number on the new corpus, and does not mix
+with the others until §9.4 refreshes them.
+
+- **F15 — the Spot surface, and why the comparison had to be built. Spot 2.14
+  has no automaton-level Manna–Pnueli classifier.** `spot.is_obligation`,
+  `is_persistence`, `is_recurrence` and `mp_class` are **formula-level**: the
+  formula is a mandatory argument and the automaton is only an optional
+  accelerator (`tl/hierarchy.hh`). `autfilt` confirms the shape of the library —
+  it offers `--is-weak` / `--is-terminal` / `--is-inherently-weak`, all
+  *structural*, and no `--is-safety` / `--is-obligation`. This is not a gap we
+  can route around with a translation: the corpus carries an LTL bit precisely
+  because **2484 of its 6222 languages are not LTL-definable**, so for those no
+  formula exists to hand the classifier. The automaton-level oracle used here
+  therefore needs no formula, and is language-level rather than structural:
+  safety = `is_safety_automaton` (its contract is "the acceptance condition can
+  be set to `true` without changing the language" — the closure fixpoint, decided
+  exactly, `twaalgos/strength.hh`); co-safety = the same test on `dualize` (an
+  exact complement on these deterministic complete automata, guarded by an
+  explicit precondition check in the script); obligation = `minimize_wdba` +
+  equivalence, which is what Spot's own `ocheck::via_WDBA` runs inside
+  `is_obligation`, minus the formula. `v4_ladder.py --selftest` pins those three
+  against `spot.mp_class` on eight formulas of known class (B/S/G/O/P/R) so the
+  oracle's contract is a rerunnable claim and not a one-off probe.
+- **F16 — perfect agreement, zero disagreements, on all three verdicts.**
+  **6222/6222** on `is_safety`, on `is_cosafety`, and on `is_obligation`
+  (1514 / 1514 / 3182 positives, identical on both sides); the full-triple
+  agreement is 6222/6222 and the disagreement dossier is empty. No case blew the
+  budget. An algebraic scan of the held invariant and a Büchi-automaton
+  minimization decide the same three questions on every language in the census.
+- **F17 — the rung census of `flat_canon`.** Obligation: **3182/6222 = 51.1%**.
+  Split: B (safety ∧ co-safety) **84**, S (safety only) **1430**, G (co-safety
+  only) **1430**, O (obligation, neither) **238**, above the obligation rung
+  **3040 = 48.9%**. Two internal consistency checks pass and are printed by the
+  script rather than left to the reader: co-safety is safety of the complement
+  and the corpus is complement-closed, so **S = G** (1430 = 1430); and complement
+  swaps the polarities of the superchain, so the degree histogram must be
+  symmetric under `(n⁺, n⁻) ↦ (n⁻, n⁺)` — it is, on every entry (1430/1430,
+  68/68, 40/40, 2/2, 1/1, with (0,0) and (1,1) self-paired).
+- **F17b — the obligation rung is not inside LTL, and that is the point of
+  F15.** Crossing the rung against the `.cat` LTL bit: **1486 of the 3182
+  obligation languages (46.7%) are not LTL-definable** (S 704, G 704, O 78;
+  every one of the 84 B-rows is LTL). This is as it must be — the ladder is
+  topological and the LTL cut is aperiodicity, so a safety language need not be
+  star-free — but it is what makes the formula-level route to Spot's classifiers
+  a dead end rather than an inconvenience: on nearly half the obligation rows
+  there is no formula to pass. The algebraic read-off does not notice the
+  difference; it never leaves the invariant.
+- **F18 — the degree stratifies the rung exactly.** Empirically the rung is a
+  *function* of `obligation_degree` on all 3182 obligation rows: degree ≤ 0 in
+  both coordinates ⟺ B (the 84 = 82 + 2 rows with `(0,0)`, `(-1,0)`, `(0,-1)`);
+  `(1,0)` ⟺ S (1430); `(0,1)` ⟺ G (1430); everything above ⟺ O (238, the tail
+  `(1,1)` 18, `(1,2)`/`(2,1)` 68 each, `(2,3)`/`(3,2)` 40 each, `(3,4)`/`(4,3)`
+  2 each). The Wagner coordinates are strictly finer than the rung and no Spot
+  call returns them — Spot decides the obligation rung but does not measure the
+  superchain, so that column has no counterpart to disagree with.
+- **F19 — the timings, stated against the trap.** Per-case median of 7, then the
+  median over cases (ms): safety 0.0029 ours / 0.0007 Spot; co-safety 0.0029 /
+  0.0017; obligation 0.0027 / 0.0061; degree 0.0265 ours, no counterpart. **Spot
+  is faster on safety (0.25×) and co-safety (0.59×) and slower on obligation
+  (2.27×)** — this is Python against C++ on tables of median 15 classes and
+  automata of ≤ 9 states, so the honest reading is that both are sub-10-µs and
+  the ratio corroborates the asymptotics rather than benchmarking anything: our
+  scans are linear in the held table, while Spot's route builds and compares
+  automata (obligation, the one that determinizes and minimizes, is the one where
+  it loses). The paper should not sell a speed claim off these numbers.
+
 ## Status
 
-All five V-experiments delivered; the paper's measurement placeholders are
-filled in pure form and cite this report's territory. The remaining CAL4 line is
-housekeeping only. The `flat_canon` census, the seeds, and the git revisions in
-each `reference/calculus/*.md` header make every finding above regenerable.
+All five V-experiments delivered, plus E-CAL-EX and V4; the paper's measurement
+placeholders are filled in pure form and cite this report's territory. The
+remaining CAL4 line is housekeeping only. The `flat_canon` census, the seeds, and
+the git revisions in each `reference/calculus/*.md` header make every finding
+above regenerable.
 
 ## Status addendum (2026-07-11, theory)
 
