@@ -43,67 +43,40 @@ only the file and section named for the task at hand — nothing else.
 
 ## Work items — Theory
 
-1. ~~Reply to F-M3~~ DONE (2026-07-11): accepted in the report with
-   the M3b addendum (spec §9.1) and a rewritten §10; E1 prediction
-   registered (5164 with μ∈{0,1}, split 2582/2582).
-1b. ~~Reply to F-M4 + ratify P-M5~~ DONE (2026-07-11): F-M4 accepted
-   (CW common-denominator deviation ratified, spec §10 amended; E2
-   prediction registered: zero census rows with `μ > 0` and
-   `ρ < |Σ|`); P-M5 RATIFIED on all three points — Moore convention,
-   PRISM subset (well-formedness normative), **initial letter
-   INCLUDED in the word** — spec §11 rewritten as the full M5 work
-   order (fixtures F-M/F-N/F-O, four gates, Bernoulli-embedding law
-   replacing the one-state Mealy cross-check). Then promoted on user
-   go: the paper's §2.3/§3.5 now state the chain model
-   state-labelled NATIVELY (`(Q, P, ι, ℓ)`, path word, Bernoulli
-   chain `B_p`; Thm 3.4 = the `B_p` case; Mealy is the embedded
-   convention) — proof unchanged, spec already Moore-native.
-2. **Fill the paper's ⟨TBD⟩ slots** from report findings as campaigns
+1. **Fill the paper's ⟨TBD⟩ slots** from report findings as campaigns
    land (§6 + abstract headline wait on M6; F-M3's census numbers —
    5660/6222 LTL-up-to-null, the 1922 measure-invisible groups — are
    candidate §6(iv) material, user-gated).
-3. **References**: PRISM CAV'11 and Chatterjee–Doyen–Henzinger ToCL'10
+2. **References**: PRISM CAV'11 and Chatterjee–Doyen–Henzinger ToCL'10
    still placeholders — get them into `papers/`, read, then cite.
-4. Fenced, deliberately unclaimed: Markov-source analogue of the
+3. Fenced, deliberately unclaimed: Markov-source analogue of the
    essential form; weighted/semiring direction is future work.
 
 ## Work items — Engineering (in order, each gated on the user's go)
 
-1. ~~M4 (spec §10) + M3b~~ DONE (2026-07-11, finding F-M4): engine
-   `sosl/sosl/quant/entropy.py`, fixtures3, `m4_gate`, `m3b_gate`;
-   all gates green (0 red / 0 non-converged / 0 case budget-kills; 1
-   m3b pair kill, a datum). One spec deviation, soundness-neutral and
-   recorded in F-M4 + `algorithm.md` §10: the CW iterate is fixed
-   point over the COMMON denominator 10⁴⁰ (per-entry
-   `limit_denominator` blows up through the lcm). Awaiting theory
-   reply.
-2. ~~Convention-flip doc sweep~~ DONE (2026-07-11, null result,
-   recorded in the report): zero stale paraphrases in
-   `quant/algorithm.md` / `quant/README.md` / `tests/quant/`; the
-   docs cite only Thm 3.4, whose statement is unchanged in the
-   restated paper; no code/gate dependence on the old convention
-   (chains enter only at M5, unimplemented). No edits made.
-3. **M5 (spec §11)** — the Markov product `Pr_M(L)`. NEXT, on the
-   user's go; P-M5 is RATIFIED (2026-07-11) and spec §11 is the
-   complete work order, written against the NEW convention: `.mc` =
-   restricted PRISM-language subset, state-labelled (Moore), exact
-   rationals in source, word INCLUDES the initial state's letter
-   (`word = ℓ(s₀)ℓ(s₁)…`; product starts at `(q₀, λ(ℓ(q₀)))`, reads
-   `ℓ(q')` per step). Fixture F-M pins the convention. Stored-chain
-   placement stays with the corpus keeper (only needed at M6/E4).
-4. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
-   and abstract ⟨TBD⟩ slots through report findings only.
-5. **Figures** — FIG-1/2/3 **DONE (2026-07-11)**: artifact
-   `research_notes/sos_measure_figs/` (index `figures.md`, `Makefile`,
-   `reproduction.md`, `notes.md`, PNGs in `img/`, canonical `.sos`
-   sources F-D/F-E in `sources/`); probes in `sosl/tests/quant/figs/`
-   (`fig1`, `fig2`+`fig2_draw`, `fig3`, shared `tikz`/`cayley`,
-   `sources.py`). `make -C research_notes/sos_measure_figs` rebuilds
-   tex+png; every value read off the tested `sosl.quant` engine, probes
-   own placement only. FIG-1/2/3 **placed in the paper**
-   (§3.1/§3.4/§4.1, 2026-07-11). FIG-4 now unblocked by M3 (its own
-   session); FIG-5 blocked on M4/M6.
-6. Deferred until a user go-ahead: move `sosl/sosl/quant/` under
+1. **M5 (spec §11)** — the Markov product `Pr_M(L)`. NEXT, on the
+   user's go; P-M5 is ratified and spec §11 is the complete work
+   order: `.mc` = restricted PRISM-language subset, state-labelled,
+   exact rationals in source, word includes the initial state's
+   letter (`word = ℓ(s₀)ℓ(s₁)…`; product starts at `(q₀, λ(ℓ(q₀)))`,
+   reads `ℓ(q')` per step). Fixture F-M pins the convention.
+   Stored-chain placement stays with the corpus keeper (only needed
+   at M6/E4).
+2. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
+   and abstract ⟨TBD⟩ slots through report findings only. Theory's E1
+   and E2 predictions are registered in the report (the F-M3 and F-M4
+   replies).
+3. **Figures** — FIG-1/2/3 built and placed in the paper
+   (§3.1/§3.4/§4.1): artifact `research_notes/sos_measure_figs/`
+   (index `figures.md`, `Makefile`, `reproduction.md`, `notes.md`,
+   PNGs in `img/`, canonical `.sos` sources F-D/F-E in `sources/`);
+   probes in `sosl/tests/quant/figs/` (`fig1`, `fig2`+`fig2_draw`,
+   `fig3`, shared `tikz`/`cayley`, `sources.py`).
+   `make -C research_notes/sos_measure_figs` rebuilds tex+png; every
+   value read off the tested `sosl.quant` engine, probes own
+   placement only. FIG-4 unblocked by M3 (its own session); FIG-5
+   blocked on M6.
+4. Deferred until a user go-ahead: move `sosl/sosl/quant/` under
    `sosl/sosl/sos/`.
 
 Implementation starts only on the user's go. One milestone per pass;
