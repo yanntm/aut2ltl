@@ -398,7 +398,10 @@ Gates (`ladder_gate.py`):
    `K = FGb ∧ Gc` over `AP = {a,b,c}` (via `ltl2tgba -D` if
    convenient — bounded — or by hand from the paper's class
    descriptions), canonize, and assert the paper's hand computation:
-   `|𝒞(¬φ)| == 7`, `|𝒞(K)| == 4`, product table 13 classes; both
+   `|𝒞(¬φ)| == 5`, `|𝒞(K)| == 4`, product table 10 classes
+   (corrected per E1, 2026-07-11 — the original 7/13 counted the bit
+   presentation, not the syntactic quotient; paper §4.6 now derives
+   the `σ = 1` merge); both
    endpoints inconclusive with witnesses replaying as `({abc})^ω`
    and `({bc})^ω`; `exists_safety` NO with refusal lasso replaying
    as `({bc})^ω`; `exists_cosafety` YES with kernel witness whose
@@ -414,7 +417,9 @@ Gates (`ladder_gate.py`):
    canonize, then the paper's §4.6 arithmetic; escalations go to the
    report verbatim. *Outcome (2026-07-11): everything semantic green;
    the two class counts failed (5 vs 7; product 10 vs 13) and are
-   escalated in the report's To theory.*
+   escalated in the report's To theory. Theory accepted E1 the same
+   day and corrected paper §4.6 and this item — the asserted values
+   above are the corrected ones; the fixture regression pins them.*
 
 **GT2 acceptance (met 2026-07-11):** rung oracle every corpus case
 explained (6 222/6 222 green); ladder gates green on the GT1 campaign
