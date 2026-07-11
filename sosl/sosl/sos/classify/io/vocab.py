@@ -44,13 +44,14 @@ def _gamma_terms(gamma: str) -> Tuple[Tuple[int, int], ...]:
     """Parse a rendered ordinal ``γ`` into descending ``(exponent, coefficient)``
     terms — a tuple that orders as the ordinal. ``PARTIAL(...)`` sorts above every
     resolved degree. Handles ``0``, finite ints, ``omega``, ``omega*c``,
-    ``omega^e``, ``omega^e*c``, and ``+``-sums."""
+    ``omega^e``, ``omega^e*c``, and ``+``-sums (spaceless, as `Ordinal`
+    renders)."""
     if gamma.startswith("PARTIAL"):
         return ((999, 1),)
     if gamma == "0":
         return ()
     out: List[Tuple[int, int]] = []
-    for part in gamma.split(" + "):
+    for part in gamma.split("+"):
         if part.startswith("omega"):
             rest, exp, coeff = part[len("omega"):], 1, 1
             if rest.startswith("^"):
