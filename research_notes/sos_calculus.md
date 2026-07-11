@@ -379,17 +379,26 @@ Every operation below factors through three moves:
 
 The slogan: **align is the only product-priced move; operate is free;
 reduce is the normal form.** An operation is expensive exactly when it
-cannot be phrased as surgery on an aligned table — §3.4 locates those.
+cannot be phrased as surgery on an aligned table — §4 locates those.
 
 ### 3.2 The free fragment: the surgery catalog
 
 All of the following act on a fixed table `(𝒞, λ, M)`; each is either a
 query answered by lookups, or a surgery returning a pair set on the same
-table, to be reduced at will. Proposition 5.11 of
-[SωSX26] (decomposition never leaves LTL) is the safety net for the whole
-fragment: every result's syntactic algebra divides `M`, so surgery never
-escapes the variety of its table — an aperiodic table yields only
-LTL-definable results, however the pair sets are cut.
+table, to be reduced at will. One safety net covers the whole fragment:
+
+**Lemma 3.3 (surgery never leaves the variety).** For every saturated
+pair set `P'` over the table of `𝓘(L)` (letter map possibly recomposed),
+the syntactic algebra of `L(P')` divides `M`. In particular an aperiodic
+table yields only aperiodic — that is, LTL-definable [DG08] — results,
+however the pair sets are cut.
+
+*Proof.* `reduce` (§3.1) quotients the carrier by a congruence of `M`
+after restricting, when the letter map changed, to the generated
+subsemigroup; the result — by [SωS26, Thm 5.1] applied to the reduced
+object, *the* syntactic algebra of `L(P')` — is a quotient of a
+subsemigroup of `M`, i.e. a divisor. Aperiodicity (`x^{k+1} = x^k` for
+`k` large) passes to subsemigroups and quotients. ∎
 
 - **Lasso membership.** `member(P, u, v) := Val_P(fold(u), fold(v))`:
   `O(|u| + |v|)` table lookups (plus one memoized idempotent walk). This
@@ -406,6 +415,9 @@ LTL-definable results, however the pair sets are cut.
   is one flip — against `2^{Θ(n log n)}` for nondeterministic Büchi
   complementation [TFVT10], this is the calculus's headline entry — and
   the constants are `∅` (empty language) and `linked(𝓘)` (universal).
+  On the running example the flip is
+  `P^c = {(A,A), (D,A), (D,B), (D,D)}` — the complement `¬(a*·b^ω)` on
+  the same five classes, no Safra in sight.
 - **Rooting (left quotients).** For `c ∈ 𝒞` define
   `P_c := { (s, e) linked : (c·s, e) ∈ P }`. Well-defined — `(c·s, e)` is
   linked when `(s, e)` is — and `Val_{P_c}(x, d) = Val_P(c·x, d)`, so
@@ -415,9 +427,9 @@ LTL-definable results, however the pair sets are cut.
   (`(uv)⁻¹L = v⁻¹(u⁻¹L)`), and the number of distinct rootings *is* the
   residual count read-off [SωS26, Prop 4.6]: the residual automaton of
   `L`, internalized. In particular `L` is prefix-independent iff all
-  rootings equal `P`. These rootings are exactly the memoized class
-  children of the extraction [SωSX26, §5.2], and Lemma 5.9 there (reach
-  absorption) is a rooting identity.
+  rootings equal `P`. On the running example, `P_A = P` (`a⁻¹L = L`:
+  the `a*` absorbs) while `P_B = {(B, B)}` — the language `{b^ω}`:
+  after one `b`, only `b`'s remain.
 - **Pair languages and prolongations.** The pair classes are the
   conjugacy classes, and conjugacy is a law about *cells*, not pairs:
 
@@ -438,20 +450,41 @@ LTL-definable results, however the pair sets are cut.
   sets. Every surgery in this catalog preserves saturation, and the
   implementation's harness asserts it on every output.)
 
-  Any saturated `P'` is then a language: a single class gives "the words
-  realizing exactly this accepting behavior" — *prolonging the language
-  from one of its behaviors*, the finest granularity of the OR-split
-  combinator [SωSX26, §5.6], with its Wagner-ladder guard.
+  Any saturated `P'` is then a language: a single conjugacy class gives
+  "the words realizing exactly this accepting behavior" — *prolonging
+  the language from one of its behaviors*, the finest OR-decomposition
+  the algebra supports.
 - **Inverse substitutions.** For `π : Σ' → Σ` (relabeling, letter
   merging, alphabet extension by duplication): compose `λ ∘ π`, same
   table, reduce — the reachable part may shrink, so the result meets the
   normal form before any byte-level use. Inverse morphic images are
   free; Spot's `relabel` is a special case.
+- **Alphabet hygiene.** For LTL applications `Σ = 2^AP`, and two
+  toolbox staples become read-offs on `λ`:
+  - *Unconstrained propositions.* `p ∈ AP` is **free** in `L` iff
+    `λ(a[p↦1]) = λ(a[p↦0])` for every valuation `a` — `|Σ|/2` lookups.
+    (⇒: toggling `p` at one position is an Arnold-context move, so
+    freeness merges the letter classes; ⇐: equal letter classes give
+    any two words agreeing outside `p` equal block folds in a shared
+    Ramsey factorization, hence one verdict.) When the test passes,
+    existential and universal projection of `p` coincide and are an
+    *alphabet quotient*: merge the letter pairs — `λ` factors through
+    the merged alphabet — and reduce. No powerset; contrast §4, where
+    projecting a *constrained* proposition is exponential. The read-off
+    prices the operation before it is paid.
+  - *Equality up to renaming.* Whether `L₂ = π(L₁)` for some permutation
+    `π` of `AP`: each candidate `π` is a relabel (an inverse
+    substitution), one `reduce`, one byte comparison — and canonicity
+    prunes hard, since class count, `|P|`, and the multiset of
+    letter-class profiles are renaming-invariant and must match before
+    any `π` is tried. On a corpus this is deduplication up to symmetry,
+    an operation with no automata-side analogue short of an isomorphism
+    search over machines that are not canonical to begin with.
 - **Canonical witnesses.** Every nonempty pair set carries its own
   certificate: `(s, e) ∈ P` yields the lasso `key(s)·key(e)^ω`, shortlex
   keys giving *the* canonical witness word. A witness or counterexample
   is read off in the same scan as the decision it certifies — the
-  certificate discipline of [SωSX26, §4], available to every operation.
+  calculus's certificate discipline, available to every operation.
   And the witness is not merely canonical:
 
   **Proposition 3.2 (the canonical witness is minimal).** Order lassos
@@ -464,8 +497,8 @@ LTL-definable results, however the pair sets are cut.
   so the cell's lasso dominates it componentwise. Every certificate the
   calculus emits — an emptiness witness, an inclusion or equivalence
   counterexample — is therefore the minimal one, and a client consuming
-  counterexamples (the learner's teacher [SωSL26]) inherits its
-  minimal-order guarantee from the scan order alone.
+  counterexamples (a learner's teacher, say) inherits a minimal-order
+  guarantee from the scan order alone.
 - **Decision procedures as scans.** All of the following scan cells in
   the discipline order and return the verdict together with the least
   witnessing cell's lasso; by Proposition 3.2 that witness is globally
@@ -517,15 +550,24 @@ Cross-table operations pay the alignment price `O(n₁·n₂·|Σ|)` once:
   generated part *is* essentially the full rectangle, and that is not an
   artifact: the intersection of independent constraints genuinely
   multiplies behaviors. The realized ratio `|nodes| / (n₁·n₂)` is a
-  datum the implementation records per alignment. Across census pairs
-  the distribution bears the two regimes out: a median of 0.17, almost
-  every product below half the rectangle and none above 0.60 on
-  independently drawn operands, falling to 0.06 when the operands are a
-  language and its complement — related tables whose shared algebra
-  collapses the product toward the diagonal. One further economy is structural: an
+  datum the implementation records per alignment; §8 measures its
+  distribution over corpus pairs — both regimes are visible, and the
+  rectangle is never approached. One further economy is structural: an
   aligned product is a table like any other, so a *session* of
   operations on the same pair — inclusion both ways, intersection,
   difference, their emptiness checks — pays its BFS once.
+
+*On the running example.* Align `𝓘(a*·b^ω)` with `𝓘(GF a)`
+("infinitely many `a`'s": three classes — `[ε]`, `α` = contains an
+`a`, `β` = nonempty and `a`-free — with `P₂ = {(α, α)}`). The BFS
+discovers five nodes — `([ε],[ε]), (A,α), (B,β), (C,α), (D,α)` — of
+the fifteen-cell rectangle: exactly the correlation the two languages
+exhibit. On the shared table, `a*·b^ω ∩ GF a = ∅` is one scan: a true
+cell needs a loop whose idempotent has first component `B` and second
+component `α`, and no discovered node offers both (`B` pairs only with
+`β`). The same aligned table answers the inclusion
+`a*·b^ω ⊆ FG ¬a` — the pointwise `Val₁ ≤ ¬Val₂` — with no further
+construction.
 
 ### 3.4 The exponential frontier
 
