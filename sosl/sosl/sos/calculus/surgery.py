@@ -294,6 +294,21 @@ def _right_cayley_sccs(table: Table) -> Tuple[List[int], int]:
     return comp, ncomp
 
 
+def r_classes(table: Table) -> Tuple[FrozenSet[int], ...]:
+    """The R-classes of the linked stems: the strongly connected components of
+    the right-Cayley letter graph (the pass `is_obligation` runs), each
+    restricted to the stems of linked pairs, empty ones dropped. They partition
+    the linked stems; component order is the Tarjan one (reverse topological:
+    every strict right-descent leaves a class toward a smaller index).
+    ``O(n * |Sigma|)``."""
+    stems = {s for (s, e) in table.linked}
+    comp, ncomp = _right_cayley_sccs(table)
+    members: List[Set[int]] = [set() for _ in range(ncomp)]
+    for s in stems:
+        members[comp[s]].add(s)
+    return tuple(frozenset(m) for m in members if m)
+
+
 def _stem_verdicts(table: Table, pairs: PairSet) -> Optional[Dict[int, bool]]:
     """The loop-blind verdict ``theta(s)`` per linked stem, or ``None`` if some
     stem carries two loops with different verdicts."""
