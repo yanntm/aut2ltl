@@ -390,3 +390,32 @@ slot order. E3's order sweep and E7's within-run axis are unblocked.
   enumerated, `|EM¹| ≤ 12 225`) is the unstructured world where §4.3
   predicts no engine win — the bottom line's win column lives on the
   scaling families and shapes the census does not sample.
+
+## C10 — the calculus, first move (§6.1 lasso membership)
+
+Engine state added: `sos_sdd/calculus.py`, the digest-side §6 moves.
+`member(aut, u, v)` implements §6.1 exactly as specified: fold both
+words through the letter-class per-slot value maps (right
+multiplication on packed vectors, no diagram anywhere), take `⟦v⟧^π`
+by concrete power iteration (orbit to first repeat, then the unique
+idempotent `d^m`, `m` the least multiple of the period ≥ the index),
+and read `Val(⟦u⟧, ⟦v⟧) = A(st_⟦u⟧(ι), e)` off `e`'s packed marks at
+the loop fixpoint state `st_e(q₀)` against the grounded acceptance
+table. `QuotientSoS.member` delegates. Scope: single `Automaton`
+digests (the blockwise form arrives with §6.3 alignment); a partial
+cube in a word is legal exactly when it sits inside one
+letter-behavior class, ambiguity refused loudly.
+
+- **F25 — membership is closure-free and three-way exact.** Gate
+  `tests/sos_sdd/member_test.py`: on the triptych, `mod3`, `dupe`
+  (both rootings — init 0 is a rejecting sink, so the rebased `dupe1`
+  supplies the accepting verdicts), and `stem`, all 210 lassos
+  (|u| ≤ 3, 1 ≤ |v| ≤ 3 over the concrete letters) per case agree
+  with an independent explicit lasso simulation of the digest; the
+  verdict equals the engine's Phase 3 profile read on
+  `evenblocks`/`mod3`/`stem`; and the §6.1 assertion holds
+  *structurally* — `calculus.py` never imports the C++ core, and the
+  gate asserts `sos_sdd._core` stays out of `sys.modules` across a
+  membership query, so Phase 1 cannot run on this code path. Cost
+  shape as the paper claims: |u|+|v| map applications plus
+  orbit-length packed compositions, no diagram built.
