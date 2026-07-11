@@ -524,9 +524,8 @@ function of `st_x(ι)` and `c` only, namely `A(st_x(ι), c)`. ∎
     e ~ω  f    ⟺   ∀ b ∈ EM(D) :   Aprof(e·b) = Aprof(f·b),        where  Aprof(c) = (q ∈ Reach ↦ A(q, c)).
 ```
 
-The slots are `Reach`, not `Q`: a slot names the state a left context lands on
-(Proposition 4.3), and an unreachable state names no context — letting it
-separate would over-refine the quotient on a non-trim `D`.
+The slots are `Reach`, not `Q`: an unreachable state names no left context,
+and letting it separate would over-refine the quotient on a non-trim `D`.
 
 Here `b` ranges over all of `EM(D)`, the identity **included**: `b = ⟦ε⟧` is the
 ω-power context with empty right padding `y = ε`, whose loop is `e` itself — a case
