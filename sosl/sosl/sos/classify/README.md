@@ -80,4 +80,6 @@ current coverage.
 Under `sosl/tests/sosl/`, each self-bound and run from the `sosl/` subtree:
 `classify_primitives`, `classify_chains`, `classify_superchains`,
 `classify_readoff`, `classify_record` (all assert against the C§9 triptych
-values), and `classify_aperiodic` (band 1 on one `.sos`).
+values), `classify_aperiodic` (band 1 on one `.sos`), and `classify_fork`
+(the derivative regime detected: the `Fork` fixture's PARTIAL record on both
+sides, and the CLI's exit code 2).
