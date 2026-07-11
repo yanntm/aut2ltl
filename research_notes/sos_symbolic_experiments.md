@@ -68,13 +68,17 @@ the derived-census driver, the engine's first consumer at scale),
   (`quotient="explicit"`, the recorded fallback; `"symbolic"` refused);
   recorded exclusions: unused-AP languages (Spot import drops the AP),
   products (refused at Phase 6).
-- **TODO: everything else.** C4's squaring shortcut (**design pinned**
-  with the libDDD author — recorded in `sos_sdd/README.md`, "The
-  squaring shortcut (C4 completion)"; implementation next), C9–C10
-  proper, E1/E3–E9, M2–M5 (E2 still owes the second component family
-  and per-point budget sweeps at scale). After C4: E1 census wiring
-  (HOA → digest bridge; corpus at `genaut/corpus/flat_canon/`), which
-  also unlocks the C5 explicit-tool cross-check.
+- **DONE (engine-side): C4 complete** — the squaring shortcut as the
+  recorded 2k relation encoding (`sos_sdd/README.md`; settled with the
+  libDDD author): R built once, relational-product iteration,
+  log-capped; all `square` modes live. Check gate green with the
+  termination theorem observed (converges iff orbit periods are powers
+  of two: mod3 diverges, MOD2 converges) — ledger F16.
+- **TODO: everything else.** C9–C10 proper, E1/E3–E9, M2–M5 (E2 still
+  owes the second component family and per-point budget sweeps at
+  scale). Next: E1 census wiring (HOA → digest bridge; corpus at
+  `genaut/corpus/flat_canon/`), which also unlocks the C5
+  explicit-tool cross-check.
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat

@@ -193,3 +193,27 @@ reference serializer's exact layout (gate
   parity is out of scope by the format's own same-AP equality clause —
   asserted as such in the gate. Products are refused at Phase 6
   (`.sos` for product digests is not defined yet).
+
+## C4 completion — the squaring shortcut (2k relation encoding)
+
+Engine state added: `src/squaring.hh` implementing the recorded design
+(`sos_sdd/README.md`, settled with the libDDD author): the squaring map
+materialized once as an interleaved relation `R = {(z ⧉ z·z)}` (dupe
+gadget with collision-free numbering; the Comp case split reading only
+pre variables — hazard-free by construction), iterated by an
+`Apply2k`-pattern relational-product homomorphism over the crossing's
+pair space, capped at `⌈log₂|EM¹|⌉ + 1` rounds. All three `square`
+modes live; unknown modes refused.
+
+- **F16 — the C4 check gate is green, and the termination theorem
+  behaves.** Under `square="check"`, every R row equals the explicit
+  packed composition and the converged shortcut equals the pairing π
+  (the engine's own O(1) comparison — a disagreement would be
+  StopTheLine) on: the triptych, `MOD2`, `EvenBlocks^{⊗2}` factored —
+  each converging in **2 squaring rounds** against pairing's 2–5.
+  `mod3` (orbit period 3) diverges at the cap exactly as the theorem
+  predicts — recorded finding, pairing π stands — and `square="on"`
+  raises StopTheLine on it; `MOD2` (period 2) converges despite
+  periodicity, pinning "detects powers of two, not aperiodicity" as
+  observed behavior. `square="on"` skips the pairing lfp entirely on
+  the converging cases and its π is element-identical.
