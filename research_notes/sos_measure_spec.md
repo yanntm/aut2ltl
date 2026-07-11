@@ -524,9 +524,12 @@ below run the same chain from several starts; no file rewriting).
 
 `word(s₀s₁s₂…) := ℓ(s₀)·ℓ(s₁)·ℓ(s₂)…` — the initial state's label IS
 the word's first letter, matching PRISM/Storm path semantics
-("same file, same number"). Paper §2.3 records the embedding under
-which Thm 3.5 applies verbatim; in the engine it is one line: the
-product starts at `(q₀, λ(ℓ(q₀)))` and each step reads `ℓ(q')`.
+("same file, same number"). Paper §2.3/§3.5 now state the chain model
+state-labelled natively, so §11.3 is Thm 3.5 read verbatim. The
+theorem allows an initial distribution `ι`; `.mc` restricts to a
+Dirac (PRISM single init) — the Bernoulli-embedding gate of §11.5
+reconstructs a distribution by hand, which is exactly the theorem's
+`ι`-linearity.
 
 ### 11.3 Algorithm (`quant/product.py`)
 
