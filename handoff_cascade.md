@@ -17,6 +17,11 @@ that). Mission: `research_notes/bls_cascade_experiments.md` (K-E0..E7). Ledger:
   `(GF(a∧X((!a&!b)U a))) ∧ (G(c→F d))` → moving terminal layer `{21,24}` with
   verified genuine (C)-conflicts at k=0,1 (ALG-7: member toggles + non-conjugate)
   = first moving-layer floor inhabitant. k=2,3 BUDGET (tooling).
+- **K-E3 DONE** (K-F10): Cor C.9 gating stratum EMPTY — 0 of 132
+  prefix-independent census langs have a non-frozen final layer
+  (prefix-independence ⟹ frozen final layer, settles C.3 ⟨TBD⟩). Moving-layer
+  one-sidedness balanced (13 up/13 down/18 both/12 neither), not upward-dominant.
+  TODO: `P|_R` rung-stratified recount for E3's precise "predominantly upward".
 
 ## Machinery (all under `tests/cascade/`)
 
@@ -45,11 +50,11 @@ that). Mission: `research_notes/bls_cascade_experiments.md` (K-E0..E7). Ledger:
 
 ## Todo (next)
 
-- **K-E3** (WIP): one-sidedness stats + Cor C.9 count. Prediction: C.9 gating
-  stratum = 0 (prefix-independence forces frozen final layer). Run
-  `k_e3_sweep.py`, record K-F10.
-- **K-E4**: config-normal-form emitter (Prop C.7 / Cor C.8), DAG-only, never
-  stringify; conformance-gate on `G(a→F b)` then K-E1-decided layers.
+- **K-E4** (NEXT): config-normal-form emitter (Prop C.7 / Cor C.8), DAG-only,
+  never stringify; conformance-gate on `G(a→F b)` then K-E1-decided layers.
+  Expected `G(a→F b)`: `(GF A_{(2,a)} ∧ GF A_{(4,b)}) ∨ F(b ∧ X G St(2)) ∨ G St(2)`
+  with `A_{(2,a)}=b∧X((b∨s) U a)`, `A_{(4,b)}=a∧X((a∨s) U b)`. LTL DAG builders in
+  `aut2ltl/ltl/builders.py`; window emitter in `aut2ltl/sos2ltl/engine.py`.
 - **K-E5**: DG vs manufactured cascade on the 258 (A)-fallback stratum
   (needs `aut2ltl/bls` bridge). Independent.
 - **K-E6**: floor witness pendency machine + prophetic `A_S` cross-check.

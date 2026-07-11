@@ -34,8 +34,11 @@ verdict oracle is `Val(s,d) = (M(s,π(d)),π(d)) ∈ P` off `sosl.sos.Invariant`
   specimen yields the **first moving-layer floor inhabitant** (verified genuine
   (C)-conflicts at k=0,1, ALG-7 toggle + non-conjugate). Floor is empty on the
   census frame, inhabited beyond it. Steps 1/2 subsumed by K-F7.
-- **Next: K-E3** (one-sidedness stats, reuses the sweep), K-E4 (config-normal-
-  form emitter — DAG-only, never stringify).
+- **K-E3 DONE** — K-F10: Cor C.9 stratum empty (0 of 132 prefix-independent
+  languages have a non-frozen final layer; prefix-independence ⟹ frozen final
+  layer); moving-layer one-sidedness balanced, not upward-dominant.
+- **Next: K-E4** (config-normal-form emitter — DAG-only, never stringify;
+  conformance-gated), then K-E5 (DG vs cascade), K-E6 (prophetic).
 
 ---
 
