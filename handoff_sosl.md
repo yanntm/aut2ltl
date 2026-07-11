@@ -7,8 +7,9 @@ only**, no history — the report is the ledger.
 
 ## Critical files
 
-- `research_notes/sos_learning.md` — the paper. Its 9 `⟨TBD-M4⟩` markers all wait
-  on the completed guarded sweep (item 5 below → item 6 fills them).
+- `research_notes/sos_learning.md` — the paper. Its `⟨TBD⟩` markers (the M4
+  tallies, the §6.3 congruence recount, the §6.4 E3 restatement) wait on
+  items 7b → 8 below.
 - `research_notes/sos_learning_spec.md` — the normative spec (§7 verdict vocab).
 - `research_notes/sos_learning_report.md` — the engineering↔theory ledger. Append dated
   entries; theory replies in place.
