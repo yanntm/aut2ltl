@@ -29,13 +29,13 @@ from sosl.sos.invariant import Invariant
 FC = "../genaut/corpus/flat_canon"
 OUT = Path("tests/sosl/logs/witness_lock")
 
-# The refutation witnesses. Primals only: the claim is an existence claim,
+# The refutation witnesses — primals only. The claim is an existence claim,
 # certified on the canonical invariant independently of provenance (spec §8
-# item 7). A complement is the accept-set byte-flip over the same semigroup, so
-# it inherits both prefix-independence (a) and the ω-sort signature (b) and can
-# only pass where its primal passes. Its catalogue name is not addressable
-# either — genaut mints a `<primal>_c` alias only where the enumeration was
-# one-sided, so a dual drawn under its own combo id has no `_c` file.
+# item 7), and a complement is the accept-set byte-flip over the same semigroup:
+# it inherits prefix-independence (a) and the ω-sort signature (b), so it can
+# only pass where its primal passes. Duality carries the complements; do not
+# name them (a catalogue dual has a `<primal>_c` file only when the enumeration
+# was one-sided).
 WITNESSES: List[str] = [
     "2state1ap2acc_parity_0088836118",
     "2state1ap2acc_parity_1178851077",
