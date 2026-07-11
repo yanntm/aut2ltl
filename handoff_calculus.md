@@ -8,8 +8,11 @@ then only the spec section for the task at hand.
 - **V4 (spec §9.2) — DONE**, `sosl/tests/calculus/v4_ladder.py`
   (`--selftest` / `--one <case>` / `--campaign`; full sweep ~4 min),
   reference `reference/calculus/v4_ladder.{md,csv}`, report findings
-  **F15–F19**, paper §8.5 filled. **6222/6222 agreement with Spot** on
-  safety, co-safety and obligation; no blown budget. Carry three facts:
+  **F15–F19**. **6222/6222 agreement with Spot** on safety, co-safety and
+  obligation; no blown budget. Paper §8.5's ⟨TBD⟩ is *answered in the
+  report*, awaiting theory to integrate — engineering does not edit the
+  paper (a §8.5/§8 edit was made and reverted this session; the E-CAL-EX
+  §8.7 flip was a one-off the spec explicitly sanctioned). Carry three facts:
   - **Spot has no automaton-level Manna–Pnueli classifier.**
     `spot.is_obligation` / `is_persistence` / `mp_class` are
     formula-level (`tl/hierarchy.hh`: the formula is mandatory, the
@@ -30,12 +33,11 @@ then only the spec section for the task at hand.
   - Read Spot's headers under `opt/spot/include/spot/`, not the bindings'
     docstrings — the Python docstrings are empty, the headers carry the
     contracts.
-- **Paper §8 is marked STALE.** Its preamble now says corpus = 6222, and
-  every corpus-derived number in §8 *except* §8.5's V4 bullet is
-  report-era 3938. The markers say what to do: re-source each figure from
-  `sos_calculus_report.md`, one by one, matched to the finding that
-  produced it — never re-typed, never left because it looks close. That
-  is spec §9.4's sweep.
+- **Paper §8 is on the wrong corpus** — every number in it is report-era
+  3938, while V4 is the first V-number on the 6222 corpus. Flagged for
+  theory in the report's *For theory* section, not in the paper. Until
+  spec §9.4's sweep reruns V1a/V1b/V1c/V2/V3 on the frozen corpus, the
+  report is the source of truth for every measured value.
 
 - **E-CAL-EX (spec §9.1) — DONE**, `sosl/tests/calculus/example_gate.py`
   (one shot, no argv, ~0.1 s), reference `reference/calculus/example_gate.md`,
@@ -176,6 +178,12 @@ is what §9.4 exists to fix). All gate numbers are recomputable — rerun
 
 ## Gotchas
 
+- **Engineering does not edit the paper.** `sos_calculus.md` is theory's;
+  results land in `sos_calculus_report.md` and theory integrates them —
+  including the ⟨TBD⟩ slots that a work order says it "fills" (that means
+  *answers*, in the report). The one exception was E-CAL-EX's §8.7 flip,
+  which the spec sanctioned in writing. When a paper number looks wrong or
+  stale, say so in the report; do not fix it in place.
 - **Concurrent sessions** commit to this same repo (learner campaign / corpus
   regeneration / figs). Git history and unfamiliar modified files are NOT
   yours — commit ONLY your files by explicit path. Repo discipline is
