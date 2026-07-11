@@ -270,6 +270,30 @@ complement entries). Data: `tests/sos_sdd/reference/e1_census.csv`
   (`--shard k/N`, ~300 jobs). This run: the engine's own `TimeBudget`
   landed every finding, zero hard-KILLED rows.
 
-Still open after E1: the C5 cross-check against the explicit tool's
-residual classes (unblocked by the bridge, probe not yet written); the
-two missing §4.2 covariate columns.
+- **F21 — the C5 cross-check gap is closed.** The engine's Phase 4
+  partition equals `spot.language_map`'s (the explicit tool's
+  `residual_classes`, run on the RAW parsed graph so state numbering is
+  the digest's) on the classic six (triptych, mod3, dupe, stem) and a
+  deterministic 25-instance corpus spread — 30 matched, 1
+  budget-skipped, 0 diverged (`tests/sos_sdd/residual_crosscheck.py`;
+  the full-corpus version can ride a cluster fan-out if wanted).
+- **F22 — the §4.2 covariates, measured (and |EM¹| corroborated a
+  third way).** `tests/sos_sdd/e1_covariates.py` closes EM¹ explicitly
+  in Python (no engine) per completed instance and records: constant
+  slots (singleton value set), `distinct_cells` (per-slot value-set
+  sizes summed — the sharing source), and mark upward-closure per
+  (slot, dst) family. Its element count equals the census `em1` on
+  **all 6102 instances** — an independent corroboration of the model
+  count. Aggregates (`tests/sos_sdd/reference/e1_covariates.csv`):
+  constant slots present on 3092/6102 instances; mean
+  `distinct_cells / (|EM¹|·|Q|)` ≈ **0.039** (per-slot sharing alone
+  collapses the explicit table to ~4 %); **62 %** of mark families
+  upward-closed. ⟨To Theory: the paper's §4.2 leaves the
+  monotone-marks metric as "quantify on the corpus" — the
+  operationalization here (per-(slot,dst) family, closure under adding
+  one mark, fraction over non-empty families) needs blessing or
+  adjustment before the paper cites the 62 %.⟩
+
+E1's scope is now fully closed. Scatter correlate analysis (which
+covariate predicts compression) is a reading of the two reference CSVs,
+left for the paper integration.
