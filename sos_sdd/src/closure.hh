@@ -22,6 +22,7 @@
 #include "ddd/Hom.h"
 #include "ddd/Hom_Basic.hh"
 
+#include "congruence.hh"
 #include "crossing.hh"
 #include "findings.hh"
 #include "primitives.hh"
@@ -60,7 +61,9 @@ public:
       Hom h = GHom::ccompose(slots);
       class_homs_.push_back(h);
       step_parts.insert(h);
-      rev_parts.insert(GHom::ccompose(rev_slots));
+      Hom rev = GHom::ccompose(rev_slots);
+      rev_class_homs_.push_back(rev);
+      rev_parts.insert(rev);
     }
     step_ = GHom::add(step_parts);
     rev_step_ = GHom::add(rev_parts);
@@ -144,9 +147,33 @@ public:
       remaining = time_budget - close_secs_ - cross_secs_;
       if (remaining <= 0) throw BudgetExhausted{true, 3, profile_};
     }
+    const auto t0 = std::chrono::steady_clock::now();
     resid_ = std::make_shared<Residuals>(name_, space_, pack, accept, classes_);
     resid_->profiles(st, crossing().pi(), node_budget, remaining, profile_);
     if (until_phase >= 4) resid_->refine(st);
+    resid_secs_ =
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - t0)
+            .count();
+  }
+
+  // Phase 5: the syntactic congruence — partition refinement on the
+  // erased pair space, seeded by the Phase 3-4 products, refined by the
+  // per-class reverse letter homs (slot-local only; no Comp).
+  void congruence(Stats &st, const PackInfo &pack, long long node_budget,
+                  double time_budget) {
+    double remaining = 0.0;
+    if (time_budget > 0) {
+      remaining = time_budget - close_secs_ - cross_secs_ - resid_secs_;
+      if (remaining <= 0) throw BudgetExhausted{true, 5, profile_};
+    }
+    const Residuals &r = residuals();
+    std::vector<std::vector<int>> locals;
+    for (int g = 0; g < r.n_states(); ++g) locals.push_back(r.locals_of(g));
+    cong_ = std::make_shared<Congruence>(name_, space_, pack.mark_bits,
+                                         r.block_starts(), r.block_sizes(),
+                                         rev_class_homs_);
+    cong_->run(st, crossing().pi(), r.columns(), r.state_labels(), locals,
+               node_budget, remaining, profile_);
   }
 
   // -- shortlex extraction (the C7 mechanism, reused by witnesses) ----
@@ -228,6 +255,11 @@ public:
   std::vector<std::pair<std::vector<int>, std::vector<int>>>
   profile_rows(size_t limit) const { return residuals().profile_rows(limit); }
 
+  // -- phase 5 readings ------------------------------------------------
+  size_t congruence_count() const { return cong().n_classes(); }
+  std::vector<std::vector<std::vector<int>>>
+  congruence_classes(size_t limit) const { return cong().classes(limit); }
+
   // -- readings ------------------------------------------------------
   const std::string &name() const { return name_; }
   double em1_count() const { require(); return model_count(em1_); }
@@ -258,6 +290,12 @@ private:
     return *resid_;
   }
 
+  const Congruence &cong() const {
+    if (!cong_)
+      throw std::logic_error(name_ + ": phase 5 has not been run");
+    return *cong_;
+  }
+
   void check_class(const LetterClassRow &c) const {
     if (static_cast<int>(c.maps.size()) != space_.n_slots())
       throw std::invalid_argument(name_ + ": class " + c.least +
@@ -285,6 +323,7 @@ private:
   SlotSpace space_;
   std::vector<LetterClassRow> classes_;
   std::vector<Hom> class_homs_;
+  std::vector<Hom> rev_class_homs_;
   Hom step_;
   Hom rev_step_;
   DDD identity_;
@@ -293,9 +332,11 @@ private:
   std::vector<LayerRow> profile_;
   std::shared_ptr<Crossing> cross_;
   std::shared_ptr<Residuals> resid_;
+  std::shared_ptr<Congruence> cong_;
   int depth_ = -1;
   double close_secs_ = 0.0;
   double cross_secs_ = 0.0;
+  double resid_secs_ = 0.0;
   bool built_ = false;
 };
 

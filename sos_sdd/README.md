@@ -108,6 +108,10 @@ S.residual_classes()  # Phase 4's ≃-partition: state ids grouped by
                    # language equality, classes ordered by least member
 S.profile_rows()   # every (x, A(q,x) bits per state) row — a test/debug
                    # reading exercising the Phase 3 columns
+S.congruence_count()    # |EM¹/~| — the syntactic class count (Phase 5)
+S.congruence_classes()  # every ~-class as explicit element tuples — a
+                   # test/debug reading; Phase 6 consumes the blocks
+                   # symbolically
 ```
 
 **Calculus operators (C10)** — each names its paper anchor; built-in
@@ -207,6 +211,15 @@ stream.
   columns, which seeds Phase 4's residual gfp — explicit Moore
   refinement over the global states (mixed-radix over the component
   blocks, guarded ≤ 32767 like the slot domains).
+- **Phase 5 rendering**: the congruence is symbolic partition refinement
+  on the pair space with the y-block erased to zero (a `setVarConst`
+  sweep), so the Phase 3 columns project onto the closure's space; the
+  seed splits by the erased profile columns (~ω) and by residual-class
+  slot selections (~lin), and the gfp splits by letter-class *preimages*
+  (the closure's per-class reverse homs). Everything in that path is
+  slot-local `Hom_Basic` — `congruence.hh` never includes the ExprHom
+  machinery, which is the rotation-lemma code invariant (no `Comp`
+  inside the fixpoint).
 - **Variable order convention**: DDD variable 0 is adjacent to the
   terminal (slot `i` = variable `i`, higher variables on top) — the
   library convention, load-bearing for the expression homomorphisms and

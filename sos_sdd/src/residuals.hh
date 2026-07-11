@@ -228,6 +228,14 @@ public:
   // -- readings --------------------------------------------------------
   int n_states() const { return n_global_; }
 
+  // Phase 5 inputs: the kept profile columns, the residual class label
+  // of every global state, and the block geometry.
+  const std::vector<DDD> &columns() const { require_profiles(); return columns_; }
+  const std::vector<int> &state_labels() const { require_refined(); return labels_; }
+  const std::vector<int> &block_starts() const { return starts_; }
+  const std::vector<int> &block_sizes() const { return sizes_; }
+  std::vector<int> locals_of(int g) const { return digits(g); }
+
   // The residual partition: global state ids grouped by class, classes
   // ordered by least member. Global indexing is mixed-radix over the
   // blocks, block 0 most significant (= the state id itself when the

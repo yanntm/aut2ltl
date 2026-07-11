@@ -144,13 +144,14 @@ void check_config(const py::dict &config) {
   want("slot_encoding", "packed");
   want("alpha", "top");
   want("fp1", "layered");
+  want("fp5", "layered");
 }
 
 SoSCore build(const py::dict &payload, const py::dict &config,
               int until_phase) {
-  if (until_phase < 1 || until_phase > 4)
+  if (until_phase < 1 || until_phase > 5)
     not_implemented("until_phase=" + std::to_string(until_phase) +
-                    " (only phases 1..4 are implemented)");
+                    " (only phases 1..5 are implemented)");
   check_config(config);
 
   SlotSpace space{py::cast<std::vector<int>>(payload["doms"]),
@@ -194,6 +195,8 @@ SoSCore build(const py::dict &payload, const py::dict &config,
           py::cast<std::vector<std::vector<int>>>(payload["accept"]);
       core.residuate(st, pack, accept, node_budget, time_budget, until_phase);
     }
+    if (until_phase >= 5)
+      core.congruence(st, pack, node_budget, time_budget);
   }
   return core;
 }
@@ -255,6 +258,21 @@ PYBIND11_MODULE(_core, m) {
           py::arg("limit") = 100000,
           "Every element with its loop-verdict bits A(q, x) per global "
           "state (test/debug reading).")
+      .def("congruence_count", &SoSCore::congruence_count,
+           "Number of syntactic-congruence classes of EM1.")
+      .def(
+          "congruence_classes",
+          [](const SoSCore &s, size_t limit) {
+            py::list out;
+            for (const auto &cls : s.congruence_classes(limit)) {
+              py::list elems;
+              for (const auto &e : cls) elems.append(py::tuple(py::cast(e)));
+              out.append(elems);
+            }
+            return out;
+          },
+          py::arg("limit") = 100000,
+          "Every ~-class as explicit element tuples (test/debug reading).")
       .def_property_readonly("depth", &SoSCore::depth)
       .def_property_readonly(
           "layers", [](const SoSCore &s) { return profile_to_py(s.profile()); })
