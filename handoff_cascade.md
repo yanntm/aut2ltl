@@ -23,26 +23,24 @@ that). Mission: `research_notes/bls_cascade_spec.md` (K-E0..E7). Ledger:
   pass 1 (`sweep_layer` needs 4 full decides > 60 s) — **every potential
   conflict sits in the timeout stratum.** Data + provenance committed:
   `reference/cascade/k_series.md` (+ `k_e1_cluster.csv`).
-- **K-E1 PASS 2 = the conflict hunt — RUNNING as `20260711-203139-k_e1v2`**
-  (250 jobs, 60 s/command, submitted 07-11 20:31; reap:
-  `cluster/reap_until.sh 20260711-203139-k_e1v2`, results land in
-  `logs/cluster/20260711-203139-k_e1v2/results.csv`). Sharded
-  `python3 -m tests.cascade.k_e1_verify <id> <layer> 0` (early-exit finder +
-  inline ALG-7, CSV per cluster contract) over the 2176 missing pairs:
-  `tests/cascade/logs/cmds_k_e1_verify.txt` (regen: join the census jsonl's
-  UNDECIDED readings against `reference/cascade/k_e1_cluster.csv`).
-  NB an earlier submission of the same cmds (`*-k_e1v`, ≈19:50) lost its
-  run id when the submit client was killed mid-oarsub; whatever partial
-  jobs it fielded die at their 15-min walltime and its orphan remote run
-  dir is harmless — ignore it, `k_e1v2` is authoritative.
-- ⚠ **K-F12 CONFIRMED on the first specimen**:
-  `2state2ap1acc_parity_3772037665` (13 classes, aperiodic, Wagner (ω³,σ),
-  frozen singleton layers 5/7) has an ALG-7-verified GENUINE width-0
-  (C)-conflict (= plain-(B) failure in-frame, Lemma C.10) — ledger K-F12,
-  log `reference/cascade/kf12_specimen_alg7.txt`. The "floor empty on the
-  census frame" claim (K-F7/K-F9, draft C.2/C.19/C.7) FALLS; PAPER-EDIT
-  queued behind the pass-2 tally. Every-width failure (full C.12′ floor
-  membership) not yet established — structural analysis TODO.
+- **K-E1 PASS 2 DONE** (`20260711-203139-k_e1v2`, one --resume): of the
+  2176 heavy layers, **1021 genuine (C)@0-conflicts (ALG-7 inline, every
+  one genuine): 806 aperiodic / 215 group**; 625 CLEAN; 530 BUDGET. Data:
+  `reference/cascade/k_e1v_conflicts_k0.csv`. (Reap tallies count
+  `k_e1_verify`'s exit-2 BUDGET rows as `fail` — they are data.)
+- **K-E1 k=1 PERSISTENCE PASS DONE** (`20260711-210851-k_e1w1`, one
+  --resume): of the 1021, **263 conflict again at k=1 — all genuine, 246
+  aperiodic**; 118 CLEAN (ladder rescues); 640 BUDGET (cone growth
+  saturates the 10⁶-state budget). Data:
+  `reference/cascade/k_e1w_conflicts_k1.csv`.
+- ⚠ **K-F12 AT SCALE**: the aperiodic floor-track stratum is **≥246
+  in-frame layers genuinely failing (C) at widths 0 and 1** (type specimen
+  `2state2ap1acc_parity_3772037665`, Wagner (ω³,σ), frozen singletons —
+  `reference/cascade/kf12_specimen_alg7.txt`). The "floor empty on the
+  census frame" claim (K-F7/K-F9, draft C.2/C.19/C.7) FALLS — PAPER-EDIT
+  is now unblocked, all numbers final in `reference/cascade/k_series.md`.
+  Every-width failure (full C.12′ floor membership) still needs the
+  structural absorption argument or a k=2 pass (640 budget-open layers).
 - **K-E3 RERUN DONE** (extended): 5050 (C)-decided final layers at k≤3;
   one-sidedness over the 74 ≥2-class-family layers: 16 up / 16 down /
   28 both / 14 neither — still balanced; up=down is forced by complement
