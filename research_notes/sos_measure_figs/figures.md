@@ -87,7 +87,7 @@ every word factors over the kernel idempotent.
 
 **Why only the kernel forgets phases — `fd.sos`'s two halves side by side.**
 Left: the right-Cayley graph of the nine classes `(r, E)` plus `[ε]`, its four
-SCCs boxed; the unique bottom SCC `K = {[a·a], [¬a·a·¬a]} = {fold(aa),
+SCCs boxed; the unique bottom SCC `K = {[a·a], [¬a·a·a]} = {fold(aa),
 fold(baa)}` is double-circled and thick-bordered, tagged `K ≅ ℤ/2` and
 `θ_K = 1` — so `μ_p(L) = 1` for every full-support `p`. Right: the phase
 contrast, every verdict computed by `Val`. The non-kernel idempotent

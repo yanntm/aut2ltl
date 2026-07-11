@@ -11,9 +11,9 @@ below is unbuildable as stated, report back rather than improvising.*
 
 | figure | subject | state |
 |---|---|---|
-| FIG-1 | the worked read-off: chain, θ, absorption for "first `b` at even position" | **DONE** — `sos_measure_figs/img/fig1_readoff.png` |
-| FIG-2 | the doubled-word cut, run on a sampled word | **DONE** — `sos_measure_figs/img/fig2_cut.png` |
-| FIG-3 | the kernel group and the phase contrast | **DONE** — `sos_measure_figs/img/fig3_kernel.png` |
+| FIG-1 | the worked read-off: chain, θ, absorption for "first `b` at even position" | **DONE** — `sos_measure_figs/img/fig1_readoff.png`; **in the paper** (§4.1) |
+| FIG-2 | the doubled-word cut, run on a sampled word | **DONE** — `sos_measure_figs/img/fig2_cut.png`; **in the paper** (§3.1) |
+| FIG-3 | the kernel group and the phase contrast | **DONE** — `sos_measure_figs/img/fig3_kernel.png`; **in the paper** (§3.4) |
 | FIG-4 | the null-class tower: `L → sh(L) → ess(L)` on the warning pair | blocked on M3 (`shadow`/`essential`) — engine has since landed, needs F-G/F-H fixtures |
 | FIG-5 | census data: measure per Wagner degree, entropy per degree, quotient distance heatmap | blocked on M4/M6 (E1–E3) |
 

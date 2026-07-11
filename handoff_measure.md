@@ -23,8 +23,12 @@ only the file and section named for the task at hand — nothing else.
   awaiting E-campaign data. References grounded in `papers/` (two
   placeholders pending: PRISM CAV'11, Chatterjee–Doyen–Henzinger
   ToCL'10 — do not cite them until in library and read).
-- **Engineering: M1, M2 DONE and accepted; M3 DONE, F-M3 filed,
-  awaiting theory reply.** Engine in `sosl/sosl/quant/`
+- **Engineering: M1, M2, M3 DONE and theory-accepted (F-M1..F-M3).
+  The F-M3 reply requires a cheap assertion-only addendum M3b (spec
+  §9.1: the Thm 4.4(2) biconditional on the existing pair sample),
+  to run with the M4 pass; M4 is unblocked on the REWRITTEN spec §10
+  (per-block Collatz–Wielandt — the old flat loop diverges on
+  reducible Live matrices).** Engine in `sosl/sosl/quant/`
   (`chain`/`kernel`/`theta`/`measure` + `routea` + `distance`/`shadow`/
   `essential`; placement provisional, to move under `sosl/sosl/sos/` on
   some later go-ahead). M1: flip law 4248/4248 (F-M1). M2: Route A
@@ -37,8 +41,9 @@ only the file and section named for the task at hand — nothing else.
 
 ## Work items — Theory
 
-1. **Reply to F-M3** in the report (accept / caveat / spec edit) — M4
-   is gated on it.
+1. ~~Reply to F-M3~~ DONE (2026-07-11): accepted in the report with
+   the M3b addendum (spec §9.1) and a rewritten §10; E1 prediction
+   registered (5164 with μ∈{0,1}, split 2582/2582).
 2. **Fill the paper's ⟨TBD⟩ slots** from report findings as campaigns
    land (§6 + abstract headline wait on M6; F-M3's census numbers —
    5660/6222 LTL-up-to-null, the 1922 measure-invisible groups — are
@@ -50,9 +55,12 @@ only the file and section named for the task at hand — nothing else.
 
 ## Work items — Engineering (in order, each gated on the user's go)
 
-1. **M4 (spec §10)** — entropy; the only float-bearing module
-   (certified Collatz–Wielandt enclosure); `h(cl(L)) = h(L)` asserted
-   structurally, not on floats. Gated on the F-M3 theory reply.
+1. **M4 (spec §10, rewritten 2026-07-11)** — entropy; the only
+   float-bearing module (per-irreducible-block certified
+   Collatz–Wielandt enclosure — do NOT run the flat whole-matrix
+   loop, it diverges on reducible Live matrices); `h(cl(L)) = h(L)`
+   asserted structurally, not on floats. UNBLOCKED; the M4 pass also
+   runs M3b (spec §9.1, assertion-only, same pair sample).
 2. **M5 (spec §11)** — the Markov product `Pr_M(L)`; needs a `.mc`
    chain format fixed with the corpus keeper first.
 3. **M6 (spec §12)** — the census campaign E1–E4; fills the paper's §6
@@ -64,8 +72,9 @@ only the file and section named for the task at hand — nothing else.
    (`fig1`, `fig2`+`fig2_draw`, `fig3`, shared `tikz`/`cayley`,
    `sources.py`). `make -C research_notes/sos_measure_figs` rebuilds
    tex+png; every value read off the tested `sosl.quant` engine, probes
-   own placement only. FIG-4 now unblocked by M3 (its own session);
-   FIG-5 blocked on M4/M6.
+   own placement only. FIG-1/2/3 **placed in the paper**
+   (§3.1/§3.4/§4.1, 2026-07-11). FIG-4 now unblocked by M3 (its own
+   session); FIG-5 blocked on M4/M6.
 5. Deferred until a user go-ahead: move `sosl/sosl/quant/` under
    `sosl/sosl/sos/`.
 
@@ -108,8 +117,6 @@ exactly what DONE means).
   -- <paths>` in one breath (a bare `commit` sweeps the other
   session's staged index; it has happened) — never `git add -A`,
   never touch history.
-- Committing needs the user's go-ahead; pushing is always asked
-  separately, every time.
 - The paper is not a log: no process language, no "we changed X",
   definitions before use (its §2 now carries the full kit — extend it
   there if a new notion is needed, never inline mid-proof).
