@@ -870,7 +870,10 @@ carries one out-edge per letter: the algebra of `M`, as a machine.
 Rooted, deterministic, and complete, `Cay(L)` is the skeleton of an automaton
 with state set `𝒞`; an Emerson–Lei acceptance on its edges, derived from `P`,
 would complete it into a canonical — not minimal — deterministic automaton for
-`L`. We leave the extraction as a prospect.
+`L`. By construction — `Cay(L)` is the algebra acting on itself — this
+canonical form is counter-free iff `L` is LTL: where Figure 1(a) smuggled a
+`Z₂` into a presentation of an LTL language, the canonical one cannot. We
+leave the extraction as a prospect.
 
 **Proposition 5.3 (residuals are derived data).** The residual `u⁻¹L` depends
 only on the class `[u]`; write `L_s` for the residual of `s ∈ 𝒞`
