@@ -1,6 +1,6 @@
 """E0 (M1 gate): the symbolic closure on the triptych, checked against an
 in-test explicit BFS ground truth and the spec constants |EM1| = 10/7/16
-(sos_symbolic_experiments.md E0). Digests transcribed from
+(sos_symbolic_spec.md E0). Digests transcribed from
 samples/fixtures/hoa/sos/{gf_aa_parity,even,evenblocks}.hoa; stats
 streams land in tests/sos_sdd/logs/e0_<name>.jsonl."""
 

@@ -5,7 +5,7 @@ a Büchi automaton symbolically — multi-valued DDD now, hierarchical SDD as
 the growth path — exposed to Python as a `SoS` class carrying the calculus
 operators as its high-level API. It implements Phases 0–6 of the paper
 (`research_notes/sos_symbolic.md`) and the §6 calculus moves; the experiment
-contract is `research_notes/sos_symbolic_experiments.md` (C1–C10, E0–E9).
+contract is `research_notes/sos_symbolic_spec.md` (C1–C10, E0–E9).
 
 The engine changes *representation, never mathematics*: on every instance
 where the explicit reference construction (`sosl.sos.build`) terminates, the

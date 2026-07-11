@@ -1,6 +1,6 @@
 # SoS Symbolic Engine — results
 
-The answer to `research_notes/sos_symbolic_experiments.md`: the `sos_sdd/`
+The answer to `research_notes/sos_symbolic_spec.md`: the `sos_sdd/`
 engine (libDDD multi-valued DDD core behind a Python `SoS` API — backend
 decisions recorded in `sos_sdd/README.md`) run against the experiment ids.
 Each section answers one milestone; each finding `Fn` is a checked or

@@ -982,7 +982,7 @@ steps as per-slot homomorphism sums, the crossing as the `|Q|`-way case
 split over symbolic expression homomorphisms, the squaring relation and
 its relational product as §3 describes, Phase 6 explicit on the small
 side. Protocols, instance-level figures and the finding ledger live in
-the companion experiment report (`sos_symbolic_experiments.md` /
+the companion experiment report (`sos_symbolic_spec.md` /
 `sos_symbolic_report.md`); this section states what is measured and
 what remains.
 
