@@ -7,12 +7,14 @@ bucketed by the origin shape encoded in each model's name.
 
     python3 genaut/flat_study.py                 # -> logs/genaut/corpus/flat_canon/STUDY.md
 
-Pure post-processing of the built `corpus/flat_canon/` (+ its json and `flat/`
-for the fixed-labeling reference); no rebuild.
+Pure post-processing of the built `corpus/flat_canon/` (+ `flat/` for the
+fixed-labeling reference); no rebuild. Every count is derived from the corpus
+files themselves — the `_c` basename suffix marks an added complement, the
+`<tag>_<id>` name encodes the origin shape — so the study needs no side
+metadata.
 """
 from __future__ import annotations
 
-import json
 import os
 import re
 import statistics
@@ -152,13 +154,25 @@ def _degree_section(cats: List[Dict]) -> List[str]:
 
 
 def build_study(corpus: str) -> str:
-    canon_json = json.load(open(os.path.join(corpus, "flat_canon", "flat_canon.json")))
-    flat_json = json.load(open(os.path.join(corpus, "flat", "flat.json")))
     shapes = _per_shape(corpus)
-    fixed = flat_json["total_langs"]
-    primal = canon_json["primal_langs"]
-    dual = canon_json["dual_langs"]
-    closed = canon_json["total_langs"]
+    names = sorted(f for f in os.listdir(os.path.join(corpus, "flat_canon", "sos"))
+                   if f.endswith(".sos"))
+    fixed = sum(1 for f in os.listdir(os.path.join(corpus, "flat", "sos"))
+                if f.endswith(".sos"))
+    closed = len(names)
+    dual = sum(1 for f in names if f[:-4].endswith("_c"))
+    primal = closed - dual
+    by_family: Dict[str, int] = {}
+    by_colours: Dict[int, int] = {}
+    for f in names:
+        if f[:-4].endswith("_c"):
+            continue                          # composition is stated over primals
+        parsed = _parse_tag(_origin_tag(f))
+        if parsed is None:
+            continue
+        _, _, c, family = parsed
+        by_family[family] = by_family.get(family, 0) + 1
+        by_colours[c] = by_colours.get(c, 0) + 1
     exhaustive = sum(len(s["states"]) for s in shapes if s["exhaustive"])
     sampled = primal - exhaustive
     all_states = [x for s in shapes for x in s["states"]]
@@ -253,7 +267,7 @@ def build_study(corpus: str) -> str:
              f" {dual} complements close the set)\n")
     L.append("| axis | bucket | languages |")
     L.append("|---|---|--:|")
-    for fam, v in sorted(canon_json["by_family"].items()):
+    for fam, v in sorted(by_family.items()):
         L.append(f"| acceptance family | `{fam}` | {v} |")
     # Provenance by model NAME (smallest realizing shape), consistent with the
     # headline and the per-shape table — this can differ from the build's
@@ -261,7 +275,7 @@ def build_study(corpus: str) -> str:
     # first materialized from that shape's sample (see STUDY note).
     L.append(f"| provenance | exhaustive | {exhaustive} |")
     L.append(f"| provenance | sampled | {sampled} |")
-    for cc, v in sorted(canon_json["by_colours"].items(), key=lambda kv: int(kv[0])):
+    for cc, v in sorted(by_colours.items()):
         L.append(f"| acceptance colours | c={cc} | {v} |")
     if cats:
         L.append(f"| definability | LTL (aperiodic) | {prim_ltl} |")
