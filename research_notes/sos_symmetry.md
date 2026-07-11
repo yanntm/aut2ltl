@@ -131,7 +131,12 @@ PSPACE question was never asked of the right object.
 - **Workflows and measurements** (§7, §9): the exact
   symmetry-reduction premise check with witness/repair; the
   independence certificate for POR; aperiodic screening for non-LTL
-  properties; three cheap census columns and a deduplication axis.
+  properties; and **Proposition 7.4**, the *symmetric envelope* —
+  enveloping both the specification (§3.4) and the system by any
+  group `G`, sound fully-quotiented proof and refutation checks that
+  assume no symmetry of either, turning the subgroup lattice into an
+  abstraction lattice with exact, witness-carrying refinement. Three
+  cheap census columns and a deduplication axis.
 
 Everything above except symmetrization (§3.4) and the quotient
 frontier (§7.2) is a read-off or a per-generator keying pass.
@@ -676,7 +681,9 @@ invariant-side workflow:
    as usual; the spec side is discharged *semantically*.
 
 Everything in steps 1–2 is new capability at negligible cost; step 3
-is the classical method, now resting on an exact premise.
+is the classical method, now resting on an exact premise. And failure
+of step 1 no longer ends the story: the symmetric envelope (§7.4)
+keeps the quotient usable, soundly, for asymmetric specifications.
 
 ### 7.2 Quotient specifications: the priced frontier
 
@@ -702,6 +709,75 @@ need the counting machinery (an automaton with the group product, or
 the certificate replay of [SωSX26]). The screen is canonical: it
 depends on `L` alone, not on how the property was written.
 
+### 7.4 The symmetric envelope: sound quotient checking without symmetry
+
+Classical symmetry reduction treats the group as a *hypothesis*: `G`
+must be a symmetry of the system, and the specification must be
+`G`-invariant, or the method is off. The two symmetrizations of §3.4
+remove the hypothesis on the specification side; symmetrizing the
+system removes it on the other. Fix **any** `G ≤ B_AP` — chosen for
+engine convenience, with no symmetry assumption on `M` or `L` — and
+form the four `G`-invariant envelopes (the spec pair by §3.4; the
+system pair trace-wise, `g(M)` denoting the `g`-relabeled system):
+
+```
+L∩ = ⋂_{g∈G} g(L)  ⊆  L  ⊆  ⋃_{g∈G} g(L) = L∪
+M∩ = ⋂_{g∈G} g(M)  ⊆  M  ⊆  ⋃_{g∈G} g(M) = M∪
+```
+
+**Proposition 7.4 (the symmetric envelope).** For every `G ≤ B_AP`:
+
+(i) *(proof)* if `M∪/G ⊨ L∩` then `M ⊨ L`;
+
+(ii) *(refutation)* if some run of `M∩/G` violates `L∪`, its lift is
+a genuine counterexample to `M ⊨ L`;
+
+and both checks are fully quotiented: all four envelope objects are
+`G`-invariant by construction, so the classical quotient theorems
+[ES96, CEFJ96] apply to them unconditionally. Soundness never uses
+symmetry of `M` or `L`; symmetry only controls the width of the two
+gaps `L∪ ∖ L∩` and `M∪ ∖ M∩` — i.e. the *completeness*, not the
+soundness, of the method.
+
+*Proof sketch.* (i) `M ⊆ M∪` (traces) and `L∩ ⊆ L`, so
+`M∪ ⊨ L∩ ⟹ M ⊨ L`; the quotient step is legal because both objects
+are `G`-invariant. (ii) mirror: `M∩ ⊆ M` and `L ⊆ L∪`, so a violating
+run of `M∩` is a run of `M` outside `L`. ∎
+
+Engine economics, honestly split: `M∪` is *cheap* — the union of the
+`g`-relabeled transition relations over the generators' closure, on
+the same state space; `M∩` is *priced* — trace intersection needs a
+product over the orbit, and in practice the refutation side runs on
+`M` directly against `L∪` instead (still sound: `M ⊆ M`, `L ⊆ L∪`,
+and `L∪` is `G`-invariant so at least the *specification* side of
+that check is quotient-compatible). On the invariant side, `L∩`/`L∪`
+carry the §3.4 orbit price and come out as canonical invariants with
+all read-offs available — including their own `Sym`, which now
+contains `G` by construction.
+
+**The subgroup lattice as an abstraction lattice.** Shrinking `G`
+tightens all four envelopes monotonically; `G = 1` is the exact
+problem. This is abstraction refinement with an *exact* refinement
+signal: an inconclusive gap run, replayed through the §3.3 witness
+machinery, names the generator `g` whose asymmetry (`g(L) ≠ L`,
+witnessed by a lasso) caused the loss — drop `g` from `G` (refine),
+or repair the specification toward its symmetric core (§3.4). The
+engine can walk down a subgroup chain adaptively, spending orbit
+price on the spec side only where the state-space payoff on the
+system side warrants it — the spec side quotes the price
+(`|orbit_G(L)|`) *before* any state-space work. The system-side
+realization (orbit canonization over a hierarchical symbolic
+representation, adaptive `G` selection against the hierarchy) is
+engine work, out of scope here; what the invariant contributes is
+that every object the engine needs on the specification side is
+exact, canonical, priced in advance, and witness-carrying.
+
+⟨TBD: relate to the partial-symmetry line — Emerson–Trefler's
+virtual/near symmetry — once fetched and read; the system-side
+over-approximation by symmetrizing the transition relation is
+folklore-adjacent there, but the two-sided envelope with an exact,
+priced spec side appears new.⟩
+
 ## 8. Related work
 
 Symmetry reduction in model checking: Emerson–Sistla [ES96],
@@ -713,7 +789,10 @@ symmetry by a type discipline on the system description (scalarsets)
 — none of the three computes the semantic symmetry group of the
 specification. Partial order reduction: Peled [Pel93], Godefroid
 [God96]; the spec-side conditions are stutter-invariance (next-free
-LTL) plus visible/invisible-operation approximations.
+LTL) plus visible/invisible-operation approximations. Partial and
+near symmetry on the system side: Emerson–Trefler ⟨TBD: fetch and
+read — the §7.4 envelope's system half should be positioned against
+virtual symmetry⟩.
 Stutter invariance on ω-words: Peled–Wilke [PW97], Etessami [Ete00];
 the algebraic read-off is [CAL26] §3.5. Trace theory for the
 independence semantics: Mazurkiewicz traces, infinite traces
@@ -760,6 +839,11 @@ census [SωSN26]:
   invariant sizes; verify the counting witnesses land in the gap.
 - **Orbit-folded extraction** (Theorem 5.1(ii)): DAG size with and
   without orbit folding on the symmetric specimens.
+- **Envelope width** (§7.4): on the nearly-symmetric specimens
+  (those where a single generator fails), the size of
+  `𝓘(L∪ ∖ L∩)` relative to `𝓘(L)` and the orbit count actually
+  paid — the datum that decides whether the symmetric envelope is a
+  practical screen or a theoretical remark.
 
 **Machine-checkable predictions (the worked examples, restated).**
 Each is a hand computation above; a mismatch convicts either the
