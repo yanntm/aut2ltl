@@ -638,9 +638,9 @@ sources are unconditional:
   closure in `2^C` — the classically diagram-friendly case — holds
   exactly when the stabilizer marks realize every single-mark
   increment; measured on the census corpus, 62 % of non-empty
-  `(slot, dst)` families are fully upward-closed (65 % restricted to
-  instances with acceptance marks). A real tendency — though as a
-  *predictor* of compression it ranks well below slot sharing (§8).
+  `(slot, dst)` families are fully upward-closed. A real tendency —
+  though as a *predictor* of compression it ranks well below slot
+  sharing (§8).
 - **Letter symmetry.** Letters the language never distinguishes are
   guard-equal in `Lett` before anything is built: the λ-quotient
   operates at the entry, symbolically.
