@@ -56,4 +56,4 @@ defined here.
 
 `algorithm.md` — why the forms are canonical and how membership is read off the
 algebra (the subtle part). The specification of record is
-`research_notes/sos_learner_spec.md` §1–2.
+`research_notes/sos_learning_spec.md` §1–2.

@@ -31,5 +31,5 @@ and figures. This is what turns a working learner into reported science.
 
 ## See also
 
-Spec of record: `research_notes/sos_learner_spec.md` §4–7. Probes live in
+Spec of record: `research_notes/sos_learning_spec.md` §4–7. Probes live in
 `tests/sosl/`, fixtures in `samples/sosl/`.

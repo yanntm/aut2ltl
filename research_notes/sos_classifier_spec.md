@@ -176,7 +176,7 @@ Layered, all automated, all green before any experiment is reported.
 ## 5. Experiments
 
 Corpus: the census + triptych + the two stall specimens, as in
-`sos_learner_spec.md` §6 (same manifest; ground-truth `.sos` from the
+`sos_learning_spec.md` §6 (same manifest; ground-truth `.sos` from the
 construction). Rev. 2 adds the `Fork` specimen with its HOA (C§9).
 
 **The bench is itself a deliverable (rev. 2).** The report must state
@@ -313,7 +313,7 @@ lives in the calculus spec, not here.
 decide language equality between a `FoldedLanguage` client `A` and a
 reference invariant `B = 𝓘(L)`, returning the *minimal* disagreeing lasso
 under the teacher discipline (shortest stem, then shortest loop, then
-shortlex) — the exact-by-reference oracle of `sos_learner_spec.md` §3.2
+shortlex) — the exact-by-reference oracle of `sos_learning_spec.md` §3.2
 (rev 2026-07-08h), packaged as a standalone component.
 
 **The two sides.**
@@ -326,7 +326,7 @@ shortlex) — the exact-by-reference oracle of `sos_learner_spec.md` §3.2
   from its P-cache read-off. **Normative:** the adapter must route every
   `A`-verdict through the hypothesis's own prediction discipline; no
   linked-pair law, no idempotent-power shortcut on the `A` side — a
-  mid-run form need not be associative (`sos_learner_spec.md` §4.2), and
+  mid-run form need not be associative (`sos_learning_spec.md` §4.2), and
   the oracle must certify the object *as it answers*, not an algebraic
   idealization of it.
 
@@ -358,17 +358,17 @@ pinned):
    classifications of the flat_canon ablation leg (`ref 57 / 93`,
    `3state1ap0acc`) to completion; their permanent-vs-transient verdicts
    are the payoff and go to the learner thread's E2 counts
-   (`sosl_report.md`). Outputs land under the curated `reference/` tree
+   (`sos_learning_report.md`). Outputs land under the curated `reference/` tree
    per the reproducibility floor.
 
 **Certification note (record with every run).** The trust anchor is the
 reference `B` — the construction's output, independently cross-checked by
 the census byte-equality gate — not a product with the presenting
 automaton. Same certification level as the closure oracle, different
-mechanism (the F6/RABIT precedent in `sos_learner_spec.md`).
+mechanism (the F6/RABIT precedent in `sos_learning_spec.md`).
 
 **Consumers, in order.** (1) The learner teacher's `--eq-mode exact`
-(`sos_learner_spec.md` §3.2) — a separate commission, requested only after
+(`sos_learning_spec.md` §3.2) — a separate commission, requested only after
 the gates above are green. (2) This tool's own harness: the duality gate
 (section 4.2) and the corpus cross-checks may replace bounded acceptor
 comparisons with `sos_equiv` once it stands. (3) Referenceless targets

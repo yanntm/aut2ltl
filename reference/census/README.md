@@ -7,7 +7,7 @@
   `logs/cluster/20260710-233331-sweep.cmds`, E3 `logs/cluster/20260711-010141-e3.cmds`
 
 These two CSVs are the **load-bearing, immutable-per-drop** record for the "Cluster
-run 1" section of `research_notes/sosl_report.md`. The corpus has since moved on, so
+run 1" section of `research_notes/sos_learning_report.md`. The corpus has since moved on, so
 these numbers cannot be re-derived by re-running the campaign — the committed files
 *are* the reproducible source (spec 2026-07-08g, item 9). Copies of build-machine
 outputs; do not edit.

@@ -191,6 +191,9 @@ def aggregate() -> int:
     logs; 0 iff no red anywhere."""
     pairs = _read_rows(LOGS / "law_pairs.csv", PAIR_HEADER)
     cases = {r[0]: r for r in _read_rows(LOGS / "law_cases.csv", CASE_HEADER)}
+    sample = LOGS / "pair_sample.txt"
+    attempted = len(sample.read_text().splitlines()) if sample.exists() else len(pairs)
+    blown = attempted - len(pairs)  # sampled pairs that left no row: budget kills
     pair_reds = [r for r in pairs if not (r[3] == "1" and r[6] == "1" and r[7] == "1")]
     inclusions = sum(1 for r in pairs if r[4] == "1" or r[5] == "1")
     case_rows = list(cases.values())
@@ -219,14 +222,16 @@ def aggregate() -> int:
         "timeout 15 python3 -m tests.quant.law_gate \"$f\" >/dev/null; done`; then "
         "`python3 -m tests.quant.law_gate --aggregate`",
         "",
-        "| law | sample | green | red |",
-        "|---|---|---|---|",
+        "| law | sample | green | red | budget-blown |",
+        "|---|---|---|---|---|",
         f"| L2 modularity + L3 monotonicity (pairs; {inclusions} with an inclusion) "
-        f"| {len(pairs)} | {len(pairs) - len(pair_reds)} | {len(pair_reds)} |",
+        f"| {attempted} | {len(pairs) - len(pair_reds)} | {len(pair_reds)} | {blown} |",
         f"| L4 trichotomy + L5 obligation (cases; {oblig_band} in the obligation band) "
-        f"| {len(case_rows)} | {len(case_rows) - len(case_reds)} | {len(case_reds)} |",
+        f"| {len(case_rows)} | {len(case_rows) - len(case_reds)} | {len(case_reds)} | — |",
         "",
-        f"missing single-case rows: {len(missing)}",
+        f"missing single-case rows: {len(missing)}. A budget-blown pair "
+        "(15s per-case cap, big aligned products) is a recorded datum, not a "
+        "law violation — no row means the 15s `timeout` killed it.",
         "",
     ]
     for title, reds, header in (
@@ -238,9 +243,9 @@ def aggregate() -> int:
             md += [",".join(r) for r in reds[:50]] + ["```", ""]
     (REF_DIR / "m2_laws.md").write_text("\n".join(md))
     print(
-        f"aggregate: {len(pairs)} pairs ({len(pair_reds)} red), "
-        f"{len(case_rows)} cases ({len(case_reds)} red, {oblig_band} obligation), "
-        f"{len(missing)} missing -> {REF_DIR / 'm2_laws.md'}"
+        f"aggregate: {len(pairs)}/{attempted} pairs ({len(pair_reds)} red, "
+        f"{blown} budget-blown), {len(case_rows)} cases ({len(case_reds)} red, "
+        f"{oblig_band} obligation), {len(missing)} missing -> {REF_DIR / 'm2_laws.md'}"
     )
     return 0 if not pair_reds and not case_reds and not missing else 1
 

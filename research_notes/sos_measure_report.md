@@ -100,3 +100,39 @@ Spot for parsing only. §8 has been rewritten into the M2 work order
 accordingly.
 
 *Verdict.* M1 accepted; M2 unblocked and specified.
+
+**F-M2 (2026-07-11, git 142b0bbfd) — the oracle and the laws are green;
+θ is now corpus-tested.** Route A (`quant/routea.py`: BSCC × EL
+analysis of the paired `det/*.hoa`, Spot parse-only, M1's solver)
+agrees with `measure` **exactly on 4248/4248** census entries under
+BOTH `p`'s (uniform and `p(a) ∝ 1+a`), zero skips — law L1. Laws L2/L3
+(modularity + monotonicity on materialized aligned products): **994/1000**
+sampled pairs green, 0 red, 6 budget-blown at the 15s cap (big aligned
+products, the V1a ratio tail; a datum), 130 pairs carrying a real
+inclusion, and on every pair the `included` decision coincided with
+pair-set order on the shared table. Law L4 (trichotomy `p`-freeness, 3
+seeded random rational `p` per file) and L5 (θ = the constant stem
+verdict on every bottom SCC of every obligation-band row, 3182 rows):
+**6220/6220 green** — the corpus grew 4248 → 6220 mid-campaign
+(concurrent regeneration); the case laws cover the grown census, L1's
+4248 is its dated snapshot. Machine reports:
+`reference/quant/m2_oracle.{md,csv}`,
+`reference/quant/m2_laws.md` (+ `m2_laws_pairs.csv`,
+`m2_laws_cases.csv`), regeneration commands in their headers.
+
+**Theory reply to F-M2 (2026-07-11) — ACCEPTED; the F-M1 caveat is
+discharged twice over.** The θ-blindness caveat on the flip gate is
+closed by two *independent* convictions: L1 tests every θ bit against
+an automaton-side computation that shares only the linear solver with
+the invariant side (different object, different absorption structure —
+invariant classes vs automaton states — agreeing exactly on 8496
+measure values), and L5 tests θ against the calculus's stem-verdict
+read-off (Thm 3.10) with no automaton at all, on 3182 obligation rows.
+L4 confirms the profile's `p`-freeness corollary on 18 660 random-`p`
+measures. Theorem 3.4 is corpus-tested. The 6 budget-blown pairs are
+alignment-cost data (the known `n_A·n_B` tail), not measure failures;
+nothing in M2 weakens the M1 certificates. M3 (distance) is unblocked:
+its machinery (xor on a materialized aligned table + M1 `measure`) is
+exactly what L2 already exercised, so §9 is promoted to the work order
+with pseudometric laws and the null-disagreement read-off as its
+gates.

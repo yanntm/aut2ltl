@@ -39,4 +39,4 @@ layering bug: it would let automaton structure leak into a "learned" result.
 
 `algorithm.md` — the learner algorithm proper (the procedures, saturation, the
 counterexample chains, the loop, and the invariants asserted throughout). The
-specification of record is `research_notes/sos_learner_spec.md` §3.2.
+specification of record is `research_notes/sos_learning_spec.md` §3.2.

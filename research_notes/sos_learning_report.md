@@ -1,7 +1,7 @@
 # SoS Learner — Status Report
 
 Where the `sosl/` implementation stands against the plan in
-`research_notes/sos_learner_spec.md` (the normative document), the paper
+`research_notes/sos_learning_spec.md` (the normative document), the paper
 `research_notes/sos_learning.md` (whose running examples are computed by hand),
 and the `.sos` normal form of `sosl/sosl/sos/io/sos_format.md`. This report answers
 the questions the spec raises; it describes the implementation as it is.

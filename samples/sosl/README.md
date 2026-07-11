@@ -18,5 +18,5 @@ Input automata and expected outputs the `sosl` probes and campaign run against.
 
 ## See also
 
-Corpus and experiment definitions: `research_notes/sos_learner_spec.md` §6.
+Corpus and experiment definitions: `research_notes/sos_learning_spec.md` §6.
 Probes that consume these: `tests/sosl/`.

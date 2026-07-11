@@ -33,4 +33,4 @@ read-off and canonical form), not in the checking.
 
 ## See also
 
-Spec of record: `research_notes/sos_learner_spec.md` §3.3 and the harness in §5.
+Spec of record: `research_notes/sos_learning_spec.md` §3.3 and the harness in §5.

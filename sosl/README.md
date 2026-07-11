@@ -3,7 +3,7 @@
 Active learning of the *syntactic ω-semigroup invariant* `I(L)` of an unknown
 ω-regular language from lasso membership and equivalence queries, plus the
 soundness harness and experiment suite that prove and measure it. Specification:
-`../research_notes/sos_learner_spec.md`; report: `../research_notes/sosl_report.md`.
+`../research_notes/sos_learning_spec.md`; report: `../research_notes/sos_learning_report.md`.
 
 This directory is a **self-contained subtree** — its own package, tests, samples
 and `pyproject.toml` — and depends on nothing in the enclosing `aut2ltl` repo. It

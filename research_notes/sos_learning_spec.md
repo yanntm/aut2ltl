@@ -5,13 +5,13 @@ implemented; nothing below exists yet except where explicitly marked
 *(exists in-repo)*.
 
 **Revision 2026-07-06 (theory thread).** Triggered by the M2 findings in
-`sosl_report.md` (the reply appended there explains the *why* of each
+`sos_learning_report.md` (the reply appended there explains the *why* of each
 change). New: section 1.1 (identity convention, normative), milestone M2.5
 (section 8), section 9 (expected failures — read it before filing any bug).
 Corrected: sections 3.3 and 5 item 6 (pre-saturation exports are diagnostic
 only; acceptor checks target the Cayley hypothesis until saturation exists).
 
-**Revision 2026-07-07 (M3 integration).** M3 is done (`sosl_report.md`). One
+**Revision 2026-07-07 (M3 integration).** M3 is done (`sos_learning_report.md`). One
 normative correction fed back from the implementation: section 3.2 step 4,
 first escalation branch, omega sort — the mint is `(x.r, y.r)`, NOT the bare
 `(x.r, y)` (rationale at the step; without it the `GF(aa)` sweep never
@@ -23,10 +23,10 @@ M3 state (corpus manifest; per-experiment design notes, including how ROLL
 equivalence queries are answered); section 7 gains three fields
 (`n_classes_initial`, `stall_class`, `cex_policy`); section 8 splits M4 into
 ordered sub-gates M4.a–M4.d; section 9 gains rows P5 / F6 / F7. The M3
-probes named in `sosl_report.md` are the campaign's starting points, not
+probes named in `sos_learning_report.md` are the campaign's starting points, not
 throwaways.
 
-**Revision 2026-07-08 (M4.a integration).** M4.a is done (`sosl_report.md`:
+**Revision 2026-07-08 (M4.a integration).** M4.a is done (`sos_learning_report.md`:
 driver + E0 gate green). One normative correction fed back from the E0 table,
 which mislabelled the two proven-permanent specimens `transient` on their
 saturation-on rows: `stall_class` is now pinned as a **per-language** property
@@ -36,7 +36,7 @@ tightened; section 6 E2; new section 9 row P6). This must be corrected before
 E2 aggregates, or the frequency table contradicts Proposition 4.4.
 
 **Revision 2026-07-08b (M4.b + census-E2 + E5 integration).** All three landed
-(`sosl_report.md`), the P6 stall_class fix is adopted, and the results are in
+(`sos_learning_report.md`), the P6 stall_class fix is adopted, and the results are in
 the paper (§6). Recorded here: E5's `first` policy coincides with `minimal`
 for the minimal-order oracles (§6 E5, so E5 is two series not three); the
 census-backed E2 over the frontier shapes (`2state1ap1acc` + parity twin, 258
@@ -129,7 +129,7 @@ named cases, re-run the deferred `OVERSIZE` classifications; after that,
 
 **Revision 2026-07-09 (item 10 delivered; three corrections adopted; the
 functionality guard; `bounded` retired from the campaign legs).** Item 10 is
-delivered (`sosl_report.md` 2026-07-09) and its three corrections are
+delivered (`sos_learning_report.md` 2026-07-09) and its three corrections are
 adopted: (1) section 3.2 `exact`, per-cell verdicts — the hypothesis side is
 its **prediction on the cell's canonical lasso**, never a bare class-pair
 read (which forgets the loop word stabilization iterates; F3-violating —
@@ -486,7 +486,7 @@ Procedures (all query counts logged by phase):
      prefix and the period suffix — `(x.r, y.r)`. NEVER the bare `(x.r, y)`:
      that keeps the period `w.y` and need not separate at all — a
      prefix-independent language swallows the prefix, and with the bare form
-     the `GF(aa)` sweep never converges (M3 finding, `sosl_report.md`; the
+     the `GF(aa)` sweep never converges (M3 finding, `sos_learning_report.md`; the
      omega analog of step 5's frozen-prefix correction). This splits
      `class(p)`;
    - if they agree: one of the two words disagrees with the representative of
@@ -548,7 +548,7 @@ Procedures (all query counts logged by phase):
    a product), which is meaningful only for a **two-sided** (saturated)
    congruence. An export taken from a fixpoint reached without saturation
    may be acceptance-wrong even though the hypothesis's own predictions are
-   all correct (observed on `F(a & Xa)` — see `sosl_report.md`). Such
+   all correct (observed on `F(a & Xa)` — see `sos_learning_report.md`). Such
    exports are diagnostic artifacts, not deliverables; see sections 3.3
    and 9.
 
@@ -680,7 +680,7 @@ and versioned, never selected ad hoc.
 corpus. E0 subsumes the M3 gates, now run under the driver: the saturation
 gate, the Even AND EvenBlocks paper-trace conformances, and the exact-mode
 fixtures; the Even / EvenBlocks split-and-query ledgers must reproduce the
-M3 baselines in `sosl_report.md` (section 9 row P5). Deliverable: a one-page
+M3 baselines in `sos_learning_report.md` (section 9 row P5). Deliverable: a one-page
 report — cases, per-case verdict, query budgets used, zero mismatches. Gate
 for everything below.
 
@@ -714,7 +714,7 @@ every `permanent` case beyond the two known specimens reported individually
 with both fixpoints and the separating left context. These exhibits feed
 the theory side; treat them as a first-class output, not a statistic.
 
-*Recorded outcome (flat_canon, preliminary — `sosl_report.md` 2026-07-08).*
+*Recorded outcome (flat_canon, preliminary — `sos_learning_report.md` 2026-07-08).*
 1180 permanent-stall languages on the partial sweep, gap to 53; permanence
 cuts the LTL boundary (582/1180 aperiodic); and **four prefix-independent
 entries — two languages and their complements**
@@ -803,7 +803,7 @@ counterexample length. Implementation hook: the teacher grows a
 `--cex-policy minimal|first|padded:<k>` flag; `minimal` is the existing
 shortlex-least cell of the exact oracle, the other two are new.
 
-*Recorded outcome (M4, `sosl_report.md`).* `first` **coincides with
+*Recorded outcome (M4, `sos_learning_report.md`).* `first` **coincides with
 `minimal`** for both the bounded and the exact oracles — they enumerate in
 shortlex-least order, so first-found *is* minimal and contributes no separate
 series. E5 is therefore two policies in effect (`minimal`/`first` identical,
@@ -910,27 +910,27 @@ sharpest evidence that a stalled export is not an algebra at all.
 - **M2.5 — Convention alignment** *(added 2026-07-06; **DONE 2026-07-06**).*
   Landed: (a) fresh-identity builder + regenerated fixtures; (b) learner
   eps-merge reverted to the section 3.2 singleton rule; (c) M2 table
-  re-baselined append-only in `sosl_report.md`. Outcome exceeded the predictions: all
+  re-baselined append-only in `sos_learning_report.md`. Outcome exceeded the predictions: all
   four of `GF a`/`GF(aa)`/`Even`/`EvenBlocks` are byte-equal to the reference
   at M2 without saturation (every stall was transient). Original text follows.
   (a) Fix the reference builder to the fresh-identity convention of
   section 1.1. Regression gate: `GF(aa)` stays 6 and `Even` stays 5;
   `EvenBlocks` moves 7 -> **8** (the previously published 7 was itself an
   instance of this bug — see section 1.1 and the correction in
-  `sosl_report.md`); `GF a` moves 2 -> 3; `F a` stays 3; `a U b` stays 4.
+  `sos_learning_report.md`); `GF a` moves 2 -> 3; `F a` stays 3; `a U b` stays 4.
   Also regenerate `research_notes/sos_figs/sources/*.md` (the current
   `evenblocks.md` embeds the buggy 7-class algebra in every table it
   contains). (b) Revert the
   learner's eps-merge (restore the section 3.2 singleton rule) in the same
   working session as the fixture regeneration, so reference and learner
   never disagree for a spurious reason in between. (c) Re-baseline the M2
-  status table by *appending* to `sosl_report.md` (never overwrite the old
+  status table by *appending* to `sos_learning_report.md` (never overwrite the old
   table); the theory reply there ("What to expect after M2.5") lists the
   predicted per-case outcomes. Accept: reference and learner agree on
   `GF a`; no assertion fires on the census; the re-baselined table is
   committed.
 - **M3 — Saturation + exact equivalence** *(**DONE 2026-07-07** —
-  `sosl_report.md`: end-to-end gate green on the census, Even conformance
+  `sos_learning_report.md`: end-to-end gate green on the census, Even conformance
   exact, exact-mode fixtures green, EvenBlocks ledger delivered to
   `sos_learning.md` §5; one normative correction fed back into section 3.2
   step 4, branch 1, omega sort)*. Accept: end-to-end gate (layer 4)
@@ -1019,7 +1019,7 @@ sharpest evidence that a stalled export is not an algebra at all.
        new low-`N` anomaly replaces it: the `N = 4` bucket's median fill of
        145 against an `N²·|Σ| = 32` envelope at median splits 0 — explain
        it.)* Deliverable: convention line + explanation of the `N = 4` fill
-       + a note in `sosl_report.md`.
+       + a note in `sos_learning_report.md`.
     2. **Associativity probe + stalled-export fixture.** Implement
        `export_associative` (section 7) and rows P7/F8 (section 9). Emit the
        stalled `a_implies_xa` 4-class export and assert it matches the
@@ -1064,7 +1064,7 @@ sharpest evidence that a stalled export is not an algebra at all.
        each table it reads off. A number that traces only to a
        build-machine file does not enter the paper.
     10. **Exact-by-reference (2026-07-08h; DELIVERED 2026-07-09 —
-       `sosl_report.md`, gates green; three corrections adopted, see the
+       `sos_learning_report.md`, gates green; three corrections adopted, see the
        revision-2026-07-09 block).** Re-base `--eq-mode exact` on
        the calculus form (section 3.2): align the hypothesis Cayley graph
        with the reference invariant, scan the symmetric difference, return
@@ -1124,7 +1124,7 @@ sharpest evidence that a stalled export is not an algebra at all.
     12. **Fallback localization (2026-07-09; performance, optional but
        approved — instrumentation first).** The closure fallback is the
        campaign's cost centre once firings begin (~33 → ~2.5 cases/s).
-       Theory supplies the localization (proof in `sosl_report.md`,
+       Theory supplies the localization (proof in `sos_learning_report.md`,
        2026-07-09 reply): on a fired graph let `Split` be the reference
        classes with ≥ 2 H-partners; a cell `(c, d)` is *quiet* when every
        class in the power orbit of `d_R` is unsplit and so is
@@ -1190,7 +1190,7 @@ recorded outcome, not a defect.
 | F4 | budget exhausted on a census case | any | should not happen | flag it; census cases are sized to finish |
 | P4 | exact mode certifies the proven-permanent stalls (`a_implies_xa`, `a_once` under `--no-saturation`) | M3+ | always green | a counterexample here = exact-mode bug — paper Prop. 4.4 proves none exists |
 | F5 | byte-equality on `a_implies_xa` / `a_once` under `--no-saturation` | any | red, FOREVER | that is the theorem, not a flake; record `ACCEPTOR_ONLY` |
-| P5 | Even / EvenBlocks ledgers match the M3 baselines (trigger sequence, minted columns, per-phase counts — `sosl_report.md`) | M4 driver, default config | always green | behavior drift: diff the audit logs and reconcile before touching paper or baselines |
+| P5 | Even / EvenBlocks ledgers match the M3 baselines (trigger sequence, minted columns, per-phase counts — `sos_learning_report.md`) | M4 driver, default config | always green | behavior drift: diff the audit logs and reconcile before touching paper or baselines |
 | F6 | ROLL certified by its native RABIT equivalence, not our teacher's oracle | E3 | expected | record it; both learners certify exactly by different mechanisms — the asymmetry is a reported result, not a defect (design note revised 2026-07-08c) |
 | F7 | budget exhausted on an E6 random case | E6 | allowed | record `BUDGET`; census sizing (F4) does not apply to E6 |
 | P6 | `stall_class` on any saturation-on run | M4.b+ (E2) | must be `n/a` | driver bug: a saturated run must never carry `transient`/`permanent` (section 7) — the M4.a E0 table had this wrong; E2's frequency counts read the ablation leg only |

@@ -127,7 +127,7 @@ def main() -> int:
         f"expected 4 omega columns (prefix-independence), got {columns}")
     assert counts == BASELINE, (
         f"query ledger drifted from the M3 baseline: {counts} != {BASELINE}; "
-        "if intentional, re-baseline sosl_report.md and the paper's §5 ledger")
+        "if intentional, re-baseline sos_learning_report.md and the paper's §5 ledger")
 
     ref = reference_of_hoa(EVENBLOCKS)
     assert inv.n == 8 and dump_invariant(inv) == dump_invariant(ref), (

@@ -818,7 +818,7 @@ split is deliberate:
   `reference/calculus/*.md` machine report, the producing script, and the
   regen command, so every paper claim is reproducible from the machine
   reports alone. (Sibling works each have such a report:
-  `sos_classifier_report.md`, `sosl_report.md`, ….)
+  `sos_classifier_report.md`, `sos_learning_report.md`, ….)
 
 The hull conjecture (§3.5 of the paper) is NOT part of CAL4; it stays a
 theory item.

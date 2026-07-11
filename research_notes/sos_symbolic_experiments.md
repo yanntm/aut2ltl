@@ -4,7 +4,7 @@
 interface between the paper (`sos_symbolic.md`) and the implementation
 sessions: the paper's §8 evaluation plan and its ⟨TBD⟩ measurements are
 fed by the experiment ids below, per the family discipline
-(`sosl_report.md` ledger style).
+(`sos_learning_report.md` ledger style).
 Companion specs: `sos_census_experiments.md` (the measurement corpus and
 the derived-census driver, the engine's first consumer at scale),
 `sos_toltl_experiments.md` (downstream consumer of the emitted quotient).

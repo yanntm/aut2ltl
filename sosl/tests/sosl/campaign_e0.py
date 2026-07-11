@@ -9,7 +9,7 @@ Runs the E0 (case, config) matrix via `sosl.experiment.driver`, writes one
   - the E0 gate PASSES (zero FAIL, zero BUDGET, zero CRASH; permanent specimens
     certify ACCEPTOR_ONLY under no-saturation — spec §9 P4/F5);
   - the Even and EvenBlocks split/query ledgers are byte-stable against the M3
-    baselines in `sosl_report.md` (spec §9 row P5).
+    baselines in `sos_learning_report.md` (spec §9 row P5).
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ from sosl.experiment.run import RunResult
 
 OUT = Path("tests/sosl/logs/e0")
 
-# The M3 baselines (sosl_report.md) the row-P5 lock pins: per-phase member
+# The M3 baselines (sos_learning_report.md) the row-P5 lock pins: per-phase member
 # counts (fill/harvest/saturation/pcache), the initial/final class counts, and
 # the escalation count — default config.
 BASELINES: Dict[str, dict] = {

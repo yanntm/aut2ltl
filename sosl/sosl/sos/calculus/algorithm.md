@@ -325,5 +325,5 @@ prints the scope it actually covered.
 The exponential frontier (`W·L`, `W^ω`, `remove_ap` — paper §3.4) is **not**
 implemented and not stubbed. Nor are exit constructions to NBA, hulls (paper
 §3.5, "conjecturally" — theory owes the pair sets first), any CLI, or any
-learner integration (a separate commission against `sos_learner_spec.md` §3.2,
+learner integration (a separate commission against `sos_learning_spec.md` §3.2,
 once this package stands).

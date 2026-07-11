@@ -39,4 +39,4 @@ wrapper's own obligation. See `algorithm.md`.
 that is not plumbing) and the regression fingerprints it must reproduce. The
 enriched-monoid construction underneath lives in the definability pipeline
 (`aut2ltl/bls/definability`, `docs/algorithm.md`), not here. The specification
-of record is `research_notes/sos_learner_spec.md` §1.1.
+of record is `research_notes/sos_learning_spec.md` §1.1.

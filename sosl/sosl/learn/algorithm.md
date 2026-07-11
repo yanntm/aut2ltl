@@ -5,7 +5,7 @@ saturation phase and the counterexample chains are what let the learner recover
 the *two-sided* congruence (not merely a right-congruence). Code-level layout is
 in the README orientation map; this file is the level above the code.
 
-The specification of record is `research_notes/sos_learner_spec.md` §3.2; this
+The specification of record is `research_notes/sos_learning_spec.md` §3.2; this
 document is the working reconstruction the implementation follows.
 
 ## Data structures (contracts, not layout)

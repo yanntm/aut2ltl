@@ -38,4 +38,4 @@ and `equiv`.
 
 `algorithm.md` — how membership is simulated on a lasso and how each
 equivalence strategy searches for (and minimizes) a counterexample. Spec of
-record: `research_notes/sos_learner_spec.md` §3.1.
+record: `research_notes/sos_learning_spec.md` §3.1.

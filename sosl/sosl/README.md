@@ -83,4 +83,4 @@ definability pipeline behind the `sosl.sos` vocabulary. Current work is
 milestone M2.5 — aligning both sides on the fresh-identity convention
 (`objects/algorithm.md`, `reference/algorithm.md`) — ahead of M3 (saturation +
 exact equivalence). The serialization is `.sos`; milestones and acceptance
-gates are in `research_notes/sos_learner_spec.md` (the specification of record).
+gates are in `research_notes/sos_learning_spec.md` (the specification of record).

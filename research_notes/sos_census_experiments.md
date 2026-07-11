@@ -6,7 +6,7 @@ be implemented; nothing below exists yet except where explicitly marked
 (`sos_census.md`, [SωSN26]) and the implementation sessions: the paper's
 ⟨TBD⟩ tables cite the experiment ids below, and every number printed in
 the paper is a *prediction or measurement* the tool must reproduce, per
-the family discipline (`sosl_report.md` ledger style). Companion specs:
+the family discipline (`sos_learning_report.md` ledger style). Companion specs:
 `sos_toltl_experiments.md` (strata testers, hunts), the symbolic spec
 (derived-census driver at scale).
 

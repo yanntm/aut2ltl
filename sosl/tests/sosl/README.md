@@ -17,5 +17,5 @@ per-example diagnostic cap; long output is redirected under `logs/` here, never
 ## See also
 
 The soundness harness layers and the experiments they back:
-`research_notes/sos_learner_spec.md` §5–6. Fixtures the probes run on:
+`research_notes/sos_learning_spec.md` §5–6. Fixtures the probes run on:
 `samples/sosl/`.
