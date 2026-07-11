@@ -373,9 +373,12 @@ context, before aggregating anything.
 
 ## M4.a — Driver + E0 (2026-07-08)
 
-_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.campaign_e0` →
-`tests/sosl/logs/e0/{results.csv, e0_report.md, e4_transcripts.md}`. The tables
-below are analysis read off `results.csv`.
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.campaign_e0` — the campaign is
+its own gate, so a nonzero exit *is* the failure report. Committed record:
+`reference/campaigns/e0/{results.csv, e0_report.md, e4_transcripts.md}`
+(manifest: `reference/campaigns/README.md`, generated). The tables below are analysis
+read off that `results.csv`. The named cases do not depend on the corpus, so a re-run
+*is* a reproduction.
 
 The `sosl.experiment` package (previously a README stub) is built by promoting
 the two M3 prototypes into the campaign layer, as spec §8 M4.a directed:
@@ -421,8 +424,8 @@ The two T1 presentations (`gf_aa_parity`, `gf_aa_reset`) produce identical
 ledgers and signature matrices — a presentation-independence witness the driver
 gets for free. The E4 renderer now machine-generates the signature matrix (class
 keys x discovered columns), the companion to the paper's Tables 6/8 that was
-previously hand-derived; artifacts land under `tests/sosl/logs/e0/`
-(`results.csv`, `e0_report.md`, `e4_transcripts.md`).
+previously hand-derived; the committed artifacts are
+`reference/campaigns/e0/` (`results.csv`, `e0_report.md`, `e4_transcripts.md`).
 
 The census tier is intentionally not wired: `genaut/corpus/` is being curated
 separately, so E0 runs the named cases alone. E1's scaling scatter and E2's
@@ -497,9 +500,10 @@ separating left context before it enters any aggregate.
 
 ## M4.b — E1 scaling + E2 ablation (2026-07-08)
 
-_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.campaign_m4b` →
-`tests/sosl/logs/m4b/{results.csv, e1_report.md, e2_report.md}`. The two tables
-below are read off `results.csv`.
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.campaign_m4b` — its own gate.
+Committed record: `reference/campaigns/m4b/{results.csv, e1_report.md, e2_report.md}`
+(manifest: `reference/campaigns/README.md`, generated). The two tables below are read
+off that `results.csv`.
 
 Both experiments run over the named cases through the driver
 (`tests/sosl/campaign_m4b.py`); the census tier stays deferred, so E1's scatter
@@ -546,7 +550,7 @@ and the **separating left context** — the saturation escalation invisible to
 lasso membership from the start. `a_once` merges `[!a;a]` into `[!a]`, split by
 the left prefix `a` (`a·[]·!a`); `a_implies_xa` merges `[a;a]` into `[!a]`,
 reaching its 5-vs-4 gap with zero counterexamples and one escalation
-(`a·([]·a)^ω`). Artifacts under `tests/sosl/logs/m4b/`
+(`a·([]·a)^ω`). Committed artifacts: `reference/campaigns/m4b/`
 (`results.csv`, `e1_report.md`, `e2_report.md`).
 
 ---
@@ -620,8 +624,9 @@ prefix-independent; `Even`, `a_once`, `a_implies_xa` not).
 
 ## M4 — E5 counterexample sensitivity (2026-07-08)
 
-_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.campaign_e5` →
-`tests/sosl/logs/e5/{results.csv, e5_report.md}`. The table below is read off
+_Reproduce (from `sosl/`):_ `python3 -m tests.sosl.campaign_e5` — its own gate.
+Committed record: `reference/campaigns/e5/{results.csv, e5_report.md}` (manifest:
+`reference/campaigns/README.md`, generated). The table below is read off that
 `results.csv`.
 
 The teacher grows a `--cex-policy minimal|first|padded:<k>` hook
@@ -647,7 +652,7 @@ run SOUND, same class count):
 
 This is the design's logarithmic counterexample term, confirmed empirically:
 padding changes only the query cost, never the outcome. Artifacts under
-`tests/sosl/logs/e5/` (`results.csv`, `e5_report.md`).
+`reference/campaigns/e5/` (`results.csv`, `e5_report.md`).
 
 ---
 
