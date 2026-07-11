@@ -143,7 +143,9 @@ def _degree_section(cats: List[Dict]) -> List[str]:
     tail = ("no language reaches Wagner's derivative (`γ = μ` throughout, "
             "Prop. 11.1)" if partial == 0 else f"**{partial}** languages hit the "
             "derivative regime (`PARTIAL`)")
-    L.append(f"\nDegrees span `(0, σ)` (trivial) up to `(ω², ·)` (parity-`{{0,1,2}}`); "
+    top = phi_pretty((proper[-1][0], "·")) if proper else phi_pretty(order[-1])
+    L.append(f"\nDegrees span `{phi_pretty(order[0])}` (weakest) up to `{top}` "
+             f"(the strongest degree the catalogue holds); "
              f"{tail}. The degree is a language invariant — a `.cat` says the same "
              "for a language however many shapes, states, or colours presented it.")
     return L
