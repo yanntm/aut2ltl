@@ -225,3 +225,28 @@ Command: `python3 -m tests.cascade.k_e2_transfer`. Log:
 *(K-E2 steps 1/2 — the census frozen/moving stratum — are subsumed by K-F7: 0
 conflicts over the 1164 census-undecided layers. The floor is thus **empty on
 the census frame, inhabited beyond it** by the C.19 construction.)*
+
+## K-F10 — Cor C.9 stratum empty: prefix-independence forces a frozen final layer — CONFIRMED
+
+`PAPER-EDIT` (settles a ⟨TBD⟩, not a refutation): C.3's ⟨TBD⟩ "prefix-independence
+forces the final layer frozen" and Cor C.9's applicability.
+
+Decider-free scan of all 4248 census languages: of the **132 prefix-independent**
+ones, **0 have a non-frozen final layer** — every prefix-independent language's
+terminal layer is a frozen (all-neutral) SCC. So the Cor C.9 gating stratum
+(prefix-independent ∧ terminal 1-anchored **non-frozen** final layer ∧
+upward-closed ∧ parked-rejecting) is **empty on the census**: C.9's global bare-`Π₂`
+form has no instances, and the config ladder's one-sided win (Cor C.8) is
+confined to **non-prefix-independent** languages (e.g. `G(a→F b)`, K-F1). This is
+the K-F2 mechanism generalized: the pending bit cannot survive in a
+prefix-independent language's absorbing class.
+
+One-sidedness of the moving final layers that *are* (C)-decided (56 with a
+≥2-class collected `F`): **13 upward, 13 downward, 18 both, 12 neither** —
+**balanced, not "predominantly upward"** as E3/C.8 predicted. (The precise E3
+claim is about the `P|_R` recurrence rung; a rung-stratified recount is TODO,
+but the raw distribution does not support upward-dominance.)
+
+Commands: `python3 -m tests.cascade.k_e3_sweep tests/cascade/logs/census_flat_canon.jsonl genaut/corpus/flat_canon/sos --out tests/cascade/logs/k_e3.csv`
+and `python3 -m tests.cascade.k_e3_pfxind tests/cascade/logs/census_flat_canon.jsonl genaut/corpus/flat_canon/sos`.
+Logs: `tests/cascade/logs/k_e3.csv` (regenerable), `tests/cascade/logs/k_e3_pfxind.txt`.
