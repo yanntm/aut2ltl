@@ -8,14 +8,14 @@ The project's reference benchmark: every ω-language a small automaton realizes,
 
 | catalogue | languages |
 |---|--:|
-| fixed AP labeling (`flat/`, distinct `.sos`) | 5110 |
-| distinct up to renaming symbols (primals) | 3212 |
+| fixed AP labeling (`flat/`, distinct `.sos`) | 5111 |
+| distinct up to renaming symbols (primals) | 3213 |
 | &nbsp;&nbsp;— from exhaustive shapes | 1764 |
-| &nbsp;&nbsp;— from sampled shapes (non-exhaustive) | 1448 |
-| + complements added to close under complement | 3008 |
-| **complement-closed total (`flat_canon/`)** | **6220** |
+| &nbsp;&nbsp;— from sampled shapes (non-exhaustive) | 1449 |
+| + complements added to close under complement | 3009 |
+| **complement-closed total (`flat_canon/`)** | **6222** |
 
-The relabeling + unused-AP fold takes 5110 fixed-labeling `.sos` to 3212 languages up to renaming (37% were relabel/polarity twins or carried a redundant AP); closing under complement (no language is its own, so the total is even) adds 3008, reaching 6220. Primal automaton states: 1 / 6 / 25 (min / median / max); algebra size `|𝒞|`: 2 / 15 / 208.
+The relabeling + unused-AP fold takes 5111 fixed-labeling `.sos` to 3213 languages up to renaming (37% were relabel/polarity twins or carried a redundant AP); closing under complement (no language is its own, so the total is even) adds 3009, reaching 6222. Primal automaton states: 1 / 6 / 25 (min / median / max); algebra size `|𝒞|`: 2 / 15 / 208.
 
 ## The LTL cut
 
@@ -23,11 +23,11 @@ The dividing line everyone asks about first — is the language **LTL-definable*
 
 | definability | languages |
 |---|--:|
-| **LTL-definable** (aperiodic) | **3736** |
+| **LTL-definable** (aperiodic) | **3738** |
 | **non-LTL** (genuine ω-counting) | **2484** |
-| total (`flat_canon/`) | 6220 |
+| total (`flat_canon/`) | 6222 |
 
-So **40%** of the small ω-languages are beyond LTL. The cut is complement-invariant (aperiodicity is a property of the semigroup, not of `accept`), so it splits the primals the same way: 1945 LTL / 1267 non-LTL of 3212. It cuts *across* the Wagner degrees below — depth and countability are independent axes.
+So **40%** of the small ω-languages are beyond LTL. The cut is complement-invariant (aperiodicity is a property of the semigroup, not of `accept`), so it splits the primals the same way: 1946 LTL / 1267 non-LTL of 3213. It cuts *across* the Wagner degrees below — depth and countability are independent axes.
 
 ### Stutter-invariant — the X-free refinement of LTL
 
@@ -35,30 +35,30 @@ A language is **stutter-invariant** iff its syntactic monoid keeps no letter apa
 
 | sub-class of LTL | languages | of LTL |
 |---|--:|--:|
-| **stutter-invariant** (X-free) | **894** | 24% |
+| **stutter-invariant** (X-free) | **896** | 24% |
 | stutter-sensitive but LTL | 2842 | 76% |
 | (non-LTL — all stutter-sensitive) | 2484 | — |
 
-So **14%** of the catalogue (894 of 6220) is stutter-invariant, i.e. **24%** of the 3736 LTL-definable languages drop the `X` operator. Like the LTL cut it is complement-invariant, splitting the primals 475 / 3212. The per-degree `stutter-inv` column below shows how it distributes over the Wagner ladder.
+So **14%** of the catalogue (896 of 6222) is stutter-invariant, i.e. **24%** of the 3738 LTL-definable languages drop the `X` operator. Like the LTL cut it is complement-invariant, splitting the primals 476 / 3213. The per-degree `stutter-inv` column below shows how it distributes over the Wagner ladder.
 
-## Composition (primals — the shape-realized languages; + 3008 complements close the set)
+## Composition (primals — the shape-realized languages; + 3009 complements close the set)
 
 | axis | bucket | languages |
 |---|---|--:|
 | acceptance family | `gba` | 1949 |
-| acceptance family | `parity` | 1263 |
+| acceptance family | `parity` | 1264 |
 | provenance | exhaustive | 1764 |
-| provenance | sampled | 1448 |
+| provenance | sampled | 1449 |
 | acceptance colours | c=0 | 1393 |
 | acceptance colours | c=1 | 930 |
-| acceptance colours | c=2 | 884 |
+| acceptance colours | c=2 | 885 |
 | acceptance colours | c=3 | 5 |
-| definability | LTL (aperiodic) | 1945 |
-| definability | &nbsp;&nbsp;— stutter-invariant (X-free ⊆ LTL) | 475 |
+| definability | LTL (aperiodic) | 1946 |
+| definability | &nbsp;&nbsp;— stutter-invariant (X-free ⊆ LTL) | 476 |
 | definability | non-LTL | 1267 |
-| **primals** | | **3212** |
-| + complements (dual acceptance) | | 3008 |
-| **complement-closed total** | | **6220** |
+| **primals** | | **3213** |
+| + complements (dual acceptance) | | 3009 |
+| **complement-closed total** | | **6222** |
 
 ## Wagner-degree profile (classified, complement-closed)
 
@@ -81,6 +81,7 @@ Each language's **category**, read off its syntactic invariant `𝓘(L)` into a 
 | (4, π) | (0, 0, 4, 3) | degree (4, pi) | 2 | 1 | 0 | 2 |
 | (ω, σ) | (0, 1, -1, 0) | properly Gδ — DBA-proper | 654 | 159 | 296 | 540 |
 | (ω, π) | (1, 0, 0, -1) | properly Fσ — DCA-proper | 654 | 159 | 296 | 157 |
+| (ω+1, δ) | (1, 1, 0, 0) | self-dual, one derivation (Fork) | 2 | 0 | 2 | 1 |
 | (ω·2, σ) | (1, 1, 0, 1) | one Rabin pair — σ side | 49 | 22 | 10 | 8 |
 | (ω·2, π) | (1, 1, 1, 0) | one Rabin pair — π side | 49 | 22 | 10 | 41 |
 | (ω², σ) | (1, 2, -1, 0) | parity {0,1,2} — proper | 169 | 90 | 23 | 121 |
@@ -119,7 +120,7 @@ Each language attributed to the smallest shape realizing it (its model name). `s
 | `2state3ap1acc_parity` | 2 | 3 | 1 | parity | **sampled** | 156 | 2 / 6 / 6 | 3 / 25 / 68 |
 | `3state1ap1acc` | 3 | 1 | 1 | gba | **sampled** | 205 | 3 / 5 / 14 | 4 / 10 / 69 |
 | `3state1ap1acc_parity` | 3 | 1 | 1 | parity | **sampled** | 70 | 3 / 5 / 10 | 4 / 9 / 30 |
-| `3state1ap2acc_parity` | 3 | 1 | 2 | parity | **sampled** | 51 | 3 / 8 / 21 | 4 / 25 / 130 |
+| `3state1ap2acc_parity` | 3 | 1 | 2 | parity | **sampled** | 52 | 3 / 8 / 21 | 4 / 23 / 130 |
 | `3state2ap1acc_parity` | 3 | 2 | 1 | parity | **sampled** | 42 | 3 / 4 / 17 | 4 / 7 / 62 |
 | `3state2ap2acc_parity` | 3 | 2 | 2 | parity | **sampled** | 203 | 3 / 14 / 25 | 4 / 42 / 208 |
 | `4state1ap1acc_parity` | 4 | 1 | 1 | parity | **sampled** | 40 | 4 / 5 / 9 | 5 / 10 / 65 |

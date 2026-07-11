@@ -1,0 +1,6 @@
+CAT v1
+ltl: yes
+stutter: invariant
+phi: omega+1,delta
+coords: 1 1 0 0
+class: self-dual, one derivation (Fork)

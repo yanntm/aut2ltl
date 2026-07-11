@@ -38,7 +38,7 @@ A uniform random probe of the id space (rows with probe stats), or a curated sel
 | `2state3ap1acc_parity` | curated | parity | — | — | 156 | — |
 | `3state1ap1acc` | 0 | gba | — | — | 500 | — |
 | `3state1ap1acc_parity` | curated | parity | — | — | 70 | — |
-| `3state1ap2acc_parity` | curated | parity | — | — | 51 | — |
+| `3state1ap2acc_parity` | curated | parity | — | — | 52 | — |
 | `3state2ap1acc_parity` | curated | parity | — | — | 42 | — |
 | `3state2ap2acc_parity` | curated | parity | — | — | 203 | — |
 | `4state1ap1acc_parity` | curated | parity | — | — | 40 | — |
