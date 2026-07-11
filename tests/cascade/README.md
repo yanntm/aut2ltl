@@ -27,8 +27,12 @@ Probes for the cascade-ladder experiments: spec
   the whole stratum with one `cmds.txt` line per language carrying an
   undecided layer, then `cluster/oarrun.sh` + reap (see `cluster/README.md`).
   The cluster is large — split wide, e.g. for the ~2100-command stratum:
-  `--split 500 --timeout 1800 --walltime 3:00:00` (≈ 4–5 commands per
-  2-core job; the walltime covers a job drawing several heavy layers).
+  `--split 500 --timeout 60 --walltime 0:15:00` (≈ 4–5 commands per 2-core
+  job). Timeout convention: **15 s per example locally, 60 s per command on
+  the cluster**; the problems are inherently EXP/PSPACE-hard, so `TIMEOUT`
+  rows are expected **data** delimiting the heavy stratum — never something
+  to wait out (the driver flushes per layer, so a timed-out language keeps
+  the layers it finished).
 - `k_e1_verify.py` — ALG-7 triage of one raw (C)-conflict (`<id> <layer> <k>`):
   `find_c_conflict` + `inv.member` toggle + non-conjugacy (Lemma C.11).
 - `k_e2_transfer.py` — the Prop C.19 transfer specimen.
