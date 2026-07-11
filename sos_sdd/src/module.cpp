@@ -140,11 +140,34 @@ void check_config(const py::dict &config) {
                         " is implemented)");
     }
   };
-  want("slot_perm", "natural");
   want("slot_encoding", "packed");
   want("alpha", "top");
   want("fp1", "layered");
   want("fp5", "layered");
+}
+
+// The C9 slot permutation: "natural" (slot i at variable i), "reverse",
+// or an explicit slot -> variable list; bijectivity is checked by
+// SlotSpace::check.
+std::vector<int> resolve_perm(const py::dict &config, int n_slots) {
+  std::vector<int> perm(n_slots);
+  if (!config.contains("slot_perm")) {
+    for (int i = 0; i < n_slots; ++i) perm[i] = i;
+    return perm;
+  }
+  const py::object p = config["slot_perm"];
+  if (py::isinstance<py::str>(p)) {
+    const auto s = p.cast<std::string>();
+    if (s == "natural")
+      for (int i = 0; i < n_slots; ++i) perm[i] = i;
+    else if (s == "reverse")
+      for (int i = 0; i < n_slots; ++i) perm[i] = n_slots - 1 - i;
+    else
+      not_implemented("slot_perm=" + s +
+                      " (natural | reverse | explicit list)");
+    return perm;
+  }
+  return py::cast<std::vector<int>>(p);
 }
 
 SoSCore build(const py::dict &payload, const py::dict &config,
@@ -154,8 +177,10 @@ SoSCore build(const py::dict &payload, const py::dict &config,
                     " (only phases 1..5 are implemented)");
   check_config(config);
 
-  SlotSpace space{py::cast<std::vector<int>>(payload["doms"]),
-                  py::cast<std::vector<int>>(payload["identity"])};
+  const auto doms = py::cast<std::vector<int>>(payload["doms"]);
+  SlotSpace space{doms,
+                  py::cast<std::vector<int>>(payload["identity"]),
+                  resolve_perm(config, static_cast<int>(doms.size()))};
   std::vector<LetterClassRow> classes;
   for (const auto &item : payload["classes"]) {
     const auto d = py::cast<py::dict>(item);

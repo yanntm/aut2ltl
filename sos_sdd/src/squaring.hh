@@ -119,11 +119,16 @@ class Squaring {
 public:
   Squaring(const std::string &name, const SlotSpace &space,
            const PackInfo &pack)
-      : name_(name), n_(space.n_slots()) {
-    labels_t labels;
+      : name_(name), n_(space.n_slots()), var_of_(space.var_of) {
+    // The interleaved space inherits the perm blockwise: slot q's
+    // (post, pre) pair sits at variables (2·var_of[q], 2·var_of[q]+1) —
+    // the dupe gadget doubles positionally, so this is its layout.
+    labels_t labels(2 * static_cast<size_t>(n_));
     for (int q = 0; q < n_; ++q) {
-      labels.push_back("w_" + std::to_string(q));
-      labels.push_back("r_" + std::to_string(q));
+      labels[static_cast<size_t>(2 * space.var_of[q])] =
+          "w_" + std::to_string(q);
+      labels[static_cast<size_t>(2 * space.var_of[q] + 1)] =
+          "r_" + std::to_string(q);
     }
     vo_ = its::VarOrder(labels);
     go_ = std::make_unique<its::GalOrder>(&vo_);
@@ -228,18 +233,20 @@ public:
   int rounds() const { return rounds_; }
 
   // Explicit (z, z·z) rows of R — a test/debug reading. Reversed paths
-  // run w_0, r_0, w_1, r_1, …: evens are post, odds pre.
+  // run in variable order (evens post, odds pre); slot q's pair sits at
+  // (2·var_of[q], 2·var_of[q]+1), un-permuted back to slot order.
   std::vector<std::pair<std::vector<int>, std::vector<int>>>
   rel_pairs(size_t limit) const {
     if (model_count(rel_) > static_cast<double>(limit))
       throw std::invalid_argument(name_ + ": R larger than the explicit cap");
     std::vector<std::pair<std::vector<int>, std::vector<int>>> out;
     const int n = n_;
-    callback_t cb = [&out, n](state_t &path) {
+    const std::vector<int> &vof = var_of_;
+    callback_t cb = [&out, n, &vof](state_t &path) {
       std::vector<int> pre(n), post(n);
       for (int q = 0; q < n; ++q) {
-        post[q] = *(path.rbegin() + 2 * q);
-        pre[q] = *(path.rbegin() + 2 * q + 1);
+        post[q] = *(path.rbegin() + 2 * vof[q]);
+        pre[q] = *(path.rbegin() + 2 * vof[q] + 1);
       }
       out.emplace_back(std::move(pre), std::move(post));
     };
@@ -250,6 +257,7 @@ public:
 private:
   std::string name_;
   int n_;
+  std::vector<int> var_of_;  // slot -> variable (the C9 perm)
   its::VarOrder vo_;
   std::unique_ptr<its::GalOrder> go_;
   Hom step_;   // the interleaved case split (writes w, reads r only)

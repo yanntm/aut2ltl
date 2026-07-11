@@ -47,14 +47,15 @@ public:
       d3::set<GHom>::type slots;
       d3::set<GHom>::type rev_slots;
       for (int i = 0; i < space_.n_slots(); ++i) {
+        const int x = space_.var_of[i];
         d3::set<GHom>::type cases;
         d3::set<GHom>::type rev_cases;
         for (int v = 0; v < space_.doms[i]; ++v) {
           const int w = c.maps[i][v];
-          cases.insert(setVarConst(i, w) & varEqState(i, v));
+          cases.insert(setVarConst(x, w) & varEqState(x, v));
           // The reverse relation is multi-valued (a value may have many
           // preimages); the same brick shape handles it as a union.
-          rev_cases.insert(setVarConst(i, v) & varEqState(i, w));
+          rev_cases.insert(setVarConst(x, v) & varEqState(x, w));
         }
         slots.insert(GHom::add(cases));
         rev_slots.insert(GHom::add(rev_cases));
@@ -249,10 +250,12 @@ public:
     require();
     if (em1_count() > static_cast<double>(limit))
       throw std::invalid_argument(name_ + ": EM1 larger than the explicit cap");
-    // Paths run top-down, i.e. from the highest variable to slot 0.
+    // Paths run top-down; reversed they are variable order, un-permuted
+    // back to slot order for the reading.
     std::vector<std::vector<int>> elems;
-    callback_t cb = [&elems](state_t &path) {
-      elems.emplace_back(path.rbegin(), path.rend());
+    const SlotSpace &sp = space_;
+    callback_t cb = [&elems, &sp](state_t &path) {
+      elems.push_back(sp.unpermute({path.rbegin(), path.rend()}));
     };
     iterate(static_cast<const GDDD &>(em1_), &cb);
     return elems;
@@ -349,10 +352,7 @@ private:
   }
 
   DDD singleton(const std::vector<int> &elem) const {
-    GDDD d = GDDD::one;
-    for (int i = 0; i < space_.n_slots(); ++i)
-      d = GDDD(i, static_cast<GDDD::val_t>(elem[i]), d);
-    return DDD(d);
+    return DDD(space_.path(elem));
   }
 
   std::string name_;

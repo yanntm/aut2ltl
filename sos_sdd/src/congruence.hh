@@ -52,8 +52,10 @@ public:
       : name_(name), n_(space.n_slots()), space_(space),
         mark_bits_(mark_bits), starts_(block_starts), sizes_(block_sizes),
         rev_classes_(rev_classes) {
+    // The y-block variable of slot q is n + var_of[q] (blockwise perm).
     Hom erase = GHom::id;
-    for (int q = 0; q < n_; ++q) erase = setVarConst(n_ + q, 0) & erase;
+    for (int q = 0; q < n_; ++q)
+      erase = setVarConst(n_ + space_.var_of[q], 0) & erase;
     erase_ = erase;
   }
 
@@ -110,7 +112,7 @@ public:
               d3::set<GHom>::type vals;
               for (int v = 0; v < space_.doms[slot]; ++v)
                 if (v >> mark_bits_[slot] == locals[t][b])
-                  vals.insert(varEqState(slot, v));
+                  vals.insert(varEqState(space_.var_of[slot], v));
               sel = GHom::add(vals) & sel;
             }
             members.insert(sel);
@@ -171,9 +173,11 @@ public:
         throw std::invalid_argument(name_ + ": class larger than the cap");
       std::vector<std::vector<int>> elems;
       const int n = n_;
-      callback_t cb = [&elems, n](state_t &path) {
-        // Paths run top-down; keep the x half, slot 0 first.
-        elems.emplace_back(path.rbegin(), path.rbegin() + n);
+      const SlotSpace &sp = space_;
+      callback_t cb = [&elems, n, &sp](state_t &path) {
+        // Paths run top-down; keep the x half (variables 0..n-1),
+        // un-permuted back to slot order.
+        elems.push_back(sp.unpermute({path.rbegin(), path.rbegin() + n}));
       };
       iterate(static_cast<const GDDD &>(blk), &cb);
       out.push_back(std::move(elems));

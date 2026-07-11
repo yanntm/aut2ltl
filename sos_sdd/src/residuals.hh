@@ -111,10 +111,15 @@ public:
       }
     }
 
-    // The A_g predicates, on the same pair-space labeling as the crossing.
-    labels_t labels;
-    for (int i = 0; i < n_; ++i) labels.push_back("x_" + std::to_string(i));
-    for (int i = 0; i < n_; ++i) labels.push_back("y_" + std::to_string(i));
+    // The A_g predicates, on the same pair-space labeling as the crossing
+    // (slot i's x at var_of[i], its y at n + var_of[i]).
+    var_of_ = space.var_of;
+    labels_t labels(2 * static_cast<size_t>(n_));
+    for (int i = 0; i < n_; ++i) {
+      labels[static_cast<size_t>(space.var_of[i])] = "x_" + std::to_string(i);
+      labels[static_cast<size_t>(n_ + space.var_of[i])] =
+          "y_" + std::to_string(i);
+    }
     vo_ = its::VarOrder(labels);
     go_ = std::make_unique<its::GalOrder>(&vo_);
 
@@ -264,20 +269,24 @@ public:
       throw std::invalid_argument(name_ + ": pi larger than the explicit cap");
     std::vector<std::pair<std::vector<int>, std::vector<int>>> out;
     const int n = n_;
-    std::vector<std::vector<int>> pairs;  // full 2n-value paths, slot 0 first
+    std::vector<std::vector<int>> pairs;  // full 2n-value paths, var 0 first
     callback_t cb = [&pairs](state_t &path) {
       pairs.emplace_back(path.rbegin(), path.rend());
     };
     iterate(static_cast<const GDDD &>(pi_), &cb);
     for (const auto &p : pairs) {
-      // Variable 0 adjacent to the terminal: wrap upward from slot 0.
+      // p is a full 2n-value path in variable order (variable 0 first):
+      // rebuild the singleton positionally, un-permute the x half.
       GDDD one = GDDD::one;
       for (int i = 0; i < 2 * n; ++i)
         one = GDDD(i, static_cast<GDDD::val_t>(p[i]), one);
       std::vector<int> bits(n_global_);
       for (int g = 0; g < n_global_; ++g)
         bits[g] = (DDD(one * columns_[g]) == DDD()) ? 0 : 1;
-      out.emplace_back(std::vector<int>(p.begin(), p.begin() + n), bits);
+      std::vector<int> x(static_cast<size_t>(n));
+      for (int i = 0; i < n; ++i)
+        x[static_cast<size_t>(i)] = p[static_cast<size_t>(var_of_[i])];
+      out.emplace_back(std::move(x), bits);
     }
     return out;
   }
@@ -313,6 +322,7 @@ private:
   std::vector<int> starts_;              // first slot of each block
   std::vector<int> sizes_;               // states per block
   std::vector<std::vector<int>> delta_;  // [global state][class] -> global
+  std::vector<int> var_of_;              // slot -> variable (the C9 perm)
   its::VarOrder vo_;
   std::unique_ptr<its::GalOrder> go_;
   std::vector<Hom> prof_homs_;  // A_g predicates on the pair space

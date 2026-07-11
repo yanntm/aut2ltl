@@ -61,12 +61,17 @@ class Crossing {
 public:
   Crossing(const std::string &name, const SlotSpace &space,
            const PackInfo &pack, const DDD &em1)
-      : name_(name), n_(space.n_slots()) {
+      : name_(name), n_(space.n_slots()), var_of_(space.var_of) {
     check_pack(space, pack);
 
-    labels_t labels;
-    for (int i = 0; i < n_; ++i) labels.push_back("x_" + std::to_string(i));
-    for (int i = 0; i < n_; ++i) labels.push_back("y_" + std::to_string(i));
+    // The label-list index IS the DDD variable: slot i's x at var_of[i],
+    // its y at n + var_of[i] (the pair space inherits the perm blockwise).
+    labels_t labels(2 * static_cast<size_t>(n_));
+    for (int i = 0; i < n_; ++i) {
+      labels[static_cast<size_t>(space.var_of[i])] = "x_" + std::to_string(i);
+      labels[static_cast<size_t>(n_ + space.var_of[i])] =
+          "y_" + std::to_string(i);
+    }
     vo_ = its::VarOrder(labels);
     go_ = std::make_unique<its::GalOrder>(&vo_);
 
@@ -110,10 +115,13 @@ public:
     idem_ = its::predicate(idem.eval(), go_.get());
 
     // The diagonal seed {(x, x)}: a placeholder y-block stacked above
-    // EM1's x-block, then y := x slot by slot.
+    // EM1's x-block, then y := x slot by slot. Wrapped in ascending
+    // variable order; the slot at y-variable n+v is slot_at[v].
+    const std::vector<int> inv = space.slot_at();
     GDDD ycells = GDDD::one;
-    for (int q = 0; q < n_; ++q)
-      ycells = GDDD(n_ + q, static_cast<GDDD::val_t>(space.identity_vals[q]),
+    for (int v = 0; v < n_; ++v)
+      ycells = GDDD(n_ + v,
+                    static_cast<GDDD::val_t>(space.identity_vals[inv[v]]),
                     ycells);
     diag_ = DDD(copy(ycells ^ GDDD(em1)));
   }
@@ -197,10 +205,16 @@ public:
       throw std::invalid_argument(name_ + ": pi larger than the explicit cap");
     std::vector<std::pair<std::vector<int>, std::vector<int>>> out;
     const int n = n_;
-    // Paths run top-down: y_{n-1}..y_0 then x_{n-1}..x_0.
-    callback_t cb = [&out, n](state_t &path) {
-      out.emplace_back(std::vector<int>(path.rbegin(), path.rbegin() + n),
-                       std::vector<int>(path.rend() - n, path.rend()));
+    const std::vector<int> &vof = var_of_;
+    // Paths run top-down; reversed they are variable order (x-block then
+    // y-block), un-permuted back to slot order for the reading.
+    callback_t cb = [&out, n, &vof](state_t &path) {
+      std::vector<int> x(static_cast<size_t>(n)), y(static_cast<size_t>(n));
+      for (int i = 0; i < n; ++i) {
+        x[static_cast<size_t>(i)] = *(path.rbegin() + vof[i]);
+        y[static_cast<size_t>(i)] = *(path.rbegin() + n + vof[i]);
+      }
+      out.emplace_back(std::move(x), std::move(y));
     };
     iterate(static_cast<const GDDD &>(pi_), &cb);
     return out;
@@ -228,6 +242,7 @@ private:
 
   std::string name_;
   int n_;
+  std::vector<int> var_of_;  // slot -> variable (the C9 perm)
   its::VarOrder vo_;
   std::unique_ptr<its::GalOrder> go_;
   Hom step_;   // y <- y·x   (pairing step, the case split)
