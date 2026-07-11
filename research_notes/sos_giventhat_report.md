@@ -21,7 +21,7 @@ moment it is found, even mid-milestone.
 
 | milestone | state | findings |
 |---|---|---|
-| GT1 — interval + endpoints | *pending* | F1–F4 |
+| GT1 — interval + endpoints | **DONE (2026-07-11, git 4c7aa9fb5+)** | F1–F4 |
 | GT2 — ladder tests | *pending* | F5–F8 |
 | GT3 — stutter two-tier | *pending* | F9–F11 |
 | GT4 — band degree probe | *pending* | F12 |
@@ -30,21 +30,37 @@ moment it is found, even mid-milestone.
 
 ## GT1 — the interval object + endpoint decisions
 
-- **F1 — Prop 3.1 holds as a runtime law.** *(pending)* The
+- **F1 — Prop 3.1 holds as a runtime law.** *(confirmed)* The
   `P_max \ P_min = P_K^c` identity and the freedom partition, asserted
-  on every constructed interval: fixture + 700-pair campaign, zero
-  violations expected. State the count.
-- **F2 — the fixture pair behaves as the paper computes.** *(pending)*
-  `|𝒞(D_ab)|` (paper predicts 6), `|𝒞(D_K)|` (datum), both endpoint
-  checks inconclusive with witnesses replaying as `(ab)^ω` and
-  `(ba)^ω`, `iv.bits` (datum — the paper leaves it uncomputed).
-- **F3 — the freedom distribution.** *(pending)* `|F|` in bits over the
-  campaign (min / median / p95 / max; share with `bits = 0`); a paper
-  §7 item 2 number in census-shaped form. Path: `logs/gt1_bits.csv`.
-- **F4 — endpoint kill rate, census-shaped.** *(pending)* How often
-  `k_settles_phi` / `k_refutes_phi` decide outright, per sampling
-  stratum (the complement-partner stratum should settle ~always —
-  say whether it does).
+  inside `given_that` on every construction: the fixture pair + 699
+  scored campaign pairs (700 sampled, 1 F2-budget skip), **zero
+  violations**. The conjugacy gate (partition of `linked`,
+  `saturate({p})` recovering each class, every carried pair set a
+  union of classes) also zero violations on all scored pairs.
+  Regen: `cd sosl && python3 -m tests.giventhat.interval_gate
+  --campaign`; rows `reference/giventhat/gt1_bits.csv`.
+- **F2 — the fixture pair behaves as the paper computes.**
+  *(confirmed)* `|𝒞(D_ab)| = 6` (as the paper's §5.2 hand count
+  predicts), `|𝒞(D_K)| = 6` (datum), product table n = 6 with 7 linked
+  pairs. `k_settles_phi = False` with the loop-2 witness
+  `ε·(p·¬p)^ω = (ab)^ω` replaying IN both HOAs; `k_refutes_phi =
+  False` with `ε·(¬p·p)^ω = (ba)^ω` replaying IN `D_K`, NOT in `D_ab`.
+  **`iv.bits = 2`** (datum — the paper leaves it uncomputed; free band
+  nonempty as predicted). 210 exhaustive metamorphic lassos, zero
+  violations. Regen: `... interval_gate --fixture`.
+- **F3 — the freedom distribution.** *(measured)* `|F|` over 699
+  scored pairs: **min 0 / median 20 / p95 124 / max 458**; `bits = 0`
+  share **1/699** (the point interval `1state1ap0acc_0 ×
+  1state1ap0acc_3`, where K settles φ outright). Summary
+  `reference/giventhat/gt1_interval.md`, raw
+  `reference/giventhat/gt1_bits.csv` (seed 20260711).
+- **F4 — endpoint kill rate, census-shaped.** *(measured)* fwd (300):
+  settles 21 (7.0%), refutes 17 (5.7%); rev (299): settles 21, refutes
+  12 (4.0%); comp (100): **settles 100/100**, refutes 0. The
+  complement-partner stratum settles always, as predicted, and
+  `k_settles_phi` agreed with `intersecting_word` finding nothing on
+  every one. Settles is symmetric (fwd = rev = 21 — the built-in
+  cross-check); refutes is directional and differs (17 vs 12).
 
 ## GT2 — the ladder tests
 
@@ -103,7 +119,15 @@ moment it is found, even mid-milestone.
 
 ## To theory
 
-*(empty — populate the moment anything below occurs)*
+**GT1 (2026-07-11): no spec/paper disagreement arose.** E1 held
+(`|𝒞(D_ab)| = 6` on the first build), Prop 3.1 zero violations across
+the fixture and 699 campaign pairs. Standing item 5's data is in:
+fixture `iv.bits = 2`; campaign extremes min 0 / median 20 / p95 124 /
+max 458 (F2, F3). One operational note for Q5 feasibility: at the
+campaign maximum (`bits = 458`) the `2^F` lattice is far beyond
+enumeration, while the median (20 bits ≈ 10^6 choices) sits at the
+edge — the greedy/hull machinery of GT2/GT4 is not optional at census
+sizes.
 
 Standing items the theory thread expects data or answers on:
 

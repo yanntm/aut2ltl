@@ -4,8 +4,8 @@
 
 | item | state |
 |---|---|
-| GT1: the interval object + endpoint decisions (§3) | **OPEN — the commissioned milestone.** Everything needed is specified below to the function level; start here and stop here. |
-| GT2: the ladder tests (§4) | SPECIFIED — do not start before GT1 acceptance |
+| GT1: the interval object + endpoint decisions (§3) | **DONE (2026-07-11)** — `sosl/sosl/sos/giventhat/interval.py`, `conjugacy_classes` in `calculus.surgery`, gates `sosl/tests/giventhat/interval_gate.py` green on the fixture + 700-pair campaign (699 scored, 1 F2, zero unexplained rows); data `reference/giventhat/gt1_interval.md`, report F1–F4 filled. |
+| GT2: the ladder tests (§4) | SPECIFIED — **next up** (GT1 acceptance passed) |
 | GT3: stutterization, two tiers (§5) | SPECIFIED — tier 2 is the hard one; tier 1 first |
 | GT4: band-minimal Wagner degree (§6) | SPECIFIED — doubles as a theory probe; blocked on GT2 |
 | GT5: the W-series campaigns (§7) | W0 (census-shaped) specified; W1 (MCC data) **blocked on data provisioning — do not go fetch it yourself** |

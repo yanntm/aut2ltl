@@ -141,6 +141,36 @@ def is_saturated(table: Table, pairs: PairSet) -> bool:
     return saturate(table, pairs) == pairs
 
 
+def conjugacy_classes(table: Table) -> Tuple[PairSet, ...]:
+    """The partition of ``table.linked`` into conjugacy classes — the atoms of
+    the saturated pair sets: a set denotes a language iff it is a union of
+    these, and each class is `saturate` of any one of its members.
+
+    Deterministic: linked pairs are processed in the discipline order of their
+    keys (``(len(key(s)), key(s), len(key(e)), key(e))``); each not-yet-covered
+    pair contributes ``saturate({pair})``, and the classes are returned in
+    discovery order, so the first pair of a class is its least representative.
+    ``O(|linked| * n^2)`` worst case; memoized on the table like `linked` is
+    (the ``_conjugacy`` slot; the table only hosts it, this function owns it)."""
+    if table._conjugacy is not None:
+        return table._conjugacy
+    keys = table.keys
+    order = sorted(
+        table.linked,
+        key=lambda p: (len(keys[p[0]]), keys[p[0]], len(keys[p[1]]), keys[p[1]]),
+    )
+    covered: Set[Tuple[int, int]] = set()
+    classes: List[PairSet] = []
+    for pair in order:
+        if pair in covered:
+            continue
+        cls = saturate(table, frozenset((pair,)))
+        classes.append(cls)
+        covered |= cls
+    table._conjugacy = tuple(classes)
+    return table._conjugacy
+
+
 def pair_language(table: Table, pairs: Iterable[Tuple[int, int]]) -> PairSet:
     """An arbitrary set of linked pairs promoted to a language, after checking
     that it is legal: every pair linked, and the set saturated. Raises

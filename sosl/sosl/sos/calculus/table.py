@@ -87,13 +87,15 @@ class Table:
     docstring. Immutable — the memo fields are pure caches over ``algebra``, an
     `Invariant` whose accepting set is empty and never consulted."""
 
-    __slots__ = ("algebra", "_idem", "_linked", "_factorizations")
+    __slots__ = ("algebra", "_idem", "_linked", "_factorizations", "_conjugacy")
 
     def __init__(self, algebra: Invariant) -> None:
         self.algebra = replace(algebra, accept=frozenset())
         self._idem: List[Optional[int]] = [None] * algebra.n
         self._linked: Optional[PairSet] = None
         self._factorizations: Optional[Tuple[Tuple[Tuple[int, int], ...], ...]] = None
+        # memo of surgery.conjugacy_classes — owned there, hosted here like _linked
+        self._conjugacy: Optional[Tuple[PairSet, ...]] = None
 
     # --- construction ------------------------------------------------------
 
