@@ -61,10 +61,11 @@ def conjugate(inv, s1, e1, s2, e2) -> bool:
     return False
 
 
-def verify_conflict(inv, con) -> None:
+def verify_conflict(inv, con) -> dict:
     """ALG-7: reconstruct the two lassos, check the verdict toggles under
     `inv.member` (independent of the closure) and the induced linked pairs are
-    non-conjugate (a genuine floor inhabitant, not a closure bug)."""
+    non-conjugate (a genuine floor inhabitant, not a closure bug). Returns
+    `{"m1", "m2", "conjugate", "genuine"}` alongside the printout."""
     (c, x, d1, v1, w1) = con.w1
     (_, _, d2, v2, w2) = con.w2
     base_cls = x[0]
@@ -81,6 +82,8 @@ def verify_conflict(inv, con) -> None:
     print(f"    loop2 classes d2={d2} (idem {e2}) member={m2}")
     print(f"    membership TOGGLES: {m1 != m2}   linked pairs conjugate: {conj}")
     print(f"    => {'GENUINE floor inhabitant' if m1 != m2 and not conj else 'CHECK (bug?)'}")
+    return {"m1": m1, "m2": m2, "conjugate": conj,
+            "genuine": m1 != m2 and not conj}
 
 FORMULA = "(G F (a & X((!a & !b) U a))) & (G (c -> F d))"
 
