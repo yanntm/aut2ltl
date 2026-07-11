@@ -15,11 +15,12 @@ work items + pointers only**; the report is the ledger.
    (C1–C10 components, E0–E9 experiments, M1–M5 milestones); its
    *State of play* block is current.
 3. `research_notes/sos_symbolic_report.md` — the ledger, findings
-   F1–F20: every measured/green claim, plus recorded gaps.
-4. `research_notes/sos_symbolic.md` — the paper. Engine results are
-   integrated (current-state voice, no history); 3 `⟨TBD⟩`s remain,
-   all waiting on E-series data. Hard data claims belong in the
-   report, never the paper.
+   F1–F23 plus the Theory responses (2026-07-11) to the E1
+   escalations: every measured/green claim, plus recorded gaps.
+4. `research_notes/sos_symbolic.md` — the paper. Engine + E1 census
+   results are integrated (current-state voice, no history); exactly
+   **1 `⟨TBD⟩` remains** (§3 Phase 1, saturation — waits on E8). Hard
+   data claims belong in the report, never the paper.
 - Code: Python façade `sos_sdd/*.py`; C++ core `sos_sdd/src/*.hh` +
   `module.cpp` (pybind11 `sos_sdd._core`). Tests + logs under
   `tests/sos_sdd/`.
@@ -75,40 +76,45 @@ at Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
    Conformance green on all 6102 completed corpus instances; |EM¹|
    corroborated three ways (model count / explicit BFS / byte gate);
    120 TIME_BUDGET at 10 s (1.9 %, mostly `3state2ap2acc_parity`).
-2. ⏳ **C9/C10** — remaining engine switches (fp disciplines `chaining`
+2. **E1 wrap-up (small, do when convenient):** adopt
+   `tests/sos_sdd/e1_readoff.py` (Theory-authored bootstrap, committed
+   — the regen for report F23's numbers); re-stratify F22 by the
+   census `marks` column and explain the 0acc-name-vs-`marks=1`
+   discrepancy (spec E1 addendum).
+3. ⏳ **C9/C10** — remaining engine switches (fp disciplines `chaining`
    / `saturation`, split slot encodings, slot permutations — E7/E8's
    axes) and the §6 calculus operators (member / Boolean algebra /
    align / included / witness / reduce; the `.sos` residuals trailer
    can ride the witness machinery). Paper §6 is the spec; C10 gates
    compare against Spot-side oracles, bounded.
-3. ⏳ **E2's second component family** + per-point budget sweeps at
+4. ⏳ **E2's second component family** + per-point budget sweeps at
    scale; E3 order sweeps (needs C9's `slot_perm`).
-4. Optional, cluster-sized: re-run the 120 TIME_BUDGET rows at bigger
-   budgets (E6 will need the honest two-column data anyway);
-   full-corpus C5 cross-check (sample of 25 done).
+5. **E5/E6 per revised spec protocols (Theory, 2026-07-11 — read them
+   before running):** E5a = parse the retained census stats JSONLs
+   (per-phase time/peak nodes on the 6102 completed; if not retained,
+   stratified ~200 rerun); E5b = the 120 TIME_BUDGET rows at 60 s /
+   300 s on the cluster (feeds E6). E6 = budget parity: rerun the
+   *explicit reference* under the same caps — the corpus `sos/` tier
+   is NOT the explicit column. Kill-phase histograms are
+   right-censored; never present one as a cost profile.
+6. Optional, cluster-sized: full-corpus C5 cross-check (sample of 25
+   done).
 5. Housekeeping when touched: milestones append ledger rows to the
    report AND sync the spec's *State of play*; paper only when a
    `⟨TBD⟩` becomes measurable.
 
 ## To-theory (escalations awaiting a Theory session)
 
-- **F22 — bless the monotone-marks metric.** Paper §4.2 says ⟨TBD:
-  quantify on the corpus⟩; engineering operationalized it as
-  per-(slot, dst) mark families, closure under adding one mark,
-  fraction over non-empty families → **62 %** upward-closed. Adjust or
-  bless before the paper cites it.
-- **F19 vs E5's prediction.** Census budget kills land in phases
-  1/3/5/2 = 52/32/21/15 — Phases 3 and 5 firing contradicts "Phases
-  5–6 are cheap relative to closure". E5 profiling will decide; the §5
-  cost-table narrative may need an edit.
-- **F19 vs E6's prediction.** The explicit reference completed all 120
-  instances the engine's 10 s budget killed — "loses nowhere on the
-  census" looks refutable at small budgets. E6 must measure both
-  columns honestly (budget parity).
-- **Paper integration.** E1 data exists for the compression-scatter
-  `⟨TBD⟩` (§3.1/§8): F17–F18 + the two reference CSVs; the correlate
-  analysis (which covariate predicts compression) is a reading of
-  those CSVs, not new runs.
+**None — all four E1 escalations resolved by the 2026-07-11 Theory
+round** (report "Theory responses" section is the record): F22 blessed
+with the stabilizer-closure lemma (paper §4.2 rewritten, cites 62 %
+pooled / 65 % on marked instances); F19 vs E5 reconciled (histogram is
+right-censored; Phase 3's read is crossing-shaped and now priced in §5
+— revised prediction + protocol in spec E5); F19 vs E6 → budget-parity
+protocol pinned in spec E6 with pre-registered outcomes; paper
+integration done (census conformance/compression + correlates in
+abstract/§8, §5 depth TBD resolved via report F23). Escalate new items
+here as they arise.
 
 ## Binding engine facts (learned the hard way — do not relearn)
 
@@ -167,6 +173,6 @@ profile (it survives in the stats stream). Spot is bounded-or-skipped
 (per-case timeout), used only via the reference tool in gates. Present
 intermediate results; do not start a new direction without user
 validation. No touching root files (STATUS/TODO/CLAUDE.md) nor
-`docs/HISTORY.md`. This handoff is untracked and disposable —
+`docs/HISTORY.md`. This handoff is tracked but disposable —
 re-curate it after every landed milestone and regenerate at session
 end (crash protection).
