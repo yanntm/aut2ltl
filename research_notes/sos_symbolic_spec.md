@@ -74,11 +74,24 @@ the derived-census driver, the engine's first consumer at scale),
   log-capped; all `square` modes live. Check gate green with the
   termination theorem observed (converges iff orbit periods are powers
   of two: mod3 diverges, MOD2 converges) — ledger F16.
-- **TODO: everything else.** C9–C10 proper, E1/E3–E9, M2–M5 (E2 still
+- **DONE (engine-side): E1** — the HOA→digest bridge (`sos_sdd/hoa.py`,
+  verbatim digest over the standard import APIs) and the census sweep
+  over all 6222 `flat_canon` instances: conformance green at corpus
+  scale (6102 completed, all byte-identical to the precomputed corpus
+  `sos/` tier — no reference runs needed, the tiers being a
+  self-consistent pair), compression prediction confirmed on 6100/6102
+  (two 1-element floor effects), 120 `TIME_BUDGET` findings (1.9 %,
+  concentrated in `3state2ap2acc_parity`) — ledger F17–F20, data in
+  `tests/sos_sdd/reference/e1_census.csv`. Recorded operational rule:
+  corpus sweeps run process-isolated (`--isolate` / cluster
+  `--shard k/N`) — libDDD's unique table is never GC'd. Still open from
+  E1's scope: the C5 explicit-tool residual cross-check (unblocked, not
+  run) and the constant/shared-slot + mark-upward-closure covariate
+  columns.
+- **TODO: everything else.** C9–C10 proper, E3–E9, M3–M5 (E2 still
   owes the second component family and per-point budget sweeps at
-  scale). Next: E1 census wiring (HOA → digest bridge; corpus at
-  `genaut/corpus/flat_canon/`), which also unlocks the C5
-  explicit-tool cross-check.
+  scale; M2's E5 first profile still owed). Next candidates: the C5
+  cross-check probe; C9 switches (unlocks E3/E7/E8); C10 calculus.
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat
