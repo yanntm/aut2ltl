@@ -51,17 +51,10 @@ def _cubes(inv: "Invariant") -> List[str]:
             for a in ab.letters()]
 
 
-def _to_formula(ast: "Ast", root: int, letters: List[str],
-                simp: bool = False) -> "spot.formula":
+def _to_formula(ast: "Ast", root: int, letters: List[str]) -> "spot.formula":
     """A `spot.formula` built bottom-up over the dg arena — one Spot node per
     arena node (Spot hash-conses internally), so shared subterms stay shared.
-    Never the O(unfolded-tree) flat string that `Ast.to_spot` renders.
-
-    `simp=False` (the dg BASELINE contract) keeps the transcription raw.
-    `simp=True` runs the per-node `_simp_f` pass on every composite node as it
-    is built — bottom-up with the hybrid policy, i.e. the measured
-    buchi-tower collapse where affordable (builders.py policy note) — for
-    consumers that need the label compact, not naive."""
+    Never the O(unfolded-tree) flat string that `Ast.to_spot` renders."""
     atoms = [spot.formula(s) for s in letters]
     memo: dict = {}
 
@@ -79,8 +72,6 @@ def _to_formula(ast: "Ast", root: int, letters: List[str],
                 f = spot.formula.Or([go(n[1]), go(n[2])])
             else:
                 f = spot.formula.X(spot.formula.U(go(n[1]), go(n[2])))
-            if simp and n[0] != "atom":
-                f = _simp_f(f)
             memo[i] = f
         return f
 
@@ -123,7 +114,7 @@ def _piece_formula(piece: "Invariant") -> "Optional[Tuple[spot.formula, str]]":
         ast, root, _ = synthesize(piece)
     except DgDecline:
         return None
-    return _to_formula(ast, root, _cubes(piece), simp=True), TAG_DG
+    return _to_formula(ast, root, _cubes(piece)), TAG_DG
 
 
 def _split_translate(plan: "SplitPlan", tag: str) -> LTLResult:
