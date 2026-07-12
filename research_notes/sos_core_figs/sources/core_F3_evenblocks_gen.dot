@@ -1,20 +1,20 @@
 // sos2cayley evenblocks.sos --rename a=a,!a=b
 digraph core_F3_evenblocks {
-  rankdir=LR;
+  rankdir=TB;
   ranksep=0.87; nodesep=0.55;
   node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];
   edge [fontname="serif", fontsize=10, arrowsize=0.7];
-  label="P = { ([b],[b]), ([a·b],[b]), ([b·a],[a·b·a]), ([a·b·a],[a·b·a]), ([b·a·b],[b]), ([b·a·b],[a·b·a]) }"; labelloc="b"; labeljust="c";
-  fontname="serif"; fontsize=11;
+  label="λ: a ↣ [a], b ↣ [b]\nP = { ([b],[b]), ([a·b],[b]), ([b·a],[a·b·a]), ([a·b·a],[a·b·a]), ([b·a·b],[b]), ([b·a·b],[a·b·a]) }";
+  labelloc="b"; labeljust="c"; fontname="serif"; fontsize=11;
 
-  eps [label="ε"];
-  a [label="a"];
-  b [label="b"];
-  aa [label="a·a"];
-  ab [label="a·b"];
-  ba [label="b·a"];
-  aba [label="a·b·a"];
-  bab [label="b·a·b"];
+  eps [label="[ε]"];
+  a [label="[a]"];
+  b [label="[b]"];
+  aa [label="[a·a]"];
+  ab [label="[a·b]"];
+  ba [label="[b·a]"];
+  aba [label="[a·b·a]"];
+  bab [label="[b·a·b]"];
   _init [shape=none, label="", width=0.02, height=0.02];
   _init -> eps;
 
@@ -23,19 +23,19 @@ digraph core_F3_evenblocks {
   { rank=same; aa ab ba; }
   { rank=same; aba bab; }
 
-  eps -> a [label="a", penwidth=1.6, weight=10];
-  eps -> b [label="b", penwidth=1.6, weight=10];
-  a -> aa [label="a", penwidth=1.6, weight=3];
-  a -> ab [label="b", penwidth=1.6, weight=3];
-  b -> ba [label="a", penwidth=1.6, weight=3];
-  b -> b [label="b", penwidth=0.8, weight=1];
-  aa -> a [label="a", penwidth=0.8, weight=1];
-  aa -> b [label="b", penwidth=0.8, weight=1];
-  ab -> aba [label="a", penwidth=1.6, weight=3];
-  ab -> ab [label="b", penwidth=0.8, weight=1];
-  ba -> b [label="a", penwidth=0.8, weight=1];
-  ba -> bab [label="b", penwidth=1.6, weight=3];
-  aba -> ab [label="a", penwidth=0.8, weight=1];
-  aba -> bab [label="b", penwidth=0.8, weight=1];
-  bab -> bab [label="a,b", penwidth=0.8, weight=1];
+  eps -> a [label="[a]", weight=10];
+  eps -> b [label="[b]", weight=10];
+  a -> aa [label="[a]", weight=3];
+  a -> ab [label="[b]", weight=3];
+  b -> ba [label="[a]", weight=3];
+  b -> b [label="[b]", weight=1];
+  aa -> a [label="[a]", weight=1];
+  aa -> b [label="[b]", weight=1];
+  ab -> aba [label="[a]", weight=3];
+  ab -> ab [label="[b]", weight=1];
+  ba -> b [label="[a]", weight=1];
+  ba -> bab [label="[b]", weight=3];
+  aba -> ab [label="[a]", weight=1];
+  aba -> bab [label="[b]", weight=1];
+  bab -> bab [label="[a],[b]", weight=1];
 }

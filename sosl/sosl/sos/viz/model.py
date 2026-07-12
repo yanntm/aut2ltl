@@ -122,6 +122,31 @@ class Figure:
         tuple of its class labels (rotated to start at its shortlex-least node)."""
         return {name: _cycles_of(self, i) for i, name in enumerate(self.naming.names)}
 
+    def letter_class(self, letter_index: int) -> int:
+        """The class ``λ(x)`` named by the letter at display index ``letter_index``
+        — the class an arrow on that letter multiplies by."""
+        return self.inv.letter_class[self.naming.letters[letter_index][0]]
+
+    def lambda_map(self) -> Tuple[Tuple[Tuple[str, ...], int], ...]:
+        """The letter map λ, grouped by its image: for each class named by at least
+        one letter (in node order), the display names of *all* the letters naming
+        it. Grouping is the point — it is what shows λ collapsing letters.
+
+        The class of a letter is always keyed by a letter (a one-letter word is in
+        it), so two letters sharing a class are two names for one generator, and
+        only one of them survives as the key."""
+        groups: Dict[int, List[str]] = {}
+        for i, name in enumerate(self.naming.names):
+            groups.setdefault(self.letter_class(i), []).append(name)
+        rank = {nd.cls: i for i, nd in enumerate(self.nodes)}
+        return tuple((tuple(groups[c]), c)
+                     for c in sorted(groups, key=lambda c: rank[c]))
+
+    def lambda_injective(self) -> bool:
+        """Is λ injective — does every letter name a class of its own? When it is,
+        the letters *are* the generators; when it is not, some are aliases."""
+        return all(len(names) == 1 for names, _ in self.lambda_map())
+
     def pair_classes(self) -> Tuple[Tuple[int, int], ...]:
         """The accepting pairs P as class-id pairs ``(s, e)``, sorted shortlex by
         stem then loop. P completes the algebra into the object ``<A, P>``, so a

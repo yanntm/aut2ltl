@@ -6,8 +6,9 @@ backends reuse (``dot -Tplain``, see `layout.py`). Pure text — no subprocess.
 
 The model's classification maps onto dot attributes: the root gets an incoming
 stub from nowhere (an initial-state marker — and the only arrow that may enter
-it), a key-tree edge is thicker, and every arrow is labeled with its letter.
-Letters are told apart by that label alone.
+it), and every arrow is labeled with the CLASS its letter names. Nothing else is
+inked: the key tree, the idempotents and the monochrome cycles are properties of
+what is drawn, not further things to draw.
 """
 from __future__ import annotations
 
@@ -29,6 +30,22 @@ def pairs_label(fig: Figure) -> str:
     return f"P = {{ {inner} }}" if inner else "P = { }"
 
 
+def lambda_label(fig: Figure) -> str:
+    """The letter map as one plain-text line, ``λ: a ↣ [a], b ↣ [b]``. The arrow
+    says whether λ is injective: a tail arrow when every letter names a class of
+    its own, a plain maplet when some letters are aliases for one class."""
+    arrow = "\u21a3" if fig.lambda_injective() else "\u21a6"
+    items = [f"{','.join(names)} {arrow} [{fig.label_of(c)}]"
+             for names, c in fig.lambda_map()]
+    return "\u03bb: " + ", ".join(items)
+
+
+def class_label(fig: Figure, cls: int) -> str:
+    """A class as it is written everywhere in the figure: ``[a·b]``. Nodes and
+    arrows alike name classes, never letters, so both wear the brackets."""
+    return f"[{fig.label_of(cls)}]"
+
+
 def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True,
            rankdir: str = "LR") -> str:
     """The `digraph` for ``fig``: layered left-to-right by key length (one
@@ -45,11 +62,11 @@ def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True,
         '  edge [fontname="serif", fontsize=10, arrowsize=0.7];',
     ]
     if pairs:
-        out += [f'  label="{pairs_label(fig)}"; labelloc="b"; labeljust="c";',
-                '  fontname="serif"; fontsize=11;']
+        out += [f'  label="{lambda_label(fig)}\\n{pairs_label(fig)}";',
+                '  labelloc="b"; labeljust="c"; fontname="serif"; fontsize=11;']
     out.append("")
     for nd in fig.nodes:
-        out.append(f'  {nd.ident} [label="{nd.label}"];')
+        out.append(f'  {nd.ident} [label="{class_label(fig, nd.cls)}"];')
     root = next(nd for nd in fig.nodes if nd.is_root)
     out += ['  _init [shape=none, label="", width=0.02, height=0.02];',
             f"  _init -> {root.ident};",   # the root, marked like an initial state
@@ -62,8 +79,12 @@ def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True,
 
     for (src, dst), letters in grouped(fig).items():
         marks = [e for e in fig.edges if (e.src, e.dst) == (src, dst)]
-        attrs = [f'label="{",".join(fig.naming.names[i] for i in letters)}"',
-                 "penwidth=1.6" if any(e.is_tree for e in marks) else "penwidth=0.8",
+        seen: List[str] = []
+        for i in letters:                       # aliases collapse to one class
+            lab = class_label(fig, fig.letter_class(i))
+            if lab not in seen:
+                seen.append(lab)
+        attrs = [f'label="{",".join(seen)}"',
                  f"weight={_weight(fig, src, dst, marks)}"]
         a, b = fig.node_of(src).ident, fig.node_of(dst).ident
         out.append(f'  {a} -> {b} [{", ".join(attrs)}];')

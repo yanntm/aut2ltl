@@ -1,18 +1,18 @@
 // sos2cayley gf_aa.sos --rename a=a,!a=b
 digraph core_F1_gf_aa {
-  rankdir=LR;
+  rankdir=TB;
   ranksep=0.87; nodesep=0.55;
   node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];
   edge [fontname="serif", fontsize=10, arrowsize=0.7];
-  label="P = { ([a·a],[a·a]) }"; labelloc="b"; labeljust="c";
-  fontname="serif"; fontsize=11;
+  label="λ: a ↣ [a], b ↣ [b]\nP = { ([a·a],[a·a]) }";
+  labelloc="b"; labeljust="c"; fontname="serif"; fontsize=11;
 
-  eps [label="ε"];
-  a [label="a"];
-  b [label="b"];
-  aa [label="a·a"];
-  ab [label="a·b"];
-  ba [label="b·a"];
+  eps [label="[ε]"];
+  a [label="[a]"];
+  b [label="[b]"];
+  aa [label="[a·a]"];
+  ab [label="[a·b]"];
+  ba [label="[b·a]"];
   _init [shape=none, label="", width=0.02, height=0.02];
   _init -> eps;
 
@@ -20,15 +20,15 @@ digraph core_F1_gf_aa {
   { rank=same; a b; }
   { rank=same; aa ab ba; }
 
-  eps -> a [label="a", penwidth=1.6, weight=10];
-  eps -> b [label="b", penwidth=1.6, weight=10];
-  a -> aa [label="a", penwidth=1.6, weight=3];
-  a -> ab [label="b", penwidth=1.6, weight=3];
-  b -> ba [label="a", penwidth=1.6, weight=3];
-  b -> b [label="b", penwidth=0.8, weight=1];
-  aa -> aa [label="a,b", penwidth=0.8, weight=1];
-  ab -> a [label="a", penwidth=0.8, weight=1];
-  ab -> ab [label="b", penwidth=0.8, weight=1];
-  ba -> aa [label="a", penwidth=0.8, weight=1];
-  ba -> b [label="b", penwidth=0.8, weight=1];
+  eps -> a [label="[a]", weight=10];
+  eps -> b [label="[b]", weight=10];
+  a -> aa [label="[a]", weight=3];
+  a -> ab [label="[b]", weight=3];
+  b -> ba [label="[a]", weight=3];
+  b -> b [label="[b]", weight=1];
+  aa -> aa [label="[a],[b]", weight=1];
+  ab -> a [label="[a]", weight=1];
+  ab -> ab [label="[b]", weight=1];
+  ba -> aa [label="[a]", weight=1];
+  ba -> b [label="[b]", weight=1];
 }
