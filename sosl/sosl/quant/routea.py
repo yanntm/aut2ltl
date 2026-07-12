@@ -19,13 +19,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, FrozenSet, List, Optional, Set, Tuple
 
 import buddy
 import spot
 
 from ..sos.alphabet import Alphabet, Letter
 from .kernel import _sccs
+from .mc import Chain
 from .measure import _solve, _validate_p
 
 
@@ -60,6 +61,32 @@ def _letter_bdds(aut: "spot.twa_graph", alphabet: Alphabet) -> List[object]:
     return out
 
 
+def _read_det(
+    aut: "spot.twa_graph", alphabet: Alphabet
+) -> Tuple[List[List[int]], List[List[FrozenSet[int]]]]:
+    """The letterwise transition function and edge marks of a deterministic
+    complete automaton: ``succ[s][i]`` and ``marks[s][i]`` for letter mask
+    ``i``. Asserts determinism and completeness (exactly one successor per
+    state and letter)."""
+    n = int(aut.num_states())
+    size = alphabet.size
+    lbdds = _letter_bdds(aut, alphabet)
+    succ: List[List[int]] = [[-1] * size for _ in range(n)]
+    marks: List[List[FrozenSet[int]]] = [
+        [frozenset()] * size for _ in range(n)
+    ]
+    for s in range(n):
+        for e in aut.out(s):
+            acc = frozenset(e.acc.sets())
+            for i, lb in enumerate(lbdds):
+                if buddy.bdd_and(e.cond, lb) != buddy.bddfalse:
+                    assert succ[s][i] == -1, f"nondeterministic at state {s}"
+                    succ[s][i] = int(e.dst)
+                    marks[s][i] = acc
+        assert -1 not in succ[s], f"incomplete at state {s}"
+    return succ, marks
+
+
 def route_a(
     hoa_path: str,
     alphabet: Alphabet,
@@ -75,18 +102,11 @@ def route_a(
         p = {a: Fraction(1, alphabet.size) for a in alphabet.letters()}
     _validate_p(alphabet, p)
     letters = alphabet.letters()
-    lbdds = _letter_bdds(aut, alphabet)
     n = int(aut.num_states())
-    succ: List[List[int]] = [[-1] * len(letters) for _ in range(n)]
-    state_marks: List[Set[int]] = [set() for _ in range(n)]
-    for s in range(n):
-        for e in aut.out(s):
-            for i, lb in enumerate(lbdds):
-                if buddy.bdd_and(e.cond, lb) != buddy.bddfalse:
-                    assert succ[s][i] == -1, f"nondeterministic at state {s}"
-                    succ[s][i] = int(e.dst)
-            state_marks[s] |= set(e.acc.sets())
-        assert -1 not in succ[s], f"incomplete at state {s}"
+    succ, marks = _read_det(aut, alphabet)
+    state_marks: List[Set[int]] = [
+        set().union(*marks[s]) if marks[s] else set() for s in range(n)
+    ]
 
     comps = _sccs({s: sorted(set(succ[s])) for s in range(n)})
     comp_of: Dict[int, int] = {s: i for i, c in enumerate(comps) for s in c}
@@ -128,4 +148,95 @@ def route_a(
     value = sum((absorption[j] for j, bit in enumerate(bits) if bit), zero)
     return RouteAResult(
         value=value, n_states=n, bits=bits, absorption=absorption
+    )
+
+
+def route_a_chain(hoa_path: str, ch: Chain) -> RouteAResult:
+    """The exact ``Pr_M(L)`` of the chain ``ch`` against the deterministic
+    complete EL automaton at ``hoa_path`` — the product-side oracle. The
+    product ``states(M) x states(A)`` starts at ``(q0, delta(a0, l(q0)))``
+    (the initial state's letter is consumed at once, the word semantics of
+    `mc`) and steps ``(q, s) -> (q', delta(s, l(q')))`` with the chain's
+    probability. In a bottom SCC every product edge recurs infinitely often
+    a.s., so the run's limit mark set is the union of the marks of the SCC's
+    edges and the EL condition on it is the SCC's verdict; the absorption
+    probabilities are the same exact transient system as `route_a`."""
+    aut = spot.automaton(hoa_path)
+    ch.validate()
+    succ, marks = _read_det(aut, ch.alphabet)
+    init = (ch.init, succ[int(aut.get_init_state_number())][ch.label[ch.init]])
+
+    edges: Dict[Tuple[int, int], List[Tuple[Tuple[int, int], Fraction, FrozenSet[int]]]] = {}
+    stack = [init]
+    while stack:
+        st = stack.pop()
+        if st in edges:
+            continue
+        q, s = st
+        out = []
+        for q2, pr in ch.trans[q]:
+            a = ch.label[q2]
+            d = (q2, succ[s][a])
+            out.append((d, pr, marks[s][a]))
+            if d not in edges:
+                stack.append(d)
+        edges[st] = out
+
+    states = sorted(edges)
+    idx = {st: i for i, st in enumerate(states)}
+    adj = {i: sorted({idx[d] for d, _, _ in edges[st]}) for i, st in enumerate(states)}
+    comps = _sccs(adj)
+    comp_of: Dict[int, int] = {v: i for i, c in enumerate(comps) for v in c}
+    bottoms = [
+        sorted(c)
+        for i, c in enumerate(comps)
+        if all(comp_of[w] == i for v in c for w in adj[v])
+    ]
+    bottoms.sort(key=lambda c: states[c[0]])
+    acc = aut.acc()
+    bits = tuple(
+        bool(
+            acc.accepting(
+                spot.mark_t(
+                    sorted(
+                        set().union(
+                            *(
+                                m
+                                for v in scc
+                                for _, _, m in edges[states[v]]
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        for scc in bottoms
+    )
+
+    where: Dict[int, int] = {v: j for j, scc in enumerate(bottoms) for v in scc}
+    zero = Fraction(0)
+    i0 = idx[init]
+    if i0 in where:
+        absorption = tuple(
+            Fraction(1) if j == where[i0] else zero for j in range(len(bottoms))
+        )
+    else:
+        transient = [i for i in range(len(states)) if i not in where]
+        row_of = {v: r for r, v in enumerate(transient)}
+        a_mat = [[zero] * len(transient) for _ in transient]
+        b_mat = [[zero] * len(bottoms) for _ in transient]
+        for v in transient:
+            r = row_of[v]
+            a_mat[r][r] += 1
+            for d, pr, _ in edges[states[v]]:
+                j = idx[d]
+                if j in row_of:
+                    a_mat[r][row_of[j]] -= pr
+                else:
+                    b_mat[r][where[j]] += pr
+        absorption = tuple(_solve(a_mat, b_mat)[row_of[i0]])
+    assert sum(absorption, zero) == 1, absorption
+    value = sum((absorption[j] for j, bit in enumerate(bits) if bit), zero)
+    return RouteAResult(
+        value=value, n_states=len(states), bits=bits, absorption=absorption
     )

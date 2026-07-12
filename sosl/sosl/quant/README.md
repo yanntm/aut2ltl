@@ -18,11 +18,14 @@ From one invariant `I(L) = (C, key, λ, M, P)` this package computes:
 - the **entropy** `h(L) = log₂ ρ(A)` as a certified enclosure: an exact
   rational bracket on the spectral radius of the live letter-count
   matrix (per-irreducible-block Collatz–Wielandt), floats only in the
-  final `log₂`, one ulp widened outward (`entropy`).
+  final `log₂`, one ulp widened outward (`entropy`);
+- the **Markov product** `Pr_M(L)` — the exact probability that the word of a
+  state-labelled Markov chain lies in `L` (`pr_chain`), the chain read from
+  (or written to) a `.mc` file, a restricted PRISM-language subset (`mc`).
 
 Normative math: `research_notes/sos_measure.md` (Lemmas 3.1–3.3,
-Theorem 3.4, §4.1–§4.2, §5); working spec: `research_notes/sos_measure_spec.md`
-(M1–M4). The *why it is correct* lives in `algorithm.md` next to this file.
+Theorems 3.4/3.5, §4.1–§4.2, §5); working spec: `research_notes/sos_measure_spec.md`
+(M1–M5). The *why it is correct* lives in `algorithm.md` next to this file.
 
 ## Contract
 
@@ -31,10 +34,14 @@ Theorem 3.4, §4.1–§4.2, §5); working spec: `research_notes/sos_measure_spec
   required or performed: everything here is insensitive to the table
   being syntactic-minimal, so a `P` flipped by the calculus complement
   works as-is.
+- A chain is a validated `mc.Chain` (Moore: one letter per state; the word of
+  a run starts with the *initial* state's letter). The `.mc` reader rejects,
+  never repairs: it checks the PRISM subset, that the letter labels partition
+  the states, and that the label names are exactly the alphabet's letters.
 - Numbers are `fractions.Fraction` end to end — no floats, no numpy, no
-  subprocess. The measure path (`chain`/`kernel`/`theta`/`measure`) never
-  touches Spot; `routea` (the independent oracle) uses Spot for HOA
-  parsing and acceptance read-out only, bounded-or-skipped.
+  subprocess. The measure path (`chain`/`kernel`/`theta`/`measure`/`mc`/
+  `product`) never touches Spot; `routea` (the independent oracle) uses Spot
+  for HOA parsing and acceptance read-out only, bounded-or-skipped.
 - Layering: this package imports `sosl.sos`, `sosl.sos.calculus` and
   the classify aperiodicity scan (`sosl.sos.classify.aperiodic`), and
   nothing else in the repo.
@@ -54,7 +61,9 @@ Theorem 3.4, §4.1–§4.2, §5); working spec: `research_notes/sos_measure_spec
 | `kernel.py` | two-sided Cayley graph on `S`, its unique sink SCC = the kernel `K`, one idempotent `k ∈ K` |
 | `theta.py` | `ThetaProfile`; `θ_C = Val(c, k)` per bottom SCC; paranoid cross-checks |
 | `measure.py` | `p` validation, transient linear system, exact Gauss–Jordan, `MeasureResult`, `value_vector` |
-| `routea.py` | independent oracle: `μ` of a deterministic complete EL automaton (`.hoa`) via BSCC analysis, same solver |
+| `mc.py` | `Chain` (state-labelled DTMC), the strict `.mc` reader/writer, the Bernoulli chain of a `p` |
+| `product.py` | `Pr_M(L)`: the chain × class product, its bottom SCCs, the cycle semigroup and its kernel, `θ_B`, the absorption system |
+| `routea.py` | independent oracles: `μ` of a deterministic complete EL automaton (`.hoa`) via BSCC analysis, and `Pr_M` of the same automaton against a `Chain` — same solver, nothing else shared |
 | `distance.py` | `d_p` = measure of the pair-set xor on the materialized aligned product; `DistanceResult` with the null-disagreement bit |
 | `shadow.py` | Prop 4.1 stem-region surgery on the invariant's own table, then `reduce` |
 | `essential.py` | Thm 4.4: value-vector congruence, held-out-identity quotient, shadow read-off, `reduce`; `ltl_up_to_null` aperiodicity verdict |
@@ -98,3 +107,10 @@ Placed scripts under `sosl/tests/quant/`, run from `sosl/`:
   biconditional on one pair: byte-equal reduced essentials ⟺ all-zero
   aligned xor-profile; `--aggregate` renders
   `reference/quant/m3b_thm442.{md,csv}` (runs on M3's pair sample).
+- `python3 -m tests.quant.fixtures4` — fixtures F-M through F-O (the word
+  convention, the deterministic 2-cycle, the absorption split).
+- `python3 -m tests.quant.m5_gate PATH.sos` (Bernoulli embedding against M1
+  under two `p`'s, complement flip on a seeded random chain, `.mc` round-trip)
+  and `... --oracle PATH.sos` (the Route A product-side oracle on the paired
+  `det/*.hoa`); `--list` / `--sample` / `--aggregate` render
+  `reference/quant/m5_product.{md,csv}` + `m5_product_oracle.csv`.
