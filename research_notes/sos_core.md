@@ -12,9 +12,10 @@ idea, no definitions, no filled text.
 ## Abstract
 
 - The syntactic ω-semigroup: canonical, complete, defined since Arnold 1985, never built.
-- Contribution 1: the object itself, reified as the tuple `𝓘 = (𝒞, λ, M, P)` with a
-  standalone lasso-membership semantics — a canonical normal form for ω-regular
-  languages, which the domain has never had.
+- Contribution 1: the object itself, reified as `𝓘 = ⟨𝒜, P⟩` — an algebra
+  `𝒜 = (𝒞, λ, M)` and an acceptance layer `P` over it — with a standalone
+  lasso-membership semantics: a canonical normal form for ω-regular languages, which
+  the domain has never had.
 - Contribution 2: the rotation lemma — the two-sided syntactic congruence is computable
   by right multiplications alone; the structural fact missing from 40 years of literature.
 - Contribution 3: the construction from any deterministic Emerson–Lei automaton,
@@ -103,7 +104,7 @@ confronts.
 
 **Recalled, and new.** Recalled from [PP04] and classical theory: that lassos suffice,
 the monoid/ω-power framing, and linked pairs. New here: the reification of the syntactic
-ω-semigroup as a concrete finite tuple with a self-contained membership semantics (§3);
+ω-semigroup as a concrete finite object with a self-contained membership semantics (§3);
 the **rotation lemma**, which both fixes that semantics (§3) and makes the two-sided
 syntactic congruence computable by right multiplications alone (§7); and the construction
 of the tuple from a deterministic Emerson–Lei automaton, proved correct against the
@@ -112,27 +113,27 @@ is recalled where it is used, in §5.
 
 ## 3. The object
 
-The syntactic ω-semigroup of `L` is reified as a finite tuple
+The syntactic ω-semigroup of `L` is reified as a finite object
 
 ```
-    𝓘(L) = (𝒞, λ, M, P),
+    𝓘(L) = ⟨𝒜, P⟩,        𝒜 = (𝒞, λ, M),
 ```
 
-read and queried with no automaton in sight. It has two layers. The first three
-components are the **algebra** `(𝒞, λ, M)` — a finite monoid carrying an alphabet
-labelling — which holds the language's structural content. The fourth, `P`, is the
-**acceptance layer**: a set of accepting linked pairs over the algebra, selecting *which*
-language over that algebra `L` is. The division is structural, not cosmetic. The algebra
-alone fixes everything invariant under changing the accepting set — most consequentially
-the group content, hence LTL-definability (§4–5), so that `L` and its complement, which
-share every table and differ only by `P ↦ P^c`, are LTL together or not at all.
-Membership, equality, and the acceptance-sensitive classifications read `P`. We define
-the algebra, then the layer; the only new mathematics of this section is that a set of
-pairs is a *legal* layer exactly when it is closed under the rotation lemma (Lemma 3.5).
+read and queried with no automaton in sight. It has two layers. The **algebra** `𝒜` — a
+finite monoid carrying an alphabet labelling — holds the language's structural content.
+The **acceptance layer** `P` is a set of accepting linked pairs over the algebra,
+selecting *which* language over that algebra `L` is. The division is structural, not
+cosmetic. The algebra alone fixes everything invariant under changing the accepting
+set — most consequentially the group content, hence LTL-definability (§4–5), so that `L`
+and its complement, which share `𝒜` and differ only by `P ↦ P^c`, are LTL together or
+not at all. Membership, equality, and the acceptance-sensitive classifications read `P`.
+We define the algebra, then the layer, and open `⟨𝒜, P⟩` into its components only when a
+statement needs them; the only new mathematics of this section is that a set of pairs is
+a *legal* layer exactly when it is closed under the rotation lemma (Lemma 3.5).
 
 ### 3.1 The algebra
 
-**Definition 3.1 (algebra).** An **algebra** over `Σ` is a triple `(𝒞, λ, M)`:
+**Definition 3.1 (algebra).** An **algebra** over `Σ` is a triple `𝒜 = (𝒞, λ, M)`:
 
 - `𝒞` is a finite set of **classes**, each **keyed** by a word over `Σ`, with a
   distinguished `[ε]` keyed by the empty word;
@@ -158,7 +159,7 @@ holds the words in `a⁺`, `[b]` those in `b⁺`, `[a·b]` those in `a⁺b⁺`, 
 
 By associativity the fold is a monoid morphism `Σ* ↠ (𝒞, M)`; two words are **equivalent
 in the algebra** when they fold alike. Each class is **keyed by its shortlex-least word**
-(shortest, ties alphabetical), a datum recomputable from `(𝒞, λ, M)` by breadth-first
+(shortest, ties alphabetical), a datum recomputable from `𝒜` by breadth-first
 enumeration from `[ε]`, so the whole algebra is a canonical block of data once `M` and
 `λ` are fixed. The identity `[ε]` is keyed by the empty word and is its own class even
 when the monoid owns another neutral element: a nonempty word folding to a neutral class
@@ -284,14 +285,13 @@ Lemma 3.3 read at the level of contexts, and §7 only instantiates it.
 ### 3.3 The acceptance layer, and well-definedness
 
 **Definition 3.4 (acceptance layer; object).** An **acceptance layer** over an algebra
-`(𝒞, λ, M)` is a set `P` of linked pairs that is **saturated** — closed under conjugacy:
+`𝒜` is a set `P` of linked pairs that is **saturated** — closed under conjugacy:
 
 ```
     (s, (gh)^ω) ∈ P  ⟺  (s·g, (hg)^ω) ∈ P     for all s, g, h ∈ 𝒞 with s·(gh)^ω = s.
 ```
 
-An **object** is a tuple `𝓘 = (𝒞, λ, M, P)` with `(𝒞, λ, M)` an algebra and `P` an
-acceptance layer. Saturation is a finite, mechanical closure — checkable directly on the
+An **object** is a pair `𝓘 = ⟨𝒜, P⟩`: an algebra and an acceptance layer over it. Saturation is a finite, mechanical closure — checkable directly on the
 multiplication table, with no automaton and no external theory (§3.5 verifies it by hand
 on the examples).
 
@@ -369,7 +369,7 @@ Started at any class, the object answers membership of a residual.
 `L_s := { y·t^ω : (s·⟦y⟧·⟦t⟧^ω, ⟦t⟧^ω) ∈ P }` — the query run from `s` — with
 `L_{[ε]} = L(𝓘)`. Then each `L_{s·λ(a)} = a⁻¹L_s`, residual equality is right-invariant
 (`L_s = L_{s'} ⟹ L_{s·λ(a)} = L_{s'·λ(a)}`), and the residual automaton is a quotient of
-the Cayley graph — all recomputable from `(𝒞, λ, M, P)`.
+the Cayley graph — all recomputable from `⟨𝒜, P⟩`.
 
 *Proof.* `L_{s·λ(a)} = a⁻¹L_s` is immediate from the fold:
 `y·t^ω ∈ L_{s·λ(a)} ⟺ (s·λ(a)·⟦y⟧·⟦t⟧^ω, ⟦t⟧^ω) ∈ P ⟺ (s·⟦a·y⟧·⟦t⟧^ω, ⟦t⟧^ω) ∈ P
@@ -489,10 +489,10 @@ on the single word `a^ω`.
   §2 block, moved here).
 - The two shapes are genuinely independent — `Even` vs `EvenBlocks`, current Prop 4.6
   and examples.
-- The syntactic tuple: the quotient by Arnold's congruence, keyed shortlex, is a
-  well-formed tuple and a function of `L` alone.
+- The syntactic object: the quotient by Arnold's congruence, keyed shortlex, is a
+  well-formed `⟨𝒜, P⟩` and a function of `L` alone.
 - Complete invariant theorem (current Thm 5.1): two languages are equal iff their
-  tuples are byte-equal.
+  objects are byte-equal.
 - Two minimality senses, both exact: coarsest congruence saturating `L` (Arnold);
   unique canonical complete invariant. (Minimal-recognizer claim dropped.)
 - The two shapes double as the specification the construction must meet — hand-off
@@ -537,7 +537,7 @@ on the single word `a^ω`.
 - NEW — Theorem A (correctness, self-contained): `𝓘(D)` is well-formed (saturation
   proved, not assumed) and `L(𝓘(D)) = L(D)`; proof from the skeleton lemma and the
   collapse only, no Arnold.
-- Theorem B (canonicity): `𝓘(D)` is the syntactic tuple of §5 — the constructed
+- Theorem B (canonicity): `𝓘(D)` is the syntactic object of §5 — the constructed
   quotient is Arnold's.
 - Examples resolved: `GF(aa)`'s presentation group dies in the quotient (10 → 6, LTL);
   `Even` and `EvenBlocks` keep a genuine `Z₂`.
@@ -563,9 +563,9 @@ on the single word `a^ω`.
 ## 11. Conclusion
 
 - The object was never built because two structural pieces were missing; both are
-  supplied, and the tuple is the deliverable.
+  supplied, and `⟨𝒜, P⟩` is the deliverable.
 - The rotation lemma stands on its own as the mathematical core.
-- The family builds on `(𝒞, λ, M, P)`: companions consume the object this paper defines
+- The family builds on `⟨𝒜, P⟩`: companions consume the object this paper defines
   and constructs.
 
 ---
