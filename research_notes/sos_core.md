@@ -206,6 +206,8 @@ key:
        ▼                            ▼
       [b]* ⟲b ────────a────────▶ [b·a]* ⟲a,b
 
+    P = { ([b],[b]),  ([a·b],[b]) }
+
     dashed root = a source, no edge enters [ε];  * = idempotent;  [b·a] = the zero
 ```
 
