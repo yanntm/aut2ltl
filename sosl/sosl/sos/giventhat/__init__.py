@@ -23,7 +23,19 @@ from .ladder import (
     is_persistence,
     is_recurrence,
     rec_hull,
+    rung_of,
 )
+from .quotient import (
+    Quotient,
+    admits,
+    congruence,
+    greatest_member,
+    hull,
+    least_member,
+    syntactic_congruence,
+)
+from .simplify import Options, Simplification, simplify
+from .stutter import exists_stutter_invariant, sc, stutter_seeds
 
 __all__ = [
     "ConjClass",
@@ -44,4 +56,18 @@ __all__ = [
     "is_recurrence",
     "is_persistence",
     "rec_hull",
+    "rung_of",
+    "Quotient",
+    "congruence",
+    "syntactic_congruence",
+    "hull",
+    "admits",
+    "least_member",
+    "greatest_member",
+    "stutter_seeds",
+    "sc",
+    "exists_stutter_invariant",
+    "Options",
+    "Simplification",
+    "simplify",
 ]

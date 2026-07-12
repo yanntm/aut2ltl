@@ -112,3 +112,54 @@ compares two *paths*, not two codebases: the violation scan here vs the
 chain DP behind the `.cat` coordinates, both over the shared
 `classify.primitives` H-order (duplicating the primitive was judged not
 worth the maintenance cost — decision 2026-07-11).
+
+## 6. The quotient engine (`quotient.py`): one theorem, one hull
+
+`Interval` fixes the *language* bounds `[P_min, P_max]`; the engine adds the
+missing dimension — the *table*. A `Quotient` is a monoid congruence `π` of the
+product table `T`, presented as the quotient table `T/π` (canonically keyed by
+`Table.of_raw` — the one shortlex BFS, never a second) plus the class map
+`π : T → T/π`. Two constructors: `congruence(T, seeds)` closes a set of seed
+identifications under a **letter** worklist (letters suffice by the same
+induction `reduce`'s refinement runs), and `syntactic_congruence(T, q)` lifts
+`reduce.syntactic_blocks` (paper Prop 4.1's `π_L`) into a `Quotient`. Both go
+through `_from_blocks`, which induces the quotient product from block
+representatives and asserts `[ε]`'s block is a singleton (trap #8).
+
+The whole engine is **paper Prop 4.2**: for any `π`,
+
+    hull(π, Q) = pullback(π, saturate_{T/π}(forced(π, Q)))
+
+is the least `π`-recognizable superset of `Q`. Two orientation traps live in
+that one line. `forced` renormalizes each image pair through the **quotient's**
+idempotent (`linked_pair_of` on `T/π`) — inserting the raw image is unsound
+(trap #3); and `saturate` runs on the **quotient**, only then `pullback` —
+pulling back first and saturating on `T` is a different, wrong set (trap #15).
+Hence `admits(π, iv)` is exactly `hull(π, P_min) ⊆ P_max`, `least_member` is
+that hull, and `greatest_member` is its de Morgan dual. Stutter invariance is
+one seed set (`M(ℓ,ℓ) ∼ ℓ`), so `stutter.py` is a thin instance — and its
+verdict is YES/UNKNOWN, never NO, because the least stutter superset can leave
+the table (paper Thm 5.7, trap #11).
+
+## 7. The greedy (`simplify.py`): merge while it admits
+
+The operation searches the lattice of congruences, scored by `|𝒞|`. From each
+admissible seed it repeatedly merges **two blocks of the current quotient** and
+re-closes *on the quotient*, composing the map back to `T` (`compose`) rather
+than re-closing from `T` each round (trap #9); it keeps the admissible merge
+that collapses the most classes, ties broken by the merged blocks' keys
+(determinism is mandatory). When no merge admits, it reads off the least and
+greatest recognized members. The global answer is the class-count `argmin` over
+every recorded member **and** the three reference points `P_¬φ / P_min / P_max`,
+so "never worse than the best reference" holds by construction — `π_{¬φ}` is
+always an admissible seed (its own language witnesses it), which is what makes
+the contract free (paper §4.6; asserted as A3).
+
+Two laws stay on at every emission: Prop 3.1 (inherited from `Interval`) and the
+[DPT25] soundness identity `B ∩ P_K = P_min` (spec §6.3). Constrained mode
+(`opts.require`, paper Lemma 5.2) alternates `hull_π` with a rung's closure
+operator to a joint least fixpoint — built from the GT2 hulls, no new machinery;
+only the Moore rungs (grow-from-`P_min`) are wired, the kernel rungs need the
+dual and are refused. **Honesty:** exact minimization is conjectured NP-hard
+(paper Conj 4.5); this is a heuristic with an exact test inside it, and the
+reported `|𝒞|` is *achieved*, never *minimal* (trap #15).

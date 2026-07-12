@@ -5,8 +5,23 @@ what is already known about the system `𝓘(K)`, every ω-regular `B` that is a
 sound stand-in for `φ` under `K` satisfies
 `ℒ(¬φ) ∩ ℒ(K) ⊆ ℒ(B) ⊆ ℒ(¬φ) ∪ ℒ(¬K)`. This package builds that interval
 *once*, on one product table, and answers exactly and with witnesses: does `K`
-settle `φ`; does `K` refute `φ`; and which legal `B`s exist between the
-endpoints.
+settle `φ`; does `K` refute `φ`; which legal `B`s exist between the endpoints;
+and — **the deliverable** — a *smaller* legal `B` chosen by a greedy over
+congruences.
+
+## The tool
+
+    python3 -m sosl.sos.giventhat NEG_PHI.sos K.sos [-o B.sos]
+            [--no-stutter] [--require RUNG] [--json REPORT.json]
+
+Two `.sos` in, one **smaller** `.sos` out with
+`ℒ(B) ∩ ℒ(K) = ℒ(¬φ) ∩ ℒ(K)` ([DPT25] Thm 1) and `|𝒞(B)|` never worse than
+`min(|𝒞(¬φ)|, |𝒞(P_min)|, |𝒞(P_max)|)`. It is the algebraic double of
+[DPT25]'s *Bounded-by-Minato*: they pick a simpler Boolean *label* between
+per-transition bounds, we pick a smaller *table* between language bounds. On
+`SETTLED` / `REFUTED` the model-checking question is already answered — the
+minimal witness lasso prints and no `.sos` is emitted. The two alphabets are
+adapted to their union first (Spot keeps only the APs a formula mentions).
 
 ## Services
 
@@ -35,21 +50,40 @@ endpoints.
   persistence), and on no a globally minimal refusal lasso. The chain
   read-offs `is_recurrence` / `is_persistence` and the closure `rec_hull`
   are exposed for single-table use; `forced(iv)` names the R-classes the
-  interval pins.
+  interval pins; `rung_of(table, pairs)` reads off the Manna–Pnueli class.
+
+- **The quotient engine (the exact primitive).** `congruence(table, seeds)` and
+  `syntactic_congruence(table, pairs)` build a `Quotient` (`T/π` + the class
+  map `π`); `hull(quot, q)` is the least `π`-recognizable superset of `q`
+  (paper Prop 4.2), and `admits(quot, iv)` decides whether the interval holds a
+  `T/π`-recognized member, with `least_member` / `greatest_member` reading it
+  off. `stutter.py` is one instance: `sc` and `exists_stutter_invariant`
+  (verdict **YES / UNKNOWN, never NO** — paper Thm 5.7).
+
+- **The simplifier.** `simplify(iv, opts) -> Simplification` — the greedy: from
+  each admissible seed (`π_{¬φ}`, identity, optionally stutter) it merges
+  blocks two at a time in the *current* quotient while `admits` still holds,
+  then the global answer is the class-count `argmin` over every recorded member
+  and the three reference points. The [DPT25] soundness law `B ∩ P_K = P_min`
+  is asserted on every emission. It is a **heuristic with an exact test inside**
+  — the reported `|𝒞|` is *achieved*, never *minimal* (spec §6).
 
 ## Source map
 
 | file | contents |
 |---|---|
 | `interval.py` | GT1: `Interval`, `given_that`, `k_settles_phi` / `k_refutes_phi`, `choose` / `decompose` |
-| `ladder.py` | GT2: the rung existence tests, `forced`, `h_below`, `is_recurrence` / `is_persistence`, `rec_hull` |
+| `ladder.py` | GT2: the rung existence tests, `forced`, `h_below`, `is_recurrence` / `is_persistence`, `rec_hull`, `rung_of` |
+| `quotient.py` | GT3: `Quotient`, `congruence` / `syntactic_congruence`, `compose`, `hull`, `admits`, `least_member` / `greatest_member`, `is_recognized` |
+| `stutter.py` | GT3: `stutter_seeds`, `sc`, `exists_stutter_invariant` (YES/UNKNOWN) |
+| `simplify.py` | GT4: `simplify`, `Options`, `Simplification` — **the operation** |
+| `__main__.py` | GT4: the CLI (thin: argv, load, adapt, call, print, dump) |
 
-Planned (specified in `research_notes/sos_giventhat_spec.md`, not yet built):
-`quotient.py` (GT3, the bounded quotient engine — the exact primitive),
-`stutter.py` (GT3, the stutter seeds as one instance of it), `simplify.py`
-+ `__main__.py` (GT4, **the deliverable**: two `.sos` in, one smaller
-`.sos` out). The two-tier stutter test and the band-minimal Wagner degree
-are **decommissioned** — see spec §8 before building either.
+`syntactic_congruence` wraps `calculus.reduce.syntactic_blocks` (the one
+commissioned cross-package addition of GT3) into a `Quotient`; the wrapper
+lives here, not in `calculus`, because a `Quotient` is a `giventhat` object and
+the layering flows one way. The two-tier stutter test and the band-minimal
+Wagner degree are **decommissioned** — see spec §8 before building either.
 
 ## Layering (hard)
 
