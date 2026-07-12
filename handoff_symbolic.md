@@ -17,10 +17,16 @@ work items + pointers only**; the report is the ledger.
 3. `research_notes/sos_symbolic_report.md` — the ledger, findings
    F1–F25 + Theory responses: every measured/green claim, plus
    recorded gaps.
-4. `research_notes/sos_symbolic.md` — the paper. Engine + E1 census
-   results are integrated (current-state voice, no history); exactly
-   **1 `⟨TBD⟩` remains** (§3 Phase 1, saturation — waits on E8). Hard
-   data claims belong in the report, never the paper.
+4. `research_notes/sos_symbolic.md` — the paper, restructured around
+   **five research questions** (RQ1 correctness / RQ2 compression /
+   RQ3 the exponential / RQ4 cost / RQ5 amortization; the RQ↔E-id
+   mapping is in the spec's State of play). §8 answers RQ-by-RQ with
+   tables; §6.3–§6.5 are compressed (propositions in place, detail in
+   the paper's Appendix A — the parking lot for cut prose, reuse or
+   discard). Subsection numbering §6.x/§8 unchanged. Exactly
+   **1 `⟨TBD⟩` remains** (§3 Phase 1, saturation — waits on E8).
+   Presentation-grade numbers may appear in §8's tables, but every
+   one must be traceable to a report finding or a tracked CSV.
 - Code: Python façade `sos_sdd/*.py`; C++ core `sos_sdd/src/*.hh` +
   `module.cpp` (pybind11 `sos_sdd._core`). Tests + logs under
   `tests/sos_sdd/`.
