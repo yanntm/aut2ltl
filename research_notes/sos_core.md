@@ -96,8 +96,7 @@ loop's value until it stops changing, and keep that stable value.
 change nothing, `φ(b)·φ(b) = φ(b)`. The value of `ab` is not: its square is the value
 of the *dead* words (`abab` puts an `a` after a `b`, and no continuation rescues
 that), itself idempotent — so `φ(ab)^ω` is the dead value: looping `ab` forever is
-exactly as dead as slipping once. The figure shows the split at a glance: thick boxes
-are the idempotents, and `a·b` is the one thin box apart from the root.
+exactly as dead as slipping once.
 
 **A linked pair names a lasso.** Reading `u·v^ω` through the sorting map `φ`
 (Ramsey's theorem): the loop
@@ -129,48 +128,42 @@ using its syntactic ω-semigroup reified as an invariant `𝓘(L)`.
 
 ## 3. The syntactic ω-semigroup as an invariant `𝓘(L)`
 
-The syntactic ω-semigroup of `L` is reified as a finite object
+The definition of the invariant
 
 ```
-    𝓘(L) = ⟨𝒜, P⟩,        𝒜 = (𝒞, λ, M),
+    𝓘(L) = ⟨𝒜, P⟩
 ```
 
-read and queried with no automaton in sight. It has two layers. The **algebra** `𝒜` — a
-finite monoid carrying an alphabet labelling — holds the language's structural content.
-The **acceptance layer** `P` is a set of accepting linked pairs over the algebra,
-selecting *which* language over that algebra `L` is. The division is structural, not
-cosmetic. The algebra alone fixes everything invariant under changing the accepting
-set — most consequentially the group content, hence LTL-definability (§4–5), so that `L`
-and its complement, which share `𝒜` and differ only by `P ↦ P^c`, are LTL together or
-not at all. Membership, equality, and the acceptance-sensitive classifications read `P`.
-We define the algebra, then the layer, and open `⟨𝒜, P⟩` into its components only when a
-statement needs them; the only new mathematics of this section is that a set of pairs is
-a *legal* layer exactly when it is closed under the rotation lemma (Lemma 3.5).
+splits in two parts: the **algebra** `𝒜`, a finite monoid classifying the finite
+words, and the **acceptance layer** `P`, a set of accepted linked pairs carrying
+acceptance. We define the algebra first.
 
-### 3.1 The algebra
+### 3.1 The algebra `𝒜`
 
-**Definition 3.1 (algebra).** An **algebra** over `Σ` is a triple `𝒜 = (𝒞, λ, M)`:
+**Definition 3.1 (algebra).** An **algebra** `𝒜` over `Σ` is a triple `(𝒞, λ, M)`:
 
 - `𝒞` is a finite set of **classes**, each **keyed** by a word over `Σ`, with a
   distinguished `[ε]` keyed by the empty word;
+- `λ : Σ → 𝒞` is the **letter map**, giving each letter its class;
 - `M : 𝒞 × 𝒞 → 𝒞` is **associative** with `[ε]` a two-sided **identity**, so `(𝒞, M)`
-  is a finite monoid; write `s·t := M(s, t)`;
-- `λ : Σ → 𝒞` is the **letter map**, and the algebra is **letter-generated**: the
-  **fold** `⟦·⟧ : Σ* → 𝒞`, defined by `⟦ε⟧ = [ε]` and `⟦w·a⟧ = ⟦w⟧·λ(a)`, is onto;
-- `[ε]` is **fresh**: `⟦w⟧ = [ε]` only for `w = ε` — no nonempty word folds to the
+  is a finite monoid; write `s·t := M(s, t)`. The **fold** `⟦·⟧ : Σ* → 𝒞` — `⟦ε⟧ = [ε]`,
+  `⟦w·a⟧ = ⟦w⟧·λ(a)` — extends `λ` to words, and the algebra is **letter-generated**:
+  the fold is onto;
+- `[ε]` is **adjoined**: `⟦w⟧ = [ε]` only for `w = ε` — no nonempty word folds to the
   identity class.
 
 *Example.* The algebra of `AsThenBs` (§2's example) has five classes, named by their
-keys — `[ε]`, `[a]`, `[b]`, `[a·b]`, `[b·a]` — with `λ(a) = [a]`, `λ(b) = [b]` and the
-letter actions
+keys — `[ε]`, `[a]`, `[b]`, `[a·b]`, `[b·a]` — with `λ(a) = [a]` and `λ(b) = [b]`.
+Figure 1 is this algebra, and every label on it is a member of `𝒞`: each node a
+class, each edge the class `λ(x)` of the letter it reads. The letter actions
 
 ```
  ·a :  [ε]↦[a]    [a]↦[a]     [b]↦[b·a]   [a·b]↦[b·a]   [b·a]↦[b·a]
  ·b :  [ε]↦[b]    [a]↦[a·b]   [b]↦[b]     [a·b]↦[a·b]   [b·a]↦[b·a]
 ```
 
-— by letter-generation these two rows are the whole of `M`: any product `s·t` is
-`key(t)` walked from `s` (the graph they define is drawn at Definition 3.2). `[a]`
+are read off its edges, and by letter-generation these two rows are the whole of `M`:
+any product `s·t` is `key(t)` walked from `s`. `[a]`
 holds the words in `a⁺`, `[b]` those in `b⁺`, `[a·b]` those in `a⁺b⁺`, and `[b·a]` the
 *dead* words, a two-sided **zero** (`x·[b·a] = [b·a]·x = [b·a]`): once an `a` follows a
 `b`, no continuation can rescue the word.
@@ -179,16 +172,16 @@ By associativity the fold is a monoid morphism `Σ* ↠ (𝒞, M)`; two words ar
 in the algebra** when they fold alike. Each class is **keyed by its shortlex-least word**
 (shortest, ties alphabetical), a datum recomputable from `𝒜` by breadth-first
 enumeration from `[ε]`, so the whole algebra is a canonical block of data once `M` and
-`λ` are fixed. Freshness makes `[ε]` a class of its own even when the monoid owns
-another neutral element: a nonempty word acting neutrally folds to its own class, with
-a nonempty key — as `[a·a]` does in two of the running examples. The axiom earns its
-keep in §3.2, where no accepting name may involve the empty past, and in §5's
-acceptance read-off, where every accepting component must carry a nonempty key.
+`λ` are fixed. Adjoining the identity makes `[ε]` a class of its own even when the
+monoid owns another neutral element: a nonempty word acting neutrally folds to its own
+class, with a nonempty key — as `[a·a]` does in two of the running examples. The axiom
+earns its keep in §3.2, where no accepting name may involve the empty past, and in
+§5's acceptance read-off, where every accepting component must carry a nonempty key.
 
 *Example.* `⟦aab⟧ = [a]·[a]·[b] = [a·b]`: the word `aab` folds with `ab`, and `ab` —
 the shortlex-least word reaching that class — is the key. No nonempty class of this
-algebra acts neutrally, so freshness costs nothing here; §3.5 meets an algebra where
-the axiom bites.
+algebra acts neutrally, so the adjunction costs nothing here; §3.5 meets an algebra
+where the axiom bites.
 
 **The idempotent power, internally.** Each class `s` has its unique idempotent power
 `s^ω` (§2). This is the algebra's entire access to "loop forever": there is no second
@@ -212,8 +205,8 @@ of the figure — and the stub marking the root stays the only arrow that ever p
 at it.
 
 The graph is the table made visible, and losslessly: any product `s·t` is read by
-walking `key(t)` from `s`. Freshness has a shape: the root is a **source** — no edge
-enters `[ε]`, and the picture itself says the past never returns. Reachability is the
+walking `key(t)` from `s`. The adjoined identity has a shape: the root is a
+**source** — no edge enters `[ε]`, and the picture itself says the past never returns. Reachability is the
 algebra's right-ideal order (here a graph falling into the dead sink), and group
 content shows as a cycle traced by *repeating one word* (`s·⟦w⟧ ≠ s` yet
 `s·⟦w⟧^k = s`) — none here; §3.5 draws one, and warns about the cycles that prove
@@ -223,8 +216,8 @@ nothing.
 
 A **linked pair** of the algebra is `(s, e) ∈ 𝒞 × 𝒞` with `e² = e` and `s·e = s`. It
 **names** every lasso `u·v^ω` with `⟦u⟧·⟦v⟧^ω = s` and `⟦v⟧^ω = e`. Loops are nonempty,
-so both components of a naming pair are folds of nonempty words; by freshness
-(Definition 3.1) neither is `[ε]`, so a naming pair lies in `(𝒞∖{[ε]})²`. Read as
+so both components of a naming pair are folds of nonempty words; since `[ε]` is
+adjoined (Definition 3.1) neither is `[ε]`, so a naming pair lies in `(𝒞∖{[ε]})²`. Read as
 intuition: no name may accept by staying at the start — a loop is the value of
 something that happens forever, and the empty past cannot recur.
 
@@ -339,8 +332,8 @@ step visibly doing the work: the loop `ab` keeps producing an `a` after a `b`.
 `P`-membership by saturation. The verdict is thus constant along any chain connecting two
 presentations. (⇒) Fix `s, g, h` with `s·(gh)^ω = s`; the cases `g = [ε]` or `h = [ε]`
 are trivial (both pairs coincide), so take `g, h ≠ [ε]`. Then `s ≠ [ε]` (else
-`s = s·(gh)^ω = (gh)^ω`, but `(gh)^ω` is a fold of nonempty words, barred from `[ε]`
-by freshness). Letter-generation realizes `s, g, h` by words, and Lemma 3.3's two
+`s = s·(gh)^ω = (gh)^ω`, but `(gh)^ω` is a fold of nonempty words and `[ε]` is
+adjoined). Letter-generation realizes `s, g, h` by words, and Lemma 3.3's two
 presentations of the one word `w(pq)^ω` carry the pairs `(s, (gh)^ω)` and
 `(s·g, (hg)^ω)`. Presentation-independence forces one verdict, i.e. both pairs lie in `P`
 or neither. ∎
