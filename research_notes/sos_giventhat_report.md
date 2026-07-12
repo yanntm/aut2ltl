@@ -23,10 +23,19 @@ moment it is found, even mid-milestone.
 |---|---|---|
 | GT1 — interval + endpoints | **DONE (2026-07-11, git 4c7aa9fb5+)** | F1–F4 |
 | GT2 — ladder tests | **DONE (2026-07-11)** — rung oracle 6222/6222, campaign 700/700, brute 264/264; §4.6 E1 escalations resolved (To theory) | F5–F8 |
-| GT3 — stutter two-tier | *pending* | F9–F11 |
-| GT4 — band degree probe | *pending* | F12 |
-| GT5/W0 — census campaigns (W0a/W0b/W0c) | *pending* | F13–F15 |
-| GT5/W1 — MCC benchmark | *blocked on data* | — |
+| GT3 — the bounded quotient engine | *pending* | F9–F11 |
+| GT4 — the simplifier and the tool | *pending* | F12–F13 |
+| GT5 — the demonstration | *pending* | F14–F15 |
+
+**Spec re-aimed (2026-07-12, theory).** The goal is now **one
+operation** — `simplify(𝓘(¬φ), 𝓘(K)) → 𝓘(B)`, two `.sos` in, one
+*smaller* `.sos` out — and the spec (GT3–GT5) plus the paper were
+restructured around it. GT1 and GT2 stand exactly as delivered: GT1 is
+steps 1–2 of the operation; GT2's rungs are re-scoped from deliverable
+to **output metrics and optional constraints**. Slots F1–F8 are
+unaffected. Slots F9–F15 are **re-cut below** (the old F9–F15 — stutter
+tier 2, the Wagner brute probe, the W-series — are decommissioned, spec
+§8; their epitaphs are inline). Nothing delivered was retracted.
 
 ## GT1 — the interval object + endpoint decisions
 
@@ -101,44 +110,71 @@ moment it is found, even mid-milestone.
   pairs, knowledge buys a strict drop to safety — the paper §7 item 3
   number, census-shaped. Table `reference/giventhat/gt2_ladder.md`.
 
-## GT3 — stutterization, two tiers
+## GT3 — the bounded quotient engine (spec §5, paper §4.2–§4.4, §5.3)
 
-- **F9 — Thm 5.2 as a regression.** *(pending)* On the fixture: quotient
-  table size 2, tier 1 UNKNOWN with `sc(p_min) = linked`, tier 2 YES.
-  The paper's counterexample, machine-checked.
-- **F10 — the tier gap, measured.** *(pending)* Over the campaign:
-  tier-1 YES / tier-1 UNKNOWN + tier-2 YES / tier-2 NO counts — the
-  frequency with which the stutter hull escapes the table (paper §7
-  item 4's middle bucket).
-- **F11 — tier-2 against the bounded semantic oracle.** *(pending)*
-  Zero violations of spec §5.2 gates (a)–(d); certificate replays on
-  every NO.
+- **F9 — Prop 4.2 against the bounded oracle.** *(pending)* On every
+  case with `bits ≤ 12`: enumerate the `2^F` members, keep the
+  `π`-recognizable ones, and confirm that the set is nonempty **iff**
+  `admits(π, iv)`, with `least_member` = their intersection and
+  `greatest_member` = their union. Exact agreement, or the smallest
+  disagreeing case verbatim — which convicts Prop 4.2 and goes to
+  To theory, never a patch of the hull.
+- **F10 — Prop 4.1 at runtime.** *(pending)* On sampled saturated `q`:
+  `syntactic_congruence(T, q).n == |𝒞(reduce(T, q))|`, and `q` is
+  recognized by that congruence — the claim that congruences *are* the
+  search space, checked rather than assumed.
+- **F11 — Thm 5.7 as a regression (was F9).** *(pending)* On the
+  fixture: stutter quotient size 2, `sc(p_min) = linked` (universal),
+  stutter verdict **UNKNOWN**. The paper's counterexample,
+  machine-checked. *(The old F9's tier-2 YES leg is decommissioned —
+  spec §8.)*
 
-## GT4 — band-minimal Wagner degree (the Prop 4.5 probe)
+*Epitaph — old F10/F11 (the two-tier stutter gap and the tier-2
+semantic oracle):* decommissioned with stutter tier 2 (spec §8). The
+tier-2 test decides existence but yields no witness the operation can
+emit; the UNKNOWN *frequency* survives as a column of F15.
 
-- **F12 — greedy vs brute.** *(pending)* Equality on all probed cases,
-  or the minimal disagreeing case verbatim (table, forced pattern,
-  greedy pair, true minimum) — either outcome is a result; a
-  disagreement additionally lands in To theory.
+## GT4 — the simplifier and the tool (spec §6, paper §4.6)
 
-## GT5 — campaigns
+- **F12 — the operation, end to end.** *(pending)* `simplify` on the
+  fixture and on small corpus pairs: the §6.3 soundness law
+  (`B ∩ P_K == P_min`, plus the independent language-level cross-check)
+  green on every case; the emitted `.sos` re-read and byte-stable under
+  `reduce`; `SETTLED` / `REFUTED` verdicts carrying their minimal
+  witness lasso.
+- **F13 — the [DPT25] example (paper §6), predicted vs actual.**
+  *(pending)* The paper **predicts** a guarantee `B` inside the bracket
+  `[F(a∧c), F(a∨¬c)]` with fewer than 5 classes (against
+  `|𝒞(¬φ)| = 5`, `bits = 25`, both endpoints larger). Report the actual
+  `|𝒞(B)|`, the rung, and which seed/side won. **A miss is a
+  To-theory finding, not a bug to hide** — it would mean the greedy
+  does not reach what the hulls prove exists.
 
-- **F13 — W0a: the all-pairs endpoint sweep.** *(pending)* Endpoint
-  kill matrix over all unordered same-stratum pairs; the inclusion
-  digraph and disjointness graph committed as census artifacts (edge
-  counts, density per stratum); sweep wall time and chunk count.
-- **F14 — W0b: simple-on-complex.** *(pending)* On the asymmetric
-  stratum (`¬φ` complex, `K` fact-shaped): bits distribution, per-rung
-  hit and rung-drop rates, tier-gap frequency, band degrees — the
-  realistic-direction numbers the paper's §7 items 2–4 cite.
-- **F15 — W0c: incremental verification with ground truth.** *(pending)*
-  Knowledge-decides rate vs the exact `S ⊨ φ` scan; median facts to
-  decision; running-table growth vs the census ratio prediction; and
-  the two per-step laws (monotonicity, losslessness) — zero violations
-  expected, any violation goes to To theory verbatim (it is a
-  paper-level event, §6.2).
-- **W1** — blocked on the [DPT25] MCC problem set landing in the repo;
-  no findings until then.
+*Epitaph — old F12 (greedy vs brute Wagner degree):* decommissioned
+(spec §8). Prop 4.5 is a sketch and `2^F` enumeration is not a proof
+technique; the degree is at best a tie-break under the `|𝒞|` objective.
+
+## GT5 — the demonstration (spec §7, paper §7)
+
+- **F14 — the size table.** *(pending)* One row per pair over the
+  N ≈ 200 small same-stratum sample: `|𝒞(¬φ)|`, `|𝒞(P_min)|`,
+  `|𝒞(P_max)|`, **`|𝒞(B)|`**, `bits`, rung in → out, stutter in → out.
+  Headline: the fraction where `|𝒞(B)|` is *strictly* below all three
+  reference points, and the median ratio `|𝒞(B)| / |𝒞(¬φ)|`. This is
+  the paper's central claim; a 0% rate is a finding, reported as such.
+- **F15 — the heuristic, scored.** *(pending)* Where `bits ≤ 12`: the
+  greedy's `|𝒞(B)|` against the exhaustive `2^F` optimum — the gap
+  distribution. Plus the rung-drop rate and the stutter UNKNOWN
+  frequency (how often the hull escapes the table — a number no automata
+  pipeline can produce). **State in the summary, in these words, that
+  the gap measures our heuristic and is not evidence about Conj 4.5.**
+
+*Epitaph — old F13/F14/F15 (the W-series: all-pairs endpoint sweep,
+asymmetric stratum, incremental verification with ground truth):*
+decommissioned (spec §8). W0 is a frequency census downstream of a
+working operation; W1 stays blocked on the [DPT25] MCC data. The
+census-shaped numbers already delivered under F1–F8 carry the paper's
+§7 "already in hand" paragraph.
 
 ## To theory
 
@@ -193,22 +229,53 @@ enumeration, while the median (20 bits ≈ 10^6 choices) sits at the
 edge — the greedy/hull machinery of GT2/GT4 is not optional at census
 sizes.
 
+**THEORY → ENGINEERING (2026-07-12): the goal was drifting; it is
+re-centered.** The milestones had become a set of independent probes,
+several of them aimed at corroborating *sketched* propositions by
+enumeration — which is not how a conjecture gets settled. The paper and
+spec are rewritten around a single operation: **`simplify(𝓘(¬φ),
+𝓘(K)) → 𝓘(B)`, two `.sos` in, one smaller `.sos` out**, the algebraic
+double of [DPT25]'s Bounded-by-Minato. What theory owes you, and now
+delivers, is the math that makes it exact:
+
+- **Prop 4.1** — minimizing `|𝒞(B)|` over the interval *is* minimizing
+  `|T/π|` over the admissible congruences of the aligned table. The
+  search space is congruences, and nothing is lost.
+- **Prop 4.2 (the engine)** — for *any* congruence `π`,
+  `hull_π(Q) = π⁻¹(sat(forced_π(Q)))` is the least `π`-recognizable
+  superset of `Q`; so the interval holds a `T/π`-recognized member iff
+  `hull_π(P_min) ⊆ P_max`. Exact, polynomial. This is the old stutter
+  `sc` with the stutter seeds removed — the proof never used them.
+- **Prop 4.3** — admissibility is inherited by refinements, so the
+  targets are the maximal admissible congruences and **greedy
+  merge-until-stuck is licensed** (the same shape Minato has, with a
+  decision procedure where they have a heuristic).
+- **Thm 4.4 / Conj 4.5** — the exact minimum is in NP, conjectured
+  NP-complete (Gold route). Hence: greedy, honestly labeled. *Do not
+  attempt to settle Conj 4.5 by enumeration.*
+- **Lemma 5.2** — constraints compose exactly (joint closure fixpoint),
+  so "smallest `B` that is also safety / stutter-invariant" is one
+  fixpoint, not a chain of heuristics.
+- **The free contract** — seed the greedy at `π_{¬φ}` (always
+  admissible) and the operation can never regress on its input.
+
 Standing items the theory thread expects data or answers on:
 
-1. Any disagreement between the spec and the paper (spec §8 E1/E2
-   escalations included) — smallest case, verbatim. **DELIVERED for
-   GT2 and RESOLVED (2026-07-11): the §4.6 class counts, above —
-   paper and spec state 5/10.**
+1. Any disagreement between the spec and the paper — smallest case,
+   verbatim. **DELIVERED for GT2 and RESOLVED (2026-07-11): the §4.6
+   class counts, above — paper and spec state 5/10.**
 2. The rung-orientation verdict (F5): confirmed or flipped.
    **DELIVERED (2026-07-11): confirmed, 6 222/6 222 (F5).**
-3. The GT4 dossier (F12) if greedy ≠ brute — it decides how Prop 4.5's
-   proof gets written.
-4. The tier-gap frequency (F10) — the paper argues the two-tier design
-   from it; if the gap is empty in practice, §5.3's framing weakens
-   and theory wants to know early.
-5. `iv.bits` on the fixture and the campaign extremes (F2, F3) — feeds
-   the paper's Q5 discussion of `2^F` enumeration feasibility.
-   **DELIVERED with GT1 (see the GT1 note below); the §4.6 pair adds
-   `bits = 25` as a mid-scale data point.**
-6. Any W0c law violation (F15) — monotonicity or losslessness breaking
-   falsifies paper §6.2 as stated; the minimal fact sequence, verbatim.
+3. `iv.bits` on the fixture and the campaign extremes (F2, F3).
+   **DELIVERED with GT1; the §4.6 pair adds `bits = 25`.**
+4. **F9 — the Prop 4.2 bounded oracle.** The one result that can
+   falsify the new core. If the hull disagrees with the `2^F`
+   enumeration on any case, theory wants the smallest one verbatim, and
+   the hull is NOT to be patched toward the oracle.
+5. **F13 — the paper §6 prediction.** The [DPT25] example should yield
+   a guarantee `B` with `< 5` classes. A miss means the greedy fails to
+   reach what the hulls prove exists — a design finding, not a bug.
+6. **F14 — the headline rate.** The fraction of pairs where `|𝒞(B)|` is
+   strictly below all three reference points. If that rate is ~0, the
+   paper's central claim is empty and theory needs to know before
+   anything else is built.
