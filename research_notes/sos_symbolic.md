@@ -5,130 +5,154 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Working draft — 2026-07-11 — placeholders marked `⟨TBD: …⟩`*
+*Working draft — 2026-07-12 — placeholders marked `⟨TBD: …⟩`*
 
 ## Abstract
 
 The construction of the syntactic ω-semigroup from a deterministic
-Emerson–Lei automaton [SωS26] is dominated by one object: the
-acceptance-enriched monoid `EM(D)`, of worst-case size
-`(|Q|·2^{|C|})^{|Q|}` — the `|Q|` in the exponent is where the explosion
-lives, and the decision problem being PSPACE-complete, some wall is a
-mathematical necessity. This paper locates the wall precisely and shows
-everything else is *symbolic*: an enriched element is a `|Q|`-slot vector
-over the small local domain `Q × 2^C`, the monoid is the **reachability
-set** of the identity vector under right multiplication by letters, and —
-the load-bearing observation — the rotation lemma of [SωS26], which
-computes the two-sided syntactic congruence with right moves alone, is
-exactly the statement that every relation the construction *iterates* is
-**slot-local**: a conjunction of one identical small relation applied at
-each slot. Closure is a least fixpoint; profiles collapse to a single
-slot-read once idempotent powers are computed (a pairing fixpoint, with
-repeated squaring a logarithmic shortcut exactly when the orbit periods
-are powers of two — the aperiodic side included); the
-residual equivalence, delegated to an external language-equivalence
-oracle in explicit implementations, *internalizes* as a small profile-
-seeded refinement; the congruence is a greatest-fixpoint partition
-refinement over letter relations; and the final quotient — the only
-object anyone keeps — is small and explicit, shortlex keys and the
-λ-quotient's guards falling out of the same fixpoint layers. On an
-abstract engine offering set union/intersection, comparison,
-`2k`-variable relations applied to `k`-variable sets, constrained
-fixpoints, and quotient by an equivalence, the whole pipeline is native.
-And construction is only the entry: the table built by the early
-phases depends only on the marked semiautomaton, so one diagram serves
-the entire Boolean algebra of acceptance conditions over it, and a
-calculus of language operations rides the same diagrams — lasso
-membership without ever closing the monoid, complement as a predicate
-flip, intersection/union/difference of two languages over an alignment
-that is variable-block concatenation, inclusion as a single relational
-query with a canonical minimal witness, and the quotient deferred
-until canonicity is actually consumed.
-The exponential does not disappear; it is *represented*, and the encoding
-must inherit the input's shape: for asynchronous products the enriched
-monoid factors exactly (`EM(D₁ ⊗ D₂) ≅ EM(D₁) × EM(D₂)`), so factored
-slot coordinates give additive diagrams where the flat state-space vector
-is itself the explosion. The compactness bet is that of symbolic model
-checking, made on the same grounds: engineered inputs are products.
-The engine exists: its exported invariant is byte-identical to the
-explicit reference construction's on every instance both complete —
-measured at census scale, 6102 instances byte-identical — and
-the factored bet is measured where it starts: `9n + 1` diagram nodes
-carrying `16ⁿ` elements on the `n`-fold product family, against a flat
-encoding that hits its proven exponential wall at `n = 3`; across the
-census the diagram sits under the explicit cell count on all but two
-floor cases (median 3.4×), with per-slot sharing the covariate that
-predicts the margin (§8).
+Emerson–Lei automaton [SωS26] is dominated by one exponential object:
+the acceptance-enriched monoid `EM(D)`, worst-case
+`(|Q|·2^{|C|})^{|Q|}`, and PSPACE-hardness makes some wall a
+mathematical necessity. We present the first symbolic
+(decision-diagram) computation of a syntactic algebra: an enriched
+element is a `|Q|`-slot vector over the small domain `Q × 2^C`, the
+monoid is the reachability set of the identity vector, residuals and
+congruence are partition-refinement fixpoints, and the rotation lemma
+of [SωS26] — the two-sided congruence yields to right moves alone —
+guarantees that every relation the construction *iterates* is
+slot-local: the algebraic economy and the symbolic feasibility are
+one fact. Decision diagrams are empirical tools, so the paper's
+claims are measured ones, organized around five research questions.
+**Correctness** (RQ1): the engine's exported invariant is
+byte-identical to the explicit reference construction's on all 6102
+census instances both tools complete — wholesale, not sampled.
+**Compression** (RQ2): on that unstructured census the diagram holds
+the monoid at 0.29× its explicit cell count at the median — a
+constant factor, never exponential, with per-slot value sharing the
+dominant predictor of the margin. **The exponential** (RQ3): on
+`n`-fold asynchronous products the factored diagram is `9n + 1` nodes
+carrying `16ⁿ` elements, measured to `n = 6`, while flat encodings of
+the same monoid are provably exponential in row-major orders and
+observably hit that wall at `n = 3` — the win exists and is
+conditional on slot coordinates that inherit the product shape.
+**Cost** (RQ4): the engine carries algebras to 12 225 elements under
+a 10-second budget and loses exactly the structureless census tail
+to explicit enumeration, as the theory predicts it must.
+**Amortization** (RQ5): the table built by the acceptance-free phases
+serves every language over the same marked semiautomaton — lasso
+membership that never closes the monoid and a same-table Boolean
+algebra are measured, commutation-exact against from-scratch builds;
+the wider calculus (alignment by variable-block concatenation,
+inclusion with canonically minimal witnesses, rootings) is designed
+and specified. The exponential does not disappear; it is represented
+— when, and only when, the input has the structure engineered
+systems have.
 
 ---
 
 ## 1. Introduction
 
-[SωS26] ends its complexity section on a promissory note: the
-construction's ingredients are all Boolean, its steps are all images,
-fixpoints and quotients over sets, "native to decision diagrams". This
-paper is the note called in — a design in which every step is named,
-priced, and mapped onto a small abstract engine, and an implementation
-whose exported invariant is byte-identical to the explicit reference
-construction's (§8).
+[SωS26] constructs, from a deterministic Emerson–Lei automaton `D`,
+the syntactic ω-semigroup of its language: a finite, canonical,
+presentation-independent invariant `𝓘(L)` from which LTL-definability
+and the rest of the classification landscape (the safety–progress
+ladder, the Wagner degree) are polynomial read-offs. Its complexity
+section ends on a promissory note: the construction's ingredients are
+all Boolean, its steps all images, fixpoints and quotients over sets,
+"native to decision diagrams". This paper is the note called in.
 
-The construction it symbolizes decides, among other things, whether an
-ω-regular language is LTL-definable, and its cost profile is lopsided in
-a way worth stating plainly. Everything *around* the enriched monoid is
-polynomial: the two seed relations, the partition refinement, every §7
-read-off of [SωS26], and the exported invariant `𝓘(L)` — often tiny —
-at the end. The single exponential object is `EM(D)` itself, the monoid
-of `|Q|`-slot vectors the construction closes under composition; and by
-PSPACE-hardness [CH91] no representation removes that worst case. The
-symbolic thesis is the model checker's: do not enumerate the set,
-*represent* it; pay per diagram node, not per element; and let the
-structure of engineered inputs — which are products, sparse in marks,
-symmetric in letters — collapse what adversarial inputs cannot.
+The cost profile is lopsided in a way worth stating plainly.
+Everything *around* the enriched monoid is polynomial: the seed
+relations, the partition refinement, every §7 read-off of [SωS26],
+and the exported invariant — often tiny — at the end. The single
+exponential object is `EM(D)` itself, the monoid of `|Q|`-slot
+vectors the construction closes under composition, worst-case
+`(|Q|·2^{|C|})^{|Q|}`; and by PSPACE-hardness [CH91] no
+representation removes that worst case. The thesis is the symbolic
+model checker's: do not enumerate the set, *represent* it; pay per
+diagram node, not per element; and let the structure of engineered
+inputs — which are products, sparse in marks, symmetric in letters —
+collapse what adversarial inputs cannot.
 
-Four claims organize the paper:
+A thesis of that kind is settled empirically or not at all. Decision
+diagrams carry no useful size theorem: the same set is linear or
+exponential depending on the variable order, intermediate ("peak")
+diagrams can dwarf final ones, and the field's forty years are a
+literature of structure bets checked on benchmarks. The paper is
+therefore built around five research questions, and its evaluation
+(§8) is organized as their answers:
 
-1. **The construction factors through five primitives** (§2), all
-   standard in symbolic model checking, with the whole pipeline written
-   out phase by phase (§3): closure as reachability, idempotent powers
-   as repeated squaring, profiles as one slot-read, residuals as a
-   profile-seeded refinement on `Q`, the congruence as a
-   greatest-fixpoint refinement, the quotient and all exports —
-   shortlex keys, λ-quotient guards, the residuals block — extracted
-   from objects the fixpoints already built.
-2. **The reason it factors is the rotation lemma** (§4.1). Right
-   multiplication by a generator updates every slot from itself; left
-   multiplication permutes slots; general composition selects a slot by
-   a runtime value. [SωS26, Lemma 4.4] — the two-sided congruence is
-   computable by right moves alone — is, re-read on the encoding, the
-   statement that the construction never iterates a slot-crossing
-   relation: the crossings it needs — idempotent powers, and the
-   verdict read that consumes them — sit outside every fixpoint. The
-   algebraic economy and the symbolic feasibility are one fact.
-3. **Compactness is a structure bet with a precise best case** (§4.2):
-   for asynchronous (interleaved) products the enriched monoid factors
-   *exactly*, and in factored slot coordinates its diagram is additive
-   in the components — while the flat state-space encoding of the same
-   monoid can be exponential. The encoding must inherit the system's
-   shape; hierarchically structured diagrams are not an optimization
-   here but the difference between additive and exponential.
-4. **The engine is not construction-only: it is a calculus** (§6).
-   Because Phases 0–2 consume no acceptance condition, the expensive
-   object is a *table* shared by every language over the same marked
-   semiautomaton, and the everyday operations of an ω-automata toolbox
-   become moves on that table: lasso membership is a closure-free fold,
-   complement is a predicate flip, cross-language products align by
-   concatenating variable blocks, inclusion and emptiness are single
-   relational queries whose counterexamples are canonical minimal
-   lassos extracted through the kept fixpoint layers — and the quotient
-   itself becomes an *on-demand* normal form rather than a mandatory
-   final phase.
+- **RQ1 (correctness).** Does the symbolic pipeline compute the same
+  canonical object as the explicit reference construction — not on
+  samples, but wholesale?
+- **RQ2 (compression).** On ordinary, unstructured inputs, how far
+  below explicit storage does the diagram sit, and what structure
+  predicts the margin?
+- **RQ3 (the exponential).** Is there an input family on which the
+  symbolic representation is exponentially smaller than explicit
+  storage — and what does reaching it require of the encoding?
+- **RQ4 (cost).** What does construction cost, where does it die,
+  and when does plain explicit enumeration win?
+- **RQ5 (amortization).** Does the expensive object amortize — one
+  table serving many languages and operations — or is it rebuilt per
+  use?
+
+**Contributions.**
+
+1. **A symbolic syntactic-algebra engine, correct wholesale**
+   (§2–§3). The construction factors through five primitives standard
+   in symbolic model checking: closure as reachability, idempotent
+   powers as a pairing fixpoint with a logarithmic squaring shortcut,
+   profiles as one slot-read, residuals as an internalized refinement
+   (no external language-equivalence oracle), the congruence as
+   greatest-fixpoint partition refinement, the quotient explicit on
+   the small side. To our knowledge this is the first decision-diagram
+   computation of a syntactic algebra, on finite or infinite words
+   (§9). The exported invariant is byte-identical to the explicit
+   reference's on every census instance both tools complete (RQ1):
+   the engine changes representation, never mathematics.
+
+2. **A characterization of when representation beats enumeration**
+   (§4). The existence condition is the rotation lemma of [SωS26]
+   re-read as a *locality* theorem: every relation the construction
+   iterates is slot-local, and the two slot-crossing reads sit
+   outside every fixpoint (§4.1). The best case is exact: for
+   asynchronous products the enriched monoid factors (Proposition
+   4.1), so factored slot coordinates give additive diagrams for
+   multiplicative cardinality — measured as an equality (RQ3) —
+   while flat coordinates are provably exponential under row-major
+   orders (Lemma 4.2), observed exactly there, the any-order question
+   posed as Conjecture 4.3. Off the best case the win is a constant
+   factor with an identified predictor, per-slot sharing (RQ2); and
+   the census tail the engine loses to explicit enumeration is
+   exactly the structureless world where §4.3 predicts it must lose
+   (RQ4).
+
+3. **The table as substrate** (§6). Phases 0–2 never read the
+   acceptance condition, so their product — the closure and the
+   `π`-map — serves *every* language over the same marked
+   semiautomaton, with a commutation theorem (Proposition 6.0)
+   licensing on-demand canonicity. Two moves are measured (RQ5):
+   lasso membership that never builds the monoid, and a same-table
+   Boolean algebra whose derived invariants are byte-identical to
+   from-scratch builds. The cross-table calculus — alignment by
+   variable-block concatenation, inclusion as one query with a
+   canonically minimal witness (Propositions 6.1–6.2), rootings and
+   inverse substitutions — is designed and specified; its measurement
+   is named open.
 
 Position: this engine is the entry gate to everything [SωS26] enables —
-its §7 read-offs (aperiodicity, the safety–progress ladder, the Wagner
-degree) all run on the small quotient the gate emits — and §6 shows the
-gate is also a workshop: a pipeline that complements, conjoins,
+its §7 read-offs all run on the small quotient the gate emits — and §6
+makes the gate a workshop: a pipeline that complements, conjoins,
 quotients, checks and re-checks a specification can stay symbolic
 throughout and reduce once at the end.
+
+§2 recalls the construction and fixes the abstract engine and the
+symbolic input; §3 gives the encoding phase by phase, each with its
+correctness proposition; §4 the locality and shape analysis behind
+RQ2/RQ3; §5 the cost model behind RQ4; §6 the calculus behind RQ5;
+§7 the scope boundary; §8 the evaluation, by research question; §9
+related work. Material parked during restructuring is in Appendix A.
 
 ## 2. Background, the engine, and the symbolic input
 
@@ -288,8 +312,7 @@ elements whose shortest representative word has length `i`, so keeping
 the layers *is* the length half of shortlex keying, and Phase 6's
 representative extraction walks them backward. The closure cap of the
 explicit implementation (an `INCONCLUSIVE` exit) becomes a diagram-size
-budget — a different resource, and the paper's central empirical
-question (§8). The slogan: **closing a monoid under generators is not
+budget — a different resource, and the subject of RQ2–RQ4 (§8). The slogan: **closing a monoid under generators is not
 like model checking; it is model checking** — states are the elements,
 transitions are right multiplications, the initial state is the
 identity.
@@ -524,7 +547,7 @@ cells (the run-parity form of `GF(aa)`: 5 nodes for 20 cells). The
 makes Proposition 4.1 visible: the diagram is literally additive —
 **`9n + 1` nodes** carrying `16ⁿ` elements, so at `n = 3` a 28-node
 diagram stands where the explicit table has `16³ = 4096` rows (the
-measured line is §8's).
+measured line is §8's, RQ3).
 
 ## 4. Why this works: locality, shape, and the honest wall
 
@@ -554,8 +577,8 @@ secondary dividend: because the first row is one identical local
 relation conjoined per slot, the fixpoints of Phases 1 and 5 have
 exactly the shape event-locality-based fixpoint accelerations were built
 for — saturation [CLS01] and its hierarchical descendants [TMPHK09];
-whether they beat the BFS order here is an §8 measurement, with one
-caveat already visible: Phase 1's layers are load-bearing (shortlex,
+whether they beat the BFS order here is an open §8 measurement (RQ4),
+with one caveat already visible: Phase 1's layers are load-bearing (shortlex,
 witnesses), so a saturation-style closure must either re-derive lengths
 afterwards or be reserved for runs that will not export keys.
 
@@ -620,8 +643,8 @@ For **synchronous** products (shared alphabet) the map
 diagonal letter pairs: the *generated alignment product* on which the
 calculus of §6 puts two languages side by side. The
 relations still factor; how close the reachable set stays to
-product-form is an empirical column (§8). Two further compression
-sources are unconditional:
+product-form is an open empirical column (§8, RQ3). Two further
+compression sources are unconditional:
 
 - **Constant and shared slots.** The completion sink is the same slot
   value in every element — one diagram node, ever; transient states
@@ -640,7 +663,7 @@ sources are unconditional:
   increment; measured on the census corpus, 62 % of non-empty
   `(slot, dst)` families are fully upward-closed. A real tendency —
   though as a *predictor* of compression it ranks well below slot
-  sharing (§8).
+  sharing (§8, RQ2).
 - **Letter symmetry.** Letters the language never distinguishes are
   guard-equal in `Lett` before anything is built: the λ-quotient
   operates at the entry, symbolically.
@@ -664,8 +687,8 @@ more and no less: worst cases stand; structured cases — products,
 sparse marks, few residuals, small λ-quotients — collapse; and the
 inputs that occur are engineered, hence structured. The evaluation
 corpus and the scaling product families of §3.1 measure which world
-the practical inputs inhabit, and §8's headline question is whether the
-`|Q|` exponent *moved* — from cardinality, where it provably lives, to
+the practical inputs inhabit; RQ3 and RQ4 (§8) ask whether the `|Q|`
+exponent *moved* — from cardinality, where it provably lives, to
 diagram width, where structure fights it.
 
 ## 5. The pipeline, costed
@@ -681,7 +704,8 @@ diagram width, where structure fights it.
 | 6 | `𝓘(L)` | quotient + algebra BFS | small, explicit | `\|𝒞\|·\|Σ\|` table steps |
 
 Every round is polynomial in the *diagram sizes* of its operands — the
-symbolic contract; the open quantity is the diagrams themselves (§8).
+symbolic contract; the open quantity is the diagrams themselves
+(§8, RQ2–RQ4).
 Two structural notes. The closure depth of Phase 1 equals the length of
 the longest shortlex-minimal representative, `< |𝒞|` *after* quotient
 collapse but up to `|EM|` before it — and in practice it is small: on
@@ -695,18 +719,6 @@ exploits [BdS92], and signature-based refinement [WHH+06] is the
 engineered form of exactly Phase 5's shape: a per-element signature
 (here: `Seed`-class plus letter-successor classes) recomputed to
 fixpoint.
-
-A remark on learning: an active-learning observation table for
-ω-regular languages [AF16] — rows keyed by words, columns by
-experiments, cells holding verdicts — is also a vector set over a
-small local domain, its row set grown by one-letter extensions
-(Phase 1's move) and its row equivalence a refinement under
-column agreement (Phase 5's move); the structural match suggests a
-*symbolic learner* whose table lives in one diagram and whose
-consistency checks are the engine's comparisons. We leave it as a
-prospect: the queries a teacher answers are per-word, so the win would
-be in the table's representation and closure processing, not in query
-count.
 
 ## 6. The calculus: operating without leaving the diagram
 
@@ -746,7 +758,10 @@ recognized language alone [SωS26, Thms. 4.5, 5.1]. Both paths land on
 the canonical invariant of the same language. ∎
 
 The economic slogan this earns: not *pay canonicity once*, but
-*pay canonicity only when canonicity is consumed*.
+*pay canonicity only when canonicity is consumed*. Of the moves
+below, membership (§6.1) and the same-table algebra (§6.2) are
+measured (§8, RQ5); the cross-table moves (§6.3–§6.5) are designed
+and specified, their measurement open.
 
 ### 6.1 Lasso membership, closure-free
 
@@ -758,15 +773,11 @@ singleton — giving `c = ⟦u⟧`, `d = ⟦v⟧` as explicit slot vectors; then
 `d^π` by concrete power iteration (at most `ℓ` compositions, `O(log ℓ)`
 by squaring in the aperiodic case), one slot read, one `Acc`
 evaluation. The verdict is `Val(c, d)` — and **Phase 1 never ran**: a
-membership query builds no monoid, touches no fixpoint.
-
-Honesty requires the comparison: on a *deterministic* input a single
-membership is answered by just running the automaton around the lasso,
-at the same cost. What the fold buys is not the bit but the *elements*
-`c, d` — the same `|u|+|v|`-step computation is the oracle every
-operation below composes with, its output lands in the algebra (ready
-to be rooted, compared, canonicalized), where the automaton-side run
-composes with nothing.
+membership query builds no monoid, touches no fixpoint. (On a
+deterministic input, running the automaton around the lasso answers
+the same bit at the same cost — what the fold buys is the *elements*
+`c, d`, which land in the algebra ready to be rooted, compared, and
+canonicalized; the longer comparison is parked in Appendix A.)
 
 ### 6.2 Complement and the same-table Boolean algebra
 
@@ -793,41 +804,25 @@ its canonical form — with all the classification read-offs of
 ### 6.3 Alignment is variable-block concatenation
 
 Cross-table operations — `L₁ = L(D₁, Acc₁)`, `L₂ = L(D₂, Acc₂)` —
-need the two languages on one table, and §4.2 has
-already drawn it: concatenate the slot blocks (`|Q₁|` slots of type
-`V₁`, then `|Q₂|` of type `V₂`), conjoin the letter relations on the
-shared `α`-block, and run Phase 1's lfp. (Distinct `AP` sets merge by
-union first, and the merge is literally free: each `Δᵢ` simply does
-not mention the other's variables — where explicit-alphabet tools pay
-`2^{AP₁ ∪ AP₂}` up front.) The reachable set is exactly
-the submonoid of `EM(D₁) × EM(D₂)` generated by the diagonal letter
-pairs — the *generated alignment product*, computed on-the-fly:
-elements outside the generated part never exist, and the factored
-coordinates keep the aligned diagram near-additive when the components
-interact weakly (§4.2, §8). Verdicts lift blockwise:
+need the two languages on one table, and §4.2 has already drawn it:
+concatenate the slot blocks, conjoin the letter relations on the
+shared `α`-block (distinct `AP` sets merge by union, and the merge is
+free — each `Δᵢ` simply does not mention the other's variables), and
+run Phase 1's lfp. The reachable set is exactly the submonoid of
+`EM(D₁) × EM(D₂)` generated by the diagonal letter pairs — the
+*generated alignment product*, computed on-the-fly in the factored
+coordinates §4.2 prescribes. Verdicts lift blockwise:
 
 **Proposition 6.1 (idempotent powers factor through blocks).** For an
-aligned element `x = (x₁, x₂)`, `x^π = (x₁^π, x₂^π)`. *Proof sketch*:
-powers act blockwise, so `x^π = (x₁^k, x₂^k)` for its exponent `k`;
-each block is then an idempotent power of `xᵢ`, and the cyclic
-subsemigroup generated by `xᵢ` has a unique idempotent. ∎
+aligned element `x = (x₁, x₂)`, `x^π = (x₁^π, x₂^π)`.
 
-The consequence is stronger than verdict lifting: the aligned `π`-map
-*is* `π₁` on block 1 conjoined with `π₂` on block 2, restricted to the
-aligned closure (block `i` of the closure projects onto exactly
-`EM¹(Dᵢ)`, so the component maps cover it — computed per block if the
-languages did not enter separately). Phase 2 — the pipeline's
-one crossing — is never run on the aligned space: the case split stays
-per-component, its cost additive while the aligned space is
-multiplicative. Hence `Valᵢ` on the aligned table reads block `i`
-alone — Phase 3 per
-component, no cross-block work — and cross-table union, intersection
-and difference are pointwise `∨ / ∧ / ∧¬` of per-block verdict
-predicates. Note what is *absent*: no acceptance-condition surgery.
-Automata products under heterogeneous Emerson–Lei conditions need
-degeneralization counters or Zielonka-style bookkeeping; here
-acceptance never left predicate form, and the Boolean combination of
-two conditions is the Boolean combination of two predicates.
+So the aligned `π`-map is per-block, Phase 2 — the pipeline's one
+crossing — is never run on the multiplicative aligned space, `Valᵢ`
+reads block `i` alone, and cross-table union, intersection and
+difference are pointwise `∨ / ∧ / ∧¬` of per-block verdict
+predicates — no degeneralization counters, no acceptance-condition
+surgery: acceptance never left predicate form. (Proof and the full
+construction: Appendix A.)
 
 ### 6.4 Inclusion, equivalence, emptiness: one query, minimal witness
 
@@ -838,103 +833,50 @@ words (§2.1), on the aligned table
 L₁ ⊆ L₂   ⟺   ∀ c, d ∈ EM_⊗ :  Val₁(c, d) → Val₂(c, d)
 ```
 
-and the check factors into two reads the engine already knows. First
-project the closure onto two slots: the set
-`S = { (st_c(ι₁), st_c(ι₂)) : c ∈ EM_⊗ }` over the small space
-`Q₁ × Q₂` — one image of the closure diagram, and recognizably the
-classical reachable product state space, recovered as a *projection of
-the monoid*. Then one intersection:
+and the check factors into two reads the engine already knows: the
+projection `S = { (st_c(ι₁), st_c(ι₂)) : c ∈ EM_⊗ }` onto the small
+space `Q₁ × Q₂` — recognizably the classical reachable product state
+space, recovered as a *projection of the monoid* — then one
+intersection:
 
 ```
 Bad  =  S(q₁, q₂)  ∧  ProfR₁(q₁, d)  ∧  ¬ProfR₂(q₂, d)
 ```
 
-with both `ProfR`s Phase-3 objects of the aligned table; `L₁ ⊆ L₂` iff
-`Bad = ∅`. The query composes relations already built, introduces no
-new relational shape, and is never iterated. Equivalence is two
-inclusions (one `Bad` with the verdict xor), or byte equality after
-reduce. Two languages over the *same* `D` skip alignment altogether:
-`S` degenerates to the reachable slot set `{ st_c(ι) : c ∈ EM¹ }` and
-the same query runs on the single table. Emptiness and universality
-are the degenerate predicates (`Val ≡` false / true on one side),
-`∃ c, d : Val(c, d)` being one quantification of the closure diagram.
+with both `ProfR`s Phase-3 objects of the aligned table; `L₁ ⊆ L₂`
+iff `Bad = ∅`. The query composes relations already built and is
+never iterated. Equivalence is two inclusions or byte equality after
+reduce; same-`D` pairs skip alignment; emptiness and universality
+are the degenerate predicates. A nonempty `Bad` carries its own
+counterexample, and the kept layers make it canonical:
 
-**Witnesses, canonical and minimal.** A nonempty `Bad` carries its own
-counterexample, and the layers make it *the* counterexample. Order
-lasso presentations `(u, v)`, `v ≠ ε`, by stem length, then loop
-length, then stem lex, then loop lex; the selection must follow the
-layers, not the variable order:
+**Proposition 6.2 (minimal witness).** If `L₁ ⊄ L₂`, the layer-driven
+selection — least stem layer, then least loop layer, then the coupled
+lex-least forward walks of Phase 6's extraction mechanism — yields
+`u·v^ω ∈ L₁ ∖ L₂` with `(u, v)` the least separating lasso
+presentation in (stem length, loop length, stem lex, loop lex) order.
 
-- `i* :=` the least closure layer holding a `c` with
-  `(st_c(ι₁), st_c(ι₂))` in `Bad`'s state-pair projection — one
-  intersection per layer, on the small space;
-- `j* :=` the least layer holding a `d` with `Bad(st_c(ι₁),
-  st_c(ι₂), d)` for some `c ∈ layer i*`;
-- `C* := { c ∈ layer i* : ∃d ∈ layer j*. Bad }`; the stem `u` is the
-  lex-least length-`i*` word folding into `C*` (Phase 6's extraction:
-  backward preimage sets, then a forward least-letter walk), pinning
-  `c = ⟦u⟧`;
-- the loop `v` is the lex-least length-`j*` word folding into
-  `{ d ∈ layer j* : Bad(st_c(ι₁), st_c(ι₂), d) }`.
-
-**Proposition 6.2 (minimal witness).** If `L₁ ⊄ L₂`, the extracted
-`u·v^ω` lies in `L₁ ∖ L₂`, and `(u, v)` is the least separating lasso
-presentation in the order above.
-*Proof.* Separation: `Bad(st_c(ι₁), st_c(ι₂), d)` for `c = ⟦u⟧`,
-`d = ⟦v⟧` says `Val₁(c, d) ∧ ¬Val₂(c, d)`, which is
-`u·v^ω ∈ L₁ ∖ L₂` (§2.1). Minimality: let `(u′, v′)` be any separating
-presentation and `c′ = ⟦u′⟧`, `d′ = ⟦v′⟧` its folds — elements of the
-closure satisfying `Bad`. Layers bound lengths from below:
-`layer(c′) ≤ |u′|` (Prop. 3.1) and `layer(c′) ≥ i*` (definition of
-`i*`), so `|u′| ≥ i*`. If `|u′| = i*` then `c′ ∈ layer i*`, so
-`layer(d′) ≥ j*` and `|v′| ≥ layer(d′) ≥ j*`. If moreover
-`|v′| = j*` then `d′ ∈ layer j*`, hence `c′ ∈ C*` and `u′` is a
-length-`i*` word folding into `C*`, so `u ≤_lex u′`; and if `u′ = u`
-then `c′ = c` (folds are deterministic), so `v′` folds into `v`'s
-selection set and `v ≤_lex v′`. ∎
-
-Emptiness and universality witnesses come from the same mechanism with
-`Val` (or its negation) in place of `Bad`, on the single table. Every
-decision procedure of this section therefore emits the *minimal*
-certificate, deterministically — a discipline automata-side
-counterexample extraction does not have.
-
-Honesty once more: with deterministic inputs, automata-side inclusion
-is also polynomial (negate one acceptance formula, product, emptiness).
-The claims here are different ones: (i) the query runs on the factored
-diagram in cases where the flat product state space is itself the
-explosion (§4.2); (ii) acceptance stays a predicate — automata-side
-emptiness under an arbitrary Emerson–Lei condition is NP-complete in
-the condition [EL87, Thm 4.7], the accepting-cycle search growing with
-the Boolean structure, while here idempotency dissolved the cycle into
-a slot read and the Boolean structure into a predicate evaluated on
-one slot's mark bits (Phase 3): that hardness is absorbed into the
-same diagram-size bet as everything else, not paid as a separate
-search; (iii) the witness is canonical-minimal by
-construction; (iv) the same aligned table then serves every further
-operation on the pair.
+(Selection algorithm and proof: Appendix A.) Every decision procedure
+of this section thus emits the minimal certificate, deterministically
+— a discipline automata-side counterexample extraction does not have.
+One pricing note survives the compression: automata-side emptiness
+under an arbitrary Emerson–Lei condition is NP-complete in the
+condition [EL87, Thm 4.7]; here idempotency dissolved the accepting
+cycle into a slot read and the Boolean structure into a predicate on
+one slot's mark bits, absorbed into the same diagram-size bet as
+everything else, not paid as a separate search.
 
 ### 6.5 Rootings and relabelings
 
-**Left quotients.** For `u⁻¹L`: fold `u` (§6.1) and read
-`q_u = st_{⟦u⟧}(ι)`; the rooted language is the same table, the same
-predicate, with the initial slot moved to `q_u` — not even surgery, a
-re-parameterization. Quotients compose as they must
-(`(uv)⁻¹L = v⁻¹(u⁻¹L)` is `st` composition), the distinct rootings are
-Phase 4's `≃`-classes — the residual automaton, internalized — and a
-rooting followed by any §6 operation costs nothing extra.
-
-**Inverse substitutions.** For a relabeling `σ : Σ' → Σ` (letter
-renaming or merging), substitute the `α`-block: compose `Lett` and `R`
-with the relation `⟦α = σ(α′)⟧` over the `AP` variables. The new
-generators are elements of the old monoid, so the re-closure lfp runs
-*constrained inside the existing diagram* — Phase 1 with the new
-letter relation, intersected with `EM¹` at every step. And nothing
-restricts the images to letters: for any non-erasing homomorphism
-`h : Σ' → Σ⁺` the generator of `a ∈ Σ'` is the fold `⟦h(a)⟧` — an
-element of the old monoid, reached in `|h(a)|` applications of `R` —
-and the same constrained re-closure yields the table of `h⁻¹(L)`:
-inverse homomorphic images never leave the diagram.
+`u⁻¹L` is a re-parameterization, not surgery: fold `u` (§6.1) and
+move the initial slot to `q_u = st_{⟦u⟧}(ι)`; quotients compose as
+`st` composition, and the distinct rootings are Phase 4's
+`≃`-classes — the residual automaton, internalized. Inverse
+substitutions, and more generally inverse non-erasing homomorphisms
+`h⁻¹(L)`, substitute the `α`-block: the new generators are folds
+`⟦h(a)⟧` — elements of the *old* monoid — so the re-closure lfp runs
+constrained inside the existing diagram, and inverse homomorphic
+images never leave it. (Full construction: Appendix A.)
 
 ### 6.6 The frontier, unchanged
 
@@ -1004,73 +946,186 @@ The engine's boundaries, stated once:
 
 ## 8. Evaluation
 
-The engine is built on multi-valued decision diagrams (libDDD): letter
-steps as per-slot homomorphism sums, the crossing as the `|Q|`-way case
-split over symbolic expression homomorphisms, the squaring relation and
-its relational product as §3 describes, Phase 6 explicit on the small
-side. Protocols, instance-level figures and the finding ledger live in
-the companion experiment report (`sos_symbolic_spec.md` /
-`sos_symbolic_report.md`); this section states what is measured and
-what remains.
+Decision diagrams are empirical tools: no theorem makes a diagram
+small, and a symbolic algorithm is judged by what its inputs'
+structure does to its variables. This section therefore answers the
+five research questions of §1 in turn. Protocols, per-instance data
+and the finding ledger live in the companion experiment report — the
+reproducibility artefact — and every number below is traceable to a
+tracked, machine-generated artefact there.
 
-**Measured.**
+**Setup.** The engine: multi-valued decision diagrams (libDDD),
+letter steps as per-slot homomorphism sums, the crossing as the
+`|Q|`-way case split over expression homomorphisms, the squaring
+relation as §3 describes, Phase 6 explicit on the small side. The
+reference: the explicit implementation of [SωS26], whose emitted
+invariant is the conformance oracle. The corpus: a census of 6222
+canonical deterministic Emerson–Lei automata (`|Q| ≤ 3`, ≤ 2 APs) —
+deliberately the *unstructured* world: enumerated shapes, no product
+seam to exploit. The scaling family: `EvenBlocks^{⊗n}`, the `n`-fold
+asynchronous product of §3.1's specimen, in factored and flat slot
+coordinates. Budget: 10 s per instance unless stated; a blown budget
+is a datum, and a run beyond the reference's own cap is `UNVERIFIED`
+and never promoted to a correctness claim.
 
-- **Conformance, at census scale.** On every instance where the
-  explicit reference construction terminates (and shares the input's
-  declared AP set — §7), the engine's exported `.sos` is
-  **byte-identical** to the reference's: the output is the same
-  canonical object, so every downstream classification read-off
-  transfers unchanged. Measured across the 6222-instance census
-  corpus: all 6102 instances completing a 10 s budget byte-identical,
-  zero mismatches; the 120 budget kills concentrate on the largest
-  sampled shape and are the bottom line's tail (open column iii).
-- **Compression, at census scale.** `EvenBlocks`: 10 diagram nodes
-  against 32 explicit slot cells; the `GF(aa)` run-parity form: 5
-  against 20. Across the census, the diagram sits at or under the
-  explicit cell count on 6100 of 6102 completed instances (the two
-  exceptions are 1-element algebras against the diagram's 2-node
-  floor); the node-to-cell ratio has quantiles 0.12 / 0.29 / 0.50
-  (p5 / median / p95). The scatter's correlates, by rank correlation:
-  **per-slot sharing dominates** (mean distinct-cells-to-cells ratio
-  0.039 — the sharing source is there to exploit), larger and
-  more-marked algebras compress relatively better, and the
-  monotone-marks fraction is a weak covariate — a structure datum,
-  not a predictor (§4.2).
-- **Factored scaling — Proposition 4.1 as an equality.**
-  `EvenBlocks^{⊗n}` in factored coordinates: `|EM¹| = 16ⁿ` exactly at
-  every `n ≤ 6`, on a diagram of exactly `9n + 1` nodes — additivity
-  measured as an equality, not an order — with the interleaving
-  isomorphism element-exact through `n = 4`. The same inputs in flat
-  coordinates hit Lemma 4.2's wall already at `n = 3` (a time budget
-  mid-closure with the diagram still growing); the divergence pair at
-  scale is the variable-order study's.
-- **Phase profile, small instances.** The crossing dominates as
-  predicted; the Phase 4 seed does not — canonicity absorbs it into
-  `|Q|` predicate applications (§3, Phase 4). Where squaring
-  converges it reaches `π` in 2 rounds on every instance tried,
-  against the pairing's 2–5; where it cannot (an orbit period that is
-  not a power of two), the cap detects it and the pairing carries.
-  At census scale the only profile signal so far is right-censored —
-  the 10 s budget kills land in Phases 1/3/5/2 at 52/32/21/15 —
-  enough to show the Phase 3 read is macroscopic at the tail (as its
-  crossing shape predicts, §5), not enough to populate the cost
-  table: open column (v).
+### RQ1 — Is the symbolic construction correct in practice?
 
-**Open columns.** (i) synchronous products — distance of the reachable
-set from product form; (ii) variable-order sensitivity, flat vs
-factored and the split-encoding orders, on the same inputs — the §4.2
-lower-bound picture empirically; (iii) the bottom line against the
-explicit implementation under *budget parity*: instances the cap kills
-that the diagram carries, and the converse — the census tail already
-warns that the small-budget census column will not flatter the engine
-(the census is the unstructured world of §4.3: `|Q| ≤ 3`, enumerated,
-`|EM¹| ≤ 12 225`, where explicit enumeration is fast and there is no
-product seam to exploit); (iv) the calculus in motion — a worked
-multi-operation pipeline (complement, conjoin, check, re-check)
-measured against per-operation automata constructions, and
-deferred-reduce vs reduce-then-operate on the same sequence; (v) the
-uncensored phase profile — per-phase time and peak nodes at census
-scale and on the scaling families.
+**Yes: byte-identical to the reference, wholesale.**
+
+| census instances | completed (10 s) | byte-identical | mismatches |
+|---|---|---|---|
+| 6222 | 6102 | **6102** | **0** |
+
+On every instance where both tools complete and share the declared
+AP set (§7), the exported `.sos` is byte-identical after canonical
+keying: the same canonical object, so every downstream
+classification read-off of [SωS26, §7] transfers unchanged. The gate
+is not a sample — it is the census. The 120 non-completions are
+budget kills, taken up under RQ4.
+
+### RQ2 — How small is the representation on unstructured inputs?
+
+**A constant factor below explicit storage — 3.4× at the median —
+and never exponential in either direction.** Explicit storage of
+`EM¹` is `|EM¹| · |Q|` slot cells; the final diagram sits at or
+below that on 6100 of 6102 completed instances (the two exceptions
+are 1-element algebras against the diagram's 2-node root+terminal
+floor).
+
+| node-to-cell ratio | p5 | median | p95 |
+|---|---|---|---|
+| census, 6102 completions | 0.12 | 0.29 | 0.50 |
+
+On the worked specimens: `EvenBlocks` holds its 16-element `EM¹` in
+10 nodes against 32 cells; the run-parity form of `GF(aa)`, 5
+against 20. One direction of the question is structural rather than
+empirical: a *final* diagram exponentially larger than the explicit
+table cannot occur — a set of `k` vectors of length `m` fits in a
+trie of `O(k·m)` nodes, and reduction only shrinks it — so the
+empirical content is the margin and its predictor. Rank-correlating
+structure against the ratio (Spearman, over the census):
+
+| covariate | ρ vs node-to-cell ratio |
+|---|---|
+| per-slot sharing (distinct-cells / cells) | **+0.73** |
+| `\|EM¹\|` | −0.66 |
+| closure depth | −0.59 |
+| marks | −0.51 |
+| letter classes | −0.41 |
+| states | −0.30 |
+| upward-closed mark fraction | +0.19 |
+| constant slots | +0.16 |
+
+Per-slot sharing dominates, and there is much to share: the mean
+distinct-cells-to-cells ratio is 0.039 — per-slot value reuse alone
+collapses the explicit table to ~4 %. Larger and more-marked
+algebras compress relatively better. The §4.2 monotone-marks
+tendency is real (62 % of non-empty `(slot, dst)` families fully
+upward-closed) but is a structure datum, not a compression
+predictor.
+
+### RQ3 — Where is the exponential, and what does reaching it require?
+
+**Observed: an exponential separation on product inputs — conditional
+on slot coordinates that inherit the product shape.** On
+`EvenBlocks^{⊗n}`, Proposition 4.1 is measured as an equality:
+
+| `n` | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| `\|EM¹\| = 16ⁿ` | 16 | 256 | 4 096 | 65 536 | 1 048 576 | 16 777 216 |
+| factored nodes `= 9n+1` | 10 | 19 | 28 | 37 | 46 | 55 |
+| flat nodes | 10 | 258 | > 2 954 † | — | — | — |
+
+† the flat build at `n = 3` exhausts its per-point budget mid-closure
+(layer 9 of the fixpoint, diagram still growing) — Lemma 4.2's wall,
+observed where it is proved. All factored points complete in under
+60 ms; the interleaving isomorphism is verified element-exactly
+through `n = 4`.
+
+The conditionality is the standard decision-diagram caveat, and we
+state it as a result rather than a disclaimer: the same monoid is
+linear or exponential *depending only on the variable order*.
+Factored coordinates were given to the engine here, not discovered by
+it; row-major flat orders are provably exponential (Lemma 4.2); and
+whether any flat order escapes is open (Conjecture 4.3). A first
+sensitivity datum points the same way: block-preserving permutations
+of the factored order are node-neutral (19 nodes at `n = 2` under
+identity and reversal alike), while a block-interleaving rotation
+inflates the same set to 82 — slot *grouping* is what matters,
+within-block order is second-order. Open: the systematic order study
+(grouping strategies × within-slot encodings) and the synchronous
+half — how far engineered synchronizations drift from product form.
+
+### RQ4 — What does construction cost, and when does explicit enumeration win?
+
+**The engine carries the census at 0.27 s per instance on average,
+tops out — under 10 s — at a 12 225-element algebra, and loses
+exactly the 1.9 % of instances with the least structure to exploit.**
+Totals: 1 647 s over the 6 102 completions. The largest completed
+algebra has `|EM¹| = 12 225`; census-wide, syntactic class counts
+are small (median 15, maximum 148), so quotient-size scaling beyond
+a few hundred classes is untested — a named boundary of everything
+this section reports. Squaring, where its convergence condition
+holds, reaches `π` in 2 rounds against the pairing's 2–5; where an
+orbit period is not a power of two, the round cap detects divergence
+and the pairing carries — the shortcut is measured as a shortcut,
+never trusted as a verdict.
+
+The 120 budget kills concentrate on the largest sampled shape
+(101/120 on the 3-state 2-AP parity class); their kill-phase counts
+are 52/32/21/15 in Phases 1/3/5/2. Two caveats bound what this
+shows. First, a kill histogram is right-censored — an instance dying
+in phase `p` charges its unknown upstream spend to `p` — so it
+proves Phases 3 and 5 are macroscopic at the tail (as Phase 3's
+crossing shape predicts, §5) but cannot populate §5's cost table;
+the uncensored per-phase profile is open. Second, the explicit
+reference completed all 120 of these instances under its own,
+unequal conditions: on this census (`|Q| ≤ 3`, enumerable, no
+product seam — §4.3's world) the engine has no structural advantage
+and should be expected to lose small-budget rows. The controlled
+bottom line is open and pre-registered: both tools on the same
+machine under the same wall budgets, all failure kinds reported on
+both sides, plus the crossover point on the scaling families where
+explicit `16ⁿ` enumeration must cap — with the stated expectation
+that the engine's win column lives on structured inputs, not the
+census.
+
+### RQ5 — Does the table amortize: is the calculus real?
+
+**The acceptance-indifferent substrate and its same-table moves are
+measured; the cross-table calculus is designed, its measurement
+open.** Both measured moves pass the Prop 6.0 commutation gate —
+op-then-reduce byte-identical to reduce-then-op:
+
+- *Membership without closure* (§6.1): across seven instance/rooting
+  cases × 210 lassos each, the fold's verdict agrees with an
+  independent explicit lasso simulation and with the engine's own
+  Phase 3 read; the closure-free claim holds structurally — the
+  membership path cannot invoke the fixpoint machinery at all.
+- *The same-table Boolean algebra* (§6.2): complement, union,
+  intersection and difference as predicate moves, no diagram work;
+  every derived invariant tried is byte-identical to the
+  from-scratch build of the operated language — and, on two cases,
+  to the explicit reference of the operated input itself; double
+  complement returns the original bytes; the reduce is observed lazy
+  (the acceptance-dependent phases run on the first
+  verdict-consuming read, not before).
+
+Open: alignment (§6.3) at scale; the inclusion query with its
+minimal-witness gate (§6.4 — Prop 6.2's extraction checked against
+brute-force lasso enumeration); rootings and substitutions (§6.5);
+and the deferred-reduce pricing — the measured column for "pay
+canonicity only when consumed".
+
+### The answers, in one place
+
+| RQ | answer | open remainder |
+|---|---|---|
+| RQ1 correctness | byte-identical at census scale, 6102/6102, zero mismatches | — |
+| RQ2 compression | constant factor (median 3.4×); per-slot sharing predicts the margin | — |
+| RQ3 the exponential | observed (`9n+1` nodes vs `16ⁿ` elements); conditional on factored coordinates; flat provably and observably exponential | order study; Conjecture 4.3; synchronous distance |
+| RQ4 cost | 12 225-element ceiling at 10 s; loses only the structureless tail | uncensored profile; budget-parity bottom line; quotient-size scaling |
+| RQ5 amortization | substrate + same-table moves measured, commutation-exact | alignment, witness gate, deferred-reduce pricing |
 
 ## 9. Related work
 
@@ -1146,11 +1201,16 @@ marked semiautomaton rides it for free, the calculus of §6 runs an
 membership without closure, complement for free, products by block
 concatenation, inclusion as one query with a provably minimal
 certificate (Proposition 6.2) — and canonicity, the construction's
-original deliverable, is paid only when canonicity is consumed. The
-open question is the one the paper was honest about throughout,
-and §8 is designed to answer it: whether the `|Q|` exponent, evicted
-from cardinality, can be kept out of diagram width on the inputs that
-occur.
+original deliverable, is paid only when canonicity is consumed.
+
+The answers so far stand where the bets were placed. The exponent
+stays out of diagram width exactly when the coordinates inherit the
+input's structure (RQ3); it degrades to a constant-factor margin
+where there is no structure to inherit (RQ2); and it returns as a
+time wall on the structureless tail, as it must (RQ4). What remains
+open is named in §8's closing table — the order study, the
+budget-parity bottom line, the calculus at scale — and each open
+cell has its protocol fixed before its data exists.
 
 ---
 
@@ -1207,3 +1267,333 @@ occur.
 - **[WHH+06]** R. Wimmer, M. Herbstritt, H. Hermanns, K. Strampp,
   B. Becker. *Sigref — A Symbolic Bisimulation Tool Box.* ATVA 2006.
   ⟨not yet in the library⟩
+
+---
+
+## Appendix A — Parked material
+
+Paragraphs moved out of the main text during restructuring, kept
+verbatim for possible reuse and otherwise to be discarded. Nothing
+here is part of the paper's argument; internal section references are
+those of the revision that contained them.
+
+### A.1 The former abstract
+
+The construction of the syntactic ω-semigroup from a deterministic
+Emerson–Lei automaton [SωS26] is dominated by one object: the
+acceptance-enriched monoid `EM(D)`, of worst-case size
+`(|Q|·2^{|C|})^{|Q|}` — the `|Q|` in the exponent is where the explosion
+lives, and the decision problem being PSPACE-complete, some wall is a
+mathematical necessity. This paper locates the wall precisely and shows
+everything else is *symbolic*: an enriched element is a `|Q|`-slot vector
+over the small local domain `Q × 2^C`, the monoid is the **reachability
+set** of the identity vector under right multiplication by letters, and —
+the load-bearing observation — the rotation lemma of [SωS26], which
+computes the two-sided syntactic congruence with right moves alone, is
+exactly the statement that every relation the construction *iterates* is
+**slot-local**: a conjunction of one identical small relation applied at
+each slot. Closure is a least fixpoint; profiles collapse to a single
+slot-read once idempotent powers are computed (a pairing fixpoint, with
+repeated squaring a logarithmic shortcut exactly when the orbit periods
+are powers of two — the aperiodic side included); the
+residual equivalence, delegated to an external language-equivalence
+oracle in explicit implementations, *internalizes* as a small profile-
+seeded refinement; the congruence is a greatest-fixpoint partition
+refinement over letter relations; and the final quotient — the only
+object anyone keeps — is small and explicit, shortlex keys and the
+λ-quotient's guards falling out of the same fixpoint layers. On an
+abstract engine offering set union/intersection, comparison,
+`2k`-variable relations applied to `k`-variable sets, constrained
+fixpoints, and quotient by an equivalence, the whole pipeline is native.
+And construction is only the entry: the table built by the early
+phases depends only on the marked semiautomaton, so one diagram serves
+the entire Boolean algebra of acceptance conditions over it, and a
+calculus of language operations rides the same diagrams — lasso
+membership without ever closing the monoid, complement as a predicate
+flip, intersection/union/difference of two languages over an alignment
+that is variable-block concatenation, inclusion as a single relational
+query with a canonical minimal witness, and the quotient deferred
+until canonicity is actually consumed.
+The exponential does not disappear; it is *represented*, and the encoding
+must inherit the input's shape: for asynchronous products the enriched
+monoid factors exactly (`EM(D₁ ⊗ D₂) ≅ EM(D₁) × EM(D₂)`), so factored
+slot coordinates give additive diagrams where the flat state-space vector
+is itself the explosion. The compactness bet is that of symbolic model
+checking, made on the same grounds: engineered inputs are products.
+The engine exists: its exported invariant is byte-identical to the
+explicit reference construction's on every instance both complete —
+measured at census scale, 6102 instances byte-identical — and
+the factored bet is measured where it starts: `9n + 1` diagram nodes
+carrying `16ⁿ` elements on the `n`-fold product family, against a flat
+encoding that hits its proven exponential wall at `n = 3`; across the
+census the diagram sits under the explicit cell count on all but two
+floor cases (median 3.4×), with per-slot sharing the covariate that
+predicts the margin (§8).
+
+### A.2 The former introduction's claim block
+
+[SωS26] ends its complexity section on a promissory note: the
+construction's ingredients are all Boolean, its steps are all images,
+fixpoints and quotients over sets, "native to decision diagrams". This
+paper is the note called in — a design in which every step is named,
+priced, and mapped onto a small abstract engine, and an implementation
+whose exported invariant is byte-identical to the explicit reference
+construction's (§8).
+
+Four claims organize the paper:
+
+1. **The construction factors through five primitives** (§2), all
+   standard in symbolic model checking, with the whole pipeline written
+   out phase by phase (§3): closure as reachability, idempotent powers
+   as repeated squaring, profiles as one slot-read, residuals as a
+   profile-seeded refinement on `Q`, the congruence as a
+   greatest-fixpoint refinement, the quotient and all exports —
+   shortlex keys, λ-quotient guards, the residuals block — extracted
+   from objects the fixpoints already built.
+2. **The reason it factors is the rotation lemma** (§4.1). Right
+   multiplication by a generator updates every slot from itself; left
+   multiplication permutes slots; general composition selects a slot by
+   a runtime value. [SωS26, Lemma 4.4] — the two-sided congruence is
+   computable by right moves alone — is, re-read on the encoding, the
+   statement that the construction never iterates a slot-crossing
+   relation: the crossings it needs — idempotent powers, and the
+   verdict read that consumes them — sit outside every fixpoint. The
+   algebraic economy and the symbolic feasibility are one fact.
+3. **Compactness is a structure bet with a precise best case** (§4.2):
+   for asynchronous (interleaved) products the enriched monoid factors
+   *exactly*, and in factored slot coordinates its diagram is additive
+   in the components — while the flat state-space encoding of the same
+   monoid can be exponential. The encoding must inherit the system's
+   shape; hierarchically structured diagrams are not an optimization
+   here but the difference between additive and exponential.
+4. **The engine is not construction-only: it is a calculus** (§6).
+   Because Phases 0–2 consume no acceptance condition, the expensive
+   object is a *table* shared by every language over the same marked
+   semiautomaton, and the everyday operations of an ω-automata toolbox
+   become moves on that table: lasso membership is a closure-free fold,
+   complement is a predicate flip, cross-language products align by
+   concatenating variable blocks, inclusion and emptiness are single
+   relational queries whose counterexamples are canonical minimal
+   lassos extracted through the kept fixpoint layers — and the quotient
+   itself becomes an *on-demand* normal form rather than a mandatory
+   final phase.
+
+### A.3 The symbolic-learner prospect (from §5)
+
+A remark on learning: an active-learning observation table for
+ω-regular languages [AF16] — rows keyed by words, columns by
+experiments, cells holding verdicts — is also a vector set over a
+small local domain, its row set grown by one-letter extensions
+(Phase 1's move) and its row equivalence a refinement under
+column agreement (Phase 5's move); the structural match suggests a
+*symbolic learner* whose table lives in one diagram and whose
+consistency checks are the engine's comparisons. We leave it as a
+prospect: the queries a teacher answers are per-word, so the win would
+be in the table's representation and closure processing, not in query
+count.
+
+### A.4 The per-move honesty digressions (from §6.1 and §6.4)
+
+From §6.1: Honesty requires the comparison: on a *deterministic*
+input a single membership is answered by just running the automaton
+around the lasso, at the same cost. What the fold buys is not the bit
+but the *elements* `c, d` — the same `|u|+|v|`-step computation is
+the oracle every operation below composes with, its output lands in
+the algebra (ready to be rooted, compared, canonicalized), where the
+automaton-side run composes with nothing.
+
+From §6.4: Honesty once more: with deterministic inputs,
+automata-side inclusion is also polynomial (negate one acceptance
+formula, product, emptiness). The claims here are different ones:
+(i) the query runs on the factored diagram in cases where the flat
+product state space is itself the explosion (§4.2); (ii) acceptance
+stays a predicate — automata-side emptiness under an arbitrary
+Emerson–Lei condition is NP-complete in the condition [EL87,
+Thm 4.7], the accepting-cycle search growing with the Boolean
+structure, while here idempotency dissolved the cycle into a slot
+read and the Boolean structure into a predicate evaluated on one
+slot's mark bits (Phase 3): that hardness is absorbed into the same
+diagram-size bet as everything else, not paid as a separate search;
+(iii) the witness is canonical-minimal by construction; (iv) the
+same aligned table then serves every further operation on the pair.
+
+### A.5 The former §6.3 body (alignment, in full)
+
+Cross-table operations — `L₁ = L(D₁, Acc₁)`, `L₂ = L(D₂, Acc₂)` —
+need the two languages on one table, and §4.2 has
+already drawn it: concatenate the slot blocks (`|Q₁|` slots of type
+`V₁`, then `|Q₂|` of type `V₂`), conjoin the letter relations on the
+shared `α`-block, and run Phase 1's lfp. (Distinct `AP` sets merge by
+union first, and the merge is literally free: each `Δᵢ` simply does
+not mention the other's variables — where explicit-alphabet tools pay
+`2^{AP₁ ∪ AP₂}` up front.) The reachable set is exactly
+the submonoid of `EM(D₁) × EM(D₂)` generated by the diagonal letter
+pairs — the *generated alignment product*, computed on-the-fly:
+elements outside the generated part never exist, and the factored
+coordinates keep the aligned diagram near-additive when the components
+interact weakly (§4.2, §8). Verdicts lift blockwise:
+
+**Proposition 6.1 (idempotent powers factor through blocks).** For an
+aligned element `x = (x₁, x₂)`, `x^π = (x₁^π, x₂^π)`. *Proof sketch*:
+powers act blockwise, so `x^π = (x₁^k, x₂^k)` for its exponent `k`;
+each block is then an idempotent power of `xᵢ`, and the cyclic
+subsemigroup generated by `xᵢ` has a unique idempotent. ∎
+
+The consequence is stronger than verdict lifting: the aligned `π`-map
+*is* `π₁` on block 1 conjoined with `π₂` on block 2, restricted to the
+aligned closure (block `i` of the closure projects onto exactly
+`EM¹(Dᵢ)`, so the component maps cover it — computed per block if the
+languages did not enter separately). Phase 2 — the pipeline's
+one crossing — is never run on the aligned space: the case split stays
+per-component, its cost additive while the aligned space is
+multiplicative. Hence `Valᵢ` on the aligned table reads block `i`
+alone — Phase 3 per
+component, no cross-block work — and cross-table union, intersection
+and difference are pointwise `∨ / ∧ / ∧¬` of per-block verdict
+predicates. Note what is *absent*: no acceptance-condition surgery.
+Automata products under heterogeneous Emerson–Lei conditions need
+degeneralization counters or Zielonka-style bookkeeping; here
+acceptance never left predicate form, and the Boolean combination of
+two conditions is the Boolean combination of two predicates.
+
+### A.6 The former §6.4 witness selection and proof (in full)
+
+First project the closure onto two slots: the set
+`S = { (st_c(ι₁), st_c(ι₂)) : c ∈ EM_⊗ }` over the small space
+`Q₁ × Q₂` — one image of the closure diagram, and recognizably the
+classical reachable product state space, recovered as a *projection of
+the monoid*. Then one intersection: `Bad`; `L₁ ⊆ L₂` iff `Bad = ∅`.
+The query composes relations already built, introduces no new
+relational shape, and is never iterated. Equivalence is two
+inclusions (one `Bad` with the verdict xor), or byte equality after
+reduce. Two languages over the *same* `D` skip alignment altogether:
+`S` degenerates to the reachable slot set `{ st_c(ι) : c ∈ EM¹ }` and
+the same query runs on the single table. Emptiness and universality
+are the degenerate predicates (`Val ≡` false / true on one side),
+`∃ c, d : Val(c, d)` being one quantification of the closure diagram.
+
+**Witnesses, canonical and minimal.** A nonempty `Bad` carries its own
+counterexample, and the layers make it *the* counterexample. Order
+lasso presentations `(u, v)`, `v ≠ ε`, by stem length, then loop
+length, then stem lex, then loop lex; the selection must follow the
+layers, not the variable order:
+
+- `i* :=` the least closure layer holding a `c` with
+  `(st_c(ι₁), st_c(ι₂))` in `Bad`'s state-pair projection — one
+  intersection per layer, on the small space;
+- `j* :=` the least layer holding a `d` with `Bad(st_c(ι₁),
+  st_c(ι₂), d)` for some `c ∈ layer i*`;
+- `C* := { c ∈ layer i* : ∃d ∈ layer j*. Bad }`; the stem `u` is the
+  lex-least length-`i*` word folding into `C*` (Phase 6's extraction:
+  backward preimage sets, then a forward least-letter walk), pinning
+  `c = ⟦u⟧`;
+- the loop `v` is the lex-least length-`j*` word folding into
+  `{ d ∈ layer j* : Bad(st_c(ι₁), st_c(ι₂), d) }`.
+
+*Proof of Proposition 6.2.* Separation: `Bad(st_c(ι₁), st_c(ι₂), d)`
+for `c = ⟦u⟧`, `d = ⟦v⟧` says `Val₁(c, d) ∧ ¬Val₂(c, d)`, which is
+`u·v^ω ∈ L₁ ∖ L₂` (§2.1). Minimality: let `(u′, v′)` be any separating
+presentation and `c′ = ⟦u′⟧`, `d′ = ⟦v′⟧` its folds — elements of the
+closure satisfying `Bad`. Layers bound lengths from below:
+`layer(c′) ≤ |u′|` (Prop. 3.1) and `layer(c′) ≥ i*` (definition of
+`i*`), so `|u′| ≥ i*`. If `|u′| = i*` then `c′ ∈ layer i*`, so
+`layer(d′) ≥ j*` and `|v′| ≥ layer(d′) ≥ j*`. If moreover
+`|v′| = j*` then `d′ ∈ layer j*`, hence `c′ ∈ C*` and `u′` is a
+length-`i*` word folding into `C*`, so `u ≤_lex u′`; and if `u′ = u`
+then `c′ = c` (folds are deterministic), so `v′` folds into `v`'s
+selection set and `v ≤_lex v′`. ∎
+
+Emptiness and universality witnesses come from the same mechanism with
+`Val` (or its negation) in place of `Bad`, on the single table.
+
+### A.7 The former §6.5 body (in full)
+
+**Left quotients.** For `u⁻¹L`: fold `u` (§6.1) and read
+`q_u = st_{⟦u⟧}(ι)`; the rooted language is the same table, the same
+predicate, with the initial slot moved to `q_u` — not even surgery, a
+re-parameterization. Quotients compose as they must
+(`(uv)⁻¹L = v⁻¹(u⁻¹L)` is `st` composition), the distinct rootings are
+Phase 4's `≃`-classes — the residual automaton, internalized — and a
+rooting followed by any §6 operation costs nothing extra.
+
+**Inverse substitutions.** For a relabeling `σ : Σ' → Σ` (letter
+renaming or merging), substitute the `α`-block: compose `Lett` and `R`
+with the relation `⟦α = σ(α′)⟧` over the `AP` variables. The new
+generators are elements of the old monoid, so the re-closure lfp runs
+*constrained inside the existing diagram* — Phase 1 with the new
+letter relation, intersected with `EM¹` at every step. And nothing
+restricts the images to letters: for any non-erasing homomorphism
+`h : Σ' → Σ⁺` the generator of `a ∈ Σ'` is the fold `⟦h(a)⟧` — an
+element of the old monoid, reached in `|h(a)|` applications of `R` —
+and the same constrained re-closure yields the table of `h⁻¹(L)`:
+inverse homomorphic images never leave the diagram.
+
+### A.8 The former §8 (Evaluation, in full)
+
+The engine is built on multi-valued decision diagrams (libDDD): letter
+steps as per-slot homomorphism sums, the crossing as the `|Q|`-way case
+split over symbolic expression homomorphisms, the squaring relation and
+its relational product as §3 describes, Phase 6 explicit on the small
+side. Protocols, instance-level figures and the finding ledger live in
+the companion experiment report (`sos_symbolic_spec.md` /
+`sos_symbolic_report.md`); this section states what is measured and
+what remains.
+
+**Measured.**
+
+- **Conformance, at census scale.** On every instance where the
+  explicit reference construction terminates (and shares the input's
+  declared AP set — §7), the engine's exported `.sos` is
+  **byte-identical** to the reference's: the output is the same
+  canonical object, so every downstream classification read-off
+  transfers unchanged. Measured across the 6222-instance census
+  corpus: all 6102 instances completing a 10 s budget byte-identical,
+  zero mismatches; the 120 budget kills concentrate on the largest
+  sampled shape and are the bottom line's tail (open column iii).
+- **Compression, at census scale.** `EvenBlocks`: 10 diagram nodes
+  against 32 explicit slot cells; the `GF(aa)` run-parity form: 5
+  against 20. Across the census, the diagram sits at or under the
+  explicit cell count on 6100 of 6102 completed instances (the two
+  exceptions are 1-element algebras against the diagram's 2-node
+  floor); the node-to-cell ratio has quantiles 0.12 / 0.29 / 0.50
+  (p5 / median / p95). The scatter's correlates, by rank correlation:
+  **per-slot sharing dominates** (mean distinct-cells-to-cells ratio
+  0.039 — the sharing source is there to exploit), larger and
+  more-marked algebras compress relatively better, and the
+  monotone-marks fraction is a weak covariate — a structure datum,
+  not a predictor (§4.2).
+- **Factored scaling — Proposition 4.1 as an equality.**
+  `EvenBlocks^{⊗n}` in factored coordinates: `|EM¹| = 16ⁿ` exactly at
+  every `n ≤ 6`, on a diagram of exactly `9n + 1` nodes — additivity
+  measured as an equality, not an order — with the interleaving
+  isomorphism element-exact through `n = 4`. The same inputs in flat
+  coordinates hit Lemma 4.2's wall already at `n = 3` (a time budget
+  mid-closure with the diagram still growing); the divergence pair at
+  scale is the variable-order study's.
+- **Phase profile, small instances.** The crossing dominates as
+  predicted; the Phase 4 seed does not — canonicity absorbs it into
+  `|Q|` predicate applications (§3, Phase 4). Where squaring
+  converges it reaches `π` in 2 rounds on every instance tried,
+  against the pairing's 2–5; where it cannot (an orbit period that is
+  not a power of two), the cap detects it and the pairing carries.
+  At census scale the only profile signal so far is right-censored —
+  the 10 s budget kills land in Phases 1/3/5/2 at 52/32/21/15 —
+  enough to show the Phase 3 read is macroscopic at the tail (as its
+  crossing shape predicts, §5), not enough to populate the cost
+  table: open column (v).
+
+**Open columns.** (i) synchronous products — distance of the reachable
+set from product form; (ii) variable-order sensitivity, flat vs
+factored and the split-encoding orders, on the same inputs — the §4.2
+lower-bound picture empirically; (iii) the bottom line against the
+explicit implementation under *budget parity*: instances the cap kills
+that the diagram carries, and the converse — the census tail already
+warns that the small-budget census column will not flatter the engine
+(the census is the unstructured world of §4.3: `|Q| ≤ 3`, enumerated,
+`|EM¹| ≤ 12 225`, where explicit enumeration is fast and there is no
+product seam to exploit); (iv) the calculus in motion — a worked
+multi-operation pipeline (complement, conjoin, check, re-check)
+measured against per-operation automata constructions, and
+deferred-reduce vs reduce-then-operate on the same sequence; (v) the
+uncensored phase profile — per-phase time and peak nodes at census
+scale and on the scaling families.
