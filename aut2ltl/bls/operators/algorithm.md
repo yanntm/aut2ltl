@@ -132,25 +132,36 @@ tractable and to keep the output compact. **None of it changes the language of t
 produced formula** — each is a soundness-preserving optimisation or a faithful
 encoding of an implicit side condition.
 
-## Hash-consing and per-build memoisation
+## Hash-consing, skeleton templates and per-build memoisation
 
-The recursion fans in heavily (the same `(S, B, β, T, τ, level)` subproblem is reached
-along many paths), so two layers of sharing turn it from a tree blow-up into a DAG
-build:
+The recursion fans in heavily (the same machine position is reached along many
+paths), so three layers of sharing turn it from a tree blow-up into a DAG build:
 
 - **Hash-consing.** Formulas are native `spot.formula` end to end; equal subterms are
   the *same* node, so the result is a shared DAG (the paper's "size" measure, digest
   §1). Stringification happens only at the very top.
-- **Per-build memo.** Each distinct subproblem is computed once and cached:
+- **Skeleton templates.** The context parameters `β`/`τ` are NOT part of any memo
+  key: every recursion step manufactures a fresh context (`solid⁺` pushes `σ ∧ Xτ`
+  and `ρ ∧ Xβ`, `dashed` swaps them into `wsolid`), so keying on them makes every
+  key path-unique and multiplies machine positions by contexts — exponential in
+  cascade height. Instead each operator is built once per machine **skeleton**
+  `(S, B, T, level)` as a template whose `β`/`τ` positions hold two reserved
+  placeholder APs (`support.PH_BETA`/`PH_TAU`); every call plugs its own context in
+  via `support._instantiate`, a per-node-memoized simultaneous substitution
+  (`builders._subst_f`) that re-simplifies rebuilt nodes so constant plugs fold.
+  Plugs may themselves contain the placeholders (the manufactured contexts above):
+  substitution is single-pass, so they denote the caller's parameters. Total cost is
+  O(#skeletons × template DAG) instead of positions × contexts.
+- **Per-build memo.** Each distinct skeleton is expanded once and cached:
   `reach` on `casc.reach_memo`, the `solid`/`wsolid`/`dashed` helpers on
-  `casc.helper_memo` (via the `support._memo_reach_helper` decorator), and `fin`'s
-  `reach_to⁺` on `casc.uncond_memo`. Keys normalise `β`/`τ` to hash-consed formulas
-  first, so the `str` and `formula` spellings of a guard share an entry. The memos live
-  on the `CascadeHolder` threaded as `casc` — never module globals — so a fresh holder
-  is a fresh build and discarding it *is* the reset.
+  `casc.helper_memo` (via the `support._memo_reach_helper` decorator), instantiation
+  node-maps per plug pair on `casc.inst_memo`, and `fin`'s `reach_to⁺` on
+  `casc.uncond_memo`. The memos live on the `CascadeHolder` threaded as `casc` —
+  never module globals — so a fresh holder is a fresh build and discarding it *is*
+  the reset.
 - **Runaway guard.** `REACH_GUARD` (`KR_REACH_GUARD`) counts **distinct** `reach`
-  expansions (memo misses, not raw calls), so it trips only on a genuine same-level
-  blow-up, not on healthy high-fan-in workloads.
+  skeleton expansions (memo misses, not raw calls), so it trips only on a genuine
+  same-level blow-up, not on healthy high-fan-in workloads.
 
 ## Letter enumeration and fusion (equivalence classes)
 
