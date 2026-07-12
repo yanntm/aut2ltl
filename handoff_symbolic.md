@@ -32,26 +32,10 @@ This file carries **current state + next work items + pointers only**.
 
 ## Build and test
 
-- Build: `cd sos_sdd && cmake -B build && cmake --build build` (drops
-  `_core*.so` in-package; links `deps/lib/libITS.a` BEFORE
-  `libDDD.a`). `sos_sdd/deps/` is untracked; if missing, run
-  `sos_sdd/install_deps.sh`.
-- Every test: `timeout 15 python3 tests/sos_sdd/<file>.py <case>` from
-  the repo root — one case per invocation (each file's `CASES` dict
-  lists them; no argv = all cases). All green as of this handoff:
-  `smoke_api`, `smoke_core`, `letters_test`, `e0_triptych`,
-  `shortlex_test`, `e2_async`, `phase2_test`, `squaring_test`,
-  `residuals_test`, `congruence_test`, `conformance_test`
-  (+ `conformance_diff.py` probe), `hoa_bridge_test`, `slotperm_test`,
-  `member_test`, `boolean_test`. Logs → `tests/sos_sdd/logs/`,
-  never /tmp.
-- **Sweeps are NEVER one process** (OOM'd once, near machine crash:
-  libDDD's unique table is never GC'd, diagrams accumulate across
-  instances). `e1_census.py --isolate` = per-instance subprocess under
-  `aut2ltl.bounded` (unconditional SIGKILL backstop — the C++ core
-  observes no signals), CSV-resume built in; `--shard k/N` = cluster
-  fan-out (~300 jobs, per-shard CSV). The user wants corpus-scale
-  sweeps on the cluster, not the local machine.
+`sos_sdd/README.md` — *Build* (cmake; `install_deps.sh` if `deps/` is
+missing) and *Testing and sweeps* (per-case invocation, the gate
+list, the sweeps-are-NEVER-one-process rule). All gates green as of
+this handoff.
 
 ## Current state (all committed, all gates green)
 
@@ -128,46 +112,17 @@ membership.
 None. (The C10 alignment reword is folded into the spec; the archive
 F26 block records the resolution.)
 
-## Binding engine facts (learned the hard way — do not relearn)
+## Binding engine facts
 
 - **The user is the author of libDDD/libITS.** When the library API is
   tricky, STOP and bring him the problem with your analysis — do not
   blindly debug. He explicitly asked for this.
-- **Variable 0 is adjacent to the terminal**; slot i = var i, higher
-  vars on top. ExprHom dies in unbounded mutual recursion on inverted
-  diagrams (archive F9); `Hom_Basic` bricks tolerate them silently — do
-  not let that mask the bug. Pair spaces stack written block ABOVE read
-  block.
-- **No GAL arrays, no `syncAssignExpr`** — plain scalars + the paper's
-  case split; the simultaneous step (squaring) is the 2k relation
-  encoding (README design section). The transparent `DoubleVars`
-  doubling (`~/git/libITS/bin/ToTransRel.cpp`) suits GAL's sequential
-  semantics only — REJECTED for Comp (reads need old values; colliding
-  var numbers defeat any GalOrder). `assignExpr` handles rhs support
-  above and below the lhs (author-confirmed).
-- Anything crossing an engine step is held as **`DDD`/`Hom`**, never
-  bare `GDDD`/`GHom` (GC sweeps unreferenced nodes); never trigger GC.
-  A hom carrying a diagram overrides `mark()` (see `ApplyRel`).
-- DDD edge values are `short`: domains ≤ 32767 (`slotspace.hh`; same
-  guard on the explicit global-state space in `residuals.hh`).
-- **All packing semantics live in `slotmodel.py`** and travel as
-  numbers (`PackInfo`, accept-mask tables) — never as convention.
-- Letters are never enumerated: letter-behavior classes
-  (`letters.py`). Canonical keying per `sosl/sosl/sos/io/
-  sos_format.md`; byte parity is against `sosl/sosl/sos/io/
-  serialize.py`'s actual layout.
-- **Identity convention (C7, normative):** word classes = ~-classes of
-  non-empty-word images; `[eps]` adjoined fresh. Phase 5's congruence
-  itself runs on all of EM¹ — only the quotient reading changes
-  (archive F15).
-- **AP-support exclusion:** Spot's import drops unused APs (e.g. empty
-  language) — such instances sit outside the same-AP byte-parity set
-  (`conformance_test` `dupe` case asserts it).
-- Assertions of the spec are structural where possible: no orbit walks
-  in Phases 3–4 (`residuals.hh`), no ExprHom include in `congruence.hh`
-  (the rotation lemma as an include list), squaring divergence decided
-  by the round cap, membership closure-free (`calculus.py` never
-  imports `_core`).
+- Everything else is in `sos_sdd/README.md` *Backend decisions*
+  (binding): variable orientation + the ExprHom inverted-diagram trap,
+  GC discipline, the scalar/no-arrays Comp rendering, packing-as-
+  numbers, canonical keying, the identity convention, AP-support
+  exclusion, the structural assertions. Read it before touching the
+  core; do not relearn F9/F15/F20 the hard way.
 
 ## Concurrent editors — stay in your sphere
 
