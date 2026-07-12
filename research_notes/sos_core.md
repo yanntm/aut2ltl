@@ -1,7 +1,7 @@
-# The Syntactic ω-Semigroup as an Object — outline draft
+# Materializing the Syntactic ω-Semigroup — outline draft
 
-**Working title:** *The Syntactic ω-Semigroup as an Object: a Canonical Normal Form
-for ω-Regular Languages, and its Construction*
+**Working title:** *Materializing the Syntactic ω-Semigroup: a Canonical
+Representation of Regular ω-Languages*
 
 Restructure of `sos_constructed.md`: object first, construction second. All content
 borrowed from there unless marked NEW. Bullets only at this stage — one sentence per
