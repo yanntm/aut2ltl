@@ -184,6 +184,15 @@ the shortlex-least word reaching that class — is the key. No nonempty class of
 algebra acts neutrally, so the adjunction costs nothing here; §3.5 meets an algebra
 where the axiom bites.
 
+**The letter map is data, not decoration.** The key of `λ(x)` is always a letter —
+length 1, with `ε` barred by the adjunction — namely the least letter of its class;
+so `λ` reads as the identity precisely when it is injective, as it is in all four
+examples. It need not be: over `Σ = {a, b, c}` the language `(a|c)*·b^ω` has exactly
+the five classes, products and accepting pairs of Figure 1 — `a` and `c` are
+interchangeable everywhere, so `λ(a) = λ(c) = [a]` — and the drawing is unchanged;
+only `λ` tells the two objects apart. And `λ` never touches the identity: `[ε]`
+labels the root, and nothing else.
+
 **The idempotent power, internally.** Each class `s` has its unique idempotent power
 `s^ω` (§2). This is the algebra's entire access to "loop forever": there is no second
 sort — a lasso's loop is read by folding it to a class and taking that class's idempotent
