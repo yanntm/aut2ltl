@@ -64,20 +64,21 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
    `sos2ltl/translator.py::sos2ltl_pairs` (engine-whole gate → split
    → cascade assembly fallback); recipe **`sos2ltl_pairs`**; anatomy
    probe `python3 -m tests.sos2ltl.pairsplit_probe '<ltl>'`.
-   Main (`survey --folder samples/validation --use sos2ltl_pairs`):
-   SUCCESS — 80 LTL + 3 not-LTL, **0 declined / 0 timeout / 0
-   crash** (first full coverage; casc had 10 timeouts), 61 TRUE /
-   0 FAIL / **22 SIZE-unchecked**. The 22 are pieces that fell to
-   dg (flat 10⁵–10¹¹⁰ tree): including REGRESSIONS — recurrence
-   lines the casc delegate used to label compactly (e.g. `G(a→Fb)`)
-   now split into dg-monster pieces because pieces run engine+dg
-   only. **Next action (pick one):** (a) thread the cascade delegate
-   to pieces — needs the per-piece acceptor presentation (invariant →
-   deterministic acceptor; the flagged interface point), or (b) a
-   piece-quality gate (reject dg-piece labels above a DAG budget,
-   poison → cascade assembly). Then: corpus sweep
-   (`genaut/corpus/flat_canon/det`, background), delegate firing
-   stats, stem ledger vs DG. **Open problem:** loop
+   Current wiring (user-set): pieces run engine-then-dg, NO cascade
+   delegate; a split label above the conformance oracle's flatten
+   gate DECLINES and the whole falls back to the cascade assembly —
+   decline-and-fallback, no per-piece acceptor for now ("complete D
+   later"). Main on that wiring: 73 TRUE / 0 FAIL / 10 TIMEOUT —
+   casc-equal; the split's verified gains need engine-shaped pieces.
+   **Quality bar (user-set): on the validation smalls, any printed
+   label above ~20 characters is a defect**; the automata-level
+   baselines met it (e.g. `G(Fa & Fb)`) because pieces were FEW (one
+   per acceptance reason, overlapping covers) and carried
+   presentations — the SoS finest atoms over-fragment (8 vs 2 on
+   `GFa & GFb`). Paper §5.3b (NEW) now states the lever inventory;
+   coarse/overlapping covers are the implementation lead once theory
+   adjudicates. Then: corpus sweep (`genaut/corpus/flat_canon/det`,
+   background), delegate firing stats, stem ledger vs DG. **Open problem:** loop
    labels are still too large flat (7.8·10⁹ on the floor witness), so
    the Spot equivalence oracle cannot consume them raw; the
    flat-column risk is confirmed, conformance story on the loop
@@ -106,18 +107,17 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
 3. Open math, unblocked by nothing: §5.1's
    width-bound-by-definiteness-degree ⟨TBD⟩; §2.3's arena bound
    (gated on full E4).
-4. Adjudicate the SoS pair decomposition
-   (`aut2ltl/sos2ltl/pairsplit/algorithm.md`, doc stage): split of
-   the accepting pair set `P` into saturation atoms over one table,
-   least-pairs side by free complement, fusion by loop class /
-   layer / free-AP projection, `⋁` recombination (+ outer `¬`).
-   Claims to check: exactness of the atom split (preimage +
-   saturation), aperiodicity inheritance through `reduce` (pieces of
-   a definable L all definable), the De Morgan collapse (no separate
-   ∧ branch needed), and whether the per-LAYER variant (inside the
-   delegate) needs its own Σᵢ/Πᵢ bookkeeping. Type specimen: the
-   validation TIMEOUT family — `GFa & GFb` complements to two
-   trivial atoms.
+4. **Integrate §5.3b (NEW)** — the decomposition-levers section
+   (atoms as the finest union split, the complement trick for the
+   union form, saturated covers with overlaps): polish, renumber,
+   resolve its ⟨TBD⟩s (specimen table + atom partition; atom counts
+   on the census). Decomposition is under-emphasized in the paper —
+   user marks it as a KEY. The open math behind the covers: which
+   coarse/overlapping covers keep pieces nameable and extractable
+   (the automata baselines suggest one-piece-per-acceptance-reason);
+   the pieces' presentations (the Cayley/Muller reference acceptor —
+   deferred, "complete D later"; library gap: the ω-semigroup →
+   Muller automaton source, Perrin–Pin).
 
 ## Machinery / conventions (user-set; keep)
 
