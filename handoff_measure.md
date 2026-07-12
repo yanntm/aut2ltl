@@ -30,15 +30,10 @@ the file and section named for the task at hand — nothing else.
   population, and it survives here only as the exhaustive *probe* suite that
   argues the engine is correct. It is pointed at, never reported as a result.
   `sos_quant.md` §7 says what the benchmark must be: **(model, spec) pairs**.
-- **Engineering: the bricks are laid.** M1–M5 done and green corpus-wide
-  (findings F-M1..F-M5 in the report, artifacts under `reference/quant/`). The
-  engine is `sosl/sosl/quant/`: measure and θ-profile
-  (`chain`/`kernel`/`theta`/`measure`), the independent oracles (`routea`),
-  distance and the null-set quotient (`distance`/`shadow`/`essential`), entropy
-  (`entropy`), and the Markov product (`mc`/`product`). Its README is the
-  source map, its `algorithm.md` the soundness argument; gates are in
-  `sosl/tests/quant/`. **Leverage it. Do not re-litigate the path that built
-  it.**
+- **Engineering: the bricks are laid.** The engine is `sosl/sosl/quant/` and it
+  documents itself — README is the source map, `algorithm.md` the soundness
+  argument, gates in `sosl/tests/quant/`, results in `sos_measure_report.md`.
+  **Leverage it; do not re-litigate the path that built it.**
 
 ## Work items — Theory
 
@@ -97,30 +92,21 @@ will have to cover, when it comes (do **not** start on it):
 
 Deferred until a user go-ahead: move `sosl/sosl/quant/` under `sosl/sosl/sos/`.
 
-## Operational facts (save the rediscovery)
+## Operational facts (only what the code does not already say)
 
 - Run from `sosl/` as modules: `cd sosl && python3 -m tests.quant.X`. cwd drifts
   mid-shell — always `cd` explicitly (commits from the repo root, tests from
   `sosl/`).
-- Corpus (**probes, not results**): `genaut/corpus/flat_canon/` — `sos/*.sos`
-  invariants (complement-closed), `det/*.hoa` the paired deterministic complete
-  DELA (same basename — the oracle's input), `sos/*.cat` sidecars
-  (`sosl.sos.classify.io.parse_cat`). A concurrent stream regenerates it, so
-  counts move — rerun a gate rather than trust a stale number.
-- Reuse the engine; never reimplement `fold`/`idem`/`Val`/complement, `align`/
-  `materialize`/`reduce`, or the SCC passes — read `sosl/sosl/sos/calculus/
-  README.md` before writing a line.
-- Numbers are `fractions.Fraction` everywhere except the quarantined eigenvalue
-  in `entropy`; no numpy, no floats in gates; probabilities render as fractions
-  (`2/3`) in every human-facing artifact, figures included.
-- Tests/probes: single-input argv, ≤ 15 s per case, long output to
-  `sosl/tests/quant/logs/` (gitignored), validated `.md`/`.csv` to
-  `reference/quant/` with the 4-line header (date, git rev, seed, corpus).
-- Spot 2.14.5 imports (`import spot`); bounded-or-skipped, never waited on; a
-  skip is a datum.
-- PRISM 4.10.1 is dropped in `opt/prism-4.10.1-linux64-x86/bin/prism`
-  (gitignored, unwired) — the arbiter of what `.mc` text will actually parse.
-  Nothing in the engine invokes it.
+- The `genaut/corpus/flat_canon/` census is **probes, not results** — it is the
+  classification framework's benchmark, and here it only argues the engine is
+  correct. A concurrent stream regenerates it, so counts move: rerun a gate
+  rather than trust a stale number.
+- Artifacts: throwaway output to `sosl/tests/quant/logs/` (gitignored),
+  validated `.md`/`.csv` to `reference/quant/` with the 4-line header (date,
+  git rev, seed, corpus).
+- PRISM 4.10.1 sits in `opt/prism-4.10.1-linux64-x86/bin/prism` — untracked,
+  unwired, invoked by nothing. It is the arbiter of what `.mc` text will
+  actually parse.
 
 ## Gotchas
 
