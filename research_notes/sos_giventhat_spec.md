@@ -1,88 +1,91 @@
 # SoS Given-That — Implementation Specification
 
-**Status (2026-07-11).**
+**Status (2026-07-12). Re-aimed.** The goal is **one operation**:
+
+    simplify( 𝓘(¬φ), 𝓘(K) )  →  𝓘(B)
+      with  ℒ(B) ∩ ℒ(K) = ℒ(¬φ) ∩ ℒ(K)      (legal: [DPT25] Thm 1)
+      and   |𝒞(B)| ≤ min( |𝒞(¬φ)|, |𝒞(P_min)|, |𝒞(P_max)| )   (never a regression)
+
+Two `.sos` files in, one **smaller** `.sos` file out. It is the
+algebraic double of [DPT25]'s *Bounded-by-Minato*: they pick a simpler
+Boolean *label* between per-transition bounds, we pick a smaller *table*
+between language bounds. Everything in this spec either builds that
+operation, measures it, or is explicitly decommissioned (§8).
 
 | item | state |
 |---|---|
-| GT1: the interval object + endpoint decisions (§3) | **DONE (2026-07-11)** — `sosl/sosl/sos/giventhat/interval.py`, `conjugacy_classes` in `calculus.surgery`, gates `sosl/tests/giventhat/interval_gate.py` green on the fixture + 700-pair campaign (699 scored, 1 F2, zero unexplained rows); data `reference/giventhat/gt1_interval.md`, report F1–F4 filled. |
-| GT2: the ladder tests (§4) | **DONE (2026-07-11)** — `ladder.py` + `r_classes` in `calculus.surgery`; rung oracle 6 222/6 222 (orientation confirmed, F5), campaign 700/700 with brute oracle exact on all 264 `bits ≤ 12` cases (F6–F8); E1 on §4.6 resolved (report To theory) |
-| GT3: stutterization, two tiers (§5) | SPECIFIED — tier 2 is the hard one; tier 1 first |
-| GT4: band-minimal Wagner degree (§6) | SPECIFIED — doubles as a theory probe; blocked on GT2 |
-| GT5: the W-series campaigns (§7) | W0 (census-shaped) specified; W1 (MCC data) **blocked on data provisioning — do not go fetch it yourself** |
+| GT1: the interval object + endpoint decisions (§3) | **DONE** — `sosl/sosl/sos/giventhat/interval.py`, `conjugacy_classes` in `calculus.surgery`; gates green on fixture + 700-pair campaign. It is step 1–2 of the operation. |
+| GT2: the ladder tests (§4) | **DONE** — `ladder.py`, `r_classes` in `calculus.surgery`; rung oracle 6 222/6 222. Re-scoped: the rungs are now **constraints and output metrics**, not the deliverable. |
+| GT3: the bounded quotient engine (§5) | **SPECIFIED — the next milestone.** `quotient.py` + `stutter.py`. This is the exact primitive the operation searches with. |
+| GT4: the simplifier and the tool (§6) | **SPECIFIED — the deliverable.** `simplify.py` + `__main__.py`. |
+| GT5: the demonstration (§7) | SPECIFIED — small corpus pairs, the size table. |
+| Decommissioned (§8) | stutter tier 2, band-minimal Wagner degree, the W-series campaigns. Do not build. |
 
-An implementer starting cold reads, in order: this header, §0–§1, the
-section for the milestone at hand, §8 (expected failures) before filing
-any bug, §9 (traps) before writing any code. Revision history lives in
-git and `docs/HISTORY.md`, not here.
+An implementer starting cold reads: this header, §0–§2, then the section
+for the milestone at hand, then §9 (expected failures) and §10 (traps)
+before writing any code.
 
-**Normative math.** `research_notes/sos_giventhat.md` (the given-that
-paper). Section map: paper §3 → GT1; paper §4 → GT2 + GT4; paper §5 →
-GT3; paper §7 → GT5. Behind it, `research_notes/sos_calculus.md`
-[SωSC26] for the calculus (align / operate / reduce, the surgery
-catalog, the hulls) and its spec `sos_calculus_spec.md` for the package
-you are building on. Where this document and the paper disagree, STOP
-and report — do not reconcile silently (the paper may be wrong; that is
-a finding, see the report contract §10).
-
-**One-line goal.** `sosl.sos.giventhat` — a new package at
-`sosl/sosl/sos/giventhat/` — turns two invariants `𝓘(¬φ)` and `𝓘(K)`
-into the given-that interval object of the paper, and answers, exactly
-and with witnesses: does `K` settle `φ`; does `K` refute `φ`; does the
-interval contain a safety / co-safety / obligation / recurrence /
-persistence / stutter-invariant `B`; and at what minimal Wagner degree.
+**Normative math.** `research_notes/sos_giventhat.md` (restructured
+2026-07-12). Section map: paper §3 → GT1; paper §5.2 → GT2; **paper §4
+(Prop 4.1, Prop 4.2, Prop 4.3, Thm 4.4) → GT3**; **paper §4.6 + §5.1 +
+Lemma 5.2 → GT4**; paper §6–§7 → GT5. Where this document and the paper
+disagree, STOP and report (§11) — do not reconcile silently.
 
 **Layering law (hard).** `sosl.sos.giventhat` imports `sosl.sos`
 (objects, io), `sosl.sos.calculus` (Table, align, materialize, surgery,
-decide, reduce, witness), `sosl.sos.classify` (the stutter read-off and
-the `primitives` toolkit — Green's orders, idempotents; reuse over
-re-derivation, 2026-07-11) — and NOTHING else in the repo. Never `sosl.learn`, `sosl.teacher`,
-`sosl.experiment`, `tests.*`. Test scripts under `sosl/tests/giventhat/`
-may import anything they need (spot, replay hooks), like the calculus
-gates do. One cross-package addition is commissioned in GT1
-(`conjugacy_classes` in `calculus.surgery`, §3.2) — that one function,
-nothing else moves in `calculus`.
+decide, reduce, witness) and `sosl.sos.classify` (the stutter read-off,
+the `primitives` toolkit) — and NOTHING else in the repo. Never
+`sosl.learn`, `sosl.teacher`, `sosl.experiment`, `tests.*`. Test scripts
+under `sosl/tests/giventhat/` may import anything.
 
-**The one theorem you must keep in your head.** Paper Prop 3.1: on the
-materialized product table, `P_max \ P_min = P_K^c`, and the legal `B`s
-are exactly `P_min ⊔ (a union of conjugacy classes of linked pairs
-outside P_K)`. Every data structure below is this sentence reified.
-It is also a *runtime assertion* (§3.3): if it ever fails, the bug is
-upstream (align / materialize / saturate), never here — report with the
-failing case, do not work around.
+**The two sentences to keep in your head.**
+
+1. *Paper Prop 3.1.* On the materialized product table,
+   `P_max \ P_min = P_K^c`, and the legal `B`s are exactly
+   `P_min ⊔ (a union of conjugacy classes of linked pairs outside P_K)`.
+   Runs as an always-on assertion; if it fires the bug is upstream
+   (align / materialize / saturate).
+2. *Paper Prop 4.2.* For **any** congruence `π` of the table,
+   `hull_π(Q) := π⁻¹(sat_{T/π}(forced_π(Q)))` is the least
+   `π`-recognizable superset of `Q`; hence the interval contains a `B`
+   recognized by `T/π` **iff** `hull_π(P_min) ⊆ P_max`. This one test,
+   run inside a greedy, is the whole engine.
 
 ---
 
 ## 0. Prerequisites (all DONE, all reused, none reimplemented)
 
-From `sosl.sos.calculus` (see its spec for contracts):
+From `sosl.sos.calculus`:
 
-- `Table` — `(𝒞, λ, M)` + memoized `fold` / `idem` / linked pairs /
-  keys + `val(P)` closures. Pair sets are immutable sets of linked-pair
-  ids over their table.
-- `align(A, B) -> Aligned` and `materialize(aligned, A, B) -> Product`
-  — the product table with **both** input pair sets carried onto it
-  (`pairs_a`, `pairs_b`). Given-that operates on the *materialized*
-  product: the endpoints are cross-table Boolean combinations, and
-  `Aligned` alone cannot host surgeries (trap #2).
+- `Table` — `(𝒞, λ, M)` + memoized `fold` / `idem` / `linked` / keys +
+  `val(P)`. Pair sets are immutable sets of linked-pair ids.
+- **`Table.of_raw(alphabet, identity, letter_class, mult)`** — a table
+  from a raw algebra in any numbering: restricts to the reachable part
+  and **re-keys by the shared shortlex BFS**, returning `(table, remap)`.
+  This *is* how you build a quotient table. There is no second BFS to
+  write (trap #13).
+- `align(A, B) -> Aligned`, `materialize(aligned, A, B) -> Product` —
+  the product table carrying **both** pair sets (`pairs_a`, `pairs_b`).
+  Given-that operates on the *materialized* product (trap #2).
 - `surgery`: `complement / union / intersection / difference`,
-  `saturate` (with the mandatory `linked_pair_of` renormalization —
-  calculus spec §3.3; you will lean on it in §3.2), `safety_closure`,
-  `interior`, `is_safety`, `is_cosafety`, `is_obligation`,
-  `obligation_degree`, `live`.
+  `saturate` (with the mandatory `linked_pair_of` renormalization),
+  `is_saturated`, `conjugacy_classes`, `r_classes`, `safety_closure`,
+  `interior`, `is_safety`, `is_cosafety`, `is_obligation`, `live`.
 - `decide`: `member / is_empty / is_universal / included / equivalent /
-  intersecting_word` — all witness-carrying, all scanning cells in the
-  discipline order (shortest stem, shortest loop, stem lex, loop lex),
-  so every witness is the globally minimal lasso (calculus spec Prop W).
-- `reduce(table, P) -> Invariant` — the canonical re-quotient.
+  intersecting_word` — witness-carrying, minimal-lasso.
+- `reduce(table, P, check=…) -> Invariant` — the canonical re-quotient.
+  **`reduce` is also how you obtain a congruence**: its `_blocks` is the
+  syntactic congruence of `L(P)` on `T` (see §5.4 — promote it, do not
+  re-derive it).
 - `witness.Witness` with `replay(oracle)`.
 
-From `sosl.sos.classify`: `is_stutter_invariant(inv)` — the
-`λ(a)² = λ(a)` read-off.
+From `sosl.sos.classify`: `is_stutter_invariant(inv)`.
+From `sosl.sos.io`: `load_invariant` / `dump_invariant` (the tool's I/O;
+never hand-parse `.sos`).
 
-Corpus: `genaut/corpus/flat_canon/` — 3 938 canonical `.sos` invariants
-+ paired det HOA, `.cat` sidecars carrying the Wagner coordinates
-`(m⁺, m⁻, n⁺, n⁻)`, the LTL bit, and the `stutter:` tag. Alphabet
-strata as in calculus spec §8.2: sample pairs WITHIN one stratum only.
+Corpus: `genaut/corpus/flat_canon/` — canonical `.sos` + paired det HOA
++ `.cat` sidecars. Sample pairs WITHIN one alphabet stratum (calculus
+spec §8.2) — `align` asserts equal alphabets (trap #1).
 
 ---
 
@@ -90,599 +93,427 @@ strata as in calculus spec §8.2: sample pairs WITHIN one stratum only.
 
 ```
 sosl/sosl/sos/giventhat/
-    __init__.py    re-exports given_that, Interval, the GT2/GT3 entry points
-    interval.py    GT1: Interval, given_that, endpoint decisions, choose
-    ladder.py      GT2: forced classes, per-rung existence tests, hulls
-    stutter.py     GT3: stutter congruence + tier-1 quotient test;
-                   tier-2 self-alignment
-    degree.py      GT4: band-minimal Wagner degree (greedy + brute probe)
+    __init__.py    re-exports only (house rule; docs live in README.md)
+    interval.py    GT1 (DONE): Interval, given_that, endpoints, choose
+    ladder.py      GT2 (DONE): rung tests, forced, rec_hull, read-offs
+    quotient.py    GT3: Quotient, congruence, forced, hull, admits,
+                   least_member / greatest_member, is_recognized
+    stutter.py     GT3: stutter_seeds, sc, exists_stutter_invariant (YES/UNKNOWN)
+    simplify.py    GT4: the greedy driver — THE OPERATION
+    __main__.py    GT4: the CLI (thin: argv, load, call, print, dump)
 
 sosl/tests/giventhat/
-    fixtures.py        builds + caches the two fixture DELAs (§3.5)
-    interval_gate.py   GT1 acceptance
-    ladder_gate.py     GT2 acceptance (incl. the corpus rung oracle)
-    stutter_gate.py    GT3 acceptance
-    degree_gate.py     GT4 acceptance
-    w0_census.py       GT5/W0 campaign
+    fixtures.py        the two fixture DELAs (DONE)
+    interval_gate.py   GT1 (DONE)
+    ladder_gate.py     GT2 (DONE)
+    quotient_gate.py   GT3
+    simplify_gate.py   GT4
+    gt5_demo.py        GT5 campaign
     logs/              working logs (never /tmp)
 ```
 
-Library only, no CLI. Type-annotate every public signature (params and
-return; `typing.Optional/Tuple/FrozenSet`, `Protocol` where a contract
-is behavioral) — house rule.
+Type-annotate every public signature (params + return) — house rule.
 
 ---
 
 ## 2. Objects
 
-**PairSet, RClass, ConjClass.** A pair set is what `calculus` says it
-is. An `RClass` is a strongly connected component of the right-Cayley
-graph `c → M(c, λ(a))` restricted to linked-pair stems (the SCC pass
-`is_obligation` already runs — expose/reuse that routine rather than
-writing a second Tarjan; if it is private, promote it to a shared
-helper `r_classes(table) -> Sequence[FrozenSet[ClassId]]` inside
-`calculus.surgery` as part of the GT2 landing, with its own one-line
-gate: `R`-classes partition the linked stems). A `ConjClass` is a
-conjugacy class of linked pairs (§3.2).
-
-**Interval (the GT1 object, frozen dataclass).**
+**`Quotient`** (frozen dataclass, `quotient.py`):
 
 ```
 @dataclass(frozen=True)
-class Interval:
-    table: Table                     # the materialized product table
-    p_neg_phi: PairSet               # P_¬φ carried onto table
-    p_k: PairSet                     # P_K carried onto table
-    p_min: PairSet                   # P_¬φ ∩ P_K
-    p_max: PairSet                   # P_¬φ ∪ P_K^c
-    freedom: Tuple[ConjClass, ...]   # conjugacy classes of linked \ p_k,
-                                     # in first-representative discipline
-                                     # order (deterministic)
+class Quotient:
+    table: Table                  # T/π, canonically keyed by Table.of_raw
+    pi: Tuple[int, ...]           # T-class id -> T/π-class id
+    source: Table                 # T (the congruence's domain)
     @property
-    def bits(self) -> int: ...       # len(freedom) — |F| of paper Prop 3.1
+    def n(self) -> int: ...       # len(T/π classes) — the greedy's score
 ```
+
+Invariants asserted at construction: `pi[T.identity] == quot.table.identity`
+and that block is a **singleton** (trap #8); `pi` is a monoid morphism
+(`pi[M(c,d)] == M_q(pi[c], pi[d])` — gate-side, `O(n²)`, not in the hot
+loop); `pi` is surjective.
+
+**`Simplification`** (frozen dataclass, `simplify.py`): see §6.4.
 
 ---
 
-## 3. GT1 — the interval object + endpoint decisions (THE MILESTONE)
+## 3. GT1 — the interval (DONE, unchanged)
 
-Normative math: paper §3 (Prop 3.1 and the two decisive checks).
-Everything in this section is prescribed; if an ambiguity remains,
-choose the reading that matches the paper and say so in the report.
+`given_that(neg_phi, k) -> Interval` with fields `table, p_neg_phi, p_k,
+p_min, p_max, freedom`, `bits = len(freedom)`; `k_settles_phi` /
+`k_refutes_phi` (the latter as emptiness of a complement — **no separate
+universality scan**, trap #4); `choose` / `decompose`. Prop 3.1 asserted
+on every construction. Gates in `interval_gate.py`.
 
-### 3.1 `given_that`
-
-```
-given_that(neg_phi: Invariant, k: Invariant) -> Interval
-```
-
-Steps, in order:
-
-1. **Assert same alphabet** (same AP set and order). Do not adapt —
-   `inverse_substitution` is the adapter and it is out of scope. A
-   mismatch is a caller error: raise.
-2. `aligned = align(neg_phi, k)`; `prod = materialize(aligned,
-   neg_phi, k)` — one product table, both pair sets carried
-   (`p_neg_phi = prod.pairs_a`, `p_k = prod.pairs_b`).
-3. `p_min = intersection(p_neg_phi, p_k)`;
-   `p_max = union(p_neg_phi, complement(p_k))` — two free surgeries on
-   the product table.
-4. `freedom = tuple(C for C in conjugacy_classes(prod.table)
-   if C.isdisjoint(p_k))` (§3.2; a class is entirely in or entirely
-   out of the saturated `p_k` — assert that dichotomy per class while
-   filtering).
-5. **Runtime law (assert, always on, cheap):**
-   `difference(p_max, p_min) == complement(p_k)` and the union of
-   `freedom` equals that same set, disjointly. This is paper Prop 3.1;
-   a violation is an upstream bug — raise with the offending pair id,
-   never continue.
-6. Return the frozen `Interval`.
-
-Cost: one align + one materialize (the only product-priced moves), one
-`conjugacy_classes` pass, `O(|linked|)` surgeries.
-
-### 3.2 `conjugacy_classes` — the one commissioned addition to `calculus.surgery`
-
-```
-conjugacy_classes(table) -> Tuple[FrozenSet[Pair], ...]
-```
-
-Partition of `linked(table)` into conjugacy classes: process linked
-pairs in the deterministic order (sort by
-`(len(key(s)), key(s), len(key(e)), key(e))`); for each not-yet-visited
-pair, its class is `saturate({pair})` (the existing fixpoint — with its
-`linked_pair_of` renormalization; do NOT re-derive the closure, call
-`saturate`); mark all members visited; class order = discovery order.
-Cost `O(|linked|·n²)` worst case — fine at census sizes; memoize on the
-table like `linked` is.
-
-Gate (goes into `interval_gate.py`, runs on every case): the classes
-partition `linked`; `saturate({p}) == class_of(p)` for a sample of `p`
-per class; for every *saturated* `P` encountered (both carried sides,
-`p_min`, `p_max`), `P` is exactly the union of the classes it meets.
-
-### 3.3 Endpoint decisions
-
-```
-k_settles_phi(iv: Interval) -> Tuple[bool, Optional[Witness]]
-k_refutes_phi(iv: Interval) -> Tuple[bool, Optional[Witness]]
-```
-
-- `k_settles_phi`: `is_empty(iv.p_min)` on the product table. True ⟹
-  `K ⊨ φ`, done, no model checker. False ⟹ witness = the minimal lasso
-  of `ℒ(¬φ) ∩ ℒ(K)` (the scan's first cell — `decide` already returns
-  it), provenance string `"k_settles_phi"`.
-- `k_refutes_phi`: `is_empty(complement(iv.p_max))`. True ⟹ `K ⊨ ¬φ`
-  (every run of a nonempty system is a counterexample). False ⟹
-  witness = minimal lasso of `ℒ(φ) ∩ ℒ(K)`.
-- **Do not implement a universality scan** — the second check IS
-  emptiness of a complement, one flip; that symmetry is a claim of the
-  paper (§3) and the code should exhibit it (trap #4).
-
-### 3.4 The choice API
-
-```
-choose(iv, chosen: Iterable[int]) -> PairSet     # indices into freedom
-decompose(iv, q: PairSet) -> Optional[FrozenSet[int]]
-```
-
-- `choose`: `p_min ∪ ⋃ freedom[i]`. By Prop 3.1 the result is saturated
-  and in the interval by construction — assert both anyway under a
-  `check=True` default (harness runs checked; campaigns may pass
-  `check=False`).
-- `decompose`: inverse — if `q` is saturated and `p_min ⊆ q ⊆ p_max`,
-  return the index set (`q \ p_min` is a union of freedom classes;
-  match by intersection — each class all-in or all-out, assert the
-  dichotomy); else `None`.
-- Laws (gate): `choose(∅) == p_min`; `choose(range(bits)) == p_max`;
-  `decompose(choose(S)) == S` for random `S`; monotone:
-  `S ⊆ S' ⟹ choose(S) ⊆ choose(S')`.
-
-### 3.5 The fixture pair (build FIRST — everything gates on it)
-
-The paper's §5.2 counterexample, used from GT1 on. `fixtures.py`
-builds two DELAs over one AP `p` (exactly two letters:
-`a := p`, `b := ¬p` — no fourth-valuation trap here), writes them
-under `sosl/tests/giventhat/logs/fixtures/`, canonizes each with
-`genaut/gen/canonize.py` (trust its defaults; head its pydoc for the
-output flag only), and caches the resulting `.sos` paths.
-
-- `D_ab` — `ℒ = {(ab)^ω}`: states `q0` (initial), `q1`, sink `R`.
-  Transitions: `q0 --a--> q1`; `q0 --b--> R`; `q1 --b--> q0` carrying
-  acceptance mark `{0}`; `q1 --a--> R`; `R --⊤--> R`. Acceptance
-  `Inf(0)`. Deterministic, complete.
-- `D_K` — `ℒ = {(ab)^ω, (ba)^ω}`: states `s0` (initial), `x1, x0`
-  (the ab-phase), `y1, y0` (the ba-phase), sink `R`. Transitions:
-  `s0 --a--> x1`, `s0 --b--> y1`; `x1 --b--> x0` mark `{0}`,
-  `x0 --a--> x1`; `y1 --a--> y0` mark `{0}`, `y0 --b--> y1`; every
-  other letter from every state → `R`; `R --⊤--> R`. Acceptance
-  `Inf(0)`.
-
-Expected facts to assert (each failure = STOP and report, §8/E1):
-
-- `|𝒞(D_ab)| == 6` — the paper's hand computation (`[ε]`, four
-  alternating classes by first/last letter, junk). A different value
-  convicts either canonize or the paper's §5.2 walkthrough; that is a
-  to-theory finding, not something to patch.
-- `|𝒞(D_K)|` — record as a datum (no hard assert; the paper does not
-  compute it).
-- On `iv = given_that(𝓘(D_ab), 𝓘(D_K))`:
-  `k_settles_phi(iv) == (False, w1)` with `w1` a lasso of loop length 2
-  whose replay is IN both HOAs (it must be `(ab)^ω` up to presentation);
-  `k_refutes_phi(iv) == (False, w2)` with `w2` replaying IN `D_K` and
-  NOT IN `D_ab` (it must be `(ba)^ω` up to presentation);
-  `iv.bits ≥ 1` — record the exact value as a datum (the paper predicts
-  the free band is nonempty; its exact class count on the product table
-  is not hand-computed — report it).
-
-Witness replay uses the existing teacher replay hook against the det
-HOA (calculus spec trap #11: reuse the `.sos`-letter → BDD mapping,
-never re-parse letters by hand). Spot bounded-or-skipped as always.
-
-### 3.6 GT1 semantic gates (in `interval_gate.py`)
-
-1. **Metamorphic endpoints** (the deep check): for every lasso
-   `(u, v)` with `|u|, |v| ≤ 3` (exhaustive over the fixture alphabet;
-   sampled ≥ 500 lassos per corpus case):
-   `member(p_min, u, v) == member_¬φ(u, v) AND member_K(u, v)` and
-   `member(p_max, u, v) == member_¬φ(u, v) OR NOT member_K(u, v)`,
-   where the right-hand memberships run on the ORIGINAL two invariants
-   (not the carried sides) — this crosses the align/materialize
-   boundary and is the gate that would catch a carry bug.
-2. **Endpoint cross-oracle**: `k_settles_phi` agrees with the
-   independent route `intersecting_word(aligned)` (no word ⟺ settles);
-   `k_refutes_phi` agrees with `included(K ≤ ¬φ)` on the aligned pair.
-   Witnesses from both routes replay against both HOAs (bounded).
-3. **Prop 3.1 law + conjugacy gate** (§3.1.5, §3.2) on every case.
-4. **Choice laws** (§3.4) with 20 random seeded subsets per case.
-5. **Corpus campaign**: 300 seeded same-stratum pairs
-   `(¬φ := L₁, K := L₂)` from `flat_canon` (seed `20260711`, sampled
-   within strata proportionally), plus the 300 reversed pairs
-   (`K := L₁`), plus 100 pairs `(L, its complement partner)` — the
-   last stratum makes `p_min = ∅` (K settles) a frequent, predictable
-   outcome: assert `k_settles_phi` is True exactly when
-   `intersecting_word` finds nothing. Per-case budget 15 s; checkpoint
-   file; `--one <case>` mode (house rules, calculus spec §8.1 applies
-   verbatim).
-
-**GT1 acceptance:** `interval_gate.py` green on the fixture pair and
-the full 700-pair campaign, zero unexplained rows; the `|F|`
-distribution over the campaign written to
-`sosl/tests/giventhat/logs/gt1_bits.csv` (this is a paper §7 datum —
-carry it into the report, finding slot F3); `conjugacy_classes` landed
-in `calculus.surgery` with its gate and the calculus harness still
-green (run it — you touched the package).
+In the operation this is steps 1–2 (paper §4.6). Nothing changes.
 
 ---
 
-## 4. GT2 — the ladder tests
+## 4. GT2 — the ladder (DONE, re-scoped)
 
-Normative math: paper §4 (Lemma 4.1, Props 4.2–4.4). Entry points in
-`ladder.py`, all taking an `Interval`, all returning
-`(bool, Optional[PairSet] least_witness, Optional[Witness] refusal)` —
-on yes, the least member (greatest on the kernel-side rungs co-safety
-and persistence); on no, the minimal lasso certificate: the first
-*cell* of the normative scan order whose linked pair was pushed past
-the constraining endpoint — the globally minimal lasso (calculus
-Prop W discipline; as-built 2026-07-11, matches the paper's §4.6
-rendering).
+`exists_safety / exists_cosafety / exists_obligation / exists_recurrence
+/ exists_persistence(iv) -> (bool, member, refusal)`, `forced`,
+`h_below`, `is_recurrence` / `is_persistence`, `rec_hull`. Gates in
+`ladder_gate.py`.
 
-- `exists_safety(iv)`: `safety_closure(p_min) ⊆ p_max` — reuse CAL5's
-  `safety_closure`, subset test is one pass; least witness the closure
-  itself. `exists_cosafety(iv)`: `p_min ⊆ interior(p_max)`; greatest
-  witness the interior.
-- `forced(iv) -> Tuple[FrozenSet[RClass], FrozenSet[RClass]]`:
-  forced-1 = `R`-classes containing a stem of `p_min`; forced-0 =
-  `R`-classes containing a stem of some linked pair outside `p_max`.
-  One pass each after `r_classes(table)`.
-- `exists_obligation(iv)`: forced-1 ∩ forced-0 == ∅ (paper Prop 4.3).
-  Least witness `{(s,e) linked : R(s) ∈ forced-1-closure}` — careful:
-  the least member is θ = forced₁ exactly (no closure beyond it);
-  greatest is θ = ¬forced₀. Assert both are saturated and in the
-  interval, and `is_obligation` (CAL5) holds on both.
-- **H-order helper** (in `ladder.py`):
-  `h_below(table) -> relation on idempotents` — the ladder-shaped view
-  of `classify.primitives`' H-order (`idempotents` / `leq_h_idem`, the
-  one-line `f·e = e·f = f` test, equivalent to `∃x: M(e,x) = f ∧
-  ∃y: M(y,e) = f` on idempotents). REUSE the primitive, do not
-  re-derive it: code duplication in the name of oracle independence
-  was rejected 2026-07-11 — a *different decision path* over shared
-  primitives is the accepted cross-check standard. `O(|E|²)`, computed
-  per call; fine at census sizes.
-- `rec_hull(table, Q) -> PairSet`: least fixpoint alternating
-  (a) the Horn rule — for `(s,e) ∈ Q` and `f ≤_H e` with `(s,f)`
-  linked, add `(s,f)` — with (b) `saturate`, until stable (≤ `|linked|`
-  rounds). Forgetting (b) yields non-language sets; the saturation law
-  will convict you (trap #10).
-- `is_recurrence(table, P) -> bool`: no linked stem `s` with loops
-  `f ≤_H e`, `Val(s,e)=1`, `Val(s,f)=0`. `is_persistence`: mirror.
-- `exists_recurrence(iv)`: `rec_hull(p_min) ⊆ p_max`.
-  `exists_persistence(iv)`: `rec_hull(complement(p_max)) ⊆
-  complement(p_min)` — ONE complement flip, no new machinery; the code
-  should be four lines and the paper says why (Prop 4.4).
+**Re-scope (2026-07-12).** These are no longer the deliverable. They are:
 
-Gates (`ladder_gate.py`):
+- **output metrics** — `simplify` reports the Manna–Pnueli rung of `¬φ`
+  and of the emitted `B`; a strict drop is a headline (§7);
+- **optional constraints** — via paper Lemma 5.2 (composition), the
+  least `B` that is *both* `π`-recognizable *and* on a given rung is the
+  joint fixpoint of `hull_π` alternated with that rung's closure. §6.5
+  specifies the constrained mode. Do not build new hulls: alternate the
+  existing ones.
 
-1. **The corpus rung oracle** (the decisive one — run it FIRST, before
-   any interval work): over every corpus invariant,
-   `is_recurrence(P) == (m⁺ ≤ 0)` and `is_persistence(P) == (m⁻ ≤ 0)`
-   against the `.cat` sidecar coordinates. The two sides share
-   `classify.primitives`' H-order but decide by different paths (the
-   ladder's violation scan vs the chain DP of `classify.chains`) —
-   that, not code-level independence, is the cross-check (2026-07-11).
-   **The paper hand-checked the orientation on four examples; the
-   corpus decides it.** If the gate fails *consistently flipped*
-   (agreement rate ≈ 0 under one orientation, ≈ 1 under the swap),
-   implement the swap and file the flip as a prominent to-theory
-   finding (report slot F5) — the paper's §2 paragraph must then be
-   corrected. If it fails *mixed*, that is a real bug or a real theory
-   problem: STOP, report the smallest disagreeing case.
-2. **Hull laws**: `rec_hull` extensive / monotone / idempotent on
-   random saturated pair sets; output saturated; `is_recurrence(rec_hull(Q))`
-   true; `rec_hull(Q) == Q` iff `is_recurrence(Q)`.
-3. **The brute-force lattice oracle** (exactness, the gate that makes
-   these tests trustworthy): on every campaign case with
-   `iv.bits ≤ 12`, enumerate ALL `2^bits` choices; for each rung,
-   `exists_rung(iv) == any(is_rung(reduce-free check on choose(S)))`
-   over the enumeration, using the independent CAL5/GT2 predicates
-   (`is_safety`, `is_cosafety`, `is_obligation`, `is_recurrence`,
-   `is_persistence`) on the raw chosen pair set (no reduce needed —
-   the predicates read the table). Also: when yes, the returned least
-   witness is ⊆ every enumerated member (leastness, checked
-   literally). Cases with `bits > 12`: skip the oracle, record.
-4. **Witness discipline**: on no, the refusal lasso replays as ∈
-   hull-language and ∉ `L(p_max)` against the exit HOAs (bounded) or
-   via `member` on the table (always).
-5. **The worked-example fixture (paper §4.6 — a second hand-verified
-   oracle).** Build DELAs for `¬φ = F(a∧c) ∨ (GFb ∧ GF¬b)` and
-   `K = FGb ∧ Gc` over `AP = {a,b,c}` (via `ltl2tgba -D` if
-   convenient — bounded — or by hand from the paper's class
-   descriptions), canonize, and assert the paper's hand computation:
-   `|𝒞(¬φ)| == 5`, `|𝒞(K)| == 4`, product table 10 classes; both
-   endpoints inconclusive with witnesses replaying as `({abc})^ω`
-   and `({bc})^ω`; `exists_safety` NO with refusal lasso replaying
-   as `({bc})^ω`; `exists_cosafety` YES with kernel witness whose
-   reduce is the invariant of `F(a ∨ ¬c)` and least member the
-   invariant of `F(a∧c)` (byte-compare against canonized DELAs for
-   those two formulas; as-built 2026-07-11: the fixture band is
-   `bits = 25`, so the least member comes from the exact
-   least-open-hull — all linked pairs whose stem is a right multiple
-   of a `P_min` stem — not from a `2^bits` enumeration);
-   `is_recurrence(P_¬φ)` true,
-   `is_persistence(P_¬φ)` and `is_obligation(P_¬φ)` false. Any
-   mismatch: E1 discipline (spec §8) — first the encoding, then
-   canonize, then the paper's §4.6 arithmetic; escalations go to the
-   report verbatim. *Outcome (2026-07-11): all green.*
-
-**GT2 acceptance (met 2026-07-11):** rung oracle every corpus case
-explained (6 222/6 222 green); ladder gates green on the GT1 campaign
-pairs (700/700); brute oracle zero disagreements on every `bits ≤ 12`
-case (264).
+A `rung_of(table, pairs) -> str` helper (safety / cosafety / obligation
+/ recurrence / persistence / above) belongs in `ladder.py` — it is the
+one addition GT2 takes, and it is a pure read-off composition of the
+existing predicates.
 
 ---
 
-## 5. GT3 — stutterization, two tiers
+## 5. GT3 — the bounded quotient engine (THE EXACT PRIMITIVE)
 
-Normative math: paper §5 (Prop 5.1, Thm 5.2, Thm 5.3). Tier 1 lands
-first and gates alone; tier 2 is a separate landing.
+Normative math: paper §4.2–§4.4 (Prop 4.1, Prop 4.2, Prop 4.3) and
+§5.3 (Prop 5.6, Thm 5.7).
 
-### 5.1 Tier 1 — the quotient test
+### 5.1 `congruence(table, seeds) -> Quotient`
 
-- `stutter_quotient(table) -> (QuotientTable, pi)`: smallest monoid
-  congruence with `λ(a)² ∼ λ(a)` per letter. Union-find over classes;
-  worklist of merged pairs; on merging `x ∼ y`, enqueue
-  `M(c,x) ∼ M(c,y)` and `M(x,c) ∼ M(y,c)` for every class `c`; drain
-  to fixpoint. `[ε]` can never merge (products of non-identity classes
-  are non-identity — assert it rather than special-casing, trap #8).
-  Quotient table re-keyed by the shared shortlex BFS (same routine as
-  align/reduce — one implementation, four call sites now).
-- `sc(table, Q, quotient, pi) -> PairSet` (the on-table stutter hull):
-  `forced` = one pass over the cells of `table`: for each cell `(c,d)`
-  with `Val_Q(c,d)` true, insert `linked_pair_of(pi(c)·e, e)`,
-  `e = idem(pi(d))`, into the quotient pair set; then `saturate` in
-  the quotient; then pull back:
-  `{(s,e) ∈ linked(table) : (pi(s)·idem(pi(e)), idem(pi(e))) ∈ P'}`.
-- `exists_stutter_invariant_tier1(iv)`: `sc(p_min) ⊆ p_max`; witness
-  on yes: `sc(p_min)` (on-table, canonical); on no: NOTHING is
-  concluded (tier 1 is only sufficient — the paper's Thm 5.2; the
-  return type must make this unmistakable: return a three-valued
-  verdict `YES / UNKNOWN`, never `NO`).
+The least monoid congruence identifying every seed pair
+`(x, y) ∈ seeds`.
 
-Gates: `sc` extensive / idempotent; `is_stutter_invariant(reduce(sc(Q)))`
-true always; `sc(Q) == Q` iff `is_stutter_invariant(reduce(Q))` on
-sampled saturated `Q`; metamorphic soundness — for lassos
-`|u|,|v| ≤ 3`, if `member(Q, u, v)` then `member(sc(Q), u', v')` for
-every stutter-variant presentation `(u', v')` in the same bound.
-**Fixture**: on the §3.5 pair, the quotient table must collapse to
-`{[ε], Z}` (assert size 2) and tier 1 must return UNKNOWN with
-`sc(p_min) = linked` (assert universal) — this is Thm 5.2 running as a
-regression test.
+- Union-find over `table.n` classes. Worklist of merged pairs; on
+  merging `x ∼ y`, enqueue `(M(g,x), M(g,y))` and `(M(x,g), M(y,g))` for
+  every **letter class** `g ∈ set(table.letter_class)`. Drain to
+  fixpoint.
+- *Letters suffice* — every class is a product of letters, so
+  single-letter two-sided stability propagates by induction (the same
+  argument `reduce._blocks` step 2 already runs). Closing over all
+  classes is also correct but quadratically wasteful; the `O(n²)`
+  full-congruence check lives in the gate, not the loop.
+- `[ε]` can never merge: it is adjoined, so no product of non-identity
+  classes returns to it, and the seeds are non-identity. **Assert it; do
+  not special-case it** (trap #8).
+- Build the quotient table with `Table.of_raw(table.alphabet,
+  block_of[identity], [block_of[lc] for lc in letter_class],
+  block_mult)` — this re-keys by the shared shortlex BFS and returns the
+  `remap`; compose `block_of` with `remap` to get `pi`. **No new BFS.**
 
-### 5.2 Tier 2 — the stutter self-alignment (the hard part)
+Cost `O(n·|Σ|·α(n))` per seed batch.
 
-`exists_stutter_invariant(iv) -> (bool, certificate)` — exact, paper
-Thm 5.3. Compute the stutter cell relation `R_st` and scan for a
-conflict `(Val_{p_min} true) × (Val_{p_max} false)`.
+### 5.2 The hull, the test, the members
 
-Prescribed construction (deviations allowed only with a written
-justification in the report):
+```
+pullback(quot, pairs_q) -> PairSet        # on T
+    { (s,e) in source.linked : quot.table.val(pairs_q, pi[s], pi[e]) }
 
-- **Stem relation.** Walk states `(last_letter, c, c') ∈ Σ × 𝒞 × 𝒞`,
-  start `(⊥, [ε], [ε])`; step: pick `b ≠ last_letter`, pick
-  `g ∈ ⟨λ(b)⟩` and `g' ∈ ⟨λ(b)⟩` *independently* (`⟨d⟩` = the cyclic
-  set `{d, d², …}`, memoized per class), move to
-  `(b, M(c,g), M(c',g'))`. Reachable set = pairs of folds of
-  stutter-variants of a common stutter-free stem.
-- **Loop relation.** Same walk, but seeded per first letter `b₀` and
-  closed cyclically: accept `(c, c')` reached from `(b₀, start)` where
-  the last letter `≠ b₀` OR the loop is a single letter block
-  (`y = b₀^k` — the single-letter loop case: `⟨λ(b₀)⟩ × ⟨λ(b₀)⟩`
-  directly). Then associated-pair renormalization on both tracks
-  (`linked_pair_of`), remembering that the two tracks renormalize
-  *independently*.
-- **Eventually-constant case.** Normal forms `w·a^ω`: stems from the
-  stem relation with last letter `≠ a` (or empty), loops
-  `(λ(a)^i, λ(a)^j)` — enumerate directly; do not force it through the
-  cyclic walk.
-- **Conflict scan.** For every related cell pair
-  `((c,d), (c',d'))`: conflict iff `Val_{p_min}(c,d)` and
-  `¬Val_{p_max}(c',d')`. Answer yes iff no conflict. Certificate on
-  no: the two canonical lassos of the conflicting cells and their
-  common destuttered base (reconstruct from the walk path — store
-  parent pointers) — "two stutter-equivalent behaviors, one mandatory,
-  one forbidden".
-- **Do NOT build `SC`'s automaton for the decision** (trap #12). The
-  yes-side witness object (an actual `B` for the model checker) is a
-  stretch goal: `sc(p_min)` when tier 1 already said yes; otherwise
-  mark `witness=None, off_table=True` and stop — constructing
-  `SC(L(p_min))` via closure automata + re-entry is future work, not
-  GT3.
+forced(quot, table, q) -> PairSet         # on T/π
+    for each cell (c, d) of table with table.val(q, c, d):
+        insert linked_pair_of(quot.table, pi[c], pi[d])
+    # linked_pair_of renormalizes through the QUOTIENT's idempotent —
+    # inserting the raw image pair is unsound (trap #3)
 
-Gates: (a) fixture: tier 2 must answer **YES** where tier 1 said
-UNKNOWN — the paper's headline counterexample, now a three-way
-regression (`tier1 UNKNOWN / tier2 YES / spot sirelax-style check YES`
-— the last via bounded Spot on the exit acceptors if convenient, else
-skip and note); (b) consistency: tier-1 YES ⟹ tier-2 YES on every
-campaign case; (c) the bounded semantic oracle: enumerate all lasso
-pairs `|u|,|v| ≤ 3` with equal destuttered normal forms; any such pair
-with `member(p_min, u, v)` and `¬member(p_max, u', v')` must make
-tier 2 answer NO, and tier-2's NO certificate must itself replay
-(`member` both sides); (d) on corpus campaign cases where the language
-is already stutter-invariant (`.cat` tag) and `¬φ = K = L`, tier 1
-must answer YES immediately.
+hull(quot, table, q) -> PairSet           # on T
+    pullback(quot, saturate(quot.table, forced(quot, table, q)))
+    # saturate on the QUOTIENT, then pull back. Pulling back first and
+    # saturating on T is a different, wrong set (trap #15)
 
-**GT3 acceptance:** tier-1 gates green (fixture regression included);
-tier-2 green on fixture + campaign, zero (a)–(d) violations; the
-tier-1-UNKNOWN-but-tier-2-YES frequency over the campaign recorded
-(report slot F10 — this measures how often the hull escapes the table,
-a paper §7 number).
+admits(quot, iv) -> bool
+    hull(quot, iv.table, iv.p_min) <= iv.p_max            # paper Prop 4.2
 
----
+least_member(quot, iv)    -> PairSet   = hull(quot, iv.table, iv.p_min)
+greatest_member(quot, iv) -> PairSet   = complement(hull(quot, iv.table,
+                                                    complement(iv.p_max)))
 
-## 6. GT4 — band-minimal Wagner degree (a theory probe)
+is_recognized(quot, table, pairs) -> bool     # gate-side
+    pairs == pullback(quot, image of pairs under pi)
+```
 
-Normative math: paper Prop 4.5 — **flagged there as a sketch**; this
-milestone is deliberately built as its experimental verification.
+### 5.3 Stutter invariance is one seed set (`stutter.py`, thin)
 
-- `min_band_degree(iv) -> Optional[Tuple[int, int]]`: None unless
-  `exists_obligation(iv)`. Greedy: condense to `R`-classes; bottom-up
-  over the condensation compute the pointwise-least monotone level
-  function `ℓ*` — `ℓ*(r) = max over R-successors' ℓ*`, bumped by one
-  if `r` is forced and the parity of the current value disagrees with
-  the forced polarity; free classes take the max unmodified. Read the
-  degree pair off `ℓ*` (per-polarity: run once with parity convention
-  1-at-even, once 0-at-even — two passes; return the pair).
-- **The brute probe (mandatory, the point of the milestone):** on
-  every case with `bits ≤ 12` AND `exists_obligation`, enumerate all
-  consistent `θ` (free classes both ways), compute
-  `obligation_degree(choose-equivalent pair set)` (CAL5) for each, and
-  take the true minimum. `min_band_degree` must equal it. **A
-  disagreement is a publishable theory finding about Prop 4.5's
-  simultaneity gap — record the minimal case verbatim in the report
-  (slot F12) and do NOT tweak the greedy to match; the theory thread
-  owns the resolution.**
+- `stutter_seeds(table) -> [(M(la, la), la) for la in set(letter_class)]`
+- `sc(table, q) = hull(congruence(table, stutter_seeds(table)), table, q)`
+  — paper Prop 5.6's `sc`, recovered as the instance.
+- `exists_stutter_invariant(iv) -> (Verdict, Optional[PairSet])` with
+  `Verdict ∈ {YES, UNKNOWN}` — **never NO** (paper Thm 5.7: the hull can
+  escape the table; trap #11). On YES the witness is `least_member`.
 
-**GT4 acceptance:** greedy == brute on every probed case, or the
-disagreement dossier filed; degree distribution over the campaign
-recorded.
+Paper §5.4's AP shedding is the same engine under seeds
+`λ(ℓ) ∼ λ(ℓ')`. Not commissioned; the API must not foreclose it.
+
+### 5.4 The syntactic congruence as a seed (needed by §6.2)
+
+`reduce._blocks(table, pairs)` already computes the syntactic congruence
+of `L(pairs)` on `table`. Promote it to a public
+`syntactic_congruence(table, pairs) -> Quotient` in `calculus.reduce`
+(the **one** commissioned cross-package addition of GT3; nothing else
+moves in `calculus`), returning a `Quotient` rather than a block dict.
+Assert `quot.n == len(𝒞(reduce(table, pairs)))` — the two must agree,
+and that assertion is paper Prop 4.1 running at runtime.
+
+### 5.5 GT3 gates (`quotient_gate.py`)
+
+1. **Congruence law.** `pi` is a morphism on **all** class pairs
+   (`O(n²)`) — this checks the letters-suffice induction actually held.
+   `[ε]`'s block is a singleton.
+2. **Closure-operator laws for `hull`.** Extensive (`q ⊆ hull(q)`),
+   monotone, idempotent, output saturated, output `is_recognized`.
+3. **The bounded oracle — this is what makes Prop 4.2 testable.** On
+   cases with `bits ≤ 12`: enumerate all `2^F` members of the interval
+   (`choose` over the freedom classes), keep those with
+   `is_recognized(quot, ·)`, and check
+   (a) the kept set is nonempty **iff** `admits(quot, iv)`;
+   (b) when nonempty, `least_member` == their intersection and
+       `greatest_member` == their union.
+   Exact agreement required. A disagreement convicts Prop 4.2 (or the
+   code) — a **To theory** event, not a patch. Cap at 12; never raise it
+   (trap #6).
+4. **Prop 4.1 at runtime.** For sampled saturated `q`:
+   `syntactic_congruence(table, q).n == |𝒞(reduce(table, q))|`, and `q`
+   is recognized by it.
+5. **Stutter instance.** `is_stutter_invariant(reduce(sc(q)))` always;
+   `sc(q) == q` iff `is_stutter_invariant(reduce(q))` on sampled
+   saturated `q`.
+6. **Fixture (E2 — paper Thm 5.7's counterexample).** On the §3.5
+   fixture pair: the stutter quotient collapses to `{[ε], Z}`
+   (**assert `quot.n == 2`**), `sc(p_min) == table.linked` (assert
+   universal), and `exists_stutter_invariant` returns **UNKNOWN**.
+   Thm 5.7, executed as a regression.
+
+**GT3 acceptance:** gates 1–6 green on the fixture and on a small
+same-stratum corpus sample; the `bits ≤ 12` oracle exact on every probed
+case.
 
 ---
 
-## 7. GT5 — the W-series campaigns
+## 6. GT4 — the simplifier and the tool (THE DELIVERABLE)
 
-House rules of calculus spec §8.1 apply verbatim (budgets, seeds,
-checkpoints, output headers, CSV+md shape, `reference/` promotion).
+Normative math: paper §4.6 (the algorithm), §4.1 (the objective and the
+three reference points), Lemma 5.2 (composition).
 
-- **W0a — the all-pairs endpoint sweep** (`w0_endpoints.py`). ALL
-  unordered same-stratum corpus pairs, endpoints ONLY. One alignment
-  serves both orientations, and the four endpoint bits per unordered
-  pair reduce to three facts: `L₁ ∩ L₂ = ∅?`, `L₁ ⊆ L₂?`, `L₂ ⊆ L₁?`
-  — `O(n²)` scans on the aligned table, no `materialize`, no
-  conjugacy pass (`bits` is NOT computed here — that is what makes
-  the full sweep affordable; budget math: millions of pairs at
-  sub-ms each, hours as a checkpointed background campaign — chunk
-  by stratum, checkpoint per chunk). Deliverables: the endpoint kill
-  matrix (paper §7 item 1 census-shaped), and two reusable census
-  artifacts stored as `.csv` edge lists — the **inclusion digraph**
-  and the **disjointness graph** over `flat_canon` (the
-  Dureja–Rozier implication matrix [DR18] is the inclusion digraph
-  restricted to proven facts; say so in the summary). Both feed W0c
-  and [SωSN26].
-- **W0b — simple-on-complex, the realistic direction**
-  (`w0_asym.py`). The full given-that battery (bits, per-rung
-  existence, tier-1/tier-2 stutter, band degree, wall times) on an
-  ASYMMETRIC sample: `¬φ` drawn from the top `|𝒞|` deciles and the
-  high rungs (recurrence and above, non-LTL rows included), `K`
-  drawn from the low deciles and low rungs (safety / obligation /
-  stutter-invariant per `.cat`) — the shape of [DPT25]'s gleaned
-  facts (`G f`, `FG a`, initial-state facts). 500 seeded pairs +
-  the GT1 campaign pairs for continuity. This is the stratum where
-  the paper's "simpler class given knowledge" claim earns its keep:
-  report rung-drop rates ¬φ-rung → best-available-rung.
-- **W0c — incremental verification emulated on the census, with
-  ground truth** (`w0_incremental.py`). The point of the framework.
-  Fix a "system" `L_S` (200 seeded choices, skewed complex); from
-  the W0a inclusion digraph harvest its genuine knowledge
-  candidates `{K : L_S ⊆ L_K}` (facts true of the system, as in
-  real incremental verification); pick targets `φ` (seeded, mixed
-  deciles); the exact verdict `S ⊨ φ` is one inclusion scan —
-  ground truth is free. Then integrate the `K`s one at a time,
-  smallest table first, and per step record: running `|nodes|`,
-  `bits`, both endpoint bits, per-rung existence. Assert two LAWS
-  per step (violation = STOP, report):
-  - **monotonicity** — `P_min` only shrinks, `P_max` only grows,
-    so `bits`, every endpoint kill, and every rung-existence bit
-    are monotone (once yes, never no);
-  - **losslessness** (paper §6.2) — at each step, the running
-    interval byte-equals the one-shot interval of the conjunction
-    so far: `reduce` of both `p_min`s byte-equal, ditto `p_max`
-    (the running table and the one-shot table are different
-    presentations of the same generated product; reduce
-    canonicalizes both).
-  Headline numbers: the knowledge-decides rate (fraction of
-  `(L_S, φ)` where some prefix of the fact sequence settles or
-  refutes — compare against the free ground truth), the median
-  number of facts to decision, and the running-table growth curve
-  vs the census alignment-ratio prediction.
+**Honesty rule, enforced in review.** Exact minimization is conjectured
+NP-hard (paper Conj 4.5). The greedy is a **heuristic with an exact test
+inside it**. Its output is `|𝒞|` *achieved*, never `|𝒞|` *minimal*.
+Claiming minimality in code, docstring, report or paper is a reject.
 
-  Deliverables `reference/giventhat/w0_endpoints.md`,
-  `w0_asym.md`, `w0_incremental.md` (+ `.csv` each): every number
-  the paper later cites in pure form comes from here; the report
-  carries the reproducibility (slots F13–F15).
-- **W1 — the MCC benchmark of [DPT25].** BLOCKED: needs the DPT25
-  problem set (formulas + knowledge facts per model instance) landed
-  in the repo by the user. Do not fetch external artifacts on your
-  own initiative; when the data lands, a W1 protocol revision of this
-  spec will accompany it. Until then W1 does not exist for you.
+### 6.1 The three reference points (compute them first, always)
 
-**GT5 acceptance (W0):** the three reference files committed with
-headers, zero unexplained failure rows, zero W0c law violations (or
-the violation filed to theory — a monotonicity or losslessness break
-is a paper-level event), the summary tables present. W0a lands first
-(W0c consumes its digraph); W0b and W0c need GT2–GT4.
+- `|𝒞(¬φ)|` — the input. `P_{¬φ}` is in the interval, so identity is a
+  legal answer.
+- `|𝒞(L(P_min))|`, `|𝒞(L(P_max))|` — [DPT25]'s `min|K` / `max|K`. Legal
+  members too, and usually *larger* than the input.
+
+`simplify` must never emit anything worse than the best of these three
+(§6.4 step 4 enforces it by construction).
+
+### 6.2 The greedy (`simplify.py`)
+
+```
+simplify(iv, opts) -> Simplification
+
+1. endpoints (GT1):
+     k_settles_phi(iv) -> SETTLED, witness, no B
+     k_refutes_phi(iv) -> REFUTED, witness, no B
+
+2. seeds := [ syntactic_congruence(iv.table, iv.p_neg_phi),   # π_¬φ
+              congruence(iv.table, []),                        # identity
+              congruence(iv.table, stutter_seeds(iv.table)) ]  # if opts.stutter
+   # π_¬φ is ALWAYS admissible: P_¬φ is π_¬φ-recognizable and in the
+   # interval, so hull ⊆ P_¬φ ⊆ P_max. Seeding there is what makes the
+   # never-regress contract free (paper §4.6). ASSERT its admissibility.
+
+3. for each admissible seed π₀:
+       π := π₀
+       loop:
+           cands := { close(π, merge(b, b')) : b ≠ b' non-identity blocks of π }
+           good  := [ π' in cands if admits(π', iv) ]
+           if not good: break
+           π := argmin over good of (π'.n, key-order of the merged blocks)
+       record least_member(π, iv) and greatest_member(π, iv)
+
+4. B := argmin over { all recorded members } ∪ { P_¬φ, P_min, P_max }
+        of |𝒞(reduce(iv.table, ·, check=False))|
+   (ties: prefer relax over restrict, then the earlier seed — deterministic)
+
+5. assert intersection(B, iv.p_k) == iv.p_min          # §6.3
+   return Simplification(..., invariant=reduce(iv.table, B, check=True))
+```
+
+Merging *in the current quotient* and composing the maps is equivalent
+to re-closing from `T` (a congruence of `T/π` is a congruence of `T`
+coarser than `π`) and is how it must be implemented — do not re-close
+from `T` every round.
+
+Determinism is mandatory: candidate blocks are enumerated in the
+discipline order of their least representative's key.
+
+### 6.3 The soundness law (always on)
+
+[DPT25] Thm 1, on the table, is a **set identity**:
+
+    intersection(B, P_K) == P_min        ⟺        P_min ⊆ B ⊆ P_max
+
+Asserted on every emission. Cross-checked once per case on a *different
+decision path*: `equivalent(align(reduce(B ∩ P_K), reduce(P_min)))` —
+languages, not pair sets. A failure is a hard stop (upstream bug), never
+a workaround.
+
+### 6.4 `Simplification` (frozen dataclass)
+
+```
+verdict:   "SETTLED" | "REFUTED" | "SIMPLIFIED"
+witness:   Optional[Witness]        # on SETTLED / REFUTED
+b:         Optional[PairSet]        # on SIMPLIFIED
+invariant: Optional[Invariant]      # reduce(b) — what gets dumped
+side:      Optional[str]            # "relax" | "restrict" | "reference"
+seed:      Optional[str]            # "syntactic" | "identity" | "stutter"
+bits:      int                      # |F|
+classes:   Dict[str, int]           # neg_phi, k, table, p_min, p_max, b
+rung:      Tuple[str, str]          # rung of ¬φ, rung of B
+stutter:   Tuple[bool, bool]        # stutter-invariance of ¬φ, of B
+stutter_verdict: str                # "YES" | "UNKNOWN" (paper §5.3)
+```
+
+### 6.5 Constrained mode (paper Lemma 5.2)
+
+`opts.require ∈ {None, "safety", "cosafety", "obligation", "recurrence",
+"persistence", "stutter"}`. When set, the admissibility test in step 3
+uses the **joint** closure: alternate `hull_π` with that rung's existing
+closure operator (`safety_closure`, `rec_hull`, the R-class forcing …)
+to a fixpoint, then compare to `P_max`. At most `|linked|` rounds
+(Lemma 5.2). Build no new hull — alternate the ones GT2 already has.
+
+### 6.6 The tool (`__main__.py`, thin)
+
+    python3 -m sosl.sos.giventhat NEG_PHI.sos K.sos [-o B.sos]
+            [--stutter] [--require RUNG] [--json REPORT.json]
+
+Loads with `load_invariant`, dumps with `dump_invariant`, prints:
+
+| row | meaning |
+|---|---|
+| `¬φ` | `\|𝒞(𝓘(¬φ))\|` — the input |
+| `K` | `\|𝒞(𝓘(K))\|` |
+| `T` | `\|𝒞\|` of the materialized product |
+| `P_min` / `P_max` | `\|𝒞(reduce(·))\|` — **the [DPT25] reference points** |
+| **`B`** | `\|𝒞(reduce(B))\|` — **must beat all of the above to count** |
+| `bits` | `\|F\|`, the freedom searched |
+| rung | Manna–Pnueli class of `¬φ` → of `B` |
+| stutter | stutter bit of `¬φ` → of `B` (+ YES/UNKNOWN) |
+
+On `SETTLED` / `REFUTED` it prints the verdict and the minimal witness
+lasso and emits no `.sos` (the model-checking problem is answered).
+
+**GT4 acceptance:** the tool runs end to end on the §3.5 fixture and on
+small corpus pairs; §6.3 green on every case; the emitted `.sos`
+re-reads with `load_invariant` and is byte-stable under `reduce`; and
+the paper's §6 prediction confirmed or refuted **in writing** (the
+[DPT25] example: a guarantee `B` with `< 5` classes is predicted — if it
+does not appear, that is a To-theory finding, not a bug to hide).
 
 ---
 
-## 8. Expected failures — read before filing a bug
+## 7. GT5 — the demonstration
+
+**Performance is out of scope.** No wall-clock claims, no budget tables,
+no model-checker comparison. We show the freedom is *leverageable*.
+
+- **Sample.** Same-stratum corpus pairs, both sides small
+  (`|𝒞| ≤ 12` each, product table `≤ 60`), N ≈ 200, seeded. Small on
+  purpose: `bits ≤ 12` on a large share, so the exhaustive optimum is
+  computable and the greedy can be **scored**.
+- **Row.** The §6.6 rows + the exhaustive `2^F` optimum where
+  `bits ≤ 12`.
+- **Headlines.** (1) Fraction with `|𝒞(B)| <` all three reference points.
+  (2) Median `|𝒞(B)| / |𝒞(¬φ)|`. (3) Rung-drop rate. (4) Stutter-gained
+  rate + UNKNOWN frequency. (5) Greedy-vs-exhaustive gap — *a measured
+  quality of our heuristic*, and **not** evidence about Conj 4.5. Say so
+  in the summary, in those words.
+- **First gate, before any table:** the Thm 5.7 fixture (stutter
+  UNKNOWN, free greedy still emits a `B`) and the [DPT25] example of
+  paper §6.
+
+**GT5 acceptance:** `reference/giventhat/gt5_demo.md` + `.csv` with the
+4-line header (date, git rev, seed, corpus), zero §6.3 violations, the
+five headlines stated with their `n`.
+
+---
+
+## 8. Decommissioned (do NOT build)
+
+Parked deliberately, with reasons. Un-parking is a theory decision.
+
+- **Stutter tier 2 / the self-alignment** (paper Appendix A.1). Exact,
+  but on YES the witness is `SC(L(P_min))`, which Thm 5.7 shows need not
+  be on the table — the operation would have **nothing to emit**. It is
+  a diagnostic, not a simplification. Un-park with off-table re-entry.
+- **Band-minimal Wagner degree** (paper Appendix A.2). Prop is a sketch;
+  the objective is `|𝒞|`, and degree is at best a tie-break. Do not
+  enumerate `2^F` to check a sketched proposition — that is proving a
+  conjecture by trial and error.
+- **The W-series campaigns** (paper Appendix A.3, A.5). W0 is a
+  frequency census, W1 needs MCC data and stays **blocked — do not fetch
+  it**. Both are downstream of a working operation.
+- `degree.py`, `w0_*.py`: not built.
+
+---
+
+## 9. Expected failures — read before filing a bug
 
 | # | check | expectation | on failure |
 |---|---|---|---|
-| A1 | Prop 3.1 runtime law (§3.1.5) | always green | upstream bug (align/materialize/saturate) — report the pair id, never work around |
-| A2 | choice laws (§3.4) | always green | interval-core bug |
-| E1 | fixture `\|𝒞(D_ab)\| == 6` | must hold | first suspect the HOA encoding; then canonize; only then the paper's §5.2 hand count — that escalation is a to-theory finding |
-| E2 | fixture GT3 regression (tier1 UNKNOWN, tier2 YES) | must hold | if tier 2 says NO here, tier 2 is wrong (the paper proves YES semantically) — do not conclude the paper is wrong before the bounded oracle (§5.2.c) also fails |
-| T1 | corpus rung oracle | green OR consistently flipped | flipped ⟹ implement swap + file finding F5; mixed ⟹ STOP, smallest case to the report |
-| T2 | GT4 greedy vs brute | may disagree | that is the experiment working — dossier to slot F12, do not patch |
-| F1 | Spot cross-checks | MAY disagree | dictionary/naming first; only a failed witness replay makes it a bug |
+| A1 | Prop 3.1 runtime law | always green | upstream bug (align/materialize/saturate) — report the pair, never work around |
+| A2 | §6.3 soundness law | always green | upstream bug; hard stop |
+| A3 | `π_¬φ` admissible (§6.2 step 2) | always green | convicts Prop 4.2 or `syntactic_congruence` — To theory |
+| E2 | fixture: stutter quotient `n == 2`, tier UNKNOWN | must hold | first suspect the HOA encoding, then canonize, then the paper's Thm 5.7 hand count — that escalation is a To-theory finding |
+| Q1 | GT3 gate 3 (bounded oracle vs `2^F`) | must be exact | convicts Prop 4.2 — **To theory**, do not patch the hull to match |
+| G1 | greedy `|𝒞(B)|` vs exhaustive optimum | **may be worse** | that is a heuristic being a heuristic — record the gap, do not tune the greedy toward the oracle |
+| G2 | `\|𝒞(B)\|` not strictly below the reference points | allowed on a case | only a *rate* is claimed (§7); a 0% rate over the sample is a finding, report it |
+| F1 | Spot cross-checks | MAY disagree | dictionary/naming first; only a failed witness replay is a bug |
 | F2 | Spot timeout | allowed | skip, record, never wait |
 
-## 9. The trap list (each traces to a section)
+## 10. The trap list (each traces to a section)
 
-1. **Alphabet strata** — `align` asserts equal alphabets; sample
-   within strata (§3.6.5); never adapt inline.
+1. **Alphabet strata** — `align` asserts equal alphabets; sample within
+   strata (§0).
 2. **Endpoints live on the MATERIALIZED product** — `Aligned` is
-   decision-only; `intersection/union/complement` need `materialize`
-   (§3.1.2).
-3. **Conjugacy closure must renormalize** — always through
-   `saturate`/`linked_pair_of`; never insert raw `(sx, yx)` (calculus
-   spec §3.3; §3.2 here).
+   decision-only (§3).
+3. **Never insert a raw conjugate/image pair** — always renormalize
+   through `linked_pair_of` **on the table you are inserting into**
+   (§5.2 `forced`).
 4. **No universality scan** — `k_refutes_phi` is emptiness of a
-   complement; implementing universality separately breaks the
-   paper's symmetry claim (§3.3).
-5. **Rung orientation** — the corpus decides, not the four hand
-   examples; a flip is a reported theory correction (§4.1, T1).
-6. **Brute oracles cap at `bits ≤ 12`** — skip and record above;
-   never raise the cap to "get more coverage" (§4.3, §6).
-7. **Per-case budget 15 s, checkpoint campaigns, `--one` mode** —
-   calculus spec §8.1 verbatim (§3.6.5, §7).
-8. **`[ε]` never merges in the stutter congruence** — assert, don't
-   special-case (§5.1).
-9. **Tier 2 has two normal-form cases** — infinitely-alternating and
-   eventually-constant; forgetting the second is the bug the bounded
-   oracle (§5.2.c) is designed to catch.
-10. **Horn hull without saturate is not a language** — alternate to
-    joint fixpoint; the saturation law convicts (§4).
-11. **Tier-1 "no" does not exist** — the verdict type is YES/UNKNOWN
-    (Thm 5.2); only tier 2 says NO (§5.1).
-12. **Do not build `SC`'s automaton** for the tier-2 decision; the
-    off-table witness is future work (§5.2).
-13. **Reuse the shortlex BFS and the SCC pass** — one implementation
-    each, shared with calculus; a second Tarjan is a review reject
-    (§2, §5.1).
-14. **`reduce(check=True)` is quadratic** — checked once per case
-    outside timers, `check=False` inside (calculus spec trap #7).
+   complement (§3).
+5. **Saturate on the QUOTIENT, then pull back** — pulling back first and
+   saturating on `T` gives a different, wrong set (§5.2 `hull`).
+6. **Brute oracles cap at `bits ≤ 12`** — skip and record above; never
+   raise the cap (§5.5, §7).
+7. **Per-case budget 15 s, checkpointed campaigns, `--one` mode** —
+   calculus spec §8.1 verbatim.
+8. **`[ε]` never merges** — assert, do not special-case (§5.1).
+9. **The greedy merges in the CURRENT quotient**, composing maps — not
+   by re-closing from `T` each round (§6.2).
+10. **Horn hull without `saturate` is not a language** — alternate to a
+    joint fixpoint (§4, §6.5).
+11. **The stutter verdict is YES/UNKNOWN, never NO** (paper Thm 5.7;
+    §5.3).
+12. **Do not build `SC`'s automaton** — decommissioned (§8).
+13. **Reuse the shortlex BFS (`Table.of_raw`) and the SCC pass
+    (`r_classes`)** — one implementation each; a second BFS or a second
+    Tarjan is a review reject (§0, §5.1).
+14. **`reduce(check=True)` is quadratic** — `check=False` inside the
+    greedy loop, `check=True` once on the emitted `B` (§6.2).
+15. **Never claim minimality** — the greedy achieves, it does not
+    minimize (§6).
 
-## 10. Report contract
+## 11. Report contract
 
-`research_notes/sos_giventhat_report.md` is the channel back to the
-theory thread; its skeleton (with pre-named finding slots F1–F15) is
-committed next to this spec. Rules: every milestone acceptance writes
-its findings into the named slots; every to-theory item (E1
-escalations, T1 flips, T2 dossiers, tier-gap statistics, anything
-where this spec and the paper disagree) goes into the report's
-**To theory** section the moment it is found — that section is read by
-the thread that owns the paper; it is how you talk to us. Findings
-state numbers with their `reference/`/logs path and regen command;
-the paper cites numbers in pure form only after they appear in the
-report (the calculus split, `sos_calculus_spec.md` §8.9, applies
-verbatim).
+`research_notes/sos_giventhat_report.md` is the channel back to theory.
+Every milestone acceptance writes its findings into the named slots;
+every to-theory item (Q1 / A3 escalations, the §6 prediction outcome,
+anything where this spec and the paper disagree) goes into the report's
+**To theory** section the moment it is found. Findings state numbers
+with their `reference/` path and regen command; the paper cites numbers
+in pure form only after they appear in the report.
