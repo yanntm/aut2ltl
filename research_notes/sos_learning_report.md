@@ -2453,3 +2453,56 @@ named prefix-independent cases conform (P8).
 cannot apply — the column needs the final table, which only a re-run
 reconstructs), then P9/P10 over its output, then the E2 recount
 (`permanent = 3170`).
+
+### 2026-07-12 (engineering) — the congruence column measured; the counts are censored
+
+**The measurement (spec §8 item 13's drop; `reference/census/ablation_congruence.csv`,
+6222 ablation rows, graded by `tests.sosl.congruence_column`):**
+
+| verdict | `fixpoint_congruent` | rows |
+|---|---|---|
+| `ACCEPTOR_ONLY` | **false** | 3137 |
+| `SOUND` | **true** | 2336 |
+| `BUDGET` | n/a / false / true | 719 / 12 / 5 |
+| `OVERSIZE` | n/a | 13 |
+
+- **P9 clean.** Every one of the 3137 certified `ACCEPTOR_ONLY` fixpoints is
+  non-congruent. **Theorem 5.3 has zero counterexamples over the catalogue** —
+  no exact-certified, congruent, non-canonical fixpoint exists.
+- **P10 clean.** Every one of the 2336 `SOUND` rows is congruent: byte-equality
+  never once arose from a non-congruent partition. (Had it, the case id would be
+  reported here unbanked, per the row's own rule.)
+- **Dual-symmetric** over the 2733 comparable pairs, zero off-diagonal mass.
+  Pairs are resolved by language (`manifest.dual_index`), never by name.
+- The **17 ex-`CRASH` rows are cured** at the root: 15 → `ACCEPTOR_ONLY`,
+  2 → `BUDGET`, none `CRASH`. The ruling's reading of that population is
+  confirmed in data.
+- A `BUDGET` row may legitimately carry a congruence value (17 do): a run can
+  reach and check its fixpoint and only then exhaust its budget. Only
+  `ACCEPTOR_ONLY` / `SOUND` are pinned.
+
+⚠️ **For theory — the permanence count is budget-censored, and `permanent = 3170`
+is not reproducible.** Re-running the same leg on other nodes moved **70 cases
+into `BUDGET` and 14 out of it** against the banked sweep, so the predicted 3170
+measures as **3137** here. The `ACCEPTOR_ONLY` / `SOUND` / `BUDGET` partition is
+a function of what a machine finishes in 60 s, not of the corpus.
+
+What *is* stable is the classification: **no case flipped `ACCEPTOR_ONLY` ↔
+`SOUND`** between the two drops. A run's verdict, once decided, is decided; only
+*whether it decides in time* moves. `BUDGET` rows are undecided, not
+counter-evidence — so every certified claim survives, and only the *cardinality*
+is at issue. The E2 permanence claim is existential (non-empty population, members
+certified), and both hold regardless.
+
+Engineering cannot rule on how §6.3 should report this. Options are set out in the
+handoff POST (report the floor / shrink the censored region with a re-run of the
+736 at a larger budget / drop the count). Engineering leans "shrink, then report a
+tight floor", but whether the section needs an exact number is theory's call. The
+recount is held until then rather than banking a number that will not reproduce.
+
+**Harness note (engineering-internal, recorded because it bounds the data).** The
+sweep now runs each case in its own process under an OS-enforced kill
+(`run_case_bounded`), so the budget is a real ceiling of `budget + grace` and a
+runaway is a `BUDGET` row rather than lost work; `cluster_plan` packs commands
+against that ceiling. The per-run record's only carrier is now a CSV row (the
+write-only `stats.json` is gone).

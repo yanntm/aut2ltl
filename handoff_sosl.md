@@ -8,8 +8,8 @@ only**, no history — the report is the ledger.
 ## Critical files
 
 - `research_notes/sos_learning.md` — the paper. Its `⟨TBD⟩` markers (the M4
-  tallies, the §6.3 congruence recount, the §6.4 E3 restatement) wait on
-  items 7b → 8 below.
+  tallies, the §6.3 congruence recount, the §6.4 E3 restatement) wait on the
+  E2 recount below.
 - `research_notes/sos_learning_spec.md` — the normative spec (§7 verdict vocab).
 - `research_notes/sos_learning_report.md` — the engineering↔theory ledger. Append dated
   entries; theory replies in place.
@@ -24,10 +24,10 @@ only**, no history — the report is the ledger.
 
 ## Concurrent editors — stay in your sphere
 
-Other live sessions share this checkout (calculus / symbolic / toltl; also a
-genaut session actively rewriting `genaut/corpus/**` — the catalogue grew
-3938→4248 and will keep growing with higher-Wagner-degree samples; immaterial, it
-all re-runs). Therefore:
+Other live sessions share this checkout (calculus / symbolic / toltl / quant;
+also a genaut session that owns `genaut/corpus/**` — the catalogue grows with
+higher-Wagner-degree samples, and growth **renames** as well as adds; immaterial,
+it all re-runs). Therefore:
 - **Commit with explicit pathspecs only** (`git commit -F ... -- <file>`); the
   index may hold others' staged changes at any moment.
 - No history/diff reading outside learner files; never touch their files.
@@ -40,7 +40,28 @@ all re-runs). Therefore:
 - **The catalogue** is 6222 complement-closed languages; the census record lives
   in `reference/census/` (sweep 12444 rows, E3 24888 rows), fully accounted.
 - **Default leg: 6222/6222 SOUND**, `N ∈ [2, 208]`, `splits ≤ N`, 0 violations.
-- **Ablation leg**: SOUND 2357, ACCEPTOR_ONLY 3153, BUDGET 680, OVERSIZE 15.
+- **The congruence column is measured and banked**
+  (`reference/census/ablation_congruence.csv`, 6222 ablation rows; grade with
+  `python3 -m tests.sosl.congruence_column <csv>`):
+  - **P9 clean** — all **3137** `ACCEPTOR_ONLY` rows are `fixpoint_congruent =
+    false`. Theorem 5.3 has zero counterexamples over the catalogue.
+  - **P10 clean** — all **2336** `SOUND` rows are `true`: no byte-equality ever
+    arose from a non-congruent partition.
+  - Dual-symmetric over the 2733 comparable pairs; zero off-diagonal mass. The
+    17 ex-`CRASH` rows are cured (15 → `ACCEPTOR_ONLY`, 2 → `BUDGET`).
+- ⚠️ **The verdict partition is budget-censored — counts are a floor, not an
+  invariant.** `ACCEPTOR_ONLY` / `SOUND` / `BUDGET` depends on what a machine
+  finishes inside the 60 s budget: against the v2 sweep this drop moved **70
+  cases into `BUDGET` and 14 out**. What is stable is the *classification* — **no
+  case ever flipped `ACCEPTOR_ONLY` ↔ `SOUND`**. So `permanent = 3170` is not
+  reproducible; a permanence count is a floor at a stated budget. This is the
+  open POST.
+- **A run's budget is a ceiling only under `run_case_bounded`** (its own process,
+  OS-enforced kill at `budget + KILL_GRACE_S`) — the sweeps use it. `run_case`'s
+  in-process `signal.alarm` is *cooperative*: Python defers it to a bytecode
+  boundary, so it cannot preempt a native call. Gates and E0 may use either.
+  `cluster_plan` packs commands against the enforced ceiling, never the bare
+  budget.
 - **The ablation's fixpoint is the certified Cayley acceptor** — an acceptor,
   never an algebra unless canonical (paper Lemma 5.2 / Theorem 5.3). With the
   exact oracle a certified fixpoint is canonical **or** its partition is not a
@@ -58,30 +79,13 @@ all re-runs). Therefore:
 
 ## Open work (in order)
 
-1. 🟡 **The ablation-only re-run drop — IN FLIGHT.**
-   `RUN=20260711-220435-sweep.cmds` (3111 commands, `--split 256`; planned by
-   `cluster_plan --legs ablate`, 2 cases/command, 60 s/run under the 130 s cap).
-   The ablation leg only: the default leg's column is `true` by construction and
-   E3 is untouched. `--done` **cannot** apply — the column needs the final table,
-   which only a re-run reconstructs. `--split 256` (not the default 8) because
-   the leg's cost is the 680 BUDGET cases burning their full budget; a small
-   split walltime-kills the jobs and mass-`missing`s.
-   - Wait: `cluster/reap_until.sh 20260711-220435-sweep.cmds` (never resume
-     before drain; verify 0 duplicate keys in the merged CSV).
-   - Merged output: `logs/cluster/$RUN/results.csv`. Promote to
-     `reference/census/` once graded.
-   - Grade: `python3 -m tests.sosl.congruence_column <merged CSV>` — asserts
-     **P9** (`ACCEPTOR_ONLY ⇒ false`; build-stopping, Theorem 5.3), **P10**
-     (`SOUND ⇒ true`; exit 2, NOT build-stopping — a byte-equality out of a
-     non-congruent partition is a theory finding: report the case ids, do not
-     bank the rows), and dual symmetry over `manifest.dual_index`.
-   - Expected: `false` on all 3153 + 17, `true` on all 2357, zero off-diagonal,
-     dual-symmetric (congruence is complement-invariant).
-2. 🔴 **The E2 recount** (`permanent = 3170`) + `census_e2_exhibits`, gates
-   (dual-symmetry / (d′), `guard_fired_final = 0` on every SOUND row), and the
-   theory deliverables that replace the paper's `⟨TBD⟩` markers: per-leg
-   `n_guard_firings`, guard-green count, cap-escape count, wall-time line,
-   LTL-agreement count.
+1. 🔴 **BLOCKED on the POST below — the E2 recount.** The permanence count cannot
+   be banked until theory rules on how to report a budget-censored population
+   (see POST). Once ruled: `census_e2_exhibits` + the recount over
+   `reference/census/ablation_congruence.csv`, the gates (dual-symmetry / (d′),
+   `guard_fired_final = 0` on every SOUND row), and the theory deliverables that
+   replace the paper's `⟨TBD⟩` markers — per-leg `n_guard_firings`, guard-green
+   count, cap-escape count, wall-time line, LTL-agreement count.
 - Parked: the "make the cap cheap to hit" measurement (lowered-cap re-run of the
   fired cases).
 
@@ -139,4 +143,36 @@ The catalogue grows, and growth renames — a hardcoded `<id>_c` is a latent
 crash. Resolve duals out of the catalogue, or rely on duality and don't name
 them.
 
-No open POST to theory.
+---
+
+# POST — how should a budget-censored population be reported?
+
+**The claims are safe; a count is not.** P9 and P10 are clean over the whole
+catalogue (3137 `ACCEPTOR_ONLY`, all non-congruent; 2336 `SOUND`, all congruent;
+zero off-diagonal). Theorem 5.3 stands with no counterexample. But the *size* of
+the permanent population is not an invariant of the corpus: it is whatever a
+machine can finish inside the 60 s budget. Re-running the same leg moved **70
+cases into `BUDGET` and 14 out of it** versus the banked sweep, so the spec's
+predicted `permanent = 3170` measures as **3137** here — and would measure
+differently again on other nodes.
+
+Crucially, **no case ever flipped `ACCEPTOR_ONLY` ↔ `SOUND`**: what a run
+*decides*, it decides stably. Only *whether it decides in time* moves. The
+`BUDGET` rows are undecided, not counter-evidence.
+
+Three ways out, engineering has no preference and will do as ruled:
+
+1. **Report the floor.** "≥ 3137 permanent at a 60 s budget, 736 undecided" —
+   honest, reproducible as an inequality, and the E2 permanence claim is
+   existential anyway (it needs the population to be non-empty and its members
+   certified, both of which hold).
+2. **Shrink the censored region.** Re-run only the 736 `BUDGET` cases at a much
+   larger budget (they are 12% of the corpus, so even 10× is cheap) and report
+   the count at that budget with the residue stated. Does not eliminate
+   censoring, just pushes it down.
+3. **Drop the count from the paper** and report the partition as
+   decided/undecided, if §6.3 does not actually need a number.
+
+Engineering leans (2)-then-(1): it costs one small drop and lets the paper state
+a much tighter floor. But whether §6.3's argument needs an exact count is a
+theory question, so it is yours.
