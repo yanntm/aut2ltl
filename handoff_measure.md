@@ -8,32 +8,27 @@ the file and section named for the task at hand — nothing else.
 | role | file | rule |
 |---|---|---|
 | **paper** (the draft being written) | `sos_quant.md` | **the plan of record.** A skeleton: sections carry bullets and a provenance tag (`[have]` / `[new]` / `[open]`). Flesh it out; do not re-plan it |
-| reservoir (normative math, superseded as a plan) | `sos_measure.md` | the proofs `sos_quant.md` reuses live here, and so does everything it parked. Mine it; do not work *from* it — its structure is the one we moved away from |
-| report (results interface) | `sos_measure_report.md` | every finding lands here with its regeneration command. Carries the engine's correctness argument, not the new paper's experiments |
+| reservoir (normative math, superseded as a plan) | `sos_measure.md` | the proofs `sos_quant.md` reuses live here, and so does everything it drops. Mine it; do not work *from* it — its structure is the one we moved away from |
+| report (results interface) | `sos_measure_report.md` | every finding lands here with its regeneration command. It carries the engine's correctness argument, not the new paper's experiments |
 | figures | `sos_measure_figures.md` | FIG specs; artifact dir `sos_measure_figs/` |
-| frozen | `sos_measure_experiments.md` | closed work orders (M1–M5) and the exchanges that settled them; reference only, never worked from |
-| stale | `sos_measure_spec.md`, `sos_quantitative.md` | the old engineering spec (its M6 census campaign is **not** this paper's evaluation) and the original memo. Do not work from either |
+| frozen | `sos_measure_experiments.md` | reference only, never worked from |
+| stale | `sos_measure_spec.md`, `sos_quantitative.md` | the old engineering spec (its census campaign is **not** this paper's evaluation) and the original memo. Do not work from either |
 
 ## State
 
-- **Theory: the paper was re-planned and the new draft is a skeleton.**
-  `sos_quant.md` is the plan of record. Its thesis: two invariants in — a
-  **model** `M` and a **spec** `S` — one exact fraction out; the i.i.d. random
-  word is the *degenerate corner* `M = Σ^ω`. Three RQs (the object, the source,
-  the identification), three numbers (satisfaction, agreement, the verdict
-  distribution). The proofs it reuses are already written in `sos_measure.md`
-  and already implemented; the new material is §4 (the verdict distribution),
-  §5 (the source is the model's own invariant), and one open theorem (§6.5).
+- **The paper was re-planned; the new draft is a skeleton.** `sos_quant.md` is
+  the plan of record. Its thesis: two invariants in — a **model** `M` and a
+  **spec** `S` — one exact fraction out; the i.i.d. random word is the
+  *degenerate corner* `M = Σ^ω`. Three RQs (the object, the source, the
+  identification), three numbers (satisfaction, agreement, the verdict
+  distribution). The new material is §4 (the verdict distribution), §5 (the
+  source is the model's own invariant), and one open theorem (§6.5).
 - **The experimental section is *not even started*.** No benchmark exists, no
-  numbers exist, nothing has been run for this paper. The 6222-language census
-  is **not** its evaluation — that is the classification framework's
-  population, and it survives here only as the exhaustive *probe* suite that
-  argues the engine is correct. It is pointed at, never reported as a result.
-  `sos_quant.md` §7 says what the benchmark must be: **(model, spec) pairs**.
-- **Engineering: the bricks are laid.** The engine is `sosl/sosl/quant/` and it
-  documents itself — README is the source map, `algorithm.md` the soundness
-  argument, gates in `sosl/tests/quant/`, results in `sos_measure_report.md`.
-  **Leverage it; do not re-litigate the path that built it.**
+  numbers exist, nothing has been run for this paper. `sos_quant.md` §7 says
+  what the benchmark must be: **(model, spec) pairs**.
+- **The engine is `sosl/sosl/quant/` and it documents itself** — README is the
+  source map, `algorithm.md` the soundness argument, gates in
+  `sosl/tests/quant/`. Leverage it.
 
 ## Work items — Theory
 
@@ -65,22 +60,12 @@ the file and section named for the task at hand — nothing else.
    nondeterminism* before claiming §5's construction. **If the verdict
    distribution or the null-quotient is already known, the plan is worthless and
    we need to learn that now, not at review.**
-4. **Reversal to note:** the §2.3 transition-emitting embedding remark was
-   slated for deletion. **It stays.** The model-induced walk puts letters on the
-   Cayley edges, so the embedding is the bridge, not a vestige.
-5. **F-M5 verdict** (the Markov product; report). Its one finding: PRISM will
-   not parse our cube label names (`a&!b`), so `.mc`'s "same file, unmodified"
-   holds only up to label-name sanitization. No number moves. `.mc` is now
-   demoted to an *import path* (`sos_quant.md` §5.7), so this is a small call:
-   accept, and note the sanitizing printer.
 
 ## Work items — Engineering
 
-**None. Blocked on a new spec from Theory.** The old `sos_measure_spec.md` is
-stale: its M6 census campaign is not this paper's evaluation, and its
-milestones M1–M5 are done and frozen. Nothing should be built until
-`sos_quant.md` is fleshed out and a spec is written against it. What that spec
-will have to cover, when it comes (do **not** start on it):
+**None. Blocked on a spec, which does not exist.** Nothing should be built
+until `sos_quant.md` is fleshed out and a spec is written against it. What that
+spec will have to cover, when it comes (do **not** start on it):
 
 - the **verdict distribution** `ν` (small: the aligned table, the absorption
   vector and the θ-profiles all exist — `ν` is grouping bottom SCCs by their
