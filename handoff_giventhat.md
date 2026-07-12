@@ -52,39 +52,48 @@ on the quotient. Run inside a greedy that merges classes while it can
   F13 **CONFIRMED** — the three §6 examples all reach `|𝒞(B)| = 3`
   (syntactic seed, relax); fairness `B` is byte-equal to `𝓘(GF b)`.
   Soundness law `B ∩ P_K == P_min` green on emission.
+- **GT5 survey WIRED (run only).** The demonstration is a
+  `survey.collect` client, not a bespoke campaign. `survey.collect`
+  (new, generic) drives correct subprocess isolation + checkpoint + CSV;
+  a `Scenario` plugs invoke / extract / validate. Discovery learns the
+  `.sos` kind (`keep={"sos"}`). `tests/giventhat/gt5_demo.py` is the
+  client: one fixed `K` vs a discovered folder of `¬φ`, each run through
+  the real tool main, the tool's `--json` grabbed to the CSV row.
+  `python3 -m tests.giventhat.gt5_demo --knowledge K.sos --folder DIR`.
 - Prerequisites harness-green: the calculus package and
   `sosl.sos.classify`. Reuse, never reimplement — spec §0.
 
+## Validation — the axis (read before touching gt5)
+
+**Oracles are dropped.** No `2^F` enumeration, no bounded `is_recognized`
+census. The sole validation is **end-to-end and independent**: Spot
+checks the two legality inclusions `P_min ⊆ L(B) ⊆ P_max` on the *inputs
+and the output only* (`¬φ.sos`, `K.sos`, `B.sos`) — never sibling atlas
+files, never our own calculus (a bug shared by construction and check
+passes both). It is **OFF now** because Spot needs an **sos→HOA** bridge
+that does not exist yet: `calculus` is slated to ship it via the
+right-Cayley graph transform. When it lands, wire `Scenario.validate`
+(min-side `¬φ∩K∩¬B = ∅`, max-side `B∩K∩¬(¬φ) = ∅`; the two inclusions,
+each diagnostic of a bad restrict / relax) as a bounded Spot subprocess
+(the `survey.verify` model). Until then legality rides the always-on
+`B ∩ P_K == P_min` set identity inside the tool.
+
 ## TODO — engineering (next session starts here)
 
-The engine works on the paper's three examples; what is owed is the
-*validation* the recentering deferred, then the demonstration.
-
-1. **The GT3 oracle gates (`quotient_gate.py`, spec §5.5) — the one that
-   matters is gate 3 (F9).** On `bits ≤ 12`: enumerate `2^F`, keep the
-   `is_recognized` members, confirm nonempty **iff** `admits`, and
-   `least_member`/`greatest_member` = their intersection/union. A
-   disagreement convicts Prop 4.2 → **To theory**, never patch the hull.
-   Plus gate 1 (morphism, `[ε]` singleton), gate 4 (F10, Prop 4.1 at
-   runtime), gate 6 (F11, the Thm 5.7 fixture: stutter quotient `n == 2`,
-   `sc(p_min)` universal, verdict UNKNOWN).
-2. **F12's remaining half — the corpus sweep (`simplify_gate.py`).** The
-   fixture + a small same-stratum sample: the §6.3 language-level
-   cross-check `equivalent(reduce(B ∩ P_K), reduce(P_min))` on every
-   case, byte-stability of the emitted `.sos`, and the `REFUTED` witness
-   leg. Copy the `--one` + `--campaign` + 15 s watchdog pattern.
-3. **GT5 (spec §7) — the demonstration.** ~200 small same-stratum pairs;
-   the size table; the five headlines (incl. greedy-vs-exhaustive gap,
-   *a heuristic quality, not evidence on Conj 4.5*).
+1. **Wait on / consume calculus sos→HOA, then turn on gt5 validation.**
+   The two-inclusion Spot post-step above; that is the only validation.
+2. **Run the demonstration** once validation is on: pick the fixed `K`(s),
+   sweep the corpus, collect the CSV; the five headlines (win rate, median
+   `|𝒞(B)|/|𝒞(¬φ)|`, rung-drop, stutter-gained, UNKNOWN freq). Promote
+   the validated `.csv` to `reference/giventhat/`.
 
 Do **not** build: stutter tier 2, the Wagner brute probe, the W-series
-(spec §8). Do not fetch MCC data.
+(spec §8); any oracle/`2^F` gate; a second sos→HOA (calculus owns it).
 
 ## TODO — theory
 
-Nothing pending. F13 is confirmed (see report). Next items land when
-engineering files F9 (the Prop 4.2 oracle — the one result that can
-falsify the core) or F14 (the headline rate — if ~0, the paper's central
+Nothing pending. F13 confirmed (report). Next data lands when the
+demonstration runs (the headline win rate — if ~0, the paper's central
 claim is empty and theory must know first).
 
 ## Operational facts (save the rediscovery)

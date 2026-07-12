@@ -23,9 +23,9 @@ moment it is found, even mid-milestone.
 |---|---|---|
 | GT1 — interval + endpoints | **DONE (2026-07-11, git 4c7aa9fb5+)** | F1–F4 |
 | GT2 — ladder tests | **DONE (2026-07-11)** — rung oracle 6222/6222, campaign 700/700, brute 264/264; §4.6 E1 escalations resolved (To theory) | F5–F8 |
-| GT3 — the bounded quotient engine | **BUILT (2026-07-12)** — `quotient.py` + `stutter.py`; the oracle gates F9–F11 not yet run (axis recentered to the deliverable first) | F9–F11 |
+| GT3 — the bounded quotient engine | **BUILT (2026-07-12)** — `quotient.py` + `stutter.py`. Oracle gates (`2^F`) **dropped**: validation is end-to-end Spot, not a census (see To theory) | — |
 | GT4 — the simplifier and the tool | **BUILT (2026-07-12)** — `simplify.py` + `__main__.py`; the three §6 examples reproduced, F13 CONFIRMED | F12–F13 |
-| GT5 — the demonstration | *pending* | F14–F15 |
+| GT5 — the demonstration | **SURVEY WIRED, run only (2026-07-12)** — a `survey.collect` client (`tests/giventhat/gt5_demo.py`); validation OFF until calculus ships sos→HOA | F14–F15 |
 
 **Spec re-aimed (2026-07-12, theory).** The goal is now **one
 operation** — `simplify(𝓘(¬φ), 𝓘(K)) → 𝓘(B)`, two `.sos` in, one
@@ -194,18 +194,24 @@ technique; the degree is at best a tie-break under the `|𝒞|` objective.
 
 ## GT5 — the demonstration (spec §7, paper §7)
 
-- **F14 — the size table.** *(pending)* One row per pair over the
-  N ≈ 200 small same-stratum sample: `|𝒞(¬φ)|`, `|𝒞(P_min)|`,
-  `|𝒞(P_max)|`, **`|𝒞(B)|`**, `bits`, rung in → out, stutter in → out.
-  Headline: the fraction where `|𝒞(B)|` is *strictly* below all three
-  reference points, and the median ratio `|𝒞(B)| / |𝒞(¬φ)|`. This is
-  the paper's central claim; a 0% rate is a finding, reported as such.
-- **F15 — the heuristic, scored.** *(pending)* Where `bits ≤ 12`: the
-  greedy's `|𝒞(B)|` against the exhaustive `2^F` optimum — the gap
-  distribution. Plus the rung-drop rate and the stutter UNKNOWN
-  frequency (how often the hull escapes the table — a number no automata
-  pipeline can produce). **State in the summary, in these words, that
-  the gap measures our heuristic and is not evidence about Conj 4.5.**
+**Delivery shape (2026-07-12).** GT5 is a **`survey.collect` client**
+(`tests/giventhat/gt5_demo.py`), not a bespoke campaign — one fixed `K`
+against a discovered folder of `.sos` `¬φ`, each run through the real
+tool main, the tool's `--json` stats grabbed into the CSV row. The
+generic collector (isolation, checkpoint, budget) and `.sos` discovery
+were added to `survey`. The **run** is wired and exercised; the **table**
+awaits validation being turned on.
+
+- **F14 — the size table.** *(infra ready, data pending validation)* One
+  row per property: verdict, `|𝒞|` of `¬φ / K / T / P_min / P_max / B`,
+  `bits`, rung in → out, stutter in → out, `win`. Headline: fraction with
+  `|𝒞(B)|` *strictly* below all three references, and median
+  `|𝒞(B)| / |𝒞(¬φ)|`. The paper's central claim; a 0% rate is a finding.
+- **F15 — the heuristic, scored.** *(pending)* Rung-drop rate and stutter
+  UNKNOWN frequency (how often the hull escapes the table — a number no
+  automata pipeline can produce). The greedy-vs-exhaustive gap is **not**
+  measured (it needed the `2^F` oracle, now dropped); if ever reported it
+  measures our heuristic and is **not** evidence about Conj 4.5.
 
 *Epitaph — old F13/F14/F15 (the W-series: all-pairs endpoint sweep,
 asymmetric stratum, incremental verification with ground truth):*
@@ -306,10 +312,14 @@ Standing items the theory thread expects data or answers on:
    **DELIVERED (2026-07-11): confirmed, 6 222/6 222 (F5).**
 3. `iv.bits` on the fixture and the campaign extremes (F2, F3).
    **DELIVERED with GT1; the §4.6 pair adds `bits = 25`.**
-4. **F9 — the Prop 4.2 bounded oracle.** The one result that can
-   falsify the new core. If the hull disagrees with the `2^F`
-   enumeration on any case, theory wants the smallest one verbatim, and
-   the hull is NOT to be patched toward the oracle.
+4. **Validation axis changed — the `2^F` oracle (old F9) is dropped.**
+   The sole validation is now **end-to-end and independent**: Spot checks
+   the two legality inclusions `P_min ⊆ L(B) ⊆ P_max` on the inputs and
+   the output only (`¬φ.sos / K.sos / B.sos`), never our own calculus (a
+   shared bug passes both) and never sibling atlas files. It is **blocked
+   on an sos→HOA bridge**, which `calculus` will deliver via the
+   right-Cayley graph transform; until then legality rides the always-on
+   `B ∩ P_K == P_min` set identity. No census, no `is_recognized` gate.
 5. **F13 — the paper §6 prediction. CONFIRMED (2026-07-12).** All three
    [DPT25] examples yield `|𝒞(B)| = 3`; the greedy reaches each from the
    `syntactic` seed, and fairness `B` is byte-equal to `𝓘(GF b)`. The
