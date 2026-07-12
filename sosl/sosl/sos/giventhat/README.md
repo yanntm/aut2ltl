@@ -12,7 +12,9 @@ congruences.
 ## The tool
 
     python3 -m sosl.sos.giventhat NEG_PHI.sos K.sos [-o B.sos]
-            [--no-stutter] [--require RUNG] [--json REPORT.json]
+            [--no-stutter] [--require RUNG]
+
+writing a `.gtr` report (`report.py` — reader + writer) to stdout.
 
 Two `.sos` in, one **smaller** `.sos` out with
 `ℒ(B) ∩ ℒ(K) = ℒ(¬φ) ∩ ℒ(K)` ([DPT25] Thm 1) and `|𝒞(B)|` never worse than
@@ -77,6 +79,7 @@ adapted to their union first (Spot keeps only the APs a formula mentions).
 | `quotient.py` | GT3: `Quotient`, `congruence` / `syntactic_congruence`, `compose`, `hull`, `admits`, `least_member` / `greatest_member`, `is_recognized` |
 | `stutter.py` | GT3: `stutter_seeds`, `sc`, `exists_stutter_invariant` (YES/UNKNOWN) |
 | `simplify.py` | GT4: `simplify`, `Options`, `Simplification` — **the operation** |
+| `report.py` | GT4: the `.gtr` run report — `dump_report` / `parse_report` |
 | `__main__.py` | GT4: the CLI (thin: argv, load, adapt, call, print, dump) |
 
 `syntactic_congruence` wraps `calculus.reduce.syntactic_blocks` (the one

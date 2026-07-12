@@ -34,6 +34,7 @@ from .quotient import (
     least_member,
     syntactic_congruence,
 )
+from .report import dump_report, parse_report
 from .simplify import Options, Simplification, simplify
 from .stutter import exists_stutter_invariant, sc, stutter_seeds
 
@@ -70,4 +71,6 @@ __all__ = [
     "Options",
     "Simplification",
     "simplify",
+    "dump_report",
+    "parse_report",
 ]
