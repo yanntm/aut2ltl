@@ -79,6 +79,17 @@ def _blocks(table: Table, pairs: PairSet) -> Dict[int, int]:
         block = new
 
 
+def syntactic_blocks(table: Table, pairs: PairSet) -> Dict[int, int]:
+    """The syntactic congruence of ``L(pairs)`` on ``table``'s non-identity
+    classes, as a ``class -> block id`` map (blocks numbered by first
+    appearance). The public face of the partition refinement `reduce` runs; the
+    two-sided-congruence coarsest partition under which ``L(pairs)`` is still
+    well defined, hence paper Prop 4.1's `pi_L`. The identity is held out (it is
+    re-adjoined as its own class by any quotient builder). ``O(n^2)`` signatures
+    then ``O(n^2 |Sigma|)`` refinement."""
+    return _blocks(table, pairs)
+
+
 def reduce(table: Table, pairs: PairSet, check: bool = True) -> Invariant:
     """The canonical `Invariant` of ``L(pairs)``: the re-quotient of ``table`` by
     the syntactic congruence of that language, re-keyed by the shortlex BFS.

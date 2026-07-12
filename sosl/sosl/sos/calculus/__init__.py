@@ -18,7 +18,7 @@ from .decide import (
     member,
 )
 from .product import Product, materialize, product
-from .reduce import reduce, reduced_invariant
+from .reduce import reduce, reduced_invariant, syntactic_blocks
 from .surgery import (
     complement,
     difference,
@@ -90,4 +90,5 @@ __all__ = [
     "obligation_degree",
     "reduce",
     "reduced_invariant",
+    "syntactic_blocks",
 ]
