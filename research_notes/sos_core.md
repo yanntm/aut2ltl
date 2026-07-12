@@ -51,7 +51,10 @@ is drawn in Figure 1.
 ![Figure 1 — the object of AsThenBs](sos_core_figs/img/core_F0_astar_bomega.png)
 
 *Figure 1 — the syntactic ω-semigroup of `AsThenBs = a*·b^ω`: five classes of finite
-words, the letter steps between them, and the accepting pairs `P` beneath.*
+words, the letter steps between them, and the accepting pairs `P` beneath. It is the
+multiplication table represented as a graph: both vertices and edges are labeled by
+classes, modeling the product `M : 𝒞 × 𝒞 → 𝒞` of the algebra `𝒜` (§3) — following an
+edge multiplies on the right by its label.*
 
 **We only ever look at lassos.** A **lasso** (ultimately-periodic word) is `u·v^ω`: a
 finite **stem** `u`, then a finite nonempty **loop** `v` repeated forever. The
