@@ -9,9 +9,19 @@ and figures. This is what turns a working learner into reported science.
 - **Driver.** Iterate a manifest of cases, apply per-case query/time budgets,
   never let one case kill the campaign, and aggregate every run's statistics
   into one CSV — one row per (case, configuration).
-- **Statistics.** The flat `stats.json` per run (query counts by phase, splits,
-  table dimensions, counterexample sizes, equivalence certification, wall time,
-  verdict) that the driver concatenates.
+- **Statistics.** The flat per-run record (query counts by phase, splits, table
+  dimensions, counterexample sizes, equivalence certification, wall time,
+  verdict). **A CSV row is its only carrier**: `csv_row` writes it, `parse_row`
+  reads it back, so one field order serves the campaign CSV, the cluster shards,
+  and the row a bounded child hands its parent.
+- **The budget, and the two runners.** `run_case` bounds itself with
+  `signal.alarm` — which Python delivers only at a bytecode boundary, so a run
+  inside a native call (Spot / BuDDy) does not see it. That budget is therefore
+  *cooperative*: fine for a gate or the E0 matrix, unsound as a ceiling.
+  `run_case_bounded` gives the run its own process (`run_one`) under an OS-level
+  kill, so the budget becomes an **enforced ceiling of `budget + KILL_GRACE_S`**
+  and a runaway is a `BUDGET` row rather than lost work. Sweeps use it — and
+  because the ceiling is real, `cluster_plan` can pack commands against it.
 - **Soundness harness.** The layered checks that must be green before any result
   is reported: teacher self-check, definitional property tests, split-audit
   replay, the end-to-end byte-equality gate, metamorphic checks, and ablation
@@ -23,8 +33,13 @@ and figures. This is what turns a working learner into reported science.
 
 ## Orientation map
 
-    driver      manifest iteration, budgets, CSV aggregation
-    stats       the stats.json schema and its writer
+    run         one instrumented run: run_case (cooperative budget) and
+                run_case_bounded (the OS-enforced one the sweeps use)
+    run_one     the child half of run_case_bounded: one case -> one CSV row
+    driver      manifest iteration, budgets, CSV aggregation (in-process; E0)
+    manifest    the corpus entry points: flat_canon_cases, dual_index (a
+                complement is resolved by language, never by name)
+    stats       the per-run record, its CSV row, and the parser back
     harness     the soundness layers (self-check … metamorphic … ablation)
     baseline    the ROLL wrapper over our teacher
     report      E0–E6 generators + triptych transcripts

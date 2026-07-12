@@ -6,22 +6,34 @@ This is the campaign's single source of per-run truth. It reuses the learner
 procedures unchanged (`_stabilize` / `saturate` / `process_counterexample` /
 `export`) behind a phase-tagged, counting `member` wrapper — the promotion of
 the `m3_ledgers` counting loop and the `genaut_census` classification into one
-package entry point. It never raises on a learner or teacher fault: a per-case
-wall-clock budget turns a runaway into a `BUDGET` verdict, and any other
+package entry point. It never raises on a learner or teacher fault: any
 exception is captured into the record's `detail`, so one case can never kill a
 campaign.
+
+**Two budgets, one sound.** `run_case` bounds itself with `signal.alarm`, which
+Python only delivers at a bytecode boundary: a run inside a native call (Spot /
+BuDDy) does not see it, and overshoots without limit. That budget is therefore
+*cooperative* — good enough for a gate or a probe, unsound for a sweep, where an
+unbounded run is not a `BUDGET` row but lost work (its process is killed from
+outside and takes the row with it). `run_case_bounded` is the sound one: it runs
+the case in its own process (`run_one`) under an OS-level kill, so a runaway
+becomes a `BUDGET` row — data, not a hole. Sweeps use it; gates may use either.
 """
 from __future__ import annotations
 
+import csv
 import itertools
 import signal
+import sys
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
+from aut2ltl import bounded
+
 from sosl.contract import Counterexample
-from sosl.experiment.stats import RunStats
+from sosl.experiment.stats import RunStats, parse_row
 from sosl.learn.columns import Column, LinCol
 from sosl.learn.export import export
 from sosl.learn.learner import (
@@ -420,3 +432,62 @@ def _classify_verdict(byte_equal: bool, p1_ok: bool, config: Config,
         return ("ACCEPTOR_ONLY",
                 "non-saturated congruent fixpoint: export byte-differs, hypothesis sound")
     return "FAIL", "byte-differs under saturation (expected byte-equal)"
+
+
+# -- the bounded run (the sweep's entry point) --------------------------------
+
+# What the parent adds to the run's own budget before the OS kill lands: the
+# child's interpreter startup, its corpus/reference load, and enough slack for
+# its cooperative alarm to fire and write a full BUDGET row. Only when that
+# alarm cannot fire — a run wedged in a native call — does the kill do the work.
+KILL_GRACE_S: int = 15
+
+
+def run_case_bounded(case_id: str, hoa_path: str, config: Config,
+                     reference_sos: Optional[str] = None,
+                     grace_seconds: int = KILL_GRACE_S) -> RunResult:
+    """`run_case` in its own process, under a budget the OS enforces.
+
+    The in-process budget is a `signal.alarm`, which Python delivers only at a
+    bytecode boundary — a run inside Spot/BuDDy never sees it. Here the run owns
+    a process and `aut2ltl.bounded` wraps it in `timeout --signal=INT
+    --kill-after=1`: the SIGINT lets the child's own alarm produce its full
+    BUDGET row, and the SIGKILL that follows bounds the run whatever it is doing.
+
+    So every outcome is a row: a completed run is parsed back from the child's
+    CSV line; a run killed at the wall becomes `BUDGET` (with no counters — the
+    process is gone); a child that dies otherwise becomes `CRASH` carrying its
+    stderr. `RunResult.invariant` / `.ledger` are not carried across the process
+    boundary — a sweep records `stats`, and the exhibits are regenerated from the
+    named cases in-process."""
+    argv = [sys.executable, "-m", "sosl.experiment.run_one", case_id, hoa_path,
+            "--config", config.config_id, "--budget", str(config.budget_seconds)]
+    if reference_sos:
+        argv += ["--sos", reference_sos]
+    res = bounded.run(argv, config.budget_seconds + grace_seconds)
+
+    if res.timed_out:
+        stats = RunStats(case_id=case_id, config_id=config.config_id,
+                         seed=config.seed, cex_policy=config.cex_policy)
+        stats.verdict = "BUDGET"
+        stats.detail = (f"HARD-KILL at {config.budget_seconds}+{grace_seconds}s: "
+                        f"the run did not yield to its own budget (a native call "
+                        f"does not see SIGALRM)")
+        stats.wall_seconds = res.wall_s
+        return RunResult(stats)
+
+    row = [ln for ln in res.out.splitlines() if ln.strip()]
+    if res.rc == 0 and row:
+        try:
+            return RunResult(parse_row(next(csv.reader([row[-1]]))))
+        except (ValueError, StopIteration) as exc:
+            detail = f"unreadable child row: {type(exc).__name__}: {exc}"
+    else:
+        detail = f"child rc={res.rc}: {(res.err or '').strip()[-300:]}"
+
+    stats = RunStats(case_id=case_id, config_id=config.config_id,
+                     seed=config.seed, cex_policy=config.cex_policy)
+    stats.verdict = "CRASH"
+    stats.detail = f"CRASH:{detail}"
+    stats.wall_seconds = res.wall_s
+    return RunResult(stats)
