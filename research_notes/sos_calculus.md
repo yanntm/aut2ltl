@@ -1111,58 +1111,8 @@ The calculus should end where the consumer needs.
   and *counter-free exactly when `L` is LTL-definable*, since the graph
   is the algebra acting on itself. The transformation is implemented —
   the corpus of §8 pairs every invariant with the deterministic EL
-  acceptor this exit produces. Adequacy — the verdict of a run is a
-  function of its recurrent transition set, so an Emerson–Lei condition
-  over the Cayley edges suffices — is exactly characterized:
-
-  **Proposition 7.1 (adequacy criterion).** Write `T(u)` for the set of
-  `Cay(L)`-edges the run of `u` traverses infinitely often. Membership
-  is a function of `T(u)` — equivalently, the Muller family
-  `{T(u) : u ∈ L}` over the edges (an EL condition over edge colors)
-  makes `Cay(L)` a deterministic acceptor for `L` — if and only if, for
-  all `y, t, h, g ∈ 𝒞` with `y·t = y·h = y·g = y`,
-
-  ```
-  (E1)  Val_P(y, (t·g)^π) = Val_P(y, (t²·g)^π)
-  (E2)  Val_P(y, (t·h·g)^π) = Val_P(y, (h·t·g)^π)
-  ```
-
-  *Proof.* (⇒) Realize `y, t, g` by words. The walks of `w_t`, `w_g`
-  from state `y` are closed (`y·t = y`), and the walk of `w_t²` is the
-  walk of `w_t` twice — the same edges. So `w_y(w_t w_g)^ω` and
-  `w_y(w_t² w_g)^ω` share their recurrent edge set while their
-  memberships are the two sides of (E1); likewise for (E2). (⇐) Let
-  `T(u) = T(v)`, pick a state `s` on `T`; both runs visit `s`
-  infinitely often. Cutting `u` at `s`-visits so every block covers `T`
-  and Ramsey-grouping to a constant idempotent block fold gives
-  `u ∈ L ⟺ Val_P(s, e)` with `e` the fold of a `T`-covering loop word
-  at `s` — the stem coordinate is pinned because in `Cay(L)` the state
-  after a prefix *is* its fold; likewise `v ↦ Val_P(s, f)`. Declare two
-  coterminal paths `p ∼ q` when `w(p̂r̂)^ω ∈ L ⟺ w(q̂r̂)^ω ∈ L` for
-  every stem word `w` folding to their origin and every return path
-  `r`; this is a path congruence (context closure just re-cuts one
-  ω-word), and (E1)/(E2) are precisely its Simon premises `p² ∼ p`,
-  `pq ∼ qp` for loops, anchored at states (a loop at `x` folds into the
-  right stabilizer of `x`, every stem to `x` folds to `x`). Simon's
-  path-congruence proposition ([CPP08, Prop. 5.6]) then makes any two
-  coterminal paths with equal edge sets equivalent, so
-  `Val_P(s, e) = Val_P(s, f)`. ∎
-
-  The criterion is a read-off — `O(Σ_y |Stab(y)|⁴)` `Val`-lookups on
-  the held table — so the exit prices its own soundness, per language,
-  in the same currency as the rest of the catalog. Whether (E1)/(E2)
-  can fail at all on a *syntactic* table is open: saturated pair sets
-  on non-reduced tables can violate (E1), and Proposition 3.1's
-  conjugacy is provably too weak to bridge the two sides (on `Σ*a^ω`,
-  the state "contains `b`" carries stabilizer idempotents of both
-  verdicts), but every violation we can build so far dies under
-  `reduce`. We conjecture the syntactic case always satisfies both.
-  This is the strong-recognition counterpart of Le Saëc–Pin–Weil's
-  transition-Muller construction as presented in [CPP08, §5.4]: from
-  weak recognition they must first pass to a cover with idempotent,
-  R-trivial stabilizers — identities that imply (E1)/(E2) outright but
-  replace the automaton; from `(𝒞, P)` the Cayley graph itself is kept
-  and the identities weaken to the two `P`-anchored equations.
+  acceptor this exit produces; its adequacy proposition is left as a
+  prospect, as in [SωS26].
 - *To LTL*: gated by the §5 aperiodicity read-off; formula extraction
   is beyond this paper.
 - *To certificates*: the witness and replay formats of §3, always.
@@ -1442,9 +1392,6 @@ concatenation blow-up sit where §§3–4 place them.
   (2003) 37–81.
 - **[CNP93]** H. Calbrix, M. Nivat, A. Podelski. *Ultimately periodic
   words of rational ω-languages.* MFPS 1993, LNCS 802.
-- **[CPP08]** O. Carton, D. Perrin, J.-É. Pin. *Automata and semigroups
-  recognizing infinite words.* In *Logic and Automata: History and
-  Perspectives*, Amsterdam Univ. Press, 2008.
 - **[CP97]** O. Carton, D. Perrin. *Chains and superchains for
   ω-rational sets, automata and semigroups.* Int. J. Algebra Comput.
   7(6) (1997) 673–695.
