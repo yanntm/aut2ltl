@@ -143,15 +143,14 @@ acceptance. We define the algebra first.
 
 **Definition 3.1 (algebra).** An **algebra** `𝒜` over `Σ` is a triple `(𝒞, λ, M)`:
 
-- `𝒞` is a finite set of **classes**, each **keyed** by a word over `Σ`, with a
-  distinguished `[ε]` keyed by the empty word;
-- `λ : Σ → 𝒞` is the **letter map**, giving each letter its class;
-- `M : 𝒞 × 𝒞 → 𝒞` is **associative** with `[ε]` a two-sided **identity**, so `(𝒞, M)`
-  is a finite monoid; write `s·t := M(s, t)`. The **fold** `⟦·⟧ : Σ* → 𝒞` — `⟦ε⟧ = [ε]`,
-  `⟦w·a⟧ = ⟦w⟧·λ(a)` — extends `λ` to words, and the algebra is **letter-generated**:
-  the fold is onto;
-- `[ε]` is **adjoined**: `⟦w⟧ = [ε]` only for `w = ε` — no nonempty word folds to the
-  identity class.
+- `𝒞` is a finite set of **classes**, denoted `[c]`, where `c ∈ Σ*` is the
+  **representative** of that class; the empty word is always in its own class `[ε]`;
+- `λ : Σ ∪ {ε} → 𝒞` is the **letter map**, associating to each letter of the alphabet
+  its class; by definition `λ(ε) = [ε]` and, for all `x ∈ Σ`, `λ(x) ≠ [ε]` — `[ε]` is
+  **isolated**;
+- `M : 𝒞 × 𝒞 → 𝒞` is the **multiplication table**: **associative**, with `[ε]` a
+  two-sided **identity** — for all `c ∈ 𝒞`, `M(c, [ε]) = M([ε], c) = c` — so `(𝒞, M)`
+  is a finite monoid, and we write `s·t := M(s, t)`.
 
 *Example.* The algebra of `AsThenBs` (§2's example) has five classes, named by their
 keys — `[ε]`, `[a]`, `[b]`, `[a·b]`, `[b·a]` — with `λ(a) = [a]` and `λ(b) = [b]`.
@@ -164,27 +163,28 @@ class, each edge the class `λ(x)` of the letter it reads. The letter actions
 ```
 
 are read off its edges, and by letter-generation these two rows are the whole of `M`:
-any product `s·t` is `key(t)` walked from `s`. `[a]`
+any product `s·t` is the representative of `t` walked from `s`. `[a]`
 holds the words in `a⁺`, `[b]` those in `b⁺`, `[a·b]` those in `a⁺b⁺`, and `[b·a]` the
 *dead* words, a two-sided **zero** (`x·[b·a] = [b·a]·x = [b·a]`): once an `a` follows a
 `b`, no continuation can rescue the word.
 
 By associativity the fold is a monoid morphism `Σ* ↠ (𝒞, M)`; two words are **equivalent
-in the algebra** when they fold alike. Each class is **keyed by its shortlex-least word**
+in the algebra** when they fold alike. Each class is **represented by its shortlex-least word**
 (shortest, ties alphabetical), a datum recomputable from `𝒜` by breadth-first
 enumeration from `[ε]`, so the whole algebra is a canonical block of data once `M` and
 `λ` are fixed. Adjoining the identity makes `[ε]` a class of its own even when the
 monoid owns another neutral element: a nonempty word acting neutrally folds to its own
-class, with a nonempty key — as `[a·a]` does in two of the running examples. The axiom
+class, with a nonempty representative — as `[a·a]` does in two of the running examples. The axiom
 earns its keep in §3.2, where no accepting name may involve the empty past, and in
-§5's acceptance read-off, where every accepting component must carry a nonempty key.
+§5's acceptance read-off, where every accepting component must carry a nonempty
+representative.
 
 *Example.* `⟦aab⟧ = [a]·[a]·[b] = [a·b]`: the word `aab` folds with `ab`, and `ab` —
-the shortlex-least word reaching that class — is the key. No nonempty class of this
+the shortlex-least word reaching that class — is the representative. No nonempty class of this
 algebra acts neutrally, so the adjunction costs nothing here; §3.5 meets an algebra
 where the axiom bites.
 
-**The letter map is data, not decoration.** The key of `λ(x)` is always a letter —
+**The letter map is data, not decoration.** The representative of `λ(x)` is always a letter —
 length 1, with `ε` barred by the adjunction — namely the least letter of its class;
 so `λ` reads as the identity precisely when it is injective, as it is in all four
 examples. It need not be: over `Σ = {a, b, c}` the language `(a|c)*·b^ω` has exactly
@@ -204,18 +204,18 @@ forces an `a` after a `b`.
 
 **Definition 3.2 (Cayley graph).** The **Cayley graph** of the algebra has nodes `𝒞`,
 root `[ε]`, and an edge `s →^a s·λ(a)` for each `s ∈ 𝒞, a ∈ Σ`. Rooted, deterministic,
-and complete — every node reached from the root along its key — it is the algebra drawn
+and complete — every node reached from the root along its representative — it is the algebra drawn
 as a machine: the right regular representation acting on itself.
 
 *Example.* The Cayley graph of `AsThenBs` is exactly Figure 1. From `[ε]`, `a` leads
 to `[a]` and `b` to `[b]`; `[a]` loops on `a` and advances to `[a·b]` on `b`; `[b]`
 and `[a·b]` loop on `b` and fall to `[b·a]` on `a`; `[b·a]` absorbs both letters. Each
-node sits at the end of the path spelled by its own key — the slightly thicker arrows
+node sits at the end of the path spelled by its own representative — the slightly thicker arrows
 of the figure — and the stub marking the root stays the only arrow that ever points
 at it.
 
 The graph is the table made visible, and losslessly: any product `s·t` is read by
-walking `key(t)` from `s`. The adjoined identity has a shape: the root is a
+walking the representative of `t` from `s`. The adjoined identity has a shape: the root is a
 **source** — no edge enters `[ε]`, and the picture itself says the past never returns. Reachability is the
 algebra's right-ideal order (here a graph falling into the dead sink), and group
 content shows as a cycle traced by *repeating one word* (`s·⟦w⟧ ≠ s` yet
