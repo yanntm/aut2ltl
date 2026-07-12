@@ -44,7 +44,7 @@ descriptions, and exactly the class the object of §3 captures. All examples in 
 paper live over the two-letter alphabet `Σ = {a, b}`. This section fixes the few
 classical notions the object rests on, adapting the presentation of Perrin and Pin
 [PP04], each paired with the intuition tying the algebra back to languages of
-infinite words; what this paper adds is listed at the close.
+infinite words.
 
 Consider the language of Carton and Perrin [CP97, Ex. 10] described by `a*·b^ω` —
 some `a`'s, then `b`'s forever — which we name `AsThenBs`. Its syntactic ω-semigroup
@@ -124,14 +124,8 @@ and infinitely many more. §3 shows how to canonically choose a single one, and 
 it: shortest stem, then shortest loop — here `(ab)^ω` with the empty stem, the
 shortlex representative of the whole family.
 
-**Recalled, and new.** Recalled from [PP04] and classical theory: that lassos suffice,
-the monoid/ω-power framing, and linked pairs. New here: the reification of the syntactic
-ω-semigroup as a concrete finite object with a self-contained membership semantics (§3);
-the **rotation lemma**, which both fixes that semantics (§3) and makes the two-sided
-syntactic congruence computable by right multiplications alone (§7); and the construction
-of the object from a deterministic Emerson–Lei automaton, proved correct against the
-semantics (§6–8). Arnold's syntactic congruence, on which the object's canonicity rests,
-is recalled where it is used, in §5.
+We now present a canonical representation of an arbitrary regular ω-language `L`,
+using its syntactic ω-semigroup reified as an invariant `𝓘(L)`.
 
 ## 3. The object
 
