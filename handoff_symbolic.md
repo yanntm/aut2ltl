@@ -2,8 +2,7 @@
 
 You are the **symbolic engine thread** (sos_sdd). Bootstrap: this file,
 then `CLAUDE.md` (discipline — binding), then the files below in order.
-This file carries **current state + next
-work items + pointers only**; the report is the ledger.
+This file carries **current state + next work items + pointers only**.
 
 ## Critical files (read in this order)
 
@@ -13,20 +12,20 @@ work items + pointers only**; the report is the ledger.
    a full chat iteration — do NOT re-derive or second-guess it).
 2. `research_notes/sos_symbolic_spec.md` — the experiment spec
    (C1–C10 components, E0–E9 experiments, M1–M5 milestones); its
-   *State of play* block is current.
-3. `research_notes/sos_symbolic_report.md` — the ledger, findings
-   F1–F25 + Theory responses: every measured/green claim, plus
-   recorded gaps.
-4. `research_notes/sos_symbolic.md` — the paper, restructured around
+   *State of play* block is current and short.
+3. `research_notes/sos_symbolic_report.md` — the **active ledger**:
+   new findings land here, numbered from **F27**.
+4. `research_notes/sos_symbolic_experiments.md` — the **frozen
+   archive**: closed findings F1–F26 (M1 through C10 §6.2, E0–E1,
+   Theory responses) + retired spec text. Reference it; never edit it.
+5. `research_notes/sos_symbolic.md` — the paper, organized around
    **five research questions** (RQ1 correctness / RQ2 compression /
-   RQ3 the exponential / RQ4 cost / RQ5 amortization; the RQ↔E-id
-   mapping is in the spec's State of play). §8 answers RQ-by-RQ with
-   tables; §6.3–§6.5 are compressed (propositions in place, detail in
-   the paper's Appendix A — the parking lot for cut prose, reuse or
-   discard). Subsection numbering §6.x/§8 unchanged. Exactly
-   **1 `⟨TBD⟩` remains** (§3 Phase 1, saturation — waits on E8).
-   Presentation-grade numbers may appear in §8's tables, but every
-   one must be traceable to a report finding or a tracked CSV.
+   RQ3 the exponential / RQ4 cost / RQ5 amortization; RQ↔E-id mapping
+   in the spec's State of play). §8 answers RQ-by-RQ with tables;
+   Appendix A is the parking lot for cut prose. Exactly **1 `⟨TBD⟩`
+   remains** (§3 Phase 1, saturation — waits on E8). Every §8 number
+   must be traceable to an archive/report finding or a tracked CSV.
+
 - Code: Python façade `sos_sdd/*.py`; C++ core `sos_sdd/src/*.hh` +
   `module.cpp` (pybind11 `sos_sdd._core`). Tests + logs under
   `tests/sos_sdd/`.
@@ -40,19 +39,12 @@ work items + pointers only**; the report is the ledger.
 - Every test: `timeout 15 python3 tests/sos_sdd/<file>.py <case>` from
   the repo root — one case per invocation (each file's `CASES` dict
   lists them; no argv = all cases). All green as of this handoff:
-  `smoke_api`, `smoke_core`, `letters_test`, `e0_triptych` (M1 gate:
-  |EM¹|=10/7/16), `shortlex_test`, `e2_async` (16ⁿ, nodes 9n+1; flat
-  n=3 = ledgered TIME_BUDGET finding), `phase2_test` (pairing π),
-  `squaring_test` (C4 shortcut), `residuals_test` (C5; `stem` = the
-  seed≠gfp witness), `congruence_test` (C6; ebeb 256→37),
-  `conformance_test` (C7 byte gate, Spot-backed; `conformance_diff.py`
-  = side-by-side probe), `hoa_bridge_test` (C2 parser half: round-trip
-  + corpus byte-parity), `slotperm_test` (C9 `slot_perm`:
-  perm-invariant readings, byte-equal `.sos`), `member_test` (C10
-  §6.1: closure-free membership, three-way exact), `boolean_test`
-  (C10 §6.2: mask-set ops on forked cores, commutation gates vs fresh
-  builds and vs the reference). Logs →
-  `tests/sos_sdd/logs/`, never /tmp.
+  `smoke_api`, `smoke_core`, `letters_test`, `e0_triptych`,
+  `shortlex_test`, `e2_async`, `phase2_test`, `squaring_test`,
+  `residuals_test`, `congruence_test`, `conformance_test`
+  (+ `conformance_diff.py` probe), `hoa_bridge_test`, `slotperm_test`,
+  `member_test`, `boolean_test`. Logs → `tests/sos_sdd/logs/`,
+  never /tmp.
 - **Sweeps are NEVER one process** (OOM'd once, near machine crash:
   libDDD's unique table is never GC'd, diagrams accumulate across
   instances). `e1_census.py --isolate` = per-instance subprocess under
@@ -63,37 +55,28 @@ work items + pointers only**; the report is the ledger.
 
 ## Current state (all committed, all gates green)
 
-**The full pipeline works end to end**: `Engine(...).build(aut,
-until_phase=6)` runs Phases 0–6; `to_sos()` is **byte-identical to the
-explicit reference** on every same-AP instance tried (spec §3
-conformance gate — F14; corpus-scale on 6102 instances — F17). Per
-component: C1–C3 (primitives, letter classes, layered closure —
-layers kept, load-bearing), C4 complete (pairing π + squaring
-shortcut, modes `off`/`check`/`on`), C5 (profiles + residuals,
-`src/residuals.hh`), C6 (congruence, `src/congruence.hh`), C7
-(quotient + `.sos`, `sos_sdd/quotient.py`, `quotient="explicit"`
-only), C8 (async product generators, factored + flat), C9 `slot_perm`
-(indirection rendering, F24), E1 closed (census + covariates +
-read-offs, F17–F23), **C10 started**: §6.1 membership closure-free in
-`sos_sdd/calculus.py` (digest-side, never imports `_core` — F25).
-Refused loudly, never ignored: `quotient="symbolic"`, products at
-Phase 6, non-sorted APs, `fp1`/`fp5` ≠ "layered", non-natural
-`slot_perm`, non-packed `slot_encoding`, unknown `square` values,
-ambiguous word cubes in membership.
+The full pipeline works end to end and is **byte-identical to the
+explicit reference at corpus scale** (6102/6102 completed census
+instances). C1–C7 done; C9's `slot_perm` done; C10 §6.1 (membership)
+and §6.2 (Boolean algebra) done with commutation gates green. E0 and
+E1 closed; E2's factored line measured to `n = 6`. Details and every
+closed finding: the archive (file 4 above). Refused loudly, never
+ignored: `quotient="symbolic"`, products at Phase 6, non-sorted APs,
+`fp1`/`fp5` ≠ "layered", non-natural `slot_perm`, non-packed
+`slot_encoding`, unknown `square` values, ambiguous word cubes in
+membership.
 
 ## Work items — engineering (in order)
 
 1. ⏳ **C10 remainder** (paper §6 is the spec; E9's gates are the
-   deliverable). §6.1 done (F25); §6.2 done (F26 — fork + lazy mask
-   algebra, commutation gates green). Remaining, in dependency order:
-   - **Alignment (§6.3), design settled with the user:** the ordinary
-     build over the **sync-product slot model** (shared-AP
-     letter-class refinement — E4's generator, `Product mode="sync"`
-     in `slotmodel.py`); no per-block π assembly (README records why:
-     the engine never builds a monolithic Comp, so the spec assertion
-     holds structurally; the assembly is a measured optimization to
-     revisit only if E9 prices aligned re-pairing as dominant).
-     Prop 6.1 validated end to end via readings + byte gates.
+   deliverable). Remaining, in dependency order:
+   - **Alignment (§6.3), design settled and now normative in the
+     spec's C10 bullet:** the ordinary build over the **sync-product
+     slot model** (shared-AP letter-class refinement — E4's generator,
+     `Product mode="sync"` in `slotmodel.py`); no per-block π assembly
+     (README records why; measured optimization to revisit only if E9
+     prices aligned re-pairing as dominant). Prop 6.1 validated end to
+     end via readings + byte gates.
    - **§6.4 queries:** `S` projection, `Bad` intersection,
      included/equiv/empty; **witness** = C7's extraction retargeted
      at a set (backward preimages + forward least-letter walk).
@@ -119,18 +102,31 @@ ambiguous word cubes in membership.
    right-censored; never present one as a cost profile.
 5. Optional, cluster-sized: full-corpus C5 cross-check (sample of 25
    done).
-6. Housekeeping when touched: milestones append ledger rows to the
-   report AND sync the spec's *State of play*; paper only when a
-   `⟨TBD⟩` becomes measurable.
+6. Housekeeping when touched: new findings → report (from F27) AND
+   sync the spec's *State of play*; paper only when a `⟨TBD⟩` becomes
+   measurable or an §8 open cell gains data; retire the report to the
+   archive when a campaign closes.
+
+## Work items — theory
+
+1. **Quotient-scaling decision** (the RQ4 named gap): no experiment
+   grows the quotient (census max 148 classes; product quotients stay
+   small). Decide whether the paper's claims stay bounded as stated
+   or the spec gains a quotient-scaling family / census-extension
+   axis — and if so, specify it (expected class growth, budgets,
+   whether the explicit Phase 6 fallback needs pricing at ~10³
+   classes).
+2. **Integrate incoming results** into §8's open cells as they land
+   (E5 profile → RQ4; E6 bottom line → RQ4; E3/E7 orders → RQ3; E9 →
+   RQ5; E8 resolves the paper's last `⟨TBD⟩`). A refuted prediction
+   is a paper edit, not a footnote.
+3. **Conjecture 4.3** (any-order lower bound) remains open math —
+   entangled-slot candidate families welcome; E3 can only probe it.
 
 ## To-theory (escalations awaiting a Theory session)
 
-- **Spec C10 alignment bullet reword** (recorded deviation, report F26
-  block, user-settled): drop the mandated per-block π assembly — the
-  engine's brick rendering satisfies "Comp never on the aligned space"
-  structurally, and alignment is the ordinary build over the
-  sync-product slot model; Prop 6.1 becomes an end-to-end-validated
-  theorem + optional optimization.
+None. (The C10 alignment reword is folded into the spec; the archive
+F26 block records the resolution.)
 
 ## Binding engine facts (learned the hard way — do not relearn)
 
@@ -139,8 +135,8 @@ ambiguous word cubes in membership.
   blindly debug. He explicitly asked for this.
 - **Variable 0 is adjacent to the terminal**; slot i = var i, higher
   vars on top. ExprHom dies in unbounded mutual recursion on inverted
-  diagrams (F9); `Hom_Basic` bricks tolerate them silently — do not
-  let that mask the bug. Pair spaces stack written block ABOVE read
+  diagrams (archive F9); `Hom_Basic` bricks tolerate them silently — do
+  not let that mask the bug. Pair spaces stack written block ABOVE read
   block.
 - **No GAL arrays, no `syncAssignExpr`** — plain scalars + the paper's
   case split; the simultaneous step (squaring) is the 2k relation
@@ -162,7 +158,8 @@ ambiguous word cubes in membership.
   serialize.py`'s actual layout.
 - **Identity convention (C7, normative):** word classes = ~-classes of
   non-empty-word images; `[eps]` adjoined fresh. Phase 5's congruence
-  itself runs on all of EM¹ — only the quotient reading changes (F15).
+  itself runs on all of EM¹ — only the quotient reading changes
+  (archive F15).
 - **AP-support exclusion:** Spot's import drops unused APs (e.g. empty
   language) — such instances sit outside the same-AP byte-parity set
   (`conformance_test` `dupe` case asserts it).
