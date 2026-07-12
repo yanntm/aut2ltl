@@ -110,4 +110,10 @@ is structural, not a wall clock: in the assembly the pure engine (no
 delegate) is tried whole FIRST and ships where it succeeds; the split runs
 only where it declines — the split is an enabler, never a rewrite of a
 label the engine already had. A poisoned split (a piece declined by engine
-and dg) falls through to the undecomposed cascade assembly.
+and dg) falls through to the undecomposed cascade assembly — and so does a
+split label above the conformance oracle's flatten gate: an emission the
+oracle cannot consume validates nothing, so it is declined, not shipped.
+The choice brick here is `first_success` with that bar; `best_of` (size
+comparator over both assemblies) is the better brick the day the cascade
+delegate DECLINES instead of crawling on its hard stratum — `best_of`
+walks all arms, so today it would re-import the crawl into every row.

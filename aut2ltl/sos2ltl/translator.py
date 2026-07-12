@@ -14,7 +14,8 @@ from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import spot
 
-from aut2ltl.ltl.builders import _Not, _Or, _simp_f
+from aut2ltl.ltl.builders import _FLATTEN_TREE_LIMIT, _Not, _Or, _simp_f
+from aut2ltl.ltl.metrics import tree_node_count
 from aut2ltl.result import LTLResult
 from aut2ltl.verifier import member
 from aut2ltl.witness import Witness
@@ -133,6 +134,13 @@ def _split_translate(plan: "SplitPlan", tag: str) -> LTLResult:
     f = _simp_f(_Or(*fs))
     if plan.negate:
         f = _simp_f(_Not(f))
+    # The oracle gate (algorithm.md "Cost"): a label the conformance oracle
+    # cannot flatten validates nothing — decline it so the assembly falls
+    # through to the cascade path instead of shipping unverifiable size.
+    if 0 <= _FLATTEN_TREE_LIMIT < tree_node_count(f, limit=_FLATTEN_TREE_LIMIT + 1):
+        return LTLResult.decline(
+            f"{tag}: split label above the flatten gate "
+            f"({_FLATTEN_TREE_LIMIT} tree nodes)", tag, TAG_PAIRS)
     return LTLResult.success(f, *sorted(tags))
 
 
