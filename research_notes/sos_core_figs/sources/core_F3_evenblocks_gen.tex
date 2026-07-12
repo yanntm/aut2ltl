@@ -16,17 +16,17 @@
   pairs/.style     = {anchor=north, font=\small},
 ]
 
-  \node[class,root] (eps) at (6.4,13.6) {$\varepsilon$};
-  \node[class] (a) at (4.7,9.4) {$a$};
-  \node[class,idem] (b) at (8.1,9.4) {$b$};
-  \node[class,idem] (aa) at (1.1,5.1) {$a{\cdot}a$};
-  \node[class] (ab) at (4.7,5.1) {$a{\cdot}b$};
-  \node[class] (ba) at (9.3,5.1) {$b{\cdot}a$};
-  \node[class,idem] (aba) at (4.3,0.8) {$a{\cdot}b{\cdot}a$};
-  \node[class,idem] (bab) at (9.3,0.8) {$b{\cdot}a{\cdot}b$};
+  \node[class,root] (eps) at (3.3,3.6) {$\varepsilon$};
+  \node[class] (a) at (7.8,5.6) {$a$};
+  \node[class,idem] (b) at (7.8,1.7) {$b$};
+  \node[class,idem] (aa) at (12.5,9.8) {$a{\cdot}a$};
+  \node[class] (ab) at (12.5,5.6) {$a{\cdot}b$};
+  \node[class] (ba) at (12.5,0.8) {$b{\cdot}a$};
+  \node[class,idem] (aba) at (17.1,6.3) {$a{\cdot}b{\cdot}a$};
+  \node[class,idem] (bab) at (17.1,0.8) {$b{\cdot}a{\cdot}b$};
 
   % the root is the adjoined identity: a source, marked like an initial state
-  \draw[init] (6.4,14.5) -- (eps);
+  \draw[init] (2.4,3.6) -- (eps);
 
   \draw[tree] (eps) to node[lbl] {$a$} (a);
   \draw[tree] (eps) to node[lbl] {$b$} (b);
@@ -44,6 +44,6 @@
   \draw[nontree] (aba) to node[lbl] {$b$} (bab);
   \draw[nontree] (bab) to[loop above] node[lbl] {$a,b$} (bab);
 
-  \node[pairs] at (5.2,-0.5) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
+  \node[pairs] at (10.2,-0.5) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
 \end{tikzpicture}
 \end{document}
