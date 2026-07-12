@@ -529,17 +529,77 @@ conditions that are again properties of the table — so each fragment is a
 decidable property of the invariant; developing those searches to the
 standard of the rest of this paper is left open.
 
-**The stutter-invariant (X-free) refinement — one more read-off.** One
-fragment *is* a one-line read-off: `L` is **stutter-invariant** (closed
-under doubling/collapsing adjacent equal letters, equivalently definable in
-`LTL∖X`) iff every letter's class is idempotent, `λ(a)·λ(a) = λ(a)` for all
-`a ∈ Σ` — then no fold distinguishes `a` from `aa`, so no context does (the
-calculus paper's Proposition 3.3, with proof). It sits strictly below the
-aperiodic cut: a stutter-invariant language is `X`-free, hence LTL, hence
-aperiodic, so the read-off is reported alongside the LTL bit and never
-contradicts it. It is complement-invariant (a property of the algebra, not
-of `accept`). *On the examples:* all three of `GF(aa)`, `Even`, `EvenBlocks`
-carry a non-idempotent letter, so all three are stutter-sensitive.
+**The stutter-invariant (X-free) refinement — one more read-off.** Two
+ω-words are *stutter-equivalent* iff they have the same destuttered
+normal form, where destuttering collapses every maximal finite block of
+equal consecutive letters to one letter (an eventually-constant word
+`u·a^ω` has normal form `destutter(u·a)·a^ω`); `L` is
+**stutter-invariant** iff it is a union of stutter classes.
+
+**Proposition 3.1b (stutter invariance).** *`L` is stutter-invariant iff
+`λ(a)·λ(a) = λ(a)` for every letter `a ∈ Σ`.*
+
+The proof uses the factoring theorem behind the invariant in its strong
+form [PP04; SωS26, §5]: for any ω-word `α` and any factorization
+`α = w₀·w₁·w₂·⋯` whose blocks `w_{j≥1}` all fold to one idempotent `e`,
+membership is decided by the associated linked pair —
+`α ∈ L ⟺ (φ(w₀)·e, e) ∈ P` — Ramsey's theorem guarantees such a
+factorization exists, and two ω-words admitting factorizations with the
+same stem image and the same idempotent block image share their
+verdict.
+
+*Proof.* (⇒) Fix `a ∈ Σ`; we show `a ≈_L a·a` in Arnold's congruence,
+whence `λ(a) = λ(a·a) = λ(a)²` since the syntactic morphism is
+multiplicative. In the linear shape, for any `x, y ∈ Σ*`, `t ∈ Σ⁺`, the
+words `x·a·y·t^ω` and `x·a·a·y·t^ω` differ by duplicating one letter
+occurrence, so they destutter identically and stutter invariance gives
+them one verdict. In the ω-power shape, for any `x, y ∈ Σ*`,
+`x·(a·y)^ω` and `x·(a·a·y)^ω` differ by duplicating one `a` inside each
+loop iteration — infinitely many duplications, but destuttering
+collapses each `a·a` block the same way in both, so the normal forms
+again coincide and stutter invariance again gives one verdict. Both
+shapes agree on `a` versus `a·a`, so `a ≈_L a·a`.
+
+(⇐) Suppose every letter class is idempotent. First, on finite words,
+`φ(w) = φ(destutter(w))`: collapsing one adjacent equal pair
+`…a·a… ↦ …a…` preserves the fold by `λ(a)² = λ(a)` and
+multiplicativity; induct on the number of collapses. It suffices to show
+that every ω-word `α` has the same verdict as its normal form `β`, since
+stutter-equivalent words share their normal form.
+
+*Case 1: `α` eventually constant*, `α = u·a^ω`. Its factorization
+`u, a, a, a, …` has all loop blocks folding to the idempotent
+`λ(a)`, so by the factoring theorem the verdict of `α` is membership of
+the linked pair `(φ(u)·λ(a), λ(a))` in `P`. Now `φ(u)·λ(a) = φ(u·a) =
+φ(destutter(u·a))` by the finite-word fact, and the normal form
+`β = destutter(u·a)·a^ω` evaluates on the same pair (its stem folds to
+`φ(destutter(u·a))`, which already ends in `λ(a)` and is absorbed).
+Same pair, same verdict.
+
+*Case 2: letters change infinitely often.* Write the normal form as
+`β = b₀b₁b₂⋯` with `b_i ≠ b_{i+1}`; then `α = b₀^{k₀}·b₁^{k₁}·⋯` for
+some exponents `k_i ≥ 1`. By Ramsey, `β` admits a factorization
+`β = w₀·w₁·w₂·⋯` with `φ(w_j) = e` idempotent for all `j ≥ 1`. Every
+cut point of this factorization sits between two *distinct* letters —
+`β` is stutter-free — so it marks a block boundary of `α`, and cutting
+`α` at those boundaries blows each factor `w_j = b_i⋯b_m` up to
+`w_j' = b_i^{k_i}⋯b_m^{k_m}`, whose destuttered form is `w_j` itself
+(adjacent letters inside `w_j` differ). By the finite-word fact
+`φ(w_j') = φ(w_j)`, so `α = w₀'·w₁'·w₂'·⋯` is a factorization with the
+same stem image `φ(w₀)` and the same idempotent block image `e` as
+`β`'s, and the strong form of the factoring theorem gives both words
+one verdict. ∎
+
+It sits strictly below the aperiodic cut: a stutter-invariant language
+is `X`-free, hence LTL, hence aperiodic, so the read-off is reported
+alongside the LTL bit and never contradicts it. It is
+complement-invariant (a property of the algebra, not of `accept`). The
+automata-side check is a construction battery — translate the property
+*and its negation*, apply the closure constructions `cl` (destuttering)
+and `sl` ("self-loopization"), test emptiness of products such as
+`sl(A) ⊗ sl(Ā)` [MD15]; on the invariant it is `|Σ|` table lookups.
+*On the examples:* all three of `GF(aa)`, `Even`, `EvenBlocks` carry a
+non-idempotent letter, so all three are stutter-sensitive.
 
 ### 3.3 Computing chains — the quantity `(m⁺, m⁻)`
 
@@ -1339,6 +1399,8 @@ same data.
   thesis, UCLA, 1968.
 - **[Lan69]** L. H. Landweber. *Decision problems for ω-automata.* Math.
   Systems Theory 3(4) (1969) 376–384.
+- **[MD15]** T. Michaud, A. Duret-Lutz. *Practical stutter-invariance
+  checks for ω-regular languages.* SPIN 2015.
 - **[MP92]** Z. Manna, A. Pnueli. *The Temporal Logic of Reactive and
   Concurrent Systems: Specification.* Springer, 1992.
 - **[PP04]** D. Perrin, J.-É. Pin. *Infinite Words: Automata, Semigroups,

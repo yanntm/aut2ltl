@@ -27,13 +27,11 @@ lasso is one fold and one lookup; emptiness, universality, and inclusion
 are scans, each returning the *minimal* witness lasso; left quotients,
 inverse substitutions, and alphabet hygiene — dropping an unconstrained
 atomic proposition, equality up to renaming — are free surgeries and
-read-offs. Classification checks that automata libraries implement as
-constructions (stutter-invariance, the safety–progress ladder, the
-acceptance strength a language actually needs) are equations on the
-table; the safety closure, the interior, and the Alpern–Schneider
-decomposition are `O(n²)` surgeries whose fixpoints generate exactly the
-obligation (Staiger–Wagner) class, with the Wagner degree inside that
-band a longest-path read-off. The exponentials do not disappear — they
+read-offs. One classification the calculus itself consumes is an
+equation on the table: LTL-definability is aperiodicity of `M`, one
+scan, and every surgery preserves it. The safety closure, the interior,
+and the Alpern–Schneider decomposition are `O(n²)` surgeries on the
+same table. The exponentials do not disappear — they
 concentrate, exactly at the ω-rational constructors (concatenation by a
 prefix set, ω-power) and existential projection, where a powerset is
 intrinsic. The economy is *pay canonicity once*: entering the calculus
@@ -41,9 +39,9 @@ costs what determinization always cost; everything downstream is cheap,
 normal-formed, and certificate-producing. The calculus is implemented as
 a small pure library, its every decision replayable against independent
 oracles; measured on a complement-closed corpus of small languages, the
-generated product realizes a median 0.17 of its `n₁·n₂` bound, and every
-classification read-off agrees with the automata-side construction on
-every language of the corpus.
+generated product realizes a median 0.17 of its `n₁·n₂` bound, and the
+read-offs it keeps agree with the automata-side construction on every
+language of the corpus.
 
 ---
 
@@ -58,9 +56,8 @@ of the trade: `2^{Θ(n log n)}` states, through Safra trees, rank
 functions, slices, or one of their descendants [Saf88, TFVT10]. Language
 inclusion and equivalence are PSPACE-complete, discharged in practice by
 complement-and-product or by simulation heuristics. Each classification
-query — is this property a safety property, is it stutter-invariant, what
-acceptance strength does it really need — is its own bespoke construction
-followed by an equivalence check. And every one of these steps returns a
+query is its own bespoke construction followed by an equivalence
+check. And every one of these steps returns a
 *machine*: a presentation of the result, not the result itself. The output
 must be re-simplified after every operation, the simplification is
 heuristic and model-bound, and no normal form exists to simplify *to* —
@@ -124,18 +121,11 @@ Contributions:
    calculus renders is accompanied by the *globally minimal* witness
    lasso, obtained from the scan order alone — no separate
    counterexample-extraction machinery.
-3. **Read-offs replacing constructions** (§5–§6): classification
-   queries answered by equations on the table, including a one-scan
-   stutter-invariance test (Proposition 5.1, with full proof) where the
-   automata-side check builds closure automata and tests product
-   emptiness; the hulls — safety closure, interior, and the
-   Alpern–Schneider decomposition — as `O(n²)` surgeries on the same
-   table (Proposition 6.1), turning the ladder's first rungs into
-   fixpoint equations; and the theorem that the obligation rung is
-   *exactly* the Boolean sublattice the hull fixpoints generate
-   (Theorem 6.6), with obligation membership a one-scan read-off and
-   the band's Wagner degrees longest-path read-offs
-   (Proposition 6.7).
+3. **Read-offs replacing constructions** (§5–§6): the LTL-definability
+   gate — aperiodicity of the table, one scan, preserved by every
+   surgery (Lemma 3.3) — and the hulls: safety closure, interior, and
+   the Alpern–Schneider decomposition as `O(n²)` surgeries on the same
+   table (Proposition 6.1, Corollaries 6.2–6.3).
 4. **The ledger, and the evidence** (§7–§8): a side-by-side of the
    calculus against a production toolbox, one row per operation, with
    the exponential frontier located exactly (§4); and the measurements.
@@ -150,11 +140,10 @@ Contributions:
 
 §2 recalls the object, the algebraic toolkit the proofs use, and the
 running example. §3 develops the calculus; §4 locates the exponential
-frontier; §5 turns the classification battery into read-offs; §6
-develops the hulls and the obligation band they generate; §7 draws the
-ledger and the cost summary and states what the calculus refuses to
-simulate; §8 reports the measurements; §9 positions the work; §10
-concludes.
+frontier; §5 keeps the one classification read-off the calculus
+consumes — the LTL cut; §6 develops the hulls; §7 draws the ledger and
+the cost summary and states what the calculus refuses to simulate; §8
+reports the measurements; §9 positions the work; §10 concludes.
 
 ## 2. Background: the object, the toolkit, the example
 
@@ -255,38 +244,10 @@ arithmetic, and uniqueness.
 
 **Green's relations.** For `x, y ∈ 𝒞`: `x ≤_R y` iff `x ∈ y·𝒞`, and
 `x R y` iff each is `≤_R` the other — they generate the same right
-ideal. `L` is the left dual, `H = R ∩ L`. The `R`-classes are the
-strongly connected components of the **right-Cayley graph** of the table
-(nodes `𝒞`, an edge `c → c·λ(a)` per letter [SωS26, Def 5.2]), and
-`≥_R` is reachability in it — the geometric reading every scan of §6
-exploits. On idempotents we use the natural order:
-`f ≤_H e` iff `e·f = f·e = f`.
-
-**The kernel.** Every finite semigroup has a least two-sided ideal `K`,
-its *kernel*, and `K` is completely simple: by Rees–Suschkewitsch it is
-isomorphic to a matrix semigroup over a group `G` — elements are
-triples `(i, g, λ)` (row, group element, column), multiplication is
-`(i, g, λ)·(j, h, μ) = (i, g·q_{λj}·h, μ)` with sandwich entries
-`q_{λj} ∈ G`, and every subsemigroup of a completely simple semigroup
-is completely simple. Lemma 6.4 computes inside one such presentation;
-only the multiplication rule is needed.
-
-**Chains and the Wagner coordinates.** Fix a saturated pair set `P` on
-the table. A *chain of length `n`* is a linked stem `s` carrying
-idempotent loops `e₀ >_H e₁ >_H ⋯ >_H e_n` whose verdicts
-`Val_P(s, e_i)` alternate; its *sign* is the first verdict. `m⁺(L)`
-(resp. `m⁻(L)`) is the maximal length of a chain of sign 1 (resp. 0),
-with the convention `m^b = −1` when no linked pair of verdict `b`
-exists at all, and `m(L) = max(m⁺, m⁻)`. A *superchain of length `n`*
-is a sequence of chains `C₀, …, C_n` of alternating signs whose stems
-are strictly `R`-decreasing and successively accessible
-(`s_{i+1} ∈ s_i·𝒞`); `n⁺(L)` / `n⁻(L)` are the maximal lengths of
-superchains of first sign 1 / 0. These coordinates, evaluated in the
-syntactic ω-semigroup, determine the Wagner degree of `L`
-[Wag79, CP97, CP99, SW08]. §6 imports exactly two facts from that
-theory: `m(L) = 0` iff `L` is a Boolean combination of open sets
-(Wagner's theorem in the Carton–Perrin form [CP99, Thm 6, Cor 7]), and
-the superchain normal form [CP97, Thm 7].
+ideal. The `R`-classes are the strongly connected components of the
+**right-Cayley graph** of the table (nodes `𝒞`, an edge `c → c·λ(a)`
+per letter [SωS26, Def 5.2]), and `≥_R` is reachability in it — the
+geometric reading the liveness scan of §6 exploits.
 
 ### 2.3 The running example
 
@@ -336,8 +297,7 @@ oracle at work:
   loop `ab` keeps producing an `a` after a `b`.
 
 Every later section revisits this table: complement and quotients in
-§3.2, alignment in §3.3, the hulls, the obligation verdict, and the
-Wagner degree `(n⁺, n⁻) = (1, 2)` in §6.
+§3.2, alignment in §3.3, and the hulls in §6.
 
 ## 3. The calculus
 
@@ -654,107 +614,33 @@ The calculus is honest about where powersets are intrinsic:
   share of the whole, and every stage's "did my rewrite change the
   language" re-check is a byte comparison.)
 
-## 5. Read-offs replace constructions
+## 5. The LTL cut — the one classification the calculus keeps
 
-Spot answers classification queries by building automata and testing
-them; on the invariant the same queries are equations on the table. The
-first is worked in full, as the pattern for the rest.
+Classification of the held language — the safety–progress ladder, the
+acceptance index, the Wagner degree — is *diagnosis* on the same
+object, sketched in [SωS26, §7.2]; it is not this paper's subject, and
+the calculus neither needs nor restates it. One cut is different,
+because the calculus itself consumes it: **LTL-definability**. `L` is
+LTL-definable iff `M` is aperiodic (`x^{k+1} = x^k` for `k` large
+enough) — the classical correspondence [DG08] landed on the canonical
+table, where no presentation artifact can blur it — and aperiodicity is
+one `O(n²)` power-orbit scan of the table, with a witness (a genuine
+group cycle in the algebra) when it fails. The calculus uses the bit as
+a *gate*: Lemma 3.3 keeps every surgery inside the variety, so a
+pipeline that enters LTL-definable stays LTL-definable through any
+sequence of free operations; the §7.3 exit reads the same bit (the
+Cayley acceptor is counter-free exactly then); and formula extraction —
+beyond this paper — is priced before it is attempted. Spot has no
+automaton→LTL query at all; on the invariant it is a scan.
 
-**Stutter invariance, one scan.** Two ω-words are *stutter-equivalent*
-iff they have the same destuttered normal form, where destuttering
-collapses every maximal finite block of equal consecutive letters to one
-letter (an eventually-constant word `u·a^ω` has normal form
-`destutter(u·a)·a^ω`). `L` is stutter-invariant iff it is a union of
-stutter classes.
+One more classification survives, in §6, because it arrives as the
+fixpoint equation of an *operator*: the safety closure of `L`, its
+interior, and the Alpern–Schneider decomposition
+`L = safety ∩ liveness` are pair-set surgeries on the same table,
+computable in `O(n²)`, and the safety and co-safety verdicts fall out
+of them.
 
-**Proposition 5.1.** `L` is stutter-invariant iff `λ(a)·λ(a) = λ(a)`
-for every letter `a ∈ Σ`.
-
-*Proof.* (⇒) Fix `a ∈ Σ`; we show `a ≈_L a·a` in Arnold's congruence,
-whence `λ(a) = λ(a·a) = λ(a)²` since the syntactic morphism is
-multiplicative. In the linear shape, for any `x, y ∈ Σ*`, `t ∈ Σ⁺`, the
-words `x·a·y·t^ω` and `x·a·a·y·t^ω` differ by duplicating one letter
-occurrence, so they destutter identically and stutter invariance gives
-them one verdict. In the ω-power shape, for any `x, y ∈ Σ*`,
-`x·(a·y)^ω` and `x·(a·a·y)^ω` differ by duplicating one `a` inside each
-loop iteration — infinitely many duplications, but destuttering
-collapses each `a·a` block the same way in both, so the normal forms
-again coincide and stutter invariance again gives one verdict. Both
-shapes agree on `a` versus `a·a`, so `a ≈_L a·a`.
-
-(⇐) Suppose every letter class is idempotent. First, on finite words,
-`fold(w) = fold(destutter(w))`: collapsing one adjacent equal pair
-`…a·a… ↦ …a…` preserves the fold by `λ(a)² = λ(a)` and
-multiplicativity; induct on the number of collapses. It suffices to show
-that every ω-word `α` has the same verdict as its normal form `β`, since
-stutter-equivalent words share their normal form.
-
-*Case 1: `α` eventually constant*, `α = u·a^ω`. Its factorization
-`u, a, a, a, …` has all loop blocks folding to the idempotent
-`λ(a)`, so by the factoring theorem (§2) the verdict of `α` is
-`Val_P(fold(u), λ(a))`, i.e. membership of the linked pair
-`(fold(u)·λ(a), λ(a))` in `P`. Now `fold(u)·λ(a) = fold(u·a) =
-fold(destutter(u·a))` by the finite-word fact, and the normal form
-`β = destutter(u·a)·a^ω` evaluates on the same pair (its stem folds to
-`fold(destutter(u·a))`, which already ends in `λ(a)` and is absorbed).
-Same cell, same verdict.
-
-*Case 2: letters change infinitely often.* Write the normal form as
-`β = b₀b₁b₂⋯` with `b_i ≠ b_{i+1}`; then `α = b₀^{k₀}·b₁^{k₁}·⋯` for
-some exponents `k_i ≥ 1`. By Ramsey (§2), `β` admits a factorization
-`β = w₀·w₁·w₂·⋯` with `fold(w_j) = e` idempotent for all `j ≥ 1`. Every
-cut point of this factorization sits between two *distinct* letters —
-`β` is stutter-free — so it marks a block boundary of `α`, and cutting
-`α` at those boundaries blows each factor `w_j = b_i⋯b_m` up to
-`w_j' = b_i^{k_i}⋯b_m^{k_m}`, whose destuttered form is `w_j` itself
-(adjacent letters inside `w_j` differ). By the finite-word fact
-`fold(w_j') = fold(w_j)`, so `α = w₀'·w₁'·w₂'·⋯` is a factorization
-with the same stem image `fold(w₀)` and the same idempotent block image
-`e` as `β`'s, and the strong factoring theorem of §2 gives both words
-one verdict. ∎
-
-(On the running example: `A² = A` and `B² = B` — `a*·b^ω` is
-stutter-invariant, in two lookups.)
-
-Spot's check [MD15] translates the property *and its negation* to Büchi
-automata, applies closure constructions — `cl` (destuttering) and `sl`
-("self-loopization", instuttering) — and tests emptiness of products
-such as `sl(A) ⊗ sl(Ā)`: two translations, two closures, one product
-emptiness. Here it is `|Σ|` table lookups. (The comparison is fair in
-one direction only — [MD15] starts from a formula, we start from the
-invariant — but in a pipeline that already holds `𝓘(L)`, the marginal
-cost of the query is the point.)
-
-The rest of the classification battery follows the same pattern —
-a construction on automata, an equation on the table:
-
-- **The safety–progress ladder** (safety, co-safety/guarantee,
-  obligation, recurrence, persistence, reactivity): each rung is a
-  closure condition on the accepting set `P` over the linked-pair
-  structure [SωS26, §7.2; Lan69, MP92, PW13] — Spot's `is_safety`,
-  `is_obligation`, … as scans, uniform over one object where the
-  automata-side answers are model-specific checks. The first rungs
-  become *exact fixpoint tests* once the hulls are in hand — that is
-  §6's subject.
-- **Acceptance strength needed** (Spot's parity/Rabin-index style
-  queries): the acceptance index — the minimal deterministic condition
-  the *language* needs — is the maximal alternating chain in the
-  algebra, computable in the syntactic ω-semigroup by Carton–Perrin
-  [CP97, Cor. 1]; a property of the language, not of a chosen condition.
-- **Wagner degree**: the complete classification up to Wadge
-  reducibility is fixed by the chain and superchain structure of the
-  algebra [CP97, CP99, SW08]; every hierarchy query above specializes
-  it.
-- **LTL-definability**: the aperiodicity scan on `M` — `L` is
-  LTL-definable iff `M` is aperiodic, the classical correspondence
-  [DG08] landed on the canonical table, and stable under every surgery
-  by Lemma 3.3. Formula extraction is beyond this paper; the read-off
-  is its gate. (Spot has no automaton→LTL path.)
-- **Hulls.** The safety closure of `L`, its interior, and the
-  Alpern–Schneider decomposition `L = safety ∩ liveness` are pair-set
-  surgeries on the same table, computable in `O(n²)` — §6 proves it.
-
-## 6. Hulls, and the obligation rung they generate
+## 6. Hulls
 
 Equip `Σ^ω` with the Cantor topology; a *safety* property is a closed
 set, a *co-safety* (guarantee) property an open one, and the safety
@@ -822,8 +708,7 @@ live for `P^c` (`stems(P^c) = {A, D}`, and even `B` reaches `D`), so
 `P̊ = ∅`: `int(L) = ∅` — no cylinder stays inside `L`, one stray `a`
 kills any prefix.
 
-**Corollary 6.2 (interior, and the ladder's first rungs as
-fixpoints).** The interior (largest open subset) is the dual surgery
+**Corollary 6.2 (interior, safety and co-safety as fixpoints).** The interior (largest open subset) is the dual surgery
 `int(L) = ¬cl(¬L)`, with pair set
 `P̊ := { (s, e) ∈ linked : s ∉ Live_{P^c} }` — the stems all of whose
 continuations stay in `L`. Consequently, on the reduced invariant: `L`
@@ -855,178 +740,13 @@ properties of the safety fragment. And the hull is a closure operator
 in the lattice sense on the saturated pair sets of a fixed table
 (extensive, monotone, idempotent — idempotence because
 `Live_{P̄} = Live_P`), so the closed pair sets form a finite lattice of
-fixpoints on the table. The natural next question is whether the
-*obligation* rung of the ladder — the Staiger–Wagner class, Boolean
-combinations of safety properties — is exactly the Boolean sublattice
-those fixpoints generate. It is, and the rest of this section proves
-it.
+fixpoints on the table. (What that lattice generates inside the
+classification hierarchy is a diagnosis question — not this paper's.)
 
-First, the generated sublattice has a concrete description. The closed
-pair sets of the table are exactly the sets
-
-```
-Q_S := { (s, e) ∈ linked : Reach(s) ∩ S ≠ ∅ },     S ⊆ linked stems,
-```
-
-where `Reach(s) := s·𝒞 ∩ (linked stems)` — Proposition 6.1 makes any
-hull a `Q_S` (take `S = stems(P)`), and each `Q_S` is its own hull (by
-transitivity of reachability). The Boolean subalgebra generated by the
-`Q_S` is generated by the singletons `Q_{{t}}`, whose indicator on a
-pair `(s, e)` is `[t ∈ Reach(s)]`; its atoms are therefore the fibers
-of `(s, e) ↦ Reach(s)`. And `Reach(s) = Reach(s')` iff `s` and `s'`
-divide each other on the right — Green's relation `R` (§2.2). So:
-
-> `P` is **hull-generated** iff `Val_P(s, e)` depends only on the
-> `R`-class of the stem `s` — in particular, not on the loop at all.
-
-The Wagner-side characterization of obligation is classical: `L` is a
-Boolean combination of open (equivalently closed) sets iff its Wagner
-degree is finite, iff `m(L) = 0` — no chain of length 1 (§2.2), the
-chains living in the syntactic ω-semigroup by the Carton–Perrin
-normal form [CP97, Thm 6; Wag79; CP99, Thm 6 and Cor 7; SW08]. Two
-lemmas take us from `m = 0` to stem-only verdicts. Throughout, note that if
-`(s, e)` and `(s, f)` are linked then `s` absorbs the whole
-subsemigroup `⟨e, f⟩` on the right: `s·(any product of e's and f's) = s`,
-letter by letter — so every element of `⟨e, f⟩` below is again a loop
-of `s`, and every conjugacy move fixes the stem.
-
-**Lemma 6.4 (loops over one stem are connected).** Let `P` be
-saturated with `m = 0`. Then `Val_P(s, e) = Val_P(s, f)` for every two
-loops `e, f` of a common linked stem `s`.
-
-*Proof.* Fix an idempotent `k` in the kernel (minimal ideal) `K` of
-`⟨e, f⟩`, and set `g := (e·k·e)^π`, `g' := (f·k·f)^π`.
-
-*Descent.* From `(eke)·e = ek(ee) = eke = e·(eke)` we get
-`(eke)^m·e = (eke)^m = e·(eke)^m` for all `m ≥ 1`, so `g·e = e·g = g`:
-`g ≤_H e`. Also `g ∈ K` (`K` is an ideal, closed under powers), and
-`(s, g)` is linked by the absorption remark. If `g ≠ e`, the pair
-`e >_H g` with differing verdicts would be a chain of length 1, so
-`m = 0` forces `Val(s, g) = Val(s, e)`; likewise
-`Val(s, g') = Val(s, f)`.
-
-*Conjugacy in the kernel.* `T := ⟨g, g'⟩ ⊆ K` is completely simple: a
-subsemigroup of a completely simple semigroup is completely simple
-(for `t, u ∈ T`, `tut` lies in the group H-class of `t` in `K`, so
-`(tut)^π` is that group's identity and `t = (tut)^π·t ∈ T·u·T`; thus
-`T` is simple, and finite simple with idempotents is completely
-simple). We exhibit `x, y ∈ T` with `x·y = g` and `y·x = g'`. If
-`g R g'` or `g L g'` this is the classical pair of identities
-(`g·g' = g'`, `g'·g = g` when `g R g'`; take `x = g'`, `y = g`, giving
-`xy = g'g = g` and `yx = gg' = g'`; dually for `L`). Otherwise
-normalize `T`'s Rees presentation (§2.2) over its rows `{1, 2}` and columns
-`{1, 2}` so that the sandwich entries are
-`p₁₁ = p₁₂ = p₂₁ = 1, p₂₂ = γ`, with `g = (1, 1, 1)` and
-`g' = (2, γ⁻¹, 2)`. Then `x := g·g' = (1, γ⁻¹, 2)` and
-`y := (g'·g)^{ord(γ)} = (2, 1, 1)` are in `T`, and
-
-```
-x·y = (1, γ⁻¹·p₂₂·1, 1) = (1, γ⁻¹γ, 1) = g,
-y·x = (2, 1·p₁₁·γ⁻¹, 2) = (2, γ⁻¹, 2) = g'.
-```
-
-So the loop `g` factors as `x·y` with `y·x = g'`; by Proposition 3.1
-the cells `(s, g)` and `(s·x, (y·x)^π) = (s, g')` carry one verdict
-(the stem is fixed since `x ∈ ⟨e, f⟩`). Chaining:
-`Val(s,e) = Val(s,g) = Val(s,g') = Val(s,f)`. ∎
-
-(The kernel step is where chains alone are powerless: inside a
-completely simple semigroup distinct idempotents are `H`-incomparable,
-so `m = 0` says nothing there — and indeed `(e·k·e)^π = e` whenever
-`e` itself lies in the kernel. It is *saturation* — the conjugacy law
-of Proposition 3.1 — that connects the kernel loops. The conjugacy of
-`D`-equivalent idempotents is classical; the point of the computation
-is that `x, y` can be taken inside `⟨e, f⟩`, which is what keeps the
-stem absorbed.)
-
-**Lemma 6.5 (blind verdicts are `R`-invariant).** Let `P` be saturated
-and loop-blind (`Val_P(s, e) =: θ(s)` for every loop `e` of `s`). Then
-`θ(s) = θ(s')` whenever `s R s'`.
-
-*Proof.* Write `s' = s·x`, `s = s'·y`. Then `E := (xy)^π` is a loop of
-`s` and `(yx)^π` a loop of `s'`. Factor `E = X·Y` with
-`X = (xy)^π·x`, `Y = y·(xy)^{π−1}`: then `X·Y = (xy)^{2π} = E` and
-`Y·X = (yx)^{2π} = (yx)^π`. Proposition 3.1 sends the cell `(s, E)` to
-`((s·X)·(yx)^π, (yx)^π) = (s', (yx)^π)`, so
-`θ(s) = Val(s, E) = Val(s', (yx)^π) = θ(s')`. ∎
-
-**Theorem 6.6 (the obligation rung is hull-generated).** For an
-ω-regular `L` with syntactic invariant `(𝒞, λ, M, P)`, the following
-are equivalent:
-
-1. `L` is an obligation (Staiger–Wagner) property — a Boolean
-   combination of safety properties;
-2. `m(L) = 0`: no linked stem carries two `H`-comparable loops with
-   different verdicts;
-3. `Val_P(s, e)` depends only on the stem `s` — equivalently, only on
-   the `R`-class of `s`;
-4. `P` belongs to the Boolean sublattice of saturated pair sets
-   generated by the closed pair sets of the table.
-
-*Proof.* (1)⟺(2) is Wagner's theorem in the Carton–Perrin form: the
-Boolean closure of the open ω-rational sets is exactly the finite
-Wagner degrees, i.e. `m(X) = 0` [Wag79; CP99, Thm 6, Cor 7; SW08],
-with chains transported to the syntactic ω-semigroup by [CP97, Thm 6].
-(2)⟹(3): Lemma 6.4 gives stem-only; Lemma 6.5 upgrades stem-only to
-`R`-class-only (saturation alone). (3)⟹(4): a loop-blind, `R`-constant
-`P` is a union of the atoms of the generated subalgebra, by the
-description above. (4)⟹(1): each `Q_S` is a safety language
-(Proposition 6.1), and Boolean combinations of safety properties are
-obligations by definition. ∎
-
-Three consequences. **A read-off**: obligation membership — Spot's
-`is_obligation`, answered there through weak-automaton realizability
-constructions — is one scan: bucket the linked pairs by stem, check
-each bucket is constant, check constancy across each `R`-class (the
-strongly connected components of the right-Cayley graph):
-`O(|linked| + n·|Σ|)`. **A normal form**: an obligation language is a
-Boolean combination of the *canonical* closed sets `Q_{{t}}` of its
-own table — no foreign safety constituents are ever needed. **A
-boundary**: the lattice of hulls captures the safety-shaped hierarchy
-*exactly up to* obligation; from the next rungs on (recurrence,
-persistence and above), verdicts are provably loop-sensitive
-(`m ≥ 1`), so no Boolean combination of fixpoints can express them —
-the hull story is complete, not truncated. And the fine structure
-*inside* the band comes for free — Wagner's superchain coordinates
-`n±`, which stratify the obligation class by its difference level
-`D_n(Σ₁)` and side `σ/π/δ` [Wag79, CP99], transcribe exactly to the
-`θ`-labeled DAG:
-
-**Proposition 6.7 (the Wagner degree of an obligation language, on
-the DAG).** Let `m(L) = 0` and let `θ` be the stem verdict of
-Theorem 6.6. For a polarity `b ∈ {0, 1}`, let `alt_b` be the maximal
-`n` for which there exist linked stems
-`s₀ ≥_R s₁ ≥_R ⋯ ≥_R s_n` (each `s_{i+1} ∈ s_i·𝒞`) with
-`θ(s₀) = b` and `θ(s_i) ≠ θ(s_{i+1})` for all `i`. Then
-`n⁺(L) = alt₁` and `n⁻(L) = alt₀`: the superchain coordinates are the
-longest alternating paths in the `θ`-labeled `R`-class DAG, computable
-in `O(n·|Σ|)` after the SCC pass of Theorem 6.6 (condense, then one
-dynamic-programming sweep in reverse topological order per polarity).
-
-*Proof.* (≤) By the superchain normal form [CP97, Thm 7], any
-`X`-superchain of length `n` can be brought to chains
-`C'_i = (s_i, E_i)` with every pair linked and the stems *strictly*
-`R`-decreasing; with `m(L) = 0` each chain is a single linked pair,
-the alternation of the chains' signs is alternation of
-`Val(s_i, e_i) = θ(s_i)` (Theorem 6.6(3)), and a strictly
-`R`-decreasing stem sequence is a path in the DAG of the required
-shape. (≥) Conversely, an alternating path yields a superchain
-directly: take `C_i = ({s_i}, (e_i))` for any loop `e_i` of `s_i` — a
-chain of the required maximal length `0`, of sign `θ(s_i)`;
-accessibility needs a nonempty word class `u_i` with
-`s_i·u_i = s_{i+1}`, which exists
-because `s_{i+1} ∈ s_i·𝒞` while `s_i R s_{i+1}` is impossible —
-`R`-equivalent stems share `θ` (Lemma 6.5) and `θ` alternates. ∎
-
-The running example closes its arc here. Every linked stem carries
-loops of one verdict — `θ(A) = 0`, `θ(B) = θ(C) = 1`, `θ(D) = 0`,
-buckets constant, `R`-classes singletons — so `a*·b^ω` *is* an
-obligation (it is not closed: `a^ω` lies in its closure; not open:
-its interior is empty; but it is `cl(L)` minus the closed set
-`{a^ω}`). The `θ`-labeled DAG carries the alternating paths
-`A → C → D` (`0, 1, 0`) and `C → D` (`1, 0`), so
-`(n⁺, n⁻) = (1, 2)` — exactly the values computed by chain-juggling
-in [CP97, Ex. 10], here a two-edge longest-path read-off.
+The running example closes the section: `a*·b^ω` is not closed — `a^ω`
+lies in its closure — and not open — its interior is empty — but it is
+`cl(L)` minus the closed set `{a^ω}`: a Boolean combination of the
+table's own closed sets, obtained entirely by surgery.
 
 ## 7. The ledger against a production toolbox
 
@@ -1052,12 +772,9 @@ returns pair sets one `reduce` away from canonical.
 | drop unconstrained APs | powerset-flavored `remove_ap` | free-AP read-off + alphabet quotient (§3.2) |
 | equality up to AP renaming | isomorphism-flavored search | relabel + reduce + byte compare, canonicity-pruned (§3.2) |
 | determinize | Safra/Zielonka | *meaningless* — object already canonical-deterministic; the cost sits at entry |
-| degeneralize / to-parity / acc transforms | bespoke constructions | *dissolved* — acceptance is `P`; the needed strength is a read-off |
+| degeneralize / to-parity / acc transforms | bespoke constructions | *dissolved* — acceptance is `P`, data not architecture |
 | minimize / simulation reductions | heuristic, model-bound (NP-c for DBA [Sch10]) | reduce: the normal form, always, uniquely |
-| stutter-invariance | `cl`/`sl` closures + product emptiness [MD15] | `λ(a)² = λ(a)` scan (Prop 5.1) |
-| safety/obligation/… tests | model-specific checks | safety/co-safety: `P = P̄` / `P = P̊` (Cor 6.2); obligation: stem-only verdict scan (Thm 6.6) |
 | safety closure / liveness split | closure construction (`cl`) | stem-liveness surgery `P̄`, `O(n²)` (Prop 6.1, Cor 6.3) |
-| acceptance index / Rabin index | condition transforms + tests | alternating-chain read-off [CP97] |
 | concatenation `W·L`, `W^ω` | native (nondeterminism) | exponential — intrinsic (§4) |
 | projection `remove_ap` | subset-flavored | exponential when constrained (§4); free when the AP is unconstrained (§3.2) |
 | automaton → LTL | absent | aperiodicity read-off (§5); extraction beyond this paper |
@@ -1080,12 +797,9 @@ One line per move; `n` is the class count of the relevant table,
 | inclusion / equivalence / intersection-word | `O(\|nodes\|²)` verdicts on the aligned table | bit + minimal lasso |
 | equivalence of reduced objects | byte comparison | bit |
 | reduce | `O(n²)` `Val` + `≤ n` rounds × `O(n·\|Σ\|)` | *the* canonical invariant |
-| stutter-invariance | `O(\|Σ\|)` | bit (Prop 5.1) |
+| LTL cut (aperiodicity) | `O(n²)` power orbits | bit + witness cycle (§5) |
 | free-AP test / drop | `O(\|Σ\|)` / + reduce | bit / smaller-alphabet invariant (§3.2) |
 | safety hull / interior / liveness part | `O(n²)` | pair sets, same table (Prop 6.1, Cor 6.2–6.3) |
-| obligation test | `O(\|linked\| + n·\|Σ\|)` | bit (Thm 6.6: stem-only verdict) |
-| Wagner degree within the obligation band | `O(n·\|Σ\|)` after SCCs | `(n⁺, n⁻)` = longest alternating DAG paths (Prop 6.7) |
-| ladder / index / Wagner read-offs | polynomial scans of the table | verdicts [SωS26, §7.2] |
 | `W·L`, `W^ω`, `remove_ap` (constrained) | exponential (exit + re-entry) | §4 |
 
 The entry row is a floor, not an apology: deciding aperiodicity of an
@@ -1132,9 +846,9 @@ The calculus is implemented as a small pure library; every decision
 returns a replayable witness object. The corpus behind all measurements
 is complement-closed — one canonical invariant per language, each
 paired with the deterministic EL acceptor of the §7.3 exit. It grew
-during the study: §§8.2–8.4, the stutter sweep of §8.5, and §8.6 were
-measured on its 3938-language edition; the classification battery of
-§8.5 on the current 6222-language edition. The two editions are never
+during the study: §§8.2–8.4 and §8.6 were measured on its
+3938-language edition; the hull comparison of §8.5 on the current
+6222-language edition. The two editions are never
 mixed inside a comparison, and the 3938-era figures will be regenerated
 on the frozen corpus in one sweep before submission. Spot
 [DL+16, DL+22] is the automata-side reference throughout; external
@@ -1195,53 +909,21 @@ grows with the machines. Inputs being deterministic, the demonstration
 isolates the normal-form economy, not the exponential entry the
 frontier reserves.
 
-### 8.5 Read-offs against the automata side (§5–§6)
+### 8.5 Read-offs against the automata side (§6)
 
-- *Stutter invariance* (Prop 5.1) against Spot's
-  `is_stutter_invariant` [MD15], on the 3938-language edition:
-  agreement on **3938 / 3938**, zero disagreements. 648 corpus
-  languages are stutter-invariant — 16.5% of the corpus, 28.9% of its
-  LTL-definable class, and every one of them LTL-definable.
 - *Hulls* (Prop 6.1, Cor 6.2–6.3): closure laws (extensive, monotone,
   idempotent), duality `int = ¬cl¬`, and the Alpern–Schneider identity
   replayed corpus-wide; stem-liveness of the hull replays against
   per-state emptiness of the paired deterministic acceptor.
-- *Obligation and degree* (Thm 6.6, Prop 6.7): the one-scan verdict and
-  the `(n⁺, n⁻)` longest-path read-off agree, on every corpus language,
-  with Wagner coordinates computed independently by chain and
-  superchain search — the calculus reading off in one SCC pass what
-  the classification side establishes by chain juggling.
-- *The classification battery against Spot*, on the full 6222-language
-  edition. The comparison had to be built: Spot 2.14 has **no
-  automaton-level Manna–Pnueli classifier** — `mp_class`,
-  `is_obligation` and kin are formula-level, the automaton only an
-  optional accelerator, and translation is no escape because 2484 of
-  the 6222 corpus languages are not LTL-definable, so no formula
-  exists to pass. The automaton-level oracle assembled instead is
-  language-level and exact: safety by Spot's acceptance-trivialization
-  fixpoint, co-safety by the same test on the dual (the inputs are
-  deterministic and complete, so dualizing complements), obligation by
-  WDBA-minimization plus equivalence — the inside of Spot's own
-  obligation check, minus the formula; the oracle is pinned against
-  `mp_class` on formulas of known class before use. Against it, the
-  algebraic scans agree on **6222 / 6222** languages, on all three
-  verdicts (safety, co-safety, obligation; 1514 / 1514 / 3182
-  positives), with an empty disagreement dossier. The rung census:
-  51.1% of the corpus is obligation — 84 bottom, 1430 safety-only,
-  1430 co-safety-only (equal by complement-closure, a printed
-  consistency check), 238 properly obligation — and **46.7% of the
-  obligation rung is not LTL-definable**: the ladder is topological,
-  the LTL cut is aperiodicity, and this is what makes the formula
-  route a dead end rather than an inconvenience. The degree read-off
-  stratifies the rung exactly (degree ≤ 0 ⟺ bottom, `(1,0)` ⟺ S,
-  `(0,1)` ⟺ G, above ⟺ O, with the histogram symmetric under polarity
-  swap on every entry) and has no Spot counterpart at all — Spot
-  decides the rung but does not measure the superchain. Timings are
-  reported and not sold: everything on both sides is sub-10-µs on
-  tables of median 15 classes (Spot faster on safety and co-safety,
-  slower on obligation — the one test where it builds and minimizes an
-  automaton while the scan stays linear in the held table); the
-  asymptotics, not the clock, are the claim.
+- *The hull fixpoints against Spot*, on the full 6222-language edition:
+  safety by Spot's acceptance-trivialization fixpoint
+  (`is_safety_automaton`), co-safety by the same test on the dual (the
+  inputs are deterministic and complete, so dualizing complements). The
+  `P = P̄` / `P = P̊` equations agree with that oracle on
+  **6222 / 6222** languages, on both verdicts (1514 positives each,
+  equal by complement-closure), with an empty disagreement dossier.
+  Timings are reported and not sold: both sides are sub-10-µs on tables
+  of median 15 classes; the asymptotics, not the clock, are the claim.
 
 ### 8.6 The blow-up, empirically (§4)
 
@@ -1259,17 +941,15 @@ Every value hand-computed for `a*·b^ω` carries a machine counter-signature:
 `sosl/tests/calculus/example_gate.py`). The invariant is *not* the one the
 calculus builds — it is Spot's determinization of `(¬p) U (G p)`, quotiented to
 canonical form; the multiplication table is regenerated from the word model
-`{ε, a⁺, b⁺, a⁺b⁺, dead}` rather than transcribed; and the Wagner coordinates
-are read from the independent classifier *and* from the committed `.cat` sidecar
-of the corpus row that holds this language (`2state1ap1acc_16898` — the census
-catalogues it at the smallest shape that emits it).
+`{ε, a⁺, b⁺, a⁺b⁺, dead}` rather than transcribed; and the committed `.cat`
+sidecar of the corpus row that holds this language (`2state1ap1acc_16898` — the
+census catalogues it at the smallest shape that emits it) supplies an
+independent cross-check.
 
 The five-class table of §2.3 (keys `ε, a, b, ab, ba`), its six linked pairs and
-its `P = {(B,B), (C,B)}` are confirmed cell by cell, as are the stutter
-read-off, the two rootings, the hulls of §6 (`Live = 𝒞 \ {D}`, closure adds
-exactly `(A,A)`, empty interior, the Alpern–Schneider factor) and the degree
-`(1, 2)` — both the classifier and the corpus sidecar independently report
-coordinates `(m⁺, m⁻, n⁺, n⁻) = (0, 0, 1, 2)`. The alignment of §3.3 generates 5 nodes of
+its `P = {(B,B), (C,B)}` are confirmed cell by cell, as are the two rootings
+and the hulls of §6 (`Live = 𝒞 \ {D}`, closure adds exactly `(A,A)`, empty
+interior, the Alpern–Schneider factor). The alignment of §3.3 generates 5 nodes of
 the possible `5 × 3`, the intersection with `GF a` is empty, `a*·b^ω ⊆ FG ¬a`
 holds, and the reverse inclusion is refuted by exactly the predicted minimal
 counterexample `ba·b^ω`.
@@ -1281,8 +961,7 @@ counterexample `ba·b^ω`.
 **Automata toolboxes.** Spot [DL+16, DL+22] is the reference point
 throughout §7–§8: a mature, carefully-engineered library in which every
 language operation is an automaton construction and every classification
-query a construction-plus-test — the stutter-invariance battery of
-[MD15] being the type specimen of the latter. Notably, Spot already
+query a construction-plus-test. Notably, Spot already
 committed to the most general acceptance (arbitrary Emerson–Lei
 conditions over the HOA format [DL+16]), which is the automata-side echo
 of this calculus's stance that acceptance is data, not architecture;
@@ -1316,8 +995,8 @@ automata side the subject of the FDFA/family-of-DFAs line
 canonical in their own terms and learnable. The syntactic invariant is
 coarser-grained machinery — a two-sided congruence with its
 multiplication — and it is exactly the two-sided table that turns
-classifications into equations (idempotency of letter classes, conjugacy
-of pairs) that right congruences cannot phrase.
+properties into equations (aperiodicity, conjugacy of pairs) that right
+congruences cannot phrase.
 
 **Finite-word proxies.** Closest in spirit to "operate on a canonical
 object" is the `L_$` construction of Calbrix–Nivat–Podelski [CNP93]: the
@@ -1326,17 +1005,8 @@ minimal DFA is canonical, and Boolean operations transfer. The calculus
 can be read as the algebraic completion of that program: the invariant
 also determines `L` and also carries Boolean structure, but additionally
 exposes the multiplication — and with it the read-offs (aperiodicity,
-the ladder, the index, the Wagner degree) and the surgeries (rooting,
-conjugacy-saturated prolongations) that a DFA over a `$`-alphabet keeps
-implicit.
-
-**Hierarchy computations on the algebra.** That the Wagner hierarchy is
-computable in the syntactic ω-semigroup is Carton–Perrin [CP97, CP99],
-completed by Selivanov–Wagner's complexity analysis [SW08]; Landweber's
-ladder [Lan69] and its effective characterizations on canonical automata
-[PW13] are the automata-side counterparts. §5–§6 claim none of these
-results — they claim their *placement*: on one shared table, as scans
-among other scans, downstream of one entry price.
+the hulls) and the surgeries (rooting, conjugacy-saturated
+prolongations) that a DFA over a `$`-alphabet keeps implicit.
 
 Position: none of these lines treats the syntactic object as an
 *operational* substrate — a thing one aligns, cuts, and re-normalizes —
@@ -1351,8 +1021,8 @@ it as a calculus. Three moves — align, the only product-priced one;
 operate, the free surgery catalog on pair sets; reduce, the normal form
 automata never had — carry the everyday toolbox: a Boolean algebra of
 languages with complements for free, residuals as an internal action,
-decisions as scans that emit minimal certificates, classifications as
-equations read off the table. The exponentials concentrate where they
+decisions as scans that emit minimal certificates, the LTL gate and
+the hulls as equations read off the table. The exponentials concentrate where they
 are intrinsic — the entry gate, the ω-rational constructors, existential
 projection — and the economy is pay-canonicity-once: a pipeline that
 keeps a language and works on it pays determinization at the door and
@@ -1360,15 +1030,12 @@ nothing per operation after.
 
 The calculus sits one step above the construction that provides its
 object [SωS26]; everything else here is self-contained, and the
-object's other prospects — learning it from queries, extracting
-defining formulas, counting the small universe — are downstream of the
-operations this paper fixes. The hull section closed its own
-follow-ups: the safety-shaped hierarchy lives on one table as a lattice
-of fixpoints, it generates *exactly* the obligation class
-(Theorem 6.6), and the Wagner degrees inside that band are longest
-alternating paths on the `θ`-labeled `R`-class DAG (Proposition 6.7) —
-beyond the band, loop-sensitivity is intrinsic and the general Wagner
-read-off takes over. The measurements (§8) bear the economy out: the
+object's other prospects — learning it from queries, classifying it,
+extracting defining formulas, counting the small universe — are
+downstream of the operations this paper fixes. The hulls stay an
+operator story: closure, interior, and the Alpern–Schneider split, a
+lattice of fixpoint surgeries on one table. The measurements (§8) bear
+the economy out: the
 alignment ratios, the operation ledger, the pipeline, and the
 concatenation blow-up sit where §§3–4 place them.
 
@@ -1395,8 +1062,6 @@ concatenation blow-up sit where §§3–4 place them.
 - **[CP97]** O. Carton, D. Perrin. *Chains and superchains for
   ω-rational sets, automata and semigroups.* Int. J. Algebra Comput.
   7(6) (1997) 673–695.
-- **[CP99]** O. Carton, D. Perrin. *The Wagner hierarchy.* Int. J.
-  Algebra Comput. 9(5) (1999) 597–620.
 - **[DG08]** V. Diekert, P. Gastin. *First-order definable languages.*
   In *Logic and Automata*, 2008.
 - **[DL+16]** A. Duret-Lutz, A. Lewkowicz, A. Fauchille, T. Michaud,
@@ -1409,33 +1074,22 @@ concatenation blow-up sit where §§3–4 place them.
 - **[EL87]** E. A. Emerson, C.-L. Lei. *Modalities for model checking:
   branching time logic strikes back.* Sci. Comput. Program. 8 (1987)
   275–306.
-- **[Lan69]** L. H. Landweber. *Decision problems for ω-automata.* Math.
-  Systems Theory 3(4) (1969) 376–384.
-- **[MD15]** T. Michaud, A. Duret-Lutz. *Practical stutter-invariance
-  checks for ω-regular languages.* SPIN 2015.
 - **[MP92]** Z. Manna, A. Pnueli. *The Temporal Logic of Reactive and
   Concurrent Systems: Specification.* Springer, 1992.
 - **[MS97]** O. Maler, L. Staiger. *On syntactic congruences for
   ω-languages.* TCS 183 (1997) 93–112.
 - **[PP04]** D. Perrin, J.-É. Pin. *Infinite Words: Automata,
   Semigroups, Logic and Games.* Elsevier, 2004.
-- **[PW13]** S. Preugschat, T. Wilke. *Effective characterizations of
-  simple fragments of temporal logic using Carton–Michel automata.* LMCS
-  9(2:08) (2013).
 - **[Saf88]** S. Safra. *On the complexity of ω-automata.* FOCS 1988,
   319–327.
 - **[Sch10]** S. Schewe. *Minimisation of deterministic parity and Büchi
   automata and relative minimisation of deterministic finite automata.*
   FSTTCS 2010 / arXiv:1007.1333.
-- **[SW08]** V. Selivanov, K. W. Wagner. *Complexity of topological
-  properties of regular ω-languages.* Fund. Inform. 83(1–2) (2008).
 - **[SωS26]** Y. Thierry-Mieg, with Claude (Anthropic). *Constructing
   the syntactic ω-semigroup from a deterministic Emerson–Lei automaton.*
   Working draft, 2026.
 - **[TFVT10]** M.-H. Tsai, S. Fogarty, M. Y. Vardi, Y.-K. Tsay. *State
   of Büchi complementation.* CIAA 2010 (full version).
-- **[Wag79]** K. Wagner. *On ω-regular sets.* Information and Control
-  43 (1979) 123–177.
 - **[Wil93]** T. Wilke. *An algebraic theory for regular languages of
   finite and infinite words.* Int. J. Algebra Comput. 3(4) (1993)
   447–489.
