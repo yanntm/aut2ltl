@@ -1,21 +1,19 @@
-"""The per-run statistics record (`stats.json`) and its serializations.
+"""The per-run statistics record and its serialization.
 
 One `RunStats` is emitted per (case, configuration): a flat record of the query
 counts by phase, the split / column dimensions, the counterexample sizes, the
-equivalence certification, wall time, and the final verdict. The driver writes
-one JSON file per run and concatenates the records into a single CSV (one row
-per run) via `CSV_FIELDS` / `csv_row`.
+equivalence certification, wall time, and the final verdict.
 
-The field set is spec §7 verbatim; the three fields added in revision 2026-07-07b
-(`n_classes_initial`, `stall_class`, `cex_policy`) and the two of rev 2026-07-11
-(`export_associative`, `fixpoint_congruent`) are present. `to_dict` /
-`CSV_FIELDS` share one field order so the JSON keys and the CSV columns never
-drift apart.
+**A CSV row is the only carrier.** `CSV_FIELDS` / `csv_row` write it and
+`parse_row` reads it back, so one field order serves the campaign's
+`results.csv`, the cluster shards `reap.sh` concatenates, and the row a bounded
+child run hands to its parent on stdout.
+
+The field set is spec §7 verbatim.
 """
 from __future__ import annotations
 
 import dataclasses
-import json
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
@@ -92,14 +90,14 @@ class RunStats:
         """The record as an ordered plain dict (declaration order)."""
         return dataclasses.asdict(self)
 
-    def write_json(self, path: str) -> None:
-        """Write the record as a one-object JSON file (stable key order)."""
-        with open(path, "w", encoding="utf-8") as fh:
-            json.dump(self.to_dict(), fh, indent=2, sort_keys=False)
-            fh.write("\n")
 
 
 CSV_FIELDS: List[str] = [f.name for f in dataclasses.fields(RunStats)]
+# `from __future__ import annotations` makes `field.type` the *source string*
+# ("int"), never the type object — so the coercion `parse_row` applies is keyed
+# by that string.
+_FIELD_TYPES: Dict[str, str] = {f.name: str(f.type)
+                                for f in dataclasses.fields(RunStats)}
 
 
 def csv_row(stats: RunStats) -> List[str]:
@@ -115,9 +113,19 @@ def _cell(value: Any) -> str:
     return str(value)
 
 
-def load_json(path: str) -> RunStats:
-    """Read a `stats.json` back into a `RunStats` (missing keys keep defaults)."""
-    with open(path, encoding="utf-8") as fh:
-        raw = json.load(fh)
-    known = {f.name for f in dataclasses.fields(RunStats)}
-    return RunStats(**{k: v for k, v in raw.items() if k in known})
+def parse_row(row: List[str]) -> RunStats:
+    """A `csv_row` read back into a `RunStats` — the inverse of `csv_row`, over
+    `CSV_FIELDS` order. Each cell is coerced to its declared field type (a short
+    row keeps the remaining defaults), so a row that crossed a process boundary
+    reconstructs the record it was written from."""
+    out = RunStats(case_id="", config_id="")
+    for name, cell in zip(CSV_FIELDS, row):
+        declared = _FIELD_TYPES[name]
+        if declared == "int":
+            value: Any = int(cell)
+        elif declared == "float":
+            value = float(cell)
+        else:
+            value = cell
+        setattr(out, name, value)
+    return out

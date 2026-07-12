@@ -2,9 +2,9 @@
 
     python3 -m tests.sosl.campaign_e0
 
-Runs the E0 (case, config) matrix via `sosl.experiment.driver`, writes one
-`stats.json` per run plus `results.csv` and the E0 report / E4 transcripts under
-`tests/sosl/logs/e0/`, and asserts:
+Runs the E0 (case, config) matrix via `sosl.experiment.driver`, writes
+`results.csv` and the E0 report / E4 transcripts under `tests/sosl/logs/e0/`,
+and asserts:
 
   - the E0 gate PASSES (zero FAIL, zero BUDGET, zero CRASH; permanent specimens
     certify ACCEPTOR_ONLY under no-saturation — spec §9 P4/F5);
