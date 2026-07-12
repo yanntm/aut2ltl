@@ -56,20 +56,26 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
    83 inputs, 70 LTL + 3 not-LTL, 73 TRUE / 0 FAIL, 10 TIMEOUT (all in
    the GF-conjunction recurrence family, e.g. `GFa & GFb`;
    default-recipe parity on those lines unverified).
-   **Pair decomposition: redesigned at the SoS level, DOC STAGE.**
-   `aut2ltl/sos2ltl/pairsplit/algorithm.md` (user-driven): split the
-   accepting pair set `P` on the invariant's own table — saturation
-   atoms via `sosl.sos.calculus`, side by least pairs (complement =
-   free set flip, De Morgan kills the ∧/∨ casing), fusion by loop
-   class / layer / per-piece free-AP projection; verdicts inherit
-   aperiodicity (pieces of a definable L are all definable). An
-   automaton-level PairSplit existed briefly (validation 77 TRUE /
-   0 FAIL / TIMEOUT 10→4) and was DROPPED as redundant with
-   `aut2ltl/decomp/`; the numbers stand as the effect-size preview.
-   **Next action:** validate algorithm.md with user, then transcribe
-   (decompose.py, combinator.py, ONE injection seam between bridge
-   and engine). Open interface point: the cascade loop half's
-   per-piece acceptor presentation. Then: corpus sweep
+   **Pair decomposition: SoS level, IMPLEMENTED — piece-quality
+   problem open.** `aut2ltl/sos2ltl/pairsplit/` (algorithm.md):
+   saturation atoms over one table (`sosl.sos.calculus`), candidate
+   sides = ≥2 atoms, least atoms wins (P̄ = free flip, outer ¬),
+   per-piece `reduce` + `remove_free_aps`; seam in
+   `sos2ltl/translator.py::sos2ltl_pairs` (engine-whole gate → split
+   → cascade assembly fallback); recipe **`sos2ltl_pairs`**; anatomy
+   probe `python3 -m tests.sos2ltl.pairsplit_probe '<ltl>'`.
+   Main (`survey --folder samples/validation --use sos2ltl_pairs`):
+   SUCCESS — 80 LTL + 3 not-LTL, **0 declined / 0 timeout / 0
+   crash** (first full coverage; casc had 10 timeouts), 61 TRUE /
+   0 FAIL / **22 SIZE-unchecked**. The 22 are pieces that fell to
+   dg (flat 10⁵–10¹¹⁰ tree): including REGRESSIONS — recurrence
+   lines the casc delegate used to label compactly (e.g. `G(a→Fb)`)
+   now split into dg-monster pieces because pieces run engine+dg
+   only. **Next action (pick one):** (a) thread the cascade delegate
+   to pieces — needs the per-piece acceptor presentation (invariant →
+   deterministic acceptor; the flagged interface point), or (b) a
+   piece-quality gate (reject dg-piece labels above a DAG budget,
+   poison → cascade assembly). Then: corpus sweep
    (`genaut/corpus/flat_canon/det`, background), delegate firing
    stats, stem ledger vs DG. **Open problem:** loop
    labels are still too large flat (7.8·10⁹ on the floor witness), so
