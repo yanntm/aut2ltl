@@ -5,18 +5,21 @@ deliver four figures for [`sos_core.md`](sos_core.md) §3, whose ASCII placehold
 are marked `[Figure F0]` … `[Figure F3]`. You do **not** touch the paper prose —
 the placeholders are swapped by a later theory session.*
 
-Prerequisites: `dot` (GraphViz) and `rsvg-convert` on `PATH` — the same toolchain
-as [`sos_figs/reproduction.md`](sos_figs/reproduction.md).
+Prerequisites: a LaTeX with TikZ (`pdflatex` or `lualatex`, `standalone` class)
+and a PDF→PNG step (`pdftoppm` or ImageMagick) on `PATH`. GraphViz `dot` is
+optional, used only as a layout oracle (below).
 
 ## Deliverable
 
 1. **The tool** — `sosl/tests/sos/sos2cayley.py`: a CLI taking exactly ONE `.sos`
-   file per invocation, emitting a GraphViz `.dot` and rendering it. Self-bound
-   ≤ 15 s per run. Typed signatures on every function (params + return).
+   file per invocation, emitting a **TikZ** `.tex` (standalone-compilable) and
+   rendering it. Self-bound ≤ 15 s per run. Typed signatures on every function
+   (params + return).
 2. **Four figures** under `research_notes/sos_figs/img/`, basenames
    `core_F0_astar_bomega`, `core_F1_gf_aa`, `core_F2_even`,
-   `core_F3_evenblocks`, each committed as `.dot` + `.png`
-   (`dot -Tsvg | rsvg-convert`, like the existing images there).
+   `core_F3_evenblocks`, each committed as `.tex` + `.pdf` + `.png` (the png is
+   the preview; the `.tex` is the paper-facing source we will hand-touch, so it
+   must be clean and human-editable — see rule 0 below).
 3. **Inputs bundled**: copy the four input `.sos` into
    `research_notes/sos_figs/sources/` (existing self-containment convention).
 4. **A `## Delivery` section appended to THIS file**: commands run, validation
@@ -48,34 +51,50 @@ is a finding — report it, don't guess.
 ## Rendering rules (exact)
 
 Output must be deterministic: nodes sorted by shortlex display key, edges by
-(source key, letter index). Rerunning must reproduce the `.dot` byte-for-byte.
+(source key, letter index). Rerunning must reproduce the `.tex` byte-for-byte.
 
+0. **The `.tex` is made to be edited by hand.** Structure it as: a comment
+   header; a `tikzpicture` with all visual choices centralized in `\tikzset`
+   styles (`class`, `root`, `idem`, `letter a`, `letter b`, `tree`, `nontree`,
+   `cyc`) — never inline styling repeated per node/edge; one `\node` per class,
+   named by a TeX-safe id (e.g. `\node[class,idem] (ab) at (x,y) {$a{\cdot}b$};`)
+   with explicit rounded coordinates (one decimal); one `\draw` per edge,
+   referencing node names, with `bend`/`loop` options where needed. Nudging a
+   figure must mean editing one coordinate or one style, nothing else.
 1. **Keys recomputed, not trusted.** BFS from the identity class, trying letters
    in `--rename` order (`a` before `b`); `key(c)` = the shortlex-least word
-   reaching `c`. Node label = the key with letters joined by `·`; the identity
-   is labeled `ε`.
-2. **Nodes**: `shape=ellipse`. Identity: `style=dashed, color=gray40,
-   fontcolor=gray40`. Idempotent classes (`c·c = c`, computed from the product;
-   identity excluded): `penwidth=2.4`. All other nodes `penwidth=1`.
+   reaching `c`. Node label = the key with letters joined by `·` (math mode,
+   `{\cdot}`); the identity is labeled `ε` (`$\varepsilon$`).
+2. **Nodes**: style `class` = ellipse/rounded, thin border. `root` = dashed
+   border, 40% gray text and border. `idem` (idempotent classes, `c·c = c`
+   computed from the product, identity excluded) = `very thick` border.
 3. **Edges** — one per (class `s`, letter `x`), target `s·λ(x)`:
-   - letter 1 (`a`): `style=solid`; letter 2 (`b`): `style=dashed`. No edge
-     labels and no in-image legend (the paper caption carries the legend).
+   - style `letter a` = solid; `letter b` = dashed. No edge labels and no
+     in-image legend (the paper caption carries the legend).
    - **key-tree edges** (for each non-identity class whose key is `w·x`: the
-     edge from the class of `w` on letter `x`): `penwidth=1.8`; every other
-     edge `penwidth=0.9`.
+     edge from the class of `w` on letter `x`): style `tree` = `semithick`;
+     every other edge style `nontree` = `thin`.
    - **monochrome-cycle edges**: for each letter `x`, find the cycles of length
      ≥ 2 in the functional graph `s ↦ s·λ(x)`; those edges additionally get
-     `color="black:invis:black"` (double-stroke). Self-loops are length-1
-     cycles: never doubled.
-4. **Layout**: `dot`, default `rankdir=LR`, one `{rank=same; …}` group per key
-   length (BFS layer). A `--rankdir` flag may override per figure if it reads
-   better (say so in Delivery).
+     style `cyc` = `double` (TikZ double-stroke). Self-loops are length-1
+     cycles: never doubled. Self-loops use `loop above/below/right` picked away
+     from neighbors.
+4. **Layout**: layered by key length (BFS layer = column; left-to-right), nodes
+   within a layer ordered shortlex top-to-bottom, ~2.2cm column separation,
+   ~1.4cm row separation. If plain layering crosses badly, you MAY call
+   GraphViz `dot -Tplain` once, internally, purely to harvest x/y coordinates —
+   but the emitted output is still the self-contained TikZ above (rounded
+   coordinates, no dot2tex artifacts). Note per figure in Delivery which layout
+   path was used.
 5. **`P` is not drawn.** The image shows the algebra `𝒜` alone. Print to
    stdout: `P = { ([s],[e]), … }` in display keys, sorted shortlex by stem then
    loop. The paper typesets that line beneath the figure — the `⟨𝒜, P⟩` split
    is a design point: the drawing is `𝒜`, the line is `P`.
-6. **Provenance**: first line of each `.dot` is a comment
-   `// sos2cayley <input> --rename a=a,!a=b`.
+6. **Provenance**: first line of each `.tex` is a comment
+   `% sos2cayley <input> --rename a=a,!a=b`.
+7. **Compile check**: each `.tex` must compile standalone (`pdflatex`) with no
+   warnings about overfull node overlap you can see in the preview; the
+   committed `.pdf`/`.png` are built from the committed `.tex`.
 
 ## Built-in checks (assert on every run)
 
