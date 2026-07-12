@@ -1,4 +1,4 @@
-# The Syntactic ω-Semigroup as a Canonical Invariant of Regular ω-Languages
+# The Syntactic ω-Semigroup as an Invariant `𝓘(L)`
 
 **Yann Thierry-Mieg**
 
