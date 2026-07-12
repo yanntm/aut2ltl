@@ -2,12 +2,12 @@
 digraph core_F3_evenblocks {
   rankdir=LR;
   ranksep=0.87; nodesep=0.55;
-  node [shape=ellipse, fontname="serif", margin="0.04,0.02"];
-  edge [fontname="serif", arrowsize=0.7];
+  node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];
+  edge [fontname="serif", fontsize=10, arrowsize=0.7];
   label="P = { ([b],[b]), ([a·b],[b]), ([b·a],[a·b·a]), ([a·b·a],[a·b·a]), ([b·a·b],[b]), ([b·a·b],[a·b·a]) }"; labelloc="b"; labeljust="c";
   fontname="serif"; fontsize=11;
 
-  eps [label="ε", style=dashed, color="grey60", fontcolor="grey60"];
+  eps [label="ε"];
   a [label="a"];
   b [label="b", peripheries=2];
   aa [label="a·a", peripheries=2];
@@ -15,26 +15,27 @@ digraph core_F3_evenblocks {
   ba [label="b·a"];
   aba [label="a·b·a", peripheries=2];
   bab [label="b·a·b", peripheries=2];
+  _init [shape=none, label="", width=0.02, height=0.02];
+  _init -> eps;
 
   { rank=same; eps; }
   { rank=same; a b; }
   { rank=same; aa ab ba; }
   { rank=same; aba bab; }
 
-  eps -> a [style=solid, penwidth=1.6];
-  eps -> b [style=dashed, penwidth=1.6];
-  a -> aa [style=solid, penwidth=1.6, color="black:black"];
-  a -> ab [style=dashed, penwidth=1.6];
-  b -> ba [style=solid, penwidth=1.6, color="black:black"];
-  b -> b [style=dashed, penwidth=0.8];
-  aa -> a [style=solid, penwidth=0.8, color="black:black"];
-  aa -> b [style=dashed, penwidth=0.8];
-  ab -> aba [style=solid, penwidth=1.6, color="black:black"];
-  ab -> ab [style=dashed, penwidth=0.8];
-  ba -> b [style=solid, penwidth=0.8, color="black:black"];
-  ba -> bab [style=dashed, penwidth=1.6];
-  aba -> ab [style=solid, penwidth=0.8, color="black:black"];
-  aba -> bab [style=dashed, penwidth=0.8];
-  bab -> bab [style=solid, penwidth=0.8];
-  bab -> bab [style=dashed, penwidth=0.8];
+  eps -> a [label="a", style=solid, penwidth=1.6];
+  eps -> b [label="b", style=dashed, penwidth=1.6];
+  a -> aa [label="a", style=solid, penwidth=1.6, color="black:black"];
+  a -> ab [label="b", style=dashed, penwidth=1.6];
+  b -> ba [label="a", style=solid, penwidth=1.6, color="black:black"];
+  b -> b [label="b", style=dashed, penwidth=0.8];
+  aa -> a [label="a", style=solid, penwidth=0.8, color="black:black"];
+  aa -> b [label="b", style=dashed, penwidth=0.8];
+  ab -> aba [label="a", style=solid, penwidth=1.6, color="black:black"];
+  ab -> ab [label="b", style=dashed, penwidth=0.8];
+  ba -> b [label="a", style=solid, penwidth=0.8, color="black:black"];
+  ba -> bab [label="b", style=dashed, penwidth=1.6];
+  aba -> ab [label="a", style=solid, penwidth=0.8, color="black:black"];
+  aba -> bab [label="b", style=dashed, penwidth=0.8];
+  bab -> bab [label="a,b", style=solid, penwidth=0.8];
 }

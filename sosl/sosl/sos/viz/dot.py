@@ -4,14 +4,15 @@ Generic over any invariant and any alphabet. Two uses: a picture of an arbitrary
 `.sos` (``dot -Tpng``), and the layout oracle whose node placement the finer
 backends reuse (``dot -Tplain``, see `layout.py`). Pure text — no subprocess.
 
-The model's classification maps onto dot attributes: the root is greyed and
-dashed, an idempotent gets a double periphery, the letter picks the line dash,
-a key-tree edge is thicker, a monochrome-cycle edge is drawn as two parallel
-strokes (dot's ``color="c:c"``).
+The model's classification maps onto dot attributes: the root gets an incoming
+stub from nowhere (an initial-state marker — and the only arrow that may enter
+it), an idempotent gets a double periphery, the letter picks the line dash and
+labels the arrow, a key-tree edge is thicker, and a monochrome-cycle edge is
+drawn as two parallel strokes (dot's ``color="c:c"``).
 """
 from __future__ import annotations
 
-from typing import List
+from typing import Dict, List, Tuple
 
 from .model import Figure
 
@@ -44,8 +45,8 @@ def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True) -> str:
         f"digraph {name} {{",
         "  rankdir=LR;",
         f"  ranksep={RANKSEP_IN}; nodesep={NODESEP_IN};",
-        '  node [shape=ellipse, fontname="serif", margin="0.04,0.02"];',
-        '  edge [fontname="serif", arrowsize=0.7];',
+        '  node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];',
+        '  edge [fontname="serif", fontsize=10, arrowsize=0.7];',
     ]
     if pairs:
         out += [f'  label="{pairs_label(fig)}"; labelloc="b"; labeljust="c";',
@@ -53,25 +54,39 @@ def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True) -> str:
     out.append("")
     for nd in fig.nodes:
         attrs = [f'label="{nd.label}"']
-        if nd.is_root:
-            attrs += ['style=dashed', 'color="grey60"', 'fontcolor="grey60"']
         if nd.is_idem:
             attrs += ["peripheries=2"]
         out.append(f'  {nd.ident} [{", ".join(attrs)}];')
-    out.append("")
+    root = next(nd for nd in fig.nodes if nd.is_root)
+    out += ['  _init [shape=none, label="", width=0.02, height=0.02];',
+            f"  _init -> {root.ident};",   # the root, marked like an initial state
+            ""]
 
     for layer in range(fig.layers()):
         same = [nd.ident for nd in fig.nodes if nd.layer == layer]
         out.append(f'  {{ rank=same; {" ".join(same)}; }}')
     out.append("")
 
-    for e in fig.edges:
-        attrs = [f"style={_letter_style(e.letter_index)}"]
-        attrs.append("penwidth=1.6" if e.is_tree else "penwidth=0.8")
-        if e.is_cycle:
+    for (src, dst), letters in grouped(fig).items():
+        marks = [e for e in fig.edges if (e.src, e.dst) == (src, dst)]
+        attrs = [f'label="{",".join(fig.naming.names[i] for i in letters)}"',
+                 f"style={_letter_style(letters[0])}" if len(letters) == 1
+                 else "style=solid",
+                 "penwidth=1.6" if any(e.is_tree for e in marks) else "penwidth=0.8"]
+        if any(e.is_cycle for e in marks):
             attrs.append('color="black:black"')
-        src, dst = fig.node_of(e.src).ident, fig.node_of(e.dst).ident
-        out.append(f'  {src} -> {dst} [{", ".join(attrs)}];')
+        a, b = fig.node_of(src).ident, fig.node_of(dst).ident
+        out.append(f'  {a} -> {b} [{", ".join(attrs)}];')
 
     out.append("}")
     return "\n".join(out) + "\n"
+
+
+def grouped(fig: Figure) -> Dict[Tuple[int, int], List[int]]:
+    """The figure's edges by endpoint pair, each with the display indices of the
+    letters that take it. Letters that agree on a target share one arrow, labeled
+    with all of them (``a,b``), rather than stacking one arrow per letter."""
+    out: Dict[Tuple[int, int], List[int]] = {}
+    for e in fig.edges:
+        out.setdefault((e.src, e.dst), []).append(e.letter_index)
+    return out
