@@ -123,6 +123,19 @@ the derived-census driver, the engine's first consumer at scale),
   never builds a monolithic `Comp`, so the C10 alignment bullet's
   assertion holds structurally and Prop 6.1's per-block assembly is
   demoted to a measured optimization (report, F26 block).
+- **DONE (Theory): the paper restructure.** `sos_symbolic.md` is
+  reorganized around five research questions — RQ1 correctness, RQ2
+  compression, RQ3 the exponential, RQ4 cost/bottom line, RQ5
+  amortization — and §8 now answers them RQ-by-RQ with tables; cut
+  prose is parked verbatim in the paper's Appendix A (subsection
+  numbering §6.x / §8 unchanged, so this spec's anchors remain
+  valid). Experiment mapping: **RQ1 ← E0/E1** (conformance),
+  **RQ2 ← E1**, **RQ3 ← E2/E3/E4/E7**, **RQ4 ← E5/E6 (+E8)**,
+  **RQ5 ← E9**. Recorded gap the mapping exposes: no experiment
+  grows the *quotient* (census max 148 classes; the E2 family's
+  quotients stay small) — whether a quotient-scaling family or
+  census-extension axis is wanted is an open spec question for a
+  future revision.
 - **TODO: everything else.** C9's remaining switches (fp disciplines
   `chaining`/`saturation`, split slot encodings), C10's remainder
   (alignment = the sync-product slot model, E4's generator; §6.4
