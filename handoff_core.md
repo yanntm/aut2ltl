@@ -18,15 +18,17 @@ tool output already in the reservoir.
 §2 and §3 are fully fleshed, polished, and user-reviewed. §§1, 4–11 and the abstract
 are still bullets-only outline.
 
-Figures: engineering delivered v1 in `research_notes/sos_core_figs/` (tool +
-`_gen`/tweaked TikZ pairs + img). A v2 regen is requested
-(`research_notes/sos_core_figures.md`): edge labels on every edge, layout
-reproducing the approved ASCII placeholders, `P` line beneath all four figures —
-the pairs are part of the object, F0 included. The paper carries the marked ASCII
-placeholders (`[Figure F0…F3]` blocks in §3) to be swapped once v2 passes user
-review; tweaked `.tex` copies are still untweaked, pending that review. Spec-style
-lesson: requests state goals and point at the approved placeholders as the
-reference; no byte-stability or assert rigidity, engineering picks the means.
+Figures: delivered, user-approved, and **integrated into §3** — the paper embeds
+`sos_core_figs/img/core_F0…F3.png` with captions matching the actual ink. The
+artifact is `research_notes/sos_core_figs/` (its `figures.md` says what the ink
+means, `reproduction.md` is the rebuild authority); `sos_core_figures.md` is now
+just a pointer, no longer a spec. Ink conventions the text must respect: letters
+are written on arrows (no dash coding), the root is stub-marked and a source,
+idempotents thick, key-tree arrows slightly thicker, `P` typeset beneath the
+drawing on all figures (pairs are part of the object), monochrome cycles named
+in prose but NOT inked. Spec-style lesson: requests state goals and point at
+approved references; no byte-stability or assert rigidity, engineering picks
+the means.
 
 ## TODO queue (next action first)
 
@@ -53,9 +55,7 @@ reference; no byte-stability or assert rigidity, engineering picks the means.
 6. **§1 Intro + §9–11 + Abstract** — last, once the body is stable. §9 splits the two
    costs (object quadratic in `|𝒞|`; construction exponential in `|Q|`; `|𝒞|`
    intrinsic, PSPACE). Abstract leads with the object and names the rotation lemma.
-7. **Swap in rendered figures F0–F3** when engineering delivers (check for a
-   `## Delivery` section in `sos_core_figures.md`); placeholders are marked in §3.
-8. **Propagate the §2–3 design to the rest of the paper and downstream.** The
+7. **Propagate the §2–3 design to the rest of the paper and downstream.** The
    `⟨𝒜, P⟩` split (algebra vs acceptance layer) and the §2–3 vocabulary are the
    approved formalization; §§4–11 bullets and the companion/downstream documents
    still speak the older idiom. Explicitly deferred — a separate session's job, do
