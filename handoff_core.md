@@ -24,9 +24,12 @@ artifact is `research_notes/sos_core_figs/` (its `figures.md` says what the ink
 means, `reproduction.md` is the rebuild authority); `sos_core_figures.md` is now
 just a pointer, no longer a spec. Ink conventions the text must respect: letters
 are written on arrows (no dash coding), the root is stub-marked and a source,
-idempotents thick, key-tree arrows slightly thicker, `P` typeset beneath the
-drawing on all figures (pairs are part of the object), monochrome cycles named
-in prose but NOT inked. Spec-style lesson: requests state goals and point at
+key-tree arrows slightly thicker, `P` typeset beneath the drawing on all figures
+(pairs are part of the object), monochrome cycles named in prose but NOT inked.
+Idempotent bolding is REMOVED (user edits the figs): idempotents are computed,
+not part of the data, so no ink; the text never mentions bold idempotents. Node
+and edge labels are to be bracketed on the figs (`[a·b]`, `[a]`) — labels are
+members of `𝒞`. Spec-style lesson: requests state goals and point at
 approved references; no byte-stability or assert rigidity, engineering picks
 the means.
 
@@ -69,8 +72,9 @@ the next. Commit per increment.
 - **`⟨𝒜, P⟩` split fully approved**: the object is a pair — algebra `𝒜 = (𝒞, λ, M)`
   holding structure, acceptance layer `P` selecting the language. Figures draw `𝒜`
   alone; `P` is typeset as a line beneath (the split made visible).
-- **Freshness is an explicit axiom** of Definition 3.1 (`⟦w⟧ = [ε]` iff `w = ε`),
-  not a prose convention; the Cayley root is a source (no in-edges).
+- **The identity is _adjoined_** — explicit Definition 3.1 axiom (`⟦w⟧ = [ε]` iff
+  `w = ε`), the semigroup-theory S¹ term; the word "fresh" is banned. The Cayley
+  root is a source (no in-edges). Def 3.1 lists `λ` before `M`.
 - **Group visibility on the Cayley graph = monochrome cycles only** (a cycle traced
   by repeating one word); mixed-letter cycles prove nothing — `GF(aa)` is the
   counterexample. Never state the naive "any non-self-loop cycle" version.
