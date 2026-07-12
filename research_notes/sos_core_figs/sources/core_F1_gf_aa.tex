@@ -19,11 +19,11 @@
   % the approved grid, rotated 90 degrees clockwise: (x,y) -> (maxrow - y, x),
   % so the flow runs top-down. col,row from the top left; cols 0,1,2 / rows 0,1,3.
   \node[class,root] (eps) at (2.6,0.0) {$\varepsilon$};         % 1,0
-  \node[class,idem] (b) at (0.0,-2.2) {$b$};                    % 0,1
+  \node[class] (a) at (0.0,-2.2) {$a$};                         % 0,1
   \node[class,idem] (ab) at (2.6,-2.2) {$a{\cdot}b$};           % 1,1
-  \node[class] (a) at (5.2,-2.2) {$a$};                         % 2,1
-  \node[class,idem] (ba) at (0.0,-6.6) {$b{\cdot}a$};           % 0,3
-  \node[class,idem] (aa) at (5.2,-6.6) {$a{\cdot}a$};           % 2,3
+  \node[class,idem] (b) at (5.2,-2.2) {$b$};                    % 2,1
+  \node[class,idem] (aa) at (0.0,-6.6) {$a{\cdot}a$};           % 0,3
+  \node[class,idem] (ba) at (5.2,-6.6) {$b{\cdot}a$};           % 2,3
 
   % the root is the adjoined identity: a source, marked like an initial state
   \draw[init] (2.6,0.9) -- (eps);
@@ -33,8 +33,8 @@
   \draw[tree] (a) to node[lbl] {$a$} (aa);
   \draw[tree] (a) to[bend left=15] node[lbl] {$b$} (ab);
   \draw[tree] (b) to[bend left=15] node[lbl] {$a$} (ba);
-  \draw[nontree] (b) to[loop left] node[lbl] {$b$} (b);
-  \draw[nontree] (aa) to[loop right] node[lbl] {$a,b$} (aa);
+  \draw[nontree] (b) to[loop right] node[lbl] {$b$} (b);
+  \draw[nontree] (aa) to[loop left] node[lbl] {$a,b$} (aa);
   \draw[nontree] (ab) to[bend left=15] node[lbl] {$a$} (a);
   \draw[nontree] (ab) to[loop below] node[lbl] {$b$} (ab);
   \draw[nontree] (ba) to node[lbl] {$a$} (aa);
