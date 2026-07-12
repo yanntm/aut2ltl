@@ -52,9 +52,13 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
    was its INLINE Spot equivalence call, now removed
    (`e11_pendency` is construction-only; any label→automaton step goes
    behind `spotrun`, never inline in a probe).
-   **Next action:** `survey --folder samples/validation --use
-   sos2ltl_casc`, then corpus sweep (`genaut/corpus/flat_canon/det`),
-   delegate firing stats, stem ledger vs DG. **Open problem:** loop
+   `survey --folder samples/validation --use sos2ltl_casc`: SUCCESS —
+   83 inputs, 70 LTL + 3 not-LTL, 73 TRUE / 0 FAIL, 10 TIMEOUT (all in
+   the GF-conjunction recurrence family, e.g. `GFa & GFb`;
+   default-recipe parity on those lines unverified).
+   **Next action:** corpus sweep (`genaut/corpus/flat_canon/det`, same
+   recipe, background), delegate firing stats, stem ledger vs DG; sort
+   the 10 validation TIMEOUTs (delegate-attributable or stratum-known). **Open problem:** loop
    labels are still too large flat (7.8·10⁹ on the floor witness), so
    the Spot equivalence oracle cannot consume them raw; the
    flat-column risk is confirmed, conformance story on the loop
