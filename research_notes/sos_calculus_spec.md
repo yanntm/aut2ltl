@@ -948,3 +948,69 @@ Do not start until the corpus stream declares the regeneration stable.
 Figure requests are specified in `sos_calculus_figures.md` (sibling of
 `sos_constructed_figures.md`); artifacts follow that file's
 conventions.
+
+### 9.6 CAL7 — the DELA adequacy gate (theory order, 2026-07-12)
+
+Background (one paragraph, no more needed): paper §7.3's canonical DELA
+exit is adequate — the Muller-over-edges family on `Cay(L)` recognizes
+`L` — **iff** two equations hold on `(𝒞, P)`
+(`sos_calculus_extensions.md` §4 has the proposition and proofs). For
+all `y, t, h, g ∈ 𝒞` with `y·t = y·h = y·g = y`:
+
+- **(E1)** `Val_P(y, (t·g)^π) = Val_P(y, (t²·g)^π)`
+- **(E2)** `Val_P(y, (t·h·g)^π) = Val_P(y, (h·t·g)^π)`
+
+Theory conjectures both hold in every *syntactic* table but cannot yet
+prove it; this gate is the experiment. Three parts, in order.
+
+**CAL7a — the equational gate, corpus-wide.** Script
+`tests/calculus/adequacy_gate.py` (`--one <case>` / `--campaign`,
+§8.1 discipline). Per invariant: for each `y ∈ 𝒞` compute
+`Stab(y) = {t : y·t = y}`; check (E1) over `Stab(y)²`, (E2) over
+`Stab(y)³` (all products in `M`, `^π` memoized, verdicts via `Val_P`;
+skip `y = [ε]`, its stabilizer is trivial). Cost is
+`O(Σ_y |Stab(y)|³·n?)` table lookups — at median `n = 15` this is
+sub-second; budget 15 s per case, a blown budget is a datum. On a
+violation: STOP for that case, dossier the witness lassos
+`key(y)·(key(t)·key(g))^ω` vs `key(y)·(key(t)²·key(g))^ω` (their
+oracle memberships differ by construction — replay both), and continue
+the sweep; violations are finding F20. Expected outcome: green on all
+6222 (a violation means the canonical-DELA exit is *inadequate for that
+corpus language* — major, theory revises §7.3).
+
+**CAL7b — the `T₄` probe (one shot).** Candidate counterexample at the
+*table* level, testing whether `reduce` is what saves the conjecture.
+In `T₄` under right action (`(u·v)(x) = v(u(x))`): `y = const-1`,
+`t = (2 3 4)`, `g = [1↦1, 2↦2, 3↦2, 4↦4]`. Then `y·t = y·g = y`,
+`F := (tg)^π = [1,2,2,2]`, `F' := (t²g)^π = [1,2,4,4] ≠ F`. Build the
+subsemigroup `S = ⟨y, t, g⟩` explicitly (closure under composition;
+letters `c_y, c_t, c_g`, `λ` mapping each to its generator, fresh
+identity), enumerate linked pairs, run the Prop 3.1 conjugacy closure
+of `{(y, F)}`.
+1. If `(y, F')` **is** in the closure: report "route closed" (the
+   candidate dies at the conjugacy level; conjecture untouched). Done.
+2. If not: set `P := closure{(y,F)}` (saturated by construction —
+   assert it), so `Val(y,F) = 1`, `Val(y,F') = 0` violates (E1) on the
+   raw table. Now `reduce` to the syntactic invariant of `L(P)` and
+   rerun CAL7a on the result. Violation survives → **the conjecture is
+   dead** and F20 gets its first witness; violation gone → report
+   which classes `reduce` merged to kill it (diff the two tables).
+If no public API builds an invariant from an explicit table + pair
+set, do NOT extend core: a test-local helper in `tests/calculus/` is
+the right size. Report which entry point you used either way.
+
+**CAL7c — state `D`'s provenance (report paragraph, no code).** The
+corpus pairs each `.sos` with a deterministic HOA `D`. State in the
+report, from the corpus pipeline's own docs/headers (do not
+reverse-engineer code paths beyond that): (i) is `D` produced by the
+§7.3 Cayley exit, or independently (e.g. Spot determinization of the
+source automaton)? (ii) is `L(D) = L` verified per row at corpus build
+time, and by what check? This decides how much of the 6222-green
+history already witnesses adequacy, and whether a CAL7a violation
+would impugn `D` or not.
+
+Deliverable: `reference/calculus/adequacy_gate.{md,csv}` + report
+section (findings F20+; CAL7b and CAL7c get their own subsections).
+Priority: after CAL6, before the §9.4 refresh (the gate is
+corpus-version-sensitive; running it on 6222 now and once more inside
+the §9.4 sweep is cheap and expected).
