@@ -18,9 +18,10 @@ from typing import List, Tuple
 import functools
 import os
 
-# support uses only these for its own helpers (the memo decorator and letter fusion);
-# the operator modules import the builders they need directly from aut2ltl.ltl.builders.
-from aut2ltl.ltl.builders import _ff, _to_f, _letters_to_f, _fuse_or
+# support uses only these for its own helpers (the memo decorator, instantiation and
+# letter fusion); the operator modules import the builders they need directly from
+# aut2ltl.ltl.builders.
+from aut2ltl.ltl.builders import _ff, _tt, _to_f, _ap, _letters_to_f, _fuse_or, _subst_f
 
 # Tracing (enable with KR_TRACE=1): verbose level-by-level construction traces.
 TRACE_ON = os.getenv("KR_TRACE", "0").lower() in ("1", "true", "yes", "on")
@@ -31,26 +32,64 @@ TRACE_ON = os.getenv("KR_TRACE", "0").lower() in ("1", "true", "yes", "on")
 # the callers.
 REACH_GUARD = int(os.getenv("KR_REACH_GUARD", "5000000"))
 
+# --- context placeholders + skeleton templates ------------------------------
+# The β/τ continuation parameters are NOT part of any memo key: the recursion
+# manufactures a fresh context at every step (solid⁺ pushes σ ∧ Xτ / ρ ∧ Xβ,
+# dashed swaps them into wsolid, …), so keying on them makes every key
+# path-unique and multiplies machine positions by contexts — exponential in
+# cascade height. Instead each operator is built ONCE per machine skeleton
+# (S, B, T, level) as a template whose β/τ positions hold the two reserved
+# placeholder APs below; concrete (or manufactured) contexts are plugged in by
+# a per-node-memoized substitution pass (`_instantiate`). Total cost:
+# O(#skeletons × template DAG) instead of positions × contexts.
+PH_BETA: "spot.formula" = _ap("_krbeta_")
+PH_TAU: "spot.formula" = _ap("_krtau_")
+
+
+def _instantiate(
+    tmpl: "spot.formula", beta_f: "spot.formula", tau_f: "spot.formula", casc: "Cascade"
+) -> "spot.formula":
+    """Plug concrete β/τ into a skeleton template: simultaneous substitution of
+    the two placeholder APs, per-node memoized on the holder's `inst_memo`
+    (one node-memo per distinct (β, τ) plug pair, shared across templates).
+    The identity plug returns the template itself — this is what nested calls
+    hit while a template is being built. Plugs may themselves contain the
+    placeholders (manufactured contexts like σ ∧ Xτ̂, or dashed's swapped
+    wsolid): substitution is single-pass, so they denote the CALLER's
+    parameters, never re-substituted."""
+    if beta_f == PH_BETA and tau_f == PH_TAU:
+        return tmpl
+    pair = (beta_f, tau_f)
+    memo = casc.inst_memo.get(pair)
+    if memo is None:
+        memo = {}
+        casc.inst_memo[pair] = memo
+    return _subst_f(tmpl, {PH_BETA: beta_f, PH_TAU: tau_f}, memo)
+
+
 # --- per-build memo decorator + tracing -------------------------------------
 def _memo_reach_helper(tag: str):
     """Memoize a helper on the CascadeHolder's `helper_memo` (per build; `casc` is the
-    holder), keyed by `(tag, S, B, beta, T, tau, level)`. `beta`/`tau` are normalized to
-    hash-consed spot.formula before keying, so the `str` and `formula` spellings of a
-    guard share an entry. The helpers fan in heavily (the same subproblem is reached
-    along many call paths), so this memo is what keeps the mutually-recursive expansion a
-    DAG build rather than a tree blow-up. One entry per distinct key; fresh per holder."""
+    holder), keyed by the machine SKELETON `(tag, S, B, T, level)` — β/τ deliberately
+    excluded (see the placeholder note above). On a miss the body runs once with the
+    placeholder APs in the β/τ positions, producing the skeleton's template; every
+    call then returns `_instantiate(template, β, τ)`. `beta`/`tau` are normalized to
+    hash-consed spot.formula (str spellings accepted). The helpers fan in heavily
+    (the same skeleton is reached along many call paths under many contexts), so this
+    memo is what keeps the mutually-recursive expansion a DAG build rather than a
+    tree blow-up. One template per distinct skeleton; fresh per holder."""
     def deco(fn):
         @functools.wraps(fn)
         def wrapper(S, B, beta, T, tau, casc, level=0):
             beta_f = _ff() if beta is None else _to_f(beta)
             tau_f = _tt() if tau is None else _to_f(tau)
-            key = (tag, S, B, beta_f, T, tau_f, level)
+            key = (tag, S, B, T, level)
             memo = casc.helper_memo
-            hit = memo.get(key)
-            if hit is None:
-                hit = fn(S, B, beta_f, T, tau_f, casc, level)
-                memo[key] = hit
-            return hit
+            tmpl = memo.get(key)
+            if tmpl is None:
+                tmpl = fn(S, B, PH_BETA, T, PH_TAU, casc, level)
+                memo[key] = tmpl
+            return _instantiate(tmpl, beta_f, tau_f, casc)
         return wrapper
     return deco
 
