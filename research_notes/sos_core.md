@@ -36,15 +36,15 @@ idea, no definitions, no filled text.
 
 ## 2. Background
 
-We work over a fixed finite alphabet `Σ` (for LTL applications `Σ = 2^AP`), writing `Σ*`
-for finite words, `Σ^ω` for infinite words, `Σ^∞ = Σ* ∪ Σ^ω`, and taking `L ⊆ Σ^ω`
-regular. The running examples use the single atom `a`, so `Σ = {a, !a}` with `!a` the
-letter on which `a` fails. This section recalls the classical notions the object rests
-on, adapting Perrin and Pin [PP04]; what this paper adds is listed at the close.
+We work over a fixed finite alphabet `Σ`, writing `Σ*` for finite words, `Σ^ω` for
+infinite words, `Σ^∞ = Σ* ∪ Σ^ω`, and taking `L ⊆ Σ^ω` regular. The running examples
+all live over the two-letter alphabet `Σ = {a, b}`. This section recalls the classical
+notions the object rests on, adapting Perrin and Pin [PP04]; what this paper adds is
+listed at the close.
 
 One further specimen threads §§2–3 alongside them, small enough that every notion is
-worked on it in full — Carton–Perrin's [CP97, Ex. 10] `L = a*·b^ω` over `Σ = {a, b}`:
-some `a`'s, then `b`'s forever (one atom `p`, read `a = ¬p`, `b = p`).
+worked on it in full — Carton–Perrin's [CP97, Ex. 10] `L = a*·b^ω`: some `a`'s, then
+`b`'s forever.
 
 **We only ever look at lassos.** A **lasso**, or ultimately-periodic word, is `u·v^ω`: a
 finite **stem** `u ∈ Σ*` followed by a finite nonempty **loop** `v ∈ Σ⁺` repeated
@@ -142,20 +142,19 @@ pairs is a *legal* layer exactly when it is closed under the rotation lemma (Lem
   **fold** `⟦·⟧ : Σ* → 𝒞`, defined by `⟦ε⟧ = [ε]` and `⟦w·a⟧ = ⟦w⟧·λ(a)`, is onto.
 
 *Specimen.* The algebra of `a*·b^ω` (§2's specimen) has five classes, named by their
-keys:
+keys — `[ε]`, `[a]`, `[b]`, `[a·b]`, `[b·a]` — with `λ(a) = [a]`, `λ(b) = [b]` and the
+letter actions
 
 ```
- ·       [ε] [a] [b] [a·b] [b·a]
-[ε]       0   1   2   3     4
-[a]       1   1   3   3     4
-[b]       2   4   2   4     4
-[a·b]     3   4   3   4     4
-[b·a]     4   4   4   4     4
+ ·a :  [ε]↦[a]    [a]↦[a]     [b]↦[b·a]   [a·b]↦[b·a]   [b·a]↦[b·a]
+ ·b :  [ε]↦[b]    [a]↦[a·b]   [b]↦[b]     [a·b]↦[a·b]   [b·a]↦[b·a]
 ```
 
-with `λ(a) = [a]`, `λ(b) = [b]` (ids `0..4` in key order). `[a]` holds the words in
-`a⁺`, `[b]` those in `b⁺`, `[a·b]` those in `a⁺b⁺`, and `[b·a]` the *dead* words — once
-an `a` follows a `b`, no continuation can rescue the word.
+— by letter-generation these two rows are the whole of `M`: any product `s·t` is
+`key(t)` walked from `s` (the graph they define is drawn at Definition 3.2). `[a]`
+holds the words in `a⁺`, `[b]` those in `b⁺`, `[a·b]` those in `a⁺b⁺`, and `[b·a]` the
+*dead* words, a two-sided **zero** (`x·[b·a] = [b·a]·x = [b·a]`): once an `a` follows a
+`b`, no continuation can rescue the word.
 
 By associativity the fold is a monoid morphism `Σ* ↠ (𝒞, M)`; two words are **equivalent
 in the algebra** when they fold alike. Each class is **keyed by its shortlex-least word**
@@ -333,8 +332,8 @@ presentations of the one word `w(pq)^ω` carry the pairs `(s, (gh)^ω)` and
 or neither. ∎
 
 *Specimen.* Presentation-independence is immediate here — singleton conjugacy classes.
-`Even` shows the force of the ⇒ direction: a `P` containing `(4,4)` but not `(2,4)`
-would answer `a^ω` two ways (§3.5's saturation check).
+`Even` shows the force of the ⇒ direction: a `P` containing `([a·a],[a·a])` but not
+`([a],[a·a])` would answer `a^ω` two ways (§3.5's saturation check).
 
 **Lemma 3.6 (presentations connect).** Two presentations name the same ω-word iff
 connected by `stem-extend`, `loop-power`, `loop-rotate` and their inverses.
@@ -384,148 +383,92 @@ automaton — `{[ε],[a]}`, `{[b],[a·b]}`, `{[b·a]}` — strictly coarser than
 the residuals cannot tell `[b]` from `[a·b]`, the two-sided congruence can.
 
 No congruence and no automaton is invoked. The residuals are derived data and rightly
-enter no equality test between objects (§3.5, Figure 2).
+enter no equality test between objects (§5).
 
 ### 3.5 Concrete form, read on the examples
 
 Recall the three running examples (introduced fully in §1): **`GF(aa)`** — infinitely
-many `aa`-factors, an LTL property; **`Even`** — an even number of `a`'s before the first
-`!a`, then anything, *not* LTL; **`EvenBlocks`** — infinitely many `!a` and eventually
-every completed `a`-block even, *not* LTL and prefix-independent. Each is met here only as
-a table; its automaton waits until §6.
+many `aa`-factors, LTL-definable; **`Even`** — an even number of `a`'s before the first
+`b`, then anything, *not* LTL; **`EvenBlocks`** — infinitely many `b` and eventually
+every completed `a`-block even, *not* LTL and prefix-independent. Each is met here as
+its algebra — the letter actions and the few laws that organize them; automata wait
+until §6, the machine formats (serialization, integer tables) until Part B. In all
+three, `λ(a) = [a]` and `λ(b) = [b]`, and letter-generation makes the two action rows
+the whole of `M`.
 
-The object serializes as a portable artifact — a *semantic HOA* — listing the keyed
-classes, letter map, multiplication table, and saturated accepting-pair set:
+**(a) `GF(aa)`** — six classes:
 
 ```
-SOS v1
-ap: a
-classes: 6
-0 eps
-1 !a
-2 a
-3 !a;a
-4 a;!a
-5 a;a
-letters: !a->1 a->2
-mult:
-0: 0 1 2 3 4 5
-1: 1 1 3 3 1 5
-2: 2 4 5 2 5 5
-3: 3 1 5 3 5 5
-4: 4 4 2 2 4 5
-5: 5 5 5 5 5 5
-accept:
-5 5
-residuals: 1
-0 eps
-res-step:
-0: 0 0
+ ·a :  [ε]↦[a]    [a]↦[a·a]   [b]↦[b·a]   [a·b]↦[a]     [b·a]↦[a·a]   [a·a]↦[a·a]
+ ·b :  [ε]↦[b]    [a]↦[a·b]   [b]↦[b]     [a·b]↦[a·b]   [b·a]↦[b]     [a·a]↦[a·a]
 ```
 
-**Figure 2.** The exportable object `𝓘(GF(aa))` — keyed classes, letter map,
-multiplication table, and saturated accepting-pair set (this core is the complete
-language invariant, Theorem 5.1), plus an optional residuals block (here one state,
-`GF(aa)` being prefix-independent) that is derived data (Proposition 3.7) and does not
-enter the equality test. To test membership of `u·z^ω`: fold `u, z` to class ids, iterate
-`z` to its idempotent `e`, set `s = u·e`, and accept iff `(s, e)` is listed under
-`accept`. For `(a·!a)^ω`: `z = a·!a` folds to class `4`, already idempotent, so `s = 4`;
-`4 4` is not in `accept`, so it is rejected — correctly, no `aa` recurs.
+Laws: `[a·a]` — "has seen `aa`" — is a two-sided **zero**
+(`x·[a·a] = [a·a]·x = [a·a]`); every power cycle has period 1 — aperiodic, the LTL
+side of the cut; the idempotents are `[b]`, `[a·b]`, `[b·a]`, `[a·a]`, with
+`[a]^ω = [a·a]`. One accepting pair, `P = { ([a·a],[a·a]) }`: hit the zero and loop
+there — `aa` recurs.
+
+**(b) `Even`** — five classes:
+
+```
+ ·a :  [ε]↦[a]    [a]↦[a·a]   [b]↦[b]     [a·b]↦[a·b]   [a·a]↦[a]
+ ·b :  [ε]↦[b]    [a]↦[a·b]   [b]↦[b]     [a·b]↦[a·b]   [a·a]↦[b]
+```
+
+Laws: `{[a], [a·a]}` is a **period-2 cycle** (`[a]·[a] = [a·a]`, `[a·a]·[a] = [a]`) — a
+`Z₂` in the algebra, visible in the `·a` row as the swap `[a] ↔ [a·a]`. `[a·a]` acts as
+the **identity** on the four word classes: the algebra owns a second neutral element,
+and the fresh-identity convention of §3.1 keeps `[ε]` apart. `[b]` and `[a·b]` are
+**left zeros**, fixed by both letters: the first `b` has been read, after an even
+(`[b]`) or odd (`[a·b]`) count of `a`'s. Accepting pairs `([b],[b])`, `([b],[a·b])`,
+`([b],[a·a])`: once `[b]` is reached, every loop accepts.
+
+**(c) `EvenBlocks`** — eight classes:
+
+```
+ ·a :  [ε]↦[a]       [a]↦[a·a]    [b]↦[b·a]        [a·b]↦[a·b·a]
+       [b·a]↦[b]     [a·a]↦[a]    [a·b·a]↦[a·b]    [b·a·b]↦[b·a·b]
+ ·b :  [ε]↦[b]       [a]↦[a·b]    [b]↦[b]          [a·b]↦[a·b]
+       [b·a]↦[b·a·b] [a·a]↦[b]    [a·b·a]↦[b·a·b]  [b·a·b]↦[b·a·b]
+```
+
+Laws: the *same* `Z₂` `{[a], [a·a]}` returns, and `[a·a]` is again neutral on the word
+classes; `[b·a·b]` — a completed odd block — is the two-sided **zero**. Unlike the
+specimen's dead class, this zero is no death sentence: the language forgives finitely
+many odd blocks, and the acceptance layer says so — of the six accepting pairs
+
+```
+P = { ([b],[b]),  ([a·b],[b]),  ([b·a·b],[b]),
+      ([b·a],[a·b·a]),  ([b·a·b],[a·b·a]),  ([a·b·a],[a·b·a]) }
+```
+
+two sit at the zero itself: what has happened is absorbed; what loops forever decides.
 
 ---
 
-The three algebras side by side (class ids in cells; in all three
-`λ(!a) = [!a]`, `λ(a) = [a]`; the wide row scrolls):
+**Reading the object by hand.** Three checks, all on the letter actions above and none
+touching an automaton.
 
-<table>
-<tr>
-<td valign="top">
+*Membership by one fold.* Is `(a·a)^ω ∈ Even`? Fold the loop: `[ε] ↦ [a] ↦ [a·a]`,
+already idempotent; the empty stem gives `s = [ε]·[a·a] = [a·a]`. The pair
+`([a·a], [a·a])` is not among `Even`'s accepting pairs, so it is rejected — correctly,
+`(aa)^ω` never sees a `b`.
 
-**(a) `S(GF(aa))₊¹`**
-
-```
- ·      [ε] [!a] [a] [!a·a] [a·!a] [a·a]
-[ε]      0   1    2    3      4      5
-[!a]     1   1    3    3      1      5
-[a]      2   4    5    2      5      5
-[!a·a]   3   1    5    3      5      5
-[a·!a]   4   4    2    2      4      5
-[a·a]    5   5    5    5      5      5
-```
-
-</td>
-<td valign="top">
-
-**(b) `S(Even)₊¹`**
-
-```
- ·      [ε] [!a] [a] [a·!a] [a·a]
-[ε]      0   1    2    3      4
-[!a]     1   1    1    1      1
-[a]      2   3    4    1      2
-[a·!a]   3   3    3    3      3
-[a·a]    4   1    2    3      4
-```
-
-</td>
-<td valign="top">
-
-**(c) `S(EvenBlocks)₊¹`**
-
-```
- ·          [ε] [!a] [a] [!a·a] [a·!a] [a·a] [!a·a·!a] [a·!a·a]
-[ε]          0   1    2    3      4      5       6        7
-[!a]         1   1    3    3      6      1       6        6
-[a]          2   4    5    7      1      2       6        3
-[!a·a]       3   6    1    6      1      3       6        3
-[a·!a]       4   4    7    7      6      4       6        6
-[a·a]        5   1    2    3      4      5       6        7
-[!a·a·!a]    6   6    6    6      6      6       6        6
-[a·!a·a]     7   6    4    6      4      7       6        7
-```
-
-</td>
-</tr>
-</table>
-
-**Table 3.** The algebras of the three examples, keyed shortlex. **(a)** `GF(aa)`:
-`[a·a]` = "contains `aa`" is two-sided absorbing and every power cycle has period `1`;
-the single accepting pair is `([a·a], [a·a])`. **(b)** `Even`: `[a]·[a] = [a·a]` and
-`[a·a]·[a] = [a]`, so `{[a], [a·a]}` is a **period-2 cycle** — a `Z₂` visible on the raw
-table. Read `[a·a]`'s row and column against the headers: it multiplies as the identity
-on all four word classes, so `S(Even)₊` owns a neutral element (the fresh-identity
-convention of §3.1); `[ε]` stays a separate class. Accepting pairs `([!a],[!a])`,
-`([!a],[a·!a])`, `([!a],[a·a])`: once the accepting behaviour `[!a]` is reached, every
-loop accepts. **(c)** `EvenBlocks`: the *same* period-2 cycle `{[a], [a·a]}` returns;
-`[a·a]` is again neutral on the word classes, and `[!a·a·!a]` — a completed odd block —
-is the two-sided zero. Six accepting pairs: `([!a],[!a])`, `([a·!a],[!a])`,
-`([!a·a·!a],[!a])`, `([!a·a],[a·!a·a])`, `([!a·a·!a],[a·!a·a])`, `([a·!a·a],[a·!a·a])`.
-In these single-atom examples `λ` is injective; in general it collapses interchangeable
-letters — over `Σ = 2^{a,b}` a property depending only on `a ⊕ b` maps `a!b` and `!ab` to
-one class.
-
----
-
-**Reading the object by hand.** Three checks, all on the tables above and none touching
-an automaton.
-
-*Membership by one fold.* Is `(a·a)^ω ∈ Even`? Fold the loop `a·a` to class `[a·a] = 4`,
-already idempotent (`4·4 = 4`); with empty stem `s = [ε]·4 = 4`. The pair `(4, 4)` is not
-among `Even`'s accepting pairs, so it is rejected — correctly, `(aa)^ω` never sees a `!a`.
-
-*The group is on the table.* In `Even`, `[a]·[a] = [a·a]` and `[a·a]·[a] = [a]`: the pair
-`{[a], [a·a]}` is a cycle of period 2, a `Z₂` sitting in the algebra. Since (as §5 makes
-exact) aperiodicity of the algebra is LTL-definability, this cycle *is* the reason `Even`
-is not LTL — read straight off `M`, before any acceptance is consulted. `GF(aa)`'s table,
-by contrast, has every power-cycle of period 1: aperiodic, hence LTL.
+*The group is on the table.* In `Even`, `[a]·[a] = [a·a]` and `[a·a]·[a] = [a]`: the
+pair `{[a], [a·a]}` is a cycle of period 2, a `Z₂` sitting in the algebra. Since (as §5
+makes exact) aperiodicity of the algebra is LTL-definability, this cycle *is* the
+reason `Even` is not LTL — read straight off the letter actions, before any acceptance
+is consulted. `GF(aa)`'s algebra, by contrast, has every power-cycle of period 1:
+aperiodic, hence LTL.
 
 *Saturation, checked.* The query on `a^ω` presented two ways must agree, and does:
-`(ε, a)` folds to the pair `([ε]·[a]^ω, [a]^ω) = ([a·a], [a·a]) = (4, 4)`, while `(a, a)`
-folds to `([a]·[a]^ω, [a]^ω) = ([a]·[a·a], [a·a]) = ([a], [a·a]) = (2, 4)` — a conjugacy
-step `(s, (gh)^ω) ≈ (s·g, (hg)^ω)` with `s = g = h = [a]`. Both `(4, 4)` and `(2, 4)` are
-absent from `Even`'s accepting set, as saturation (Definition 3.4) demands; a `P`
-containing one but not the other would be an *illegal* acceptance layer, its query
-self-contradictory on the single word `a^ω`.
+`(ε, a)` folds to the pair `([ε]·[a]^ω, [a]^ω) = ([a·a], [a·a])`, while `(a, a)` folds
+to `([a]·[a·a], [a·a]) = ([a], [a·a])` — a conjugacy step
+`(s, (gh)^ω) ≈ (s·g, (hg)^ω)` with `s = g = h = [a]`. Both pairs are absent from
+`Even`'s accepting set, as saturation (Definition 3.4) demands; a `P` containing one
+but not the other would be an *illegal* acceptance layer, its query self-contradictory
+on the single word `a^ω`.
 
 ## 4. What the object unlocks
 
