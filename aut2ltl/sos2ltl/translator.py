@@ -10,10 +10,11 @@ certificate or dg side is a decline, never a wrong verdict.
 """
 from __future__ import annotations
 
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import spot
 
+from aut2ltl.ltl.builders import _Not, _Or, _simp_f
 from aut2ltl.result import LTLResult
 from aut2ltl.verifier import member
 from aut2ltl.witness import Witness
@@ -24,6 +25,7 @@ from .bridge import BridgeDecline, invariant_of_language
 from .census import CENSUS, CENSUS_FH, census_line
 from .dg import DgDecline, synthesize
 from .engine import transcribe
+from .pairsplit import SplitPlan, split_plan
 from .witness import Family, extract_family, toggles
 
 if TYPE_CHECKING:
@@ -34,6 +36,7 @@ if TYPE_CHECKING:
 
 TAG = "sos2ltl"
 TAG_CASC = "sos2ltl_casc"
+TAG_PAIRS = "sos2ltl_pairs"
 TAG_ENGINE = "sos2ltl.engine"
 TAG_DG = "sos2ltl.dg"
 
@@ -96,10 +99,50 @@ def _lasso_str(inv: "Invariant", lasso: "Lasso") -> str:
     return "; ".join(parts)
 
 
+def _piece_formula(piece: "Invariant") -> "Optional[Tuple[spot.formula, str]]":
+    """One pairsplit piece: engine first, dg as the floor; (formula, tag of
+    the technique that produced it), or None when both decline. Pieces of an
+    aperiodic invariant are aperiodic (reduce only merges classes —
+    pairsplit/algorithm.md "Verdicts inherit"), so no group scan re-runs
+    here; the cascade delegate is not threaded to pieces (v1 — the per-piece
+    acceptor presentation is the open interface point)."""
+    phi = transcribe(piece, fallback=None)
+    if phi is not None:
+        return phi, TAG_ENGINE
+    try:
+        ast, root, _ = synthesize(piece)
+    except DgDecline:
+        return None
+    return _to_formula(ast, root, _cubes(piece)), TAG_DG
+
+
+def _split_translate(plan: "SplitPlan", tag: str) -> LTLResult:
+    """Translate a `SplitPlan`: every piece must label (a decline poisons the
+    split — algorithm.md "Verdicts inherit"); the labels recombine as ⋁, with
+    an outer ¬ iff the complement side was taken."""
+    fs: List["spot.formula"] = []
+    tags = {tag, TAG_PAIRS}
+    for piece in plan.pieces:
+        got = _piece_formula(piece)
+        if got is None:
+            return LTLResult.decline(
+                f"{tag}: pairsplit piece declined by engine and dg "
+                f"(|C|={piece.n})", tag, TAG_PAIRS)
+        fs.append(got[0])
+        tags.add(got[1])
+    f = _simp_f(_Or(*fs))
+    if plan.negate:
+        f = _simp_f(_Not(f))
+    return LTLResult.success(f, *sorted(tags))
+
+
 def _sos2ltl(lang: "Language", tag: str,
-             fallback: Optional["LayerFallback"]) -> LTLResult:
-    """The shared assembly: bridge, step-0 witness scan, engine (with an
-    optional per-layer delegate), dg where the engine declines."""
+             fallback: Optional["LayerFallback"],
+             pairsplit: bool = False) -> LTLResult:
+    """The shared assembly: bridge, step-0 witness scan, optionally the SoS
+    pair decomposition (pairsplit/algorithm.md; aperiodic invariants only —
+    the group scan has already spoken for L itself), engine (with an optional
+    per-layer delegate), dg where the engine declines."""
     try:
         inv = invariant_of_language(lang)
     except BridgeDecline as e:
@@ -121,6 +164,21 @@ def _sos2ltl(lang: "Language", tag: str,
         return LTLResult.decline(
             f"{tag}: counting family failed replay against the input "
             "(internal inconsistency)", tag)
+
+    if pairsplit:
+        # The inflation gate (pairsplit/algorithm.md "Cost"): the pure engine
+        # (no delegate) is tried whole first — where it succeeds the split
+        # could only inflate the label. The split is an ENABLER: it runs only
+        # where the whole-language engine declines; a poisoned split falls
+        # through to the full cascade assembly below.
+        phi0: Optional["spot.formula"] = transcribe(inv, fallback=None)
+        if phi0 is not None:
+            return LTLResult.success(phi0, tag, TAG_ENGINE)
+        plan = split_plan(inv)
+        if plan is not None:
+            r = _split_translate(plan, tag)
+            if r.ok:
+                return r
 
     phi: Optional["spot.formula"] = transcribe(inv, fallback=fallback)
     if phi is not None:
@@ -147,6 +205,19 @@ def sos2ltl_casc(lang: "Language") -> LTLResult:
     from .cascade.delegate import CascadeFallback
     return _sos2ltl(lang, TAG_CASC,
                     CascadeFallback(lambda: lang.det_parity_sbacc()))
+
+
+def sos2ltl_pairs(lang: "Language") -> LTLResult:
+    """`sos2ltl_casc` under the SoS pair decomposition (paper-side doc:
+    `pairsplit/algorithm.md`): an aperiodic invariant whose accepting pair
+    set — or its free complement — splits into ≥ 2 saturation atoms is
+    translated piecewise over the same table (engine + dg per piece) and
+    recombined `⋁` (outer `¬` iff complemented); otherwise the full cascade
+    assembly runs unchanged."""
+    from .cascade.delegate import CascadeFallback
+    return _sos2ltl(lang, TAG_PAIRS,
+                    CascadeFallback(lambda: lang.det_parity_sbacc()),
+                    pairsplit=True)
 
 
 def sos2ltl_dg(lang: "Language") -> LTLResult:
