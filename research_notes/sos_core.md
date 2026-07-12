@@ -107,7 +107,7 @@ the monoid/ω-power framing, and linked pairs. New here: the reification of the 
 ω-semigroup as a concrete finite object with a self-contained membership semantics (§3);
 the **rotation lemma**, which both fixes that semantics (§3) and makes the two-sided
 syntactic congruence computable by right multiplications alone (§7); and the construction
-of the tuple from a deterministic Emerson–Lei automaton, proved correct against the
+of the object from a deterministic Emerson–Lei automaton, proved correct against the
 semantics (§6–8). Arnold's syntactic congruence, on which the object's canonicity rests,
 is recalled where it is used, in §5.
 
