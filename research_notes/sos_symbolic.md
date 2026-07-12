@@ -950,9 +950,10 @@ Decision diagrams are empirical tools: no theorem makes a diagram
 small, and a symbolic algorithm is judged by what its inputs'
 structure does to its variables. This section therefore answers the
 five research questions of §1 in turn. Protocols, per-instance data
-and the finding ledger live in the companion experiment report — the
-reproducibility artefact — and every number below is traceable to a
-tracked, machine-generated artefact there.
+and the finding ledger live in the companion experiment files — the
+archive of closed experiments (`sos_symbolic_experiments.md`) and the
+active report — the reproducibility artefact; every number below is
+traceable to a tracked, machine-generated artefact there.
 
 **Setup.** The engine: multi-valued decision diagrams (libDDD),
 letter steps as per-slot homomorphism sums, the crossing as the
