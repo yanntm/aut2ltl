@@ -60,10 +60,17 @@ current free-vs-exponential dichotomy skips: `X L`, and `W·L` when `W` is a
 prefix code / the factorization is unambiguous — deterministic split, new
 table, polynomial, no powerset.
 
-## 4. The canonical DELA exit — adequacy reduced to two equations (2026-07-12)
+## 4. PARKED — the DELA exit adequacy notes (2026-07-12, out of scope)
 
-Worked state of the paper §7.3 ⟨TBD⟩ (was "queued theory item" below; the
-proposition is now *stated and proved as a criterion*, with one open half).
+**Not a paper item and not queued anywhere.** User call 2026-07-12: this
+direction is a spiral away from the calculus paper; §7.3 stays a prospect.
+The notes below are archived as-is in case the question ever becomes
+load-bearing (it would, only if paper §8's claim that the corpus `D` comes
+from this exit is confirmed *and* a soundness statement is demanded).
+Caveats if ever revived: the sufficiency direction rests on Simon's
+path-congruence proposition, seen only *stated* in [CPP08] (proof is in
+Eilenberg Vol. B, which we do not hold); nothing below has been machine-
+checked; the syntactic-case question is open.
 
 **Setting.** `Cay(L)` per [SωS26, Def 5.2]: nodes `𝒞` (fresh identity root
 `[ε]`), edges `c →ᵃ c·λ(a)`. Deterministic and complete, and with one gift no
@@ -73,7 +80,7 @@ traverses infinitely often. *Adequacy* = membership is a function of `T(u)`;
 equivalently the Muller-over-edges family `𝒯 = {T(u) : u ∈ L}` (an EL
 condition over edge colors) completes `Cay(L)` into a DELA for `L`.
 
-**Proposition (adequacy criterion).** Adequacy holds iff for all
+**Claimed criterion (unverified — see header caveats).** Adequacy holds iff for all
 `y, t, h, g ∈ 𝒞` with `y·t = y·h = y·g = y`:
 
 - **(E1)** `Val_P(y, (t·g)^π) = Val_P(y, (t²·g)^π)`
@@ -124,16 +131,8 @@ level (saturated, not reduced) a candidate exists in `T₄` (right action,
 `y·t = y·g = y`, `(tg)^π = [1,2,2,2] =: F`, `(t²g)^π = [1,2,4,4] =: F' ≠ F`.
 If `(y,F)` and `(y,F')` are non-conjugate in `S = ⟨y,t,g⟩`, the saturated
 `P := closure{(y,F)}` violates (E1) — and the question becomes whether
-`reduce` (to the true syntactic table of `L(P)`) kills the violation. That
-is CAL7b (spec §9.6). Outcomes: conjecture dead → paper §7.3 states the
-criterion + per-corpus certificate (still a clean result); conjecture
-survives corpus + probe → prove (E1)/(E2) from syntacticity (open).
-
-**Theory debts.** (1) Reprove Simon's path-congruence proposition ourselves
-(elementary; [CPP08] states it, proof is in Eilenberg Vol. B which we do not
-hold). (2) Acquisitions for `papers/`: Eilenberg Vol. B (1976); Le Saëc–Pin–
-Weil FSTTCS 1991 + IJAC 1991; Le Saëc, *Saturating right congruences*,
-RAIRO 1990 (checked: none present; [CPP08] is our only read source).
+`reduce` (to the true syntactic table of `L(P)`) kills the violation. (A CAL7 work order for this was drafted and withdrawn the same day —
+spec §9.6 now asks only the `D`-provenance question.)
 
 ## 5. One-liners and small open items
 
@@ -155,11 +154,10 @@ RAIRO 1990 (checked: none present; [CPP08] is our only read source).
 ## Priority
 
 (1) mixed product first — it is the practical claim of the whole paper;
-(2) DELA adequacy §4: close the open half (CAL7 outcomes decide the route);
-(3) the §3.4 completion + `X` middle band — cheap, closes the frontier
-story; (4) LTL-over-SoS as a remark, section if the evaluator gets built;
-(5) the one-liners opportunistically. The sister memos are separate papers,
-not paper sections.
+(2) the §3.4 completion + `X` middle band — cheap, closes the frontier
+story; (3) LTL-over-SoS as a remark, section if the evaluator gets built;
+(4) the one-liners opportunistically. §4 is parked, not prioritized. The
+sister memos are separate papers, not paper sections.
 
 ## Status update (2026-07-11)
 
@@ -171,8 +169,6 @@ not paper sections.
 - **Alphabet hygiene** (free-AP read-off + drop, equality up to AP
   renaming) landed in paper §3.2/§7.1; implementation is spec §9.3
   (CAL6).
-- **DELA adequacy** (paper §7.3): advanced 2026-07-12 from queued sketch
-  to the criterion of §4 above — adequacy ⟺ (E1) ∧ (E2), necessity and
-  sufficiency proved, the syntactic-case conjecture open, CAL7
-  (spec §9.6) probing it. Le Saëc checked: not in `papers/`; [CPP08]
-  §5.4 is the read source.
+- **DELA adequacy**: explored 2026-07-12, judged a spiral, PARKED (§4
+  above). Paper §7.3 keeps the prospect wording; no work order stands
+  except the spec §9.6 `D`-provenance paragraph.
