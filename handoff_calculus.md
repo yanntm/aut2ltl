@@ -1,66 +1,89 @@
 # Handoff — SoS calculus
 
-Bootstraps a fresh session on `research_notes/sos_calculus_spec.md`. Read this,
-then only the spec section for the task at hand. The harness and its Spot
-contracts are documented in `sosl/tests/calculus/README.md` — read it before
-writing a gate or an experiment.
+Bootstraps a fresh session on `research_notes/sos_calculus_spec.md`. Read
+this, then only the spec section for the task at hand. The harness and its
+Spot contracts are documented in `sosl/tests/calculus/README.md` — read it
+before writing a gate or an experiment.
+
+## Scope (permanent)
+
+The paper does **no classification**. Publication plan: core [SωS26] →
+the siblings (calculus, classification) → learn / toltl; each sibling
+cites only core, never the other. In the calculus paper: exactly one
+classification row — the LTL cut (§5) — and the hulls as *operators*
+(§6). The excised material (Thm 6.6 / Prop 6.7, ladder / index / Wagner,
+the V4 obligation census) sits in `sos_calculus_extensions.md` §6, a
+**garbage bin — do not reintegrate**. Stutter invariance lives in
+`sos_classification.md` §3.2 (Prop 3.1b, with [MD15]).
 
 ## TODO — engineering (spec §9, in order)
 
 1. **§9.3 CAL6 — alphabet hygiene. NEXT.** `free_aps` / `drop_ap` /
-   `rename_equal` in `calculus.surgery`. The corpus pipeline already carries the
-   pieces (`sos.minimize.remove_free_aps`, `sos.relabel.canonical_relabeling`) —
-   lift and share, do not duplicate, and report where they live.
-2. **§9.6 — one report paragraph**: the corpus `D`'s provenance (is it the
-   §7.3 exit's output, and is `L(D) = L` checked per row?). Paper §8 asserts
-   it; the sentence must be right. No code.
-3. **§9.4 corpus-refresh sweep. BLOCKED** on the corpus stream declaring the
-   regeneration stable. Then: freeze the corpus, rerun V1a/V1b/V1c/V2/V3 (V4 is
-   already on the 6222 corpus), refresh every measured number in the report in
-   one pass.
-4. **Figures** — `sos_calculus_figures.md`; paper §8.7 wants the invariant and
-   the aligned product rendered.
+   `rename_equal` in `calculus.surgery`. The corpus pipeline already
+   carries the pieces (`sos.minimize.remove_free_aps`,
+   `sos.relabel.canonical_relabeling`) — lift and share, do not
+   duplicate, and report where they live.
+2. **§9.6 — one report paragraph**: the corpus `D`'s provenance (is it
+   the §7.3 exit's output, and is `L(D) = L` checked per row?). Paper §8
+   asserts it; the sentence must be right. No code.
+3. **§9.4 corpus-refresh sweep. BLOCKED** on the corpus stream declaring
+   the regeneration stable. Then freeze the corpus and rerun in one pass
+   what the de-scoped paper §8 consumes: V1a / V1b / V1c (§8.2–8.4), V3
+   (§8.6), and the safety / co-safety half of V4 (§8.5). V2 and the V4
+   obligation columns are no longer paper numbers here — rerun them only
+   if theory claims them for the classification paper (its item below).
+4. **Figures** — `sos_calculus_figures.md` (realigned: Fig 1(b) carries
+   the liveness reading, no θ overlay); paper §8.7 ⟨TBD⟩ wants the
+   invariant and the aligned product rendered.
 
-Non-goals stand (frontier ops, NBA exits, CLI, learner integration — and the
-DELA adequacy question, explored and parked 2026-07-12, notes in
-`sos_calculus_extensions.md` §4; do not reopen unprompted).
+Non-goals stand: frontier ops, NBA exits, CLI, learner integration, DELA
+adequacy (extensions §4, parked) — and anything classification-shaped.
 
 ## TODO — theory
 
-- **The mixed product** `K × 𝒞` (`sos_calculus_extensions.md` §1) — model
-  checking against a system without entry, the load-bearing one. NEXT.
-- On the §9.6 report paragraph: if paper §8's "paired with the §7.3 exit's
-  acceptor" turns out wrong, fix that sentence.
+- **The mixed product** `K × 𝒞` — model checking against a system
+  without entry, the load-bearing section the de-scoped paper now has
+  room for. Notes in `sos_calculus_extensions.md` §1. NEXT.
+- **Spec realignment**: spec §5 / §8.6 / §9.2 still describe the pre-cut
+  paper (V2 filling §8.5, the V4 obligation battery as a paper
+  deliverable). Rewrite to current scope so engineering orders stay true.
+- **Coherence pass** on the de-scoped paper, end to end: abstract,
+  contributions and §8 were stitched during the cut; one read-through.
+- **Orphaned findings**: report F15–F18 (no automaton-level Manna–Pnueli
+  classifier in Spot; 6222/6222 obligation agreement; the rung census)
+  have no calculus-paper consumer. If claimed, they belong to the
+  classification paper — its §8 profile is the same data on the 6220
+  edition; reconcile editions before quoting. Decide, or drop.
+- On §9.6: if paper §8's "paired with the §7.3 exit's acceptor" turns
+  out wrong, fix that sentence.
 
 ## State
 
-- The package `sosl/sosl/sos/calculus/` (table / surgery / align / product /
-  decide / reduce / witness) with the hull and obligation read-offs; harness
-  green, corpus-wide.
-- Experiments delivered to `reference/calculus/`, each with a report section:
-  V1a / V1b / V1c / V2 / V3 (on the **3938** corpus — pending the §9.4 refresh),
-  E-CAL-EX, and **V4** (on **6222**). Until §9.4 runs, the report — not the
-  paper — is the source of truth for every 3938-era measured value.
-- **Scope cut (permanent): the paper does no classification.** Thm 6.6 /
-  Prop 6.7, the ladder/index/Wagner material and the V4 obligation census
-  are excised to `sos_calculus_extensions.md` §6 (garbage bin — do NOT
-  reintegrate); stutter invariance moved to `sos_classification.md` §3.2
-  (Prop 3.1b, with [MD15]). The paper keeps exactly one classification
-  row — the LTL cut (§5) — plus the hulls as *operators* (§6; the
-  safety/co-safety half of V4 is their Spot validation in §8.5).
-  Calculus and classification are siblings: each cites only core
-  [SωS26], never the other. V2/V4 findings stay report-owned.
-- The corpus is regenerated by a concurrent stream (3938 → 4248 → 6222); all
-  gate numbers are recomputable.
-- Sibling threads, own handoffs: measure, given-that, extensions.
+- Package `sosl/sosl/sos/calculus/` (table / surgery / align / product /
+  decide / reduce / witness) with the hull and liveness read-offs;
+  harness green, corpus-wide. The obligation/degree scans still exist in
+  code and harness — unclaimed by the paper, harmless; remove only on a
+  work order.
+- Experiments in `reference/calculus/`, each with a report section:
+  V1a / V1b / V1c / V2 / V3 (on the **3938** corpus — pending §9.4),
+  E-CAL-EX, and V4 (on **6222**). Until §9.4 runs, the report — not the
+  paper — is the source of truth for every 3938-era measured value; the
+  V2 and V4-obligation data stays report-owned.
+- Paper `sos_calculus.md`: ten sections, one ⟨TBD⟩ left (§8.7 figures).
+- The corpus is regenerated by a concurrent stream (3938 → 4248 → 6222);
+  all gate numbers are recomputable.
+- Sibling threads, own handoffs: measure, given-that, corpus.
 
 ## Gotchas
 
-- **Engineering does not edit the paper.** `sos_calculus.md` is theory's; results
-  land in `sos_calculus_report.md` and theory integrates them — including the
-  ⟨TBD⟩ slots a work order says it "fills" (that means *answers*, in the report).
-  When a paper number looks wrong or stale, say so in the report; do not fix it
-  in place.
-- **Concurrent sessions** commit to this same repo (learner campaign / corpus
-  regeneration / figs). Git history and unfamiliar modified files are NOT yours —
-  commit ONLY your files by explicit path.
+- **Engineering does not edit the paper.** `sos_calculus.md` is theory's;
+  results land in `sos_calculus_report.md` and theory integrates them.
+  When a paper number looks wrong or stale, say so in the report; do not
+  fix it in place.
+- **The extensions file is a garbage bin.** Nothing in it is queued;
+  only this handoff and the spec queue work. Its §1 notes feed the
+  theory mixed-product item above — that pointer, not the file, is the
+  order.
+- **Concurrent sessions** commit to this same repo (learner campaign /
+  corpus regeneration / figs). Git history and unfamiliar modified files
+  are NOT yours — commit ONLY your files by explicit path.

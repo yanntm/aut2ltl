@@ -25,8 +25,8 @@ in the footer.
   idempotents, linked pairs, `P = {(B,B), (C,B)}`);
 - (b) the right-Cayley graph (nodes `𝒞`, one edge per letter), with
   `stems(P)` highlighted and the dead class `D` visually sunk; this
-  panel is reused by §6 — overlay the `θ` verdict per node
-  (`0/1/1/0`) and mark the alternating path `A → C → D`.
+  panel is reused by §6, where the liveness scan reads
+  `Live = 𝒞 \ {D}` off it.
 
 Graphviz or the repo's existing HOA/graph rendering; keep it small
 enough to read in a single column.
