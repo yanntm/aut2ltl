@@ -1,114 +1,56 @@
-# Task — `sos2cayley`: Cayley-graph figures for the sos_core paper
+# Figures for `sos_core.md` §3 — delivered
 
-*Engineering task, now at **v2**. v1 is delivered in
-`research_notes/sos_core_figs/` (tool, `img/`, `sources/` with `_gen`/tweaked
-pairs, `figures.md`, `reproduction.md`, Makefile) — keep that structure and
-regenerate in place. This revision changes the rendering only; inputs and
-expected content are unchanged. You do not touch the paper prose.*
+The four Cayley-graph figures (`[Figure F0]` … `[Figure F3]`, §3.1–§3.5) are
+built and committed. **This file is no longer the specification.** The artifact
+is, and it is self-describing:
 
-## v2 — what changes from v1
+> **[`sos_core_figs/`](sos_core_figs/)** — the figures, their inputs, the tool,
+> and how to rebuild them.
+>
+> - [`figures.md`](sos_core_figs/figures.md) — the four figures, what each shows,
+>   and what the ink means.
+> - [`reproduction.md`](sos_core_figs/reproduction.md) — **the authority**:
+>   prerequisites, the inputs with their provenance, every command, and the
+>   machine-vs-hand split.
 
-1. **Label every edge with its letter.** The figures must read without a
-   legend: a small `a` or `b` on each edge, like the ASCII placeholders in the
-   paper. Keeping solid-vs-dashed per letter as redundant coding is fine, but
-   the label is what the reader uses. Self-loops too — one loop labeled `a,b`
-   where both letters fix the node beats two stacked unlabeled loops.
-2. **The ASCII placeholders in `sos_core.md` §3 are the approved figures —
-   reproduce them.** Same relative node placement: root at left/top and visibly
-   a source, swap pairs adjacent with their doubled `a`-edges between them,
-   the zero at the far right/bottom. Same edges, routed similarly. The TikZ
-   version is the approved ASCII drawn well, not a fresh layout; automatic
-   layout is at most a starting point, and per-figure hand-set coordinates that
-   match the ASCII are expected.
-3. **Forget v1's mechanical constraints.** No byte-stable output requirement,
-   no expect-file asserts, no prescribed pen widths. What matters is: the
-   `.tex` stays pleasant to hand-edit (styles gathered in one `\tikzset`, named
-   nodes, explicit coordinates, one `\draw` per edge), it compiles standalone,
-   and the drawn content matches the tables below. Check that however is
-   convenient; if something doesn't match, report it rather than absorbing it.
+| fig | language | input | file |
+|---|---|---|---|
+| F0 | `a*·b^ω` (= `a U G!a`) | `astar_bomega.sos` | `img/core_F0_astar_bomega.png` |
+| F1 | `GF(aa)` | `gf_aa.sos` | `img/core_F1_gf_aa.png` |
+| F2 | `Even` | `even.sos` | `img/core_F2_even.png` |
+| F3 | `EvenBlocks` | `evenblocks.sos` | `img/core_F3_evenblocks.png` |
 
-## Visual encoding (as in v1)
+Displayed in `{a, b}` with `b := !a`. Each figure draws the algebra `𝒜` and
+carries `P` as a caption beneath it — the object is `⟨𝒜, P⟩`, and only `𝒜` has a
+shape.
 
-- Nodes labeled by their shortlex keys, letters joined by `·`; identity `ε`.
-- Root: dashed border, grayed — and it should visibly have no incoming edge
-  (freshness; if a render shows one, something is wrong upstream — report it).
-- Idempotent classes (`c·c = c`, identity excluded): thick border.
-- Monochrome cycles (length ≥ 2 under a single letter): doubled stroke. Mixed
-  cycles and self-loops are never doubled.
-- The `P` line is typeset beneath the drawing, for **all four figures** — the
-  pairs are part of the object `⟨𝒜, P⟩`; a figure without them shows half the
-  object.
+## What the figures say
 
-## Inputs (as in v1 — all four `.sos` now exist)
+Recomputed from the `.sos` on every build, and agreeing with §3 throughout:
 
-Load with `sosl.sos.io.load_invariant`; display rename `!a → b`; everything
-below is in display letters.
+| fig | classes | idempotents | monochrome cycles | zero |
+|---|---|---|---|---|
+| F0 | 5 | `a, b, b·a` (`[a·b]² = [b·a]`) | none | `b·a` |
+| F1 | 6 | `b, a·b, b·a, a·a` | none — its cycles are **mixed-letter** | `a·a` |
+| F2 | 5 | `b, a·b, a·a` | `{[a],[a·a]}` under `a` — the `Z₂` | — |
+| F3 | 8 | `b, a·a, a·b·a, b·a·b` | `{[a],[a·a]}`, `{[b],[b·a]}`, `{[a·b],[a·b·a]}` under `a` | `b·a·b` |
 
-| fig | language | input `.sos` |
-|---|---|---|
-| F0 | `a*·b^ω` (warm-up) | `samples/fixtures/hoa/sos/astar_bomega.sos` |
-| F1 | `GF(aa)` = `G F (a & X a)` | `samples/fixtures/hoa/sos/gf_aa.sos` |
-| F2 | `Even` | `samples/fixtures/hoa/sos/even.sos` |
-| F3 | `EvenBlocks` | `samples/fixtures/hoa/sos/evenblocks.sos` |
+## Findings
 
-## Expected content (display letters)
+1. **`import_ltl` is not the entry point** for building F0 — it returns a Spot
+   `twa_graph`. The `Invariant` comes from `sosl.sos.build.reference_of_ltl`.
+2. **Machine keys are not display keys.** The machine letter order is `!a < a`
+   (absent before present), so a `.sos`'s keys are shortlex-least under `b < a`.
+   The figures recompute keys by BFS in *display* order. On these four the words
+   coincide and only the node ordering changes — but on a larger alphabet they
+   will not.
+3. **`P` does not fit in the drawing, and the Büchi convention is a trap.**
+   Acceptance here is a *relation* on classes, not a predicate, so no node mark
+   (double circle, colour, bold) can carry it. Worse: on all four figures `P`
+   happens to factor as `stems × loops ∩ linked`, so a two-mark node scheme would
+   be *accidentally* right on every figure we print while teaching a rule that is
+   not a theorem. `P` is typeset, not drawn.
 
-A mismatch here is a finding to report back to theory, not something to paper
-over.
-
-### F0 — `a*·b^ω` (5 classes)
-
-```
- ·a :  ε↦a    a↦a     b↦b·a   a·b↦b·a   b·a↦b·a
- ·b :  ε↦b    a↦a·b   b↦b     a·b↦a·b   b·a↦b·a
-```
-
-keys `{ε, a, b, a·b, b·a}`; idempotents `{a, b, b·a}` (`[a·b]² = [b·a]`);
-monochrome cycles: none; zero `b·a`;
-`P = { ([b],[b]), ([a·b],[b]) }`.
-
-### F1 — `GF(aa)` (6 classes)
-
-```
- ·a :  ε↦a    a↦a·a   b↦b·a   a·b↦a     b·a↦a·a   a·a↦a·a
- ·b :  ε↦b    a↦a·b   b↦b     a·b↦a·b   b·a↦b     a·a↦a·a
-```
-
-keys `{ε, a, b, a·b, b·a, a·a}`; idempotents `{b, a·b, b·a, a·a}`;
-monochrome cycles: none (the mixed-letter cycles `[a]⇄[a·b]`, `[b]⇄[b·a]` are
-NOT doubled); zero `a·a`;
-`P = { ([a·a],[a·a]) }`.
-
-### F2 — `Even` (5 classes)
-
-```
- ·a :  ε↦a    a↦a·a   b↦b     a·b↦a·b   a·a↦a
- ·b :  ε↦b    a↦a·b   b↦b     a·b↦a·b   a·a↦b
-```
-
-keys `{ε, a, b, a·b, a·a}`; idempotents `{b, a·b, a·a}`;
-monochrome cycles: `{[a], [a·a]}` under `a` (the `Z₂`); no zero;
-`P = { ([b],[b]), ([b],[a·b]), ([b],[a·a]) }`.
-
-### F3 — `EvenBlocks` (8 classes)
-
-```
- ·a :  ε↦a        a↦a·a     b↦b·a         a·b↦a·b·a
-       b·a↦b      a·a↦a     a·b·a↦a·b     b·a·b↦b·a·b
- ·b :  ε↦b        a↦a·b     b↦b           a·b↦a·b
-       b·a↦b·a·b  a·a↦b     a·b·a↦b·a·b   b·a·b↦b·a·b
-```
-
-keys `{ε, a, b, a·b, b·a, a·a, a·b·a, b·a·b}`;
-idempotents `{b, a·a, a·b·a, b·a·b}` (`[a·b]² = [b·a·b]` — not idempotent);
-monochrome cycles under `a`: `{[a],[a·a]}`, `{[b],[b·a]}`, `{[a·b],[a·b·a]}`;
-zero `b·a·b`;
-`P = { ([b],[b]), ([a·b],[b]), ([b·a·b],[b]), ([b·a],[a·b·a]),
-([b·a·b],[a·b·a]), ([a·b·a],[a·b·a]) }`.
-
-## Delivery
-
-Regenerate the `_gen.tex` files and refresh the tweaked copies + `img/` (no
-hand-tweaks exist yet — the tweaked files are still plain copies, pending
-theory review). Note the v2 outcome per figure in `sos_core_figs/figures.md`,
-findings included. Usual discipline per `CLAUDE.md`.
+Monochrome cycles are computed and asserted on every build but are **not inked**:
+a monochrome cycle is a property *of* the drawn arrows, not an arrow of another
+kind. Likewise the letter is written on each arrow rather than coded in a dash.
