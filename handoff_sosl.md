@@ -47,8 +47,10 @@ it all re-runs). Therefore:
     false`. Theorem 5.3 has zero counterexamples over the catalogue.
   - **P10 clean** — all **2336** `SOUND` rows are `true`: no byte-equality ever
     arose from a non-congruent partition.
-  - Dual-symmetric over the 2733 comparable pairs; zero off-diagonal mass. The
-    17 ex-`CRASH` rows are cured (15 → `ACCEPTOR_ONLY`, 2 → `BUDGET`).
+  - Dual-symmetric over the 2733 comparable pairs; zero off-diagonal mass, and
+    no `CRASH` row anywhere in the leg.
+  - A `BUDGET` row may carry either value or `n/a`: a run can check its fixpoint
+    and only then exhaust its budget. Only `ACCEPTOR_ONLY` / `SOUND` are pinned.
 - ⚠️ **The verdict partition is budget-censored — counts are a floor, not an
   invariant.** `ACCEPTOR_ONLY` / `SOUND` / `BUDGET` depends on what a machine
   finishes inside the 60 s budget: against the v2 sweep this drop moved **70

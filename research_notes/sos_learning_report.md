@@ -2500,9 +2500,9 @@ handoff POST (report the floor / shrink the censored region with a re-run of the
 tight floor", but whether the section needs an exact number is theory's call. The
 recount is held until then rather than banking a number that will not reproduce.
 
-**Harness note (engineering-internal, recorded because it bounds the data).** The
-sweep now runs each case in its own process under an OS-enforced kill
-(`run_case_bounded`), so the budget is a real ceiling of `budget + grace` and a
-runaway is a `BUDGET` row rather than lost work; `cluster_plan` packs commands
-against that ceiling. The per-run record's only carrier is now a CSV row (the
-write-only `stats.json` is gone).
+**Reproducibility of the column.** A row is measured under an OS-enforced ceiling
+(`run_case_bounded`: the run owns a process, killed at `budget + grace`), so an
+undecided run is a `BUDGET` row and never a hole; `cluster_plan` packs commands
+against that ceiling. Regenerate:
+`python3 -m tests.sosl.cluster_plan --legs ablate`, then
+`python3 -m tests.sosl.congruence_column ../reference/census/ablation_congruence.csv`.
