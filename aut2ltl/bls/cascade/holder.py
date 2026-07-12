@@ -14,7 +14,7 @@ is gone by construction.
 The wrapper is transparent: `__getattr__` delegates every Cascade attribute and
 method to the wrapped `cascade`, so the construction code keeps reading
 `casc.move_config(...)`, `casc.num_levels`, `casc.all_configs()`, etc. unchanged
-while the holder owns `reach_memo` / `helper_memo` / `uncond_memo` and the
+while the holder owns `reach_memo` / `helper_memo` / `inst_memo` / `uncond_memo` and the
 `reach_calls` / `fin_calls` counters as its own fields. The `Cascade` itself is
 never touched (it stays a pure data model).
 """
@@ -36,10 +36,16 @@ class CascadeHolder:
 
     def __init__(self, cascade: "Cascade") -> None:
         self.cascade: "Cascade" = cascade
-        # reach memo: key (S, B, beta_f, T, tau_f, level) -> formula.
+        # reach memo: skeleton key (S, B, T, level) -> template formula (β/τ as
+        # the reserved placeholder APs — see operators/support.py).
         self.reach_memo: Dict[Tuple[Any, ...], "spot.formula"] = {}
-        # helper memo (solid/wsolid/dashed + the >0 cores), keyed by the decorator.
+        # helper memo (solid/wsolid/dashed + the >0 cores), skeleton-keyed by
+        # the decorator (tag, S, B, T, level) -> template formula.
         self.helper_memo: Dict[Tuple[Any, ...], "spot.formula"] = {}
+        # instantiation memo: (beta_f, tau_f) plug pair -> {template node id ->
+        # substituted node}; shared across templates so equal plugs walk any
+        # given node once.
+        self.inst_memo: Dict[Tuple[Any, Any], Dict[int, "spot.formula"]] = {}
         # fin.py _uncond_reach_strict memo.
         self.uncond_memo: Dict[Any, "spot.formula"] = {}
         # Distinct reach expansions: the runaway-guard counter AND the
