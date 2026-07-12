@@ -1,13 +1,11 @@
-# Materializing the Syntactic ω-Semigroup — outline draft
+# The Syntactic ω-Semigroup as a Canonical Invariant of Regular ω-Languages
 
-**Working title:** *Materializing the Syntactic ω-Semigroup: a Canonical
-Representation of Regular ω-Languages*
+**Yann Thierry-Mieg**
 
-Restructure of `sos_constructed.md`: object first, construction second. All content
-borrowed from there unless marked NEW. Bullets only at this stage — one sentence per
-idea, no definitions, no filled text.
+With significant inputs from
+**Claude (Anthropic)**
 
----
+*Working draft — 2026-07-13*
 
 ## Abstract
 
