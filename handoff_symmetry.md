@@ -117,8 +117,23 @@ conjecture), Emerson–Trefler CHARME'99, Weeg 62 / Fleck 62 / Bavel 68
    hook — do not start it, do not build the hook.** Fills F15–F16.
 4. **Loose end:** countersign `max |𝒞| = 208` into `sy1_summary.md`
    at the next SY1 regen (the paper's §3.1 cost remark cites it).
-5. **Figures:** FIG-1/FIG-2 can run independently now — fixtures live
-   in `sosl/tests/symmetry/fixtures.py`.
+5. **Figures** (commission `research_notes/sos_symmetry_figures.md`;
+   artifact `research_notes/sos_symmetry_figs/`, index `figures.md`;
+   probes in `sosl/tests/symmetry/figs/`, shared style in `tikz.py`):
+   - **FIG-1 built** (`fig1.py` → `img/fig1_levels.png`): kernel vs
+     `Aut`, read-offs match §9 P1/P2/P3.
+   - **FIG-2 next** — EvenHead gap triptych, FIX_E. SY4 is still
+     unbuilt, so use the sanctioned fallback (figures spec §FIG-2):
+     `first_group` (classify group walk) + a union-find congruence
+     closure + `Table.of_raw` (the shared shortlex re-keying), NOT a
+     hand-rolled collapse. Hand-checked on FIX_E: group `{a,aa}≅Z/2`
+     at idempotent `aa`, collapse `a∼aa` drags `a¬a∼aa¬a`, → 5
+     classes (assert 5 + the two merges, §9 P5). Panel-3 gap dots
+     from `Invariant.member`.
+   - **FIG-3** — envelope schema, hand layout, tags verbatim from §7.4.
+   - Loose ends: bundle the FIX_E source, add a `Makefile` +
+     `reproduction.md` + `notes.md` to the artifact once ≥2 figures
+     exist (FIG-1's tex/png are committed but not yet Make-wired).
 
 Recommended next round: **practice — SY4** (its F12/F13/F14 feed open
 theory items, and theory's own TODO 3–4 is fetch-blocked). SY2 is the
