@@ -24,25 +24,35 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
   `2state2ap1acc_parity_3772037665`); prefix-independent stratum is
   1 104; the (A)-fallback stratum count is unknown pending recount.
 - Engine sound catalogue-wide on the old cut; `python3 -m
-  tests.sos2ltl.e0_gate` (fixtures, corpus-independent) stays the
-  landing gate, with `python3 -m survey --folder samples/validation`
-  SUCCESS before any code lands.
+  tests.sos2ltl.e0_gate` (fixtures, corpus-independent) is the landing
+  gate.
 - Deferred marks in the paper awaiting the drops below: ⟨TBD: §9
   re-based⟩ in §5.1 and §8; §6's stem-half ledger ⟨TBD⟩.
 
 ## Todo — Engineering (in order; spec head has the details)
 
-1. **E11 — the decomposition fallback: IMPLEMENTED, measuring now.**
+1. **E11 — the decomposition fallback: IMPLEMENTED; operator-memo
+   rewrite landed, pendency stall open.**
    `aut2ltl/sos2ltl/cascade/` (algorithm.md there), wired below the
    engine via `engine.LayerFallback`, exposed as the registered recipe
    **`sos2ltl_casc`** (hi simplifier at the recipe boundary only).
    Stem half: Prop 4.14 with the reach family's `τ` as the insertion
    point (no standalone LTLf pass — deviation from spec wording,
    user-sanctioned). Loop half: product `D × confined-walk` acceptor →
-   `decompose_aut` → bls member ladder. E0 gate green; default-recipe
-   validation green. **In flight:** `survey --folder
-   samples/validation --use sos2ltl_casc` (background). Next: corpus
-   sweep (`genaut/corpus/flat_canon/det`, same recipe, background),
+   `decompose_aut` → bls member ladder. The reach-family memos are now
+   **skeleton-keyed templates** (β/τ factored out into placeholder
+   APs, plugged by memoized substitution — `bls/operators/algorithm.md`
+   "Skeleton templates"; the fin uncond-memo key-shadowing bug is also
+   fixed). E0 gate green; `fin_ground` EQUIVALENT on validation
+   fixtures; distinct reach expansions drop ~5× on the 2-level
+   fixtures (guarantee_l12: 174→36; probe
+   `tests/probes/bls/memo_stats.py`, run under `KR_SIMP_OPTS=basics`).
+   **Next action:** `tests.sos2ltl.e11_pendency` STILL blows 15 s even
+   under basics on the new code — localize (probe includes the product
+   acceptor decomposition and the Spot oracle; not yet attributed),
+   and show the height effect on a ≥3-level case both code states can
+   finish. Then: `survey --folder samples/validation --use
+   sos2ltl_casc`, corpus sweep (`genaut/corpus/flat_canon/det`),
    delegate firing stats, stem ledger vs DG. **Open problem:** loop
    labels are stupid large (floor witness: DAG 3 125, flat ≈ 2.5·10¹¹
    — at parity with the bare bls floor on the same language), so the
