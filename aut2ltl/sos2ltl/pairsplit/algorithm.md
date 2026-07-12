@@ -72,10 +72,11 @@ its complement splits it into `|D|` single-atom pieces — the max width
 strictly decreases. The recursion depth is bounded by the atom count of the
 original condition.
 
-Pass-through (the degenerate case): when the chosen side is `L` and its DNF
-is a single disjunct of width ≤ 1 — or the split would yield one piece
-identical to the input — the ORIGINAL `Language` goes to the inner translator
-unchanged. The decorator is invisible on inputs it cannot help.
+Pass-through (the degenerate case): only a side whose DNF has ≥ 2 disjuncts
+is a candidate — a single-disjunct side carries no union split (and choosing
+a single-disjunct dual would ping-pong under the recursion). When neither
+side is a candidate, the ORIGINAL `Language` goes to the inner translator
+unchanged: the decorator is invisible on inputs it cannot help.
 
 (The finer, in-engine variant — applying the same move per LAYER label inside
 the loop-half delegate — is pending the Σᵢ/Πᵢ fragment bookkeeping; see the
