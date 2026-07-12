@@ -87,6 +87,38 @@ re-canonicalises the rebuilt node and the operand list is tiny. When the And/Or
 constructor exposes a new atom sibling (fold/flatten), the node is re-walked. Subsumes the classics: unit propagation, both absorptions,
 contradiction/tautology.
 
+*The propositional tier of pass 1.* The atom-only Shannon above has a structural
+blind spot that NNF makes systematic: a **purely propositional but non-atomic**
+sibling — an `And`/`Or` of literals with no temporal node below — contributes
+nothing, and its negation is never recognizable by identity (`¬(a ∧ b)` is stored
+as `!a | !b`, structurally unrelated to `Not(And(a,b))`). The construction emits
+exactly this shape: `(a ∧ b) ∨ ((¬a ∨ ¬b) ∧ XF(a ∧ b))`, whose guard is the NNF
+complement of its sibling. The tier extension is two symmetric halves:
+
+- **Contribute.** A sibling whose current (finalized-or-original, per the
+  sequential reading) form is purely propositional is asserted like an atom —
+  itself true at `And`, false at `Or` — entering `pos`/`neg` as a whole formula.
+  Non-propositional boolean siblings stay skipped (their parts already flow
+  through the skeleton walk).
+- **Consume.** At any purely propositional node under a context, the
+  propositional members of `(pos, neg)` form the care-set
+  `γ = ⋀ pos_prop ∧ ⋀ ¬neg_prop`, and the node is replaced by its
+  Coudert–Madre restrict over `γ` (`prop_cofactor`: `bdd_simplify` +
+  Minato-ISOP back), accepted only when not larger. Identity domination and the
+  atom Shannon are the special cases `γ ⊨ node` / `γ ⊨ ¬node`.
+
+Soundness is the same in-place model as the atomic case: each consumption is a
+node-level equivalence *given the context* (`D ∨ φ ≡ D ∨ φ|_{¬D}` is Shannon on
+the whole disjunct), asserted at the root as always; the sequential
+finalized-form reading covers the circular-support hazard verbatim — a
+propositional sibling consumed to a constant contributes nothing. Knowledge
+still dies at every temporal operator. Cost: the BDD round-trips are bounded by
+the propositional fan-in of the node, the same bound the existing helpers obey;
+the memo key is unchanged (`(node, pos, neg)` — the care-set is derived). The
+payoff chain on the emitted shape:
+`(a ∧ b) ∨ ((¬a ∨ ¬b) ∧ XF(a ∧ b))` → (consume, guard dies)
+`(a ∧ b) ∨ XF(a ∧ b)` → (pass-4 pair-fold) `F(a ∧ b)`.
+
 **2 — Now-evaluation** (`now_eval.py`, hooked into the context pass as `now_hook`). A
 boolean conjunct `A` in `A ∧ φ` is an *initial state* for `φ`, however deeply nested.
 A temporal head under a non-empty context is unrolled once at that instant via its
