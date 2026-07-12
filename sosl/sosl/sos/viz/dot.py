@@ -19,6 +19,10 @@ from .model import Figure
 RANKSEP_IN = 0.87
 NODESEP_IN = 0.55
 
+# How hard the layout pulls an arrow's endpoints into line (see `_weight`).
+ROOT_WEIGHT = 10
+TREE_WEIGHT = 3
+
 def pairs_label(fig: Figure) -> str:
     """The accepting pairs as one plain-text line, ``P = { ([b],[b]), … }``."""
     inner = ", ".join(f"([{s}],[{e}])" for s, e in fig.pairs())
@@ -62,12 +66,25 @@ def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True,
     for (src, dst), letters in grouped(fig).items():
         marks = [e for e in fig.edges if (e.src, e.dst) == (src, dst)]
         attrs = [f'label="{",".join(fig.naming.names[i] for i in letters)}"',
-                 "penwidth=1.6" if any(e.is_tree for e in marks) else "penwidth=0.8"]
+                 "penwidth=1.6" if any(e.is_tree for e in marks) else "penwidth=0.8",
+                 f"weight={_weight(fig, src, dst, marks)}"]
         a, b = fig.node_of(src).ident, fig.node_of(dst).ident
         out.append(f'  {a} -> {b} [{", ".join(attrs)}];')
 
     out.append("}")
     return "\n".join(out) + "\n"
+
+
+def _weight(fig: Figure, src: int, dst: int, marks: List) -> int:
+    """How hard dot pulls an arrow's endpoints into line. It minimizes the
+    weighted spread of the coordinates across a rank, so weight is the lever for
+    *length*: the root's arrows get the heaviest pull, because a root left free to
+    drift away from its two successors is what makes them long diagonals; the rest
+    of the key tree gets a lesser pull, so a key still reads as a straight path
+    down from the root. Non-tree arrows are free to be long."""
+    if fig.node_of(src).is_root:
+        return ROOT_WEIGHT
+    return TREE_WEIGHT if any(e.is_tree for e in marks) else 1
 
 
 def grouped(fig: Figure) -> Dict[Tuple[int, int], List[int]]:

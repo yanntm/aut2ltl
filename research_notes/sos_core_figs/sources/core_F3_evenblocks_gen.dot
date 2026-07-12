@@ -23,19 +23,19 @@ digraph core_F3_evenblocks {
   { rank=same; aa ab ba; }
   { rank=same; aba bab; }
 
-  eps -> a [label="a", penwidth=1.6];
-  eps -> b [label="b", penwidth=1.6];
-  a -> aa [label="a", penwidth=1.6];
-  a -> ab [label="b", penwidth=1.6];
-  b -> ba [label="a", penwidth=1.6];
-  b -> b [label="b", penwidth=0.8];
-  aa -> a [label="a", penwidth=0.8];
-  aa -> b [label="b", penwidth=0.8];
-  ab -> aba [label="a", penwidth=1.6];
-  ab -> ab [label="b", penwidth=0.8];
-  ba -> b [label="a", penwidth=0.8];
-  ba -> bab [label="b", penwidth=1.6];
-  aba -> ab [label="a", penwidth=0.8];
-  aba -> bab [label="b", penwidth=0.8];
-  bab -> bab [label="a,b", penwidth=0.8];
+  eps -> a [label="a", penwidth=1.6, weight=10];
+  eps -> b [label="b", penwidth=1.6, weight=10];
+  a -> aa [label="a", penwidth=1.6, weight=3];
+  a -> ab [label="b", penwidth=1.6, weight=3];
+  b -> ba [label="a", penwidth=1.6, weight=3];
+  b -> b [label="b", penwidth=0.8, weight=1];
+  aa -> a [label="a", penwidth=0.8, weight=1];
+  aa -> b [label="b", penwidth=0.8, weight=1];
+  ab -> aba [label="a", penwidth=1.6, weight=3];
+  ab -> ab [label="b", penwidth=0.8, weight=1];
+  ba -> b [label="a", penwidth=0.8, weight=1];
+  ba -> bab [label="b", penwidth=1.6, weight=3];
+  aba -> ab [label="a", penwidth=0.8, weight=1];
+  aba -> bab [label="b", penwidth=0.8, weight=1];
+  bab -> bab [label="a,b", penwidth=0.8, weight=1];
 }
