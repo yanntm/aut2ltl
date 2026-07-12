@@ -99,7 +99,8 @@ that), itself idempotent — so `φ(ab)^ω` is the dead value: looping `ab` fore
 exactly as dead as slipping once. The figure shows the split at a glance: thick boxes
 are the idempotents, and `a·b` is the one thin box apart from the root.
 
-**A linked pair names a lasso.** Reading `u·v^ω` through a finite `φ` (Ramsey): the loop
+**A linked pair names a lasso.** Reading `u·v^ω` through the sorting map `φ`
+(Ramsey's theorem): the loop
 settles on the idempotent `e = φ(v)^ω` and the stem on `s = φ(u)·e`, with `s·e = s` (the
 stem precedes the loop and is absorbed by it). A **linked pair** is any `(s, e)` with
 `e² = e` and `s·e = s`; `s` names the stem, `e` the loop, `(s, e)` the lasso. A
@@ -107,9 +108,10 @@ recognizer is fixed by which lassos it accepts, hence by its set of **accepting 
 pairs** — which is why (§3) the acceptance datum of the object is a *set of pairs*, not a
 subset of the monoid.
 
-*Example.* Read `aab·b^ω` through the five-value algebra of §3.1: the loop settles on
-`e = ⟦b⟧^ω = [b]`, the stem on `s = ⟦aab⟧·[b] = [a·b]`, and the pair `([a·b], [b])`
-names the lasso — as it does every lasso with stem in `a⁺b*` and loop in `b⁺`.
+*Example.* Read `aab·b^ω` on Figure 1: the loop's value `[b]` is already idempotent,
+so `e = [b]`; the stem walks `a·a·b` from the root to `[a·b]`, which the loop absorbs
+(`s = [a·b]·[b] = [a·b]`). The pair `([a·b], [b])` names the lasso — as it does every
+lasso with stem in `a⁺b*` and loop in `b⁺`.
 
 **One lasso, many names.** A single ω-word has many presentations —
 `u·v^ω = (uv)·v^ω = u·(v²)^ω = (u v₁)·(v₂ v₁)^ω` — and, as §3 shows, these need not name
@@ -117,9 +119,10 @@ it by the same linked pair. Reconciling them is not bookkeeping: it is the **rot
 lemma** (§3), the paper's structural pivot, and the one nontrivial constraint the object
 must satisfy.
 
-*Example.* `a·(ba)^ω = ab·(ab)^ω = ab·(abab)^ω`: one ω-word, three presentations.
-Whether all presentations of a word receive one name is exactly the subtlety §3
-confronts.
+*Example.* `a·(ba)^ω = ab·(ab)^ω = ab·(abab)^ω`: one ω-word, three presentations —
+and infinitely many more. §3 shows how to canonically choose a single one, and gives
+it: shortest stem, then shortest loop — here `(ab)^ω` with the empty stem, the
+shortlex representative of the whole family.
 
 **Recalled, and new.** Recalled from [PP04] and classical theory: that lassos suffice,
 the monoid/ω-power framing, and linked pairs. New here: the reification of the syntactic
