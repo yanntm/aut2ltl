@@ -1,6 +1,8 @@
 """``sos2cayley`` — one `.sos` invariant to one paper-ready Cayley figure.
 
-    python3 -m tests.sos.sos2cayley <in.sos> --name <basename> --out-dir <dir>
+    python3 -m tests.sos.sos2cayley <in.sos> --name <basename>
+        --out-dir <dir>          # the .tex / _gen.tex / _gen.dot / .pdf land here
+        [--img-dir <dir>]        # the .png lands here (default: --out-dir)
         [--rename 'a=a,!a=b']    # display letters, in display order
         [--layout dot|layered]   # node placement (default: dot)
         [--no-pairs]             # ablate the P caption (draw the bare algebra)
@@ -32,11 +34,13 @@ from sosl.sos.viz.model import Figure, Naming
 from sosl.sos.viz.render import compile_pdf, pdf_to_png
 
 
-def emit(fig: Figure, out_dir: str, name: str, layout: str, provenance: str,
-         pairs: bool = True) -> str:
-    """Write the machine artefacts, seed the hand-owned ``<name>.tex`` if absent,
-    and compile *that* one to pdf + png. Returns the hand-owned tex path."""
+def emit(fig: Figure, out_dir: str, img_dir: str, name: str, layout: str,
+         provenance: str, pairs: bool = True) -> str:
+    """Write the machine artefacts and the hand-owned tex under ``out_dir``,
+    compile *the hand-owned one* to pdf, and rasterize it into ``img_dir``.
+    Returns the hand-owned tex path."""
     os.makedirs(out_dir, exist_ok=True)
+    os.makedirs(img_dir, exist_ok=True)
     gen_dot = os.path.join(out_dir, f"{name}_gen.dot")
     gen_tex = os.path.join(out_dir, f"{name}_gen.tex")
     tex = os.path.join(out_dir, f"{name}.tex")
@@ -52,7 +56,11 @@ def emit(fig: Figure, out_dir: str, name: str, layout: str, provenance: str,
         print(f"seeded hand-owned {tex} from {gen_tex}")
 
     pdf = compile_pdf(tex)
-    print(f"wrote {gen_dot}, {gen_tex}, {pdf}, {pdf_to_png(pdf)}")
+    png = pdf_to_png(pdf)
+    if os.path.abspath(img_dir) != os.path.abspath(out_dir):
+        shutil.move(png, os.path.join(img_dir, os.path.basename(png)))
+        png = os.path.join(img_dir, os.path.basename(png))
+    print(f"wrote {gen_dot}, {gen_tex}, {pdf}, {png}")
     return tex
 
 
@@ -61,6 +69,7 @@ def main(argv: List[str]) -> int:
     ap.add_argument("sos")
     ap.add_argument("--name", required=True)
     ap.add_argument("--out-dir", required=True)
+    ap.add_argument("--img-dir")
     ap.add_argument("--rename")
     ap.add_argument("--layout", default="dot", choices=("dot", "layered"))
     ap.add_argument("--no-pairs", action="store_true",
@@ -74,7 +83,7 @@ def main(argv: List[str]) -> int:
     fig = figure_of(inv, naming)   # asserts freshness: no edge enters [eps]
 
     rename = f" --rename {args.rename}" if args.rename else ""
-    emit(fig, args.out_dir, args.name, args.layout,
+    emit(fig, args.out_dir, args.img_dir or args.out_dir, args.name, args.layout,
          f"sos2cayley {os.path.basename(args.sos)}{rename}", not args.no_pairs)
     print(pairs_label(fig))
     return 0
