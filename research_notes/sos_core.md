@@ -127,7 +127,7 @@ shortlex representative of the whole family.
 We now present a canonical representation of an arbitrary regular ω-language `L`,
 using its syntactic ω-semigroup reified as an invariant `𝓘(L)`.
 
-## 3. The object
+## 3. The syntactic ω-semigroup as an invariant `𝓘(L)`
 
 The syntactic ω-semigroup of `L` is reified as a finite object
 
