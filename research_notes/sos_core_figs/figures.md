@@ -17,13 +17,19 @@ Büchi double circle has no analogue here).
 A node is a class, named by its **key**: the shortlex-least word reaching it. So
 a key can be read off the picture as a path from the root.
 
+Everything in the picture — node *and* arrow — is written as a **class**, in
+brackets. An arrow does not carry a letter: it carries the class `[x] = λ(x)` that
+the step multiplies by. The **λ line** under the drawing is what ties the letters
+back to it.
+
 | ink | meaning |
 |---|---|
-| rounded box | a class |
+| rounded box `[a·b]` | a class, named by its key |
 | incoming stub from nowhere | the root `[ε]`, marked like an initial state. It is the *adjoined* identity — the class of no word — hence a **source**, and that stub stays the only arrow entering it (freshness, asserted on every build) |
-| arrow, labeled `a` / `b` | one letter step `s → s·λ(x)`. **The label is the only letter coding** — no dashes, no colours |
-| arrow labeled `a,b` | both letters agree on this target; one arrow, not two |
-| thicker arrow | a **key-tree** edge: the last letter of its target's key. These `n−1` arrows span the graph from the root, and are what makes a key readable as a path |
+| arrow labeled `[a]` | the step `s ↦ s·[a]`. Every arrow is one weight: nothing is coded by thickness, dash or colour |
+| arrow labeled `[a],[b]` | both classes take this step; one arrow, not two |
+| `λ : a ↣ [a], b ↣ [b]` | the letter map, letters grouped by the class they name. The arrow carries the fact: **`↣` iff λ is injective** — every letter names a class of its own. A `↦` means some letters are aliases for one class |
+| `P = { … }` | the accepting pairs |
 
 Out-degree is `|Σ| = 2` at every node, always: the picture is a deterministic
 transition system on classes.

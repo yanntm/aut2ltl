@@ -73,19 +73,39 @@ Per figure, `sources/` holds:
 | `img/<name>.png` | machine | yes — rasterized from `<name>.pdf` |
 
 **The hand edits are decoration, and provably so.** A hand edit may touch
-*placement directives only*: `\node` coordinates, `loop <dir>`, `bend`, the
-caption anchor. It may never touch a `\draw`, a label, or a node's style — so
-the graph in the paper is the graph the machine derived, moved around. The proof
-is a diff away, and it is the reason both forms are committed:
+*placement* only — `\node` coordinates and `loop <dir>` — never a `\draw`, a
+label, or a style. The graph in the paper is the graph the machine derived, moved
+around. The proof is a diff away, and it is why both forms are committed:
 
 ```sh
 diff research_notes/sos_core_figs/sources/core_F2_even{_gen,}.tex
-#   -> only \node coordinates and loop/bend options; every \draw identical
+#   -> only \node coordinates and loop directions; every \draw identical
 ```
 
-The four figures are currently hand-placed on a shared grid (root above, classes
-in a square, no crossing edges). Delete a `<name>.tex` and re-run to fall back to
-the machine layout at any time.
+The four figures are hand-placed on a shared grid: root above, the classes on a
+square (F3 on a 2x3 rectangle), no crossing edges, self-loops outside the square.
+
+**`--reseed` is what makes that survive a redesign, and is the reproduction of the
+placement itself.** When the *drawing* changes — a style dropped, a caption added,
+labels rewritten — the hand-placed figures would otherwise have to be re-tuned by
+hand, or worse, hand-patched (which is how a figure quietly stops matching its
+`.sos`). Instead:
+
+```sh
+# redraw <name>.tex entirely from the machine, AT ITS OWN COORDINATES
+cd sosl && python3 -m tests.sos.sos2cayley … --reseed
+```
+
+`harvest()` (in `tests/sos/sos2cayley.py`) reads the existing `<name>.tex` for two
+things and two only — the `\node` coordinates and the `to[loop <dir>]` directions —
+and hands them back to the generator as the placement. Everything else in the file
+is re-derived. So a restyle propagates into a hand-placed figure with **no hand
+edit at all**, and the placement is reproducible rather than a pile of nudges: the
+content is 100% machine, the arrangement is 100% ours, and the two never mix.
+
+It refuses rather than half-transplant: if the invariant changed such that a class
+is gone or renamed, `harvest` raises and you re-seed from scratch (delete
+`<name>.tex` and re-run) instead of silently keeping a stale layout.
 
 **The verdicts are the machine's, and are inspectable.** Nothing a hand can do to
 the `.tex` changes what the figure *asserts*, because every assertion is derived
