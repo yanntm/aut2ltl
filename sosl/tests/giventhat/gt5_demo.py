@@ -7,8 +7,9 @@ A client of `survey.collect` (the generic collector) and `survey.discovery`
   * **enumeration** — `survey.discovery.discover(folder, keep={"sos"})` walks a
     folder into one `Example` per `.sos` property (the `¬φ`s);
   * **invocation** — `GivenThatScenario` maps each `¬φ` × the fixed `K` to the
-    normal tool call `python3 -m sosl.sos.giventhat ¬φ.sos K.sos -o B.sos
-    --json ...` and grabs the tool's own `--json` stats into the CSV row.
+    normal tool call `python3 -m sosl.sos.giventhat ¬φ.sos K.sos -o B.sos` and
+    reads the tool's own `.gtr` stdout report (via `giventhat.report`) into the
+    CSV row.
 
 **Validation is the pluggable post step (`Scenario.validate`), and it is OFF
 here.** A sound check is external (Spot) and takes only the inputs and the
@@ -28,7 +29,6 @@ collector; the resulting `.csv` is promoted by hand to `reference/giventhat/`.
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 from typing import List, Optional, Sequence
@@ -42,6 +42,8 @@ if str(_REPO) not in sys.path:  # so `survey` and `aut2ltl` (repo root) import
 from survey.collect import Invocation, Row, Scenario, collect  # noqa: E402
 from survey.discovery import discover  # noqa: E402
 from survey.example import Example  # noqa: E402
+
+from sosl.sos.giventhat.report import parse_report  # noqa: E402
 
 _LOGS = _HERE / "logs"
 _MODULE = "sosl.sos.giventhat"
@@ -59,7 +61,7 @@ _COLS = ["input", "verdict", "n_negphi", "n_k", "n_table", "bits", "n_pmin",
 class GivenThatScenario(Scenario):
     """Each `¬φ` example run against the fixed `K` through the tool main. The
     fixed context (`K`, the work dir) is captured on the instance — the shape
-    the collector is built for. Stats come from the tool's own `--json`."""
+    the collector is built for. Stats come from the tool's `.gtr` stdout."""
 
     columns = _COLS
 
@@ -68,47 +70,40 @@ class GivenThatScenario(Scenario):
         self.work_dir = work_dir
         work_dir.mkdir(parents=True, exist_ok=True)
 
-    def _out(self, ex: Example) -> "tuple[Path, Path]":
-        stem = Path(ex.value).stem
-        return self.work_dir / f"{stem}.B.sos", self.work_dir / f"{stem}.json"
+    def _b_path(self, ex: Example) -> Path:
+        return self.work_dir / f"{Path(ex.value).stem}.B.sos"
 
     def invoke(self, ex: Example) -> Invocation:
-        b_path, j_path = self._out(ex)
         argv = [sys.executable, "-m", _MODULE, ex.value, str(self.k_path),
-                "-o", str(b_path), "--json", str(j_path)]
+                "-o", str(self._b_path(ex))]
         return Invocation(argv=argv, cwd=_SOSL_ROOT)
 
     def extract(self, ex: Example, res) -> Row:
         row: Row = {"input": ex.display}
-        _, j_path = self._out(ex)
         if res.timed_out:
             row["verdict"], row["note"] = "TIMEOUT", "budget"
             return row
-        if not j_path.exists():
+        if "verdict:" not in (res.out or ""):
             tail = (res.err or res.out or "no output").strip().splitlines()
             row["verdict"] = "CRASH"
             row["note"] = ((tail[-1][:80] if tail else "") + f" rc={res.rc}")
             return row
-        d = json.loads(j_path.read_text())
-        v = d["verdict"]
-        row["verdict"], row["bits"] = v, d.get("bits", "")
-        c = d.get("classes", {})
-        row["n_negphi"], row["n_k"] = c.get("neg_phi", ""), c.get("k", "")
-        row["n_table"] = c.get("table", "")
+        d = parse_report(res.out)
+        v = str(d["verdict"])
+        row["verdict"] = v
         if v != "SIMPLIFIED":
             return row
-        row["n_pmin"], row["n_pmax"], row["n_b"] = (
-            c.get("p_min", ""), c.get("p_max", ""), c.get("b", ""))
-        rung = d.get("rung", ["", ""])
-        row["rung_in"], row["rung_out"] = rung[0], rung[1]
-        st = d.get("stutter", [None, None])
-        row["stut_in"], row["stut_out"] = int(bool(st[0])), int(bool(st[1]))
-        row["stut_verdict"] = d.get("stutter_verdict", "")
-        row["side"], row["seed"] = d.get("side", ""), d.get("seed", "")
-        refs = [c.get("neg_phi"), c.get("p_min"), c.get("p_max")]
-        if all(isinstance(x, int) for x in refs) and isinstance(c.get("b"), int):
-            row["win"] = int(c["b"] < min(refs))
-            row["ratio"] = round(c["b"] / c["neg_phi"], 4)
+        c = d["classes"]  # type: ignore[assignment]
+        row["bits"] = d["bits"]
+        row["n_negphi"], row["n_k"], row["n_table"] = c["neg_phi"], c["k"], c["table"]
+        row["n_pmin"], row["n_pmax"], row["n_b"] = c["p_min"], c["p_max"], c["b"]
+        row["rung_in"], row["rung_out"] = d["rung"]  # type: ignore[misc]
+        st = d["stutter"]  # type: ignore[assignment]
+        row["stut_in"], row["stut_out"] = int(st[0]), int(st[1])
+        row["stut_verdict"] = d["stutter_verdict"]
+        row["side"], row["seed"] = d["side"], d["seed"]
+        row["win"] = int(c["b"] < min(c["neg_phi"], c["p_min"], c["p_max"]))
+        row["ratio"] = round(c["b"] / c["neg_phi"], 4)
         return row
 
     def summary(self, rows: Sequence[Row]) -> List[str]:

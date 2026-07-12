@@ -34,10 +34,10 @@ shape for a new tool. It surveys `simplify(𝓘(¬φ), 𝓘(K))` for one fixed
 knowledge `K` over a folder of `.sos` properties:
 
 - **enumerate** — `discover([folder], keep={"sos"})` → one `Example` per `¬φ`;
-- **invoke** — `python3 -m sosl.sos.giventhat ¬φ.sos K.sos -o B.sos --json …`
+- **invoke** — `python3 -m sosl.sos.giventhat ¬φ.sos K.sos -o B.sos`
   (the fixed `K` and the work dir live on the `GivenThatScenario` instance;
   `cwd` is the `sosl/` root so the module imports);
-- **extract** — read the tool's own `--json` report into the row (verdict,
+- **extract** — parse the tool's `.gtr` stdout report into the row (verdict,
   class counts of `¬φ / K / T / P_min / P_max / B`, freedom bits, rung and
   stutter transitions, whether `B` beats all three references);
 - **validate** — **off for now.** A sound check is external (Spot) and takes
