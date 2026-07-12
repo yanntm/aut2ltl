@@ -13,12 +13,13 @@ header, so any row below is reproducible from that file alone. Commands
 run from `sosl/`. Spot appears only inside the Route A oracle,
 bounded-or-skipped; a blown per-case budget is a datum, never a wait.
 
-*Status (2026-07-11): M1 (measure), M2 (oracle + laws), M3
+*Status (2026-07-12): M1 (measure), M2 (oracle + laws), M3
 (distance / shadow / essential), M4 (entropy) and the M3b addendum are
-done, green corpus-wide, and theory-accepted (F-M1..F-M4). M5 (Markov
-product; spec §11 is the work order, P-M5 ratified) is next, on the
-user's go; M6 (the census campaign that fills the ⟨TBD⟩ slots below)
-follows it.*
+done, green corpus-wide, and theory-accepted (F-M1..F-M4). M5 (the
+Markov product) is done and green corpus-wide (F-M5, verdict pending) —
+with one finding against the ratified `.mc` format: PRISM does not parse
+our cube label names. M6 (the census campaign that fills the ⟨TBD⟩ slots
+below) is next, on the user's go.*
 
 ## Slot map (paper ⟨TBD⟩ → expected finding)
 
@@ -37,9 +38,9 @@ follows it.*
 
 Engine: `sosl/sosl/quant/` (placement provisional) — `chain` / `kernel`
 / `theta` / `measure` (+ `value_vector`) / `routea` / `distance` /
-`shadow` / `essential` / `entropy`; `PARANOID` on; `Fraction` end to
-end, the one float quarantined to `entropy`'s final `log₂`; Spot
-parse-only inside `routea`. Gates, run from `sosl/` as
+`shadow` / `essential` / `entropy` / `mc` / `product`; `PARANOID` on;
+`Fraction` end to end, the one float quarantined to `entropy`'s final
+`log₂`; Spot parse-only inside `routea`. Gates, run from `sosl/` as
 `python3 -m tests.quant.<name>`, machine reports under
 `reference/quant/`:
 
@@ -53,6 +54,8 @@ parse-only inside `routea`. Gates, run from `sosl/` as
 | `fixtures3` | F-J..F-L entropy hand ground truth (golden mean by rational sign test) | (in-test, exact) | green |
 | `m4_gate` | entropy case laws + monotonicity under inclusion | `m4_entropy.md` + csvs | green 6222 cases / 1000 pairs, 0 red, 0 non-converged |
 | `m3b_gate` | Thm 4.4(2) biconditional: essentials ⟺ null xor-profile | `m3b_thm442.{md,csv}` | green 999/1000, 0 red |
+| `fixtures4` | F-M..F-O hand ground truth (F-M pins the word convention) | (in-test, exact) | green |
+| `m5_gate` | Bernoulli embedding vs M1, complement flip, `.mc` round-trip; `--oracle`: Route A product side | `m5_product.{md,csv}` + oracle csv | green 6222/6222 + 250/250 oracle, 0 red, 0 skips |
 
 Budget kills (15 s per case) are recorded as data in each aggregate;
 the corpus is concurrently regenerated, so gate counts are dated
@@ -428,3 +431,66 @@ record carries the decisions and their grounds.
 - *With the corpus keeper.* Only file placement/naming of *stored*
   chain families: M5's gate generates its chains seeded and in-test,
   so storage becomes real at M6/E4 — decide then.
+
+**F-M5 (2026-07-12, git 115e8a7cf) — the Markov product lands; the
+Bernoulli embedding reconciles it with M1 corpus-wide.** Theorem 3.5
+implemented as spec §11 orders it: `mc.py` (state-labelled `Chain`, the
+strict `.mc` reader/writer) and `product.py` (the chain × class product
+from `(q₀, λ(ℓ(q₀)))`, its bottom SCCs, the cycle semigroup at the base
+state, that semigroup's kernel, `θ_B = Val(c, k)`, and M1's transient
+solver). Everything exact `Fraction`; `PARANOID` (shared with `theta`)
+re-derives every `θ_B` from a second base state and a second kernel
+idempotent and stayed silent throughout.
+
+*Fixtures (exact, hand-computed).* **F-M green and discriminating**:
+`Pr(a·Σ^ω) = 1` — the dropped-first-letter reading would give `1/3`, so
+the §11.2 convention is now pinned by a test, not by a comment. F-N
+green (`Pr((ab)^ω) = 1`, `Pr((ba)^ω) = 0`) on the 6-class alternating
+monoid, and it is the fixture where the second-base-state paranoid check
+bites: its single product bottom SCC spans both chain states, and the
+two base states carry different cycle semigroups (`{ba}` vs `{ab}`) yet
+the same verdict. F-O green (`1/3` / `2/3`), two bottom SCCs through the
+linear system.
+
+*Gates (`reference/quant/m5_product.{md,csv}` + `m5_product_oracle.csv`).*
+All four green, 0 red, 0 missing, 0 budget kills, 0 skips.
+
+| gate | scope | result |
+|---|---|---|
+| Bernoulli embedding `Σ_a p(a)·Pr_{M_a}(L) = μ_p(L)` | all 6222, both `p`'s, chain restarted at each of the `|Σ|` letter states | 6222/6222 byte-exact against M1 |
+| complement flip `Pr_M(L) + Pr_M(L̄) = 1` | all 6222, one seeded random chain each | 6222/6222 exact |
+| `.mc` reader round-trip | every chain of every gate and fixture | identical |
+| Route A product-side oracle | seeded sample of 250, paired `det/*.hoa` × the same chain | 250/250 byte-equal, **0 Spot skips** |
+
+Cost is a non-issue: median product 17 states (max 178), median 4 ms per
+case (max 1198 ms) against the 15 s budget — the reachable product stays
+far below the `|M|·n` bound.
+
+*Finding against the ratified format — PRISM will not parse our label
+names.* P-M5 §Syntax says label names are the alphabet's letters
+*verbatim* and that the same file loads unmodified in PRISM and Storm.
+Those two clauses are incompatible: our letters render as Boolean cubes
+(`a`, `!a`, `a&!b`), and PRISM 4.10.1 rejects a cube inside the label
+quotes — `label "a&!b" = s=0;` gives `Error: Syntax error ("&", line 9,
+column 9)`. The label name must be a plain identifier. **This changes no
+number in this finding** (nothing in M5 runs PRISM; the four gates are
+in-engine), and it leaves the *semantic* half of P-M5 intact — the word
+convention, which is the clause that actually decides the answer. Agreed
+remedy (user, this session): keep `.mc` as specified, and give the E4
+bench a printer that sanitizes the names PRISM refuses; the rendering
+lives in one function (`mc._render`/`parse_mc`'s label check), so the
+change is local and re-emits. Theory should read P-M5's "same file,
+unmodified" as "same file up to label-name sanitization".
+
+*Two notes on §11.3.* (i) The cycle semigroup needs no fixpoint
+iteration: the BFS over `(M-state, class)` pairs from `(q̂, [ε])` ranges
+over *all* walks returning to `q̂`, so the classes it collects are
+already closed under product (a concatenation of cycles at `q̂` is a
+cycle at `q̂`). The code asserts the closure rather than iterating to it.
+(ii) `routea`'s HOA read-off was factored into `_read_det` (letterwise
+successors *and* per-edge marks) so the product-side oracle can evaluate
+Emerson–Lei on the product BSCC's *edges*; M2's `route_a` was spot-checked
+unchanged on rerun.
+
+*Verdict requested.* M5 DONE per spec §11; M6 (the census campaign) is
+the next milestone, on the user's go.
