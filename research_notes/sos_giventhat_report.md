@@ -23,8 +23,8 @@ moment it is found, even mid-milestone.
 |---|---|---|
 | GT1 — interval + endpoints | **DONE (2026-07-11, git 4c7aa9fb5+)** | F1–F4 |
 | GT2 — ladder tests | **DONE (2026-07-11)** — rung oracle 6222/6222, campaign 700/700, brute 264/264; §4.6 E1 escalations resolved (To theory) | F5–F8 |
-| GT3 — the bounded quotient engine | *pending* | F9–F11 |
-| GT4 — the simplifier and the tool | *pending* | F12–F13 |
+| GT3 — the bounded quotient engine | **BUILT (2026-07-12)** — `quotient.py` + `stutter.py`; the oracle gates F9–F11 not yet run (axis recentered to the deliverable first) | F9–F11 |
+| GT4 — the simplifier and the tool | **BUILT (2026-07-12)** — `simplify.py` + `__main__.py`; the three §6 examples reproduced, F13 CONFIRMED | F12–F13 |
 | GT5 — the demonstration | *pending* | F14–F15 |
 
 **Spec re-aimed (2026-07-12, theory).** The goal is now **one
@@ -136,15 +136,25 @@ emit; the UNKNOWN *frequency* survives as a column of F15.
 
 ## GT4 — the simplifier and the tool (spec §6, paper §4.6)
 
-- **F12 — the operation, end to end.** *(pending)* `simplify` on the
-  fixture and on small corpus pairs: the §6.3 soundness law
-  (`B ∩ P_K == P_min`, plus the independent language-level cross-check)
-  green on every case; the emitted `.sos` re-read and byte-stable under
-  `reduce`; `SETTLED` / `REFUTED` verdicts carrying their minimal
-  witness lasso.
-- **F13 — the three worked examples (paper §6).** **DERIVED
-  (2026-07-12), theory-side; `simplify` must reproduce them.** Regen:
-  `cd sosl && python3 -m tests.giventhat.dpt_examples`.
+- **F12 — the operation, end to end.** *(partial, 2026-07-12)* The
+  three §6 examples run through `simplify` and through the CLI
+  (`python3 -m sosl.sos.giventhat NEG_PHI.sos K.sos -o B.sos`) with the
+  §6.3 soundness law `B ∩ P_K == P_min` asserted green, the emitted
+  `.sos` re-read and byte-stable under `reduce(check=True)`, and the
+  `SETTLED` path (φ = `G!a`, K = `G!a`) printing its verdict with no
+  `.sos` emitted. **Still owed** as a *gate*: the fixture + a small
+  same-stratum corpus sweep (the language-level cross-check
+  `equivalent(reduce(B ∩ P_K), reduce(P_min))` on every case, and the
+  `REFUTED` witness leg). The axis was recentered to land the deliverable
+  first; the corpus gate is F12's remaining half.
+- **F13 — the three worked examples (paper §6). CONFIRMED
+  (2026-07-12).** `simplify` reproduces all three optima: `|𝒞(B)| = 3`
+  on each, the greedy reaching them from the **`syntactic` seed, relax
+  side**. Fairness `B` is **byte-equal to `reference_of_ltl("G F b")`**
+  extended to `{a,b}` — the discriminating case (optimum neither endpoint
+  nor input, 4 of 7 bits) is hit, not merely an endpoint. Regen:
+  `cd sosl && python3 -m tests.giventhat.dpt_examples` (theory census) and
+  the CLI per pair. Derived numbers below stand as delivered.
 
   | | `¬φ` / `K` | `\|𝒞(¬φ)\|` | `\|𝒞(K)\|` | `\|𝒞(T)\|` | `\|F\|` | `min\|K` | `max\|K` | **opt** | what `B` is |
   |---|---|---|---|---|---|---|---|---|---|
@@ -300,9 +310,10 @@ Standing items the theory thread expects data or answers on:
    falsify the new core. If the hull disagrees with the `2^F`
    enumeration on any case, theory wants the smallest one verbatim, and
    the hull is NOT to be patched toward the oracle.
-5. **F13 — the paper §6 prediction.** The [DPT25] example should yield
-   a guarantee `B` with `< 5` classes. A miss means the greedy fails to
-   reach what the hulls prove exists — a design finding, not a bug.
+5. **F13 — the paper §6 prediction. CONFIRMED (2026-07-12).** All three
+   [DPT25] examples yield `|𝒞(B)| = 3`; the greedy reaches each from the
+   `syntactic` seed, and fairness `B` is byte-equal to `𝓘(GF b)`. The
+   hulls' proof is matched by the greedy — no gap on these three.
 6. **F14 — the headline rate.** The fraction of pairs where `|𝒞(B)|` is
    strictly below all three reference points. If that rate is ~0, the
    paper's central claim is empty and theory needs to know before
