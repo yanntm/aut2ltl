@@ -47,17 +47,18 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
    fixtures; distinct reach expansions drop ~5× on the 2-level
    fixtures (guarantee_l12: 174→36; probe
    `tests/probes/bls/memo_stats.py`, run under `KR_SIMP_OPTS=basics`).
-   **Next action:** `tests.sos2ltl.e11_pendency` STILL blows 15 s even
-   under basics on the new code — localize (probe includes the product
-   acceptor decomposition and the Spot oracle; not yet attributed),
-   and show the height effect on a ≥3-level case both code states can
-   finish. Then: `survey --folder samples/validation --use
-   sos2ltl_casc`, corpus sweep (`genaut/corpus/flat_canon/det`),
+   Floor witness ([2,2,2] pendency): construction 0.98 s, DAG
+   3 125→2 680, flat 2.5·10¹¹→7.8·10⁹ — the old probe's 15 s blowout
+   was its INLINE Spot equivalence call, now removed
+   (`e11_pendency` is construction-only; any label→automaton step goes
+   behind `spotrun`, never inline in a probe).
+   **Next action:** `survey --folder samples/validation --use
+   sos2ltl_casc`, then corpus sweep (`genaut/corpus/flat_canon/det`),
    delegate firing stats, stem ledger vs DG. **Open problem:** loop
-   labels are stupid large (floor witness: DAG 3 125, flat ≈ 2.5·10¹¹
-   — at parity with the bare bls floor on the same language), so the
-   Spot equivalence oracle cannot consume them raw; the flat-column
-   risk is confirmed, conformance story on the loop branch pending.
+   labels are still too large flat (7.8·10⁹ on the floor witness), so
+   the Spot equivalence oracle cannot consume them raw; the
+   flat-column risk is confirmed, conformance story on the loop
+   branch pending.
 2. **Census regeneration on the current corpus**: E1, E2, E7, E10,
    frontier counts; report bench + every finding re-based, flips
    flagged `PAPER-EDIT:`. Includes wiring the (C) decider into the
