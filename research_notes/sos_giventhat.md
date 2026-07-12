@@ -50,16 +50,21 @@ minimizes. Constraints compose exactly, by a joint closure fixpoint,
 where the automata side chains heuristics and hopes. Finally, a
 three-class floor lemma makes optima *certifiable for free*: whenever the
 two endpoint checks are inconclusive, no member of the interval has fewer
-than three classes. We run the operation on both of [DPT25]'s own worked
-figures. It returns a `B` with **3 classes** on each — against inputs of
-5 and 4, and against their `min|K` (6 and 4) and `max|K` (4 and 3) — so
-by the floor its answer is not merely smaller but **provably minimal over
-the whole interval**, on one of which the lattice has 2^25 members. On the
-way it drops a recurrence property to a guarantee, and repairs a
-stutter-sensitive property into a stutter-invariant one — the two goals
-[DPT25] pursue by heuristics that, on those same figures, land on a
-strictly larger member or (their Minato pass, on the second) do nothing
-at all.
+than three classes, so a member with three is optimal. Our headline
+instance takes the cheapest fact [DPT25] know how to harvest — the
+implication `G(b → a)` between `a = [x>2]` and `b = [x>3]`, which an SMT
+check settles from the proposition definitions without looking at the
+system — and the most canonical property shape there is, conjunctive
+fairness `¬φ = GF a ∧ GF b` (one state, **two acceptance sets**). The
+operation returns `GF b`: five classes become three, **certified optimal
+and unique** in a 128-member lattice; two acceptance sets become one; and
+an atomic proposition is shed. Their own shipped implementation
+(`autfilt --given-strategy`, Spot 2.13+) returns the input **unchanged**
+on this pair, and structurally must: reaching the optimum means spending
+the interval's freedom *partially* — four of seven bits — and a partial
+choice is not something a presentation can name. Their two figures come
+out the same way (5 → 3 with a drop from recurrence to guarantee; 4 → 3
+with a stutter-sensitive property repaired), both provably minimal.
 
 ---
 
@@ -159,18 +164,22 @@ four things that make that line true:
    closure fixpoint (Lemma 5.2) — where [DPT25]'s evaluation must chain
    `SIrelax+BM` and take what luck gives.
 
-5. **It works on their own examples, provably** (§6). [DPT25] draw
-   exactly two instances as figures; we run the operation on both. A
-   three-class floor lemma (Lemma 4.6) says that whenever the endpoint
-   checks are inconclusive, *every* member of the interval has at least
-   three classes — so a member with three is optimal, certified without
-   enumeration. The operation returns exactly that on both figures: 3
-   classes against inputs of 5 and 4, beating their `min|K` (6, 4) and
-   `max|K` (4, 3), dropping a recurrence to a guarantee on the first, and
-   turning a stutter-sensitive property into a stutter-invariant one on
-   the second — where their `sirestrict` lands on a strictly larger legal
-   member and their Minato pass, by their own admission, changes nothing.
-   The paper therefore stands on derivation, not on a campaign.
+5. **It beats their shipped tool, provably, on cheap realistic
+   knowledge** (§6). A three-class floor lemma (Lemma 4.6) says that
+   whenever the endpoint checks are inconclusive, *every* member of the
+   interval has at least three classes — so a member with three is
+   optimal, certified without enumeration. Our headline instance pairs
+   the cheapest fact in [DPT25]'s own harvest catalogue (§7.2 there: the
+   AP implication `G(b → a)` for `a = [x>2]`, `b = [x>3]`, settled by SMT
+   from the definitions, with no system exploration) with the most
+   canonical property shape (conjunctive fairness `¬φ = GF a ∧ GF b`, two
+   acceptance sets). The operation returns `GF b` — 5 classes to 3,
+   optimal and unique in a 128-member lattice, two acceptance sets to
+   one, one atomic proposition shed — while **their implementation, run
+   as shipped, returns the input unchanged**, because the optimum needs
+   *four of seven* freedom bits and no presentation can name a partial
+   choice. Their two figures behave the same way. The paper therefore
+   stands on derivation, not on a campaign.
 
 The system `S` never enters the calculus: only the two spec-sized
 objects `𝓘(¬φ)` and `𝓘(K)` pay the entry price. §7 is the evaluation
@@ -857,27 +866,106 @@ things; conjecture: incomparable).
 
 Any intersection of these is decided by one joint fixpoint (Lemma 5.2).
 
-## 6. The operation on [DPT25]'s own examples
+## 6. Worked examples
 
-[DPT25] draws exactly two instances as figures. We run the operation on
-both. In each case it returns a `B` that is **strictly smaller than the
-input**, and — by the three-class floor (Lemma 4.6) — **provably minimal
-over the whole interval**. No experiment is involved: the numbers below
-are the algebra, and each is reproducible in one command
-(`sosl/tests/giventhat/dpt_examples.py`).
+Three instances, each derived rather than measured; every number below is
+reproducible in one command (`sosl/tests/giventhat/dpt_examples.py`), and
+each is checked against [DPT25]'s *shipped implementation* — their
+strategies are in Spot 2.13+ as `autfilt --given-formula
+--given-strategy=minato|stutter-relax|stutter-restrict`.
 
-| | `\|𝒞(¬φ)\|` | `\|𝒞(K)\|` | `\|𝒞(T)\|` | `\|F\|` | `min\|K` | `max\|K` | **`\|𝒞(B)\|`** | rung `¬φ → B` | stutter `¬φ → B` |
-|---|---|---|---|---|---|---|---|---|---|
-| Figs. 2–3 | 5 | 4 | 10 | 25 | 6 | 4 | **3** | recurrence → **guarantee** | inv → inv |
-| Fig. 4 | 4 | 3 | 5 | 3 | 4 | 3 | **3** | guarantee → guarantee | **sensitive → invariant** |
+| | `\|𝒞(¬φ)\|` | `\|𝒞(K)\|` | `\|𝒞(T)\|` | `\|F\|` | `min\|K` | `max\|K` | **`\|𝒞(B)\|`** | what it buys |
+|---|---|---|---|---|---|---|---|---|
+| §6.1 fairness | 5 | 3 | 6 | 7 | 4 | 4 | **3** | 2 acceptance sets → 1; an AP shed |
+| §6.2 Figs. 2–3 | 5 | 4 | 10 | 25 | 6 | 4 | **3** | recurrence → **guarantee** |
+| §6.3 Fig. 4 | 4 | 3 | 5 | 3 | 4 | 3 | **3** | stutter-sensitive → **invariant** |
 
-The two are complementary. On Figs. 2–3 the optimum lies *strictly
-inside* the lattice — below the input *and* below both of [DPT25]'s
-endpoint strategies — and `2^F` has 33 554 432 members, so only the hulls
-can reach it. On Fig. 4 the lattice has eight members and we enumerate it
-by hand: the minimum is unique.
+In all three the operation returns a `B` **strictly smaller than the
+input**, and in all three that `B` is — by the three-class floor
+(Lemma 4.6) — **provably minimal over the entire interval**. §6.1 is the
+one that matters: it is the only one where the optimum is beyond *every*
+strategy [DPT25] ship, because reaching it requires spending the freedom
+**partially**, and a partial choice is exactly what a presentation cannot
+represent. §§6.2–6.3 are their own figures, and serve as mechanics: they
+show the machinery on instances the reader can already picture.
 
-### 6.1 Figs. 2–3: the running example
+### 6.1 The example that matters: conjunctive fairness, given a free fact
+
+**The knowledge is the cheapest [DPT25] have.** Their §7.2 catalogues what
+is cheap to acquire about a system: the initial state (free), the first
+`n` steps (bounded BFS), invariants `G f` from a reachability engine, and
+convergent atomic propositions `FG a` from an SCC analysis. Among these
+they single out a fact that costs *nothing at all* — no system
+exploration, not even a reachability query — because it follows from the
+definitions of the propositions: *"`a = [x > 2]` and `b = [x > 3]` have a
+strong relationship … we use an SMT solver to check if some of these
+cases are impossible, not even looking at the system."* The fact is
+
+    K  =  G(b → a) .
+
+**The property is the canonical one.** Conjunctive fairness —
+`φ = GF a → FG ¬b`, i.e.
+
+    ¬φ  =  GF a  ∧  GF b ,
+
+"`a` infinitely often *and* `b` infinitely often". This is the shape every
+TGBA library is built around: one state, **two acceptance sets**,
+`Inf(0) ∧ Inf(1)`. Its invariant has **5 classes**.
+
+**What the algebra says.** Under `K`, every `b` is an `a`, so `GF b`
+already forces `GF a`, and the conjunction collapses. The operation
+returns
+
+    B  =  GF b ,
+
+whose invariant has **3 classes** — and `B` is legal (`ℒ(B) ∩ ℒ(K) =
+ℒ(¬φ) ∩ ℒ(K)`, confirmed independently by Spot's `ltlfilt
+--equivalent-to`). Neither endpoint check fires, so Lemma 4.6 applies: no
+member of the interval has fewer than 3 classes, and **`GF b` is
+optimal**. It is also *unique*: the freedom is `|F| = 7` bits, and the
+128 members of the lattice have class counts `{3: 1, 4: 7, 5: 15,
+6: 105}`.
+
+**Why no endpoint reaches it.** `B` turns on **4 of the 7** freedom
+classes — not none, not all. `min|K = ℒ(¬φ) ∩ ℒ(K)` keeps the whole
+conjunction and gives **4** classes; `max|K = ℒ(¬φ) ∪ ℒ(¬K)` relaxes too
+far, dragging in the junk `F(b ∧ ¬a)`, and also gives **4**. The optimum
+lies strictly between them, and *"strictly between"* is not a thing an
+automaton construction can be asked for: `min|K` and `max|K` are the only
+two languages the endpoint strategies can name. Only an exact
+representation of the lattice can spend the freedom in part.
+
+**What their implementation actually does.** We ran it. On this pair, all
+three shipped strategies — `minato`, `stutter-relax`, `stutter-restrict` —
+return `A_{¬φ}` **unchanged**: one state, two acceptance sets, two atomic
+propositions. (The tool is wired up: on their own Fig. 2–3 instance the
+same invocation does reduce the automaton from 3 states to 2.) The reason
+is structural, not incidental. `BM` rewrites transition *labels* between
+Boolean bounds; merging two acceptance sets into one is not a label
+rewrite, and no amount of Minato covering will find it. The stutter
+strategies do nothing because both languages are already
+stutter-invariant — there is no partly-covered stutter class to trade.
+
+**An honest note on `min|K`.** Translate `ℒ(¬φ) ∩ ℒ(K)` with Spot and the
+*automaton* comes out with one acceptance set: Spot's LTL simplifier
+notices `GF a ∧ GF b ∧ G(b → a) ≡ GF b ∧ G(b → a)`. So on the automaton
+side `p.min` looks competitive. This is precisely the trap §4.1 warns
+about, and it is worth stating plainly: **automaton size is a
+presentation statistic and it flatters**. The *language* `p.min` denotes
+still has 4 classes, not 3, and — because it conjoins `K` into the
+property — it still observes **both** propositions. [DPT25] name this cost
+themselves: using `min|K` "is similar to asking the model checker to prove
+`K` in addition to `¬φ`". On the canonical object there is no ambiguity:
+5, 4, 4, **3**, and 3 is the floor.
+
+**And the atomic proposition falls out.** `GF b` does not mention `a`. In
+the emitted invariant, letters differing only in `a` carry the same class,
+so `a` is shed by inverse substitution (§5.4) and the alphabet halves:
+the model checker builds its product observing **one** proposition instead
+of two. Two acceptance sets become one, five classes become three, and an
+atomic proposition disappears — from a fact that cost nothing to obtain.
+
+### 6.2 Figs. 2–3: their running example
 
 The running example of [DPT25, Figs. 2–3]:
 `¬φ = F(a∧c) ∨ (GFb ∧ GF¬b)` given `K = FGb ∧ Gc`, over `Σ = 2^{a,b,c}`
@@ -966,7 +1054,7 @@ their Minato pass happened to land on; they cannot say it is a
 guarantee (they *observe* their automaton is "now terminal"), cannot say
 whether anything smaller exists, and cannot name the bracket it sits in.
 
-### 6.2 Fig. 4: the stutter example, small enough to enumerate
+### 6.3 Fig. 4: the stutter example, small enough to enumerate
 
 [DPT25, Fig. 4] is `¬φ = XFa` given `K = ā` (i.e. `¬a` holds initially),
 over `Σ = 2^{a}`. They use it to motivate `sirelax` / `sirestrict`:
@@ -1025,13 +1113,19 @@ smaller, and it is optimal. Three goals, one merge, no heuristic.
 
 **What is already established, and by what.** The claims of this paper
 are theorems, and §6 discharges the empirical-looking one — *the freedom
-is leverageable* — on [DPT25]'s own two figures, by derivation rather
-than by campaign: a `B` strictly smaller than the input on both, drops to
-3 classes from 5 and from 4, **certified optimal by Lemma 4.6**, with a
-rung drop on one and a stutter repair on the other. Nothing below is
-needed to support that. What a campaign adds is *frequency* — how often
-this happens on languages nobody chose to illustrate a paper with — and a
-score for the greedy where the optimum is computable.
+is leverageable* — by derivation rather than by campaign: on three
+instances, a `B` strictly smaller than the input and **certified optimal
+by Lemma 4.6**, including one (§6.1) built from the cheapest fact in
+[DPT25]'s own harvest catalogue, on which their shipped implementation
+returns the input unchanged. The comparison is against the real tool
+(`autfilt --given-formula --given-strategy=…`, Spot 2.13+), not against
+our reading of their paper, and the legality of every `B` we emit is
+re-checked by an independent oracle (`ltlfilt --equivalent-to`). Nothing
+below is needed to support that.
+
+What a campaign adds is *frequency* — how often this happens on languages
+nobody chose to illustrate a paper with — and a *score* for the greedy
+where the optimum is computable.
 
 **Scope.** Wall-clock, the MCC benchmark and the downstream model checker
 are out of scope for this draft; the tests are polynomial and the objects
@@ -1099,11 +1193,22 @@ Minato covers, the stutter closures under knowledge, incremental
 integration, and the MCC evaluation. This paper is its algebraic double:
 same soundness theorem, same goals, but the interval represented
 exactly, the objective well-posed, the class questions decided rather
-than probed, and witnesses canonical. The two remain complementary in a
-precise sense (Thm 5.7): presentation-side closures can reach off-table
-witnesses cheaply; the calculus knows *whether* and *what*, the automata
-side renders it — the exit acceptor of the chosen `B` still deserves
-their grooming against `A_K`.
+than probed, and witnesses canonical. Their strategies ship in Spot
+(2.13+, `autfilt --given-formula --given-strategy=…`), so §6 compares
+against the tool rather than against the text: on §6.1 all three of their
+strategies return the input unchanged, and the gap is structural — a
+label rewrite cannot merge acceptance sets, and the endpoints are the
+only two languages their constructions can name, while the optimum
+requires spending the freedom in part. The knowledge is theirs too:
+§6.1's fact comes verbatim from their own harvest catalogue [DPT25,
+§7.2]. That is the point — the ceiling we lift is not reached by better
+knowledge, but by representing the freedom that knowledge creates.
+
+The two remain complementary in one precise sense (Thm 5.7):
+presentation-side closures can reach off-table witnesses cheaply; the
+calculus knows *whether* and *what*, the automata side renders it — the
+exit acceptor of the chosen `B` still deserves their grooming against
+`A_K`.
 
 **Minimization from constraints.** Our objective — fewest classes
 consistent with a lower and an upper bound — is the ω-side of minimal
@@ -1159,12 +1264,15 @@ property of the language, not of a drawing; the search space is exactly
 the congruences of one aligned table; admissibility of a congruence is
 decided exactly by a bounded quotient test in polynomial time; the true
 optimum sits in NP; and a greedy whose every inner step is a decision
-procedure delivers a `B` that never regresses on the input. On both of
-the examples [DPT25] chose to draw, it does better than that: a 3-class
-answer against inputs of 5 and 4, **provably minimal** by the three-class
-floor, dropping a recurrence property to a guarantee on one and repairing
-a stutter-sensitive property on the other — where their own heuristics
-land on a strictly larger member, or on nothing. The same quotient
+procedure delivers a `B` that never regresses on the input. On the three
+worked instances of §6 it does better than that: a **provably minimal**
+answer each time, by the three-class floor. On the two figures [DPT25]
+chose to draw it drops a recurrence property to a guarantee, and repairs
+a stutter-sensitive one. On conjunctive fairness given a fact that costs
+nothing to obtain, it collapses two acceptance sets into one and sheds an
+atomic proposition — where their shipped implementation, run as shipped,
+changes nothing at all, because the answer requires spending the freedom
+in part and their objects can only name the two ends. The same quotient
 engine, differently seeded, is stutterization and proposition-shedding;
 constraints compose by a joint fixpoint rather than by chaining
 heuristics. The exponentials sit where they always did: at entry, paid
