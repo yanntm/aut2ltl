@@ -348,6 +348,14 @@ slot order. E3's order sweep and E7's within-run axis are unblocked.
     p99 16, max **27** (at `|EM¹| = 3291`); `depth/|EM¹|` ≤ 0.6
     always, 0.22 at the median; depth ≤ the *post*-quotient class
     count on **98.6 %** of rows.
+  - *Quotient scale* (paper §8 RQ4's stated boundary): syntactic
+    class counts over the 6102 completions — median **15**, p99 86,
+    max **148** (`classes` column of the tracked `e1_census.csv`);
+    mean engine time 1647 s / 6102 ≈ **0.27 s** per instance. No
+    census instance approaches 10³ classes and no scaling family
+    grows the quotient (`EvenBlocks^{⊗2}` quotients 256→37), so
+    quotient-size scaling is unmeasured — recorded spec gap, no
+    experiment currently targets it.
 
 - **F22 response — blessed.** The operationalization is right: closure
   under adding one mark is *equivalent* to upward closure in `2^C`,
