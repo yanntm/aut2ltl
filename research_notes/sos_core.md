@@ -37,51 +37,67 @@ idea, no definitions, no filled text.
 
 ## 2. Background
 
-We work over a fixed finite alphabet `Σ`, writing `Σ*` for finite words, `Σ^ω` for
-infinite words, `Σ^∞ = Σ* ∪ Σ^ω`, and taking `L ⊆ Σ^ω` regular. All examples in this
-paper live over the two-letter alphabet `Σ = {a, b}`. This section recalls the
-classical notions the object rests on, adapting Perrin and Pin [PP04]; what this paper
-adds is listed at the close.
+We fix a finite alphabet `Σ` and write `Σ*` for the finite words over it, `Σ^ω` for
+the infinite ones, `Σ^∞ = Σ* ∪ Σ^ω`. A **language** here is a set of infinite words,
+`L ⊆ Σ^ω`; we take `L` **regular** (ω-regular [PP04]) — the class with finite-memory
+descriptions, and exactly the class the object of §3 captures. All examples in this
+paper live over the two-letter alphabet `Σ = {a, b}`. This section fixes the few
+classical notions the object rests on, adapting the presentation of Perrin and Pin
+[PP04], each paired with the intuition tying the algebra back to languages of
+infinite words; what this paper adds is listed at the close.
 
-The section works a single example, threading every notion — Carton–Perrin's
-[CP97, Ex. 10] `L = a*·b^ω`: some `a`'s, then `b`'s forever. Almost trivial as a
-language, and that is the point: small enough to be worked in full at every step, it
-carries the reader through §§2–3; the three running examples take over in §3.5.
+Consider the language of Carton and Perrin [CP97, Ex. 10] described by `a*·b^ω` —
+some `a`'s, then `b`'s forever — which we name `AsThenBs`. Its syntactic ω-semigroup
+is drawn in Figure 1.
 
-**We only ever look at lassos.** A **lasso**, or ultimately-periodic word, is `u·v^ω`: a
-finite **stem** `u ∈ Σ*` followed by a finite nonempty **loop** `v ∈ Σ⁺` repeated
-forever. Lassos suffice: *two regular ω-languages are equal iff they agree on all lassos*
-[PP04]. Classifying `L` is therefore sorting lassos into finitely many types, and every
-object below is machinery for naming and sorting them.
+![Figure 1 — the object of AsThenBs](sos_core_figs/img/core_F0_astar_bomega.png)
 
-*Example.* `b^ω`, `ab·b^ω` and `aab·(bb)^ω` are lassos of `L`; `ba·(ab)^ω` is a lasso
-outside it; and the word `a·b·a·a·b·b·a·a·a·b·b·b·⋯`, its blocks growing forever, is no
-lasso at all — yet `L` is pinned by its verdicts on lassos alone.
+*Figure 1 — the syntactic ω-semigroup of `AsThenBs = a*·b^ω`: five classes of finite
+words, the letter steps between them, and the accepting pairs `P` beneath.*
 
-**A finite monoid, plus one operation.** Finite words are classified by a finite
-**monoid**: an associative product with unit, concatenation collapsed onto finitely many
-values by a morphism `φ(uv) = φ(u)φ(v)`. Infinite words need exactly one thing more — a
-way to read "loop forever" — since no finite product expresses `v^ω`. Classically one
-adjoins an **ω-power** `s ↦ s^ω` and obtains a two-sorted **ω-semigroup** `(S₊, S_ω)`
-[PP04, Ch. II], with a morphism `φ : Σ^∞ → S` **recognizing** `L` when `L = φ⁻¹(P)` for a
-set `P` of accepting ω-types. We record this framing but do not carry the second sort as
-a standalone algebra: §3 reads "loop forever" *inside* the finite monoid, so the object
-is a finite monoid together with a set of accepting names.
+**We only ever look at lassos.** A **lasso** (ultimately-periodic word) is `u·v^ω`: a
+finite **stem** `u`, then a finite nonempty **loop** `v` repeated forever. The
+organizing fact: *two regular ω-languages are equal iff they agree on all lassos*
+[PP04]. Classifying `L` is therefore sorting lassos into finitely many types, and
+every object below is machinery for naming and sorting them.
 
-*Example.* For `a*·b^ω` concatenation collapses onto five values — §3.1 exhibits
-them — and "loop forever" will be read inside those five, with no second sort.
+*Example.* `b^ω`, `ab·b^ω` and `aab·(bb)^ω` are lassos of `AsThenBs`; `ba·(ab)^ω` is a
+lasso outside it; and the word `a·b·a·a·b·b·a·a·a·b·b·b·⋯`, its blocks growing forever,
+is no lasso at all — yet `AsThenBs` is pinned by its verdicts on lassos alone.
+
+**Finite words are solved.** For finite words, the problem of sorting all words into
+finitely many bins is solved: a finite **monoid** — an associative product with a
+unit — carries the bins, and a morphism `φ(uv) = φ(u)·φ(v)` does the sorting,
+collapsing concatenation onto finitely many values.
+
+On infinite words, exactly one thing more is needed — a way to say "repeat this loop
+forever" — because no product of finite pieces expresses `v^ω`. Classically one
+adjoins that single operation, an **ω-power** `s ↦ s^ω`, and obtains a two-sorted
+**ω-semigroup** `S = (S₊, S_ω)`: `S₊` the types of finite words, `S_ω` the types of
+ω-words [PP04, Ch. II]. A **recognizer** for `L` is such an `S` with a morphism
+`φ : Σ^∞ → S` under which membership depends only on the type — `L = φ⁻¹(P)` for a
+set `P` of accepting ω-types (that finitely many types suffice for all ω-words is
+Ramsey's theorem [PP04]). We record this framing but do not carry the second sort as
+a standalone algebra: §3 reads "loop forever" *inside* the finite monoid, so the
+object is a finite monoid together with a set of accepting names.
+
+*Example.* For `AsThenBs` concatenation collapses onto five values — the five boxes
+of Figure 1 — and "loop forever" will be read inside those five, with no second sort.
 
 **The idempotent power.** In a finite monoid the powers `s, s², s³, …` of any element
 cannot all be distinct, so the sequence is eventually periodic and contains a unique
-**idempotent**, written `s^ω` — the unique `s^n` (`n ≥ 1`) with `s^n·s^n = s^n`. Read a
-loop `v` through `φ`: its repeated image settles on `φ(v)^ω`. Concretely, "loop forever"
-is "iterate the loop's value to its idempotent."
+**idempotent**, written `s^ω` — the unique `s^n` (`n ≥ 1`) with `s^n·s^n = s^n`. Now
+read a loop `v` through a recognizer's sorting map `φ`: the values of
+`v, vv, vvv, …` are the powers of `φ(v)`, so they settle on the idempotent `φ(v)^ω`.
+That is how "loop forever" is read without any infinite object at hand: iterate the
+loop's value until it stops changing, and keep that stable value.
 
-*Example.* In the five-value collapse of `a*·b^ω`, the value of `b` is its own
-idempotent power — more `b`'s change nothing, `φ(b)·φ(b) = φ(b)`. The value of `ab` is
-not: its square is the value of the *dead* words (`abab` puts an `a` after a `b`, and
-no continuation rescues that), itself idempotent — so `φ(ab)^ω` is the dead value:
-looping `ab` forever is exactly as dead as slipping once.
+*Example.* On Figure 1, the value of `b` is its own idempotent power — more `b`'s
+change nothing, `φ(b)·φ(b) = φ(b)`. The value of `ab` is not: its square is the value
+of the *dead* words (`abab` puts an `a` after a `b`, and no continuation rescues
+that), itself idempotent — so `φ(ab)^ω` is the dead value: looping `ab` forever is
+exactly as dead as slipping once. The figure shows the split at a glance: thick boxes
+are the idempotents, and `a·b` is the one thin box apart from the root.
 
 **A linked pair names a lasso.** Reading `u·v^ω` through a finite `φ` (Ramsey): the loop
 settles on the idempotent `e = φ(v)^ω` and the stem on `s = φ(u)·e`, with `s·e = s` (the
@@ -147,7 +163,7 @@ a *legal* layer exactly when it is closed under the rotation lemma (Lemma 3.5).
 - `[ε]` is **fresh**: `⟦w⟧ = [ε]` only for `w = ε` — no nonempty word folds to the
   identity class.
 
-*Example.* The algebra of `a*·b^ω` (§2's example) has five classes, named by their
+*Example.* The algebra of `AsThenBs` (§2's example) has five classes, named by their
 keys — `[ε]`, `[a]`, `[b]`, `[a·b]`, `[b·a]` — with `λ(a) = [a]`, `λ(b) = [b]` and the
 letter actions
 
@@ -191,19 +207,12 @@ root `[ε]`, and an edge `s →^a s·λ(a)` for each `s ∈ 𝒞, a ∈ Σ`. Roo
 and complete — every node reached from the root along its key — it is the algebra drawn
 as a machine: the right regular representation acting on itself.
 
-*Example.* From `[ε]`, `a` leads to `[a]` and `b` to `[b]`; `[a]` loops on `a` and
-advances to `[a·b]` on `b`; `[b]` and `[a·b]` loop on `b` and fall to `[b·a]` on `a`;
-`[b·a]` absorbs both letters. Each node sits at the end of the path spelled by its own
-key:
-
-![Figure F0 — the object of a*·b^ω](sos_core_figs/img/core_F0_astar_bomega.png)
-
-*Figure F0 — the object of `a*·b^ω` drawn. Nodes are classes named by their keys;
-thick borders mark the idempotents; the stub marks the root and stays the only
-arrow entering it — a source. Arrows are the letter steps, labeled (`a,b` when
-both letters agree); the slightly thicker arrows spell the keys out from the
-root. The pairs `P` beneath complete the object: the drawing is `𝒜`, the line
-is `P`.*
+*Example.* The Cayley graph of `AsThenBs` is exactly Figure 1. From `[ε]`, `a` leads
+to `[a]` and `b` to `[b]`; `[a]` loops on `a` and advances to `[a·b]` on `b`; `[b]`
+and `[a·b]` loop on `b` and fall to `[b·a]` on `a`; `[b·a]` absorbs both letters. Each
+node sits at the end of the path spelled by its own key — the slightly thicker arrows
+of the figure — and the stub marking the root stays the only arrow that ever points
+at it.
 
 The graph is the table made visible, and losslessly: any product `s·t` is read by
 walking `key(t)` from `s`. Freshness has a shape: the root is a **source** — no edge
@@ -418,9 +427,9 @@ side of the cut; the idempotents are `[b]`, `[a·b]`, `[b·a]`, `[a·a]`, with
 `[a]^ω = [a·a]`. One accepting pair, `P = { ([a·a],[a·a]) }`: hit the zero and loop
 there — `aa` recurs.
 
-![Figure F1 — the object of GF(aa)](sos_core_figs/img/core_F1_gf_aa.png)
+![Figure 2 — the object of GF(aa)](sos_core_figs/img/core_F1_gf_aa.png)
 
-*Figure F1 — `GF(aa)`. Two waiting rooms — `[a] ⇄ [a·b]` and `[b] ⇄ [b·a]`, cycles
+*Figure 2 — `GF(aa)`. Two waiting rooms — `[a] ⇄ [a·b]` and `[b] ⇄ [b·a]`, cycles
 that mix letters, hence no group — each escaping on `a` toward the zero; the one
 accepting name loops at the zero itself.*
 
@@ -439,9 +448,9 @@ and the fresh-identity convention of §3.1 keeps `[ε]` apart. `[b]` and `[a·b]
 (`[b]`) or odd (`[a·b]`) count of `a`'s. Accepting pairs `([b],[b])`, `([b],[a·a])`,
 `([b],[a·b])`: once `[b]` is reached, every loop accepts.
 
-![Figure F2 — the object of Even](sos_core_figs/img/core_F2_even.png)
+![Figure 3 — the object of Even](sos_core_figs/img/core_F2_even.png)
 
-*Figure F2 — `Even`. The diagonal `[a] ⇄ [a·a]`, both legs on the single letter
+*Figure 3 — `Even`. The diagonal `[a] ⇄ [a·a]`, both legs on the single letter
 `a`, is a monochrome two-cycle — the `Z₂` drawn; every accepting name stems at
 `[b]`.*
 
@@ -456,7 +465,7 @@ and the fresh-identity convention of §3.1 keeps `[ε]` apart. `[b]` and `[a·b]
 
 Laws: the *same* `Z₂` `{[a], [a·a]}` returns, and `[a·a]` is again neutral on the word
 classes; `[b·a·b]` — a completed odd block — is the two-sided **zero**. Unlike
-`a*·b^ω`'s dead class, this zero is no death sentence: the language forgives finitely
+`AsThenBs`'s dead class, this zero is no death sentence: the language forgives finitely
 many odd blocks, and the acceptance layer says so — of the six accepting pairs
 
 ```
@@ -466,9 +475,9 @@ P = { ([b],[b]),  ([a·b],[b]),  ([b·a],[a·b·a]),
 
 two sit at the zero itself: what has happened is absorbed; what loops forever decides.
 
-![Figure F3 — the object of EvenBlocks](sos_core_figs/img/core_F3_evenblocks.png)
+![Figure 4 — the object of EvenBlocks](sos_core_figs/img/core_F3_evenblocks.png)
 
-*Figure F3 — `EvenBlocks`. The same `Z₂` acting as three `·a` swaps — one per
+*Figure 4 — `EvenBlocks`. The same `Z₂` acting as three `·a` swaps — one per
 phase of the language — and two accepting names sitting at the zero.*
 
 ---
@@ -488,8 +497,8 @@ reason `Even` is not LTL — read straight off the letter actions, before any ac
 is consulted. `GF(aa)`'s algebra, by contrast, has every power-cycle of period 1:
 aperiodic, hence LTL. In the drawing the criterion is a *monochrome* cycle — one
 letter (more generally one word) repeated, as `Even`'s `·a` swap between `[a]` and
-`[a·a]` (Figure F2). A cycle that mixes letters proves nothing: `GF(aa)`'s graph
-closes `[a] →^b [a·b] →^a [a]` (Figure F1's waiting rooms), and its algebra is
+`[a·a]` (Figure 3). A cycle that mixes letters proves nothing: `GF(aa)`'s graph
+closes `[a] →^b [a·b] →^a [a]` (Figure 2's waiting rooms), and its algebra is
 aperiodic all the same.
 
 *Saturation, checked.* The query on `a^ω` presented two ways must agree, and does:
