@@ -8,13 +8,17 @@ every width. The delegate restricts the deterministic acceptor to the
 layer's tails (the two-state pendency machine — "last non-`s` letter was
 an `a`", Büchi on the completion transition), KR-decomposes it, and reads
 the label off `Fin(C)`. Expected: an emission equivalent to the language
-itself (the layer is terminal and prefix-independent, so `T_z = L`),
-checked with `spot.are_equivalent` — the bounded oracle, per the K-E4
-gate pattern. DAG-only; sizes reported, never the formula string.
+itself (the layer is terminal and prefix-independent, so `T_z = L`).
+
+The probe's operational goal is the CONSTRUCTION: timed and sized on its
+own, DAG-only, never the formula string. No conformance oracle here — the
+label→automaton step belongs behind the `spotrun` containment in a gate,
+not inlined in a construction probe it would dominate.
 """
 from __future__ import annotations
 
 import sys
+import time
 
 import spot
 
@@ -37,6 +41,7 @@ def main() -> int:
     print(f"  classes={inv.n} layers={len(cay.layers)} "
           f"final layer {fid} = {cay.layers[fid]}")
 
+    t0 = time.monotonic()
     em = loop_acceptance(cay, fid, lang.det_parity_sbacc(), timeout=10)
     print(f"  seam: {em.record.line()}  member={em.technique}", flush=True)
 
@@ -44,13 +49,12 @@ def main() -> int:
     print(f"  label size: dag={dag_node_count(f)} "
           f"flat={tree_node_count(f, limit=10**6)}", flush=True)
     f_s = _simp_f(f)
-    print(f"  simplified: dag={dag_node_count(f_s)} "
+    dt = time.monotonic() - t0
+    print(f"  construction: {dt:.3f}s  simplified: dag={dag_node_count(f_s)} "
           f"flat={tree_node_count(f_s, limit=10**6)}", flush=True)
     print(f"  label: {format_gated(f_s, limit=200)}", flush=True)
-    eq = spot.are_equivalent(f_s, spot.formula(PHI))
-    print(f"  label ≡ {PHI}: {eq}")
-    print("OK" if eq else "FAIL")
-    return 0 if eq else 1
+    print("OK (construction only; conformance is the gate's job)")
+    return 0
 
 
 if __name__ == "__main__":
