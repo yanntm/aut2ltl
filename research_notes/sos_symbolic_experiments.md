@@ -519,6 +519,70 @@ paper reading.
 *(Outcome: prediction confirmed 6100/6102 with two floor effects —
 F17–F23.)*
 
+### Retired component definitions (C1–C8, spec §2)
+
+**C1 — engine bindings.** The five primitives over the chosen backend,
+plus instrumentation hooks: node counts (peak and final) per operation,
+fixpoint round counts, wall time per phase. Every experiment below is a
+reading of these hooks; build them first, not last.
+
+**C2 — symbolic input builder (Phase 0).** From HOA: `Δ`, `Mk_c`,
+the slot domain `V = Q × 2^C`, the letter-element relation
+`Lett(α; x)` and the right-multiplication relation `R(α; x, x′)` —
+slot-local by construction, `α` carried symbolically, the alphabet
+never enumerated.
+
+**C3 — closure (Phase 1).** Layered lfp from the identity vector;
+layers *kept* (they are the length half of shortlex keying and Phase
+6's extraction path). The explicit tool's closure cap becomes a
+**diagram-node budget**: blowing it is a `DIAGRAM_BUDGET` finding with
+the layer profile attached, never a silent abort. Cardinality
+(`|EM¹|`) available by model count for cross-checks.
+
+**C4 — the crossing (Phase 2).** The composition relation
+`Comp(x, y, z)` (the `|Q|`-way case split), the pairing lfp for the
+idempotent-power map `π`, and the aperiodic squaring shortcut
+(`O(log ℓ)` applications of `Sq`), with the guard the paper specifies:
+squaring is a shortcut, never a verdict — on inputs where the shortcut
+and the general pairing disagree, that is a stop-the-line bug. ⟨The
+squaring rendering is pinned (settled with the libDDD author): the
+interleaved 2k-variable relation `R = {(z ⧉ z·z)}` built once by a
+renumbering dupe gadget + the Comp case split reading only pre
+variables, iterated by a relational-product homomorphism; full recorded
+design in `sos_sdd/README.md`, "The squaring shortcut (C4 completion)".
+The loop's termination theorem: convergence iff every orbit period is a
+power of two.⟩
+
+**C5 — profiles and residuals (Phases 3–4).** `ProfR` as π-composition
++ one slot-read + the `Acc` predicate (no cycle detection anywhere —
+assert it: no orbit walk in the code path); the residual gfp on
+`Q × Q`, profile-seeded, oracle-free. Cross-check `≃` against the
+explicit tool's residual classes on every conformance instance.
+
+**C6 — congruence (Phase 5).** Seed (`~lin` slot-conjunction over `≃`,
+`~ω` profile columns) and the gfp partition refinement over the
+slot-local letter relations only — assert statically that no
+`Comp`-shaped relation is applied inside this fixpoint (the rotation
+lemma as a code invariant, §4.1 of the paper).
+
+**C7 — quotient and exports (Phase 6).** Quotient, shortlex
+representative extraction through the kept layers — the mechanism the
+paper pins in Phase 6: the minimal layer gives the length, a backward
+preimage pass builds the layer-indexed can-still-reach sets, and a
+*forward* walk through them choosing the least letter gives the
+lex-least word (a backward letter choice minimizes the wrong end,
+yielding reverse-lex — do not implement that) — the multiplication
+table (`M(κ, a)` by `R_a` images, `M(κ, κ′)` by folding representative
+words, never `Comp`), λ-quotient with symbolic guards, accepting pairs
+via `Val` on representatives, residuals block; serialize to `.sos`.
+
+**C8 — product family generators.** From a fixed component `D`: the
+`n`-fold asynchronous product `D^{⊗n}` (disjoint alphabets and marks)
+and synchronous (shared-alphabet) variants; emit each in **both slot
+coordinates** — factored (component-grouped variables) and flat (one
+slot per global state) — as inputs to E2/E3. `EvenBlocks^{⊗n}` is the
+canonical family (`|EM| = 16ⁿ`, by Proposition 4.1 of the paper).
+
 ### The spec's State of play at retirement (2026-07-12)
 
 Condensed: M1 (C1–C3 + E0) green; C4 complete including the squaring
