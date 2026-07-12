@@ -45,6 +45,7 @@ from typing import List, Optional, Set, Tuple
 
 from sosl.experiment.baseline import MODES
 from sosl.experiment.manifest import DEFAULT, NOSAT_EXACT, flat_canon_cases
+from sosl.experiment.run import KILL_GRACE_S
 
 # Interpreter start plus imports (and the `cd sosl`), once per command, charged
 # against the chunk's share of the per-command cap.
@@ -104,9 +105,18 @@ def _plan_sweep(case_ids: List[str], timeout: int, legs: str, budget: int,
     every `(case, config)` is in ``done`` is not emitted at all — the shard would
     do nothing but pay startup — and each emitted line carries `--done` so the
     campaign skips the covered languages it already has."""
-    per_case = _LEGS[legs] * budget
+    # Pack against the run's ENFORCED ceiling, not its budget. `run_case_bounded`
+    # kills a run at `budget + KILL_GRACE_S`, so that sum — not `budget` — is the
+    # worst case a command must fit. Packing against the bare budget leaves no
+    # room for the kill grace or the child's startup, and a command whose cases
+    # all burn their budget then dies ON the cap, losing the rows it had not yet
+    # flushed. (Budget-burners are not spread out: a language's complement is the
+    # same algebra and burns too, and duals are adjacent in case order, so they
+    # arrive in adjacent pairs and land in one command.)
+    per_case = _LEGS[legs] * (budget + KILL_GRACE_S)
     if per_case + STARTUP_S > timeout:
-        print(f"cluster_plan: one case's budget ({per_case}s for {legs}) plus "
+        print(f"cluster_plan: one case's enforced ceiling ({per_case}s for "
+              f"{legs}: budget {budget}s + {KILL_GRACE_S}s kill grace) plus "
               f"startup ({STARTUP_S}s) exceeds the cap ({timeout}s); commands will "
               f"be cut short — raise OARRUN_TIMEOUT or lower --budget", file=sys.stderr)
     chunk = _chunk(timeout, per_case)
