@@ -309,13 +309,12 @@ battery), forbids mixing them in a comparison, and promises the one-sweep
 regeneration — the ⟨TBD⟩ there is gone; until §9.4 runs this report stays
 the source of truth for every measured value.
 
-Separately, the §7.3 adequacy ⟨TBD⟩ became **Proposition 7.1**: the
-canonical-DELA exit is adequate iff two equations (E1)/(E2) hold on
-`(𝒞, P)` — decidable per language by a stabilizer scan. Whether they can
-fail on a *syntactic* table is open, and that is now an engineering
-question: **spec §9.6 (CAL7)** — the corpus-wide equational gate, a one-shot
-`T₄` probe, and a provenance paragraph for the corpus `D` (findings F20+).
-Working notes in `sos_calculus_extensions.md` §4.
+Separately: a DELA-adequacy proposition for §7.3 was drafted and
+withdrawn the same day (out of scope; notes parked in
+`sos_calculus_extensions.md` §4 — paper §7.3 keeps the prospect wording).
+What survives is **spec §9.6**, one report paragraph: state the corpus
+`D`'s provenance and whether `L(D) = L` is checked per row — paper §8
+asserts `D` is the §7.3 exit's output, and that sentence must be right.
 
 ## Status addendum (2026-07-11, theory)
 
