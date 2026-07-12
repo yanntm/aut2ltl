@@ -250,7 +250,18 @@ stream.
   library convention, load-bearing for the expression homomorphisms and
   the SDD growth path. Pair spaces stack the written block (`y`) *above*
   the read block (`x`), so data-dependent reads resolve downward through
-  the ExprHom query mechanism.
+  the ExprHom query mechanism. **Warning, learned the hard way:**
+  `Hom_Basic` bricks key on variable numbers only and silently tolerate
+  diagrams built upside-down; ExprHom navigates the order and dies in
+  unbounded mutual recursion on inverted diagrams (archive F9) — do not
+  let the bricks' tolerance mask the bug.
+- **GC discipline**: anything that crosses an engine step is held as
+  `DDD`/`Hom`, never bare `GDDD`/`GHom` (the library GC sweeps
+  unreferenced nodes); the engine never triggers GC. A homomorphism
+  carrying a diagram must override `mark()` (see `ApplyRel`).
+  Corollary at sweep scale: the unique table is never GC'd, so diagrams
+  accumulate across instances within one process — corpus sweeps are
+  process-isolated (see *Testing and sweeps*).
 - **Guard**: DDD edge values are `val_t` (`short` in stock libDDD); the
   packed slot encoding caps at `|Q × 2^C| ≤ 32767`; the engine rejects a
   digest that exceeds it (reachable in flat coordinates on scaling
@@ -406,3 +417,22 @@ cmake -B build && cmake --build build
 The extension lands inside the package directory, so `import sos_sdd`
 works from the repo root without an install step. `LIBDDD_HOME`
 overrides the deps/ prefix if ever needed.
+
+## Testing and sweeps
+
+Every test: `timeout 15 python3 tests/sos_sdd/<file>.py <case>` from
+the repo root — one case per invocation (each file's `CASES` dict
+lists them; no argv = all cases). Long output → `tests/sos_sdd/logs/`,
+never /tmp. The gates: `smoke_api`, `smoke_core`, `letters_test`,
+`e0_triptych`, `shortlex_test`, `e2_async`, `phase2_test`,
+`squaring_test`, `residuals_test`, `congruence_test`,
+`conformance_test` (+ `conformance_diff.py`, the side-by-side probe),
+`hoa_bridge_test`, `slotperm_test`, `member_test`, `boolean_test`.
+
+**Sweeps are NEVER one process** (OOM'd once, near machine crash —
+the GC-discipline corollary above). `tests/sos_sdd/e1_census.py
+--isolate` = per-instance subprocess under `aut2ltl.bounded`
+(unconditional SIGKILL backstop — the C++ core observes no signals),
+CSV-resume built in; `--shard k/N` = cluster fan-out (~300 jobs,
+per-shard CSV). Corpus-scale sweeps run on the cluster, not the local
+machine.
