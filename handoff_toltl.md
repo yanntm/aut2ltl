@@ -87,6 +87,16 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
 3. Open math, unblocked by nothing: §5.1's
    width-bound-by-definiteness-degree ⟨TBD⟩; §2.3's arena bound
    (gated on full E4).
+4. Idea to adjudicate (user): at translation time, translate
+   whichever of the language or its complement carries the fewer
+   acceptance pairs, and negate the result — complementing the det
+   parity input is a priority shift, so the test is cheap; plausibly
+   applicable at EVERY recursion level (per-layer labels too), not
+   just the top. Top level is trivially sound (closure under
+   negation); inner levels need the fragment bookkeeping checked
+   (negation swaps Σᵢ/Πᵢ, which the bls member ladder and the
+   delegate's insertion points care about) and a statement of where
+   pair-count actually drives emitted size.
 
 ## Machinery / conventions (user-set; keep)
 
