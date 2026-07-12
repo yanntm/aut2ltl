@@ -60,7 +60,82 @@ current free-vs-exponential dichotomy skips: `X L`, and `W·L` when `W` is a
 prefix code / the factorization is unambiguous — deterministic split, new
 table, polynomial, no powerset.
 
-## 4. One-liners and small open items
+## 4. The canonical DELA exit — adequacy reduced to two equations (2026-07-12)
+
+Worked state of the paper §7.3 ⟨TBD⟩ (was "queued theory item" below; the
+proposition is now *stated and proved as a criterion*, with one open half).
+
+**Setting.** `Cay(L)` per [SωS26, Def 5.2]: nodes `𝒞` (fresh identity root
+`[ε]`), edges `c →ᵃ c·λ(a)`. Deterministic and complete, and with one gift no
+other automaton has: *the state after reading `w` is `fold(w)`* — stems pin to
+their own class. For `u ∈ Σ^ω` let `T(u)` be the set of edges its run
+traverses infinitely often. *Adequacy* = membership is a function of `T(u)`;
+equivalently the Muller-over-edges family `𝒯 = {T(u) : u ∈ L}` (an EL
+condition over edge colors) completes `Cay(L)` into a DELA for `L`.
+
+**Proposition (adequacy criterion).** Adequacy holds iff for all
+`y, t, h, g ∈ 𝒞` with `y·t = y·h = y·g = y`:
+
+- **(E1)** `Val_P(y, (t·g)^π) = Val_P(y, (t²·g)^π)`
+- **(E2)** `Val_P(y, (t·h·g)^π) = Val_P(y, (h·t·g)^π)`
+
+*Necessity.* Realize `y, t, g` by words `w_y, w_t, w_g`. The walks of `w_t`,
+`w_g` from state `y` are closed (`y·t = y`), and the walk of `w_t²` is the
+walk of `w_t` twice — same edges. So `w_y(w_t w_g)^ω` and `w_y(w_t² w_g)^ω`
+have the *same* recurrent edge set (the union of the two closed walks), and
+their memberships are the two sides of (E1). Same word game for (E2). ∎
+
+*Sufficiency* (LSPW's skeleton [CPP08 §5.4], cover-free). Let `T(u) = T(v)`.
+Pick `s` on `T`; both runs visit `s` infinitely often. Cut `u` at `s`-visits
+so every block covers `T` exactly; each cut prefix has fold `s` (state =
+fold — this kills the (5.6)/(5.7) machinery of [CPP08]). Ramsey-group blocks
+to a constant idempotent fold `e`: `u ∈ L ⟺ Val_P(s, e)` with `e` the fold of
+a `T`-covering loop word `p` at `s`; likewise `v ↦ (s, f)`, loop word `q`.
+Define on `Cay`-paths: `p ∼ q` iff coterminal and
+`∀w ([w] = origin), ∀r (return path): w(p̂r̂)^ω ∈ L ⟺ w(q̂r̂)^ω ∈ L`. This is
+a path congruence (context closure is literal re-cutting of one ω-word, no
+algebra). Its Simon premises are *exactly* (E1)/(E2) anchored at states: a
+loop at `x` has fold in `Stab(x)`, every stem to `x` has fold `x`. By Simon's
+path-congruence proposition ([CPP08, Prop 5.6]; proof in Eilenberg Vol. B),
+coterminal same-edge-set paths are `∼`-equivalent, so `p ∼ q`; with stem
+`u₀` and the empty return, `Val_P(s, e) = Val_P(s, f)`. ∎
+
+**Why saturation alone cannot do it.** `L = Σ*a^ω`: at `y = β`
+("contains b") the stabilizer is `{α, β}`, both idempotent,
+`Val(β, α) = 1 ≠ Val(β, β) = 0`. Verdicts are *not* constant on stabilizer
+idempotents; (E1)/(E2) hold there anyway (any product mixing both letters
+folds to `β`). The anchored equations are precisely what edge-covering buys.
+
+**Relation to Le Saëc–Pin–Weil.** They start from *weak* recognition and
+must first pass to a cover with idempotent, R-trivial right stabilizers
+(`x² = x`, `xyx = xy`) — identities that imply (E1)/(E2) outright but change
+the automaton. We start from the saturated `(𝒞, P)` and keep `Cay(L)`
+itself; the price is that (E1)/(E2) become a *hypothesis* — but a decidable
+one: `O(Σ_y |Stab(y)|³)` resp. `|Stab(y)|⁴` `Val`-lookups per table. The
+exit prices itself, per language.
+
+**Open half + candidate counterexample.** Do (E1)/(E2) hold in *every
+syntactic* ω-semigroup? Rotation/absorption arguments give only conjugacy
+orbits (`(t g)^π ~ (g t)^π` at anchored stems); parity-style invariants die
+under `^π`, order-style under rotation — every hand attempt at a violation
+is "protected" by the states recording the left context. But at the *table*
+level (saturated, not reduced) a candidate exists in `T₄` (right action,
+`(u·v)(x) = v(u(x))`): `y = const-1`, `t = (2 3 4)`, `g = [1,2,2,4]`; then
+`y·t = y·g = y`, `(tg)^π = [1,2,2,2] =: F`, `(t²g)^π = [1,2,4,4] =: F' ≠ F`.
+If `(y,F)` and `(y,F')` are non-conjugate in `S = ⟨y,t,g⟩`, the saturated
+`P := closure{(y,F)}` violates (E1) — and the question becomes whether
+`reduce` (to the true syntactic table of `L(P)`) kills the violation. That
+is CAL7b (spec §9.6). Outcomes: conjecture dead → paper §7.3 states the
+criterion + per-corpus certificate (still a clean result); conjecture
+survives corpus + probe → prove (E1)/(E2) from syntacticity (open).
+
+**Theory debts.** (1) Reprove Simon's path-congruence proposition ourselves
+(elementary; [CPP08] states it, proof is in Eilenberg Vol. B which we do not
+hold). (2) Acquisitions for `papers/`: Eilenberg Vol. B (1976); Le Saëc–Pin–
+Weil FSTTCS 1991 + IJAC 1991; Le Saëc, *Saturating right congruences*,
+RAIRO 1990 (checked: none present; [CPP08] is our only read source).
+
+## 5. One-liners and small open items
 
 - **Monitor extraction** (Spot's safety monitors): the monitor *is* the
   right-Cayley DFA restricted to `Live` — CAL5's `live()` already computes
@@ -80,9 +155,10 @@ table, polynomial, no powerset.
 ## Priority
 
 (1) mixed product first — it is the practical claim of the whole paper;
-(2) the §3.4 completion + `X` middle band — cheap, closes the frontier
-story; (3) LTL-over-SoS as a remark, section if the evaluator gets built;
-(4) the one-liners opportunistically. The sister memos are separate papers,
+(2) DELA adequacy §4: close the open half (CAL7 outcomes decide the route);
+(3) the §3.4 completion + `X` middle band — cheap, closes the frontier
+story; (4) LTL-over-SoS as a remark, section if the evaluator gets built;
+(5) the one-liners opportunistically. The sister memos are separate papers,
 not paper sections.
 
 ## Status update (2026-07-11)
@@ -95,13 +171,8 @@ not paper sections.
 - **Alphabet hygiene** (free-AP read-off + drop, equality up to AP
   renaming) landed in paper §3.2/§7.1; implementation is spec §9.3
   (CAL6).
-- **New queued theory item — the canonical DELA exit, adequacy
-  proposition** (paper §7.3 ⟨TBD⟩): on the right-Cayley structure the
-  verdict of a run is a function of its recurrent transition set, so an
-  EL condition over the edges completes core's Def 5.2 prospect. Proof
-  sketch scoped: reduces to "idempotent folds of T-covering cycle
-  products at a common state share their verdict"; check the
-  saturating-right-congruence literature (Le Saëc) in `papers/` first.
-  The transformation itself is already implemented (corpus pairs
-  sos/det). This now outranks item 2 in priority; item 1 (mixed
-  product) stays first.
+- **DELA adequacy** (paper §7.3): advanced 2026-07-12 from queued sketch
+  to the criterion of §4 above — adequacy ⟺ (E1) ∧ (E2), necessity and
+  sufficiency proved, the syntactic-case conjecture open, CAL7
+  (spec §9.6) probing it. Le Saëc checked: not in `papers/`; [CPP08]
+  §5.4 is the read source.
