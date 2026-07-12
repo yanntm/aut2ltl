@@ -9,140 +9,25 @@ Companion specs: `sos_census_spec.md` (the measurement corpus and
 the derived-census driver, the engine's first consumer at scale),
 `sos_toltl_spec.md` (downstream consumer of the emitted quotient).
 
-**State of play.**
-- **DONE (exists in-repo, consumed as-is):** the explicit reference
-  construction emitting `.sos` (the conformance oracle); the HOA parser
-  side of C2; the triptych automata.
-- **DONE (paper-side, settles questions this spec used to leave open):**
-  the flat-order lower bound is *stated and proved* for row-major-style
-  orders (paper Lemma 4.2), with the any-order question posed as
-  Conjecture 4.3 — E3 now probes the conjecture, it no longer decides a
-  lemma; the shortlex/witness extraction mechanism is pinned (backward
-  preimage sets + *forward* least-letter walk — see C7, C10); the
-  calculus is specified with its correctness propositions (paper §6,
-  Props 6.0–6.2) — covered by C10 + E9.
-- **DONE (engine-side): M1** — the engine lives in `sos_sdd/` (libDDD
-  multi-valued DDD core, Python `SoS` API; backend decisions recorded in
-  its README, milestone ledger in `sos_symbolic_report.md`). C1
-  (primitives + instrumentation), C2 (guard-cube → letter-behavior
-  classes; slot space + brick step homs — the backend note in §1 is
-  resolved: homomorphism bricks, not 2k-diagram relations), C3 (layered
-  closure, layers kept, budgets as findings), E0 green (10/7/16,
-  dual-verified; the §3.1 node-vs-cells figure measured: 10 < 32).
-- **DONE (engine-side, Comp-free advance):** C7's extraction mechanism
-  (shortlex over kept layers, exact vs ground truth); C8 async
-  generators in both coordinates; E2's factored line measured to `n = 6`
-  (`16ⁿ` exact, additive nodes `9n+1`, Prop 4.1 element-exact to
-  `n = 4`) with the flat `n = 3` `TIME_BUDGET` finding previewing E3 —
-  ledger rows F5–F7 in `sos_symbolic_report.md`.
-- **DONE (engine-side): C4, pairing path** — Phase 2's crossing as the
-  `|Q|`-way case split over scalar GAL expressions (libITS-gal
-  `assignExpr`/`predicate`; no arrays), pairing lfp + idempotence
-  predicate, π element-exact vs power-orbit ground truth on triptych /
-  period-3 / `EvenBlocks^{⊗2}` — ledger rows F8–F9. The **squaring
-  shortcut is deferred** (simultaneous step, pending a 2k-variable
-  relation encoding); `square≠"off"` is refused, so C4's check gate
-  waits on that encoding.
-- **DONE (engine-side): C5** — Phase 3 profiles as per-state predicate
-  columns on π's pair space (acceptance grounded Python-side into
-  accepting-mask tables; no orbit walk or cycle detection in the code
-  path), Phase 4 residuals as the profile-seeded gfp (column seed by
-  O(1) canonical comparison, Moore refinement over the explicit global
-  states). Gate: verdict bits and partition exact vs an explicit
-  cycle-walk + lockstep-gfp ground truth on seven cases, including one
-  (`stem`) where the seed is strictly coarser than the gfp — ledger
-  rows F10–F11. The spec's cross-check vs the explicit tool's residual
-  classes proper waits on E1's HOA bridge (recorded gap).
-- **DONE (engine-side): C6** — Phase 5 as symbolic partition refinement
-  on the erased pair space (profile-column + residual-signature seed,
-  letter-class preimage gfp; the rotation lemma held structurally —
-  `congruence.hh` is pure `Hom_Basic`, no `Comp` reachable inside the
-  fixpoint). Partition element-exact vs an explicit right-translation
-  GT on seven cases (ledger F12–F13); `gf_aa_parity`'s 6 classes match
-  the explicit tool's `gfaa` fixture. `fp5` is now a checked switch
-  (only `"layered"`; others refused).
-- **DONE (engine-side): C7** — Phase 6 quotient + `.sos` emission,
-  **conformance gate green**: byte-identical to the reference on every
-  same-AP instance tried (ledger F14; the identity convention was the
-  one divergence found and fixed — F15). Explicit quotient route
-  (`quotient="explicit"`, the recorded fallback; `"symbolic"` refused);
-  recorded exclusions: unused-AP languages (Spot import drops the AP),
-  products (refused at Phase 6).
-- **DONE (engine-side): C4 complete** — the squaring shortcut as the
-  recorded 2k relation encoding (`sos_sdd/README.md`; settled with the
-  libDDD author): R built once, relational-product iteration,
-  log-capped; all `square` modes live. Check gate green with the
-  termination theorem observed (converges iff orbit periods are powers
-  of two: mod3 diverges, MOD2 converges) — ledger F16.
-- **DONE (engine-side): E1** — the HOA→digest bridge (`sos_sdd/hoa.py`,
-  verbatim digest over the standard import APIs) and the census sweep
-  over all 6222 `flat_canon` instances: conformance green at corpus
-  scale (6102 completed, all byte-identical to the precomputed corpus
-  `sos/` tier — no reference runs needed, the tiers being a
-  self-consistent pair), compression prediction confirmed on 6100/6102
-  (two 1-element floor effects), 120 `TIME_BUDGET` findings (1.9 %,
-  concentrated in `3state2ap2acc_parity`) — ledger F17–F20, data in
-  `tests/sos_sdd/reference/e1_census.csv`. Recorded operational rule:
-  corpus sweeps run process-isolated (`--isolate` / cluster
-  `--shard k/N`) — libDDD's unique table is never GC'd. E1's scope is
-  now fully closed (ledger F21–F22): the C5 cross-check vs
-  `spot.language_map` matches on the classic six + a 25-instance corpus
-  spread, and the §4.2 covariates are measured
-  (`tests/sos_sdd/reference/e1_covariates.csv`, |EM¹| corroborated a
-  third way on all 6102 — the monotone-marks metric operationalization
-  awaits Theory blessing, F22).
-- **DONE (Theory): the E1 escalations + the paper reading.** F22
-  blessed — the stabilizer-closure lemma grounds the metric (paper
-  §4.2, pooled 62 %); Phase 3's verdict read is crossing-shaped and
-  priced in the paper's §5 table; E5/E6 carry their predictions and
-  protocols below (kill histograms are right-censored — never a cost
-  profile; E6 is budget-parity only). The scatter correlates and the
-  §5 depth question are read off the two tracked CSVs (report
-  **F23**; regen `tests/sos_sdd/e1_readoff.py`) and integrated
-  (abstract, §5, §8). Remaining paper ⟨TBD⟩: the E8 saturation study
-  only.
-- **DONE (engine-side): C9's `slot_perm`** — the slot→variable
-  permutation as a pure indirection (payload semantics slot-indexed
-  throughout; ExprHom label lists permuted; readings un-permuted).
-  Gate green with byte parity under every perm tried; first order
-  datum: block-interleaving a factored product inflates nodes 19→82
-  while block-preserving perms are neutral (ledger F24). E3's order
-  sweep is unblocked.
-- **DONE (engine-side): C10's first move** — §6.1 lasso membership,
-  closure-free by construction (`sos_sdd/calculus.py` is digest-side
-  and never imports the core — the assertion held structurally); gate
-  three-way exact (explicit lasso simulation, engine Phase 3 read,
-  210-lasso sweeps on seven cases) — ledger F25.
-- **DONE (engine-side): C10 §6.2** — the same-table Boolean algebra as
-  mask-set operations over a forked core (Phases 0–2 shared, 3–5
-  write-once and lazily re-run per accept table); the E9 commutation
-  gate green in both formulations (fresh-build bytes on four cases ×
-  four ops; against the explicit reference on two) — ledger F26.
-  Recorded deviation awaiting a Theory spec edit: alignment will be
-  the ordinary build over the sync-product slot model — the engine
-  never builds a monolithic `Comp`, so the C10 alignment bullet's
-  assertion holds structurally and Prop 6.1's per-block assembly is
-  demoted to a measured optimization (report, F26 block).
-- **DONE (Theory): the paper restructure.** `sos_symbolic.md` is
-  reorganized around five research questions — RQ1 correctness, RQ2
-  compression, RQ3 the exponential, RQ4 cost/bottom line, RQ5
-  amortization — and §8 now answers them RQ-by-RQ with tables; cut
-  prose is parked verbatim in the paper's Appendix A (subsection
-  numbering §6.x / §8 unchanged, so this spec's anchors remain
-  valid). Experiment mapping: **RQ1 ← E0/E1** (conformance),
-  **RQ2 ← E1**, **RQ3 ← E2/E3/E4/E7**, **RQ4 ← E5/E6 (+E8)**,
-  **RQ5 ← E9**. Recorded gap the mapping exposes: no experiment
-  grows the *quotient* (census max 148 classes; the E2 family's
-  quotients stay small) — whether a quotient-scaling family or
-  census-extension axis is wanted is an open spec question for a
-  future revision.
-- **TODO: everything else.** C9's remaining switches (fp disciplines
-  `chaining`/`saturation`, split slot encodings), C10's remainder
-  (alignment = the sync-product slot model, E4's generator; §6.4
-  queries + witness; rootings/substitutions; E9's witness and
-  deferred-reduce columns + per-op stats for derived runs), E3–E9,
-  M3–M5 (E2 still owes the second component family and per-point
-  budget sweeps at scale; M2's E5 first profile still owed).
+**State of play** (details of closed work:
+`sos_symbolic_experiments.md`, the frozen archive, findings F1–F26;
+new findings land in `sos_symbolic_report.md` from F27).
+
+- **Engine complete through Phase 6** (`sos_sdd/`, libDDD): C1–C7
+  done, C9's `slot_perm` done, C10 §6.1–§6.2 done; the conformance
+  byte-gate is green at corpus scale (6102/6102). **E0 and E1 are
+  closed**; E2's factored line is measured to `n = 6` (second
+  component family still owed).
+- **Paper**: restructured around five research questions; §8 answers
+  them with tables; one `⟨TBD⟩` left (§3 Phase 1 saturation — E8).
+  Mapping: **RQ1 ← E0/E1**, **RQ2 ← E1**, **RQ3 ← E2/E3/E4/E7**,
+  **RQ4 ← E5/E6 (+E8)**, **RQ5 ← E9**. Named gap the mapping
+  exposes: no experiment grows the *quotient* (census max 148
+  classes) — a quotient-scaling family or census-extension axis is
+  an open question for a future revision of this spec.
+- **Open**: C9 remainder (fp disciplines, split encodings), C10
+  remainder (§6.3–§6.5 + E9), E2's second family and per-point
+  budget sweeps, E3–E8, milestones M3–M5.
 
 **One-line goal.** Provide the data for `sos_symbolic.md`: the
 compression scatter (diagram size vs `|EM|`), the factored-vs-flat
@@ -260,9 +145,16 @@ each item names its paper anchor and its built-in assertion:
   only the plumbing that keeps several `Acc` predicates per table.
 - **Alignment (§6.3):** block-concatenated slot spaces, letter
   relations conjoined on the shared `α`-block (AP-set union free),
-  Phase 1 lfp on the aligned space; the aligned π-map assembled
-  per block (Prop 6.1). *Assert `Comp` is never applied on the aligned
-  space.*
+  Phase 1 lfp on the aligned space — i.e. the **ordinary build over
+  the sync-product slot model** (E4's generator, `Product
+  mode="sync"`). The engine never builds a monolithic `Comp` (Phase 2
+  is per-slot case-split bricks), so the requirement "*`Comp` is
+  never applied on the aligned space*" holds structurally, with no
+  dedicated assembly; Prop 6.1's per-block π assembly is an optional,
+  measured optimization — revisit only if E9 prices aligned
+  re-pairing as dominant. Prop 6.1 is validated end to end via
+  readings and byte gates. ⟨User-settled; supersedes the earlier
+  mandated per-block assembly — archive, F26 block.⟩
 - **Inclusion / equivalence / emptiness (§6.4):** the `S` projection
   onto `Q₁ × Q₂`, the `Bad` intersection, the degenerate same-`D` and
   emptiness forms.
@@ -291,35 +183,20 @@ Long outputs to `tests/**/logs/`, one file per experiment id.
 
 ## 4. Experiments
 
-### E0 — sanity on the worked examples (gates M1)
+### E0 — sanity on the worked examples (gated M1) — CLOSED
 
-C2+C3 on the triptych, full pipeline once M2 lands. **Predictions to
-confirm:** `|EM¹|` = 10 / 7 / 16 for `GF(aa)` / `Even` / `EvenBlocks`,
-identity included, per [SωS26, Tables 1–2] (for `EvenBlocks`,
-`⟦aa⟧ = ⟦ε⟧` merges into the identity — 15 non-identity elements);
-closure depths match the longest shortlex key per [SωS26]; emitted `𝓘`
-byte-equal to the reference on all three; for `EvenBlocks`, the diagram
-node count of the closed `EM¹` is strictly below the 32 explicit slot
-cells — the §3.1 figure's numbers, to be drawn from this run.
+Closed green: `|EM¹|` = 10 / 7 / 16 on the triptych, depths and
+byte-parity confirmed, the §3.1 figure measured (10 nodes < 32
+cells). Full protocol and findings F1–F2/F14: the archive.
 
-### E1 — the compression scatter (census corpus)
+### E1 — the compression scatter (census corpus) — CLOSED
 
-Full pipeline over the census corpus; record per instance `|EM¹|`
-(model count) against final and peak diagram nodes, plus the §4.2
-unconditional-compression covariates (constant/shared slots, mark
-upward-closure, guard-equal letters). **Paper deliverable:** the
-scatter and its correlates — which structure predicts compression.
-**Prediction:** diagram ≤ explicit cells on essentially all census
-rows, with compression strongest on sparse-mark, letter-symmetric
-inputs.
-
-**Addendum (Theory).** The covariate operationalization is blessed
-(report, F22 response): per-`(slot, dst)` families, one-mark closure
-⟺ upward closure; the paper cites the pooled 62 %. Instance-name acc
-tokens are source-GBA provenance, never an analysis variable. The
-correlate analysis is done (report F23): per-slot sharing dominates,
-algebra size next, upward-closure weak — E1 is closed *including* its
-paper reading.
+Closed: conformance at corpus scale (6102/6102 byte-identical),
+compression prediction confirmed 6100/6102, covariates measured and
+blessed, correlates and depth read off. Full protocol, Theory
+addendum and findings F17–F23: the archive. Data:
+`tests/sos_sdd/reference/e1_census.csv` + `e1_covariates.csv`
+(tracked); regen read-offs via `tests/sos_sdd/e1_readoff.py`.
 
 ### E2 — asynchronous scaling (Proposition 4.1, measured)
 
@@ -473,12 +350,10 @@ small-space passes).
   acceptable (the quotient is small by then) — record it, it does not
   taint the symbolic claims about Phases 1–5.
 
-## 6. Milestones (all TODO — none started)
+## 6. Milestones
 
-- **M1** — C1–C3 + E0 closure (cardinalities and depths green on the
-  triptych); instrumentation proven out.
-- **M2** — C4–C7 full pipeline; conformance gate green on triptych +
-  census subset; E1 scatter; E5 first profile.
+- **M1 — DONE** (C1–C3 + E0; archive). **M2 — DONE except E5's first
+  profile** (C4–C7 pipeline, conformance green, E1 scatter; archive).
 - **M3** — C8 + E2/E3/E4 (the scaling story — the paper's headline
   measurements); Proposition 4.1 verified at every affordable `n`.
 - **M4** — C9 + E7/E8 studies; E6 bottom line; hand the derived-census
@@ -486,7 +361,7 @@ small-space passes).
 - **M5** — C10 + E9 (the calculus): commutation and witness gates
   green, the deferred-reduce column measured. Depends on M2 (the
   pipeline) and C8 (aligned pairs at scale); independent of M4's
-  sweeps.
+  sweeps. §6.1–§6.2 gates already green (archive, F25–F26).
 
 Every milestone ends with a report appended to `sos_symbolic_report.md`
 (ledger style, one row per finding, predictions checked off or refuted —
