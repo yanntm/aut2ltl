@@ -19,13 +19,13 @@ digraph core_F0_astar_bomega {
   { rank=same; a b; }
   { rank=same; ab ba; }
 
-  eps -> a [label="a", style=solid, penwidth=1.6];
-  eps -> b [label="b", style=dashed, penwidth=1.6];
-  a -> a [label="a", style=solid, penwidth=0.8];
-  a -> ab [label="b", style=dashed, penwidth=1.6];
-  b -> ba [label="a", style=solid, penwidth=1.6];
-  b -> b [label="b", style=dashed, penwidth=0.8];
-  ab -> ba [label="a", style=solid, penwidth=0.8];
-  ab -> ab [label="b", style=dashed, penwidth=0.8];
-  ba -> ba [label="a,b", style=solid, penwidth=0.8];
+  eps -> a [label="a", penwidth=1.6];
+  eps -> b [label="b", penwidth=1.6];
+  a -> a [label="a", penwidth=0.8];
+  a -> ab [label="b", penwidth=1.6];
+  b -> ba [label="a", penwidth=1.6];
+  b -> b [label="b", penwidth=0.8];
+  ab -> ba [label="a", penwidth=0.8];
+  ab -> ab [label="b", penwidth=0.8];
+  ba -> ba [label="a,b", penwidth=0.8];
 }

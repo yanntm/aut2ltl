@@ -10,12 +10,8 @@
   root/.style      = {},          % the root needs no ink: the init stub says it
   idem/.style      = {very thick},
   init/.style      = {semithick, -{Stealth[length=4pt,width=3pt]}},
-  letter a/.style = {solid},          % display letter a
-  letter b/.style = {dashed},          % display letter b
-  mixed/.style     = {solid},     % one arrow, several letters agree on it
   tree/.style      = {semithick, -{Stealth[length=4pt,width=3pt]}},
   nontree/.style   = {thin, -{Stealth[length=4pt,width=3pt]}},
-  cyc/.style       = {double, double distance=0.8pt},
   lbl/.style       = {font=\small, inner sep=1.5pt, fill=white},
   pairs/.style     = {anchor=north, font=\small},
 ]
@@ -32,21 +28,21 @@
   % the root is the adjoined identity: a source, marked like an initial state
   \draw[init] (2.4,4.7) -- (eps);
 
-  \draw[letter a,tree] (eps) to node[lbl] {$a$} (a);
-  \draw[letter b,tree] (eps) to node[lbl] {$b$} (b);
-  \draw[letter a,tree,cyc] (a) to[bend left=15] node[lbl] {$a$} (aa);
-  \draw[letter b,tree] (a) to node[lbl] {$b$} (ab);
-  \draw[letter a,tree,cyc] (b) to[bend left=15] node[lbl] {$a$} (ba);
-  \draw[letter b,nontree] (b) to[loop above] node[lbl] {$b$} (b);
-  \draw[letter a,nontree,cyc] (aa) to[bend left=15] node[lbl] {$a$} (a);
-  \draw[letter b,nontree] (aa) to node[lbl] {$b$} (b);
-  \draw[letter a,tree,cyc] (ab) to[bend left=15] node[lbl] {$a$} (aba);
-  \draw[letter b,nontree] (ab) to[loop above] node[lbl] {$b$} (ab);
-  \draw[letter a,nontree,cyc] (ba) to[bend left=15] node[lbl] {$a$} (b);
-  \draw[letter b,tree] (ba) to node[lbl] {$b$} (bab);
-  \draw[letter a,nontree,cyc] (aba) to[bend left=15] node[lbl] {$a$} (ab);
-  \draw[letter b,nontree] (aba) to node[lbl] {$b$} (bab);
-  \draw[mixed,nontree] (bab) to[loop above] node[lbl] {$a,b$} (bab);
+  \draw[tree] (eps) to node[lbl] {$a$} (a);
+  \draw[tree] (eps) to node[lbl] {$b$} (b);
+  \draw[tree] (a) to[bend left=15] node[lbl] {$a$} (aa);
+  \draw[tree] (a) to node[lbl] {$b$} (ab);
+  \draw[tree] (b) to[bend left=15] node[lbl] {$a$} (ba);
+  \draw[nontree] (b) to[loop above] node[lbl] {$b$} (b);
+  \draw[nontree] (aa) to[bend left=15] node[lbl] {$a$} (a);
+  \draw[nontree] (aa) to node[lbl] {$b$} (b);
+  \draw[tree] (ab) to[bend left=15] node[lbl] {$a$} (aba);
+  \draw[nontree] (ab) to[loop above] node[lbl] {$b$} (ab);
+  \draw[nontree] (ba) to[bend left=15] node[lbl] {$a$} (b);
+  \draw[tree] (ba) to node[lbl] {$b$} (bab);
+  \draw[nontree] (aba) to[bend left=15] node[lbl] {$a$} (ab);
+  \draw[nontree] (aba) to node[lbl] {$b$} (bab);
+  \draw[nontree] (bab) to[loop above] node[lbl] {$a,b$} (bab);
 
   \node[pairs] at (10.2,-0.5) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
 \end{tikzpicture}

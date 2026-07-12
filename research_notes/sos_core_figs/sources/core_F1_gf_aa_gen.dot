@@ -20,15 +20,15 @@ digraph core_F1_gf_aa {
   { rank=same; a b; }
   { rank=same; aa ab ba; }
 
-  eps -> a [label="a", style=solid, penwidth=1.6];
-  eps -> b [label="b", style=dashed, penwidth=1.6];
-  a -> aa [label="a", style=solid, penwidth=1.6];
-  a -> ab [label="b", style=dashed, penwidth=1.6];
-  b -> ba [label="a", style=solid, penwidth=1.6];
-  b -> b [label="b", style=dashed, penwidth=0.8];
-  aa -> aa [label="a,b", style=solid, penwidth=0.8];
-  ab -> a [label="a", style=solid, penwidth=0.8];
-  ab -> ab [label="b", style=dashed, penwidth=0.8];
-  ba -> aa [label="a", style=solid, penwidth=0.8];
-  ba -> b [label="b", style=dashed, penwidth=0.8];
+  eps -> a [label="a", penwidth=1.6];
+  eps -> b [label="b", penwidth=1.6];
+  a -> aa [label="a", penwidth=1.6];
+  a -> ab [label="b", penwidth=1.6];
+  b -> ba [label="a", penwidth=1.6];
+  b -> b [label="b", penwidth=0.8];
+  aa -> aa [label="a,b", penwidth=0.8];
+  ab -> a [label="a", penwidth=0.8];
+  ab -> ab [label="b", penwidth=0.8];
+  ba -> aa [label="a", penwidth=0.8];
+  ba -> b [label="b", penwidth=0.8];
 }

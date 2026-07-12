@@ -19,12 +19,12 @@ digraph core_F2_even {
   { rank=same; a b; }
   { rank=same; aa ab; }
 
-  eps -> a [label="a", style=solid, penwidth=1.6];
-  eps -> b [label="b", style=dashed, penwidth=1.6];
-  a -> aa [label="a", style=solid, penwidth=1.6, color="black:black"];
-  a -> ab [label="b", style=dashed, penwidth=1.6];
-  b -> b [label="a,b", style=solid, penwidth=0.8];
-  aa -> a [label="a", style=solid, penwidth=0.8, color="black:black"];
-  aa -> b [label="b", style=dashed, penwidth=0.8];
-  ab -> ab [label="a,b", style=solid, penwidth=0.8];
+  eps -> a [label="a", penwidth=1.6];
+  eps -> b [label="b", penwidth=1.6];
+  a -> aa [label="a", penwidth=1.6];
+  a -> ab [label="b", penwidth=1.6];
+  b -> b [label="a,b", penwidth=0.8];
+  aa -> a [label="a", penwidth=0.8];
+  aa -> b [label="b", penwidth=0.8];
+  ab -> ab [label="a,b", penwidth=0.8];
 }

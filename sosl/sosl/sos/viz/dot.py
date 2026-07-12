@@ -6,9 +6,8 @@ backends reuse (``dot -Tplain``, see `layout.py`). Pure text — no subprocess.
 
 The model's classification maps onto dot attributes: the root gets an incoming
 stub from nowhere (an initial-state marker — and the only arrow that may enter
-it), an idempotent gets a double periphery, the letter picks the line dash and
-labels the arrow, a key-tree edge is thicker, and a monochrome-cycle edge is
-drawn as two parallel strokes (dot's ``color="c:c"``).
+it), an idempotent gets a double periphery, a key-tree edge is thicker, and every
+arrow is labeled with its letter. Letters are told apart by that label alone.
 """
 from __future__ import annotations
 
@@ -19,15 +18,6 @@ from .model import Figure
 # Rank/node separation, in inches: the ~2.2cm x ~1.4cm grid the figures want.
 RANKSEP_IN = 0.87
 NODESEP_IN = 0.55
-
-# The dash pattern per letter index; cycled if the alphabet is larger.
-LETTER_STYLE = ("solid", "dashed", "dotted", "bold")
-
-
-def _letter_style(index: int) -> str:
-    """The dot line style of the letter at display index ``index``."""
-    return LETTER_STYLE[index % len(LETTER_STYLE)]
-
 
 def pairs_label(fig: Figure) -> str:
     """The accepting pairs as one plain-text line, ``P = { ([b],[b]), … }``."""
@@ -70,11 +60,7 @@ def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True) -> str:
     for (src, dst), letters in grouped(fig).items():
         marks = [e for e in fig.edges if (e.src, e.dst) == (src, dst)]
         attrs = [f'label="{",".join(fig.naming.names[i] for i in letters)}"',
-                 f"style={_letter_style(letters[0])}" if len(letters) == 1
-                 else "style=solid",
                  "penwidth=1.6" if any(e.is_tree for e in marks) else "penwidth=0.8"]
-        if any(e.is_cycle for e in marks):
-            attrs.append('color="black:black"')
         a, b = fig.node_of(src).ident, fig.node_of(dst).ident
         out.append(f'  {a} -> {b} [{", ".join(attrs)}];')
 
