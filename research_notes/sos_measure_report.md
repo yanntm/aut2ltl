@@ -10,9 +10,7 @@ Every campaign writes its machine report under `reference/quant/` (one `.md`
 own regeneration command), so any number below is reproducible from that
 file alone. Commands run from `sosl/`. Spot appears only inside the
 independent oracles, bounded-or-skipped; a blown per-case budget is a datum,
-never a wait. Each report carries the corpus it ran against in its header;
-where an early campaign shows 4248 cases and a later one 6222, the corpus
-grew once, between them.
+never a wait.
 
 **Closed work.** M1 (measure + θ-profile), M2 (the Route A oracle and laws
 L1–L5), M3 (distance / shadow / essential, + the M3b biconditional), M4
