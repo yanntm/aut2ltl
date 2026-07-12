@@ -433,7 +433,7 @@ accepting name loops at the zero itself.*
 Laws: `{[a], [a·a]}` is a **period-2 cycle** (`[a]·[a] = [a·a]`, `[a·a]·[a] = [a]`) — a
 `Z₂` in the algebra, visible in the `·a` row as the swap `[a] ↔ [a·a]`. `[a·a]` acts as
 the **identity** on the four word classes: the algebra owns a second neutral element,
-and the fresh-identity convention of §3.1 keeps `[ε]` apart. `[b]` and `[a·b]` are
+and the adjoined identity of §3.1 keeps `[ε]` apart. `[b]` and `[a·b]` are
 **left zeros**, fixed by both letters: the first `b` has been read, after an even
 (`[b]`) or odd (`[a·b]`) count of `a`'s. Accepting pairs `([b],[b])`, `([b],[a·a])`,
 `([b],[a·b])`: once `[b]` is reached, every loop accepts.
