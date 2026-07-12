@@ -33,7 +33,9 @@ from typing import Dict, FrozenSet, List, Optional, Set, Tuple
 from ..calculus.surgery import (
     complement,
     interior,
+    is_cosafety,
     is_obligation,
+    is_safety,
     is_saturated,
     r_classes,
     safety_closure,
@@ -136,6 +138,29 @@ def rec_hull(table: Table, q: PairSet) -> PairSet:
             return frozenset(out)
         out.update(added)
         out = set(saturate(table, frozenset(out)))
+
+
+def rung_of(table: Table, pairs: PairSet) -> str:
+    """The Manna-Pnueli class of `L(pairs)`, lowest rung first: `clopen`,
+    `guarantee`, `safety`, `obligation`, `recurrence`, `persistence`,
+    `reactivity`. A pure read-off composition of the rung predicates — the one
+    output-metric helper GT2 takes (spec §4). `pairs` must be saturated."""
+    if is_safety(table, pairs) and is_cosafety(table, pairs):
+        return "clopen"
+    if is_cosafety(table, pairs):
+        return "guarantee"
+    if is_safety(table, pairs):
+        return "safety"
+    if is_obligation(table, pairs):
+        return "obligation"
+    rec, per = is_recurrence(table, pairs), is_persistence(table, pairs)
+    if rec and per:
+        return "obligation"
+    if rec:
+        return "recurrence"
+    if per:
+        return "persistence"
+    return "reactivity"
 
 
 # --- the rung existence tests (paper Props 4.2-4.4) --------------------------
