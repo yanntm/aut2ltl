@@ -56,11 +56,12 @@ only the file and section named for the task at hand — nothing else.
 ## Work items — Engineering (in order, each gated on the user's go)
 
 1. **M6 (spec §12)** — the census campaign E1–E4. Fills the paper's §6
-   and abstract ⟨TBD⟩ slots, through report findings only. Theory's E1
-   and E2 predictions are registered in the report and are falsifiable —
-   check them, do not assume them. E4 is where PRISM actually runs the
-   `.mc` files: it owns the label-name sanitizing printer and the
-   stored-chain placement decision with the corpus keeper.
+   and abstract ⟨TBD⟩ slots, through report findings only. The report
+   carries two cross-gate laws the campaign must *assert* (they are free —
+   E1–E3 compute both sides anyway, and a violation convicts M1/M3/M4).
+   E4 is where PRISM actually runs the `.mc` files: it owns the label-name
+   sanitizing printer and the stored-chain placement decision with the
+   corpus keeper.
 2. **Figures** — FIG-1/2/3 are built and placed in the paper; the
    artifact is `research_notes/sos_measure_figs/` (`make` rebuilds
    tex+png), its probes `sosl/tests/quant/figs/`. FIG-4 is unblocked (its

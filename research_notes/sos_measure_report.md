@@ -40,28 +40,32 @@ and must check the two predictions registered below.
 | §6 (iv) distance geometry, nearest-LTL-neighbor | E3 | ⟨F3⟩ |
 | §6 (v) pipeline + baseline | E4 | ⟨F4⟩ |
 
-## Predictions registered for M6 (falsifiable — check them, do not assume them)
+## Cross-gate laws M6 must check (falsifiable; assert them, don't assume them)
 
-**E1 — the trivial-essential identity.** A trivial essential form (`n = 2`)
-is *equivalent* to `μ(L) ∈ {0, 1}`: if `μ(L) = 1` the complement is null in
-every cylinder, so every residual measure is `1`, the series is constant and
-`M_x` is trivial (dually for `μ = 0`); conversely a trivial quotient forces
-`ess(L) ∈ {∅, Σ^ω}`. So an E1 rerun on the same census snapshot must report
-exactly **5164** languages with `μ ∈ {0, 1}`, split **2582/2582** by
-complement pairing (the corpus is complement-closed, and complement sends
-`x` to `1 − x` pointwise, so `≈` and its triviality are complement-
-invariant). A mismatch convicts M1 or M3.
+Both are laws between columns of the *same* run, so they hold on whatever
+corpus snapshot M6 actually walks and cost nothing extra to assert — E1–E3
+compute both sides anyway. No count is fixed here on purpose: the corpus is
+regenerated concurrently, and a hard-coded total would only produce a false
+red (or a chased edit) on the next snapshot.
 
-**E2 — no interior language below maximal entropy (uniform `p`).** For
-uniform `p`, `μ(L) ≤ |pref_n(L)|/|Σ|^n` for every `n`, so `μ_p(L) > 0`
-forces `h(L) = log₂|Σ|` — and in the engine this is exact, not asymptotic:
+**Trivial essential ⟺ `μ ∈ {0, 1}`.** If `μ(L) = 1` the complement is null
+in every cylinder, so every residual measure is `1`, the residual series is
+constant, and `M_x` is trivial (dually for `μ = 0`); conversely a trivial
+quotient forces `ess(L) ∈ {∅, Σ^ω}`. So the E1 count of `μ ∈ {0, 1}` must
+equal the E3 count of `n = 2` essential forms, row for row — and, the corpus
+being complement-closed and complement sending `x` to `1 − x` pointwise (so
+`≈`, its aperiodicity and its triviality are complement-invariant), that
+count must split evenly between `μ = 0` and `μ = 1` up to self-complementary
+entries. A mismatch convicts M1 or M3.
+
+**`μ > 0` ⟹ `ρ = |Σ|`, exactly (uniform `p`).** For uniform `p`,
+`μ(L) ≤ |pref_n(L)|/|Σ|^n` for every `n`, so `μ_p(L) > 0` forces
+`h(L) = log₂|Σ|` — and in the engine this is exact, not asymptotic:
 `ρ = |Σ|` requires an irreducible live block whose every row sums to `|Σ|`
-(for irreducible nonnegative matrices `ρ` reaches the max row sum only when
+(for an irreducible nonnegative matrix `ρ` reaches the max row sum only when
 all row sums are equal), on which the `v₀ = 1` bracket is `[|Σ|, |Σ|]` at
-iteration 0, width 0. So the E1×E2 census join must show **zero rows with
-`μ > 0` and `ρ < |Σ|`**: all 2582 `μ = 1` languages and all 1058 strictly
-interior languages report `ρ = |Σ|` exactly at width 0, and every language
-with `h < log₂|Σ|` (the 195 with `ρ = 1` among them) reports `μ = 0`. A
+iteration 0, width 0. So the E1×E2 join must contain **no row with `μ > 0`
+and `ρ < |Σ|`**, and every row with `h < log₂|Σ|` must report `μ = 0`. A
 violation convicts M1 or M4. The converse is *not* claimed: a `μ = 0`
 language may still have maximal entropy ("finitely many `b`" has
 `pref = Σ*`).
