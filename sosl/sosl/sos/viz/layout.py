@@ -41,7 +41,7 @@ def layered(fig: Figure) -> Placement:
     return pos
 
 
-def by_dot(fig: Figure) -> Placement:
+def by_dot(fig: Figure, rankdir: str = "LR") -> Placement:
     """The coordinates GraphViz computes for `dot.dot_of(fig)`, in centimetres.
 
     Runs ``dot -Tplain``, whose output gives one ``node <name> <x> <y> …`` line
@@ -51,7 +51,7 @@ def by_dot(fig: Figure) -> Placement:
     if shutil.which("dot") is None:
         raise RuntimeError("GraphViz `dot` not on PATH (use the `layered` engine)")
     proc = subprocess.run(                      # no P caption: it would shift the
-        ["dot", "-Tplain"], input=dot_of(fig, pairs=False),   # bounding box, and
+        ["dot", "-Tplain"], input=dot_of(fig, pairs=False, rankdir=rankdir),  # box, and
         capture_output=True, text=True, timeout=DOT_TIMEOUT_S)  # only nodes matter
     if proc.returncode != 0:
         raise RuntimeError(f"dot -Tplain failed: {proc.stderr.strip()}")
@@ -69,10 +69,11 @@ def by_dot(fig: Figure) -> Placement:
     return pos
 
 
-def place(fig: Figure, engine: str = "dot") -> Placement:
-    """The placement under ``engine`` (``"dot"`` or ``"layered"``)."""
+def place(fig: Figure, engine: str = "dot", rankdir: str = "LR") -> Placement:
+    """The placement under ``engine`` (``"dot"`` or ``"layered"``); ``rankdir``
+    (``LR`` / ``TB``) is the direction the layers run in, and is dot's alone."""
     if engine == "dot":
-        return by_dot(fig)
+        return by_dot(fig, rankdir)
     if engine == "layered":
         return layered(fig)
     raise ValueError(f"unknown layout engine {engine!r} (dot | layered)")

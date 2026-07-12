@@ -5,6 +5,7 @@
         [--img-dir <dir>]        # the .png lands here (default: --out-dir)
         [--rename 'a=a,!a=b']    # display letters, in display order
         [--layout dot|layered]   # node placement (default: dot)
+        [--rankdir LR|TB]        # which way the BFS layers run (default: LR)
         [--no-pairs]             # ablate the P caption (draw the bare algebra)
 
 The drawing itself is `sosl.sos.viz`, the engine's generic `.sos` -> picture
@@ -35,7 +36,7 @@ from sosl.sos.viz.render import compile_pdf, pdf_to_png
 
 
 def emit(fig: Figure, out_dir: str, img_dir: str, name: str, layout: str,
-         provenance: str, pairs: bool = True) -> str:
+         provenance: str, pairs: bool = True, rankdir: str = "LR") -> str:
     """Write the machine artefacts and the hand-owned tex under ``out_dir``,
     compile *the hand-owned one* to pdf, and rasterize it into ``img_dir``.
     Returns the hand-owned tex path."""
@@ -46,9 +47,10 @@ def emit(fig: Figure, out_dir: str, img_dir: str, name: str, layout: str,
     tex = os.path.join(out_dir, f"{name}.tex")
 
     with open(gen_dot, "w") as fh:
-        fh.write(f"// {provenance}\n" + dot_of(fig, name.replace("-", "_"), pairs))
+        fh.write(f"// {provenance}\n"
+                 + dot_of(fig, name.replace("-", "_"), pairs, rankdir))
     with open(gen_tex, "w") as fh:
-        fh.write(tikz_of(fig, place(fig, layout), provenance, pairs))
+        fh.write(tikz_of(fig, place(fig, layout, rankdir), provenance, pairs))
     if os.path.exists(tex):
         print(f"kept hand-owned {tex} (machine form refreshed in {gen_tex})")
     else:
@@ -72,6 +74,7 @@ def main(argv: List[str]) -> int:
     ap.add_argument("--img-dir")
     ap.add_argument("--rename")
     ap.add_argument("--layout", default="dot", choices=("dot", "layered"))
+    ap.add_argument("--rankdir", default="LR", choices=("LR", "TB"))
     ap.add_argument("--no-pairs", action="store_true",
                     help="ablate the P caption; draw the bare algebra A")
     args = ap.parse_args(argv[1:])
@@ -84,7 +87,8 @@ def main(argv: List[str]) -> int:
 
     rename = f" --rename {args.rename}" if args.rename else ""
     emit(fig, args.out_dir, args.img_dir or args.out_dir, args.name, args.layout,
-         f"sos2cayley {os.path.basename(args.sos)}{rename}", not args.no_pairs)
+         f"sos2cayley {os.path.basename(args.sos)}{rename}", not args.no_pairs,
+         args.rankdir)
     print(pairs_label(fig))
     return 0
 

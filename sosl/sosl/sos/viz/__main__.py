@@ -34,6 +34,7 @@ def main(argv: List[str]) -> int:
     ap.add_argument("-o", "--out")
     ap.add_argument("--rename")
     ap.add_argument("--layout", default="dot", choices=("dot", "layered"))
+    ap.add_argument("--rankdir", default="LR", choices=("LR", "TB"))
     ap.add_argument("--no-pairs", action="store_true",
                     help="ablate the P caption; draw the bare algebra A")
     args = ap.parse_args(argv[1:])
@@ -60,10 +61,10 @@ def main(argv: List[str]) -> int:
             else:
                 _write(args.out, text)
         elif ext == ".tex":
-            _write(args.out, tikz_of(fig, place(fig, args.layout), provenance, pairs))
+            _write(args.out, tikz_of(fig, place(fig, args.layout, args.rankdir), provenance, pairs))
         elif ext == ".pdf":
             tex = os.path.splitext(args.out)[0] + ".tex"
-            _write(tex, tikz_of(fig, place(fig, args.layout), provenance, pairs))
+            _write(tex, tikz_of(fig, place(fig, args.layout, args.rankdir), provenance, pairs))
             print(f"wrote {compile_pdf(tex)}")
         elif ext == ".png":
             dot_to_png(dot_of(fig, pairs=pairs), args.out)

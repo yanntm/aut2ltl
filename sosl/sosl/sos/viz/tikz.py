@@ -155,9 +155,13 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str,
 
     root = next(nd for nd in fig.nodes if nd.is_root)
     rx, ry = pos[root.cls]
+    # The stub comes from wherever the graph is not: from above when the root
+    # sits on top of everything (a top-down layout), from the left otherwise.
+    top = all(pos[nd.cls][1] < ry for nd in fig.nodes if not nd.is_root)
+    sx, sy = (rx, ry + INIT_STUB_CM) if top else (rx - INIT_STUB_CM, ry)
     out += ["", "  % the root is the adjoined identity: a source, marked like an "
                 "initial state",
-            f"  \\draw[init] ({rx - INIT_STUB_CM:.1f},{ry:.1f}) -- ({root.ident});", ""]
+            f"  \\draw[init] ({sx:.1f},{sy:.1f}) -- ({root.ident});", ""]
 
     for ar in _arrows(fig):
         style = ["tree" if ar.is_tree else "nontree"]

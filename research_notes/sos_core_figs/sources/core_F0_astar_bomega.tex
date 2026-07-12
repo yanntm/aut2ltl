@@ -16,25 +16,26 @@
   pairs/.style     = {anchor=north, font=\small},
 ]
 
-  \node[class,root] (eps) at (3.3,3.7) {$\varepsilon$};
-  \node[class,idem] (a) at (7.8,6.0) {$a$};
-  \node[class,idem] (b) at (7.8,1.7) {$b$};
-  \node[class] (ab) at (12.5,6.1) {$a{\cdot}b$};
-  \node[class,idem] (ba) at (12.5,0.8) {$b{\cdot}a$};
+  % hand-placed: the four word classes on a square, the root off to its left.
+  \node[class,root] (eps) at (0.0,0.0) {$\varepsilon$};
+  \node[class,idem] (a) at (3.6,1.5) {$a$};
+  \node[class,idem] (b) at (3.6,-1.5) {$b$};
+  \node[class] (ab) at (7.6,1.5) {$a{\cdot}b$};
+  \node[class,idem] (ba) at (7.6,-1.5) {$b{\cdot}a$};
 
   % the root is the adjoined identity: a source, marked like an initial state
-  \draw[init] (2.4,3.7) -- (eps);
+  \draw[init] (-0.9,0.0) -- (eps);
 
   \draw[tree] (eps) to node[lbl] {$a$} (a);
   \draw[tree] (eps) to node[lbl] {$b$} (b);
   \draw[nontree] (a) to[loop above] node[lbl] {$a$} (a);
   \draw[tree] (a) to node[lbl] {$b$} (ab);
   \draw[tree] (b) to node[lbl] {$a$} (ba);
-  \draw[nontree] (b) to[loop above] node[lbl] {$b$} (b);
+  \draw[nontree] (b) to[loop below] node[lbl] {$b$} (b);
   \draw[nontree] (ab) to node[lbl] {$a$} (ba);
   \draw[nontree] (ab) to[loop above] node[lbl] {$b$} (ab);
-  \draw[nontree] (ba) to[loop above] node[lbl] {$a,b$} (ba);
+  \draw[nontree] (ba) to[loop below] node[lbl] {$a,b$} (ba);
 
-  \node[pairs] at (7.9,-0.5) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]) \,\}$};
+  \node[pairs] at (3.8,-3.2) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]) \,\}$};
 \end{tikzpicture}
 \end{document}

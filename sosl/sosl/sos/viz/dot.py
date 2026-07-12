@@ -25,15 +25,17 @@ def pairs_label(fig: Figure) -> str:
     return f"P = {{ {inner} }}" if inner else "P = { }"
 
 
-def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True) -> str:
+def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True,
+           rankdir: str = "LR") -> str:
     """The `digraph` for ``fig``: layered left-to-right by key length (one
     ``rank=same`` group per BFS layer), nodes and edges in the figure's canonical
     order, so the text is a deterministic function of the invariant. ``pairs``
     puts P under the drawing as the graph title (the object is ``<A, P>``; only
-    ``A`` has a shape, so P is a caption)."""
+    ``A`` has a shape, so P is a caption). ``rankdir`` is the direction the BFS
+    layers run in: ``LR`` (the root at the left) or ``TB`` (the root at the top)."""
     out: List[str] = [
         f"digraph {name} {{",
-        "  rankdir=LR;",
+        f"  rankdir={rankdir};",
         f"  ranksep={RANKSEP_IN}; nodesep={NODESEP_IN};",
         '  node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];',
         '  edge [fontname="serif", fontsize=10, arrowsize=0.7];',
