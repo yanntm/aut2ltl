@@ -18,10 +18,15 @@ tool output already in the reservoir.
 §2 and §3 are fully fleshed, polished, and user-reviewed. §§1, 4–11 and the abstract
 are still bullets-only outline.
 
-A figure request is delegated to engineering:
-`research_notes/sos_core_figures.md` specs a generic `.sos → Cayley graph` renderer
-(`sos2cayley`) plus four figures F0–F3; the paper carries marked ASCII placeholders
-(`[Figure F0…F3]` blocks in §3) to be swapped once renders land.
+Figures: engineering delivered v1 in `research_notes/sos_core_figs/` (tool +
+`_gen`/tweaked TikZ pairs + img). A v2 regen is requested
+(`research_notes/sos_core_figures.md`): edge labels on every edge, layout
+reproducing the approved ASCII placeholders, `P` line beneath all four figures —
+the pairs are part of the object, F0 included. The paper carries the marked ASCII
+placeholders (`[Figure F0…F3]` blocks in §3) to be swapped once v2 passes user
+review; tweaked `.tex` copies are still untweaked, pending that review. Spec-style
+lesson: requests state goals and point at the approved placeholders as the
+reference; no byte-stability or assert rigidity, engineering picks the means.
 
 ## TODO queue (next action first)
 
