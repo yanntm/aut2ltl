@@ -42,11 +42,19 @@ regular. The running examples use the single atom `a`, so `Σ = {a, !a}` with `!
 letter on which `a` fails. This section recalls the classical notions the object rests
 on, adapting Perrin and Pin [PP04]; what this paper adds is listed at the close.
 
+One further specimen threads §§2–3 alongside them, small enough that every notion is
+worked on it in full — Carton–Perrin's [CP97, Ex. 10] `L = a*·b^ω` over `Σ = {a, b}`:
+some `a`'s, then `b`'s forever (one atom `p`, read `a = ¬p`, `b = p`).
+
 **We only ever look at lassos.** A **lasso**, or ultimately-periodic word, is `u·v^ω`: a
 finite **stem** `u ∈ Σ*` followed by a finite nonempty **loop** `v ∈ Σ⁺` repeated
 forever. Lassos suffice: *two regular ω-languages are equal iff they agree on all lassos*
 [PP04]. Classifying `L` is therefore sorting lassos into finitely many types, and every
 object below is machinery for naming and sorting them.
+
+*Specimen.* `b^ω`, `ab·b^ω` and `aab·(bb)^ω` are lassos of `L`; `ba·(ab)^ω` is a lasso
+outside it; and the word `a·b·a·a·b·b·a·a·a·b·b·b·⋯`, its blocks growing forever, is no
+lasso at all — yet `L` is pinned by its verdicts on lassos alone.
 
 **A finite monoid, plus one operation.** Finite words are classified by a finite
 **monoid**: an associative product with unit, concatenation collapsed onto finitely many
@@ -58,11 +66,18 @@ set `P` of accepting ω-types. We record this framing but do not carry the secon
 a standalone algebra: §3 reads "loop forever" *inside* the finite monoid, so the object
 is a finite monoid together with a set of accepting names.
 
+*Specimen.* For `a*·b^ω` concatenation collapses onto five values — §3.1 exhibits
+them — and "loop forever" will be read inside those five, with no second sort.
+
 **The idempotent power.** In a finite monoid the powers `s, s², s³, …` of any element
 cannot all be distinct, so the sequence is eventually periodic and contains a unique
 **idempotent**, written `s^ω` — the unique `s^n` (`n ≥ 1`) with `s^n·s^n = s^n`. Read a
 loop `v` through `φ`: its repeated image settles on `φ(v)^ω`. Concretely, "loop forever"
 is "iterate the loop's value to its idempotent."
+
+*Example.* In the multiplicative monoid of the integers mod 12, the powers of `2` run
+`2, 4, 8, 4, 8, …` — eventually periodic; the unique idempotent among them is `4`
+(`4·4 = 16 = 4`), so `2^ω = 4`.
 
 **A linked pair names a lasso.** Reading `u·v^ω` through a finite `φ` (Ramsey): the loop
 settles on the idempotent `e = φ(v)^ω` and the stem on `s = φ(u)·e`, with `s·e = s` (the
@@ -72,11 +87,19 @@ recognizer is fixed by which lassos it accepts, hence by its set of **accepting 
 pairs** — which is why (§3) the acceptance datum of the object is a *set of pairs*, not a
 subset of the monoid.
 
+*Specimen.* Read `aab·b^ω` through the five-value algebra of §3.1: the loop settles on
+`e = ⟦b⟧^ω = [b]`, the stem on `s = ⟦aab⟧·[b] = [a·b]`, and the pair `([a·b], [b])`
+names the lasso — as it does every lasso with stem in `a⁺b*` and loop in `b⁺`.
+
 **One lasso, many names.** A single ω-word has many presentations —
 `u·v^ω = (uv)·v^ω = u·(v²)^ω = (u v₁)·(v₂ v₁)^ω` — and, as §3 shows, these need not name
 it by the same linked pair. Reconciling them is not bookkeeping: it is the **rotation
 lemma** (§3), the paper's structural pivot, and the one nontrivial constraint the object
 must satisfy.
+
+*Specimen.* `a·(ba)^ω = ab·(ab)^ω = ab·(abab)^ω`: one ω-word, three presentations.
+Whether all presentations of a word receive one name is exactly the subtlety §3
+confronts.
 
 **Recalled, and new.** Recalled from [PP04] and classical theory: that lassos suffice,
 the monoid/ω-power framing, and linked pairs. New here: the reification of the syntactic
@@ -118,10 +141,8 @@ pairs is a *legal* layer exactly when it is closed under the rotation lemma (Lem
 - `λ : Σ → 𝒞` is the **letter map**, and the algebra is **letter-generated**: the
   **fold** `⟦·⟧ : Σ* → 𝒞`, defined by `⟦ε⟧ = [ε]` and `⟦w·a⟧ = ⟦w⟧·λ(a)`, is onto.
 
-*Specimen.* Every notion of this section is instantiated on one language, small enough
-to read in full — Carton–Perrin's [CP97, Ex. 10] `L = a*·b^ω` over `Σ = {a, b}`: some
-`a`'s, then `b`'s forever (one atom `p`, read `a = ¬p`, `b = p`). Its algebra has five
-classes, named by their keys:
+*Specimen.* The algebra of `a*·b^ω` (§2's specimen) has five classes, named by their
+keys:
 
 ```
  ·       [ε] [a] [b] [a·b] [b·a]
@@ -168,7 +189,22 @@ as a machine: the right regular representation acting on itself.
 *Specimen.* From `[ε]`, `a` leads to `[a]` and `b` to `[b]`; `[a]` loops on `a` and
 advances to `[a·b]` on `b`; `[b]` and `[a·b]` loop on `b` and fall to `[b·a]` on `a`;
 `[b·a]` absorbs both letters. Each node sits at the end of the path spelled by its own
-key.
+key:
+
+```
+          a                  b
+   [ε] ─────▶ [a] ───────▶ [a·b]
+    │         ⟲ a           ⟲ b
+    │ b                      │ a
+    ▼                        ▼
+   [b] ─────────a────────▶ [b·a]
+    ⟲ b                     ⟲ a, b
+```
+
+The graph is the matrix made visible, and losslessly: any product `s·t` is read by
+walking `key(t)` from `s`. Its reachability shape is the algebra's right-ideal order
+(here a graph falling into the dead sink), and a group would show as a cycle that is
+not a self-loop — none here; `Even`'s `Z₂` (§3.5) draws as one.
 
 ### 3.2 Naming lassos, and the rotation lemma
 
@@ -177,6 +213,11 @@ A **linked pair** of the algebra is `(s, e) ∈ 𝒞 × 𝒞` with `e² = e` and
 so both components of a naming pair are folds of nonempty words; since no nonempty word
 folds to `[ε]` (the identity is keyed by `ε` — §3.1), a naming pair lies in
 `(𝒞∖{[ε]})²`.
+
+*Specimen.* Six linked pairs: `([a],[a])`, `([b],[b])`, `([a·b],[b])`, `([b·a],[a])`,
+`([b·a],[b])`, `([b·a],[b·a])`. The pair `([a],[a])` names `a^ω` and nothing else;
+`([b·a],[a])` names the lassos with a `b` somewhere, then `a`'s forever; `([a·b],[b])`
+names exactly the lassos with stem in `a⁺b*` and loop in `b⁺`.
 
 One lasso has many presentations, and — this is the subtlety the object must confront —
 they need not name it by one pair. Three elementary **moves** relate the presentations of
@@ -191,6 +232,11 @@ a common ω-word:
 On the named pair, `loop-power` changes nothing (`(⟦v⟧^k)^ω = ⟦v⟧^ω`, the idempotent
 power of a power). The other two move it — and both are instances of one rotation, the
 paper's pivot.
+
+*Specimen.* `a·(ba)^ω ↦ ab·(ab)^ω` is a `loop-rotate`; `ab·(ab)^ω ↦ ab·(abab)^ω` a
+`loop-power`. All three presentations fold to the one name `([b·a], [b·a])` — this
+specimen's stems absorb, so its moves happen to fix the name; `Even` (§3.5) has a move
+that does not, and the lemma below is what makes the verdicts survive even those.
 
 **Lemma 3.3 (rotation lemma).** For all `s, g, h ∈ 𝒞` with `s·(gh)^ω = s`, the linked
 pairs
@@ -217,9 +263,16 @@ unchanged and the stem merely gains `⟦v⟧`, which is why a longer stem can na
 lasso by a different pair. `loop-rotate` is the general case. So of the three moves, only
 `loop-power` fixes the pair; every other pair-change is one rotation step.
 
+*Specimen.* The degenerate case on `(a, b) ↦ (ab, b)`: the stem gains `[b]`, which
+`[a·b]` absorbs — both presentations carry the name `([a·b], [b])`.
+
 Call two linked pairs **conjugate**, `(s, e) ≈ (s', e')`, when connected by rotations —
 the equivalence generated by `(s, (gh)^ω) ≈ (s·g, (hg)^ω)`. Lemma 3.3 says conjugate
 pairs name the same lassos, so a recognizer must accept them together.
+
+*Specimen.* All six conjugacy classes are singletons — every rotation fixes the pair,
+the dead class absorbing whatever factor moves. The genuine two-pair conjugacy waits
+for `Even`: `([a·a],[a·a]) ≈ ([a],[a·a])`, two names for `a^ω`, worked in §3.5.
 
 **The rotation lemma is the structural pivot of the paper.** Here it constrains the
 acceptance layer (§3.3). In §7, applied not to the loop of a single lasso but to the
@@ -243,6 +296,11 @@ acceptance layer. Saturation is a finite, mechanical closure — checkable direc
 multiplication table, with no automaton and no external theory (§3.5 verifies it by hand
 on the examples).
 
+*Specimen.* `P = { ([b],[b]), ([a·b],[b]) }` — the two behaviors of `a*·b^ω`: "reading
+`b`'s after nothing but `a`'s (if any), keep reading `b`'s". Saturation is immediate,
+each pair being its own conjugacy class (§3.2). The flip `P^c` — the other four linked
+pairs — is an equally legal layer, and denotes the complement (§4).
+
 **The membership query.** Given a lasso `u·v^ω`, the object answers membership by folding
 and one lookup:
 
@@ -251,6 +309,13 @@ and one lookup:
 ```
 
 `(s, e)` is a linked pair (`e² = e`; `s·e = ⟦u⟧·e·e = s`) — the pair naming `u·v^ω`.
+
+*Specimen.* Three runs. `b^ω`: the loop `[b]` is already idempotent, the empty stem
+gives `s = [ε]·[b] = [b]`; `([b],[b]) ∈ P` — accepted. `aab·b^ω`: `⟦aab⟧ = [a·b]`,
+loop `[b]`; `([a·b],[b]) ∈ P` — accepted. `a·(ab)^ω`: `⟦ab⟧ = [a·b]` is *not*
+idempotent — the table refuses `ab` as a stable block; iterate to `[a·b]^ω = [b·a]`,
+then `s = [a]·[b·a] = [b·a]` and `([b·a],[b·a]) ∉ P` — rejected, the idempotent-power
+step visibly doing the work: the loop `ab` keeps producing an `a` after a `b`.
 
 **Lemma 3.5 (well-definedness).** The query's verdict on `u·v^ω` depends only on the
 ω-word, not on the presentation `(u, v)`, **iff** `P` is saturated.
@@ -267,6 +332,10 @@ presentations of the one word `w(pq)^ω` carry the pairs `(s, (gh)^ω)` and
 `(s·g, (hg)^ω)`. Presentation-independence forces one verdict, i.e. both pairs lie in `P`
 or neither. ∎
 
+*Specimen.* Presentation-independence is immediate here — singleton conjugacy classes.
+`Even` shows the force of the ⇒ direction: a `P` containing `(4,4)` but not `(2,4)`
+would answer `a^ω` two ways (§3.5's saturation check).
+
 **Lemma 3.6 (presentations connect).** Two presentations name the same ω-word iff
 connected by `stem-extend`, `loop-power`, `loop-rotate` and their inverses.
 
@@ -281,10 +350,17 @@ lowering `|u|` by one and rotating `ρ`; iterate to `|u| = t`. The result — th
 prefix of `α` and the period rotated to begin at `t` — depends only on `α`, so any two
 presentations reduce to it. ∎
 
+*Specimen.* `(aab, bb)` reduces: `loop-power`⁻¹ to `(aab, b)`; the stem's last letter
+`b` lies in the periodic part, so `loop-rotate`⁻¹ pulls it in, giving `(aa, b)` — the
+canonical presentation (`t = 2`, `π = 1`), reached from any presentation of `aab·b^ω`.
+
 By Lemma 3.5 a saturated `P` makes the query a function of the ω-word. Read as a
 recognizer, the object accepts exactly the lassos of a unique regular ω-language
 `L(𝓘)` — agreement on lassos determining a regular ω-language (§2) — and this is the
 language the object denotes.
+
+*Specimen.* The two accepting names admit exactly the lassos with stem in `a*b*` and
+loop in `b⁺` — the lassos of `a*·b^ω`, and no others: `L(𝓘) = L`.
 
 ### 3.4 Residuals are derived data
 
@@ -302,31 +378,15 @@ the Cayley graph — all recomputable from `(𝒞, λ, M, P)`.
 residual equality yields a deterministic, complete letter-graph — the residual
 automaton. ∎
 
+*Specimen.* `L_{[a]} = a⁻¹L = L` (the `a*` absorbs); `L_{[b]} = L_{[a·b]} = {b^ω}`;
+`L_{[b·a]} = ∅`. The five-node Cayley graph quotients to a three-state residual
+automaton — `{[ε],[a]}`, `{[b],[a·b]}`, `{[b·a]}` — strictly coarser than the algebra:
+the residuals cannot tell `[b]` from `[a·b]`, the two-sided congruence can.
+
 No congruence and no automaton is invoked. The residuals are derived data and rightly
 enter no equality test between objects (§3.5, Figure 2).
 
 ### 3.5 Concrete form, read on the examples
-
-**The specimen, completed.** §3.1 built the algebra of `a*·b^ω`; its acceptance layer
-completes the object. The idempotents are `[a]`, `[b]`, `[b·a]`; the linked pairs are
-`([a],[a])`, `([b·a],[a])`, `([b],[b])`, `([a·b],[b])`, `([b·a],[b])`,
-`([b·a],[b·a])`; and
-
-```
-P = { ([b],[b]), ([a·b],[b]) }
-```
-
-— the two behaviors of the language: "reading `b`'s after nothing but `a`'s (if any),
-keep reading `b`'s". The membership query of §3.3, run on three lassos:
-
-- `b^ω`: the loop folds to `[b]`, already idempotent; the empty stem gives
-  `s = [ε]·[b] = [b]`; `([b],[b]) ∈ P` — accepted.
-- `aab·b^ω`: `⟦aab⟧ = [a·b]`, loop class `[b]`; `s = [a·b]·[b] = [a·b]`;
-  `([a·b],[b]) ∈ P` — accepted.
-- `a·(ab)^ω`: `⟦ab⟧ = [a·b]` is *not* idempotent — the table refuses `ab` as a stable
-  block; iterate to `[a·b]^ω = [b·a]`. Then `s = [a]·[b·a] = [b·a]` and
-  `([b·a],[b·a]) ∉ P` — rejected, and the idempotent-power step is visibly doing the
-  work: the loop `ab` keeps producing an `a` after a `b`.
 
 Recall the three running examples (introduced fully in §1): **`GF(aa)`** — infinitely
 many `aa`-factors, an LTL property; **`Even`** — an even number of `a`'s before the first
