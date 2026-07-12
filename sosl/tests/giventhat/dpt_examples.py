@@ -31,9 +31,15 @@ from sosl.sos.giventhat import given_that, k_settles_phi, k_refutes_phi
 from sosl.sos.giventhat.interval import Interval, choose
 from sosl.sos.giventhat.ladder import is_persistence, is_recurrence
 
-# The two figures of [DPT25]. Fig. 2/3 is their running example; Fig. 4 is the
-# stutter one (A_XFa given K = ā), the tiny lattice the paper enumerates.
+# The paper's §6. `fairness` is the headline: `¬φ` is the canonical generalized
+# Büchi (two acceptance sets), `K` is [DPT25]'s own cheapest knowledge — the AP
+# implication `a = [x>2]`, `b = [x>3]` (§7.2 there), which an SMT check on the
+# proposition definitions settles without looking at the system at all. The other
+# two are the instances [DPT25] draw as figures: Fig. 2/3 is their running
+# example, Fig. 4 the stutter one (`A_XFa` given `K = ā`), whose lattice is small
+# enough to enumerate whole.
 EXAMPLES: List[Tuple[str, str, str]] = [
+    ("fairness", "G F a & G F b", "G(b -> a)"),
     ("fig2-3", "F(a & c) | (G F b & G F !b)", "(F G b) & G c"),
     ("fig4", "X F a", "!a"),
 ]
@@ -137,6 +143,11 @@ def report(tag: str, neg_phi_ltl: str, k_ltl: str) -> None:
 
 
 def main() -> None:
+    import sys
+    argv = sys.argv[1:]
+    if len(argv) == 3 and argv[0] == "--pair":
+        report("adhoc", argv[1], argv[2])
+        return
     for tag, neg_phi, k in EXAMPLES:
         report(tag, neg_phi, k)
 
