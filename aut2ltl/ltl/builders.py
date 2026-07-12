@@ -387,6 +387,36 @@ def register_aps(names: List[str]) -> None:
         spot.formula_to_bdd(_ap(name), _guard_bdd_dict, _guard_bdd_owner)
 
 
+def _subst_f(
+    f: "spot.formula",
+    mapping: Dict["spot.formula", "spot.formula"],
+    memo: Dict[int, "spot.formula"],
+) -> "spot.formula":
+    """Simultaneous substitution of atomic propositions by formulas over a
+    shared DAG. `mapping` sends AP nodes to replacement formulas; every other
+    node is rebuilt from its substituted children. Single pass over the input's
+    nodes: replacement subtrees are inserted verbatim, never re-visited, so a
+    replacement may itself contain a mapped AP without capture. Rebuilt nodes
+    go through `_simp_f`, so constant plugs fold on the way up (¬false → true,
+    σ ∧ X(false) → false, …); untouched subtrees are returned as-is unsimplified.
+
+    `memo` is caller-owned, keyed by node id, and only valid for THIS mapping —
+    use one dict per (mapping, build) pair. Cost: O(DAG) per distinct
+    (node, mapping)."""
+    rep = mapping.get(f)
+    if rep is not None:
+        return rep
+    gid = f.id()
+    hit = memo.get(gid)
+    if hit is not None:
+        return hit
+    res = f.map(lambda c: _subst_f(c, mapping, memo))
+    if res != f:
+        res = _simp_f(res)
+    memo[gid] = res
+    return res
+
+
 def _str_f(f: spot.formula) -> str:
     """Convert formula to normalized str — top-level output and traces ONLY.
     Pure stringification: no simplify (that was a per-conversion tree walk that
