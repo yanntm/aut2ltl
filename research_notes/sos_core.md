@@ -196,20 +196,14 @@ advances to `[a·b]` on `b`; `[b]` and `[a·b]` loop on `b` and fall to `[b·a]`
 `[b·a]` absorbs both letters. Each node sits at the end of the path spelled by its own
 key:
 
-> **[Figure F0 — placeholder; rendered figure specified in `sos_core_figures.md`]**
+![Figure F0 — the object of a*·b^ω](sos_core_figs/img/core_F0_astar_bomega.png)
 
-```
-    ╭╌╌╌╌╮   a
-    ┊  ε ┊ ─────▶ [a]* ⟲a ──b──▶ [a·b] ⟲b
-    ╰╌╌┬╌╯                          │
-       │ b                          │ a
-       ▼                            ▼
-      [b]* ⟲b ────────a────────▶ [b·a]* ⟲a,b
-
-    P = { ([b],[b]),  ([a·b],[b]) }
-
-    dashed root = a source, no edge enters [ε];  * = idempotent;  [b·a] = the zero
-```
+*Figure F0 — the object of `a*·b^ω` drawn. Nodes are classes named by their keys;
+thick borders mark the idempotents; the stub marks the root and stays the only
+arrow entering it — a source. Arrows are the letter steps, labeled (`a,b` when
+both letters agree); the slightly thicker arrows spell the keys out from the
+root. The pairs `P` beneath complete the object: the drawing is `𝒜`, the line
+is `P`.*
 
 The graph is the table made visible, and losslessly: any product `s·t` is read by
 walking `key(t)` from `s`. Freshness has a shape: the root is a **source** — no edge
@@ -424,24 +418,11 @@ side of the cut; the idempotents are `[b]`, `[a·b]`, `[b·a]`, `[a·a]`, with
 `[a]^ω = [a·a]`. One accepting pair, `P = { ([a·a],[a·a]) }`: hit the zero and loop
 there — `aa` recurs.
 
-> **[Figure F1 — placeholder; rendered figure specified in `sos_core_figures.md`]**
+![Figure F1 — the object of GF(aa)](sos_core_figs/img/core_F1_gf_aa.png)
 
-```
-    ╭╌╌╌╌╮  a               a
-    ┊  ε ┊ ───▶ [a] ─────────────▶ [a·a]* ⟲a,b
-    ╰╌╌┬╌╯      │ ▲                   ▲
-       │ b    b ▼ │ a                 │ a
-       │       [a·b]* ⟲b              │
-       ▼                              │
-      [b]* ⟲b ──a──▶ [b·a]* ──────────┘
-        ▲──────b───────┘
-
-    P = { ([a·a],[a·a]) }
-```
-
-Two waiting rooms — `[a]⇄[a·b]` and `[b]⇄[b·a]`, cycles that mix letters, hence no
-group — each escaping on `a` toward the zero; the one accepting name loops at the zero
-itself.
+*Figure F1 — `GF(aa)`. Two waiting rooms — `[a] ⇄ [a·b]` and `[b] ⇄ [b·a]`, cycles
+that mix letters, hence no group — each escaping on `a` toward the zero; the one
+accepting name loops at the zero itself.*
 
 **(b) `Even`** — five classes:
 
@@ -455,25 +436,14 @@ Laws: `{[a], [a·a]}` is a **period-2 cycle** (`[a]·[a] = [a·a]`, `[a·a]·[a]
 the **identity** on the four word classes: the algebra owns a second neutral element,
 and the fresh-identity convention of §3.1 keeps `[ε]` apart. `[b]` and `[a·b]` are
 **left zeros**, fixed by both letters: the first `b` has been read, after an even
-(`[b]`) or odd (`[a·b]`) count of `a`'s. Accepting pairs `([b],[b])`, `([b],[a·b])`,
-`([b],[a·a])`: once `[b]` is reached, every loop accepts.
+(`[b]`) or odd (`[a·b]`) count of `a`'s. Accepting pairs `([b],[b])`, `([b],[a·a])`,
+`([b],[a·b])`: once `[b]` is reached, every loop accepts.
 
-> **[Figure F2 — placeholder; rendered figure specified in `sos_core_figures.md`]**
+![Figure F2 — the object of Even](sos_core_figs/img/core_F2_even.png)
 
-```
-    ╭╌╌╌╌╮  a          a
-    ┊  ε ┊ ───▶ [a] ◀═════▶ [a·a]*
-    ╰╌╌┬╌╯       │             │
-       │ b     b │             │ b
-       ▼         ▼             │
-      [b]* ⟲a,b [a·b]* ⟲a,b    │
-       ▲───────────────────────┘
-
-    P = { ([b],[b]),  ([b],[a·b]),  ([b],[a·a]) }
-```
-
-The doubled edge is the `·a` swap — a monochrome two-cycle, the `Z₂` drawn; every
-accepting name stems at `[b]`.
+*Figure F2 — `Even`. The diagonal `[a] ⇄ [a·a]`, both legs on the single letter
+`a`, is a monochrome two-cycle — the `Z₂` drawn; every accepting name stems at
+`[b]`.*
 
 **(c) `EvenBlocks`** — eight classes:
 
@@ -490,34 +460,16 @@ classes; `[b·a·b]` — a completed odd block — is the two-sided **zero**. Un
 many odd blocks, and the acceptance layer says so — of the six accepting pairs
 
 ```
-P = { ([b],[b]),  ([a·b],[b]),  ([b·a·b],[b]),
-      ([b·a],[a·b·a]),  ([b·a·b],[a·b·a]),  ([a·b·a],[a·b·a]) }
+P = { ([b],[b]),  ([a·b],[b]),  ([b·a],[a·b·a]),
+      ([a·b·a],[a·b·a]),  ([b·a·b],[b]),  ([b·a·b],[a·b·a]) }
 ```
 
 two sit at the zero itself: what has happened is absorbed; what loops forever decides.
 
-> **[Figure F3 — placeholder; rendered figure specified in `sos_core_figures.md`]**
+![Figure F3 — the object of EvenBlocks](sos_core_figs/img/core_F3_evenblocks.png)
 
-```
-                   ╭╌╌╌╌╮
-                a  ┊  ε ┊  b
-              ┌────╰╌╌╌╌╯─────────────┐
-              ▼                       ▼
-    [a·a]* ◀═a═▶ [a]        [b]* ⟲b ◀═a═▶ [b·a]
-       │           │                        │
-     b │         b │                        │ b
-       ▼           ▼                        ▼
-     [b] …      [a·b] ◀═a═▶ [a·b·a]* ──b──▶ [b·a·b]* ⟲a,b
-                 ⟲b
-
-    (… the [a·a] ─b→ [b] edge re-enters the [b] node above; ASCII routes it out of line)
-
-    P = { ([b],[b]),  ([a·b],[b]),  ([b·a·b],[b]),
-          ([b·a],[a·b·a]),  ([b·a·b],[a·b·a]),  ([a·b·a],[a·b·a]) }
-```
-
-The same `Z₂` acting as three `·a` swaps — one per phase of the language — and two
-accepting names sitting at the zero.
+*Figure F3 — `EvenBlocks`. The same `Z₂` acting as three `·a` swaps — one per
+phase of the language — and two accepting names sitting at the zero.*
 
 ---
 
@@ -535,9 +487,10 @@ makes exact) aperiodicity of the algebra is LTL-definability, this cycle *is* th
 reason `Even` is not LTL — read straight off the letter actions, before any acceptance
 is consulted. `GF(aa)`'s algebra, by contrast, has every power-cycle of period 1:
 aperiodic, hence LTL. In the drawing the criterion is a *monochrome* cycle — one
-letter (more generally one word) repeated, as `Even`'s doubled `·a` swap. A cycle that
-mixes letters proves nothing: `GF(aa)`'s graph closes `[a] →^b [a·b] →^a [a]`, and its
-algebra is aperiodic all the same.
+letter (more generally one word) repeated, as `Even`'s `·a` swap between `[a]` and
+`[a·a]` (Figure F2). A cycle that mixes letters proves nothing: `GF(aa)`'s graph
+closes `[a] →^b [a·b] →^a [a]` (Figure F1's waiting rooms), and its algebra is
+aperiodic all the same.
 
 *Saturation, checked.* The query on `a^ω` presented two ways must agree, and does:
 `(ε, a)` folds to the pair `([ε]·[a]^ω, [a]^ω) = ([a·a], [a·a])`, while `(a, a)` folds
