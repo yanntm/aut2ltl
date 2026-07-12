@@ -1,0 +1,30 @@
+// sos2cayley even.sos --rename a=a,!a=b
+digraph core_F2_even {
+  rankdir=LR;
+  ranksep=0.87; nodesep=0.55;
+  node [shape=ellipse, fontname="serif", margin="0.04,0.02"];
+  edge [fontname="serif", arrowsize=0.7];
+  label="P = { ([b],[b]), ([b],[a·a]), ([b],[a·b]) }"; labelloc="b"; labeljust="c";
+  fontname="serif"; fontsize=11;
+
+  eps [label="ε", style=dashed, color="grey60", fontcolor="grey60"];
+  a [label="a"];
+  b [label="b", peripheries=2];
+  aa [label="a·a", peripheries=2];
+  ab [label="a·b", peripheries=2];
+
+  { rank=same; eps; }
+  { rank=same; a b; }
+  { rank=same; aa ab; }
+
+  eps -> a [style=solid, penwidth=1.6];
+  eps -> b [style=dashed, penwidth=1.6];
+  a -> aa [style=solid, penwidth=1.6, color="black:black"];
+  a -> ab [style=dashed, penwidth=1.6];
+  b -> b [style=solid, penwidth=0.8];
+  b -> b [style=dashed, penwidth=0.8];
+  aa -> a [style=solid, penwidth=0.8, color="black:black"];
+  aa -> b [style=dashed, penwidth=0.8];
+  ab -> ab [style=solid, penwidth=0.8];
+  ab -> ab [style=dashed, penwidth=0.8];
+}
