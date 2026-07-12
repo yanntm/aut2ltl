@@ -42,8 +42,8 @@ def _uncond_reach_strict(S: Tuple[int, ...], T: Tuple[int, ...], casc: "Cascade"
         g_f = _letters_to_f(casc.letter_valuations[li], casc.aps)
         if g_f.is_ff():
             continue
-        key = arrived if _FUSE_LETTERS else (li, arrived)
-        groups.setdefault(key, (arrived, []))[1].append(g_f)
+        gkey = arrived if _FUSE_LETTERS else (li, arrived)
+        groups.setdefault(gkey, (arrived, []))[1].append(g_f)
     disjs = []
     for arrived, gs in groups.values():
         # after this letter class, from arrived (0-step ok if arrived==T)
