@@ -9,12 +9,12 @@ digraph core_F3_evenblocks {
 
   eps [label="ε"];
   a [label="a"];
-  b [label="b", peripheries=2];
-  aa [label="a·a", peripheries=2];
+  b [label="b"];
+  aa [label="a·a"];
   ab [label="a·b"];
   ba [label="b·a"];
-  aba [label="a·b·a", peripheries=2];
-  bab [label="b·a·b", peripheries=2];
+  aba [label="a·b·a"];
+  bab [label="b·a·b"];
   _init [shape=none, label="", width=0.02, height=0.02];
   _init -> eps;
 

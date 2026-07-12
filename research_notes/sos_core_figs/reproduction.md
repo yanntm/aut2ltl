@@ -94,9 +94,10 @@ from the `.sos` on each build:
 - which node is the root, and that **no edge enters it** (freshness — a hard
   assert on every run, on every input);
 - that every class is reachable from `[ε]`;
-- which classes are **idempotent** (`c·c = c`) — the thick borders;
 - which arrows are **key-tree** edges — the thicker strokes;
-- the **monochrome cycles** (computed and asserted, deliberately not inked);
+- which classes are **idempotent** (`c·c = c`), and the **monochrome cycles** —
+  both computed and asserted, both deliberately *not* inked: they are properties
+  of what is drawn, not further things to draw;
 - the **accepting pairs `P`** — the caption, and echoed on stdout.
 
 To see them without any drawing at all:

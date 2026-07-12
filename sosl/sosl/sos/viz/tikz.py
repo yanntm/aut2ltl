@@ -9,8 +9,9 @@ inline and nothing is repeated.
 The figure reads without a legend, and it draws only what the object *is*. Every
 arrow carries its letter as a label — that, not a dash pattern, is how letters are
 told apart — and the letters that agree on a target share one arrow (`a,b`)
-instead of stacking two. Derived facts get no ink of their own: a monochrome cycle
-is a property of the drawn arrows, not an arrow of another kind. The root is
+instead of stacking two. Derived facts get no ink of their own -- not a monochrome
+cycle (a property of the drawn arrows, not an arrow of another kind), not an
+idempotent (a property of the product, not a kind of class). The root is
 marked the way an initial state is, with a short incoming stub from nowhere, which
 is also what makes freshness visible: it is the only arrow that enters it.
 
@@ -136,7 +137,6 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str,
         r"  class/.style     = {draw, thin, rounded corners=2pt, inner sep=3pt,",
         r"                      minimum width=10mm, minimum height=7mm},",
         r"  root/.style      = {},          % the root needs no ink: the init stub says it",
-        r"  idem/.style      = {very thick},",
         r"  init/.style      = {semithick, -{Stealth[length=4pt,width=3pt]}},",
     ]
     out += [
@@ -148,7 +148,7 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str,
         "",
     ]
     for nd in fig.nodes:
-        style = "class" + (",root" if nd.is_root else "") + (",idem" if nd.is_idem else "")
+        style = "class" + (",root" if nd.is_root else "")
         x, y = pos[nd.cls]
         out.append(f"  \\node[{style}] ({nd.ident}) at ({x:.1f},{y:.1f}) "
                    f"{{${_tex_key(fig, nd.key)}$}};")

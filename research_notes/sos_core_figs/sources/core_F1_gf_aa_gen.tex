@@ -8,7 +8,6 @@
   class/.style     = {draw, thin, rounded corners=2pt, inner sep=3pt,
                       minimum width=10mm, minimum height=7mm},
   root/.style      = {},          % the root needs no ink: the init stub says it
-  idem/.style      = {very thick},
   init/.style      = {semithick, -{Stealth[length=4pt,width=3pt]}},
   tree/.style      = {semithick, -{Stealth[length=4pt,width=3pt]}},
   nontree/.style   = {thin, -{Stealth[length=4pt,width=3pt]}},
@@ -16,15 +15,15 @@
   pairs/.style     = {anchor=north, font=\small},
 ]
 
-  \node[class,root] (eps) at (4.7,9.3) {$\varepsilon$};
-  \node[class] (a) at (6.9,5.1) {$a$};
-  \node[class,idem] (b) at (2.6,5.1) {$b$};
-  \node[class,idem] (aa) at (9.1,0.8) {$a{\cdot}a$};
-  \node[class,idem] (ab) at (4.7,0.8) {$a{\cdot}b$};
-  \node[class,idem] (ba) at (1.1,0.8) {$b{\cdot}a$};
+  \node[class,root] (eps) at (3.3,5.8) {$\varepsilon$};
+  \node[class] (a) at (7.7,4.4) {$a$};
+  \node[class] (b) at (7.7,7.1) {$b$};
+  \node[class] (aa) at (12.0,4.4) {$a{\cdot}a$};
+  \node[class] (ab) at (12.0,0.6) {$a{\cdot}b$};
+  \node[class] (ba) at (12.0,9.7) {$b{\cdot}a$};
 
   % the root is the adjoined identity: a source, marked like an initial state
-  \draw[init] (4.7,10.2) -- (eps);
+  \draw[init] (2.4,5.8) -- (eps);
 
   \draw[tree] (eps) to node[lbl] {$a$} (a);
   \draw[tree] (eps) to node[lbl] {$b$} (b);
@@ -38,6 +37,6 @@
   \draw[nontree] (ba) to node[lbl] {$a$} (aa);
   \draw[nontree] (ba) to[bend left=15] node[lbl] {$b$} (b);
 
-  \node[pairs] at (5.1,-0.5) {$P = \{\, ([a{\cdot}a],[a{\cdot}a]) \,\}$};
+  \node[pairs] at (7.7,-0.7) {$P = \{\, ([a{\cdot}a],[a{\cdot}a]) \,\}$};
 \end{tikzpicture}
 \end{document}

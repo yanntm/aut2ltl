@@ -9,9 +9,9 @@ digraph core_F2_even {
 
   eps [label="ε"];
   a [label="a"];
-  b [label="b", peripheries=2];
-  aa [label="a·a", peripheries=2];
-  ab [label="a·b", peripheries=2];
+  b [label="b"];
+  aa [label="a·a"];
+  ab [label="a·b"];
   _init [shape=none, label="", width=0.02, height=0.02];
   _init -> eps;
 

@@ -1,6 +1,6 @@
 // sos2cayley gf_aa.sos --rename a=a,!a=b
 digraph core_F1_gf_aa {
-  rankdir=TB;
+  rankdir=LR;
   ranksep=0.87; nodesep=0.55;
   node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];
   edge [fontname="serif", fontsize=10, arrowsize=0.7];
@@ -9,10 +9,10 @@ digraph core_F1_gf_aa {
 
   eps [label="ε"];
   a [label="a"];
-  b [label="b", peripheries=2];
-  aa [label="a·a", peripheries=2];
-  ab [label="a·b", peripheries=2];
-  ba [label="b·a", peripheries=2];
+  b [label="b"];
+  aa [label="a·a"];
+  ab [label="a·b"];
+  ba [label="b·a"];
   _init [shape=none, label="", width=0.02, height=0.02];
   _init -> eps;
 

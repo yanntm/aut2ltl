@@ -20,7 +20,6 @@ a key can be read off the picture as a path from the root.
 | ink | meaning |
 |---|---|
 | rounded box | a class |
-| **thick** border | an **idempotent** class, `[c]·[c] = [c]` — the classes that can be the *loop* of an accepting pair |
 | incoming stub from nowhere | the root `[ε]`, marked like an initial state. It is the *adjoined* identity — the class of no word — hence a **source**, and that stub stays the only arrow entering it (freshness, asserted on every build) |
 | arrow, labeled `a` / `b` | one letter step `s → s·λ(x)`. **The label is the only letter coding** — no dashes, no colours |
 | arrow labeled `a,b` | both letters agree on this target; one arrow, not two |
@@ -29,10 +28,16 @@ a key can be read off the picture as a path from the root.
 Out-degree is `|Σ| = 2` at every node, always: the picture is a deterministic
 transition system on classes.
 
-**What is deliberately *not* inked:** monochrome cycles (a cycle of one letter's
-map `s ↦ s·λ(x)`). They are computed and asserted on every build, and the prose
-names them — but a monochrome cycle is a property *of* the drawn arrows, not an
-arrow of another kind, so it gets no stroke of its own.
+**What is deliberately *not* inked.** Derived facts get no ink of their own —
+they are *properties of* what is drawn, not extra things to draw. Two of them
+matter to the prose, and both are computed and asserted on every build:
+
+- **idempotency** (`[c]·[c] = [c]`) — a property of the product, not a kind of
+  class;
+- **monochrome cycles** (a cycle of one letter's map `s ↦ s·λ(x)`) — a property
+  of the drawn arrows, not an arrow of another kind.
+
+Read them off the build (`python3 -m sosl.sos.viz …`), not off the picture.
 
 ## F0 — `a*·b^ω`, the warm-up
 

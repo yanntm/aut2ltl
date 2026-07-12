@@ -6,8 +6,8 @@ backends reuse (``dot -Tplain``, see `layout.py`). Pure text — no subprocess.
 
 The model's classification maps onto dot attributes: the root gets an incoming
 stub from nowhere (an initial-state marker — and the only arrow that may enter
-it), an idempotent gets a double periphery, a key-tree edge is thicker, and every
-arrow is labeled with its letter. Letters are told apart by that label alone.
+it), a key-tree edge is thicker, and every arrow is labeled with its letter.
+Letters are told apart by that label alone.
 """
 from __future__ import annotations
 
@@ -49,10 +49,7 @@ def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True,
                 '  fontname="serif"; fontsize=11;']
     out.append("")
     for nd in fig.nodes:
-        attrs = [f'label="{nd.label}"']
-        if nd.is_idem:
-            attrs += ["peripheries=2"]
-        out.append(f'  {nd.ident} [{", ".join(attrs)}];')
+        out.append(f'  {nd.ident} [label="{nd.label}"];')
     root = next(nd for nd in fig.nodes if nd.is_root)
     out += ['  _init [shape=none, label="", width=0.02, height=0.02];',
             f"  _init -> {root.ident};",   # the root, marked like an initial state

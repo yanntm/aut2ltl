@@ -8,10 +8,10 @@ digraph core_F0_astar_bomega {
   fontname="serif"; fontsize=11;
 
   eps [label="ε"];
-  a [label="a", peripheries=2];
-  b [label="b", peripheries=2];
+  a [label="a"];
+  b [label="b"];
   ab [label="a·b"];
-  ba [label="b·a", peripheries=2];
+  ba [label="b·a"];
   _init [shape=none, label="", width=0.02, height=0.02];
   _init -> eps;
 
