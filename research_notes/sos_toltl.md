@@ -2660,6 +2660,89 @@ Proposition 5.8 makes the whole combinator layer safe: no move ever
 leaves LTL or grows the algebra. They slot into the architecture as step
 2.5, between the ladder templates and the walk engine.
 
+### 5.3b (NEW) Decomposition levers: the atoms, the complement, and the degrees of liberty
+
+⟨NEW section — incomplete; placement and renumbering pending. It states
+only what is established; selection criteria among decompositions and
+the extraction of the pieces are deliberately not treated here.⟩
+
+Decomposition is not an optimization of the extraction; it is one of its
+*levers*, and §5.3 under-states its generality. On a fixed table
+`(𝒞, λ, M)` every pair set is a language [SωS26, Thm 5.1] and `h⁻¹`
+commutes with all Boolean operations, so the following hold with no side
+condition — no determinism hypothesis, no re-presentation, no surgery:
+
+```
+    P = ⋃_i P_i   ⇒   L(P) = ⋃_i L(P_i)          (union lever)
+    P = ⋂_i P_i   ⇒   L(P) = ⋂_i L(P_i)          (intersection lever)
+    L(P^c)        =   Σ^ω ∖ L(P)                  (complement lever)
+```
+
+each `P_i` saturated (below), each piece a language *of the same table*,
+each piece within the reach of Proposition 5.8: no lever ever leaves LTL
+or grows the algebra. By De Morgan the complement and union levers
+generate the intersection lever, so one connective and negation suffice;
+which form one works in is a *choice*, not a constraint.
+
+**Definition 5.13 (atoms).** Two linked pairs are conjugate when they
+denote the same ω-class; a pair set is **saturated** when closed under
+conjugacy, and it denotes a language iff it is saturated. The
+**atoms** of the table are its conjugacy classes of linked pairs. A
+saturated set is exactly a union of atoms.
+
+**Proposition 5.14 (the finest pieces).** The decomposition of `L(P)`
+into its atoms,
+
+```
+    L(P) = ⋃_{A ⊆ P atom} L(A),
+```
+
+is the finest union decomposition on the table: every union lever
+factors through it. *Proof.* Each `P_i` is saturated, hence a union of
+atoms; conversely atoms admit no proper saturated subset. ∎
+
+The guard of §5.3(1) applies verbatim: an atom asserts "the pair is
+exactly this ω-class" and can sit strictly higher on the Wagner ladder
+than `L` itself — finest is a bound, not a recommendation.
+
+**The complement trick (getting the union form).** The union lever is
+worthless on a side with one atom — and the conjunctive-recurrence shape
+is exactly that: for `GFa ∧ GFb` the accepting set is a *single* atom,
+while its complement splits into several (the ω-classes of runs whose
+loop content misses a letter). The lever is then applied on the other
+side of the flip:
+
+```
+    L(P) = ¬ ⋃_{A ⊆ P^c atom} L(A)
+```
+
+— decompose the complement, negate the recombination. Since the flip is
+a set operation on the same table, choosing the side is free, and the
+criterion is structural: work on whichever of `P`, `P^c` the union
+lever can act on at all. ⟨TBD: the specimen's table and atom partition,
+displayed; the atom counts on the census.⟩
+
+**Degrees of liberty.** A union decomposition is any saturated **cover**
+of the chosen side — a partition is *not* required: union is
+idempotent, so
+
+```
+    ⋃_i P_i = P   with the P_i overlapping
+```
+
+is exact verbatim, at every granularity from the atom partition up to
+covers by a few large, overlapping pieces. This is a genuine liberty
+the atom partition does not have: a cover may choose its pieces to be
+*nameable* sublanguages (all pairs sharing a rejection reason, all
+pairs above a common loop) where the atoms are mere shards, and two
+reasons may share their shards freely. The full space of union
+decompositions of a language on its table is therefore indexed by
+(side: `P` or `P^c`) × (saturated cover of that side, overlaps
+allowed) — with the intersection form reachable from it by De Morgan.
+⟨TBD: everything past this point — how a cover is chosen, what the
+pieces' presentations are, where the lever sits in the architecture —
+is not yet part of this paper.⟩
+
 ### 5.4 The architecture, assembled
 
 Every piece is now on the table; assembled, they are the paper's
