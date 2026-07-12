@@ -275,6 +275,48 @@ enter no equality test between objects (§3.5, Figure 2).
 
 ### 3.5 Concrete form, read on the examples
 
+**A warm-up specimen.** Before the running examples, one language small enough to read in
+full — Carton–Perrin's own [CP97, Ex. 10]: `L = a*·b^ω` over `Σ = {a, b}`, some `a`'s,
+then `b`'s forever (one atomic proposition `p`, read `a = ¬p`, `b = p`). Its algebra has
+five classes,
+
+```
+𝒞 = { [ε], A, B, C, D },    keyed    ε, a, b, ab, ba,
+```
+
+with `A = [a]` the words in `a⁺`, `B = [b]` those in `b⁺`, `C = [ab]` those in `a⁺b⁺`,
+and `D = [ba]` the *dead* words — once an `a` follows a `b`, no continuation can rescue
+the word. The letter map is `λ(a) = A`, `λ(b) = B`; the multiplication table (identity
+row and column omitted) is
+
+| `·` | `A` | `B` | `C` | `D` |
+|---|---|---|---|---|
+| **`A`** | `A` | `C` | `C` | `D` |
+| **`B`** | `D` | `B` | `D` | `D` |
+| **`C`** | `D` | `C` | `D` | `D` |
+| **`D`** | `D` | `D` | `D` | `D` |
+
+The idempotents are `A`, `B`, `D` (`C² = D`, so `C^ω = D`). The linked pairs are
+`(A,A), (D,A), (B,B), (C,B), (D,B), (D,D)`, and the acceptance layer is
+
+```
+P = { (B, B), (C, B) }
+```
+
+— the two behaviors of the language: "reading `b`'s after nothing but `a`'s (if any),
+keep reading `b`'s".
+
+The membership query of §3.3, run on three lassos:
+
+- `b^ω`: the loop folds to `⟦b⟧ = B`, already idempotent; the empty stem gives
+  `s = [ε]·B = B`; `(B, B) ∈ P` — accepted.
+- `aab·b^ω`: `⟦aab⟧ = A·A·B = C`, loop class `B`; `s = C·B = C`; `(C, B) ∈ P` —
+  accepted.
+- `a·(ab)^ω`: `⟦ab⟧ = C` is *not* idempotent — the table refuses `ab` as a stable
+  block; iterate to `C^ω = D`. Then `s = A·D = D` and `(D, D) ∉ P` — rejected, and the
+  idempotent-power step is visibly doing the work: the loop `ab` keeps producing an `a`
+  after a `b`.
+
 Recall the three running examples (introduced fully in §1): **`GF(aa)`** — infinitely
 many `aa`-factors, an LTL property; **`Even`** — an even number of `a`'s before the first
 `!a`, then anything, *not* LTL; **`EvenBlocks`** — infinitely many `!a` and eventually
