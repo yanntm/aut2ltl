@@ -56,11 +56,22 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
    83 inputs, 70 LTL + 3 not-LTL, 73 TRUE / 0 FAIL, 10 TIMEOUT (all in
    the GF-conjunction recurrence family, e.g. `GFa & GFb`;
    default-recipe parity on those lines unverified).
-   **Next action:** implement the per-accepting-pair decomposition
-   (Theory item 4: disjunctive side of L/¬L, split by pair, translate
-   each, OR, negate back) — it targets exactly the 10 validation
-   TIMEOUTs. Then: corpus sweep (`genaut/corpus/flat_canon/det`, same
-   recipe, background), delegate firing stats, stem ledger vs DG. **Open problem:** loop
+   **Pair decomposition: redesigned at the SoS level, DOC STAGE.**
+   `aut2ltl/sos2ltl/pairsplit/algorithm.md` (user-driven): split the
+   accepting pair set `P` on the invariant's own table — saturation
+   atoms via `sosl.sos.calculus`, side by least pairs (complement =
+   free set flip, De Morgan kills the ∧/∨ casing), fusion by loop
+   class / layer / per-piece free-AP projection; verdicts inherit
+   aperiodicity (pieces of a definable L are all definable). An
+   automaton-level PairSplit existed briefly (validation 77 TRUE /
+   0 FAIL / TIMEOUT 10→4) and was DROPPED as redundant with
+   `aut2ltl/decomp/`; the numbers stand as the effect-size preview.
+   **Next action:** validate algorithm.md with user, then transcribe
+   (decompose.py, combinator.py, ONE injection seam between bridge
+   and engine). Open interface point: the cascade loop half's
+   per-piece acceptor presentation. Then: corpus sweep
+   (`genaut/corpus/flat_canon/det`, background), delegate firing
+   stats, stem ledger vs DG. **Open problem:** loop
    labels are still too large flat (7.8·10⁹ on the floor witness), so
    the Spot equivalence oracle cannot consume them raw; the
    flat-column risk is confirmed, conformance story on the loop
@@ -89,21 +100,18 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
 3. Open math, unblocked by nothing: §5.1's
    width-bound-by-definiteness-degree ⟨TBD⟩; §2.3's arena bound
    (gated on full E4).
-4. Adjudicate the acceptance decomposition (user; engineering has it
-   queued): pick the side of L / ¬L where the acceptance is
-   DISJUNCTIVE (complementing the det parity input is a priority
-   shift, so the test is free), split it by accepting pair —
-   L(A, ⋁ pairs) = ⋃_p L(A, pair p) on the same semiautomaton — then
-   translate each single-pair (Rabin-1) sub-language independently,
-   OR the labels, negate back if complemented. The min-pairs
-   complement trick and the pair split are one mechanism: complement
-   is what turns the conjunctive (Streett) side into the disjunctive
-   side where the split is exact. Type specimen: the 10 validation
-   TIMEOUTs — `GFa & GFb` complements to `FG¬a ∨ FG¬b`, two co-Büchi
-   one-pair pieces. Plausibly applies at EVERY recursion level
-   (per-layer labels too). To check: fragment bookkeeping (¬ and ⋁
-   move Σᵢ/Πᵢ, which the member ladder and the delegate's insertion
-   points care about) and where pair-count drives emitted size.
+4. Adjudicate the SoS pair decomposition
+   (`aut2ltl/sos2ltl/pairsplit/algorithm.md`, doc stage): split of
+   the accepting pair set `P` into saturation atoms over one table,
+   least-pairs side by free complement, fusion by loop class /
+   layer / free-AP projection, `⋁` recombination (+ outer `¬`).
+   Claims to check: exactness of the atom split (preimage +
+   saturation), aperiodicity inheritance through `reduce` (pieces of
+   a definable L all definable), the De Morgan collapse (no separate
+   ∧ branch needed), and whether the per-LAYER variant (inside the
+   delegate) needs its own Σᵢ/Πᵢ bookkeeping. Type specimen: the
+   validation TIMEOUT family — `GFa & GFb` complements to two
+   trivial atoms.
 
 ## Machinery / conventions (user-set; keep)
 
