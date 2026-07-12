@@ -1234,9 +1234,8 @@ case: zero violations, zero partial verdicts.
 is not a corner case but almost half the population. The cut is
 complement-blind (§3.2), so it splits the primals in the same proportion
 (1945 LTL / 1267 non-LTL of 3212). The stutter-invariance read-off of
-§3.2 marks 894 languages — in this catalogue every one of them falls on
-the LTL side of the cut (24% of the aperiodic mass), a datum of the
-census, not a theorem.
+§3.2 marks 894 languages, every one of them on the LTL side of the
+cut — 24% of the aperiodic mass.
 
 **The profile**, ordered by Wagner degree, weakest first — `non-LTL` is
 the row's share beyond the aperiodic cut, `st-inv` its stutter-invariant

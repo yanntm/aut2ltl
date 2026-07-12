@@ -140,8 +140,8 @@ Contributions:
 
 §2 recalls the object, the algebraic toolkit the proofs use, and the
 running example. §3 develops the calculus; §4 locates the exponential
-frontier; §5 keeps the one classification read-off the calculus
-consumes — the LTL cut; §6 develops the hulls; §7 draws the ledger and
+frontier; §5 reads the LTL cut off the table; §6 develops the hulls;
+§7 draws the ledger and
 the cost summary and states what the calculus refuses to simulate; §8
 reports the measurements; §9 positions the work; §10 concludes.
 
@@ -614,31 +614,26 @@ The calculus is honest about where powersets are intrinsic:
   share of the whole, and every stage's "did my rewrite change the
   language" re-check is a byte comparison.)
 
-## 5. The LTL cut — the one classification the calculus keeps
+## 5. The LTL cut
 
-Classification of the held language — the safety–progress ladder, the
-acceptance index, the Wagner degree — is *diagnosis* on the same
-object, sketched in [SωS26, §7.2]; it is not this paper's subject, and
-the calculus neither needs nor restates it. One cut is different,
-because the calculus itself consumes it: **LTL-definability**. `L` is
-LTL-definable iff `M` is aperiodic (`x^{k+1} = x^k` for `k` large
-enough) — the classical correspondence [DG08] landed on the canonical
-table, where no presentation artifact can blur it — and aperiodicity is
-one `O(n²)` power-orbit scan of the table, with a witness (a genuine
-group cycle in the algebra) when it fails. The calculus uses the bit as
-a *gate*: Lemma 3.3 keeps every surgery inside the variety, so a
+The calculus consumes one classification of the held language:
+**LTL-definability**. `L` is LTL-definable iff `M` is aperiodic
+(`x^{k+1} = x^k` for `k` large enough) — the classical correspondence
+[DG08] landed on the canonical table, where no presentation artifact
+can blur it — and aperiodicity is one `O(n²)` power-orbit scan, with a
+witness (a genuine group cycle in the algebra) when it fails. The bit
+is a *gate*: Lemma 3.3 keeps every surgery inside the variety, so a
 pipeline that enters LTL-definable stays LTL-definable through any
 sequence of free operations; the §7.3 exit reads the same bit (the
 Cayley acceptor is counter-free exactly then); and formula extraction —
 beyond this paper — is priced before it is attempted. Spot has no
-automaton→LTL query at all; on the invariant it is a scan.
+automaton→LTL query; on the invariant it is a scan.
 
-One more classification survives, in §6, because it arrives as the
-fixpoint equation of an *operator*: the safety closure of `L`, its
-interior, and the Alpern–Schneider decomposition
-`L = safety ∩ liveness` are pair-set surgeries on the same table,
-computable in `O(n²)`, and the safety and co-safety verdicts fall out
-of them.
+§6 develops the other read-off the calculus owns, as the fixpoint
+equations of an operator: the safety closure of `L`, its interior, and
+the Alpern–Schneider decomposition `L = safety ∩ liveness` are pair-set
+surgeries on the same table, computable in `O(n²)`, with the safety and
+co-safety verdicts falling out.
 
 ## 6. Hulls
 
@@ -740,8 +735,7 @@ properties of the safety fragment. And the hull is a closure operator
 in the lattice sense on the saturated pair sets of a fixed table
 (extensive, monotone, idempotent — idempotence because
 `Live_{P̄} = Live_P`), so the closed pair sets form a finite lattice of
-fixpoints on the table. (What that lattice generates inside the
-classification hierarchy is a diagnosis question — not this paper's.)
+fixpoints on the table.
 
 The running example closes the section: `a*·b^ω` is not closed — `a^ω`
 lies in its closure — and not open — its interior is empty — but it is
