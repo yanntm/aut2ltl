@@ -141,6 +141,8 @@ acceptance. We define the algebra first.
 
 ### 3.1 The algebra `𝒜`
 
+Let us define the algebra component `𝒜` of the invariant `𝓘 = ⟨𝒜, P⟩`.
+
 **Definition 3.1 (algebra).** An **algebra** `𝒜` over `Σ` is a triple `(𝒞, λ, M)`:
 
 - `𝒞` is a finite set of **classes**, denoted `[c]`, where `c ∈ Σ*` is the
@@ -152,10 +154,11 @@ acceptance. We define the algebra first.
   two-sided **identity** — for all `c ∈ 𝒞`, `M(c, [ε]) = M([ε], c) = c` — so `(𝒞, M)`
   is a finite monoid, and we write `s·t := M(s, t)`.
 
-*Example.* The algebra of `AsThenBs` (§2's example) has five classes, named by their
-keys — `[ε]`, `[a]`, `[b]`, `[a·b]`, `[b·a]` — with `λ(a) = [a]` and `λ(b) = [b]`.
-Figure 1 is this algebra, and every label on it is a member of `𝒞`: each node a
-class, each edge the class `λ(x)` of the letter it reads. The letter actions
+*Example.* The algebra of `AsThenBs` (`a*·b^ω`) is represented in Figure 1. It
+contains five classes `𝒞 = {[ε], [a], [b], [a·b], [b·a]}`, which are also the
+vertices of the diagram, with `λ(a) = [a]` and `λ(b) = [b]`. The edges are also
+labeled by `𝒞`, representing the multiplication table `M : 𝒞 × 𝒞 → 𝒞` of the algebra
+as a graph. The letter actions
 
 ```
  ·a :  [ε]↦[a]    [a]↦[a]     [b]↦[b·a]   [a·b]↦[b·a]   [b·a]↦[b·a]
