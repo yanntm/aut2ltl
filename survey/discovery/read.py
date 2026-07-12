@@ -1,6 +1,6 @@
 """survey.discovery.read — turn a classified file into runnable Example(s).
 
-An HOA file yields one Example (the automaton is the input); an LTL list yields
+An HOA or sos file yields one Example (the file is the input); an LTL list yields
 one Example per non-blank, non-comment line. Each carries provenance.
 """
 from __future__ import annotations
@@ -12,8 +12,8 @@ from survey.example import Example
 
 
 def read(path: Path, kind: str) -> Iterator[Example]:
-    if kind == "hoa":
-        yield Example("hoa", str(path), path.name, source=str(path))
+    if kind in ("hoa", "sos"):
+        yield Example(kind, str(path), path.name, source=str(path))
         return
     for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         formula = line.split("#", 1)[0].strip()

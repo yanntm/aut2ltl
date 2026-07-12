@@ -4,6 +4,57 @@
 the front-end tool and produces CSV + logs. It installs as the `aut2ltl_survey`
 console tool, or runs as `python -m survey` from the repo root.
 
+## The generic collector (`survey.collect`)
+
+The reusable core — correct subprocess isolation, a crash-safe checkpointed CSV,
+per-item budget — is factored out of the aut2ltl-specific pipeline so *any*
+tool-plus-validation experiment reuses it instead of hand-rolling (and
+mis-rolling) process plumbing. A client supplies a `Scenario` with three plug
+points and nothing else:
+
+| plug point | what it decides |
+|---|---|
+| `invoke(example) -> Invocation` | how the tool is spawned for one input (the fixed context — e.g. a knowledge `K` — is captured on the Scenario instance) |
+| `extract(example, result) -> Row` | the tool's stats parsed into CSV cells |
+| `validate(example, row) -> Row` | the post step: re-check on an independent path (default no-op) |
+
+`collect(examples, scenario, ...)` drives the loop: `bounded` isolation, resume
+from checkpoint, one flushed row per run, then the summary. **Enumeration** is
+the other configurable axis — `survey.discovery.discover(paths, keep=...)` walks
+folders into `Example`s and now recognizes `.sos` invariants (first line
+`SOS v1`); `keep={"sos"}` restricts a client to sos-only. The aut2ltl path
+(`build`/`verify`/`report`/`run`) is one such client, unchanged; the given-that
+survey (`sosl/tests/giventhat/gt5_demo.py`) is another — one fixed `K` against a
+discovered folder of properties, validated by an independent legality recompute.
+
+### Example client: the given-that survey
+
+`sosl/tests/giventhat/gt5_demo.py` is the reference `collect` client — copy its
+shape for a new tool. It surveys `simplify(𝓘(¬φ), 𝓘(K))` for one fixed
+knowledge `K` over a folder of `.sos` properties:
+
+- **enumerate** — `discover([folder], keep={"sos"})` → one `Example` per `¬φ`;
+- **invoke** — `python3 -m sosl.sos.giventhat ¬φ.sos K.sos -o B.sos --json …`
+  (the fixed `K` and the work dir live on the `GivenThatScenario` instance;
+  `cwd` is the `sosl/` root so the module imports);
+- **extract** — read the tool's own `--json` report into the row (verdict,
+  class counts of `¬φ / K / T / P_min / P_max / B`, freedom bits, rung and
+  stutter transitions, whether `B` beats all three references);
+- **validate** — **off for now.** A sound check is external (Spot) and takes
+  only the inputs and the output via the two legality inclusions
+  `P_min ⊆ L(B) ⊆ P_max`; that needs sos→HOA, which `calculus` is slated to
+  deliver through the right-Cayley graph transform. Re-checking legality with
+  our own calculus would be circular (a shared bug passes both sides), so the
+  post step stays empty until the Spot oracle exists. Meanwhile legality is
+  guaranteed by the always-on `B ∩ P_K == P_min` set identity inside the tool.
+
+Run it from `sosl/`:
+
+```
+python3 -m tests.giventhat.gt5_demo --knowledge K.sos --folder DIR \
+        [--budget S] [--limit N] [--logs DIR]
+```
+
 **Defaults** (all overridable — see [CLI](#cli)): verification **on**, per-input
 budgets **15 s** build / **15 s** equivalence, the **default** technique, and the
 CSV to **stdout** (pass `--logs DIR`, e.g. `--logs logs`, to write a file).
@@ -77,6 +128,7 @@ per-folder breakdowns.
 
 | module | concern |
 |---|---|
+| `collect.py` | **generic** run→row→validate collector: `Scenario` (invoke/extract/validate) + `collect` (isolation, checkpoint, summary) — reusable by any tool |
 | `__main__.py` | `python -m survey` entry — delegates to `cli.main` |
 | `cli.py` | argument parsing; gathers inputs → `Example`s, calls `run` |
 | `run.py` | orchestrate examples × techniques → rows → CSV + per-technique summary |
