@@ -99,8 +99,7 @@ Deferred until a user go-ahead: move `sosl/sosl/quant/` under `sosl/sosl/sos/`.
   `sosl/`).
 - The `genaut/corpus/flat_canon/` census is **probes, not results** — it is the
   classification framework's benchmark, and here it only argues the engine is
-  correct. A concurrent stream regenerates it, so counts move: rerun a gate
-  rather than trust a stale number.
+  correct.
 - Artifacts: throwaway output to `sosl/tests/quant/logs/` (gitignored),
   validated `.md`/`.csv` to `reference/quant/` with the 4-line header (date,
   git rev, seed, corpus).
