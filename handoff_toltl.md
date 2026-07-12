@@ -56,9 +56,11 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
    83 inputs, 70 LTL + 3 not-LTL, 73 TRUE / 0 FAIL, 10 TIMEOUT (all in
    the GF-conjunction recurrence family, e.g. `GFa & GFb`;
    default-recipe parity on those lines unverified).
-   **Next action:** corpus sweep (`genaut/corpus/flat_canon/det`, same
-   recipe, background), delegate firing stats, stem ledger vs DG; sort
-   the 10 validation TIMEOUTs (delegate-attributable or stratum-known). **Open problem:** loop
+   **Next action:** implement the per-accepting-pair decomposition
+   (Theory item 4: disjunctive side of L/¬L, split by pair, translate
+   each, OR, negate back) — it targets exactly the 10 validation
+   TIMEOUTs. Then: corpus sweep (`genaut/corpus/flat_canon/det`, same
+   recipe, background), delegate firing stats, stem ledger vs DG. **Open problem:** loop
    labels are still too large flat (7.8·10⁹ on the floor witness), so
    the Spot equivalence oracle cannot consume them raw; the
    flat-column risk is confirmed, conformance story on the loop
@@ -87,16 +89,21 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
 3. Open math, unblocked by nothing: §5.1's
    width-bound-by-definiteness-degree ⟨TBD⟩; §2.3's arena bound
    (gated on full E4).
-4. Idea to adjudicate (user): at translation time, translate
-   whichever of the language or its complement carries the fewer
-   acceptance pairs, and negate the result — complementing the det
-   parity input is a priority shift, so the test is cheap; plausibly
-   applicable at EVERY recursion level (per-layer labels too), not
-   just the top. Top level is trivially sound (closure under
-   negation); inner levels need the fragment bookkeeping checked
-   (negation swaps Σᵢ/Πᵢ, which the bls member ladder and the
-   delegate's insertion points care about) and a statement of where
-   pair-count actually drives emitted size.
+4. Adjudicate the acceptance decomposition (user; engineering has it
+   queued): pick the side of L / ¬L where the acceptance is
+   DISJUNCTIVE (complementing the det parity input is a priority
+   shift, so the test is free), split it by accepting pair —
+   L(A, ⋁ pairs) = ⋃_p L(A, pair p) on the same semiautomaton — then
+   translate each single-pair (Rabin-1) sub-language independently,
+   OR the labels, negate back if complemented. The min-pairs
+   complement trick and the pair split are one mechanism: complement
+   is what turns the conjunctive (Streett) side into the disjunctive
+   side where the split is exact. Type specimen: the 10 validation
+   TIMEOUTs — `GFa & GFb` complements to `FG¬a ∨ FG¬b`, two co-Büchi
+   one-pair pieces. Plausibly applies at EVERY recursion level
+   (per-layer labels too). To check: fragment bookkeeping (¬ and ⋁
+   move Σᵢ/Πᵢ, which the member ladder and the delegate's insertion
+   points care about) and where pair-count drives emitted size.
 
 ## Machinery / conventions (user-set; keep)
 
