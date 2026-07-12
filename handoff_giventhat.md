@@ -39,49 +39,53 @@ on the quotient. Run inside a greedy that merges classes while it can
 
 ## State
 
-- **GT1 DONE** — `giventhat/interval.py` (`Interval`, `given_that`,
-  `k_settles_phi` / `k_refutes_phi`, `choose` / `decompose`),
-  `conjugacy_classes` in `calculus.surgery`. It *is* steps 1–2 of the
-  operation. Gates green (fixture + 700-pair campaign). F1–F4 filled.
-- **GT2 DONE, re-scoped** — `giventhat/ladder.py` (the five `exists_*`,
-  `forced`, `h_below`, `rec_hull`, the chain read-offs), `r_classes` in
-  `calculus.surgery`. Rung oracle 6 222/6 222. The rungs are **no longer
-  the deliverable**: they are output metrics (rung of `¬φ` → rung of
-  `B`) and optional constraints (spec §6.5, via Lemma 5.2). F5–F8 filled.
-- Prerequisites harness-green: the calculus package (align, materialize,
-  surgery incl. `saturate` / hulls, `reduce`, `decide`, witnesses) and
-  `sosl.sos.classify`. Reuse, never reimplement — spec §0 lists exactly
-  what you get.
+- **GT1 / GT2 DONE.** `interval.py` (the interval + endpoints + choose),
+  `ladder.py` (the five `exists_*`, `rec_hull`, `rung_of`, chain
+  read-offs). GT1 is steps 1–2 of the operation; GT2's rungs are output
+  metrics + optional constraints. F1–F8 filled.
+- **GT3 / GT4 BUILT (the cake).** `quotient.py` (`Quotient`,
+  `congruence`, `syntactic_congruence`, `compose`, `hull`, `admits`,
+  `least_member` / `greatest_member`), `stutter.py` (YES/UNKNOWN),
+  `simplify.py` (the greedy), `__main__.py` (the CLI). `syntactic_blocks`
+  promoted public in `calculus.reduce`. **The tool runs:**
+  `python3 -m sosl.sos.giventhat NEG_PHI.sos K.sos -o B.sos`.
+  F13 **CONFIRMED** — the three §6 examples all reach `|𝒞(B)| = 3`
+  (syntactic seed, relax); fairness `B` is byte-equal to `𝓘(GF b)`.
+  Soundness law `B ∩ P_K == P_min` green on emission.
+- Prerequisites harness-green: the calculus package and
+  `sosl.sos.classify`. Reuse, never reimplement — spec §0.
 
 ## TODO — engineering (next session starts here)
 
-1. **GT3 (spec §5) — the bounded quotient engine.** `quotient.py`:
-   `congruence(table, seeds)` (union-find + letter-worklist; quotient
-   table via **`Table.of_raw`**, which already is the shared shortlex
-   BFS — no new BFS), then `forced` / `hull` / `admits` /
-   `least_member` / `greatest_member` / `is_recognized`. Plus a thin
-   `stutter.py` (the stutter seeds are one instance; verdict YES/UNKNOWN,
-   **never NO**) and one commissioned addition:
-   `syntactic_congruence` promoted out of `reduce._blocks`. Gate hard on
-   the `bits ≤ 12` oracle (spec §5.5 gate 3) — that is what makes
-   Prop 4.2 falsifiable.
-2. **GT4 (spec §6) — the simplifier and the tool.** `simplify.py` (the
-   greedy; seeds `π_{¬φ}` / identity / stutter; relax **and** restrict;
-   pick the best against the three reference points) and a thin
-   `__main__.py`: `python3 -m sosl.sos.giventhat A.sos K.sos -o B.sos`.
-   The soundness law `B ∩ P_K == P_min` is asserted on every emission.
-3. **GT5 (spec §7) — the demonstration.** ~200 small same-stratum corpus
-   pairs; the size table; the headline rate.
+The engine works on the paper's three examples; what is owed is the
+*validation* the recentering deferred, then the demonstration.
+
+1. **The GT3 oracle gates (`quotient_gate.py`, spec §5.5) — the one that
+   matters is gate 3 (F9).** On `bits ≤ 12`: enumerate `2^F`, keep the
+   `is_recognized` members, confirm nonempty **iff** `admits`, and
+   `least_member`/`greatest_member` = their intersection/union. A
+   disagreement convicts Prop 4.2 → **To theory**, never patch the hull.
+   Plus gate 1 (morphism, `[ε]` singleton), gate 4 (F10, Prop 4.1 at
+   runtime), gate 6 (F11, the Thm 5.7 fixture: stutter quotient `n == 2`,
+   `sc(p_min)` universal, verdict UNKNOWN).
+2. **F12's remaining half — the corpus sweep (`simplify_gate.py`).** The
+   fixture + a small same-stratum sample: the §6.3 language-level
+   cross-check `equivalent(reduce(B ∩ P_K), reduce(P_min))` on every
+   case, byte-stability of the emitted `.sos`, and the `REFUTED` witness
+   leg. Copy the `--one` + `--campaign` + 15 s watchdog pattern.
+3. **GT5 (spec §7) — the demonstration.** ~200 small same-stratum pairs;
+   the size table; the five headlines (incl. greedy-vs-exhaustive gap,
+   *a heuristic quality, not evidence on Conj 4.5*).
 
 Do **not** build: stutter tier 2, the Wagner brute probe, the W-series
-(spec §8 — reasons given there). Do not fetch MCC data.
+(spec §8). Do not fetch MCC data.
 
 ## TODO — theory
 
-Nothing pending. Next items land when engineering files F9 (the Prop 4.2
-oracle), F13 (the paper §6 prediction: a guarantee `B` with `< 5`
-classes on [DPT25]'s own example) or F14 (the headline rate — if it is
-~0, the paper's central claim is empty and theory must know first).
+Nothing pending. F13 is confirmed (see report). Next items land when
+engineering files F9 (the Prop 4.2 oracle — the one result that can
+falsify the core) or F14 (the headline rate — if ~0, the paper's central
+claim is empty and theory must know first).
 
 ## Operational facts (save the rediscovery)
 
