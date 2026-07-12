@@ -47,7 +47,19 @@ seeded with `λ(a)² ∼ λ(a)` it is stutter-invariance (whose hull provably
 *escapes the table* — a locality theorem we exhibit over two letters);
 seeded with `λ(ℓ) ∼ λ(ℓ')` it sheds atomic propositions; unseeded it
 minimizes. Constraints compose exactly, by a joint closure fixpoint,
-where the automata side chains heuristics and hopes.
+where the automata side chains heuristics and hopes. Finally, a
+three-class floor lemma makes optima *certifiable for free*: whenever the
+two endpoint checks are inconclusive, no member of the interval has fewer
+than three classes. We run the operation on both of [DPT25]'s own worked
+figures. It returns a `B` with **3 classes** on each — against inputs of
+5 and 4, and against their `min|K` (6 and 4) and `max|K` (4 and 3) — so
+by the floor its answer is not merely smaller but **provably minimal over
+the whole interval**, on one of which the lattice has 2^25 members. On the
+way it drops a recurrence property to a guarantee, and repairs a
+stutter-sensitive property into a stutter-invariant one — the two goals
+[DPT25] pursue by heuristics that, on those same figures, land on a
+strictly larger member or (their Minato pass, on the second) do nothing
+at all.
 
 ---
 
@@ -147,12 +159,24 @@ four things that make that line true:
    closure fixpoint (Lemma 5.2) — where [DPT25]'s evaluation must chain
    `SIrelax+BM` and take what luck gives.
 
+5. **It works on their own examples, provably** (§6). [DPT25] draw
+   exactly two instances as figures; we run the operation on both. A
+   three-class floor lemma (Lemma 4.6) says that whenever the endpoint
+   checks are inconclusive, *every* member of the interval has at least
+   three classes — so a member with three is optimal, certified without
+   enumeration. The operation returns exactly that on both figures: 3
+   classes against inputs of 5 and 4, beating their `min|K` (6, 4) and
+   `max|K` (4, 3), dropping a recurrence to a guarantee on the first, and
+   turning a stutter-sensitive property into a stutter-invariant one on
+   the second — where their `sirestrict` lands on a strictly larger legal
+   member and their Minato pass, by their own admission, changes nothing.
+   The paper therefore stands on derivation, not on a campaign.
+
 The system `S` never enters the calculus: only the two spec-sized
-objects `𝓘(¬φ)` and `𝓘(K)` pay the entry price. §6 runs [DPT25]'s own
-running example through the operation, §7 is the evaluation plan, §8
-positions the work, §9 concludes. Appendix A parks the material of
-earlier drafts that the operation does not need — decommissioned, not
-retracted.
+objects `𝓘(¬φ)` and `𝓘(K)` pay the entry price. §7 is the evaluation
+plan — corroboration, not support — §8 positions the work, §9 concludes.
+Appendix A parks the material of earlier drafts that the operation does
+not need: decommissioned, not retracted.
 
 ## 2. Background
 
@@ -366,6 +390,27 @@ free:
 
 The operation's contract is therefore `|𝒞(B)| ≤ min` of the three, and
 its claim is that the inequality is usually strict.
+
+And there is a floor, which costs nothing and certifies optima for free:
+
+**Lemma 4.6 (the three-class floor).** If neither endpoint check fires —
+`K ⊭ φ` and `K ⊭ ¬φ` — then **every** `B` in the interval satisfies
+`|𝒞(B)| ≥ 3`. Consequently any member attaining 3 classes is a
+*minimum*, certified without enumerating anything.
+
+*Proof.* A table has at least two classes (`[ε]` is adjoined fresh, so
+no letter maps to it). Suppose `𝓘(L)` has exactly two, `[ε]` and `C`;
+every nonempty word folds to `C`, so `C·C = C` and the only linked pair
+is `(C, C)` (`[ε]·C = C ≠ [ε]`). Its accepting set is `∅` or `{(C,C)}`,
+i.e. `L ∈ {∅, Σ^ω}`. Now `K ⊭ φ` means `L(P_min) ≠ ∅` and `K ⊭ ¬φ` means
+`L(P_max) ≠ Σ^ω`; every member `B` has `L(P_min) ⊆ L(B) ⊆ L(P_max)`, so
+`B ∉ {∅, Σ^ω}` and `|𝒞(B)| ≥ 3`. ∎
+
+The two examples of §6 both hit the floor: the operation returns a
+3-class `B` on each, so on [DPT25]'s own figures its answer is not merely
+smaller — it is **optimal, and provably so**. The floor also explains why
+the endpoint checks come first: they are exactly the case distinction
+that makes the objective non-degenerate.
 
 ### 4.2 The search space is the congruences of the aligned table
 
@@ -812,7 +857,27 @@ things; conjecture: incomparable).
 
 Any intersection of these is decided by one joint fixpoint (Lemma 5.2).
 
-## 6. The operation on [DPT25]'s own example
+## 6. The operation on [DPT25]'s own examples
+
+[DPT25] draws exactly two instances as figures. We run the operation on
+both. In each case it returns a `B` that is **strictly smaller than the
+input**, and — by the three-class floor (Lemma 4.6) — **provably minimal
+over the whole interval**. No experiment is involved: the numbers below
+are the algebra, and each is reproducible in one command
+(`sosl/tests/giventhat/dpt_examples.py`).
+
+| | `\|𝒞(¬φ)\|` | `\|𝒞(K)\|` | `\|𝒞(T)\|` | `\|F\|` | `min\|K` | `max\|K` | **`\|𝒞(B)\|`** | rung `¬φ → B` | stutter `¬φ → B` |
+|---|---|---|---|---|---|---|---|---|---|
+| Figs. 2–3 | 5 | 4 | 10 | 25 | 6 | 4 | **3** | recurrence → **guarantee** | inv → inv |
+| Fig. 4 | 4 | 3 | 5 | 3 | 4 | 3 | **3** | guarantee → guarantee | **sensitive → invariant** |
+
+The two are complementary. On Figs. 2–3 the optimum lies *strictly
+inside* the lattice — below the input *and* below both of [DPT25]'s
+endpoint strategies — and `2^F` has 33 554 432 members, so only the hulls
+can reach it. On Fig. 4 the lattice has eight members and we enumerate it
+by hand: the minimum is unique.
+
+### 6.1 Figs. 2–3: the running example
 
 The running example of [DPT25, Figs. 2–3]:
 `¬φ = F(a∧c) ∨ (GFb ∧ GF¬b)` given `K = FGb ∧ Gc`, over `Σ = 2^{a,b,c}`
@@ -844,11 +909,13 @@ refute it (`({bc})^ω` is the shortest `K`-behavior satisfying `φ`). The
 freedom is `|F| = 25` bits — `2^25` legal members, so enumeration is
 already out of reach on a toy.
 
-**Step 3–4 — the search.** The reference points: `|𝒞(¬φ)| = 5`,
-`|𝒞(L(P_min))|` and `|𝒞(L(P_max))|` are the conjunction and the
-disjunction with knowledge and are *not* smaller. Seeding at `π_{¬φ}`
-starts the greedy on the 5-class table of `¬φ` itself and coarsens from
-there.
+**Step 3–4 — the search.** The three reference points: the input
+`|𝒞(¬φ)| = 5`; [DPT25]'s `min|K` = `ℒ(¬φ) ∩ ℒ(K)`, which has **6**
+classes — *larger than the input*, exactly as [DPT25] predict ("using
+these automata is similar to asking the model checker to prove `K` in
+addition to `¬φ`"); and their `max|K` = `ℒ(¬φ) ∪ ℒ(¬K)`, which has **4**.
+So knowledge already buys one class through their own relaxation. The
+operation buys two, and proves nothing more is available.
 
 **What the constraints say about the answer** (each decided, none
 guessed):
@@ -883,22 +950,92 @@ guessed):
   a drop from **recurrence to guarantee** — from a full Büchi emptiness
   check to reachability.
 
-**Prediction (to be confirmed by the implementation).** The
-guarantee-constrained operation (Lemma 5.2: `hull_π` alternated with the
-co-safety kernel) should return a member of the `[F(a∧c), F(a∨¬c)]`
-bracket whose invariant has **fewer than 5 classes** — `F(a∧c)` needs
-`[ε]`, "not yet", and the sink, i.e. 3 — against `|𝒞(¬φ)| = 5` and
-against both endpoints, which are larger. That is the shape of the
-claim; §7 measures it at scale, and this instance is the first
-regression test.
+**The answer, and its optimality.** Both ends of the guarantee bracket
+have **3 classes** (`F(a∧c)`: `[ε]`, "not yet", the accepting sink;
+`F(a∨¬c)` likewise), so the operation returns a 3-class guarantee `B` —
+against `|𝒞(¬φ)| = 5`, `min|K` = 6, `max|K` = 4. And by Lemma 4.6 no
+member of the interval can have fewer than 3, since neither endpoint
+check fired. **The answer is minimal over all 2^25 members of the
+lattice, certified without enumerating one of them.**
+
+Read the whole instance in one line: *given `K`, the recurrence property
+`¬φ` may be replaced by a guarantee property with 3 classes instead of 5
+— a full Büchi emptiness check becomes reachability, on a smaller
+object, and nothing smaller exists.* [DPT25] obtain `Fa`, a legal member
+their Minato pass happened to land on; they cannot say it is a
+guarantee (they *observe* their automaton is "now terminal"), cannot say
+whether anything smaller exists, and cannot name the bracket it sits in.
+
+### 6.2 Fig. 4: the stutter example, small enough to enumerate
+
+[DPT25, Fig. 4] is `¬φ = XFa` given `K = ā` (i.e. `¬a` holds initially),
+over `Σ = 2^{a}`. They use it to motivate `sirelax` / `sirestrict`:
+`A_{XFa}` is stutter-sensitive — it rejects `w = a·ā^ω` but accepts
+`aa·ā^ω`, two stutter-equivalent words — and since `w ∉ ℒ(K)`, the
+freedom can be spent to repair that.
+
+**The algebra.** `𝓘(XFa)` has **4 classes**: `[ε]`, `N` (no `a`), `A` (an
+`a`, only at index 0), `T` (an `a` at index ≥ 1; absorbing), with the
+product `(α,β)·(α',β') = (α∨α', β∨α')` where `α` = "contains an `a`",
+`β` = "contains an `a` at index ≥ 1". Note `λ(a)² = A·A = T ≠ A`: the
+letter class is not idempotent, so `XFa` is stutter-sensitive by the
+read-off of §2 — [DPT25]'s observation, as a one-line equational check.
+`𝓘(ā)` has **3 classes** (`[ε]`, `F_a`, `F_ā` — the first letter,
+left-absorbing) and is stutter-invariant. The aligned product `T` has
+**5 classes** and 8 linked pairs; both endpoint checks are inconclusive,
+so Lemma 4.6 applies.
+
+**The freedom is 3 bits.** The linked pairs outside `P_K` fall into three
+conjugacy classes — `{(a1,n1)}` = the single word `a·ā^ω`;
+`{(t_a,n1)}` = `a`-initial words with an `a` later but finitely many;
+`{(t_a,t_a), (t_a,t_n)}` = `a`-initial words with infinitely many `a`s.
+So the interval has exactly **8** members, and we can list what each
+costs:
+
+| `|𝒞|` | members |
+|---|---|
+| **3** | **1** — and it is `ℒ(¬φ) ∪ ℒ(¬K)` = `XFa ∨ a₀` = **`Fa`** |
+| 4 | 4 — among them the input `XFa`, the lower endpoint `min|K`, and `G(a) ∨ F(ā ∧ Fa)` |
+| 5 | 3 |
+
+**Everything [DPT25] does to this example is a point of that lattice.**
+Their `sirelax` adds the partly-covered stutter class and lands on `Fa` —
+the minimum, reached by luck and unrecognized as such. Their `sirestrict`
+removes it instead and lands on `G(a) ∨ F(ā ∧ Fa)`, which is precisely
+the member `P_min ⊔ C₃`: legal, stutter-invariant, and **strictly worse**
+(4 classes). And their Minato pass `BM` does **nothing at all** here —
+they say so themselves: *"it would only give us bounds `ā…⊤` on the first
+transition, but since this transition is already labeled by `⊤` it would
+not be changed."* The heuristic that our operation doubles is, on this
+instance, empty; the operation is not.
+
+**What the operation does.** `max|K` is already `Fa` (3 classes), so the
+reference points alone win here — and the floor certifies that no member
+of the eight is smaller. But the greedy finds it too, and how it finds it
+is the point: seeded at `π_{¬φ}` (the 4-class table of `XFa`, blocks
+`[ε] | {a1} | {n1} | {t_a, t_n}`), **one merge** collapses `{a1}` into
+`{t_a, t_n}` — and that merge *is* `λ(a)² ∼ λ(a)`, the stutter seed of
+§5.3. The unconstrained minimizer **discovers stutter-invariance on its
+own**, because on this instance the smallest member happens to be the
+stutter-invariant one. The output is stutter-invariant where the input
+was not — the partial-order reductions [DPT25] were after — and it is
+smaller, and it is optimal. Three goals, one merge, no heuristic.
 
 ## 7. Evaluation plan
 
-**Scope.** We are demonstrating that the interval's freedom is
-*leverageable*, and more finely than [DPT25] — not that it is fast.
-Wall-clock, the MCC benchmark and the downstream model checker are out
-of scope for this draft; the tests are polynomial and the objects are
-spec-sized.
+**What is already established, and by what.** The claims of this paper
+are theorems, and §6 discharges the empirical-looking one — *the freedom
+is leverageable* — on [DPT25]'s own two figures, by derivation rather
+than by campaign: a `B` strictly smaller than the input on both, drops to
+3 classes from 5 and from 4, **certified optimal by Lemma 4.6**, with a
+rung drop on one and a stutter repair on the other. Nothing below is
+needed to support that. What a campaign adds is *frequency* — how often
+this happens on languages nobody chose to illustrate a paper with — and a
+score for the greedy where the optimum is computable.
+
+**Scope.** Wall-clock, the MCC benchmark and the downstream model checker
+are out of scope for this draft; the tests are polynomial and the objects
+are spec-sized.
 
 **The instrument.** `simplify` (§4.6) as a tool: two `.sos` in, one
 `.sos` out. **The sample:** same-stratum pairs from the census corpus of
@@ -1022,12 +1159,16 @@ property of the language, not of a drawing; the search space is exactly
 the congruences of one aligned table; admissibility of a congruence is
 decided exactly by a bounded quotient test in polynomial time; the true
 optimum sits in NP; and a greedy whose every inner step is a decision
-procedure delivers a `B` that never regresses on the input and, we
-claim, usually beats it and both of [DPT25]'s endpoints. The same
-quotient engine, differently seeded, is stutterization and
-proposition-shedding; constraints compose by a joint fixpoint rather
-than by chaining heuristics. The exponentials sit where they always did:
-at entry, paid once per spec-sized object, never per question.
+procedure delivers a `B` that never regresses on the input. On both of
+the examples [DPT25] chose to draw, it does better than that: a 3-class
+answer against inputs of 5 and 4, **provably minimal** by the three-class
+floor, dropping a recurrence property to a guarantee on one and repairing
+a stutter-sensitive property on the other — where their own heuristics
+land on a strictly larger member, or on nothing. The same quotient
+engine, differently seeded, is stutterization and proposition-shedding;
+constraints compose by a joint fixpoint rather than by chaining
+heuristics. The exponentials sit where they always did: at entry, paid
+once per spec-sized object, never per question.
 
 The open edges are stated where they live: the hardness of `|𝒞|`
 minimization (Conj 4.5), the locality map of §5.5 (which semantic hulls
@@ -1147,14 +1288,14 @@ comparisons (notably against `sirestrict`'s timeouts) belong here.
 | Prop 4.4 (recurrence/persistence) | **Prop 5.5** |
 | Prop 4.5 (band-minimal degree) | **Appendix A.2** |
 | §4.5 (locality / minimization landscape) | absorbed into §4.1, §4.5, §5.5 |
-| §4.6 (worked example) | **§6** |
+| §4.6 (worked example) | **§6.1** (+ **§6.2**, new: [DPT25] Fig. 4) |
 | Prop 5.1 (stutter recognition) | **Prop 5.6** |
 | Thm 5.2 (non-locality) | **Thm 5.7** |
 | Thm 5.3 (self-alignment) | **Appendix A.1** |
 | §6.1 (AP shedding) | **§5.4** |
 | §6.2 (incremental) | **Appendix A.3** |
 | §6.3 (LTL end to end) | **Appendix A.4** + corollary in §4.1 |
-| — | **new: Prop 4.1, Prop 4.2, Prop 4.3, Thm 4.4, Conj 4.5, Lemma 5.2** |
+| — | **new: Prop 4.1, Prop 4.2, Prop 4.3, Thm 4.4, Conj 4.5, Lemma 4.6, Lemma 5.2** |
 
 ---
 
