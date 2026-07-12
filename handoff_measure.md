@@ -78,13 +78,6 @@ the file and section named for the task at hand — nothing else.
    holds only up to label-name sanitization. No number moves. `.mc` is now
    demoted to an *import path* (`sos_quant.md` §5.7), so this is a small call:
    accept, and note the sanitizing printer.
-6. **Decision recorded, not yet taken** (`sos_quant.md` App. A): the
-   model-induced source is the **local renormalized walk** (rational, exact) in
-   the main line. The measure-theoretically canonical alternative is the
-   **maximum-entropy (Parry) measure**, whose transition probabilities are
-   *algebraic* — every number stops being a fraction, and entropy comes back out
-   of the appendix as load-bearing. Revisit only if the local walk proves
-   unsatisfying.
 
 ## Work items — Engineering
 

@@ -84,8 +84,6 @@ about what happens when the second object is a real one.
   probabilistic-verification recipe [CY95]. **Keep the transition-emitting
   embedding remark** — the model-induced walk needs it (letters sit on the
   Cayley edges).
-- *Dropped from this paper:* the entropy background (§2.4) — moves to the
-  appendix with its section.
 
 ## 3. The generic verdict  **[have — but restructured]**
 
@@ -147,7 +145,8 @@ about what happens when the second object is a real one.
   among the letters that stay live, weighted by `p` and renormalized. For a
   safety `M` the walk stays inside `M` forever (`Pr(M) = 1`), so it is a source
   with support exactly `M`. Rational, exact, end to end; `M = Σ^ω` gives back
-  `p`.
+  `p`. The operational reading is the one an engineer means: *the model picks a
+  legal move.*
 - 5.4 **The product IS `align`.** Aligned classes are pairs `(c_S, c_M)`; the
   walk's state *is* the `M`-component. So the "product of a chain with the
   spec's invariant" is the calculus's `align`, restricted to the `M`-live part.
@@ -249,36 +248,14 @@ identified?"*
   component, one lookup. That statement cannot be made on an automaton.
 - Two invariants in, one fraction out; the product is `align`; the whole
   Boolean lattice is one solve.
-- Open: the model-relative essential form (§6.5); the weighted/semiring
-  direction; the finite-word case.
-
----
-
-# Appendices — parked, not part of the contribution
-
-*Retained here so nothing is lost. Each is out because it does not serve
-RQ1–RQ3: it is not a probability, it does not come from `ν`, and it identifies
-nothing.*
-
-- **A — Entropy.** `h(S) = log₂ ρ(A)` on the live classes; the certified
-  rational enclosure; Staiger's closure identity recovered structurally.
-  *(Proved and implemented; `sos_measure.md` §5.)* **The one thing that could
-  pull it back into the paper:** if the model-induced source is taken to be the
-  **maximum-entropy (Parry) measure** — the true "uniformly random word of `M`"
-  — rather than the local renormalized walk, then `ρ` and its Perron
-  eigenvector *are* the source, and `h(M)` measures the freedom granted to the
-  model. Cost: the transition probabilities become **algebraic, not rational**,
-  and `Pr_M(S)` stops being a fraction. Decision deferred; the main line takes
-  the local walk and keeps every number exact.
-- **B — The metric geometry of the census.** Diameter, distance distribution,
-  clustering by Wagner degree, nearest-LTL-neighbour. A plot, not a finding.
-- **C — Finite words / LTLf.** Same table, acceptance a *class set* instead of
-  a linked-pair set; the walk's **transient** law gives densities where its
-  **limit** law gives measures; Schützenberger makes the same aperiodicity scan
-  decide LTLf. This is the sequel, and it is where process mining
-  (entropy-based precision/recall; stochastic conformance) actually connects —
-  their world is finite traces, ours is ω. Do not claim the connection in this
-  paper.
+- Open directions, one line each: the **model-relative essential form** (§6.5);
+  the **weighted/semiring** invariant (semiring-valued `Val` under the conjugacy
+  law); the **finite-word case** — the same table with a *class-set* acceptance,
+  where the walk's transient law gives densities as its limit law gives
+  measures, and Schützenberger makes the same aperiodicity scan decide LTLf.
+- Non-goals, stated once: MDPs (we fix the uniform scheduler rather than
+  optimize over them, §5.5); performance (the entry cost is the invariant, an
+  owned frontier — the quantitative layer is one linear solve).
 
 ---
 
