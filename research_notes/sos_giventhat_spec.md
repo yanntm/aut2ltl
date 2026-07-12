@@ -407,19 +407,44 @@ Loads with `load_invariant`, dumps with `dump_invariant`, prints:
 On `SETTLED` / `REFUTED` it prints the verdict and the minimal witness
 lasso and emits no `.sos` (the model-checking problem is answered).
 
-**GT4 acceptance:** the tool runs end to end on the §3.5 fixture and on
-small corpus pairs; §6.3 green on every case; the emitted `.sos`
-re-reads with `load_invariant` and is byte-stable under `reduce`; and
-the paper's §6 prediction confirmed or refuted **in writing** (the
-[DPT25] example: a guarantee `B` with `< 5` classes is predicted — if it
-does not appear, that is a To-theory finding, not a bug to hide).
+**GT4 acceptance — the two [DPT25] examples are the gate.** Paper §6
+*derives* both; `tests/giventhat/dpt_examples.py` already reproduces
+every number below from the two LTL pairs. `simplify` must land on them:
+
+| | `¬φ` / `K` | `\|𝒞(¬φ)\|` | `\|F\|` | `min\|K` | `max\|K` | **`\|𝒞(B)\|`** | rung `¬φ → B` | stutter `¬φ → B` |
+|---|---|---|---|---|---|---|---|---|
+| Figs. 2–3 | `F(a&c) \| (GFb & GF!b)` / `FGb & Gc` | 5 | 25 | 6 | 4 | **3** | recurrence → guarantee | inv → inv |
+| Fig. 4 | `X F a` / `!a` | 4 | 3 | 4 | 3 | **3** | guarantee → guarantee | **False → True** |
+
+Both are **certified optimal** by the three-class floor (paper Lemma 4.6:
+neither endpoint check fires, so no member has `< 3` classes). So:
+`|𝒞(B)| == 3` on both, or GT4 is not done. On Fig. 4 additionally assert
+the whole `2^F` census — histogram `{3: 1, 4: 4, 5: 3}`, the minimum
+unique and equal to `P_max` — and that the greedy seeded at `π_{¬φ}`
+reaches it in **one merge**, that merge being `λ(a)² ∼ λ(a)`.
+
+Plus: §6.3 green on every case; the emitted `.sos` re-reads with
+`load_invariant` and is byte-stable under `reduce`. A miss on either
+example is a **To-theory finding, not a bug to hide** — it means the
+greedy fails to reach what the hulls prove exists.
+
+Note the alphabet trap: Spot keeps only the APs a formula mentions, so
+`K = FGb & Gc` has `{b,c}` while `¬φ` has `{a,b,c}`. Extend `K` with the
+sanctioned adapter (`inverse_substitution` + `reduce`; `_extend` in
+`ladder_gate.py`) — never hand-pad the formula.
 
 ---
 
-## 7. GT5 — the demonstration
+## 7. GT5 — the demonstration (corroboration, not support)
+
+**The paper no longer needs this milestone to stand.** Paper §6 derives
+the central claim on [DPT25]'s own two figures, with certified optima
+(Lemma 4.6). GT5 adds *frequency* — how often the operation wins on
+languages nobody picked to illustrate a paper — and a *score* for the
+greedy. Build it after GT4, and do not let it block the paper.
 
 **Performance is out of scope.** No wall-clock claims, no budget tables,
-no model-checker comparison. We show the freedom is *leverageable*.
+no model-checker comparison.
 
 - **Sample.** Same-stratum corpus pairs, both sides small
   (`|𝒞| ≤ 12` each, product table `≤ 60`), N ≈ 200, seeded. Small on

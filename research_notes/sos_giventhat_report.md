@@ -142,13 +142,28 @@ emit; the UNKNOWN *frequency* survives as a column of F15.
   green on every case; the emitted `.sos` re-read and byte-stable under
   `reduce`; `SETTLED` / `REFUTED` verdicts carrying their minimal
   witness lasso.
-- **F13 — the [DPT25] example (paper §6), predicted vs actual.**
-  *(pending)* The paper **predicts** a guarantee `B` inside the bracket
-  `[F(a∧c), F(a∨¬c)]` with fewer than 5 classes (against
-  `|𝒞(¬φ)| = 5`, `bits = 25`, both endpoints larger). Report the actual
-  `|𝒞(B)|`, the rung, and which seed/side won. **A miss is a
-  To-theory finding, not a bug to hide** — it would mean the greedy
-  does not reach what the hulls prove exists.
+- **F13 — the two [DPT25] examples (paper §6).** **DERIVED
+  (2026-07-12), theory-side; `simplify` must reproduce them.** Both of
+  [DPT25]'s figures, run through the interval core with
+  `sosl/tests/giventhat/dpt_examples.py` (regen:
+  `cd sosl && python3 -m tests.giventhat.dpt_examples`):
+
+  | | `¬φ` / `K` | `\|𝒞(¬φ)\|` | `\|𝒞(K)\|` | `\|𝒞(T)\|` | `\|F\|` | `min\|K` | `max\|K` | **opt** | rung | stutter |
+  |---|---|---|---|---|---|---|---|---|---|---|
+  | Figs. 2–3 | `F(a&c)\|(GFb&GF!b)` / `FGb&Gc` | 5 | 4 | 10 | 25 | 6 | 4 | **3** | recurrence → guarantee | inv → inv |
+  | Fig. 4 | `X F a` / `!a` | 4 | 3 | 5 | 3 | 4 | 3 | **3** | guarantee | **False → True** |
+
+  Both optima are **certified** by the three-class floor (paper
+  Lemma 4.6): neither endpoint check fires on either pair, so no member
+  has `< 3` classes. On Fig. 4 the full `2^F` census (8 members) is in:
+  histogram `{3: 1, 4: 4, 5: 3}` — the minimum is **unique** and equals
+  `P_max = Fa`, which is [DPT25]'s own `sirelax` answer, while their
+  `sirestrict` answer `G(a) ∨ F(ā ∧ Fa)` is the 4-class member
+  `P_min ⊔ C₃` and their Minato pass changes nothing at all.
+  **GT4's gate:** `simplify` returns `|𝒞(B)| = 3` on both, and on Fig. 4
+  the `π_{¬φ}`-seeded greedy reaches it in one merge (`λ(a)² ∼ λ(a)`).
+  A miss is a **To-theory finding, not a bug to hide** — it means the
+  greedy does not reach what the hulls prove exists.
 
 *Epitaph — old F12 (greedy vs brute Wagner degree):* decommissioned
 (spec §8). Prop 4.5 is a sketch and `2^F` enumeration is not a proof
