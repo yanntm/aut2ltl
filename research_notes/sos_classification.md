@@ -529,7 +529,7 @@ conditions that are again properties of the table — so each fragment is a
 decidable property of the invariant; developing those searches to the
 standard of the rest of this paper is left open.
 
-**The stutter-invariant (X-free) refinement — one more read-off.** Two
+**The stutter-invariance read-off.** Two
 ω-words are *stutter-equivalent* iff they have the same destuttered
 normal form, where destuttering collapses every maximal finite block of
 equal consecutive letters to one letter (an eventually-constant word
@@ -590,11 +590,11 @@ same stem image `φ(w₀)` and the same idempotent block image `e` as
 `β`'s, and the strong form of the factoring theorem gives both words
 one verdict. ∎
 
-It sits strictly below the aperiodic cut: a stutter-invariant language
-is `X`-free, hence LTL, hence aperiodic, so the read-off is reported
-alongside the LTL bit and never contradicts it. It is
-complement-invariant (a property of the algebra, not of `accept`). The
-automata-side check is a construction battery — translate the property
+Stutter invariance is a property of the algebra alone — `accept` plays
+no role, so it is complement-invariant — and the test owes nothing to
+the aperiodic cut: it reads only the letter classes, where aperiodicity
+reads every power orbit. It is reported alongside the LTL bit as a
+separate column. The automata-side check is a construction battery — translate the property
 *and its negation*, apply the closure constructions `cl` (destuttering)
 and `sl` ("self-loopization"), test emptiness of products such as
 `sl(A) ⊗ sl(Ā)` [MD15]; on the invariant it is `|Σ|` table lookups.
@@ -1233,9 +1233,10 @@ case: zero violations, zero partial verdicts.
 2484 — **40%** — are not: among the small ω-languages, genuine ω-counting
 is not a corner case but almost half the population. The cut is
 complement-blind (§3.2), so it splits the primals in the same proportion
-(1945 LTL / 1267 non-LTL of 3212). Inside the LTL side, the
-stutter-invariant read-off of §3.2 marks 894 languages (24% of the
-aperiodic mass) as X-free.
+(1945 LTL / 1267 non-LTL of 3212). The stutter-invariance read-off of
+§3.2 marks 894 languages — in this catalogue every one of them falls on
+the LTL side of the cut (24% of the aperiodic mass), a datum of the
+census, not a theorem.
 
 **The profile**, ordered by Wagner degree, weakest first — `non-LTL` is
 the row's share beyond the aperiodic cut, `st-inv` its stutter-invariant
@@ -1316,7 +1317,7 @@ is already beyond LTL, two thirds of the `ω³` band (412 of 613 per side)
 is LTL-definable, and no proper degree is purely one-sided — even the
 deepest `(ω⁴, ·)` rows keep 7 LTL languages per side. The two axes read
 off the same object — §3.2's cut and §4's degree — are exhibited by the
-catalogue as a full cross-product. The stutter-invariant refinement has
+catalogue as a full cross-product. The stutter-invariant class has
 its own shape: its mass concentrates at the recurrence/persistence pair
 (`(ω, ·)`: 296 per side, two thirds of all 894) and vanishes at the
 deepest bands.
