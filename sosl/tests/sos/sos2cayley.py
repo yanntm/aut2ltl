@@ -29,7 +29,7 @@ import os
 import re
 import shutil
 import sys
-from typing import List
+from typing import Dict, List, Tuple
 
 from sosl.sos import load_invariant
 from sosl.sos.viz import dot_of, figure_of, place, tikz_of
@@ -40,22 +40,29 @@ from sosl.sos.viz.render import compile_pdf, pdf_to_png
 
 
 NODE_AT = re.compile(r"\\node\[[^\]]*\]\s*\((\w+)\)\s*at\s*\(([-\d.]+),\s*([-\d.]+)\)")
+LOOP_AT = re.compile(r"\\draw\[[^\]]*\]\s*\((\w+)\)\s*to\[(loop \w+)\]")
 
 
-def harvest(tex_path: str, fig: Figure) -> Placement:
-    """The placement of an existing hand-owned `.tex`: one (x, y) per class, read
-    off its ``\\node`` lines. Coordinates are the *only* thing taken — this is what
-    lets a restyle rewrite the whole figure from the machine while keeping the
-    placement a human chose. Raises if the file does not place every class (a node
-    was renamed or dropped: re-seed from scratch instead of half-transplanting)."""
+def harvest(tex_path: str, fig: Figure) -> Tuple[Placement, Dict[int, str]]:
+    """The placement of an existing hand-owned `.tex`: one (x, y) per class and the
+    direction of each self-loop, read off its ``\\node`` and ``\\draw`` lines.
+
+    Placement is the *only* thing taken — coordinates and loop directions, nothing
+    else — which is what lets a restyle rewrite the whole figure from the machine
+    while keeping the arrangement a human chose. Raises if the file does not place
+    every class (a node was renamed or dropped: re-seed from scratch rather than
+    half-transplant)."""
     by_ident = {nd.ident: nd.cls for nd in fig.nodes}
     with open(tex_path) as fh:
-        found = {by_ident[m.group(1)]: (float(m.group(2)), float(m.group(3)))
-                 for m in NODE_AT.finditer(fh.read()) if m.group(1) in by_ident}
-    missing = [nd.ident for nd in fig.nodes if nd.cls not in found]
+        text = fh.read()
+    pos = {by_ident[m.group(1)]: (float(m.group(2)), float(m.group(3)))
+           for m in NODE_AT.finditer(text) if m.group(1) in by_ident}
+    loops = {by_ident[m.group(1)]: m.group(2)
+             for m in LOOP_AT.finditer(text) if m.group(1) in by_ident}
+    missing = [nd.ident for nd in fig.nodes if nd.cls not in pos]
     if missing:
         raise RuntimeError(f"{tex_path} places no coordinate for {missing}")
-    return found
+    return pos, loops
 
 
 def emit(fig: Figure, out_dir: str, img_dir: str, name: str, layout: str,
@@ -81,9 +88,9 @@ def emit(fig: Figure, out_dir: str, img_dir: str, name: str, layout: str,
     with open(gen_tex, "w") as fh:
         fh.write(tikz_of(fig, place(fig, layout, rankdir), provenance, pairs))
     if reseed and os.path.exists(tex):
-        kept = harvest(tex, fig)          # read BEFORE the truncating open below
+        pos, loops = harvest(tex, fig)    # read BEFORE the truncating open below
         with open(tex, "w") as fh:
-            fh.write(tikz_of(fig, kept, provenance, pairs))
+            fh.write(tikz_of(fig, pos, provenance, pairs, loops))
         print(f"reseeded {tex} from the machine, at its own coordinates")
     elif os.path.exists(tex):
         print(f"kept hand-owned {tex} (machine form refreshed in {gen_tex})")

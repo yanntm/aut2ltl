@@ -28,10 +28,10 @@
   \draw[arrow] (eps) to node[lbl] {$[b]$} (b);
   \draw[arrow] (a) to[bend left=15] node[lbl] {$[a]$} (aa);
   \draw[arrow] (a) to node[lbl] {$[b]$} (ab);
-  \draw[arrow] (b) to[loop above] node[lbl] {$[a],[b]$} (b);
+  \draw[arrow] (b) to[loop right] node[lbl] {$[a],[b]$} (b);
   \draw[arrow] (aa) to[bend left=15] node[lbl] {$[a]$} (a);
   \draw[arrow] (aa) to node[lbl] {$[b]$} (b);
-  \draw[arrow] (ab) to[loop above] node[lbl] {$[a],[b]$} (ab);
+  \draw[arrow] (ab) to[loop left] node[lbl] {$[a],[b]$} (ab);
 
   \node[pairs] at (2.2,-3.0) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
   \node[pairs] at (2.2,-3.8) {$P = \{\, ([b],[b]),\; ([b],[a{\cdot}a]),\; ([b],[a{\cdot}b]) \,\}$};
