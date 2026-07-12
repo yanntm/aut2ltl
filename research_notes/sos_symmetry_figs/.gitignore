@@ -1,0 +1,4 @@
+# LaTeX by-products of the rasterize step; the .tex sources and the .png are tracked.
+sources/*.aux
+sources/*.log
+sources/*.pdf
