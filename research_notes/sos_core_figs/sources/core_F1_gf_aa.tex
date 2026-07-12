@@ -18,28 +18,28 @@
   pairs/.style     = {anchor=north, font=\small},
 ]
 
-  \node[class,root] (eps) at (2.2,2.6) {$\varepsilon$};
-  \node[class]      (a)   at (0.0,0.9) {$a$};
-  \node[class,idem] (b)   at (4.4,0.9) {$b$};
-  \node[class,idem] (ab)  at (0.0,-1.7) {$a{\cdot}b$};
+  \node[class,root] (eps) at (2.2,2.6)  {$\varepsilon$};
+  \node[class]      (a)   at (0.0,0.9)  {$a$};
+  \node[class,idem] (ab)  at (2.2,0.9)  {$a{\cdot}b$};
+  \node[class,idem] (b)   at (4.4,0.9)  {$b$};
+  \node[class,idem] (aa)  at (0.0,-1.7) {$a{\cdot}a$};
   \node[class,idem] (ba)  at (4.4,-1.7) {$b{\cdot}a$};
-  \node[class,idem] (aa)  at (2.2,-4.3) {$a{\cdot}a$};
 
   % the root is the adjoined identity: a source, marked like an initial state
   \draw[init] (2.2,3.5) -- (eps);
 
-  \draw[tree]    (eps) to              node[lbl] {$a$} (a);
-  \draw[tree]    (eps) to              node[lbl] {$b$} (b);
-  \draw[tree]    (a)  to[bend left=12] node[lbl] {$b$} (ab);   % waiting room 1
-  \draw[nontree] (ab) to[bend left=12] node[lbl] {$a$} (a);
-  \draw[tree]    (b)  to[bend left=12] node[lbl] {$a$} (ba);   % waiting room 2
-  \draw[nontree] (ba) to[bend left=12] node[lbl] {$b$} (b);
-  \draw[nontree] (ab) to[loop left]    node[lbl] {$b$} (ab);
-  \draw[nontree] (b)  to[loop right]   node[lbl] {$b$} (b);
-  \draw[tree]    (a)  to               node[lbl] {$a$} (aa);   % both escape on a
-  \draw[nontree] (ba) to               node[lbl] {$a$} (aa);
-  \draw[nontree] (aa) to[loop below]   node[lbl] {$a,b$} (aa);
+  \draw[tree]    (eps) to               node[lbl] {$a$} (a);
+  \draw[tree]    (eps) to               node[lbl] {$b$} (b);
+  \draw[tree]    (a)   to[bend left=12] node[lbl] {$b$} (ab);   % waiting room 1
+  \draw[nontree] (ab)  to[bend left=12] node[lbl] {$a$} (a);
+  \draw[nontree] (ab)  to[loop above]   node[lbl] {$b$} (ab);
+  \draw[tree]    (b)   to[bend left=12] node[lbl] {$a$} (ba);   % waiting room 2
+  \draw[nontree] (ba)  to[bend left=12] node[lbl] {$b$} (b);
+  \draw[nontree] (b)   to[loop right]   node[lbl] {$b$} (b);
+  \draw[tree]    (a)   to               node[lbl] {$a$} (aa);   % both escape on a,
+  \draw[nontree] (ba)  to               node[lbl] {$a$} (aa);   % to the zero
+  \draw[nontree] (aa)  to[loop left]    node[lbl] {$a,b$} (aa);
 
-  \node[pairs] at (2.2,-5.7) {$P = \{\, ([a{\cdot}a],[a{\cdot}a]) \,\}$};
+  \node[pairs] at (2.2,-3.1) {$P = \{\, ([a{\cdot}a],[a{\cdot}a]) \,\}$};
 \end{tikzpicture}
 \end{document}
