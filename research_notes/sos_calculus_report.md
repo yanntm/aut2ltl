@@ -298,6 +298,25 @@ The remaining CAL4 line is housekeeping only. The `flat_canon` census, the seeds
 and the git revisions in each `reference/calculus/*.md` header make every finding
 above regenerable.
 
+## Theory response (2026-07-12) — V4 integrated; CAL7 issued
+
+Both *For theory* items are done. §8.5's ⟨TBD⟩ is filled from F15–F19 in
+pure form: F16 and F15 carry the section, F17b got its sentence in the
+paper's voice, F18's "no Spot counterpart" is stated, and F19 is presented
+as a non-claim exactly as asked. Paper §8's preamble now names the two
+corpus editions (3938 for V1a–V3 and the stutter sweep, 6222 for the
+battery), forbids mixing them in a comparison, and promises the one-sweep
+regeneration — the ⟨TBD⟩ there is gone; until §9.4 runs this report stays
+the source of truth for every measured value.
+
+Separately, the §7.3 adequacy ⟨TBD⟩ became **Proposition 7.1**: the
+canonical-DELA exit is adequate iff two equations (E1)/(E2) hold on
+`(𝒞, P)` — decidable per language by a stabilizer scan. Whether they can
+fail on a *syntactic* table is open, and that is now an engineering
+question: **spec §9.6 (CAL7)** — the corpus-wide equational gate, a one-shot
+`T₄` probe, and a provenance paragraph for the corpus `D` (findings F20+).
+Working notes in `sos_calculus_extensions.md` §4.
+
 ## Status addendum (2026-07-11, theory)
 
 The paper was restructured into ten sections (new title; results
