@@ -1111,10 +1111,58 @@ The calculus should end where the consumer needs.
   and *counter-free exactly when `L` is LTL-definable*, since the graph
   is the algebra acting on itself. The transformation is implemented —
   the corpus of §8 pairs every invariant with the deterministic EL
-  acceptor this exit produces — and its adequacy proposition (the
-  verdict of a run is a function of its recurrent transition set, so an
-  Emerson–Lei condition over the Cayley edges suffices) is
-  ⟨TBD: Proposition 7.x, queued as the next theory increment⟩.
+  acceptor this exit produces. Adequacy — the verdict of a run is a
+  function of its recurrent transition set, so an Emerson–Lei condition
+  over the Cayley edges suffices — is exactly characterized:
+
+  **Proposition 7.1 (adequacy criterion).** Write `T(u)` for the set of
+  `Cay(L)`-edges the run of `u` traverses infinitely often. Membership
+  is a function of `T(u)` — equivalently, the Muller family
+  `{T(u) : u ∈ L}` over the edges (an EL condition over edge colors)
+  makes `Cay(L)` a deterministic acceptor for `L` — if and only if, for
+  all `y, t, h, g ∈ 𝒞` with `y·t = y·h = y·g = y`,
+
+  ```
+  (E1)  Val_P(y, (t·g)^π) = Val_P(y, (t²·g)^π)
+  (E2)  Val_P(y, (t·h·g)^π) = Val_P(y, (h·t·g)^π)
+  ```
+
+  *Proof.* (⇒) Realize `y, t, g` by words. The walks of `w_t`, `w_g`
+  from state `y` are closed (`y·t = y`), and the walk of `w_t²` is the
+  walk of `w_t` twice — the same edges. So `w_y(w_t w_g)^ω` and
+  `w_y(w_t² w_g)^ω` share their recurrent edge set while their
+  memberships are the two sides of (E1); likewise for (E2). (⇐) Let
+  `T(u) = T(v)`, pick a state `s` on `T`; both runs visit `s`
+  infinitely often. Cutting `u` at `s`-visits so every block covers `T`
+  and Ramsey-grouping to a constant idempotent block fold gives
+  `u ∈ L ⟺ Val_P(s, e)` with `e` the fold of a `T`-covering loop word
+  at `s` — the stem coordinate is pinned because in `Cay(L)` the state
+  after a prefix *is* its fold; likewise `v ↦ Val_P(s, f)`. Declare two
+  coterminal paths `p ∼ q` when `w(p̂r̂)^ω ∈ L ⟺ w(q̂r̂)^ω ∈ L` for
+  every stem word `w` folding to their origin and every return path
+  `r`; this is a path congruence (context closure just re-cuts one
+  ω-word), and (E1)/(E2) are precisely its Simon premises `p² ∼ p`,
+  `pq ∼ qp` for loops, anchored at states (a loop at `x` folds into the
+  right stabilizer of `x`, every stem to `x` folds to `x`). Simon's
+  path-congruence proposition ([CPP08, Prop. 5.6]) then makes any two
+  coterminal paths with equal edge sets equivalent, so
+  `Val_P(s, e) = Val_P(s, f)`. ∎
+
+  The criterion is a read-off — `O(Σ_y |Stab(y)|⁴)` `Val`-lookups on
+  the held table — so the exit prices its own soundness, per language,
+  in the same currency as the rest of the catalog. Whether (E1)/(E2)
+  can fail at all on a *syntactic* table is open: saturated pair sets
+  on non-reduced tables can violate (E1), and Proposition 3.1's
+  conjugacy is provably too weak to bridge the two sides (on `Σ*a^ω`,
+  the state "contains `b`" carries stabilizer idempotents of both
+  verdicts), but every violation we can build so far dies under
+  `reduce`. We conjecture the syntactic case always satisfies both.
+  This is the strong-recognition counterpart of Le Saëc–Pin–Weil's
+  transition-Muller construction as presented in [CPP08, §5.4]: from
+  weak recognition they must first pass to a cover with idempotent,
+  R-trivial stabilizers — identities that imply (E1)/(E2) outright but
+  replace the automaton; from `(𝒞, P)` the Cayley graph itself is kept
+  and the identities weaken to the two `P`-anchored equations.
 - *To LTL*: gated by the §5 aperiodicity read-off; formula extraction
   is beyond this paper.
 - *To certificates*: the witness and replay formats of §3, always.
@@ -1133,12 +1181,15 @@ pipelines that *keep* a language and work on it.
 The calculus is implemented as a small pure library; every decision
 returns a replayable witness object. The corpus behind all measurements
 is complement-closed — one canonical invariant per language, each
-paired with the deterministic EL acceptor of the §7.3 exit — and held
-3938 small languages at measurement time. Spot [DL+16, DL+22] is the
-automata-side reference throughout; external calls are budgeted, and a
-blown budget is reported as a datum, never waited out.
-⟨TBD: refresh the corpus-derived numbers after the corpus regeneration
-(now 6222 languages)⟩
+paired with the deterministic EL acceptor of the §7.3 exit. It grew
+during the study: §§8.2–8.4, the stutter sweep of §8.5, and §8.6 were
+measured on its 3938-language edition; the classification battery of
+§8.5 on the current 6222-language edition. The two editions are never
+mixed inside a comparison, and the 3938-era figures will be regenerated
+on the frozen corpus in one sweep before submission. Spot
+[DL+16, DL+22] is the automata-side reference throughout; external
+calls are budgeted, and a blown budget is reported as a datum, never
+waited out.
 
 ### 8.1 The soundness harness
 
@@ -1197,10 +1248,10 @@ frontier reserves.
 ### 8.5 Read-offs against the automata side (§5–§6)
 
 - *Stutter invariance* (Prop 5.1) against Spot's
-  `is_stutter_invariant` [MD15]: agreement on **3938 / 3938**
-  languages, zero disagreements. 648 corpus languages are
-  stutter-invariant — 16.5% of the corpus, 28.9% of its LTL-definable
-  class, and every one of them LTL-definable.
+  `is_stutter_invariant` [MD15], on the 3938-language edition:
+  agreement on **3938 / 3938**, zero disagreements. 648 corpus
+  languages are stutter-invariant — 16.5% of the corpus, 28.9% of its
+  LTL-definable class, and every one of them LTL-definable.
 - *Hulls* (Prop 6.1, Cor 6.2–6.3): closure laws (extensive, monotone,
   idempotent), duality `int = ¬cl¬`, and the Alpern–Schneider identity
   replayed corpus-wide; stem-liveness of the hull replays against
@@ -1210,8 +1261,37 @@ frontier reserves.
   with Wagner coordinates computed independently by chain and
   superchain search — the calculus reading off in one SCC pass what
   the classification side establishes by chain juggling.
-  ⟨TBD: head-to-head timing against Spot's own classification battery
-  (`is_obligation` and kin) — V4⟩
+- *The classification battery against Spot*, on the full 6222-language
+  edition. The comparison had to be built: Spot 2.14 has **no
+  automaton-level Manna–Pnueli classifier** — `mp_class`,
+  `is_obligation` and kin are formula-level, the automaton only an
+  optional accelerator, and translation is no escape because 2484 of
+  the 6222 corpus languages are not LTL-definable, so no formula
+  exists to pass. The automaton-level oracle assembled instead is
+  language-level and exact: safety by Spot's acceptance-trivialization
+  fixpoint, co-safety by the same test on the dual (the inputs are
+  deterministic and complete, so dualizing complements), obligation by
+  WDBA-minimization plus equivalence — the inside of Spot's own
+  obligation check, minus the formula; the oracle is pinned against
+  `mp_class` on formulas of known class before use. Against it, the
+  algebraic scans agree on **6222 / 6222** languages, on all three
+  verdicts (safety, co-safety, obligation; 1514 / 1514 / 3182
+  positives), with an empty disagreement dossier. The rung census:
+  51.1% of the corpus is obligation — 84 bottom, 1430 safety-only,
+  1430 co-safety-only (equal by complement-closure, a printed
+  consistency check), 238 properly obligation — and **46.7% of the
+  obligation rung is not LTL-definable**: the ladder is topological,
+  the LTL cut is aperiodicity, and this is what makes the formula
+  route a dead end rather than an inconvenience. The degree read-off
+  stratifies the rung exactly (degree ≤ 0 ⟺ bottom, `(1,0)` ⟺ S,
+  `(0,1)` ⟺ G, above ⟺ O, with the histogram symmetric under polarity
+  swap on every entry) and has no Spot counterpart at all — Spot
+  decides the rung but does not measure the superchain. Timings are
+  reported and not sold: everything on both sides is sub-10-µs on
+  tables of median 15 classes (Spot faster on safety and co-safety,
+  slower on obligation — the one test where it builds and minimizes an
+  automaton while the scan stays linear in the held table); the
+  asymptotics, not the clock, are the claim.
 
 ### 8.6 The blow-up, empirically (§4)
 
@@ -1362,6 +1442,9 @@ concatenation blow-up sit where §§3–4 place them.
   (2003) 37–81.
 - **[CNP93]** H. Calbrix, M. Nivat, A. Podelski. *Ultimately periodic
   words of rational ω-languages.* MFPS 1993, LNCS 802.
+- **[CPP08]** O. Carton, D. Perrin, J.-É. Pin. *Automata and semigroups
+  recognizing infinite words.* In *Logic and Automata: History and
+  Perspectives*, Amsterdam Univ. Press, 2008.
 - **[CP97]** O. Carton, D. Perrin. *Chains and superchains for
   ω-rational sets, automata and semigroups.* Int. J. Algebra Comput.
   7(6) (1997) 673–695.
