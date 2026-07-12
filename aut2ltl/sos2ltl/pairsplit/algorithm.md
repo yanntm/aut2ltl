@@ -26,13 +26,16 @@ exact by preimage. Every piece `L(A_k)` lives on the same table; `reduce`
 
 ## The general form
 
-1. **Least pairs, complement free.** `L(P̄)` is the complement on the same
-   table (a set flip, `calculus.surgery`). Work on whichever of `P` / `P̄`
-   has fewer atoms; an outer `¬` on the label undoes the flip. This is the
-   whole ∧/∨ business of the automaton route collapsed by De Morgan: with a
-   free complement, ONE connective (∨ over atoms) plus negation expresses
-   both — the conjunctive-recurrence stratum (`GFa ∧ GFb`) is precisely the
-   case where `P̄` splits into trivial atoms while `P` is one hard block.
+1. **Least pairs among the sides that split, complement free.** `L(P̄)` is
+   the complement on the same table (a set flip, `calculus.surgery`). A side
+   is a candidate only if it has ≥ 2 atoms — a single-atom side offers no
+   decomposition; it IS the undecomposable hard block, so a raw least-count
+   rule would pick exactly the wrong side on the conjunctive-recurrence
+   stratum (`GFa ∧ GFb`: one `P` atom, many trivial `P̄` atoms). Among
+   candidates take the fewer atoms, ties to `P`; an outer `¬` on the label
+   undoes the flip. This is the whole ∧/∨ business of the automaton route
+   collapsed by De Morgan: with a free complement, ONE connective (∨ over
+   atoms) plus negation expresses both.
 2. **Fuse the pairs that pair well.** Atoms need not be translated one by
    one; a grouping criterion coarsens the partition (below), and each group
    is one piece — the acceptance analogue of letter fusion.
@@ -101,6 +104,10 @@ engine run sees the same-or-smaller algebra with a one-atom (or one-group)
 accepting set. The corpus stratum this targets — the conjunctive-recurrence
 TIMEOUTs — is exactly "multi-atom `P̄`, trivial atoms": pieces the engine
 already handles in milliseconds. As with every decomposition, the split can
-inflate the answer where the engine succeeds whole; the atomic pass-through
-(singleton `P` side chosen uncomplemented) keeps it invisible there, and a
-cost gate stays an option when the corpus says so.
+inflate the answer where the engine succeeds whole (the complement side of a
+TRIVIAL language also splits — `Ga` would come back De-Morgan'd). The gate
+is structural, not a wall clock: in the assembly the pure engine (no
+delegate) is tried whole FIRST and ships where it succeeds; the split runs
+only where it declines — the split is an enabler, never a rewrite of a
+label the engine already had. A poisoned split (a piece declined by engine
+and dg) falls through to the undecomposed cascade assembly.
