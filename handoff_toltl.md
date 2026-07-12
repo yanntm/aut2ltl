@@ -69,7 +69,15 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
    gate DECLINES and the whole falls back to the cascade assembly —
    decline-and-fallback, no per-piece acceptor for now ("complete D
    later"). Main on that wiring: 73 TRUE / 0 FAIL / 10 TIMEOUT —
-   casc-equal; the split's verified gains need engine-shaped pieces.
+   casc-equal. Diffed against the default-portfolio reference
+   (`survey --folder samples/validation --use sos2ltl_pairs --logs
+   logs/…` then `survey.diff.results
+   results/reference/validation/default.csv logs/…/survey_*.csv`):
+   reference is fully green (83 TRUE, 10 s, total DAG 458); ours is
+   CONSISTENT (0 FAIL, 0 clash) but 10 no-answers, DAG ×2, tree
+   ×6.5, build ×20 — e.g. recurrence_l10: daisy DAG 7 vs our 95.
+   The gap to the automata baseline is the actual problem statement;
+   the split's verified gains need engine-shaped pieces.
    **Quality bar (user-set): on the validation smalls, any printed
    label above ~20 characters is a defect**; the automata-level
    baselines met it (e.g. `G(Fa & Fb)`) because pieces were FEW (one
