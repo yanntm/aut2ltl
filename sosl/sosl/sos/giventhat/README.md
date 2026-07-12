@@ -45,8 +45,11 @@ endpoints.
 | `ladder.py` | GT2: the rung existence tests, `forced`, `h_below`, `is_recurrence` / `is_persistence`, `rec_hull` |
 
 Planned (specified in `research_notes/sos_giventhat_spec.md`, not yet built):
-`stutter.py` (GT3, the two-tier stutter test), `degree.py` (GT4,
-band-minimal Wagner degree).
+`quotient.py` (GT3, the bounded quotient engine — the exact primitive),
+`stutter.py` (GT3, the stutter seeds as one instance of it), `simplify.py`
++ `__main__.py` (GT4, **the deliverable**: two `.sos` in, one smaller
+`.sos` out). The two-tier stutter test and the band-minimal Wagner degree
+are **decommissioned** — see spec §8 before building either.
 
 ## Layering (hard)
 
