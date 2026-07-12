@@ -142,28 +142,41 @@ emit; the UNKNOWN *frequency* survives as a column of F15.
   green on every case; the emitted `.sos` re-read and byte-stable under
   `reduce`; `SETTLED` / `REFUTED` verdicts carrying their minimal
   witness lasso.
-- **F13 — the two [DPT25] examples (paper §6).** **DERIVED
-  (2026-07-12), theory-side; `simplify` must reproduce them.** Both of
-  [DPT25]'s figures, run through the interval core with
-  `sosl/tests/giventhat/dpt_examples.py` (regen:
-  `cd sosl && python3 -m tests.giventhat.dpt_examples`):
+- **F13 — the three worked examples (paper §6).** **DERIVED
+  (2026-07-12), theory-side; `simplify` must reproduce them.** Regen:
+  `cd sosl && python3 -m tests.giventhat.dpt_examples`.
 
-  | | `¬φ` / `K` | `\|𝒞(¬φ)\|` | `\|𝒞(K)\|` | `\|𝒞(T)\|` | `\|F\|` | `min\|K` | `max\|K` | **opt** | rung | stutter |
-  |---|---|---|---|---|---|---|---|---|---|---|
-  | Figs. 2–3 | `F(a&c)\|(GFb&GF!b)` / `FGb&Gc` | 5 | 4 | 10 | 25 | 6 | 4 | **3** | recurrence → guarantee | inv → inv |
-  | Fig. 4 | `X F a` / `!a` | 4 | 3 | 5 | 3 | 4 | 3 | **3** | guarantee | **False → True** |
+  | | `¬φ` / `K` | `\|𝒞(¬φ)\|` | `\|𝒞(K)\|` | `\|𝒞(T)\|` | `\|F\|` | `min\|K` | `max\|K` | **opt** | what `B` is |
+  |---|---|---|---|---|---|---|---|---|---|
+  | **fairness** | `GFa & GFb` / `G(b->a)` | 5 | 3 | 6 | 7 | 4 | 4 | **3** | `𝓘(GF b)`, byte-equal; 4 of 7 bits on |
+  | Figs. 2–3 | `F(a&c)\|(GFb&GF!b)` / `FGb&Gc` | 5 | 4 | 10 | 25 | 6 | 4 | **3** | a guarantee; recurrence → guarantee |
+  | Fig. 4 | `X F a` / `!a` | 4 | 3 | 5 | 3 | 4 | 3 | **3** | `𝓘(F a)` = `P_max`; stutter False → True |
 
-  Both optima are **certified** by the three-class floor (paper
-  Lemma 4.6): neither endpoint check fires on either pair, so no member
-  has `< 3` classes. On Fig. 4 the full `2^F` census (8 members) is in:
-  histogram `{3: 1, 4: 4, 5: 3}` — the minimum is **unique** and equals
-  `P_max = Fa`, which is [DPT25]'s own `sirelax` answer, while their
-  `sirestrict` answer `G(a) ∨ F(ā ∧ Fa)` is the 4-class member
-  `P_min ⊔ C₃` and their Minato pass changes nothing at all.
-  **GT4's gate:** `simplify` returns `|𝒞(B)| = 3` on both, and on Fig. 4
-  the `π_{¬φ}`-seeded greedy reaches it in one merge (`λ(a)² ∼ λ(a)`).
-  A miss is a **To-theory finding, not a bug to hide** — it means the
-  greedy does not reach what the hulls prove exists.
+  All three optima are **certified** by the three-class floor (paper
+  Lemma 4.6): neither endpoint check fires on any pair, so no member has
+  `< 3` classes. Full `2^F` censuses: fairness (128 members) histogram
+  `{3: 1, 4: 7, 5: 15, 6: 105}`; Fig. 4 (8 members) `{3: 1, 4: 4, 5: 3}`
+  — the minimum **unique** in both.
+
+  **The fairness pair is the one that discriminates.** Its optimum is
+  neither endpoint (both 4) nor the input (5); it turns on 4 of the 7
+  freedom classes. A greedy that only ever lands on an endpoint or the
+  input passes the two figures and fails this one. Gate on
+  byte-equality with `reference_of_ltl("G F b")`.
+
+  **External baseline (recorded, not a gate).** [DPT25] ship in Spot
+  2.13+. On the fairness pair, all three strategies return the input
+  unchanged:
+  `ltl2tgba "G F a & G F b" | autfilt --given-formula="G(b -> a)" --given-strategy=S`
+  for `S ∈ {minato, stutter-relax, stutter-restrict}` → 1 state,
+  `Inf(0)&Inf(1)`, 2 APs (the same invocation *does* reduce their Fig. 2–3
+  automaton 3 → 2 states, so the tool is live). Our `B` is legality-checked
+  by an independent oracle:
+  `ltlfilt -f "(G F b) & G(b -> a)" --equivalent-to="(G F a & G F b) & G(b -> a)"`
+  → equivalent. Do not debug Spot; out of scope.
+
+  A miss on any of the three is a **To-theory finding, not a bug to
+  hide** — it means the greedy does not reach what the hulls prove exists.
 
 *Epitaph — old F12 (greedy vs brute Wagner degree):* decommissioned
 (spec §8). Prop 4.5 is a sketch and `2^F` enumeration is not a proof

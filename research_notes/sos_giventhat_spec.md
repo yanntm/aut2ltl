@@ -407,21 +407,41 @@ Loads with `load_invariant`, dumps with `dump_invariant`, prints:
 On `SETTLED` / `REFUTED` it prints the verdict and the minimal witness
 lasso and emits no `.sos` (the model-checking problem is answered).
 
-**GT4 acceptance — the two [DPT25] examples are the gate.** Paper §6
-*derives* both; `tests/giventhat/dpt_examples.py` already reproduces
-every number below from the two LTL pairs. `simplify` must land on them:
+**GT4 acceptance — the three §6 examples are the gate.** Paper §6
+*derives* all three; `tests/giventhat/dpt_examples.py` already reproduces
+every number below. `simplify` must land on them:
 
-| | `¬φ` / `K` | `\|𝒞(¬φ)\|` | `\|F\|` | `min\|K` | `max\|K` | **`\|𝒞(B)\|`** | rung `¬φ → B` | stutter `¬φ → B` |
-|---|---|---|---|---|---|---|---|---|
-| Figs. 2–3 | `F(a&c) \| (GFb & GF!b)` / `FGb & Gc` | 5 | 25 | 6 | 4 | **3** | recurrence → guarantee | inv → inv |
-| Fig. 4 | `X F a` / `!a` | 4 | 3 | 4 | 3 | **3** | guarantee → guarantee | **False → True** |
+| | `¬φ` / `K` | `\|𝒞(¬φ)\|` | `\|F\|` | `min\|K` | `max\|K` | **`\|𝒞(B)\|`** | `B` is |
+|---|---|---|---|---|---|---|---|
+| **fairness (§6.1)** | `GFa & GFb` / `G(b->a)` | 5 | 7 | 4 | 4 | **3** | `𝓘(GF b)` — byte-equal |
+| Figs. 2–3 (§6.2) | `F(a&c) \| (GFb & GF!b)` / `FGb & Gc` | 5 | 25 | 6 | 4 | **3** | a guarantee in `[F(a∧c), F(a∨¬c)]` |
+| Fig. 4 (§6.3) | `X F a` / `!a` | 4 | 3 | 4 | 3 | **3** | `𝓘(F a)` = `P_max` |
 
-Both are **certified optimal** by the three-class floor (paper Lemma 4.6:
-neither endpoint check fires, so no member has `< 3` classes). So:
-`|𝒞(B)| == 3` on both, or GT4 is not done. On Fig. 4 additionally assert
-the whole `2^F` census — histogram `{3: 1, 4: 4, 5: 3}`, the minimum
-unique and equal to `P_max` — and that the greedy seeded at `π_{¬φ}`
-reaches it in **one merge**, that merge being `λ(a)² ∼ λ(a)`.
+All three are **certified optimal** by the three-class floor (paper
+Lemma 4.6: neither endpoint check fires, so no member has `< 3` classes).
+So `|𝒞(B)| == 3` on all three, or GT4 is not done.
+
+**§6.1 is the hard one and the one that matters:** the optimum is neither
+endpoint (both give 4) and neither the input (5) — it turns on **4 of the
+7** freedom classes. A greedy that only ever reaches an endpoint or the
+input passes the other two examples and fails this one; that is what it is
+here for. Assert the emitted invariant is **byte-equal to
+`reference_of_ltl("G F b")`** extended to the pair's alphabet, and that
+the `2^F` census (128 members) has histogram `{3: 1, 4: 7, 5: 15,
+6: 105}` — the minimum unique.
+
+On Fig. 4 additionally assert the whole `2^F` census — histogram
+`{3: 1, 4: 4, 5: 3}`, the minimum unique and equal to `P_max` — and that
+the greedy seeded at `π_{¬φ}` reaches it in **one merge**, that merge
+being `λ(a)² ∼ λ(a)`.
+
+**The external baseline (record it, do not chase it).** [DPT25] ship in
+Spot 2.13+: `autfilt --given-formula=K --given-strategy=minato |
+stutter-relax | stutter-restrict`. On §6.1 all three return `A_{¬φ}`
+unchanged. Legality of our `B` is cross-checked with `ltlfilt
+--equivalent-to` (`B ∧ K ≡ ¬φ ∧ K`). Both belong in the report as
+reproducible commands; neither is a gate on our code, and debugging
+Spot's behavior is **out of scope**.
 
 Plus: §6.3 green on every case; the emitted `.sos` re-reads with
 `load_invariant` and is byte-stable under `reduce`. A miss on either
