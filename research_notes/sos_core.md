@@ -236,7 +236,9 @@ value does not depend on how the `n`-fold product is parenthesized — one class
 word. The fold is moreover a monoid
 morphism — `⟦u·v⟧ = ⟦u⟧·⟦v⟧`, `⟦ε⟧ = [ε]` — the only one agreeing with `λ` on the
 letters: it is §2's sorting map `φ`, realized on the table. On the diagram, `⟦u⟧` is
-exactly where the reading of `u` ends — one letter, one edge, from the root.
+exactly where the reading of `u` ends — one letter, one edge, from the root. Finally,
+recall (§3.1) that `(𝒞, M)` is a finite monoid, so every fold admits a unique
+idempotent power `⟦u⟧^ω` — the one power of `⟦u⟧` equal to its own square.
 
 **Definition 3.4 (language of an invariant).** Let `𝓘 = ⟨𝒜, P⟩` denote an invariant
 over `Σ`, and `w = u·v^ω ∈ Σ^ω` a lasso, its loop `v` nonempty. Let `e := ⟦v⟧^ω` be
