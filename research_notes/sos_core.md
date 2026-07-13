@@ -36,7 +36,7 @@ With significant inputs from
 ## 2. Background
 
 We fix a finite alphabet `Σ` and write `Σ*` for the finite words over it, `Σ⁺` for
-the nonempty ones, `Σ^ω` for the infinite ones, `Σ^∞ = Σ* ∪ Σ^ω`. The same exponents
+the nonempty ones, `Σ^ω` for the infinite ones. The same exponents
 serve on letters and words: for `x ∈ Σ`, `x*` — finitely many repetitions of `x`,
 possibly none; `x⁺` — at least one; `x^ω` — repeated forever. A **language** here is a set of infinite words,
 `L ⊆ Σ^ω`; we take `L` **regular** (ω-regular [PP04]) — the class with finite-memory
@@ -68,31 +68,58 @@ computing the assignment.
 *Example.* `b^ω`, `ab·b^ω` and `aab·(bb)^ω` are lassos of `AsThenBs`; `ba·(ab)^ω` is a
 lasso outside it.
 
-**On finite words, the object is classical.** Classifying all finite words into finitely
-many classes is the province of the syntactic monoid, a cornerstone of regular language
-theory [PP04]: a finite **monoid** — an associative product with a unit — carries the
-classes, and a morphism `φ(uv) = φ(u)·φ(v)` assigns each word its class, collapsing
-concatenation onto finitely many values.
+**On finite words, the classifier is a finite monoid.** A **monoid** is a set with an
+associative product and an identity element; the finite words `Σ*` form one, under
+concatenation, with the empty word as identity. A finite monoid `M` **recognizes** a
+language of finite words through a **morphism** `φ : Σ* → M` — a map carrying
+concatenation to the product, `φ(u·v) = φ(u)·φ(v)`, and `ε` to the identity — such
+that membership depends only on the value: the language is `φ⁻¹(P)` for an accepting
+set `P ⊆ M`. The finitely many elements of `M` are the classes, and `φ` computes the
+assignment, letter by letter. Every regular language of finite words is recognized by
+a finite monoid, and among its recognizers one is canonical, the **syntactic monoid**
+— the cornerstone of algebraic language theory [PP04].
+
+*Example.* For `AsThenBs`, concatenation collapses onto five values — the five boxes
+of Figure 1, the class `[ε]` of the empty word among them.
 
 On *infinite* words, exactly one thing more is needed, because no product of finite
-pieces expresses `v^ω`. The words themselves show the required shape: finite words
-concatenate (`Σ*`, a monoid); a finite word prefixes an ω-word (`Σ* × Σ^ω → Σ^ω`);
-and repetition forever sends a nonempty finite word to an ω-word (`v ↦ v^ω`). An
-**ω-semigroup** `S = (S₊, S_ω)` is a finite **two-sorted** structure of the same
-shape, its two carriers the **sorts**: a finite monoid `S₊` carrying the classes of
-finite words and a finite set `S_ω` carrying the classes of ω-words, joined by a
-mixed product `S₊ × S_ω → S_ω` and the **ω-power** `S₊ → S_ω` [PP04, Ch. II]. A **recognizer** for `L` is such an `S` with a morphism
-`φ : Σ^∞ → S` — one component per sort, respecting the three operations — under
-which membership depends only on the class: `L = φ⁻¹(P)` for a set `P ⊆ S_ω` of
-accepting ω-classes (that finitely many suffice is Ramsey's theorem [PP04]). For a regular `L` such a finite recognizer exists [PP04, Ch. II], and this makes the
-organizing claim explicit: the equivalence classes of lassos needed to recognize a
-regular ω-language are finitely many — two lassos with the same ω-class receive one
-verdict, and there are at most `|S_ω|` classes. We do not carry the second sort as a
-standalone algebra: §3 reads the ω-power *inside* the finite monoid, so the object is
-a finite monoid together with a set of accepting names.
+pieces expresses `v^ω`. One adjustment first: the empty word is the single finite
+word that cannot be repeated forever — `ε^ω` is not an ω-word — so the infinite
+theory is built on the nonempty words `Σ⁺`, a **semigroup**: the associative product
+alone, no identity required. On `Σ⁺` and `Σ^ω` together, the words carry three total
+operations:
 
-*Example.* For `AsThenBs` concatenation collapses onto five values — the five boxes
-of Figure 1 — and "loop forever" will be read inside those five, with no second sort.
+* **concatenation** `Σ⁺ × Σ⁺ → Σ⁺` of two finite words;
+* the **mixed product** `Σ⁺ × Σ^ω → Σ^ω` — a finite word prefixed to an ω-word,
+  concatenation continued;
+* the **ω-power** `Σ⁺ → Σ^ω`, `v ↦ v^ω` — the new operation, repetition forever.
+
+An **ω-semigroup** `S = (S₊, S_ω)` is a finite structure with the same signature, one
+**sort** per kind of word [PP04, Ch. II]: a finite semigroup `S₊` carries the classes
+of nonempty finite words, a finite set `S_ω` carries the classes of ω-words; the
+three operations become a product `S₊ × S₊ → S₊`, a mixed product `S₊ × S_ω → S_ω`,
+and an ω-power `S₊ → S_ω`. A **recognizer** for `L` is an ω-semigroup with a morphism
+`φ = (φ₊, φ_ω)`, one component per sort — `φ₊ : Σ⁺ → S₊`, `φ_ω : Σ^ω → S_ω` —
+carrying each operation to its counterpart,
+
+`φ₊(u·v) = φ₊(u)·φ₊(v)`,   `φ_ω(u·w) = φ₊(u)·φ_ω(w)`,   `φ_ω(v^ω) = φ₊(v)^ω`,
+
+such that membership depends only on the class: `L = φ_ω⁻¹(P)` for a set `P ⊆ S_ω`
+of accepting ω-classes. Every regular `L` has a finite recognizer [PP04, Ch. II];
+that finitely many ω-classes suffice is Ramsey's theorem [PP04]. The organizing claim
+is now explicit: two lassos with the same ω-class receive one verdict, and there are
+at most `|S_ω|` classes of lassos.
+
+**The second sort will not be carried.** Everything `S_ω` records about a lasso is
+determined inside `S₊` by the classes of its stem and of its loop — the idempotent
+power and the linked pair below are that determination made exact. §3 therefore
+keeps one carrier — the classes of finite words, the class `[ε]` adjoined back to
+make it a monoid again — and replaces `P` by a set of accepting *pairs* of word
+classes.
+
+*Example.* Figure 1 already has this one-sorted shape: five classes of finite words
+and, beneath the drawing, the acceptance data as pairs of classes — no box for an
+ω-word anywhere.
 
 **The idempotent power.** In a finite monoid the powers `s, s², s³, …` of any element
 cannot all be distinct, so the sequence is eventually periodic and contains a unique
