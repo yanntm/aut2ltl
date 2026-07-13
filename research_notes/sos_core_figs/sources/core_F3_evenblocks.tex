@@ -16,18 +16,18 @@
   pairs/.style     = {anchor=north, font=\small},
 ]
 
-  \node[class] (a) at (0.0,0.9) {$[a]$};
-  \node[class] (b) at (4.4,0.9) {$[b]$};
-  \node[class] (aa) at (2.2,0.9) {$[a{\cdot}a]$};
-  \node[class] (ab) at (0.0,-1.7) {$[a{\cdot}b]$};
-  \node[class] (ba) at (4.4,-1.7) {$[b{\cdot}a]$};
-  \node[class] (aba) at (0.0,-4.3) {$[a{\cdot}b{\cdot}a]$};
-  \node[class] (bab) at (4.4,-4.3) {$[b{\cdot}a{\cdot}b]$};
+  \node[class] (a) at (0.0,5.2) {$[a]$};
+  \node[class] (b) at (8.8,5.2) {$[b]$};
+  \node[class] (aa) at (4.4,0.0) {$[a{\cdot}a]$};
+  \node[class] (ab) at (0.0,0.0) {$[a{\cdot}b]$};
+  \node[class] (ba) at (8.8,0.0) {$[b{\cdot}a]$};
+  \node[class] (aba) at (0.0,-5.2) {$[a{\cdot}b{\cdot}a]$};
+  \node[class] (bab) at (8.8,-5.2) {$[b{\cdot}a{\cdot}b]$};
 
   \draw[arrow] (a) to[bend left=15] node[lbl] {$[a]$} (aa);
   \draw[arrow] (a) to node[lbl] {$[b]$} (ab);
   \draw[arrow] (a) to[loop above] node[lbl] {$[a{\cdot}a]$} (a);
-  \draw[arrow] (a) to[out=90,in=90,looseness=1.7] node[lbl] {$[a{\cdot}b]$} (b);
+  \draw[arrow] (a) to node[lbl] {$[a{\cdot}b]$} (b);
   \draw[arrow] (a) to[out=180,in=180,looseness=1.7] node[lbl] {$[b{\cdot}a]$} (aba);
   \draw[arrow] (a) to node[lbl] {$[a{\cdot}b{\cdot}a]$} (ba);
   \draw[arrow] (a) to node[lbl] {$[b{\cdot}a{\cdot}b]$} (bab);
@@ -52,7 +52,7 @@
   \draw[arrow] (aba) to[loop below] node[lbl] {$[a{\cdot}a],$\\$[a{\cdot}b{\cdot}a]$} (aba);
   \draw[arrow] (bab) to[loop below] node[lbl] {$[a],[b],$\\$[a{\cdot}a],[a{\cdot}b],$\\$[b{\cdot}a],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
 
-  \node[pairs] at (2.2,-7.0) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
-  \node[pairs] at (2.2,-7.8) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
+  \node[pairs] at (4.4,-7.9) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
+  \node[pairs] at (4.4,-8.7) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
 \end{tikzpicture}
 \end{document}
