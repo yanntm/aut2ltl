@@ -34,9 +34,12 @@ LOOP_DIRS: Tuple[Tuple[str, Tuple[float, float]], ...] = (
     ("loop right", (1.0, 0.0)), ("loop left", (-1.0, 0.0)))
 # A neighbour nearer than this (cm), in a direction's cone, crowds it out.
 CROWD_CM = 2.6
-# How far an anti-parallel pair of arrows bends apart (both bend left). Wide enough
-# that the two labels, each sitting at its arc's midpoint, clear each other.
+# How far an anti-parallel pair of arrows bends apart (both bend left). Along a row
+# or a column the two labels sit level with each other and the arcs must part enough
+# to keep them apart; between nodes that are diagonal to each other the labels are
+# already offset, and the wider arc only eats into what the diagonal passes.
 BEND_ANGLE = 22
+BEND_ANGLE_DIAG = 15
 # The label of an arrow that carries every column: all the (non-identity) classes.
 ALL_CLASSES = r"\mathcal{C}"
 # Two nodes count as sharing a row / a column when their y / x differ by less than
@@ -331,7 +334,9 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
         elif (diag := _diagonal(fig, pos, ar.src, ar.dst)) is not None:
             via = f"[{diag}]"            # a corner diagonal that would cross a node
         elif ar.bend:                    # anti-parallel: both bend left, splitting
-            via = f"[bend left={BEND_ANGLE}]"
+            (px, py), (qx, qy) = pos[ar.src], pos[ar.dst]
+            aligned = abs(px - qx) < ALIGN_CM or abs(py - qy) < ALIGN_CM
+            via = f"[bend left={BEND_ANGLE if aligned else BEND_ANGLE_DIAG}]"
         else:
             via = ""
         src, dst = fig.node_of(ar.src).ident, fig.node_of(ar.dst).ident
