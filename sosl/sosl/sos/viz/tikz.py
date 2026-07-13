@@ -42,6 +42,11 @@ ALL_CLASSES = r"\mathcal{C}"
 # Two nodes count as sharing a row / a column when their y / x differ by less than
 # this (cm) — coordinates are hand-rounded, so exact equality is too strict.
 ALIGN_CM = 0.3
+# A corner diagonal grazes a node when it passes within this of it (cm): the node's
+# box plus a little. Only the diagonal is tested — see `_grazes`.
+CLEAR_CM = 1.0
+# How much steeper than the straight diagonal such an arrow leaves, in degrees.
+DIAG_BEND = 20
 # How far out a detour swings: the `looseness` of its bezier. Enough to clear the
 # node it goes around and that node's own self-loop, not more — a wider arc buys no
 # clearance and only steepens the dive back in. An anti-parallel pair of detours
@@ -157,6 +162,49 @@ def _blocked(fig: Figure, pos: Placement, src: int, dst: int) -> bool:
         if same_col and abs(x - px) < ALIGN_CM and min(py, qy) < y < max(py, qy):
             return True
     return False
+
+
+def _grazes(fig: Figure, pos: Placement, src: int, dst: int) -> bool:
+    """Does the straight line from ``src`` to ``dst`` pass within `CLEAR_CM` of a
+    third node, that node lying between the endpoints? Distance to the segment, not
+    to the line: a node behind either end is not in the way."""
+    (px, py), (qx, qy) = pos[src], pos[dst]
+    ux, uy = qx - px, qy - py
+    span = (ux * ux + uy * uy) ** 0.5
+    if span == 0:
+        return False
+    for nd in fig.nodes:
+        if nd.cls in (src, dst):
+            continue
+        vx, vy = pos[nd.cls][0] - px, pos[nd.cls][1] - py
+        along = (vx * ux + vy * uy) / span
+        if 0.0 < along < span and abs((ux * vy - uy * vx) / span) < CLEAR_CM:
+            return True
+    return False
+
+
+def _diagonal(fig: Figure, pos: Placement, src: int, dst: int) -> Optional[str]:
+    """The `bend` option of a CORNER DIAGONAL that would otherwise run over a node:
+    an arrow from the figure's top row to its bottom row (or back), in another
+    column, whose straight line grazes something on the way — in practice the node in
+    the middle, which such a diagonal passes through rather than near.
+
+    It leaves *steeper* than the diagonal, rotated `DIAG_BEND` towards the vertical,
+    and so bows past the obstacle instead of across it. Rotating towards the vertical
+    means bending right when the arrow descends to the right (or climbs to the left),
+    left otherwise — that is the sign of `dx·dy`. An arrow from a row to the NEXT one
+    is not a corner diagonal and is left alone: it has nothing to clear."""
+    ys = [p[1] for p in pos.values()]
+    top, bot = max(ys), min(ys)
+    (px, py), (qx, qy) = pos[src], pos[dst]
+    spans = ((abs(py - top) < ALIGN_CM and abs(qy - bot) < ALIGN_CM)
+             or (abs(py - bot) < ALIGN_CM and abs(qy - top) < ALIGN_CM))
+    if not spans or abs(px - qx) < ALIGN_CM:
+        return None
+    if not _grazes(fig, pos, src, dst):
+        return None
+    side = "right" if (qx - px) * (qy - py) < 0 else "left"
+    return f"bend {side}={DIAG_BEND}"
 
 
 def _detour(fig: Figure, pos: Placement, src: int, dst: int, far: bool) -> str:
@@ -280,6 +328,8 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
             # anti-parallel pair swinging wider so the two arcs stay apart
             far = ar.bend and rank[ar.src] > rank[ar.dst]
             via = f"[{_detour(fig, pos, ar.src, ar.dst, far)}]"
+        elif (diag := _diagonal(fig, pos, ar.src, ar.dst)) is not None:
+            via = f"[{diag}]"            # a corner diagonal that would cross a node
         elif ar.bend:                    # anti-parallel: both bend left, splitting
             via = f"[bend left={BEND_ANGLE}]"
         else:
