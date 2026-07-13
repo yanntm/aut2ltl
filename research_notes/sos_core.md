@@ -50,13 +50,18 @@ Consider the language of Carton and Perrin [CP97, Ex. 10] described by `a*·b^ω
 some `a`'s, then `b`'s forever — which we name `aUGb`. Its syntactic ω-semigroup
 is drawn in Figure 1.
 
-![Figure 1 — the invariant of aUGb](sos_core_figs/img/core_F0_astar_bomega.png)
+![Figure 1 — the invariant of aUGb](sos_core_figs/img/core_F0_astar_bomega.png) ![Figure 1′ — [ε] elided](sos_core_figs/img/core_F0_astar_bomega_b.png)
 
-*Figure 1 — the syntactic ω-semigroup of `aUGb = a*·b^ω`: five classes of finite
-words, the letter steps between them, and the accepting pairs `P` beneath. It is the
+*Figure 1 (left) — the syntactic ω-semigroup of `aUGb = a*·b^ω`: five classes of
+finite words, the letter map `λ` and the accepting pairs `P` beneath. It is the
 multiplication table represented as a graph: both vertices and edges are labeled by
 classes, modeling the product `M : 𝒞 × 𝒞 → 𝒞` of the algebra `𝒜` (§3) — following an
-edge multiplies on the right by its label.*
+edge multiplies on the right by its label, parallel edges fused into one arrow
+listing their labels. Figure 1′ (right) — `[ε]` is elided from the drawing: by
+definition `[ε]` is the identity, `[ε]·[c] = [c]·[ε] = [c]`, so drawing it adds no
+information; `𝒞` marks an edge that carries every class of the algebra. The
+discussion in §2–3 uses Figure 1, without elision; Figure 1′ is homogeneous in
+notation to the further figures (§3.4).*
 
 **We only ever look at lassos.** A **lasso** (ultimately-periodic word) is `u·v^ω`: a
 finite **stem** `u`, then a finite nonempty **loop** `v` repeated forever. The
