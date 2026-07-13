@@ -61,7 +61,7 @@ edge multiplies on the right by its label.*
 **We only ever look at lassos.** A **lasso** (ultimately-periodic word) is `u·v^ω`: a
 finite **stem** `u`, then a finite nonempty **loop** `v` repeated forever. The
 organizing fact: *two regular ω-languages are equal iff they agree on all lassos*
-[PP04]. Classifying `L` is therefore assigning each lasso to one of finitely many
+[PP04, Ch. I, Cor. 9.8]. Classifying `L` is therefore assigning each lasso to one of finitely many
 equivalence classes, and every notion below is machinery for naming the classes and
 computing the assignment.
 
@@ -98,21 +98,26 @@ An **ω-semigroup** `S = (S₊, S_ω)` is a finite structure with the same signa
 **sort** per kind of word [PP04, Ch. II]: a finite semigroup `S₊` carries the classes
 of nonempty finite words, a finite set `S_ω` carries the classes of ω-words; the
 three operations become a product `S₊ × S₊ → S₊`, a mixed product `S₊ × S_ω → S_ω`,
-and an ω-power `S₊ → S_ω`. A **recognizer** for `L` is an ω-semigroup with a morphism
+and an ω-power `S₊ → S_ω`. The general definition equips the pair with an *infinite
+product* `S₊^ω → S_ω` — one class for every infinite sequence of finite classes
+[PP04, Ch. II]; on finite carriers the ω-power determines it entirely
+[PP04, Ch. II, Thm 5.1], and the table-sized signature above is the form recalled
+here. A **recognizer** for `L` is an ω-semigroup with a morphism
 `φ = (φ₊, φ_ω)`, one component per sort — `φ₊ : Σ⁺ → S₊`, `φ_ω : Σ^ω → S_ω` —
 carrying each operation to its counterpart,
 
 `φ₊(u·v) = φ₊(u)·φ₊(v)`,   `φ_ω(u·w) = φ₊(u)·φ_ω(w)`,   `φ_ω(v^ω) = φ₊(v)^ω`,
 
 such that membership depends only on the class: `L = φ_ω⁻¹(P)` for a set `P ⊆ S_ω`
-of accepting ω-classes. Every regular `L` has a finite recognizer [PP04, Ch. II];
-that finitely many ω-classes suffice is Ramsey's theorem [PP04]. The organizing claim
+of accepting ω-classes. Every regular `L` has a finite recognizer
+[PP04, Ch. II, §7]. The organizing claim
 is now explicit: two lassos with the same ω-class receive one verdict, and there are
 at most `|S_ω|` classes of lassos.
 
 **The second sort will not be carried.** Everything `S_ω` records about a lasso is
 determined inside `S₊` by the classes of its stem and of its loop — the idempotent
-power and the linked pair below are that determination made exact. §3 therefore
+power and the linked pair below are that determination made exact
+[PP04, Ch. II, Thm 5.1]. §3 therefore
 keeps one carrier — the classes of finite words, the class `[ε]` adjoined back to
 make it a monoid again — and replaces `P` by a set of accepting *pairs* of word
 classes.
@@ -137,7 +142,7 @@ after a `b`, and no continuation rescues that), itself idempotent — so the ide
 power of `φ(ab)` is `[b·a]`: looping `ab` forever is exactly as dead as slipping once.
 
 **A linked pair names a lasso.** Reading `u·v^ω` through the morphism `φ`
-(Ramsey's theorem): the loop
+(Ramsey's theorem [PP04, Ch. II, Thm 2.1]): the loop
 settles on an idempotent `e` — the idempotent power of `φ(v)` — and the stem on
 `s = φ(u)·e`, with `s·e = s` (the
 stem precedes the loop and is absorbed by it). A **linked pair** is any `(s, e)` with
