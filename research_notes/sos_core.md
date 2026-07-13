@@ -259,24 +259,27 @@ pair.
 
 ### 3.2 Semantics: the language of an invariant
 
-Let us now define the semantics — the language `L(𝓘)` of an invariant `𝓘 = ⟨𝒜, P⟩`.
-For this definition we need to introduce the notion of fold.
+An invariant decides lassos with the data it carries and nothing else: `λ` assigns
+each letter its class, the table `M` extends that assignment to every finite word —
+stem and loop alike — and `P` lists the pairs that accept. The assignment of words
+to classes comes first.
 
-**Definition 3.3 (folding).** Let `𝒜 = (𝒞, λ, M)` be an algebra over `Σ`. The
+**Definition 3.3 (fold).** Let `𝒜 = (𝒞, λ, M)` be an algebra over `Σ`. The
 **fold** of `𝒜` is the map `⟦·⟧ : Σ* → 𝒞` extending the letter map to all finite
 words through the table: for `u = x₁x₂⋯xₙ ∈ Σ*`,
 `⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being `⟦ε⟧ := λ(ε) = [ε]`; we call
 `⟦u⟧` the fold of `u`.
 
-The fold is well defined: `M` is a function on all of `𝒞 × 𝒞`, so the product of
-the letter classes always exists, and `M` is associative (Definition 3.1), so its
-value does not depend on how the `n`-fold product is parenthesized — one class per
-word. The fold is moreover a monoid
-morphism — `⟦u·v⟧ = ⟦u⟧·⟦v⟧`, `⟦ε⟧ = [ε]` — the only one agreeing with `λ` on the
-letters: it is §2's morphism `φ`, realized on the table. On the diagram, `⟦u⟧` is
-exactly where the reading of `u` ends — one letter, one edge, from the root. Finally,
-recall (§3.1) that `(𝒞, M)` is a finite monoid, so every fold admits a unique
-idempotent power `⟦u⟧^ω` — the one power of `⟦u⟧` equal to its own square.
+The fold is well defined: `M` is a total function and associative (Definition 3.1),
+so the product of the letter classes always exists and its value does not depend on
+how it is parenthesized — one class per word. It is moreover a monoid morphism —
+`⟦u·v⟧ = ⟦u⟧·⟦v⟧`, `⟦ε⟧ = [ε]` — the only one agreeing with `λ` on the letters: on
+nonempty words it is §2's morphism `φ`, realized on the table, and the adjoined
+`[ε]` extends it to the empty word.
+
+*Example.* On Figure 1 (`aUGb`), the fold of a word is where its reading ends — one
+letter, one edge, from the root: `⟦aab⟧ = [a]·[a]·[b] = [a·b]`, and
+`⟦ba⟧ = [b]·[a] = [b·a]`, the dead class.
 
 **Definition 3.4 (language of an invariant).** Let `𝓘 = ⟨𝒜, P⟩` denote an invariant
 over `Σ`, and `w = u·v^ω ∈ Σ^ω` a lasso, its loop `v` nonempty. Let `e := ⟦v⟧^ω` be
@@ -286,12 +289,12 @@ the idempotent power in `𝒜` of the fold of `v`. Then
     w ∈ L(𝓘)   iff   (⟦u⟧·e, e) ∈ P.
 ```
 
-*Example.* On Figure 1. For `aab·b^ω`: the loop folds to `⟦b⟧ = [b]`, already
-idempotent, so `e = [b]`; the stem folds to `⟦aab⟧ = [a·b]` and `[a·b]·[b] = [a·b]`.
-The pair `([a·b], [b])` is in `P`: accepted. For `ba·(ab)^ω`: the loop folds to
-`⟦ab⟧ = [a·b]`, not idempotent — its square `[b·a]` is — so `e = [b·a]`; the stem
-folds to `[b·a]` and `[b·a]·[b·a] = [b·a]`. The pair `([b·a], [b·a])` is not in `P`:
-rejected, as §2 announced.
+*Example.* On Figure 1 (`aUGb`), the two verdicts. For `aab·b^ω`: the loop folds to
+`⟦b⟧ = [b]`, already idempotent, so `e = [b]`; the stem folds to `⟦aab⟧ = [a·b]` and
+`[a·b]·[b] = [a·b]`. The pair `([a·b], [b])` is in `P`: accepted. For `ba·(ab)^ω`:
+the loop folds to `⟦ab⟧ = [a·b]`, not idempotent — its square `[b·a]` is — so
+`e = [b·a]`; the stem folds to `[b·a]` and `[b·a]·[b·a] = [b·a]`. The pair
+`([b·a], [b·a])` is not in `P`: rejected, as §2 announced.
 
 The definition reads `w` through one presentation `(u, v)`, and a lasso has many.
 That the verdict does not depend on the presentation chosen is not automatic; it is
