@@ -72,14 +72,17 @@ theory [PP04]: a finite **monoid** — an associative product with a unit — ca
 classes, and a morphism `φ(uv) = φ(u)·φ(v)` assigns each word its class, collapsing
 concatenation onto finitely many values.
 
-On *infinite* words, exactly one thing more is needed — a way to say "repeat this loop
-forever" — because no product of finite pieces expresses `v^ω`. Classically one
-adjoins that single operation, an **ω-power** `s ↦ s^ω`, and obtains a two-sorted
-**ω-semigroup** `S = (S₊, S_ω)`: `S₊` the classes of finite words, `S_ω` the classes of
-ω-words [PP04, Ch. II]. A **recognizer** for `L` is such an `S` with a morphism
-`φ : Σ^∞ → S` under which membership depends only on the class — `L = φ⁻¹(P)` for a
-set `P` of accepting ω-classes (that finitely many classes suffice for all ω-words is
-Ramsey's theorem [PP04]). For a regular `L` such a finite recognizer exists [PP04, Ch. II], and this makes the
+On *infinite* words, exactly one thing more is needed, because no product of finite
+pieces expresses `v^ω`. The words themselves show the required shape: finite words
+concatenate (`Σ*`, a monoid); a finite word prefixes an ω-word (`Σ* × Σ^ω → Σ^ω`);
+and repetition forever sends a nonempty finite word to an ω-word (`v ↦ v^ω`). An
+**ω-semigroup** `S = (S₊, S_ω)` is a finite **two-sorted** structure of the same
+shape, its two carriers the **sorts**: a finite monoid `S₊` carrying the classes of
+finite words and a finite set `S_ω` carrying the classes of ω-words, joined by a
+mixed product `S₊ × S_ω → S_ω` and the **ω-power** `S₊ → S_ω` [PP04, Ch. II]. A **recognizer** for `L` is such an `S` with a morphism
+`φ : Σ^∞ → S` — one component per sort, respecting the three operations — under
+which membership depends only on the class: `L = φ⁻¹(P)` for a set `P ⊆ S_ω` of
+accepting ω-classes (that finitely many suffice is Ramsey's theorem [PP04]). For a regular `L` such a finite recognizer exists [PP04, Ch. II], and this makes the
 organizing claim explicit: the equivalence classes of lassos needed to recognize a
 regular ω-language are finitely many — two lassos with the same ω-class receive one
 verdict, and there are at most `|S_ω|` classes. We do not carry the second sort as a
