@@ -79,9 +79,12 @@ adjoins that single operation, an **ω-power** `s ↦ s^ω`, and obtains a two-s
 ω-words [PP04, Ch. II]. A **recognizer** for `L` is such an `S` with a morphism
 `φ : Σ^∞ → S` under which membership depends only on the class — `L = φ⁻¹(P)` for a
 set `P` of accepting ω-classes (that finitely many classes suffice for all ω-words is
-Ramsey's theorem [PP04]). We record this framing but do not carry the second sort as
-a standalone algebra: §3 reads "loop forever" *inside* the finite monoid, so the
-object is a finite monoid together with a set of accepting names.
+Ramsey's theorem [PP04]). For a regular `L` such a finite recognizer exists [PP04, Ch. II], and this makes the
+organizing claim explicit: the equivalence classes of lassos needed to recognize a
+regular ω-language are finitely many — two lassos with the same ω-class receive one
+verdict, and there are at most `|S_ω|` classes. We do not carry the second sort as a
+standalone algebra: §3 reads the ω-power *inside* the finite monoid, so the object is
+a finite monoid together with a set of accepting names.
 
 *Example.* For `AsThenBs` concatenation collapses onto five values — the five boxes
 of Figure 1 — and "loop forever" will be read inside those five, with no second sort.
