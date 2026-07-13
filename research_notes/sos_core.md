@@ -655,8 +655,10 @@ right): `a` toggles the parity of the running block; `b` returns to even, marked
 
 *Figure 5 — three of the four inputs, as Spot renders them: `GF(aa)` run-parity
 (the `a`-transposition), `Even` (the parity pair and two sinks), `EvenBlocks`
-(`Fin(0) ∧ Inf(1)` on the block-closing letter). Read `!a` as this paper's `b`.
-`aUGb`'s three-state automaton is described in the text.*
+(`Fin(0) ∧ Inf(1)` on the block-closing letter). Drawn in the machine convention
+of §2 — read `!a` as this paper's `b`, and recall the drawn letter order is
+`!a < a`, so nothing shortlex transfers. `aUGb`'s three-state automaton is
+described in the text.*
 
 ### 4.2 Step 1: the enriched monoid `EM(D)`
 
@@ -928,8 +930,9 @@ their `Z₂` (§3.4): those groups are `L`'s own.
 ![Figure 6 — the reset presentation of GF(aa)](sos_figs/img/gf_aa_reset.png)
 
 *Figure 6 — the reset presentation of `GF(aa)`: `a` sends both states to "just saw
-`a`", whose `a`-self-loop carries the mark; `b` resets both. Read `!a` as this
-paper's `b`. Non-isomorphic to Figure 5's run-parity form, same language, same
+`a`", whose `a`-self-loop carries the mark; `b` resets both. Drawn in the machine
+convention of §2 (`!a` is this paper's `b`). Non-isomorphic to Figure 5's
+run-parity form, same language, same
 `𝓘`.*
 
 **The algorithm.** The theorem is also the procedure. The seed `R` groups elements
