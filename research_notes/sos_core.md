@@ -578,286 +578,74 @@ in §3.3. Both pairs are absent from
 but not the other would be an *illegal* acceptance layer, its query self-contradictory
 on the single word `a^ω`.
 
-## 4. What the object unlocks
+## 4. The construction: from an automaton to `𝓘(L)`
 
-- Identity band, near-free from the semantics: equality is byte equality of canonical
-  serializations, complement is `P ↦ P^c`, emptiness is `P = ∅`, membership is one fold.
-- Flagship read-off: LTL-definability is aperiodicity of the table — power-iterate each
-  class, look for a cycle of period ≥ 2 (current §7.1, compressed).
-- The taxonomy table (current §7.2) condensed: one sentence per row, each a structural
-  test on the same object, several with no practical tool today.
-- The suggestion, one paragraph: wherever a pipeline step is language-level, the
-  automaton is a proxy and the canonical object can take its place — the calculus
-  companion develops this.
-- Nothing here is developed; this section motivates Part B and points at the family.
+We now construct the invariant. The input is an automaton `D` for `L`, in the most
+general deterministic form in use — throughout this section `L := L(D)`. The output
+is `𝓘(D) = ⟨𝒜(D), P(D)⟩`, and the destination is Theorem 4.11:
+`𝓘(D) = 𝓘(L)` — not merely *an* invariant denoting `L`, but the syntactic
+invariant of §3.3 itself, byte for byte, whatever presentation `D` was. Two steps
+carry the section: an enrichment that makes the automaton's acceptance algebraic
+(§4.2), and a quotient that §3.3's rotation lemma makes computable by right
+multiplications alone (§4.3).
 
-## 6. The construction, I: seeing acceptance
+### 4.1 Emerson–Lei automata
 
-We now construct the invariant. The input is an automaton for `L`; the output is an
-invariant `𝓘(D) = ⟨𝒜(D), P(D)⟩`; the destination of this section and the next is the
-correctness theorem — `L(𝓘(D)) = L(D)` (Theorem 7.5) — proved with §3's semantics
-and two automaton lemmas, nothing else. That the result is moreover canonical — one
-invariant per language, whatever `D` presented it — is deferred to §8.
+Nothing in this subsection is ours: we fix the input format and its vocabulary, and
+meet the running examples as machines.
 
-**The input.** A **deterministic, complete Emerson–Lei automaton** over `Σ` is
-`D = (Q, ι, δ, C, Acc)`: a finite set `Q` of **states** with an **initial** `ι ∈ Q`;
-a total **transition function** `δ : Q × Σ → Q`, each transition carrying a (possibly
-empty) subset of a finite set `C` of **marks**; and an **acceptance condition**
-`Acc`, a positive Boolean combination of atoms `Inf(c)`, `Fin(c)` for `c ∈ C`. An
-ω-word `α = x₀x₁⋯` traces the unique infinite **run** `q₀ = ι`,
-`q_{i+1} = δ(q_i, x_i)` — one successor per letter, a successor for every letter, so
-exactly one run, never stalling. `Acc` is evaluated on the set of marks the run
-collects infinitely often — `Inf(c)` true iff `c` recurs, `Fin(c)` iff it does not —
-and `L(D)` is the set of ω-words whose run satisfies `Acc`. Emerson–Lei acceptance is
-the most general ω-regular acceptance (Büchi, co-Büchi, Rabin, Muller are special
-shapes), and every regular `L` is `L(D)` for some such `D` [Saf88]. For `q ∈ Q`, the
+**Definition 4.1 (deterministic Emerson–Lei automaton).** A **deterministic,
+complete Emerson–Lei automaton** over `Σ` is `D = (Q, ι, δ, C, Acc)`: a finite set
+`Q` of **states** with an **initial** state `ι ∈ Q`; a total **transition
+function** `δ : Q × Σ → Q`, each transition carrying a (possibly empty) subset of
+a finite set `C` of **marks**; and an **acceptance condition** `Acc`, a positive
+Boolean combination of atoms `Inf(c)`, `Fin(c)` for `c ∈ C`. An ω-word
+`α = x₀x₁⋯` traces the unique infinite **run** `q₀ = ι`, `q_{i+1} = δ(q_i, x_i)` —
+one successor per letter, a successor for every letter, so exactly one run, never
+stalling. `Acc` is evaluated on the set of marks the run collects infinitely
+often — `Inf(c)` true iff `c` recurs, `Fin(c)` iff it does not — and `L(D)` is the
+set of ω-words whose run satisfies `Acc`.
+
+Emerson–Lei acceptance is the most general ω-regular acceptance — Büchi, co-Büchi,
+Rabin, Muller are special shapes — and every regular `L` is `L(D)` for some such
+`D`, determinization costing at worst an exponential [Saf88]. For `q ∈ Q`, the
 **residual** `L(q) := { α : the run from q on α satisfies Acc }` is what `D` would
-accept started at `q`; determinism gives `L(δ(ι, u)) = u⁻¹L(D)` for every finite
-`u`. We write `Reach := δ(ι, Σ*)` for the states some finite word reaches.
+accept started at `q`; determinism ties residuals to the language,
+`L(δ(ι, u)) = u⁻¹L` for every finite `u`. We write `Reach := δ(ι, Σ*)` for the
+states some finite word reaches.
+
+These automata are, in practice, the standard machine representation of regular
+ω-languages — the form modern tools exchange and optimize. What the format lacks
+is a canonical form: on finite words minimization yields *the* minimal DFA, unique
+up to isomorphism, while a regular ω-language has no such distinguished machine —
+`GF(aa)` is presented below by two non-isomorphic automata on the same two states,
+with nothing intrinsic to prefer either. §4.4 sends both to one invariant.
 
 *Example.* `aUGb` is `L(D)` for a three-state `D`: state `A` (initial) loops on
-`a`; `b` leads to `B`, which loops on `b`, that loop carrying the single mark `c`; an
-`a` at `B` falls to the sink `Z`, which absorbs both letters unmarked.
+`a`; `b` leads to `B`, which loops on `b`, that loop carrying the single mark `c`;
+an `a` at `B` falls to the sink `Z`, which absorbs both letters unmarked.
 `Acc = Inf(c)`: a run collects `c` forever iff it eventually reads only `b`'s.
 
-**The obstruction.** The classical algebra of `D` on finite words is its transition
-monoid, the maps `q ↦ δ(q, w)`. It forgets the marks a run collects — exactly the
-data `Acc` consumes. So we enrich it.
+*Example.* `GF(aa)` is `L(D)` for a two-state `D` tracking the parity of the
+running block of `a`'s (Figure 5, left): the letter `a` *transposes* the two
+states — a `Z₂` in the maps `q ↦ δ(q, w)` — and the transposition closing an `aa`
+carries the mark; `b` resets to the even state, unmarked. `Acc = Inf(0)`: an
+`aa`-factor recurs iff the mark does. `Even` needs four states (Figure 5, middle):
+the parity pair, swapped by `a`, plus two sinks — `b` at even parity enters the
+accepting sink, whose self-loops carry the mark, `b` at odd parity falls to the
+rejecting sink; `Acc = Inf(0)`. `EvenBlocks` returns to two states (Figure 5,
+right): `a` toggles the parity of the running block; `b` returns to even, marked
+`1` when the block it closes is even, `0` when it is odd;
+`Acc = Fin(0) ∧ Inf(1)` — infinitely many even blocks, finitely many odd ones.
 
-**Definition 6.1 (enriched monoid).** For `w ∈ Σ*`, the **enriched element** `⟨w⟩`
-records, at each state, where `w` leads and what it collects:
+![Figure 5a — GF(aa) as an automaton](sos_figs/img/gf_aa.png)
+![Figure 5b — Even as an automaton](sos_figs/img/even.png)
+![Figure 5c — EvenBlocks as an automaton](sos_figs/img/evenblocks.png)
 
-```
-    ⟨w⟩ : q ↦ ( δ(q, w), mk(q, w) ),
-```
-
-`mk(q, w) ⊆ C` the marks on the run from `q` over `w`. `EM(D)` is the set of
-enriched elements under the composition `⟨w⟩·⟨w'⟩ = ⟨w·w'⟩` — at `q`: reach
-`δ(q, w)`, continue by `w'`, unite the marks — a finite monoid generated by the
-letter elements `⟨x⟩`, with identity `⟨ε⟩ : q ↦ (q, ∅)`. We write `st_e(q)`,
-`mk_e(q)` for the two components of `e ∈ EM(D)` at `q`. (The brackets `⟨·⟩` leave
-`⟦·⟧` to §3's fold.)
-
-*Example.* On the two-state presentation of `GF(aa)` — state `1` after an odd run of
-`a`'s, the `a` leaving `1` closes an `aa` and carries the mark `c`, `b` resets to `0`
-unmarked, `Acc = Inf(c)` — the elements `⟨a⟩` and `⟨aaa⟩` have the *same* state
-part, the transposition of `{0, 1}`, and differ only in marks: `mk_{⟨aaa⟩}(0) = {c}`
-(the longer word closes an `aa`), `mk_{⟨a⟩}(0) = ∅`. The transition monoid
-identifies them; the enrichment is what keeps them apart.
-
-**Lemma 6.2 (skeleton).** If two ω-words factor into blocks with the same sequence
-of enriched images — `α = w₁w₂⋯`, `β = w'₁w'₂⋯` with `⟨w₁⋯w_k⟩ = ⟨w'₁⋯w'_k⟩` for
-every `k` — then `α ∈ L(D) ⟺ β ∈ L(D)`.
-
-*Proof.* Determinism gives each word one run. Equality of the prefix images puts
-both runs at the same state `p_k = st_{⟨w₁⋯w_k⟩}(ι)` at every block boundary, and
-equality of the images with the composition law makes the marks collected inside
-block `k` equal on both sides: `mk(p_{k-1}, w_k) = mk(p_{k-1}, w'_k)`. The two runs
-thus collect the same marks per block, hence the same set of marks infinitely often
-— and `Acc` is a function of that set alone. ∎
-
-**Proposition 6.3 (enrichment is necessary).** No quotient of the transition monoid
-can serve, in general, as the algebra of an invariant denoting `L(D)`.
-
-*Proof (a one-state witness).* Let `D` have one state `p`, both letters of
-`Σ = {a, b}` self-looping, the mark `c` on the `a`-loop only, `Acc = Inf(c)`:
-`L(D)` is "infinitely many `a`'s". The transition monoid is trivial — every word is
-the identity map on `{p}` — so in any algebra built on it the folds of `a` and `b`
-coincide, the queries of `a^ω` and `b^ω` coincide (Definition 3.4), and the two
-receive one verdict. But `a^ω ∈ L(D)` and `b^ω ∉ L(D)`. The enriched elements do
-separate them: `mk_{⟨a⟩}(p) = {c} ≠ ∅ = mk_{⟨b⟩}(p)`. ∎
-
-The starkness is the message: a trivial transition monoid under a nontrivial
-language. No state bookkeeping recovers acceptance — the marks along the run are
-irreducible data, and the enrichment is the smallest way to keep them. It is also
-why a group in a transition monoid proves nothing about `L`: it can be pure
-encoding, invisible to the marks. `GF(aa)`'s transposition above is exactly that
-situation, resolved in §7.
-
-Conversely, `EM(D)` classifies too finely. On the `aUGb` automaton above,
-`⟨ba⟩` and `⟨aba⟩` are distinct elements (`mk_{⟨ba⟩}(B) = {c}` while
-`mk_{⟨aba⟩}(B) = ∅`) though no context whatsoever separates the words `ba` and
-`aba`: both are dead. The next section quotients exactly this excess away.
-
-## 7. The construction, II: the rotation lemma
-
-What remains is a quotient: merge elements of `EM(D)` exactly when the words they
-image are interchangeable — in every stem, in every loop — and read `P` off the
-result. Interchangeability is a two-sided demand: a word sits in a lasso between a
-left context and a right one. A monoid's table, meanwhile, offers one operation for
-free: multiply on the right. The gap is closed by the rotation lemma — §3's rotation
-read on runs: a left factor carries no information of its own; it only shifts the
-slot where a right test is read.
-
-**Lemma 7.1 (collapse).** For `x, c ∈ EM(D)`, `c` the image of a nonempty word, all
-lassos `w·z^ω` with `⟨w⟩ = x` and `⟨z⟩ = c` share one verdict (Lemma 6.2), written
-`Acc(x, c)`; and it depends on `x` only through the single state the stem reaches:
-
-```
-    Acc(x, c) = A(st_x(ι), c),
-```
-
-where the **loop verdict** `A(q, c)` iterates `c` from `q`: follow `st_c` from `q`
-into its closed cycle, unite the marks `mk_c` around that cycle, evaluate `Acc`.
-
-*Proof.* The stem is read once; its marks are collected finitely often and none
-recurs. The set of marks recurring in `w·z^ω` is therefore that of the tail `z^ω`
-read from `st_x(ι)`: the iteration of `st_c` from there eventually closes a cycle,
-the marks `mk_c` around that cycle recur, and no other mark does. ∎
-
-**Definition 7.2 (the two right relations).** For `e, f ∈ EM(D)` images of nonempty
-words, with `Aprof(c) := (q ∈ Reach ↦ A(q, c))` the **profile** of `c`:
-
-```
-    e ~lin f   ⟺   ∀ q ∈ Reach :   L(st_e(q)) = L(st_f(q)) ;
-    e ~ω  f    ⟺   ∀ b ∈ EM(D) :   Aprof(e·b) = Aprof(f·b) ;
-```
-
-and `~ := ~lin ∧ ~ω`. The slots are `Reach`, not `Q`: an unreachable state names no
-context. The extension `b` ranges over all of `EM(D)`, identity included — `b = ⟨ε⟩`
-tests the bare loop `e` itself, and `e·b` is always the image of a nonempty word.
-
-`~lin` compares the futures the words open — residual languages of reached states —
-and never looks at marks; `~ω` compares the loops the words can close, under every
-right completion. Neither mentions a left context.
-
-*Example (the two relations divide the labor).* `EvenBlocks` is `L(D)` for a
-two-state `D` tracking the parity of the running block of `a`'s: `a` toggles the
-state; `b` returns to the even state, marked `1` when the block it closes is even,
-`0` when it is odd; `Acc = Fin(0) ∧ Inf(1)`. Here `⟨aa⟩ = ⟨ε⟩` — two `a`'s toggle
-back, collecting nothing. `~lin` is total: the language is prefix-independent, both
-states accept exactly `EvenBlocks`. The separation of `⟨a⟩` from `⟨aa⟩` is carried
-entirely by `~ω`, with the block-closing extension `b = ⟨b⟩`:
-`Aprof(⟨a⟩·⟨b⟩) = Aprof(⟨ab⟩)` rejects at both slots — the loop `ab` closes an odd
-block forever, violating `Fin(0)` — while `Aprof(⟨aa⟩·⟨b⟩)` accepts at both —
-`(aab)^ω` closes even blocks forever.
-
-**Lemma 7.3 (rotation).** A left factor acts on both relations only by re-indexing
-the slot: for all `a, e, b ∈ EM(D)` and `q ∈ Reach`,
-
-```
-    st_{a·e}(q) = st_e(st_a(q))        and        Aprof(a·e·b)(q) = Aprof(e·b·a)(st_a(q)).
-```
-
-Consequently, with `R` the equivalence "same `~lin`-class and same profile `Aprof`",
-the relation `~` is the coarsest right-invariant equivalence refining `R`, and it is
-a two-sided congruence on `EM(D)`.
-
-*Proof.* The state identity is composition of maps. For the profile identity, read
-the loop `(a·e·b)^ω` from `q` as `a·(e·b·a)^ω` — one rotation, §3's move: the factor
-`a` is carried from the loop's front onto the stem. That prefix is read once, its
-marks recur never, so the verdict is the loop verdict of `e·b·a` from the state the
-prefix reaches (Lemma 7.1): `Aprof(a·e·b)(q) = A(st_a(q), e·b·a) =
-Aprof(e·b·a)(st_a(q))`.
-
-*Right-invariance.* Both halves of the seed survive a right factor: residual
-equality steps through letters (`L(p) = L(p')` gives
-`L(δ(p, x)) = x⁻¹L(p) = x⁻¹L(p') = L(δ(p', x))`), so `e ~lin f` gives
-`e·c ~lin f·c`; and `Aprof(e·c·b) = Aprof(f·c·b)` is an instance of `e ~ω f`. Hence
-`~` is right-invariant.
-
-*Coarsest.* Suppose `e·b R f·b` for every `b`: the profile half over all `b` is
-`e ~ω f`, and the `~lin` half at `b = ⟨ε⟩` is `e ~lin f` — so `e ~ f`. Conversely
-`e ~ f` gives `e·b ~ f·b` (right-invariance), hence `e·b R f·b` for every `b`. So
-`~` is exactly "R-equal under every right extension": the coarsest right-invariant
-equivalence refining `R`.
-
-*Two-sided.* For a left factor `a`: `a·e ~lin a·f` since
-`st_{a·e}(q) = st_e(st_a(q))` and `st_a(q) ∈ Reach`; and
-`Aprof(a·e·b)(q) = Aprof(e·(b·a))(st_a(q)) = Aprof(f·(b·a))(st_a(q)) =
-Aprof(a·f·b)(q)` — the left factor became a right extension. With right-invariance,
-`~` is a two-sided congruence. ∎
-
-The lemma is the load-bearing step. Maler and Staiger [MS97] display the finitary ×
-infinitary split — at the single slot `ι`, `~lin` is their classical right
-congruence — but their two-sided quantification stays inside the loop test; Carton,
-Perrin and Pin [CPP08] saturate over context triples. The conjugation
-`a·e·b ↦ e·b·a` — the same rotation §3 applies to the pairs naming a lasso, applied
-here to contexts — is the step neither takes, and it is what makes a two-sided
-congruence computable with the one operation a monoid's table offers for free. Two
-remarks we can back: the right-extension-at-slots discipline is an
-observation-table discipline, answering the obstruction Angluin and Fisman record
-for ω-learning [AF21]; and a coarsest right-invariant refinement is precisely what
-partition refinement — or its symbolic implementation — computes (§8).
-
-**Definition 7.4 (the constructed invariant).** `𝓘(D) := ⟨𝒜(D), P(D)⟩`:
-
-- `𝒞`: the `~`-classes of images of nonempty words, plus the adjoined `[ε]`; each
-  word class is represented by the shortlex-smallest word whose enriched image lies
-  in it (the convention of §3.1);
-- `λ`: `λ(x) :=` the class of `⟨x⟩` for `x ∈ Σ`, and `λ(ε) = [ε]`;
-- `M`: the induced product on word classes — well-defined since `~` is a two-sided
-  congruence (Lemma 7.3), closed since nonempty words concatenate to nonempty words
-  — with `[ε]` the identity by definition;
-- `P(D)`: for each pair `(s, e)` of word classes with `e·e = e` and `s·e = s`, test
-  the single lasso `w_s·(w_e)^ω` on `D`, `w_s` and `w_e` the representatives; put
-  `(s, e)` in `P(D)` iff it is accepted.
-
-`𝒜(D)` is an algebra in the sense of Definition 3.1 — `[ε]` is isolated: no letter
-maps to it, and a product of word classes is a word class. The fold of a nonempty
-word unwinds to its `~`-class, `⟦w⟧ = [⟨w⟩]` (Definition 3.3 composes the letter
-classes, and `~` is a congruence); in particular every representative folds to its
-own class.
-
-**Theorem 7.5 (correctness).** `𝓘(D)` is a well-formed invariant — `P(D)` is
-saturated, so the semantics of Definition 3.4 is presentation-independent — and
-
-```
-    L(𝓘(D)) = L(D).
-```
-
-*Proof.* **Step 1: every query returns `D`'s verdict.** Let `u·v^ω` be a lasso, `v`
-nonempty. Definition 3.4 queries `e := ⟦v⟧^ω` and `s := ⟦u⟧·e`. Choose `k ≥ 1` with
-`⟦v⟧^k = e` (the idempotent power is a power); folding is compatible with
-concatenation (§3.2), so `e = ⟦v^k⟧ = [⟨v^k⟩]` and `s = ⟦u·v^k⟧ = [⟨u·v^k⟩]`.
-Rewrite the ω-word on this presentation: `u·v^ω = (u·v^k)·(v^k)^ω`.
-
-*Stem swap.* `⟨u·v^k⟩ ~ ⟨w_s⟩` — both lie in `s` — so in particular `~lin` at the
-slot `ι`: the states `st_{⟨u·v^k⟩}(ι)` and `st_{⟨w_s⟩}(ι)` have equal residuals, so
-the two stems open the same futures and
-`u·v^ω = (u·v^k)·(v^k)^ω ∈ L(D) ⟺ w_s·(v^k)^ω ∈ L(D)`.
-
-*Loop swap.* `⟨v^k⟩ ~ ⟨w_e⟩` — both lie in `e` — so in particular `~ω` at the empty
-extension: `Aprof(⟨v^k⟩) = Aprof(⟨w_e⟩)`. With `q := st_{⟨w_s⟩}(ι) ∈ Reach`, the
-collapse (Lemma 7.1) turns both memberships into loop verdicts at `q`:
-`w_s·(v^k)^ω ∈ L(D) ⟺ A(q, ⟨v^k⟩) = A(q, ⟨w_e⟩) ⟺ w_s·(w_e)^ω ∈ L(D)`.
-
-Chaining: `u·v^ω ∈ L(D) ⟺ w_s·(w_e)^ω ∈ L(D) ⟺ (s, e) ∈ P(D)`, the last step by
-definition of `P(D)`. The right-hand side is exactly Definition 3.4's verdict on
-`u·v^ω`: every presentation of every lasso receives from `𝓘(D)` the verdict of
-`L(D)`.
-
-**Step 2: well-formedness.** By Step 1 the verdict on a presentation `(u, v)`
-equals membership of the ω-word `u·v^ω` in `L(D)` — a function of the ω-word alone.
-The semantics is presentation-independent, so by the well-definedness lemma of §3.4
-(Lemma 3.5, forward direction), `P(D)` is saturated.
-
-**Step 3: the language.** `𝓘(D)` and `D` accept the same lassos (Step 1); two
-regular ω-languages agreeing on all lassos are equal (§2), and `L(𝓘(D))` is the
-regular language its lasso verdicts pin (§3.2). Hence `L(𝓘(D)) = L(D)`. ∎
-
-The theorem is deliberately self-contained: no syntactic congruence, no Arnold —
-the two automaton lemmas (skeleton and collapse) and §3's semantics carry it. What
-it does *not* say is that `𝓘(D)` is independent of the presentation `D`; that is
-canonicity, Theorem B of §8, and it is where Arnold's congruence enters. §8 also
-turns Lemma 7.3 into the algorithm: the coarsest right-invariant refinement of the
-seed is computed by partition refinement, and `P(D)` by one lasso test per
-candidate pair.
-
-## 8. The algorithm and the two theorems
-
-- Moore partition refinement from the seed `R = (~lin-class, Aprof)`, split by right
-  letters to fixpoint (current Thm 4.5's procedure).
-- Reading `P` off `D`: test one shortlex lasso per candidate linked pair.
-- NEW — Theorem A (correctness, self-contained): `𝓘(D)` is well-formed (saturation
-  proved, not assumed) and `L(𝓘(D)) = L(D)`; proof from the skeleton lemma and the
-  collapse only, no Arnold.
-- Theorem B (canonicity): `𝓘(D)` is the syntactic object of §5 — the constructed
-  quotient is Arnold's.
-- Examples resolved: `GF(aa)`'s presentation group dies in the quotient (10 → 6, LTL);
-  `Even` and `EvenBlocks` keep a genuine `Z₂`.
-- Canonicity exhibited (current Fig 3): two non-isomorphic presentations of `GF(aa)`,
-  byte-identical output.
+*Figure 5 — three of the four inputs, as Spot renders them: `GF(aa)` run-parity
+(the `a`-transposition), `Even` (the parity pair and two sinks), `EvenBlocks`
+(`Fin(0) ∧ Inf(1)` on the block-closing letter). Read `!a` as this paper's `b`.
+`aUGb`'s three-state automaton is described in the text.*
 
 ## 9. Complexity
 
