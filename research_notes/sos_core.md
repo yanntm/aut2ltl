@@ -224,16 +224,17 @@ pair.
 Let us now define the semantics — the language `L(𝓘)` of an invariant `𝓘 = ⟨𝒜, P⟩`.
 For this definition we need to introduce the notion of fold.
 
-**Definition 3.3 (folding).** Let `u = x₁x₂⋯xₙ ∈ Σ*` be a finite word. The **fold**
-of `u` is the class `⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being
-`λ(ε) = [ε]`.
+**Definition 3.3 (folding).** Let `𝒜 = (𝒞, λ, M)` be an algebra over `Σ`, and
+`u = x₁x₂⋯xₙ ∈ Σ*` a finite word. The **fold** of `u` in `𝒜` is the class
+`⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being `λ(ε) = [ε]`.
 
 The fold is exactly where the reading of `u` ends on the diagram — one letter, one
 edge, from the root. By associativity the product needs no parentheses, and folding
 is compatible with concatenation: `⟦u·v⟧ = ⟦u⟧·⟦v⟧`.
 
-**Definition 3.4 (language of an invariant).** Let `w = u·v^ω ∈ Σ^ω` be a lasso, its
-loop `v` nonempty. Let `e := ⟦v⟧^ω` be the idempotent power of the loop's fold. Then
+**Definition 3.4 (language of an invariant).** Let `𝓘 = ⟨𝒜, P⟩` denote an invariant
+over `Σ`, and `w = u·v^ω ∈ Σ^ω` a lasso, its loop `v` nonempty. Let `e := ⟦v⟧^ω` be
+the idempotent power in `𝒜` of the fold of `v`. Then
 
 ```
     w ∈ L(𝓘)   iff   (⟦u⟧·e, e) ∈ P.
