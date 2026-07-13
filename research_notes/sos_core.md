@@ -195,14 +195,16 @@ classes and products of Figure 1: `a` and `c` are interchangeable everywhere, so
 `λ(a) = λ(c) = [a]`, and the drawing is unchanged; only `λ` tells the two algebras
 apart.
 
-**The idempotent power, internally.** Each class `s` has its unique idempotent power
-`s^ω` (§2). This is the algebra's entire access to "loop forever": there is no second
-sort — a lasso's loop will be read (§3.2) by taking the idempotent power of the class
-its reading reaches.
+**The idempotent power.** Each class `s` has a unique idempotent power `s^ω` (§2):
+among the powers `s, s², s³, …` — finitely many, since `𝒞` is finite — exactly one is
+idempotent, `s^ω·s^ω = s^ω`. It is a computation on the multiplication table alone.
 
-*Example.* `[a]`, `[b]` and `[b·a]` are their own idempotent powers; `[a·b]` is not —
-`[a·b]² = [b·a]`, already idempotent, so `[a·b]^ω = [b·a]`: iterating "`a`'s then `b`'s"
-forces an `a` after a `b`.
+*Example.* All classes but `[a·b]` are idempotent, hence their own idempotent powers:
+`[ε]` is the identity; `[a]·[a] = [a]` and `[b]·[b] = [b]` read on their self-loops —
+more `a`'s, more `b`'s change nothing; and `[b·a]·[b·a] = [b·a]`, the zero absorbing
+even itself. `[a·b]` is not: gluing two words of `a⁺b⁺` puts an `a` after a `b`, so
+`[a·b]·[a·b] = [b·a]` — already idempotent. Hence `[a·b]^ω = [b·a]`: iterating "`a`'s
+then `b`'s" forces an `a` after a `b`.
 
 The second component of the invariant `𝓘` is a set of pairs of classes.
 
