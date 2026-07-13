@@ -121,10 +121,11 @@ classes.
 and, beneath the drawing, the acceptance data as pairs of classes — no box for an
 ω-word anywhere.
 
-**The idempotent power.** In a finite monoid the powers `s, s², s³, …` of any element
+**The idempotent power.** In a finite semigroup the powers `s, s², s³, …` of any element
 cannot all be distinct, so the sequence is eventually periodic and contains a unique
-**idempotent**, written `s^ω` — the unique `s^n` (`n ≥ 1`) with `s^n·s^n = s^n`. Now
-read a loop `v` through a recognizer's morphism `φ`: the values of
+**idempotent**, the one `s^n` (`n ≥ 1`) with `s^n·s^n = s^n`. We write it `s^ω`,
+reusing the ω-power's superscript deliberately. Now read a loop `v` through the
+morphism's finite-word component, simply `φ` from here on: the values of
 `v, vv, vvv, …` are the powers of `φ(v)`, so they settle on the idempotent `φ(v)^ω`.
 That is how "loop forever" is read without any infinite object at hand: iterate the
 loop's value until it stops changing, and keep that stable value.
