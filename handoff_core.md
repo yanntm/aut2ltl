@@ -53,6 +53,12 @@ construction's saturation obligation).
 - Vocabulary: **classes** (never bins/types; "equivalence classes" spelled out only
   at §2's organizing sentence); classify/assign, never metaphorical "sorting"; `φ` is
   "the morphism"; algebraic **sort** reserved for the two-sorted structure.
+- `𝓘` is **the invariant** (Def 3.2's term); "the object" is banned paper-wide.
+  Binding text (§2–3.2) is clean; indicative sections still carry it — purge at
+  their rewrite, including Def 3.4's competing "**object**" definition.
+- §2 is PP04-faithful: `S₊` is a **semigroup** on `Σ⁺` (`ε` has no ω-power); the
+  identity is adjoined only in §3. Morphism is `φ = (φ₊, φ_ω)`, equations displayed;
+  after the "second sort not carried" hinge, `φ` means `φ₊`.
 - Worked paragraphs are labeled `*Example.*` and anchored ("On Figure 1
   (`AsThenBs`), …"); no bare "In general". No individual non-lasso words as
   specimens — out of regular scope.
