@@ -123,22 +123,23 @@ and, beneath the drawing, the acceptance data as pairs of classes — no box for
 
 **The idempotent power.** In a finite semigroup the powers `s, s², s³, …` of any element
 cannot all be distinct, so the sequence is eventually periodic and contains a unique
-**idempotent**, the one `s^n` (`n ≥ 1`) with `s^n·s^n = s^n`. We write it `s^ω`,
-reusing the ω-power's superscript deliberately. Now read a loop `v` through the
+**idempotent**, the one power `s^n` (`n ≥ 1`) with `s^n·s^n = s^n`: the **idempotent
+power** of `s`. Now read a loop `v` through the
 morphism's finite-word component, simply `φ` from here on: the values of
-`v, vv, vvv, …` are the powers of `φ(v)`, so they settle on the idempotent `φ(v)^ω`.
+`v, vv, vvv, …` are the powers of `φ(v)`, so they settle on the idempotent power of `φ(v)`.
 That is how "loop forever" is read without any infinite object at hand: iterate the
 loop's value until it stops changing, and keep that stable value.
 
 *Example.* On Figure 1 (`aUGb`), the value `φ(b) = [b]` is its own idempotent power —
 more `b`'s change nothing, `[b]·[b] = [b]`. The value `φ(ab) = [a·b]` is not: its
 square `[a·b]·[a·b] = [b·a]` is the value of the *dead* words (`abab` puts an `a`
-after a `b`, and no continuation rescues that), itself idempotent — so
-`φ(ab)^ω = [b·a]`: looping `ab` forever is exactly as dead as slipping once.
+after a `b`, and no continuation rescues that), itself idempotent — so the idempotent
+power of `φ(ab)` is `[b·a]`: looping `ab` forever is exactly as dead as slipping once.
 
 **A linked pair names a lasso.** Reading `u·v^ω` through the morphism `φ`
 (Ramsey's theorem): the loop
-settles on the idempotent `e = φ(v)^ω` and the stem on `s = φ(u)·e`, with `s·e = s` (the
+settles on an idempotent `e` — the idempotent power of `φ(v)` — and the stem on
+`s = φ(u)·e`, with `s·e = s` (the
 stem precedes the loop and is absorbed by it). A **linked pair** is any `(s, e)` with
 `e² = e` and `s·e = s`; `s` names the stem, `e` the loop, `(s, e)` the lasso. A
 recognizer is fixed by which lassos it accepts, hence by its set of **accepting linked
@@ -233,9 +234,11 @@ classes and products of Figure 1: `a` and `c` are interchangeable everywhere, so
 `λ(a) = λ(c) = [a]`, and the drawing is unchanged; only `λ` tells the two algebras
 apart.
 
-**The idempotent power.** Each class `s` has a unique idempotent power `s^ω` (§2):
-among the powers `s, s², s³, …` — finitely many, since `𝒞` is finite — exactly one is
-idempotent, `s^ω·s^ω = s^ω`. It is a computation on the multiplication table alone.
+**The idempotent power.** Each class `s` has a unique idempotent power (§2): among
+the powers `s, s², s³, …` — finitely many, since `𝒞` is finite — exactly one is
+idempotent. We write it `s^ω`: the superscript is free — the invariant carries no
+second sort and no ω-power — and this idempotent is exactly what stands in for them.
+It is a computation on the multiplication table alone.
 
 *Example.* On Figure 1 (`aUGb`), all classes but `[a·b]` are
 idempotent, hence their own idempotent powers:
