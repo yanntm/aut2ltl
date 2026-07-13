@@ -476,8 +476,8 @@ the rest of the paper: **`GF(aa)`** — infinitely
 many `aa`-factors, LTL-definable; **`Even`** — an even number of `a`'s before the first
 `b`, then anything, *not* LTL; **`EvenBlocks`** — infinitely many `b` and eventually
 every completed `a`-block even, *not* LTL and prefix-independent. Each is met here as
-its invariant — the letter actions, the few laws that organize them, and the Cayley
-graph drawn; automata wait until §4, the machine formats (serialization, integer
+its invariant — the letter actions, the few laws that organize them, and the table
+drawn as a graph; automata wait until §4, the machine formats (serialization, integer
 tables) until Part B. In all
 three, `λ(a) = [a]` and `λ(b) = [b]`, and letter-generation makes the two action rows
 the whole of `M`.
@@ -498,7 +498,7 @@ there — `aa` recurs.
 ![Figure 2 — the invariant of GF(aa)](sos_core_figs/img/core_F1_gf_aa.png)
 
 *Figure 2 — `GF(aa)`. Two waiting rooms — `[a] ⇄ [a·b]` and `[b] ⇄ [b·a]`, cycles
-that mix letters, hence no group — each escaping on `a` toward the zero; the one
+with no common label, hence no group — each escaping on `a` toward the zero; the one
 accepting name loops at the zero itself.*
 
 **(b) `Even`** — five classes:
@@ -518,9 +518,8 @@ and the adjoined identity of §3.1 keeps `[ε]` apart. `[b]` and `[a·b]` are
 
 ![Figure 3 — the invariant of Even](sos_core_figs/img/core_F2_even.png)
 
-*Figure 3 — `Even`. The diagonal `[a] ⇄ [a·a]`, both legs on the single letter
-`a`, is a monochrome two-cycle — the `Z₂` drawn; every accepting name stems at
-`[b]`.*
+*Figure 3 — `Even`. The diagonal `[a] ⇄ [a·a]`, both legs labeled `[a]`, is a
+monochrome two-cycle — the `Z₂` drawn; every accepting name stems at `[b]`.*
 
 **(c) `EvenBlocks`** — eight classes:
 
@@ -563,11 +562,12 @@ pair `{[a], [a·a]}` is a cycle of period 2, a `Z₂` sitting in the algebra. Si
 aperiodicity of the algebra is exactly LTL-definability [DG08], this cycle *is* the
 reason `Even` is not LTL — read straight off the letter actions, before any acceptance
 is consulted. `GF(aa)`'s algebra, by contrast, has every power-cycle of period 1:
-aperiodic, hence LTL. In the drawing the criterion is a *monochrome* cycle — one
-letter (more generally one word) repeated, as `Even`'s `·a` swap between `[a]` and
-`[a·a]` (Figure 3). A cycle that mixes letters proves nothing: `GF(aa)`'s graph
-closes `[a] →^b [a·b] →^a [a]` (Figure 2's waiting rooms), and its algebra is
-aperiodic all the same.
+aperiodic, hence LTL. In the drawing the criterion is a *monochrome* cycle — all
+edges sharing one class label, as `Even`'s `[a]`-swap between `[a]` and `[a·a]`
+(Figure 3); every column of `M` being drawn, every power cycle is a drawn cycle. A
+cycle with no common label proves nothing: `GF(aa)`'s graph closes
+`[a] →^b [a·b] →^a [a]` (Figure 2's waiting rooms), and its algebra is aperiodic
+all the same.
 
 *Saturation, checked.* The query on `a^ω` presented two ways must agree, and does:
 `(ε, a)` folds to the pair `([ε]·[a]^ω, [a]^ω) = ([a·a], [a·a])`, while `(a, a)` folds
