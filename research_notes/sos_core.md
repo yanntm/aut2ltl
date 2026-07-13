@@ -154,6 +154,9 @@ Let us define the algebra component `𝒜` of the invariant `𝓘 = ⟨𝒜, P�
   two-sided **identity** — for all `c ∈ 𝒞`, `M(c, [ε]) = M([ε], c) = c` — so `(𝒞, M)`
   is a finite monoid, and we write `s·t := M(s, t)`.
 
+By convention, the shortlex-smallest word in each class (shortest, then alphabetical)
+is chosen as its representative.
+
 *Example.* The algebra of `AsThenBs` (`a*·b^ω`) is represented in Figure 1. It
 contains five classes `𝒞 = {[ε], [a], [b], [a·b], [b·a]}`, which are also the
 vertices of the diagram, with `λ(a) = [a]` and `λ(b) = [b]`. The edges are also
@@ -170,8 +173,8 @@ the representative of `t` walked from `s`, edge by edge.
 
 Consider the lasso `aab·b^ω`. Its reading starts in `[ε]`, and we do not progress by
 letters but by classes: reading a letter `s` follows the edge labeled `λ(s)`. The
-first `a` follows `[a]`, from `[ε]` to `[ε]·[a] = [a]` — the class vertex of the
-letter itself, labeled by a letter because representatives are shortlex. In this
+first `a` follows `[a]`, from `[ε]` to `[ε]·[a] = [a]`, the class vertex of the
+letter itself. In this
 situation reading `a` stays in place, `[a]·[a] = [a]`, while `b` moves on,
 `[a]·[b] = [a·b]`: after the stem `aab` we sit in `[a·b]`. The loop `b^ω` then turns
 on the self-loop `[b]` of `[a·b]` forever — the reading of a lasso is a finite path
