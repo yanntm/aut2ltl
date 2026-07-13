@@ -199,7 +199,8 @@ apart.
 among the powers `s, s², s³, …` — finitely many, since `𝒞` is finite — exactly one is
 idempotent, `s^ω·s^ω = s^ω`. It is a computation on the multiplication table alone.
 
-*Example.* All classes but `[a·b]` are idempotent, hence their own idempotent powers:
+*Example.* On our running example of Figure 1, all classes but `[a·b]` are
+idempotent, hence their own idempotent powers:
 `[ε]` is the identity; `[a]·[a] = [a]` and `[b]·[b] = [b]` read on their self-loops —
 more `a`'s, more `b`'s change nothing; and `[b·a]·[b·a] = [b·a]`, the zero absorbing
 even itself. `[a·b]` is not: gluing two words of `a⁺b⁺` puts an `a` after a `b`, so
