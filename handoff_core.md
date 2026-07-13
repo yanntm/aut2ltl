@@ -19,6 +19,12 @@ rewritten when its turn comes.
 2. Parked, bites when §3.1 reopens: Def 3.1's isolation only constrains `λ`; the S¹
    axiom (word classes closed under `M`, i.e. `⟦u⟧ = [ε] ⟺ u = ε`) is still missing,
    and §3.3 needs it abstractly (`𝓘(L)` has it by construction).
+3. PP04 is now searchable (`papers/Perrin_Pin_2004_Book.txt`, OCR with artifacts but
+   readable). §2 cites audited and pinned (Ch. I Cor 9.8; Ch. II Thm 2.1, Thm 5.1,
+   §7). Still to read, feeds §3.3: Ch. II §8 (syntactic congruence — cross-check
+   Arnold), §2.2 (conjugacy of linked pairs — cite it, the notion is classical, as is
+   the Wilke axiom `s(ts)^ω = (st)^ω`; our claim is the congruence collapse, not the
+   identity). Also pending: Thm 5.1 statement verbatim, §7's theorem number.
 
 ## §3.3 spec (redraft from here if the draft is lost)
 
