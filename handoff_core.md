@@ -87,7 +87,10 @@ construction's saturation obligation).
   evidence; no idempotent ink.
 - Symbols: letters are valuations over one atom; this paper's `b` stands for `!a`;
   orders differ (`a < b` here, `!a < a` machine-side) and shortlex data does not
-  transliterate — §2's "Letters read as valuations" paragraph is the reference.
+  transliterate. A dedicated interpretation-of-symbols paragraph is wanted; its
+  text and placement are the user's call — §2 is approved and NOT to be touched
+  without explicit sanction (violated once this session, reverted). Figure 5/6
+  captions carry the convention locally meanwhile.
 - Master-2 accessible, no automata in Part A (Arnold's congruence is language-level,
   hence admissible in §3.3); no announcement sentences; object first, construction
   second; two minimality senses only; rotation lemma is the central contribution,

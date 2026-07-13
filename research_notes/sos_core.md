@@ -46,17 +46,6 @@ classical notions the invariant rests on, adapting the presentation of Perrin an
 [PP04], each paired with the intuition tying the algebra back to languages of
 infinite words.
 
-**Letters read as valuations.** Our language names are LTL-flavored — `aUGb`,
-`GF(aa)` — and the reading is deliberate: temporal logic evaluates over the
-valuations of a set of atomic propositions, `Σ = 2^{AP}`, and with a single atom
-`a` the two letters are "`a` holds" and "`a` fails", the latter written `!a`. This
-paper writes the two letters `a` and `b` — so `b` stands for `!a` — and orders
-them `a < b`; machine-generated material draws the same letters as `a` and `!a`
-and orders them `!a < a`, the atom-true letter *second* there and *first* here.
-Names are read through this paper's convention — `aUGb` names `a*·b^ω` because
-`a U Gb` describes it, `b` standing for `!a` — and shortlex data (keys,
-serializations) does not transliterate between the two orders.
-
 Consider the language of Carton and Perrin [CP97, Ex. 10] described by `a*·b^ω` —
 some `a`'s, then `b`'s forever — which we name `aUGb`. Its syntactic ω-semigroup
 is drawn in Figure 1.
@@ -655,10 +644,10 @@ right): `a` toggles the parity of the running block; `b` returns to even, marked
 
 *Figure 5 — three of the four inputs, as Spot renders them: `GF(aa)` run-parity
 (the `a`-transposition), `Even` (the parity pair and two sinks), `EvenBlocks`
-(`Fin(0) ∧ Inf(1)` on the block-closing letter). Drawn in the machine convention
-of §2 — read `!a` as this paper's `b`, and recall the drawn letter order is
-`!a < a`, so nothing shortlex transfers. `aUGb`'s three-state automaton is
-described in the text.*
+(`Fin(0) ∧ Inf(1)` on the block-closing letter). Drawn over the one-atom alphabet
+`{!a, a}`: read `!a` as this paper's `b`; the drawn shortlex order is `!a < a`,
+the reverse role order of this paper's `a < b`, so keys do not transfer. `aUGb`'s
+three-state automaton is described in the text.*
 
 ### 4.2 Step 1: the enriched monoid `EM(D)`
 
@@ -930,9 +919,9 @@ their `Z₂` (§3.4): those groups are `L`'s own.
 ![Figure 6 — the reset presentation of GF(aa)](sos_figs/img/gf_aa_reset.png)
 
 *Figure 6 — the reset presentation of `GF(aa)`: `a` sends both states to "just saw
-`a`", whose `a`-self-loop carries the mark; `b` resets both. Drawn in the machine
-convention of §2 (`!a` is this paper's `b`). Non-isomorphic to Figure 5's
-run-parity form, same language, same
+`a`", whose `a`-self-loop carries the mark; `b` resets both. Drawn over the
+one-atom alphabet, as Figure 5: read `!a` as this paper's `b`. Non-isomorphic to
+Figure 5's run-parity form, same language, same
 `𝓘`.*
 
 **The algorithm.** The theorem is also the procedure. The seed `R` groups elements
