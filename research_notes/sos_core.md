@@ -40,9 +40,9 @@ the nonempty ones, `Σ^ω` for the infinite ones. The same exponents
 serve on letters and words: for `x ∈ Σ`, `x*` — finitely many repetitions of `x`,
 possibly none; `x⁺` — at least one; `x^ω` — repeated forever. A **language** here is a set of infinite words,
 `L ⊆ Σ^ω`; we take `L` **regular** (ω-regular [PP04]) — the class with finite-memory
-descriptions, and exactly the class the object of §3 captures. All examples in this
+descriptions, and exactly the class the invariant of §3 captures. All examples in this
 paper live over the two-letter alphabet `Σ = {a, b}`. This section fixes the few
-classical notions the object rests on, adapting the presentation of Perrin and Pin
+classical notions the invariant rests on, adapting the presentation of Perrin and Pin
 [PP04], each paired with the intuition tying the algebra back to languages of
 infinite words.
 
@@ -50,7 +50,7 @@ Consider the language of Carton and Perrin [CP97, Ex. 10] described by `a*·b^ω
 some `a`'s, then `b`'s forever — which we name `AsThenBs`. Its syntactic ω-semigroup
 is drawn in Figure 1.
 
-![Figure 1 — the object of AsThenBs](sos_core_figs/img/core_F0_astar_bomega.png)
+![Figure 1 — the invariant of AsThenBs](sos_core_figs/img/core_F0_astar_bomega.png)
 
 *Figure 1 — the syntactic ω-semigroup of `AsThenBs = a*·b^ω`: five classes of finite
 words, the letter steps between them, and the accepting pairs `P` beneath. It is the
@@ -62,7 +62,7 @@ edge multiplies on the right by its label.*
 finite **stem** `u`, then a finite nonempty **loop** `v` repeated forever. The
 organizing fact: *two regular ω-languages are equal iff they agree on all lassos*
 [PP04]. Classifying `L` is therefore assigning each lasso to one of finitely many
-equivalence classes, and every object below is machinery for naming the classes and
+equivalence classes, and every notion below is machinery for naming the classes and
 computing the assignment.
 
 *Example.* `b^ω`, `ab·b^ω` and `aab·(bb)^ω` are lassos of `AsThenBs`; `ba·(ab)^ω` is a
@@ -141,7 +141,7 @@ settles on the idempotent `e = φ(v)^ω` and the stem on `s = φ(u)·e`, with `s
 stem precedes the loop and is absorbed by it). A **linked pair** is any `(s, e)` with
 `e² = e` and `s·e = s`; `s` names the stem, `e` the loop, `(s, e)` the lasso. A
 recognizer is fixed by which lassos it accepts, hence by its set of **accepting linked
-pairs** — which is why (§3) the acceptance datum of the object is a *set of pairs*, not a
+pairs** — which is why (§3) the acceptance datum of the invariant is a *set of pairs*, not a
 subset of the monoid.
 
 *Example.* Read `aab·b^ω` on Figure 1: the loop's value `[b]` is already idempotent,
@@ -152,7 +152,7 @@ lasso with stem in `a⁺b*` and loop in `b⁺`.
 **One lasso, many names.** A single ω-word has many presentations —
 `u·v^ω = (uv)·v^ω = u·(v²)^ω = (u v₁)·(v₂ v₁)^ω` — and, as §3 shows, these need not name
 it by the same linked pair. Reconciling them is not bookkeeping: it is the **rotation
-lemma** (§3), the paper's structural pivot, and the one nontrivial constraint the object
+lemma** (§3), the paper's structural pivot, and the one nontrivial constraint the invariant
 must satisfy.
 
 *Example.* `a·(ba)^ω = ab·(ab)^ω = ab·(abab)^ω`: one ω-word, three presentations —
