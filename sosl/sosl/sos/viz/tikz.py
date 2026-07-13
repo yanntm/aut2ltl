@@ -36,12 +36,13 @@ LOOP_DIRS: Tuple[Tuple[str, Tuple[float, float]], ...] = (
 CROWD_CM = 2.6
 # How far an anti-parallel pair of arrows bends apart (both bend left).
 BEND_ANGLE = 15
-# A straight arrow passing within this of a THIRD node (cm) runs over that node, or
-# over its self-loop and label; it is bent around instead. Half a node box plus the
-# room a loop and its label take on the far side of it.
-CLEAR_CM = 1.3
-# How far such an arrow arcs out to clear the node it would otherwise cross.
-DETOUR_ANGLE = 30
+# Two nodes count as sharing a row / a column when their y / x differ by less than
+# this (cm) — coordinates are hand-rounded, so exact equality is too strict.
+ALIGN_CM = 0.3
+# How far out a detour swings: the `looseness` of its bezier. An anti-parallel pair
+# of detours takes the two values, so the arcs do not lie on top of each other.
+LOOSENESS = 1.7
+LOOSENESS_FAR = 2.5
 # How far under the lowest node the P caption sits (cm).
 PAIRS_DROP_CM = 1.3
 # Extra drop when a bottom node's self-loop hangs below it: the loop and its label
@@ -123,35 +124,42 @@ def _loop_dir(fig: Figure, pos: Placement, cls: int) -> str:
     return sorted(scored)[0][2]
 
 
-def _detour(fig: Figure, pos: Placement, src: int, dst: int) -> Optional[str]:
-    """The `bend` option an arrow needs to clear a THIRD node it would otherwise run
-    across, or None when its straight line is free.
-
-    A node blocks when it sits within `CLEAR_CM` of the segment and *between* the
-    endpoints (its projection falls strictly inside them — a node behind either end
-    is not in the way). The arrow arcs away from it: TikZ bends left towards the
-    left of the direction of travel, so a blocker on the left is passed by bending
-    right, and vice versa. The nearest blocker decides."""
+def _blocked(fig: Figure, pos: Placement, src: int, dst: int) -> bool:
+    """Is a node sitting ON the straight line between ``src`` and ``dst``? Only the
+    aligned case counts — the two share a row or a column (to `ALIGN_CM`) and a third
+    node of that row/column lies strictly between them. That is a node the arrow
+    would run *through*; an arrow merely passing near one is left alone."""
     (px, py), (qx, qy) = pos[src], pos[dst]
-    ux, uy = qx - px, qy - py
-    span = (ux * ux + uy * uy) ** 0.5
-    if span == 0:
-        return None
-    blockers: List[Tuple[float, float]] = []          # (distance, side)
+    same_row, same_col = abs(py - qy) < ALIGN_CM, abs(px - qx) < ALIGN_CM
+    if not (same_row or same_col):
+        return False
     for nd in fig.nodes:
         if nd.cls in (src, dst):
             continue
-        vx, vy = pos[nd.cls][0] - px, pos[nd.cls][1] - py
-        along = (vx * ux + vy * uy) / span            # projection onto the segment
-        if not 0.0 < along < span:
-            continue
-        cross = (ux * vy - uy * vx) / span            # signed distance, + = left
-        if abs(cross) < CLEAR_CM:
-            blockers.append((abs(cross), cross))
-    if not blockers:
-        return None
-    _, cross = min(blockers)
-    return f"bend {'right' if cross > 0 else 'left'}={DETOUR_ANGLE}"
+        x, y = pos[nd.cls]
+        if same_row and abs(y - py) < ALIGN_CM and min(px, qx) < x < max(px, qx):
+            return True
+        if same_col and abs(x - px) < ALIGN_CM and min(py, qy) < y < max(py, qy):
+            return True
+    return False
+
+
+def _detour(fig: Figure, pos: Placement, src: int, dst: int, far: bool) -> str:
+    """The `to[...]` option of an arrow that must go around a node standing between
+    its endpoints: a bezier that leaves the source *outward* (away from the middle of
+    the figure), runs parallel to the row or column it is skipping, and dives back in
+    at the target. Leaving and arriving on the same outward heading is what keeps the
+    two turns gentle; `looseness` is how far out the arc swings, and an anti-parallel
+    pair takes the two values so its arcs do not coincide."""
+    cx = sum(p[0] for p in pos.values()) / len(pos)
+    cy = sum(p[1] for p in pos.values()) / len(pos)
+    (px, py), (qx, qy) = pos[src], pos[dst]
+    if abs(py - qy) < ALIGN_CM:                       # a row: swing above or below
+        angle = 90 if py >= cy else -90
+    else:                                             # a column: swing left or right
+        angle = 180 if px <= cx else 0
+    loose = LOOSENESS_FAR if far else LOOSENESS
+    return f"out={angle},in={angle},looseness={loose}"
 
 
 def _arrows(fig: Figure) -> "List[Arrow]":
@@ -248,14 +256,19 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
     out.append("")
 
     loops = loops or {}
+    rank = {nd.cls: i for i, nd in enumerate(fig.nodes)}
     for ar in _arrows(fig):
         if ar.is_loop:
             via = f"[{loops.get(ar.src) or _loop_dir(fig, pos, ar.src)}]"
+        elif _blocked(fig, pos, ar.src, ar.dst):
+            # a node stands between the endpoints: go around it, the back arrow of an
+            # anti-parallel pair swinging wider so the two arcs stay apart
+            far = ar.bend and rank[ar.src] > rank[ar.dst]
+            via = f"[{_detour(fig, pos, ar.src, ar.dst, far)}]"
         elif ar.bend:                    # anti-parallel: both bend left, splitting
             via = f"[bend left={BEND_ANGLE}]"
-        else:                            # straight, unless a third node is in the way
-            detour = _detour(fig, pos, ar.src, ar.dst)
-            via = f"[{detour}]" if detour else ""
+        else:
+            via = ""
         src, dst = fig.node_of(ar.src).ident, fig.node_of(ar.dst).ident
         out.append(f"  \\draw[arrow] ({src}) to{via} "
                    f"node[lbl] {{{_tex_arrow_label(fig, ar.cols)}}} ({dst});")
