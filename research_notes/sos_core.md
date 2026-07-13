@@ -626,6 +626,11 @@ with nothing intrinsic to prefer either. §4.4 sends both to one invariant.
 an `a` at `B` falls to the sink `Z`, which absorbs both letters unmarked.
 `Acc = Inf(c)`: a run collects `c` forever iff it eventually reads only `b`'s.
 
+![aUGb as an automaton](sos_figs/img/aUGb.png)
+
+*The three-state automaton for `aUGb` (caption TODO; `!a` reads as this paper's
+`b`).*
+
 *Example.* `GF(aa)` is `L(D)` for a two-state `D` tracking the parity of the
 running block of `a`'s (Figure 5, left): the letter `a` *transposes* the two
 states — a `Z₂` in the maps `q ↦ δ(q, w)` — and the transposition closing an `aa`
