@@ -308,185 +308,65 @@ The definition reads `w` through one presentation `(u, v)`, and a lasso has many
 That the verdict does not depend on the presentation chosen is not automatic; it is
 the subject of the next section.
 
-### 3.3 Naming lassos, and the rotation lemma
+### 3.3 Canonicity: the invariant of `L`
 
-A **linked pair** of the algebra is `(s, e) ∈ 𝒞 × 𝒞` with `e² = e` and `s·e = s`. It
-**names** every lasso `u·v^ω` with `⟦u⟧·⟦v⟧^ω = s` and `⟦v⟧^ω = e`. Loops are nonempty,
-so both components of a naming pair are folds of nonempty words; since `[ε]` is
-adjoined (Definition 3.1) neither is `[ε]`, so a naming pair lies in `(𝒞∖{[ε]})²`. Read as
-intuition: no name may accept by staying at the start — a loop is the value of
-something that happens forever, and the empty past cannot recur.
+Definition 3.4 leaves two debts. It reads a lasso through one presentation, and a
+lasso has many — nothing yet says all presentations receive one verdict. And it
+evaluates whatever invariant it is handed — nothing yet singles out, among the many
+invariants denoting one language, a canonical one. Both debts are paid at once by
+building the invariant from `L` itself, one class per behavior `L` can distinguish.
+The classifying relation is Arnold's [Arn85]. A finite word sits in a lasso either
+in the stem or inside the loop, and interchangeability must hold in both positions:
 
-*Example.* Six linked pairs: `([a],[a])`, `([b],[b])`, `([a·b],[b])`, `([b·a],[a])`,
-`([b·a],[b])`, `([b·a],[b·a])`. The pair `([a],[a])` names `a^ω` and nothing else;
-`([b·a],[a])` names the lassos with a `b` somewhere, then `a`'s forever; `([a·b],[b])`
-names exactly the lassos with stem in `a⁺b*` and loop in `b⁺`.
-
-One lasso has many presentations, and — this is the subtlety the object must confront —
-they need not name it by one pair. Three elementary **moves** relate the presentations of
-a common ω-word:
+**Definition 3.5 (syntactic congruence [Arn85]).** Two words `u, v ∈ Σ⁺` are
+**syntactically congruent** for `L`, written `u ≈_L v`, when they are
+interchangeable in both context shapes:
 
 ```
-    stem-extend   (u, v)      ↦ (uv, v)          [ uv·v^ω = u·v^ω ]
-    loop-power    (u, v)      ↦ (u, v^k)  (k≥1)  [ (v^k)^ω = v^ω ]
-    loop-rotate   (u, v₁v₂)   ↦ (uv₁, v₂v₁)      [ u(v₁v₂)^ω = uv₁(v₂v₁)^ω ]
+    (linear)     ∀ x, y ∈ Σ*, t ∈ Σ⁺ :   x·u·y·t^ω ∈ L  ⟺  x·v·y·t^ω ∈ L
+    (ω-power)    ∀ x, y ∈ Σ*          :   x·(u·y)^ω ∈ L  ⟺  x·(v·y)^ω ∈ L
 ```
 
-On the named pair, `loop-power` changes nothing (`(⟦v⟧^k)^ω = ⟦v⟧^ω`, the idempotent
-power of a power). The other two move it — and both are instances of one rotation, the
-paper's pivot.
+The linear shape mutates the stem — a finite change, a loop `t` appended to complete
+the lasso; the ω-power shape mutates inside the loop, where the change recurs
+forever. `≈_L` is a two-sided **congruence** — `u ≈_L v` gives `x·u·y ≈_L x·v·y` —
+of **finite index** for regular `L`: finitely many classes [Arn85]. And it is the
+**coarsest** relation with these interchange properties — every relation
+interchangeable in both shapes refines it — the first of two senses in which the
+quotient below is minimal.
 
-*Example.* `a·(ba)^ω ↦ ab·(ab)^ω` is a `loop-rotate`; `ab·(ab)^ω ↦ ab·(abab)^ω` a
-`loop-power`. All three presentations fold to the one name `([b·a], [b·a])` — this
-example's stems absorb, so its moves happen to fix the name; the lemma below is what
-makes verdicts survive the moves that do not.
+*Example.* On Figure 1 (`aUGb`), from `L = a*·b^ω` alone: `a ≉_L b` by the ω-power
+shape at `x = y = ε` — `a^ω ∉ L`, `b^ω ∈ L`; `ab ≉_L ba` by the linear shape at
+`x = y = ε`, `t = b` — `ab·b^ω ∈ L`, `ba·b^ω ∉ L`; and `a ≈_L aa` — membership in
+`L` never counts `a`'s, in either shape a block of `a`'s acts as one `a`. The
+quotient `Σ⁺/≈_L` has exactly four classes — `a⁺`, `b⁺`, `a⁺b⁺` and the dead words —
+the four boxes of Figure 1 other than `[ε]`.
 
-**Lemma 3.3 (rotation lemma).** For all `s, g, h ∈ 𝒞` with `s·(gh)^ω = s`, the linked
-pairs
+**Definition 3.6 (the invariant of `L`).** `𝓘(L) := ⟨𝒜(L), P(L)⟩`, where
+`𝒜(L) = (𝒞, λ, M)` and:
 
-```
-    (s, (gh)^ω)   and   (s·g, (hg)^ω)
-```
+- `𝒞 := Σ⁺/≈_L ∪ {[ε]}`: one **word class** per congruence class of nonempty
+  words, keyed by its shortlex-smallest member (§3.1), plus the adjoined `[ε]`;
+- `λ(x) := [x]` for `x ∈ Σ`, and `λ(ε) := [ε]`;
+- `M` is the induced product, `[u]·[v] := [u·v]` on word classes — well defined
+  because `≈_L` is a two-sided congruence — with `[ε]` the identity;
+- `P(L) := { (s, e) : s, e word classes, e·e = e, s·e = s, w_s·(w_e)^ω ∈ L }`,
+  where `w_s` and `w_e` are the keys of `s` and `e` — the linked pairs (§2, now of
+  classes) whose one representative lasso belongs to `L`.
 
-name the same lassos: every ω-word named by one is named by the other.
+`𝒜(L)` is an algebra in the sense of Definition 3.1 — `[ε]` is isolated, no letter
+folding to it — and it is **letter-generated**: `⟦u⟧ = [u]` for every `u ∈ Σ*` (`λ`
+seeds the letters, `M` is the induced product, induction does the rest), so every
+class is the fold of each of its members, and `⟦u⟧ = [ε]` only for `u = ε`. As
+stated, `P(L)` consults a single lasso per pair, built from the keys; that the
+choice of representatives is innocent is Theorem 3.8's content.
 
-*Proof.* By letter-generation pick words `w, p, q` with `⟦w⟧ = s`, `⟦p⟧ = g`, `⟦q⟧ = h`.
-The single ω-word `w·(pq)^ω` has the presentation `(w, pq)`, named by
-`(⟦w⟧·⟦pq⟧^ω, ⟦pq⟧^ω) = (s·(gh)^ω, (gh)^ω) = (s, (gh)^ω)`; and the presentation
-`(wp, qp)` — the same word, since `w(pq)^ω = wp(qp)^ω` — named by
-`(⟦wp⟧·⟦qp⟧^ω, ⟦qp⟧^ω) = (s·g·(hg)^ω, (hg)^ω)`. Here `g·(hg)^ω = (gh)^ω·g`, so the stem
-is `s·(gh)^ω·g = s·g` (using `s·(gh)^ω = s`), and `(s·g, (hg)^ω)` is a linked pair
-(`(hg)^ω` idempotent; `s·g·(hg)^ω = s·(gh)^ω·g = s·g`). Any lasso named by either pair
-thus presents, by loop rotation, as one named by the other. ∎
-
-The lemma says a loop may be **rotated** — a factor `g` carried from the loop's front
-onto the stem — the loop's idempotent conjugating `(gh)^ω ↦ (hg)^ω` while the stem
-absorbs `g`. `stem-extend` is the degenerate case `g = h = ⟦v⟧`: then `(gh)^ω = ⟦v⟧^ω` is
-unchanged and the stem merely gains `⟦v⟧`, which is why a longer stem can name the same
-lasso by a different pair. `loop-rotate` is the general case. So of the three moves, only
-`loop-power` fixes the pair; every other pair-change is one rotation step.
-
-*Example.* The degenerate case on `(a, b) ↦ (ab, b)`: the stem gains `[b]`, which
-`[a·b]` absorbs — both presentations carry the name `([a·b], [b])`.
-
-Call two linked pairs **conjugate**, `(s, e) ≈ (s', e')`, when connected by rotations —
-the equivalence generated by `(s, (gh)^ω) ≈ (s·g, (hg)^ω)`. Lemma 3.3 says conjugate
-pairs name the same lassos, so a recognizer must accept them together.
-
-*Example.* All six conjugacy classes are singletons — every rotation fixes the pair,
-the dead class absorbing whatever factor moves. A conjugacy that genuinely pairs two
-names is worked in §3.5.
-
-**The rotation lemma is the structural pivot of the paper.** Here it constrains the
-acceptance layer (§3.3). In §7, applied not to the loop of a single lasso but to the
-two-sided contexts of Arnold's syntactic congruence, the same rotation carries a *left*
-context around the loop into a *right* extension at a shifted starting point — collapsing
-the two-sided congruence to a right-invariant refinement, computable by the one operation
-a monoid's table offers for free. That collapse is the construction's core; it is
-Lemma 3.3 read at the level of contexts, and §7 only instantiates it.
-
-### 3.4 The acceptance layer, and well-definedness
-
-**Definition 3.4 (acceptance layer; object).** An **acceptance layer** over an algebra
-`𝒜` is a set `P` of linked pairs that is **saturated** — closed under conjugacy:
-
-```
-    (s, (gh)^ω) ∈ P  ⟺  (s·g, (hg)^ω) ∈ P     for all s, g, h ∈ 𝒞 with s·(gh)^ω = s.
-```
-
-An **object** is a pair `𝓘 = ⟨𝒜, P⟩`: an algebra and an acceptance layer over it. Saturation is a finite, mechanical closure — checkable directly on the
-multiplication table, with no automaton and no external theory (§3.5 verifies it by hand
-on the examples).
-
-*Example.* `P = { ([b],[b]), ([a·b],[b]) }` — the two behaviors of `a*·b^ω`: "reading
-`b`'s after nothing but `a`'s (if any), keep reading `b`'s". Saturation is immediate,
-each pair being its own conjugacy class (§3.2). The flip `P^c` — the other four linked
-pairs — is an equally legal layer, and denotes the complement (§4).
-
-**The membership query.** Given a lasso `u·v^ω`, the object answers membership by folding
-and one lookup:
-
-```
-    e := ⟦v⟧^ω,   s := ⟦u⟧·e,   accept  u·v^ω  ⟺  (s, e) ∈ P.
-```
-
-`(s, e)` is a linked pair (`e² = e`; `s·e = ⟦u⟧·e·e = s`) — the pair naming `u·v^ω`.
-
-*Example.* Three runs. `b^ω`: the loop `[b]` is already idempotent, the empty stem
-gives `s = [ε]·[b] = [b]`; `([b],[b]) ∈ P` — accepted. `aab·b^ω`: `⟦aab⟧ = [a·b]`,
-loop `[b]`; `([a·b],[b]) ∈ P` — accepted. `a·(ab)^ω`: `⟦ab⟧ = [a·b]` is *not*
-idempotent — the table refuses `ab` as a stable block; iterate to `[a·b]^ω = [b·a]`,
-then `s = [a]·[b·a] = [b·a]` and `([b·a],[b·a]) ∉ P` — rejected, the idempotent-power
-step visibly doing the work: the loop `ab` keeps producing an `a` after a `b`.
-
-**Lemma 3.5 (well-definedness).** The query's verdict on `u·v^ω` depends only on the
-ω-word, not on the presentation `(u, v)`, **iff** `P` is saturated.
-
-*Proof.* (⇐) Two presentations of one ω-word are connected by the three moves
-(Lemma 3.6). `loop-power` leaves the named pair, hence the verdict, unchanged;
-`stem-extend` and `loop-rotate` change it by one conjugacy step, which preserves
-`P`-membership by saturation. The verdict is thus constant along any chain connecting two
-presentations. (⇒) Fix `s, g, h` with `s·(gh)^ω = s`; the cases `g = [ε]` or `h = [ε]`
-are trivial (both pairs coincide), so take `g, h ≠ [ε]`. Then `s ≠ [ε]` (else
-`s = s·(gh)^ω = (gh)^ω`, but `(gh)^ω` is a fold of nonempty words and `[ε]` is
-adjoined). Letter-generation realizes `s, g, h` by words, and Lemma 3.3's two
-presentations of the one word `w(pq)^ω` carry the pairs `(s, (gh)^ω)` and
-`(s·g, (hg)^ω)`. Presentation-independence forces one verdict, i.e. both pairs lie in `P`
-or neither. ∎
-
-*Example.* Presentation-independence is immediate here — singleton conjugacy classes;
-§3.5's saturation check shows the ⇒ direction biting on a `P` that would answer `a^ω`
-two ways.
-
-**Lemma 3.6 (presentations connect).** Two presentations name the same ω-word iff
-connected by `stem-extend`, `loop-power`, `loop-rotate` and their inverses.
-
-*Proof.* (⇐) Each move preserves the ω-word (the identities beside the moves). (⇒) Reduce
-any `(u, v)` to a canonical presentation of `α := u·v^ω` fixed by `α` alone. Let `π` be
-the least eventual period of `α` and `t` its least pre-period (`α` is `π`-periodic from
-position `t`, both minimal). As `v^ω` is the tail of `α` from position `|u|`, `v` is a
-power of the length-`π` rotation `ρ` of the primitive period beginning at position `|u|`;
-`loop-power`⁻¹ takes `v = ρ`. If `|u| > t`, the last letter of `u` lies in the periodic
-part and is the letter `ρ` continues with, so `loop-rotate`⁻¹ pulls it into the loop,
-lowering `|u|` by one and rotating `ρ`; iterate to `|u| = t`. The result — the length-`t`
-prefix of `α` and the period rotated to begin at `t` — depends only on `α`, so any two
-presentations reduce to it. ∎
-
-*Example.* `(aab, bb)` reduces: `loop-power`⁻¹ to `(aab, b)`; the stem's last letter
-`b` lies in the periodic part, so `loop-rotate`⁻¹ pulls it in, giving `(aa, b)` — the
-canonical presentation (`t = 2`, `π = 1`), reached from any presentation of `aab·b^ω`.
-
-By Lemma 3.5 a saturated `P` makes the query a function of the ω-word. Read as a
-recognizer, the object accepts exactly the lassos of a unique regular ω-language
-`L(𝓘)` — agreement on lassos determining a regular ω-language (§2) — and this is the
-language the object denotes.
-
-*Example.* The two accepting names admit exactly the lassos with stem in `a*b*` and
-loop in `b⁺` — the lassos of `a*·b^ω`, and no others: `L(𝓘) = L`.
-
-### 3.5 Residuals are derived data
-
-Started at any class, the object answers membership of a residual.
-
-**Proposition 3.7 (residuals).** For `s ∈ 𝒞` set
-`L_s := { y·t^ω : (s·⟦y⟧·⟦t⟧^ω, ⟦t⟧^ω) ∈ P }` — the query run from `s` — with
-`L_{[ε]} = L(𝓘)`. Then each `L_{s·λ(a)} = a⁻¹L_s`, residual equality is right-invariant
-(`L_s = L_{s'} ⟹ L_{s·λ(a)} = L_{s'·λ(a)}`), and the residual automaton is a quotient of
-the Cayley graph — all recomputable from `⟨𝒜, P⟩`.
-
-*Proof.* `L_{s·λ(a)} = a⁻¹L_s` is immediate from the fold:
-`y·t^ω ∈ L_{s·λ(a)} ⟺ (s·λ(a)·⟦y⟧·⟦t⟧^ω, ⟦t⟧^ω) ∈ P ⟺ (s·⟦a·y⟧·⟦t⟧^ω, ⟦t⟧^ω) ∈ P
-⟺ a·y·t^ω ∈ L_s`. Right-invariance follows, so quotienting the Cayley graph (Def 3.2) by
-residual equality yields a deterministic, complete letter-graph — the residual
-automaton. ∎
-
-*Example.* `L_{[a]} = a⁻¹L = L` (the `a*` absorbs); `L_{[b]} = L_{[a·b]} = {b^ω}`;
-`L_{[b·a]} = ∅`. The five-node Cayley graph quotients to a three-state residual
-automaton — `{[ε],[a]}`, `{[b],[a·b]}`, `{[b·a]}` — strictly coarser than the algebra:
-the residuals cannot tell `[b]` from `[a·b]`, the two-sided congruence can.
-
-No congruence and no automaton is invoked. The residuals are derived data and rightly
-enter no equality test between objects (§5).
+*Example.* Figure 1 is `𝓘(aUGb)` — §2 called the drawing a syntactic ω-semigroup,
+and Definition 3.6 is that claim made precise. Six pairs of word classes are
+linked: `([a],[a])`, `([b],[b])`, `([a·b],[b])`, `([b·a],[a])`, `([b·a],[b])`,
+`([b·a],[b·a])`. Testing each key lasso: `b·b^ω = b^ω ∈ L` and `ab·b^ω ∈ L`; the
+four others fail — `a·a^ω = a^ω` never shows a `b`, and a dead stem stays dead. So
+`P(L) = { ([b],[b]), ([a·b],[b]) }`, the pair set printed beneath the figure.
 
 ### 3.6 Concrete form, read on the examples
 
