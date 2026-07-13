@@ -9,8 +9,8 @@ borrow freely, never edit it. Dependents adapt to us, never the reverse.
 ## State
 
 **§2 through §3.2 are approved.** Everything else in the paper file — whatever its
-state of polish — is indicative or important, nothing more: not reference, not
-binding, rewritten when its turn comes.
+state of polish — is indicative at most: not reference, not important, not binding,
+rewritten when its turn comes.
 
 ## TODO queue (next action first)
 
