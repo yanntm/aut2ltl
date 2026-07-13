@@ -226,7 +226,7 @@ For this definition we need to introduce the notion of fold.
 
 **Definition 3.3 (folding).** Let `𝒜 = (𝒞, λ, M)` be an algebra over `Σ`, and
 `u = x₁x₂⋯xₙ ∈ Σ*` a finite word. The **fold** of `u` in `𝒜` is the class
-`⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being `λ(ε) = [ε]`.
+`⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being `⟦ε⟧ := λ(ε) = [ε]`.
 
 The fold is exactly where the reading of `u` ends on the diagram — one letter, one
 edge, from the root. By associativity the product needs no parentheses, and folding
