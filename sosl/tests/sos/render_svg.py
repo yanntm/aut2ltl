@@ -13,8 +13,16 @@ pixels, height scaled to keep the aspect ratio (never stretched). The default
 width is a reasonable on-screen automaton size, well under a page; pass a
 smaller/larger width to taste.
 
+With `--verbatim` an HOA file is drawn exactly as written, skipping the import
+layer's canonicalization. Use it when the file is already deterministic and
+complete and its mark placement is hand-owned: `spot.postprocess` re-infers a
+state-based reading whenever one exists, and a state-based reading puts each
+accepting state's mark on *all* its outgoing edges — including edges into a
+rejecting sink, where the mark is sound but reads as noise. The flag is
+ignored for a formula input (there is no file to take verbatim).
+
 Usage (module run from `sosl/` subtree root):
-  python3 -m tests.sos.render_svg <file.hoa | 'LTL/PSL formula'> OUT[.svg|.png] [width_px]
+  python3 -m tests.sos.render_svg [--verbatim] <file.hoa | 'LTL/PSL formula'> OUT[.svg|.png] [width_px]
 """
 from __future__ import annotations
 
@@ -30,24 +38,27 @@ import spot
 spot.setup()
 
 
-def load(arg: str) -> "spot.twa_graph":
+def load(arg: str, verbatim: bool = False) -> "spot.twa_graph":
     """The automaton for `arg`: the canonical form D of the file if it exists,
     else of the formula it denotes — through the sos import layer, so the
     picture is the transition-based D the construction actually consumes
-    (never a state-based re-reading of the source file)."""
+    (never a state-based re-reading of the source file). With `verbatim`, an
+    existing file is read as written instead, marks and all."""
     from sosl.sos.build import import_hoa, import_ltl
     if os.path.isfile(arg):
-        return import_hoa(arg)
+        return spot.automaton(arg) if verbatim else import_hoa(arg)
     return import_ltl(arg)
 
 
 def main(argv: list) -> int:
+    verbatim = "--verbatim" in argv[1:]
+    argv = [a for a in argv if a != "--verbatim"]
     if len(argv) not in (3, 4):
         print(__doc__)
         return 1
     out = argv[2]
     width = argv[3] if len(argv) == 4 else "360"
-    svg = load(argv[1])._repr_svg_()
+    svg = load(argv[1], verbatim)._repr_svg_()
     if out.lower().endswith(".png"):
         # -w alone fixes the width and scales height to keep the aspect ratio.
         subprocess.run(["rsvg-convert", "-w", width, "-f", "png", "-o", out],
