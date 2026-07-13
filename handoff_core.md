@@ -27,7 +27,7 @@ Numbering continues §3.2; next label is 3.5.
 1. Inherited question: Def 3.4 reads one presentation; a lasso has many.
 2. **Def 3.5** Arnold's congruence [Arn85] on `Σ⁺`, both shapes (linear / ω-power),
    in full; facts used: two-sided, finite index; coarsest = first minimality sense.
-   Example on `AsThenBs`: `a ≉ b` (ω-power, empty paddings), `ab ≉ ba` (linear,
+   Example on `aUGb`: `a ≉ b` (ω-power, empty paddings), `ab ≉ ba` (linear,
    `t = b`), `a ≈ aa`; the five Fig 1 classes.
 3. **Def 3.6** `𝓘(L)`: `𝒞 = Σ⁺/≈_L` shortlex-keyed plus adjoined `[ε]`; `λ(x) = [x]`;
    `M` induced; `P(L)` = linked pairs of word classes tested on the representative
@@ -60,7 +60,7 @@ construction's saturation obligation).
   identity is adjoined only in §3. Morphism is `φ = (φ₊, φ_ω)`, equations displayed;
   after the "second sort not carried" hinge, `φ` means `φ₊`.
 - Worked paragraphs are labeled `*Example.*` and anchored ("On Figure 1
-  (`AsThenBs`), …"); no bare "In general". No individual non-lasso words as
+  (`aUGb`), …"); no bare "In general". No individual non-lasso words as
   specimens — out of regular scope.
 - Identity **adjoined** (S¹; "fresh" banned); "specimen" banned; shortlex keys;
   Cayley root a source; `P` typeset beneath figures; monochrome cycles only as group
