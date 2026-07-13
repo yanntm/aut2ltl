@@ -21,6 +21,9 @@ from .model import Figure, wrap
 RANKSEP_IN = 0.87
 NODESEP_IN = 0.55
 
+# The label of an arrow that carries every column: all the (non-identity) classes.
+ALL_CLASSES = "C"
+
 # How hard the layout pulls an arrow's endpoints into line (see `_weight`).
 ROOT_WEIGHT = 10
 TREE_WEIGHT = 3
@@ -84,7 +87,11 @@ def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True,
     for (src, dst), cols in grouped(fig).items():
         marks = [e for e in fig.edges if (e.src, e.dst) == (src, dst)]
         labs = [class_label(fig, c) for c in sorted(cols, key=lambda c: rank[c])]
-        attrs = [f'label="{_wrapped(labs)}"',
+        # an arrow carrying every column is C, the set of all classes (eliding
+        # figures only — see the TikZ backend, which is where the reasoning lives)
+        text = ALL_CLASSES if fig.elided and set(cols) == set(fig.columns()) \
+            else _wrapped(labs)
+        attrs = [f'label="{text}"',
                  f"weight={_weight(fig, src, dst, marks)}"]
         a, b = fig.node_of(src).ident, fig.node_of(dst).ident
         out.append(f'  {a} -> {b} [{", ".join(attrs)}];')

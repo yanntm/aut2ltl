@@ -36,6 +36,8 @@ LOOP_DIRS: Tuple[Tuple[str, Tuple[float, float]], ...] = (
 CROWD_CM = 2.6
 # How far an anti-parallel pair of arrows bends apart (both bend left).
 BEND_ANGLE = 15
+# The label of an arrow that carries every column: all the (non-identity) classes.
+ALL_CLASSES = r"\mathcal{C}"
 # Two nodes count as sharing a row / a column when their y / x differ by less than
 # this (cm) — coordinates are hand-rounded, so exact equality is too strict.
 ALIGN_CM = 0.3
@@ -75,7 +77,17 @@ def _tex_arrow_label(fig: Figure, cols: Tuple[int, ...]) -> str:
     several classes multiply the source to the same target. Node order, wrapped to
     `WRAP_CHARS` — the label of a full table can list every class, and a long one
     lies across whatever the arrow passes. The comma stays at the end of the line
-    it breaks, so the list reads on unambiguously."""
+    it breaks, so the list reads on unambiguously.
+
+    An arrow carrying EVERY column collapses to `C`, the set of all non-identity
+    classes: the longest label there is, and the least informative as a list — a
+    self-loop under `C` is exactly an absorbing class, seen at a glance instead of
+    counted out. Only in an eliding figure. With the identity drawn, `C` would mean
+    one set on a self-loop (`[eps]` fixes every class, so every loop carries it) and
+    another on an arrow that leaves its source (which can never carry it); a figure
+    whose job is to be exact about the definitions does not get to be suggestive."""
+    if fig.elided and set(cols) == set(fig.columns()):
+        return f"${ALL_CLASSES}$"
     plain = [f"[{fig.label_of(c)}]" for c in cols]
     tex = [_tex_class(fig, c) for c in cols]
     lines = wrap(plain)

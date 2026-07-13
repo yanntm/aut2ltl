@@ -45,5 +45,5 @@ digraph core_F3_evenblocks {
   aba -> ab [label="[a],[a·b]", weight=1];
   aba -> bab [label="[b],[b·a],\n[b·a·b]", weight=1];
   aba -> aba [label="[a·a],\n[a·b·a]", weight=1];
-  bab -> bab [label="[a],[b],\n[a·a],[a·b],\n[b·a],\n[a·b·a],\n[b·a·b]", weight=1];
+  bab -> bab [label="C", weight=1];
 }

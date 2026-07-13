@@ -16,13 +16,13 @@
   pairs/.style     = {anchor=north, font=\small},
 ]
 
-  \node[class] (a) at (8.9,11.2) {$[a]$};
-  \node[class] (b) at (20.9,11.2) {$[b]$};
-  \node[class] (aa) at (2.8,7.0) {$[a{\cdot}a]$};
-  \node[class] (ab) at (8.9,7.0) {$[a{\cdot}b]$};
-  \node[class] (ba) at (22.0,7.0) {$[b{\cdot}a]$};
-  \node[class] (aba) at (5.1,1.3) {$[a{\cdot}b{\cdot}a]$};
-  \node[class] (bab) at (17.1,1.3) {$[b{\cdot}a{\cdot}b]$};
+  \node[class] (a) at (8.9,9.9) {$[a]$};
+  \node[class] (b) at (20.9,9.9) {$[b]$};
+  \node[class] (aa) at (2.8,5.8) {$[a{\cdot}a]$};
+  \node[class] (ab) at (8.9,5.8) {$[a{\cdot}b]$};
+  \node[class] (ba) at (22.1,5.8) {$[b{\cdot}a]$};
+  \node[class] (aba) at (5.1,0.6) {$[a{\cdot}b{\cdot}a]$};
+  \node[class] (bab) at (17.1,0.6) {$[b{\cdot}a{\cdot}b]$};
 
   \draw[arrow] (a) to[bend left=15] node[lbl] {$[a]$} (aa);
   \draw[arrow] (a) to node[lbl] {$[b]$} (ab);
@@ -50,9 +50,9 @@
   \draw[arrow] (aba) to[bend left=15] node[lbl] {$[a],[a{\cdot}b]$} (ab);
   \draw[arrow] (aba) to node[lbl] {$[b],[b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (aba) to[loop above] node[lbl] {$[a{\cdot}a],$\\$[a{\cdot}b{\cdot}a]$} (aba);
-  \draw[arrow] (bab) to[loop above] node[lbl] {$[a],[b],$\\$[a{\cdot}a],[a{\cdot}b],$\\$[b{\cdot}a],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
+  \draw[arrow] (bab) to[loop above] node[lbl] {$\mathcal{C}$} (bab);
 
-  \node[pairs] at (12.4,0.0) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
-  \node[pairs] at (12.4,-0.8) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
+  \node[pairs] at (12.5,-0.7) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
+  \node[pairs] at (12.5,-1.5) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
 \end{tikzpicture}
 \end{document}

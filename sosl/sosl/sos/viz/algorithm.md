@@ -106,6 +106,19 @@ table starts, and the form in which the elision can be *shown* to cost nothing.
 The two are meant to be drawn side by side once, and the elided one used from
 then on.
 
+**`𝒞`, in eliding figures only.** An arrow that carries *every* column is labeled
+`𝒞` — the set of all non-identity classes — instead of listing them. It is the
+longest label a full table produces and the least informative as a list, while as
+a symbol it states the fact: a self-loop under `𝒞` **is** an absorbing class, and
+a non-loop arrow under `𝒞` says every product lands there.
+
+The collapse is off when the identity is drawn, and that is not a taste: `[ε]`'s
+column is `s·ε = s`, so the `[ε]` entry of a row is a self-loop, *always*. A
+self-loop therefore always carries `[ε]`, and an arrow that leaves its source never
+can. One symbol for "every column" would then denote two different sets depending
+on the shape of the arrow it sits on. The identity-keeping figure is the one that
+has to be exact about the definitions, so it lists.
+
 With the identity elided there is **no root node**, hence no init stub: the
 backends draw the stub only when the figure has one. Keys are unaffected — they
 are shortlex-least *words*, computed by the letter BFS of step 2 from `[ε]`,

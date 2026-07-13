@@ -22,7 +22,7 @@ digraph core_F1_gf_aa {
   b -> ba [label="[a],[b·a]", weight=3];
   b -> b [label="[b],[a·b]", weight=1];
   b -> aa [label="[a·a]", weight=1];
-  aa -> aa [label="[a],[b],\n[a·a],[a·b],\n[b·a]", weight=1];
+  aa -> aa [label="C", weight=1];
   ab -> a [label="[a],[b·a]", weight=1];
   ab -> ab [label="[b],[a·b]", weight=1];
   ab -> aa [label="[a·a]", weight=1];
