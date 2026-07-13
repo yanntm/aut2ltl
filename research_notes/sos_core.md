@@ -229,7 +229,7 @@ The fold is exactly where the reading of `u` ends on the diagram — one letter,
 edge, from the root. By associativity the product needs no parentheses, and folding
 is compatible with concatenation: `⟦u·v⟧ = ⟦u⟧·⟦v⟧`.
 
-**Definition 3.4 (language of an invariant).** Let `(u, v) ∈ Σ* × Σ⁺` be a
+**Definition 3.4 (language of an invariant).** Let `(u, v) ∈ Σ* × (Σ* ∖ {ε})` be a
 presentation of the lasso `w = u·v^ω ∈ Σ^ω`, and let `e := ⟦v⟧^ω` be the idempotent
 power of the loop's fold. Then
 
