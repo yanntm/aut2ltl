@@ -35,8 +35,10 @@ With significant inputs from
 
 ## 2. Background
 
-We fix a finite alphabet `Σ` and write `Σ*` for the finite words over it, `Σ^ω` for
-the infinite ones, `Σ^∞ = Σ* ∪ Σ^ω`. A **language** here is a set of infinite words,
+We fix a finite alphabet `Σ` and write `Σ*` for the finite words over it, `Σ⁺` for
+the nonempty ones, `Σ^ω` for the infinite ones, `Σ^∞ = Σ* ∪ Σ^ω`. The same exponents
+serve on letters and words: for `x ∈ Σ`, `x*` — finitely many repetitions of `x`,
+possibly none; `x⁺` — at least one; `x^ω` — repeated forever. A **language** here is a set of infinite words,
 `L ⊆ Σ^ω`; we take `L` **regular** (ω-regular [PP04]) — the class with finite-memory
 descriptions, and exactly the class the object of §3 captures. All examples in this
 paper live over the two-letter alphabet `Σ = {a, b}`. This section fixes the few
@@ -189,8 +191,8 @@ that ends circling a cycle. Reading §2's outside lasso `ba·(ab)^ω` instead:
 `[ε]·[b] = [b]`, then `[b]·[a] = [b·a]`, and the loop `(ab)^ω` circles at `[b·a]`,
 since `[b·a]·[a] = [b·a]·[b] = [b·a]`.
 
-In general, `[a]` holds the words in `a⁺`, `[b]` those in `b⁺`, `[a·b]` those in
-`a⁺b⁺`, and `[b·a]` the *dead* words, a two-sided **zero**
+*Example.* On Figure 1 (`AsThenBs`), `[a]` holds the words in `a⁺`, `[b]` those in
+`b⁺`, `[a·b]` those in `a⁺b⁺`, and `[b·a]` the *dead* words, a two-sided **zero**
 (`x·[b·a] = [b·a]·x = [b·a]`): once an `a` follows a `b`, no continuation can rescue
 the word — which is why the second reading never left `[b·a]`.
 
