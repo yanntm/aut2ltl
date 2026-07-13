@@ -930,23 +930,38 @@ result is exactly `∼`. `P(D)` is one lasso test per candidate linked pair.
 Everything downstream of `EM(D)` is polynomial in its size; the size itself is the
 subject of §5.
 
-## 9. Complexity
+## 5. Complexity
 
-- Two costs, currently blurred, now split: the object is quadratic in `|𝒞|`; the
+- Two costs, currently blurred, now split: the invariant is quadratic in `|𝒞|`; the
   construction path through `EM(D)` is exponential in `|Q|` in the worst case.
 - `|𝒞|` is a language invariant — the intrinsic complexity of `L`; PSPACE-hardness of
   the aperiodicity question says some exponential is unavoidable.
 - Everything after construction is polynomial in the table (current §8 read-off claims).
 - BDD-friendliness note kept: all ingredients Boolean, all steps set operations.
 
-## 10. Related work
+## 6. What the invariant unlocks
+
+- Identity band, near-free from the semantics: equality is byte equality of
+  canonical serializations, complement is `P ↦ P^c`, emptiness is `P = ∅`,
+  membership is one fold.
+- Flagship read-off: LTL-definability is aperiodicity of the table — power-iterate
+  each class, look for a cycle of period ≥ 2 (reservoir §7.1, compressed).
+- The taxonomy table (reservoir §7.2) condensed: one sentence per row, each a
+  structural test on the same invariant, several with no practical tool today.
+- The suggestion, one paragraph: wherever a pipeline step is language-level, the
+  automaton is a proxy and the canonical invariant can take its place — the
+  calculus companion develops this.
+- Nothing here is developed; this section motivates Part B and points at the
+  family.
+
+## 7. Related work
 
 - Arnold (the congruence), MS97 (the display), CPP08 (the recognizer, saturation over
   triples), PP04 (the algebraic frame), Wilke, DG08 (decidability without an algebra),
   AF16/AF21/ABF18 (the learning obstruction the rotation lemma addresses).
 - Positioning sentence per item: what each had, what each lacked toward the object.
 
-## 11. Conclusion
+## 8. Conclusion
 
 - The object was never built because two structural pieces were missing; both are
   supplied, and `⟨𝒜, P⟩` is the deliverable.
