@@ -139,7 +139,7 @@ splits in two parts: the **algebra** `𝒜`, a finite monoid classifying the fin
 words, and the **acceptance layer** `P`, a set of accepted linked pairs carrying
 acceptance. We define the algebra first.
 
-### 3.1 The algebra `𝒜`
+### 3.1 Syntax: the invariant `𝓘 = ⟨𝒜, P⟩`
 
 Let us define the algebra component `𝒜` of the invariant `𝓘 = ⟨𝒜, P⟩`.
 
@@ -187,61 +187,68 @@ In general, `[a]` holds the words in `a⁺`, `[b]` those in `b⁺`, `[a·b]` tho
 (`x·[b·a] = [b·a]·x = [b·a]`): once an `a` follows a `b`, no continuation can rescue
 the word — which is why the second reading never left `[b·a]`.
 
-By associativity the fold is a monoid morphism `Σ* ↠ (𝒞, M)`; two words are **equivalent
-in the algebra** when they fold alike. Each class is **represented by its shortlex-least word**
-(shortest, ties alphabetical), a datum recomputable from `𝒜` by breadth-first
-enumeration from `[ε]`, so the whole algebra is a canonical block of data once `M` and
-`λ` are fixed. Adjoining the identity makes `[ε]` a class of its own even when the
-monoid owns another neutral element: a nonempty word acting neutrally folds to its own
-class, with a nonempty representative — as `[a·a]` does in two of the running examples. The axiom
-earns its keep in §3.2, where no accepting name may involve the empty past, and in
-§5's acceptance read-off, where every accepting component must carry a nonempty
-representative.
-
-*Example.* `⟦aab⟧ = [a]·[a]·[b] = [a·b]`: the word `aab` folds with `ab`, and `ab` —
-the shortlex-least word reaching that class — is the representative. No nonempty class of this
-algebra acts neutrally, so the adjunction costs nothing here; §3.5 meets an algebra
-where the axiom bites.
-
-**The letter map is data, not decoration.** The representative of `λ(x)` is always a letter —
-length 1, with `ε` barred by the adjunction — namely the least letter of its class;
-so `λ` reads as the identity precisely when it is injective, as it is in all four
-examples. It need not be: over `Σ = {a, b, c}` the language `(a|c)*·b^ω` has exactly
-the five classes, products and accepting pairs of Figure 1 — `a` and `c` are
+**The letter map is data, not decoration.** The representative of `λ(x)` is always a
+letter — length 1, with `ε` barred by isolation — namely the least letter of its
+class; so `λ` reads as the identity precisely when it is injective, as it is in every
+example of this paper. It need not be: over `Σ = {a, b, c}` the language `(a|c)*·b^ω`
+has exactly the five classes and products of Figure 1 — `a` and `c` are
 interchangeable everywhere, so `λ(a) = λ(c) = [a]` — and the drawing is unchanged;
-only `λ` tells the two objects apart. And `λ` never touches the identity: `[ε]`
+only `λ` tells the two algebras apart. And `λ` never touches the identity: `[ε]`
 labels the root, and nothing else.
 
 **The idempotent power, internally.** Each class `s` has its unique idempotent power
 `s^ω` (§2). This is the algebra's entire access to "loop forever": there is no second
-sort — a lasso's loop is read by folding it to a class and taking that class's idempotent
-power.
+sort — a lasso's loop will be read (§3.2) by taking the idempotent power of the class
+its reading reaches.
 
 *Example.* `[a]`, `[b]` and `[b·a]` are their own idempotent powers; `[a·b]` is not —
 `[a·b]² = [b·a]`, already idempotent, so `[a·b]^ω = [b·a]`: iterating "`a`'s then `b`'s"
 forces an `a` after a `b`.
 
-**Definition 3.2 (Cayley graph).** The **Cayley graph** of the algebra has nodes `𝒞`,
-root `[ε]`, and an edge `s →^a s·λ(a)` for each `s ∈ 𝒞, a ∈ Σ`. Rooted, deterministic,
-and complete — every node reached from the root along its representative — it is the algebra drawn
-as a machine: the right regular representation acting on itself.
+The second component of the invariant `𝓘` is a set of pairs of classes.
 
-*Example.* The Cayley graph of `AsThenBs` is exactly Figure 1. From `[ε]`, `a` leads
-to `[a]` and `b` to `[b]`; `[a]` loops on `a` and advances to `[a·b]` on `b`; `[b]`
-and `[a·b]` loop on `b` and fall to `[b·a]` on `a`; `[b·a]` absorbs both letters. Each
-node sits at the end of the path spelled by its own representative — the slightly thicker arrows
-of the figure — and the stub marking the root stays the only arrow that ever points
-at it.
+**Definition 3.2 (pair set; invariant).** A **pair set** over an algebra `𝒜` is a
+finite set `P ⊆ 𝒞 × 𝒞` of pairs of classes. An **invariant** is a pair `𝓘 = ⟨𝒜, P⟩`.
 
-The graph is the table made visible, and losslessly: any product `s·t` is read by
-walking the representative of `t` from `s`. The adjoined identity has a shape: the root is a
-**source** — no edge enters `[ε]`, and the picture itself says the past never returns. Reachability is the
-algebra's right-ideal order (here a graph falling into the dead sink), and group
-content shows as a cycle traced by *repeating one word* (`s·⟦w⟧ ≠ s` yet
-`s·⟦w⟧^k = s`) — none here; §3.5 draws one, and warns about the cycles that prove
-nothing.
+*Example.* Figure 1 carries its pair set beneath the drawing:
+`P = { ([b], [b]), ([a·b], [b]) }`. Of the two lassos we have been reading since §2,
+only `aab·b^ω` belongs to `AsThenBs`; `ba·(ab)^ω` does not — and `P` is the data that
+separates them. The first reading ended circling `[a·b]` on the loop class `[b]`, and
+`([a·b], [b])` is listed in `P`; the second ended at `[b·a]`, which appears in no
+pair.
 
-### 3.2 Naming lassos, and the rotation lemma
+### 3.2 Semantics: the language of an invariant
+
+Let us now define the semantics — the language `L(𝓘)` of an invariant `𝓘 = ⟨𝒜, P⟩`.
+For this definition we need to introduce the notion of fold.
+
+**Definition 3.3 (folding).** Let `u = x₁x₂⋯xₙ ∈ Σ*` be a finite word. The **fold**
+of `u` is the class `⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being
+`λ(ε) = [ε]`.
+
+The fold is exactly where the reading of `u` ends on the diagram — one letter, one
+edge, from the root. By associativity the product needs no parentheses, and folding
+is compatible with concatenation: `⟦u·v⟧ = ⟦u⟧·⟦v⟧`.
+
+**Definition 3.4 (language of an invariant).** Let `w = u·v^ω ∈ Σ^ω` be a lasso, and
+let `e := ⟦v⟧^ω` be the idempotent power of the loop's fold. Then
+
+```
+    w ∈ L(𝓘)   iff   (⟦u⟧·e, e) ∈ P.
+```
+
+*Example.* On Figure 1. For `aab·b^ω`: the loop folds to `⟦b⟧ = [b]`, already
+idempotent, so `e = [b]`; the stem folds to `⟦aab⟧ = [a·b]` and `[a·b]·[b] = [a·b]`.
+The pair `([a·b], [b])` is in `P`: accepted. For `ba·(ab)^ω`: the loop folds to
+`⟦ab⟧ = [a·b]`, not idempotent — its square `[b·a]` is — so `e = [b·a]`; the stem
+folds to `[b·a]` and `[b·a]·[b·a] = [b·a]`. The pair `([b·a], [b·a])` is not in `P`:
+rejected, as §2 announced.
+
+The definition reads `w` through one presentation `(u, v)`, and a lasso has many.
+That the verdict does not depend on the presentation chosen is not automatic; it is
+the subject of the next section.
+
+### 3.3 Naming lassos, and the rotation lemma
 
 A **linked pair** of the algebra is `(s, e) ∈ 𝒞 × 𝒞` with `e² = e` and `s·e = s`. It
 **names** every lasso `u·v^ω` with `⟦u⟧·⟦v⟧^ω = s` and `⟦v⟧^ω = e`. Loops are nonempty,
@@ -318,7 +325,7 @@ the two-sided congruence to a right-invariant refinement, computable by the one 
 a monoid's table offers for free. That collapse is the construction's core; it is
 Lemma 3.3 read at the level of contexts, and §7 only instantiates it.
 
-### 3.3 The acceptance layer, and well-definedness
+### 3.4 The acceptance layer, and well-definedness
 
 **Definition 3.4 (acceptance layer; object).** An **acceptance layer** over an algebra
 `𝒜` is a set `P` of linked pairs that is **saturated** — closed under conjugacy:
@@ -397,7 +404,7 @@ language the object denotes.
 *Example.* The two accepting names admit exactly the lassos with stem in `a*b*` and
 loop in `b⁺` — the lassos of `a*·b^ω`, and no others: `L(𝓘) = L`.
 
-### 3.4 Residuals are derived data
+### 3.5 Residuals are derived data
 
 Started at any class, the object answers membership of a residual.
 
@@ -421,7 +428,7 @@ the residuals cannot tell `[b]` from `[a·b]`, the two-sided congruence can.
 No congruence and no automaton is invoked. The residuals are derived data and rightly
 enter no equality test between objects (§5).
 
-### 3.5 Concrete form, read on the examples
+### 3.6 Concrete form, read on the examples
 
 Recall the three running examples (introduced fully in §1): **`GF(aa)`** — infinitely
 many `aa`-factors, LTL-definable; **`Even`** — an even number of `a`'s before the first
