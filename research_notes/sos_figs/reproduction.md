@@ -118,3 +118,26 @@ python3 -m tests.sos.assemble research_notes/sos_figs/sources/evenblocks.md \
 The run-parity `gf_aa.md` is the presentation the paper uses (Figure 1a,
 Tables 1–2); `gf_aa_reset.md` is the second, aperiodic presentation whose
 `.sos` is byte-identical — the canonicity check made visible.
+
+## 6. `aUGb` — the warm-up `a·U·G·b`
+
+`a U G b` with `b := !a`, i.e. the language `a*·bω`. Same four steps as above,
+on one input:
+
+```sh
+ltl2tgba -D -C --name='aUGb = a*.b^w  [b := !a]' 'a U G!a' -H \
+  > research_notes/sos_figs/sources/aUGb.hoa
+autfilt -q --equivalent-to=<(ltl2tgba 'a U G!a') research_notes/sos_figs/sources/aUGb.hoa && echo EQUIV
+
+python3 -m tests.sos.build_sos research_notes/sos_figs/sources/aUGb.hoa \
+        --sos research_notes/sos_figs/sources/aUGb.sos --residuals
+python3 -m tests.sos.render_svg research_notes/sos_figs/sources/aUGb.hoa research_notes/sos_figs/img/aUGb.png
+python3 -m tests.sos.assemble research_notes/sos_figs/sources/aUGb.md \
+  'aUGb=research_notes/sos_figs/sources/aUGb.hoa'
+```
+
+`D` has 3 states (initial `1` looping on `a`, accepting `0` looping on `!a`,
+rejecting sink `2`), `|EM¹| = 7`, `|S(L)₊¹| = 5`, no group in the transition
+monoid — LTL by construction. Same language as
+[`sos_core_figs/sources/astar_bomega.sos`](../sos_core_figs/sources/astar_bomega.sos),
+which the other figure set builds from the formula instead.
