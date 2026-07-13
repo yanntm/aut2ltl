@@ -34,17 +34,20 @@ LOOP_DIRS: Tuple[Tuple[str, Tuple[float, float]], ...] = (
     ("loop right", (1.0, 0.0)), ("loop left", (-1.0, 0.0)))
 # A neighbour nearer than this (cm), in a direction's cone, crowds it out.
 CROWD_CM = 2.6
-# How far an anti-parallel pair of arrows bends apart (both bend left).
-BEND_ANGLE = 15
+# How far an anti-parallel pair of arrows bends apart (both bend left). Wide enough
+# that the two labels, each sitting at its arc's midpoint, clear each other.
+BEND_ANGLE = 22
 # The label of an arrow that carries every column: all the (non-identity) classes.
 ALL_CLASSES = r"\mathcal{C}"
 # Two nodes count as sharing a row / a column when their y / x differ by less than
 # this (cm) — coordinates are hand-rounded, so exact equality is too strict.
 ALIGN_CM = 0.3
-# How far out a detour swings: the `looseness` of its bezier. An anti-parallel pair
-# of detours takes the two values, so the arcs do not lie on top of each other.
-LOOSENESS = 1.7
-LOOSENESS_FAR = 2.5
+# How far out a detour swings: the `looseness` of its bezier. Enough to clear the
+# node it goes around and that node's own self-loop, not more — a wider arc buys no
+# clearance and only steepens the dive back in. An anti-parallel pair of detours
+# takes the two values, so the arcs do not lie on top of each other.
+LOOSENESS = 1.3
+LOOSENESS_FAR = 1.8
 # How far under the lowest node the P caption sits (cm).
 PAIRS_DROP_CM = 1.3
 # Extra drop when a bottom node's self-loop hangs below it: the loop and its label
