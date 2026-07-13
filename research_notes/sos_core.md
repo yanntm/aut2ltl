@@ -165,11 +165,24 @@ as a graph. The letter actions
  ·b :  [ε]↦[b]    [a]↦[a·b]   [b]↦[b]     [a·b]↦[a·b]   [b·a]↦[b·a]
 ```
 
-are read off its edges, and by letter-generation these two rows are the whole of `M`:
-any product `s·t` is the representative of `t` walked from `s`. `[a]`
-holds the words in `a⁺`, `[b]` those in `b⁺`, `[a·b]` those in `a⁺b⁺`, and `[b·a]` the
-*dead* words, a two-sided **zero** (`x·[b·a] = [b·a]·x = [b·a]`): once an `a` follows a
-`b`, no continuation can rescue the word.
+are read off its edges, and these two rows are the whole of `M`: any product `s·t` is
+the representative of `t` walked from `s`, edge by edge.
+
+Consider the lasso `aab·b^ω`. Its reading starts in `[ε]`, and we do not progress by
+letters but by classes: reading a letter `s` follows the edge labeled `λ(s)`. The
+first `a` follows `[a]`, from `[ε]` to `[ε]·[a] = [a]` — the class vertex of the
+letter itself, labeled by a letter because representatives are shortlex. In this
+situation reading `a` stays in place, `[a]·[a] = [a]`, while `b` moves on,
+`[a]·[b] = [a·b]`: after the stem `aab` we sit in `[a·b]`. The loop `b^ω` then turns
+on the self-loop `[b]` of `[a·b]` forever — the reading of a lasso is a finite path
+that ends circling a cycle. Reading §2's outside lasso `ba·(ab)^ω` instead:
+`[ε]·[b] = [b]`, then `[b]·[a] = [b·a]`, and the loop `(ab)^ω` circles at `[b·a]`,
+since `[b·a]·[a] = [b·a]·[b] = [b·a]`.
+
+In general, `[a]` holds the words in `a⁺`, `[b]` those in `b⁺`, `[a·b]` those in
+`a⁺b⁺`, and `[b·a]` the *dead* words, a two-sided **zero**
+(`x·[b·a] = [b·a]·x = [b·a]`): once an `a` follows a `b`, no continuation can rescue
+the word — which is why the second reading never left `[b·a]`.
 
 By associativity the fold is a monoid morphism `Σ* ↠ (𝒞, M)`; two words are **equivalent
 in the algebra** when they fold alike. Each class is **represented by its shortlex-least word**
