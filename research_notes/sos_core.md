@@ -469,14 +469,15 @@ absorb their loops — so saturation of `P(aUGb)` is immediate. A conjugacy that
 genuinely pairs two names, and the saturation check it forces, is worked on
 `Even` in §3.4.
 
-### 3.6 Concrete form, read on the examples
+### 3.4 The examples, as invariants
 
-Recall the three running examples (introduced fully in §1): **`GF(aa)`** — infinitely
+Three more languages exercise the invariant across its range, and they run through
+the rest of the paper: **`GF(aa)`** — infinitely
 many `aa`-factors, LTL-definable; **`Even`** — an even number of `a`'s before the first
 `b`, then anything, *not* LTL; **`EvenBlocks`** — infinitely many `b` and eventually
 every completed `a`-block even, *not* LTL and prefix-independent. Each is met here as
-its algebra — the letter actions, the few laws that organize them, and the Cayley
-graph drawn; automata wait until §6, the machine formats (serialization, integer
+its invariant — the letter actions, the few laws that organize them, and the Cayley
+graph drawn; automata wait until §4, the machine formats (serialization, integer
 tables) until Part B. In all
 three, `λ(a) = [a]` and `λ(b) = [b]`, and letter-generation makes the two action rows
 the whole of `M`.
@@ -494,7 +495,7 @@ side of the cut; the idempotents are `[b]`, `[a·b]`, `[b·a]`, `[a·a]`, with
 `[a]^ω = [a·a]`. One accepting pair, `P = { ([a·a],[a·a]) }`: hit the zero and loop
 there — `aa` recurs.
 
-![Figure 2 — the object of GF(aa)](sos_core_figs/img/core_F1_gf_aa.png)
+![Figure 2 — the invariant of GF(aa)](sos_core_figs/img/core_F1_gf_aa.png)
 
 *Figure 2 — `GF(aa)`. Two waiting rooms — `[a] ⇄ [a·b]` and `[b] ⇄ [b·a]`, cycles
 that mix letters, hence no group — each escaping on `a` toward the zero; the one
@@ -515,7 +516,7 @@ and the adjoined identity of §3.1 keeps `[ε]` apart. `[b]` and `[a·b]` are
 (`[b]`) or odd (`[a·b]`) count of `a`'s. Accepting pairs `([b],[b])`, `([b],[a·a])`,
 `([b],[a·b])`: once `[b]` is reached, every loop accepts.
 
-![Figure 3 — the object of Even](sos_core_figs/img/core_F2_even.png)
+![Figure 3 — the invariant of Even](sos_core_figs/img/core_F2_even.png)
 
 *Figure 3 — `Even`. The diagonal `[a] ⇄ [a·a]`, both legs on the single letter
 `a`, is a monochrome two-cycle — the `Z₂` drawn; every accepting name stems at
@@ -542,14 +543,14 @@ P = { ([b],[b]),  ([a·b],[b]),  ([b·a],[a·b·a]),
 
 two sit at the zero itself: what has happened is absorbed; what loops forever decides.
 
-![Figure 4 — the object of EvenBlocks](sos_core_figs/img/core_F3_evenblocks.png)
+![Figure 4 — the invariant of EvenBlocks](sos_core_figs/img/core_F3_evenblocks.png)
 
 *Figure 4 — `EvenBlocks`. The same `Z₂` acting as three `·a` swaps — one per
 phase of the language — and two accepting names sitting at the zero.*
 
 ---
 
-**Reading the object by hand.** Three checks, all on the letter actions above and none
+**Reading the invariant by hand.** Three checks, all on the letter actions above and none
 touching an automaton.
 
 *Membership by one fold.* Is `(a·a)^ω ∈ Even`? Fold the loop: `[ε] ↦ [a] ↦ [a·a]`,
@@ -558,8 +559,8 @@ already idempotent; the empty stem gives `s = [ε]·[a·a] = [a·a]`. The pair
 `(aa)^ω` never sees a `b`.
 
 *The group is on the table.* In `Even`, `[a]·[a] = [a·a]` and `[a·a]·[a] = [a]`: the
-pair `{[a], [a·a]}` is a cycle of period 2, a `Z₂` sitting in the algebra. Since (as §5
-makes exact) aperiodicity of the algebra is LTL-definability, this cycle *is* the
+pair `{[a], [a·a]}` is a cycle of period 2, a `Z₂` sitting in the algebra. Since
+aperiodicity of the algebra is exactly LTL-definability [DG08], this cycle *is* the
 reason `Even` is not LTL — read straight off the letter actions, before any acceptance
 is consulted. `GF(aa)`'s algebra, by contrast, has every power-cycle of period 1:
 aperiodic, hence LTL. In the drawing the criterion is a *monochrome* cycle — one
@@ -571,8 +572,9 @@ aperiodic all the same.
 *Saturation, checked.* The query on `a^ω` presented two ways must agree, and does:
 `(ε, a)` folds to the pair `([ε]·[a]^ω, [a]^ω) = ([a·a], [a·a])`, while `(a, a)` folds
 to `([a]·[a·a], [a·a]) = ([a], [a·a])` — a conjugacy step
-`(s, (gh)^ω) ≈ (s·g, (hg)^ω)` with `s = g = h = [a]`. Both pairs are absent from
-`Even`'s accepting set, as saturation (Definition 3.4) demands; a `P` containing one
+`(s, (gh)^ω) ∼ (s·g, (hg)^ω)` with `s = g = h = [a]`, the two-name lasso promised
+in §3.3. Both pairs are absent from
+`Even`'s accepting set, as saturation (Definition 3.10) demands; a `P` containing one
 but not the other would be an *illegal* acceptance layer, its query self-contradictory
 on the single word `a^ω`.
 
@@ -588,21 +590,6 @@ on the single word `a^ω`.
   automaton is a proxy and the canonical object can take its place — the calculus
   companion develops this.
 - Nothing here is developed; this section motivates Part B and points at the family.
-
-## 5. Canonicity
-
-- Arnold's syntactic congruence recalled in full, with the two context shapes (current
-  §2 block, moved here).
-- The two shapes are genuinely independent — `Even` vs `EvenBlocks`, current Prop 4.6
-  and examples.
-- The syntactic object: the quotient by Arnold's congruence, keyed shortlex, is a
-  well-formed `⟨𝒜, P⟩` and a function of `L` alone.
-- Complete invariant theorem (current Thm 5.1): two languages are equal iff their
-  objects are byte-equal.
-- Two minimality senses, both exact: coarsest congruence saturating `L` (Arnold);
-  unique canonical complete invariant. (Minimal-recognizer claim dropped.)
-- The two shapes double as the specification the construction must meet — hand-off
-  to Part B.
 
 ## 6. The construction, I: seeing acceptance
 
