@@ -130,11 +130,11 @@ morphism's finite-word component, simply `φ` from here on: the values of
 That is how "loop forever" is read without any infinite object at hand: iterate the
 loop's value until it stops changing, and keep that stable value.
 
-*Example.* On Figure 1, the value of `b` is its own idempotent power — more `b`'s
-change nothing, `φ(b)·φ(b) = φ(b)`. The value of `ab` is not: its square is the value
-of the *dead* words (`abab` puts an `a` after a `b`, and no continuation rescues
-that), itself idempotent — so `φ(ab)^ω` is the dead value: looping `ab` forever is
-exactly as dead as slipping once.
+*Example.* On Figure 1 (`aUGb`), the value `φ(b) = [b]` is its own idempotent power —
+more `b`'s change nothing, `[b]·[b] = [b]`. The value `φ(ab) = [a·b]` is not: its
+square `[a·b]·[a·b] = [b·a]` is the value of the *dead* words (`abab` puts an `a`
+after a `b`, and no continuation rescues that), itself idempotent — so
+`φ(ab)^ω = [b·a]`: looping `ab` forever is exactly as dead as slipping once.
 
 **A linked pair names a lasso.** Reading `u·v^ω` through the morphism `φ`
 (Ramsey's theorem): the loop
