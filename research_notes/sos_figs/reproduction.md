@@ -127,14 +127,27 @@ on one input:
 ```sh
 ltl2tgba -D -C --name='aUGb = a*.b^w  [b := !a]' 'a U G!a' -H \
   > research_notes/sos_figs/sources/aUGb.hoa
+# HAND EDIT (the one human touch): Spot emits state-based acceptance, State: 0 {0}.
+# Rewritten to transition-based, the mark on the accepting !a-loop only:
+#     State: 0 / [!0] 0 {0} / [0] 2      (was: State: 0 {0} / [!0] 0 / [0] 2)
+# A state-based reading puts the mark on *every* outgoing edge of state 0, so the
+# edge into the rejecting sink 2 carried one too — sound, but it reads as noise.
 autfilt -q --equivalent-to=<(ltl2tgba 'a U G!a') research_notes/sos_figs/sources/aUGb.hoa && echo EQUIV
 
 python3 -m tests.sos.build_sos research_notes/sos_figs/sources/aUGb.hoa \
         --sos research_notes/sos_figs/sources/aUGb.sos --residuals
-python3 -m tests.sos.render_svg research_notes/sos_figs/sources/aUGb.hoa research_notes/sos_figs/img/aUGb.png
+python3 -m tests.sos.render_svg --verbatim \
+        research_notes/sos_figs/sources/aUGb.hoa research_notes/sos_figs/img/aUGb.png
 python3 -m tests.sos.assemble research_notes/sos_figs/sources/aUGb.md \
   'aUGb=research_notes/sos_figs/sources/aUGb.hoa'
 ```
+
+`--verbatim` draws the file as written. Without it the picture goes through the
+import layer, whose `spot.postprocess` re-infers the state-based reading and so
+paints the mark back onto the sink edge — the hand edit would be invisible. The
+algebra is indifferent: `.sos` and the tables in `aUGb.md` are byte-identical
+either way (a mark on an edge into a rejecting sink is reachable by no accepting
+run), which is why only the drawing takes the file verbatim.
 
 `D` has 3 states (initial `1` looping on `a`, accepting `0` looping on `!a`,
 rejecting sink `2`), `|EM¹| = 7`, `|S(L)₊¹| = 5`, no group in the transition
