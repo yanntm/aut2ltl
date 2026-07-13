@@ -59,26 +59,26 @@ edge multiplies on the right by its label.*
 **We only ever look at lassos.** A **lasso** (ultimately-periodic word) is `u·v^ω`: a
 finite **stem** `u`, then a finite nonempty **loop** `v` repeated forever. The
 organizing fact: *two regular ω-languages are equal iff they agree on all lassos*
-[PP04]. Classifying `L` is therefore sorting lassos into finitely many types, and
-every object below is machinery for naming and sorting them.
+[PP04]. Classifying `L` is therefore sorting lassos into finitely many equivalence
+classes, and every object below is machinery for naming and sorting them.
 
 *Example.* `b^ω`, `ab·b^ω` and `aab·(bb)^ω` are lassos of `AsThenBs`; `ba·(ab)^ω` is a
 lasso outside it; and the word `a·b·a·a·b·b·a·a·a·b·b·b·⋯`, its blocks growing forever,
 is no lasso at all — yet `AsThenBs` is pinned by its verdicts on lassos alone.
 
 **On finite words, the object is classical.** Sorting all finite words into finitely
-many bins is the province of the syntactic monoid, a cornerstone of regular language
+many classes is the province of the syntactic monoid, a cornerstone of regular language
 theory [PP04]: a finite **monoid** — an associative product with a unit — carries the
-bins, and a morphism `φ(uv) = φ(u)·φ(v)` does the sorting, collapsing concatenation
+classes, and a morphism `φ(uv) = φ(u)·φ(v)` does the sorting, collapsing concatenation
 onto finitely many values.
 
 On *infinite* words, exactly one thing more is needed — a way to say "repeat this loop
 forever" — because no product of finite pieces expresses `v^ω`. Classically one
 adjoins that single operation, an **ω-power** `s ↦ s^ω`, and obtains a two-sorted
-**ω-semigroup** `S = (S₊, S_ω)`: `S₊` the types of finite words, `S_ω` the types of
+**ω-semigroup** `S = (S₊, S_ω)`: `S₊` the classes of finite words, `S_ω` the classes of
 ω-words [PP04, Ch. II]. A **recognizer** for `L` is such an `S` with a morphism
-`φ : Σ^∞ → S` under which membership depends only on the type — `L = φ⁻¹(P)` for a
-set `P` of accepting ω-types (that finitely many types suffice for all ω-words is
+`φ : Σ^∞ → S` under which membership depends only on the class — `L = φ⁻¹(P)` for a
+set `P` of accepting ω-classes (that finitely many classes suffice for all ω-words is
 Ramsey's theorem [PP04]). We record this framing but do not carry the second sort as
 a standalone algebra: §3 reads "loop forever" *inside* the finite monoid, so the
 object is a finite monoid together with a set of accepting names.
