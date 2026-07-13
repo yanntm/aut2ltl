@@ -46,6 +46,17 @@ classical notions the invariant rests on, adapting the presentation of Perrin an
 [PP04], each paired with the intuition tying the algebra back to languages of
 infinite words.
 
+**Letters read as valuations.** Our language names are LTL-flavored — `aUGb`,
+`GF(aa)` — and the reading is deliberate: temporal logic evaluates over the
+valuations of a set of atomic propositions, `Σ = 2^{AP}`, and with a single atom
+`a` the two letters are "`a` holds" and "`a` fails", the latter written `!a`. This
+paper writes the two letters `a` and `b` — so `b` stands for `!a` — and orders
+them `a < b`; machine-generated material draws the same letters as `a` and `!a`
+and orders them `!a < a`, the atom-true letter *second* there and *first* here.
+Names are read through this paper's convention — `aUGb` names `a*·b^ω` because
+`a U Gb` describes it, `b` standing for `!a` — and shortlex data (keys,
+serializations) does not transliterate between the two orders.
+
 Consider the language of Carton and Perrin [CP97, Ex. 10] described by `a*·b^ω` —
 some `a`'s, then `b`'s forever — which we name `aUGb`. Its syntactic ω-semigroup
 is drawn in Figure 1.
