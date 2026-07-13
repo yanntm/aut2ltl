@@ -36,8 +36,17 @@ LOOP_DIRS: Tuple[Tuple[str, Tuple[float, float]], ...] = (
 CROWD_CM = 2.6
 # How far an anti-parallel pair of arrows bends apart (both bend left).
 BEND_ANGLE = 15
+# A straight arrow passing within this of a THIRD node (cm) runs over that node, or
+# over its self-loop and label; it is bent around instead. Half a node box plus the
+# room a loop and its label take on the far side of it.
+CLEAR_CM = 1.3
+# How far such an arrow arcs out to clear the node it would otherwise cross.
+DETOUR_ANGLE = 30
 # How far under the lowest node the P caption sits (cm).
 PAIRS_DROP_CM = 1.3
+# Extra drop when a bottom node's self-loop hangs below it: the loop and its label
+# reach further down than the node box, and the caption must clear them.
+LOOP_HANG_CM = 1.4
 # Length of the initial-state stub pointing into the root (cm).
 INIT_STUB_CM = 0.9
 # Vertical gap between the lambda line and the P line (cm).
@@ -112,6 +121,37 @@ def _loop_dir(fig: Figure, pos: Placement, cls: int) -> str:
                 crowd += 1
         scored.append((crowd, rank, opt))
     return sorted(scored)[0][2]
+
+
+def _detour(fig: Figure, pos: Placement, src: int, dst: int) -> Optional[str]:
+    """The `bend` option an arrow needs to clear a THIRD node it would otherwise run
+    across, or None when its straight line is free.
+
+    A node blocks when it sits within `CLEAR_CM` of the segment and *between* the
+    endpoints (its projection falls strictly inside them — a node behind either end
+    is not in the way). The arrow arcs away from it: TikZ bends left towards the
+    left of the direction of travel, so a blocker on the left is passed by bending
+    right, and vice versa. The nearest blocker decides."""
+    (px, py), (qx, qy) = pos[src], pos[dst]
+    ux, uy = qx - px, qy - py
+    span = (ux * ux + uy * uy) ** 0.5
+    if span == 0:
+        return None
+    blockers: List[Tuple[float, float]] = []          # (distance, side)
+    for nd in fig.nodes:
+        if nd.cls in (src, dst):
+            continue
+        vx, vy = pos[nd.cls][0] - px, pos[nd.cls][1] - py
+        along = (vx * ux + vy * uy) / span            # projection onto the segment
+        if not 0.0 < along < span:
+            continue
+        cross = (ux * vy - uy * vx) / span            # signed distance, + = left
+        if abs(cross) < CLEAR_CM:
+            blockers.append((abs(cross), cross))
+    if not blockers:
+        return None
+    _, cross = min(blockers)
+    return f"bend {'right' if cross > 0 else 'left'}={DETOUR_ANGLE}"
 
 
 def _arrows(fig: Figure) -> "List[Arrow]":
@@ -211,15 +251,24 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
     for ar in _arrows(fig):
         if ar.is_loop:
             via = f"[{loops.get(ar.src) or _loop_dir(fig, pos, ar.src)}]"
-        else:
-            via = f"[bend left={BEND_ANGLE}]" if ar.bend else ""
+        elif ar.bend:                    # anti-parallel: both bend left, splitting
+            via = f"[bend left={BEND_ANGLE}]"
+        else:                            # straight, unless a third node is in the way
+            detour = _detour(fig, pos, ar.src, ar.dst)
+            via = f"[{detour}]" if detour else ""
         src, dst = fig.node_of(ar.src).ident, fig.node_of(ar.dst).ident
         out.append(f"  \\draw[arrow] ({src}) to{via} "
                    f"node[lbl] {{{_tex_arrow_label(fig, ar.cols)}}} ({dst});")
 
     if pairs:
         xs = [p[0] for p in pos.values()]
-        low = min(p[1] for p in pos.values()) - PAIRS_DROP_CM
+        floor = min(p[1] for p in pos.values())
+        # a self-loop hanging below a bottom node, with its label, reaches further
+        # down than the node does: the caption starts under whatever is lowest
+        hangs = any(ar.is_loop and abs(pos[ar.src][1] - floor) < 0.1
+                    and "below" in (loops.get(ar.src) or _loop_dir(fig, pos, ar.src))
+                    for ar in _arrows(fig))
+        low = floor - PAIRS_DROP_CM - (LOOP_HANG_CM if hangs else 0.0)
         mid = (min(xs) + max(xs)) / 2.0
         out += ["", f"  \\node[pairs] at ({mid:.1f},{low:.1f}) "
                     f"{{{_tex_lambda(fig)}}};",

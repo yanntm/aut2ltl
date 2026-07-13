@@ -28,8 +28,8 @@
   \draw[arrow] (eps) to[loop right] node[lbl] {$[\varepsilon]$} (eps);
   \draw[arrow] (eps) to node[lbl] {$[a]$} (a);
   \draw[arrow] (eps) to node[lbl] {$[b]$} (b);
-  \draw[arrow] (eps) to node[lbl] {$[a{\cdot}b]$} (ab);
-  \draw[arrow] (eps) to node[lbl] {$[b{\cdot}a]$} (ba);
+  \draw[arrow] (eps) to[bend left=30] node[lbl] {$[a{\cdot}b]$} (ab);
+  \draw[arrow] (eps) to[bend right=30] node[lbl] {$[b{\cdot}a]$} (ba);
   \draw[arrow] (a) to[loop left] node[lbl] {$[\varepsilon],[a]$} (a);
   \draw[arrow] (a) to node[lbl] {$[b],[a{\cdot}b]$} (ab);
   \draw[arrow] (a) to node[lbl] {$[b{\cdot}a]$} (ba);
@@ -37,7 +37,7 @@
   \draw[arrow] (b) to node[lbl] {$[a],[a{\cdot}b],$\\$[b{\cdot}a]$} (ba);
   \draw[arrow] (ab) to[loop left] node[lbl] {$[\varepsilon],[b]$} (ab);
   \draw[arrow] (ab) to node[lbl] {$[a],[a{\cdot}b],$\\$[b{\cdot}a]$} (ba);
-  \draw[arrow] (ba) to[loop right] node[lbl] {$[\varepsilon],[a],$\\$[b],[a{\cdot}b],$\\$[b{\cdot}a]$} (ba);
+  \draw[arrow] (ba) to[loop right] node[lbl] {$[\varepsilon],[a],[b],$\\$[a{\cdot}b],[b{\cdot}a]$} (ba);
 
   \node[pairs] at (2.2,-3.0) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
   \node[pairs] at (2.2,-3.8) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]) \,\}$};

@@ -26,21 +26,21 @@
 
   \draw[arrow] (a) to[bend left=15] node[lbl] {$[a]$} (aa);
   \draw[arrow] (a) to node[lbl] {$[b]$} (ab);
-  \draw[arrow] (a) to[loop left] node[lbl] {$[a{\cdot}a]$} (a);
-  \draw[arrow] (a) to node[lbl] {$[a{\cdot}b]$} (b);
-  \draw[arrow] (a) to node[lbl] {$[b{\cdot}a]$} (aba);
-  \draw[arrow] (a) to node[lbl] {$[a{\cdot}b{\cdot}a]$} (ba);
+  \draw[arrow] (a) to[loop above] node[lbl] {$[a{\cdot}a]$} (a);
+  \draw[arrow] (a) to[bend left=30] node[lbl] {$[a{\cdot}b]$} (b);
+  \draw[arrow] (a) to[bend left=30] node[lbl] {$[b{\cdot}a]$} (aba);
+  \draw[arrow] (a) to[bend right=30] node[lbl] {$[a{\cdot}b{\cdot}a]$} (ba);
   \draw[arrow] (a) to node[lbl] {$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (b) to[bend left=15] node[lbl] {$[a],[b{\cdot}a]$} (ba);
-  \draw[arrow] (b) to[loop right] node[lbl] {$[b],[a{\cdot}a]$} (b);
-  \draw[arrow] (b) to node[lbl] {$[a{\cdot}b],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
+  \draw[arrow] (b) to[loop above] node[lbl] {$[b],[a{\cdot}a]$} (b);
+  \draw[arrow] (b) to[bend left=30] node[lbl] {$[a{\cdot}b],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (aa) to[bend left=15] node[lbl] {$[a]$} (a);
   \draw[arrow] (aa) to node[lbl] {$[b]$} (b);
   \draw[arrow] (aa) to[loop above] node[lbl] {$[a{\cdot}a]$} (aa);
   \draw[arrow] (aa) to node[lbl] {$[a{\cdot}b]$} (ab);
   \draw[arrow] (aa) to node[lbl] {$[b{\cdot}a]$} (ba);
-  \draw[arrow] (aa) to node[lbl] {$[a{\cdot}b{\cdot}a]$} (aba);
-  \draw[arrow] (aa) to node[lbl] {$[b{\cdot}a{\cdot}b]$} (bab);
+  \draw[arrow] (aa) to[bend left=30] node[lbl] {$[a{\cdot}b{\cdot}a]$} (aba);
+  \draw[arrow] (aa) to[bend right=30] node[lbl] {$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (ab) to[bend left=15] node[lbl] {$[a],[b{\cdot}a]$} (aba);
   \draw[arrow] (ab) to[loop left] node[lbl] {$[b],[a{\cdot}a]$} (ab);
   \draw[arrow] (ab) to node[lbl] {$[a{\cdot}b],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
@@ -49,10 +49,10 @@
   \draw[arrow] (ba) to[loop right] node[lbl] {$[a{\cdot}a],$\\$[a{\cdot}b{\cdot}a]$} (ba);
   \draw[arrow] (aba) to[bend left=15] node[lbl] {$[a],[a{\cdot}b]$} (ab);
   \draw[arrow] (aba) to node[lbl] {$[b],[b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
-  \draw[arrow] (aba) to[loop left] node[lbl] {$[a{\cdot}a],$\\$[a{\cdot}b{\cdot}a]$} (aba);
-  \draw[arrow] (bab) to[loop right] node[lbl] {$[a],[b],$\\$[a{\cdot}a],$\\$[a{\cdot}b],$\\$[b{\cdot}a],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
+  \draw[arrow] (aba) to[loop below] node[lbl] {$[a{\cdot}a],$\\$[a{\cdot}b{\cdot}a]$} (aba);
+  \draw[arrow] (bab) to[loop below] node[lbl] {$[a],[b],$\\$[a{\cdot}a],[a{\cdot}b],$\\$[b{\cdot}a],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
 
-  \node[pairs] at (2.2,-5.6) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
-  \node[pairs] at (2.2,-6.3) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
+  \node[pairs] at (2.2,-7.0) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
+  \node[pairs] at (2.2,-7.8) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
 \end{tikzpicture}
 \end{document}

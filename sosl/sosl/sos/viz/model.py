@@ -24,8 +24,9 @@ DOT = "·"
 EPSILON = "ε"
 # An arrow label breaks to a new line once a line would exceed this many characters
 # (measured on the plain text, "[a·b]" = 5). A full table's labels list several
-# classes, and one long line is what lies across whatever the arrow passes.
-WRAP_CHARS = 10
+# classes, and one long line is what lies across whatever the arrow passes. 12 fits
+# two three-character classes on a line ("[a·a],[b·a]").
+WRAP_CHARS = 12
 
 
 def wrap(items: Sequence[str], width: int = WRAP_CHARS) -> List[List[int]]:

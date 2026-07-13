@@ -27,8 +27,8 @@
   \draw[arrow] (a) to[loop left] node[lbl] {$[b{\cdot}a]$} (a);
   \draw[arrow] (b) to[bend left=15] node[lbl] {$[a],[b{\cdot}a]$} (ba);
   \draw[arrow] (b) to[loop right] node[lbl] {$[b],[a{\cdot}b]$} (b);
-  \draw[arrow] (b) to node[lbl] {$[a{\cdot}a]$} (aa);
-  \draw[arrow] (aa) to[loop left] node[lbl] {$[a],[b],$\\$[a{\cdot}a],$\\$[a{\cdot}b],$\\$[b{\cdot}a]$} (aa);
+  \draw[arrow] (b) to[bend left=30] node[lbl] {$[a{\cdot}a]$} (aa);
+  \draw[arrow] (aa) to[loop left] node[lbl] {$[a],[b],$\\$[a{\cdot}a],[a{\cdot}b],$\\$[b{\cdot}a]$} (aa);
   \draw[arrow] (ab) to[bend left=15] node[lbl] {$[a],[b{\cdot}a]$} (a);
   \draw[arrow] (ab) to[loop right] node[lbl] {$[b],[a{\cdot}b]$} (ab);
   \draw[arrow] (ab) to node[lbl] {$[a{\cdot}a]$} (aa);
