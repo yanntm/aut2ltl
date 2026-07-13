@@ -172,7 +172,7 @@ are read off its edges, and these two rows are the whole of `M`: any product `s�
 the representative of `t` walked from `s`, edge by edge.
 
 Consider the lasso `aab·b^ω`. Its reading starts in `[ε]`, and we do not progress by
-letters but by classes: reading a letter `s` follows the edge labeled `λ(s)`. The
+letters but by classes: reading a letter `x` follows the edge labeled `λ(x)`. The
 first `a` follows `[a]`, from `[ε]` to `[ε]·[a] = [a]`, the class vertex of the
 letter itself. In this
 situation reading `a` stays in place, `[a]·[a] = [a]`, while `b` moves on,
@@ -187,14 +187,13 @@ In general, `[a]` holds the words in `a⁺`, `[b]` those in `b⁺`, `[a·b]` tho
 (`x·[b·a] = [b·a]·x = [b·a]`): once an `a` follows a `b`, no continuation can rescue
 the word — which is why the second reading never left `[b·a]`.
 
-**The letter map is data, not decoration.** The representative of `λ(x)` is always a
-letter — length 1, with `ε` barred by isolation — namely the least letter of its
-class; so `λ` reads as the identity precisely when it is injective, as it is in every
-example of this paper. It need not be: over `Σ = {a, b, c}` the language `(a|c)*·b^ω`
-has exactly the five classes and products of Figure 1 — `a` and `c` are
-interchangeable everywhere, so `λ(a) = λ(c) = [a]` — and the drawing is unchanged;
-only `λ` tells the two algebras apart. And `λ` never touches the identity: `[ε]`
-labels the root, and nothing else.
+**The letter map.** `λ` is data in its own right: two algebras may share their
+classes and their table and differ only in `λ`.
+
+*Example.* Over `Σ = {a, b, c}`, the language `(a|c)*·b^ω` has exactly the five
+classes and products of Figure 1: `a` and `c` are interchangeable everywhere, so
+`λ(a) = λ(c) = [a]`, and the drawing is unchanged; only `λ` tells the two algebras
+apart.
 
 **The idempotent power, internally.** Each class `s` has its unique idempotent power
 `s^ω` (§2). This is the algebra's entire access to "loop forever": there is no second
@@ -230,8 +229,9 @@ The fold is exactly where the reading of `u` ends on the diagram — one letter,
 edge, from the root. By associativity the product needs no parentheses, and folding
 is compatible with concatenation: `⟦u·v⟧ = ⟦u⟧·⟦v⟧`.
 
-**Definition 3.4 (language of an invariant).** Let `w = u·v^ω ∈ Σ^ω` be a lasso, and
-let `e := ⟦v⟧^ω` be the idempotent power of the loop's fold. Then
+**Definition 3.4 (language of an invariant).** Let `(u, v) ∈ Σ* × Σ⁺` be a
+presentation of the lasso `w = u·v^ω ∈ Σ^ω`, and let `e := ⟦v⟧^ω` be the idempotent
+power of the loop's fold. Then
 
 ```
     w ∈ L(𝓘)   iff   (⟦u⟧·e, e) ∈ P.
