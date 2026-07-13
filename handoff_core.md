@@ -18,16 +18,18 @@ most, rewritten when its turn comes.
 
 ## TODO queue (next action first)
 
-1. **User review of §3.3–§3.4** as landed. Then flush the spec below.
-2. **§4 rewrite — the construction** (agreed target): §4.1 recalls deterministic
-   complete Emerson–Lei semantics — pure citation, none of it ours — and introduces
-   the four automata (`aUGb` added to the three); `GF(aa)`'s reset presentation
-   arrives only at the canonicity exhibit. §4.2 onward is our meat: `EM(D)`, the two
-   right relations, the rotation collapse, the algorithm; closer `L(𝓘(D)) = L(D)`.
-   Note: the construction's saturation step reuses Cor 3.11's argument shape
-   (independent verdicts + shared lasso ⟹ saturated); the full biconditional stays
-   parked. Old "§4 unlocks" outline conflicts with this numbering — its fate
-   (post-construction section or Part B) is a user decision at that rewrite.
+1. **User review of §3.3–§3.4 and §4** as landed. §4 structure: 4.1 EL recall +
+   the four machines; 4.2 `EM(D)` (Def 4.2, skeleton 4.3, Cor 4.4 refines Arnold,
+   necessity 4.5); 4.3 the quotient (collapse 4.6, relations 4.7, rotation-on-runs
+   4.8, prefix-independence 4.9); 4.4 `𝓘(D)` Def 4.10, **Thm 4.11
+   `⟨u⟩ ∼ ⟨v⟩ ⟺ u ≈_L v` hence `𝓘(D) = 𝓘(L)`**, Cor 4.12 (correctness +
+   presentation-independence as corollaries — the old two-theorem split is gone),
+   GF(aa) two-presentation exhibit, algorithm paragraph. Tail renumbered: 5
+   complexity, 6 unlocks (outline), 7 related work, 8 conclusion.
+2. **Engineering: regenerate the automata figures over `{a, b}`** (Figures 5–6
+   currently hijack `sos_figs/img/{gf_aa,even,evenblocks,gf_aa_reset}.png`, drawn
+   over `{!a, a}` with shortlex `!a < a`; captions carry the caveat). An `aUGb`
+   three-state automaton figure is missing entirely — text describes it.
 3. Parked, bites when §3.1 reopens: Def 3.1's isolation only constrains `λ`; the S¹
    axiom (word classes closed under `M`, i.e. `⟦u⟧ = [ε] ⟺ u = ε`) is still missing.
    §3.3's Lemma 3.9 sidesteps it via the explicit letter-generated hypothesis.
@@ -83,6 +85,9 @@ construction's saturation obligation).
 - Identity **adjoined** (S¹; "fresh" banned); "specimen" banned; shortlex keys;
   Cayley root a source; `P` typeset beneath figures; monochrome cycles only as group
   evidence; no idempotent ink.
+- Symbols: letters are valuations over one atom; this paper's `b` stands for `!a`;
+  orders differ (`a < b` here, `!a < a` machine-side) and shortlex data does not
+  transliterate — §2's "Letters read as valuations" paragraph is the reference.
 - Master-2 accessible, no automata in Part A (Arnold's congruence is language-level,
   hence admissible in §3.3); no announcement sentences; object first, construction
   second; two minimality senses only; rotation lemma is the central contribution,
