@@ -63,8 +63,7 @@ organizing fact: *two regular ω-languages are equal iff they agree on all lasso
 classes, and every object below is machinery for naming and sorting them.
 
 *Example.* `b^ω`, `ab·b^ω` and `aab·(bb)^ω` are lassos of `AsThenBs`; `ba·(ab)^ω` is a
-lasso outside it; and the word `a·b·a·a·b·b·a·a·a·b·b·b·⋯`, its blocks growing forever,
-is no lasso at all — yet `AsThenBs` is pinned by its verdicts on lassos alone.
+lasso outside it.
 
 **On finite words, the object is classical.** Sorting all finite words into finitely
 many classes is the province of the syntactic monoid, a cornerstone of regular language
