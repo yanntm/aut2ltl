@@ -208,7 +208,8 @@ as a graph. The letter actions
 are read off its edges, and these two rows are the whole of `M`: any product `s·t` is
 the representative of `t` walked from `s`, edge by edge.
 
-Consider the lasso `aab·b^ω`. Its reading starts in `[ε]`, and we do not progress by
+*Example.* On Figure 1 (`aUGb`), consider the lasso `aab·b^ω`. Its reading starts in
+`[ε]`, and we do not progress by
 letters but by classes: reading a letter `x` follows the edge labeled `λ(x)`. The
 first `a` follows `[a]`, from `[ε]` to `[ε]·[a] = [a]`, the class vertex of the
 letter itself. In this
@@ -236,7 +237,7 @@ apart.
 among the powers `s, s², s³, …` — finitely many, since `𝒞` is finite — exactly one is
 idempotent, `s^ω·s^ω = s^ω`. It is a computation on the multiplication table alone.
 
-*Example.* On our running example of Figure 1, all classes but `[a·b]` are
+*Example.* On Figure 1 (`aUGb`), all classes but `[a·b]` are
 idempotent, hence their own idempotent powers:
 `[ε]` is the identity; `[a]·[a] = [a]` and `[b]·[b] = [b]` read on their self-loops —
 more `a`'s, more `b`'s change nothing; and `[b·a]·[b·a] = [b·a]`, the zero absorbing
