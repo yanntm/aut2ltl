@@ -725,6 +725,120 @@ situation, resolved in §4.4.
 are dead, and no context separates them. The next step quotients exactly this
 excess away.
 
+### 4.3 Step 2: the quotient, computed on the right
+
+What remains is to merge elements of `EM(D)` exactly when the words they image are
+congruent — interchangeable in every stem, in every loop. Interchangeability is a
+two-sided demand: a word sits in a lasso between a left context and a right one. A
+monoid's table, meanwhile, offers one operation for free: multiply on the right.
+The gap is closed by §3.3's rotation lemma read on runs: a left factor carries no
+information of its own; it only shifts the slot where a right test is read.
+
+**Lemma 4.6 (collapse).** For `x, c ∈ EM(D)`, `c` the image of a nonempty word,
+all lassos `w·z^ω` with `⟨w⟩ = x` and `⟨z⟩ = c` share one verdict (Lemma 4.3),
+written `Acc(x, c)`; and it depends on `x` only through the single state the stem
+reaches:
+
+```
+    Acc(x, c) = A(st_x(ι), c),
+```
+
+where the **loop verdict** `A(q, c)` iterates `c` from `q`: follow `st_c` from `q`
+into its closed cycle, unite the marks `mk_c` around that cycle, evaluate `Acc`.
+
+*Proof.* The stem is read once; its marks are collected finitely often and none
+recurs. The set of marks recurring in `w·z^ω` is therefore that of the tail `z^ω`
+read from `st_x(ι)`: the iteration of `st_c` from there eventually closes a cycle,
+the marks `mk_c` around that cycle recur, and no other mark does. ∎
+
+**Definition 4.7 (the two right relations).** For `e, f ∈ EM(D)` images of
+nonempty words, with `Aprof(c) := (q ∈ Reach ↦ A(q, c))` the **profile** of `c`:
+
+```
+    e ∼lin f   ⟺   ∀ q ∈ Reach :   L(st_e(q)) = L(st_f(q)) ;
+    e ∼ω  f    ⟺   ∀ b ∈ EM(D) :   Aprof(e·b) = Aprof(f·b) ;
+```
+
+and `∼ := ∼lin ∧ ∼ω`. The slots are `Reach`, not `Q`: an unreachable state names
+no context. The extension `b` ranges over all of `EM(D)`, identity included —
+`b = ⟨ε⟩` tests the bare loop `e` itself, and `e·b` is always the image of a
+nonempty word.
+
+`∼lin` compares the futures the words open — residual languages of reached
+states — and never looks at marks; `∼ω` compares the loops the words can close,
+under every right completion. Neither mentions a left context.
+
+*Example (the two relations divide the labor).* On `EvenBlocks`'s two-state `D`
+(§4.1), `⟨aa⟩ = ⟨ε⟩` — two `a`'s toggle back, collecting nothing. `∼lin` is total:
+the language is prefix-independent, both states accept exactly `EvenBlocks`. The
+separation of `⟨a⟩` from `⟨aa⟩` is carried entirely by `∼ω`, with the
+block-closing extension `b = ⟨b⟩`: `Aprof(⟨a⟩·⟨b⟩) = Aprof(⟨ab⟩)` rejects at both
+slots — the loop `ab` closes an odd block forever, violating `Fin(0)` — while
+`Aprof(⟨aa⟩·⟨b⟩)` accepts at both: `(aab)^ω` closes even blocks forever.
+
+**Lemma 4.8 (rotation, on runs).** A left factor acts on both relations only by
+re-indexing the slot: for all `a, e, b ∈ EM(D)` and `q ∈ Reach`,
+
+```
+    st_{a·e}(q) = st_e(st_a(q))        and        Aprof(a·e·b)(q) = Aprof(e·b·a)(st_a(q)).
+```
+
+Consequently, with `R` the equivalence "same `∼lin`-class and same profile
+`Aprof`", the relation `∼` is the coarsest right-invariant equivalence refining
+`R`, and it is a two-sided congruence on `EM(D)`.
+
+*Proof.* The state identity is composition of maps. For the profile identity, read
+the loop `(a·e·b)^ω` from `q` as `a·(e·b·a)^ω` — one rotation, §3.3's move: the
+factor `a` is carried from the loop's front onto the stem. That prefix is read
+once, its marks recur never, so the verdict is the loop verdict of `e·b·a` from
+the state the prefix reaches (Lemma 4.6):
+`Aprof(a·e·b)(q) = A(st_a(q), e·b·a) = Aprof(e·b·a)(st_a(q))`.
+
+*Right-invariance.* Both halves of the seed survive a right factor: residual
+equality steps through letters (`L(p) = L(p')` gives
+`L(δ(p, x)) = x⁻¹L(p) = x⁻¹L(p') = L(δ(p', x))`), so `e ∼lin f` gives
+`e·c ∼lin f·c`; and `Aprof(e·c·b) = Aprof(f·c·b)` is an instance of `e ∼ω f`.
+Hence `∼` is right-invariant.
+
+*Coarsest.* Suppose `e·b R f·b` for every `b`: the profile half over all `b` is
+`e ∼ω f`, and the `∼lin` half at `b = ⟨ε⟩` is `e ∼lin f` — so `e ∼ f`. Conversely
+`e ∼ f` gives `e·b ∼ f·b` (right-invariance), hence `e·b R f·b` for every `b`. So
+`∼` is exactly "R-equal under every right extension": the coarsest right-invariant
+equivalence refining `R`.
+
+*Two-sided.* For a left factor `a`: `a·e ∼lin a·f` since
+`st_{a·e}(q) = st_e(st_a(q))` and `st_a(q) ∈ Reach`; and
+`Aprof(a·e·b)(q) = Aprof(e·(b·a))(st_a(q)) = Aprof(f·(b·a))(st_a(q)) =
+Aprof(a·f·b)(q)` — the left factor became a right extension. With
+right-invariance, `∼` is a two-sided congruence. ∎
+
+The lemma is the load-bearing step. Maler and Staiger [MS97] display the
+finitary × infinitary split — at the single slot `ι`, `∼lin` is their classical
+right congruence — but their two-sided quantification stays inside the loop test;
+Carton, Perrin and Pin [CPP08] saturate over context triples. The conjugation
+`a·e·b ↦ e·b·a` — Lemma 3.9 applied to contexts instead of names — is the step
+neither takes, and it is what makes a two-sided congruence computable with the one
+operation a monoid's table offers for free. It is also an observation-table
+discipline — right extensions at prefix-indexed slots — answering the obstruction
+Angluin and Fisman record for ω-learning [AF21]; and a coarsest right-invariant
+refinement is precisely what partition refinement computes (§4.4).
+
+**Proposition 4.9 (prefix-independence, as a theorem not a case).** `L` is
+prefix-independent (`σα ∈ L ⟺ α ∈ L` for all `σ ∈ Σ*`) iff `L` has a single
+residual iff `∼lin` is total. In that case all discrimination is carried by `∼ω`.
+
+*Proof.* Prefix-independence says every residual `u⁻¹L` equals `L`; determinism
+then gives one residual per reached state, all equal, so `∼lin`, which compares
+residuals of reached states, is total. Conversely a single residual class forces
+every prefix to preserve membership. ∎
+
+*Example.* `EvenBlocks` is prefix-independent — deleting a finite prefix changes
+neither "infinitely many `b`" nor "eventually every completed block is even" — so
+its `∼lin` is total: the finitary half is blind, and the whole of its non-LTL-ness
+(the `Z₂` of §3.4) is invisible until `∼ω` is computed. This is the generic
+situation for tail properties, not a corner case, and it is why a construction
+resting on residuals alone cannot even see it.
+
 ## 9. Complexity
 
 - Two costs, currently blurred, now split: the object is quadratic in `|𝒞|`; the
