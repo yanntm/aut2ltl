@@ -7,28 +7,26 @@ digraph core_F1_gf_aa {
   label="λ: a ↣ [a], b ↣ [b]\nP = { ([a·a],[a·a]) }";
   labelloc="b"; labeljust="c"; fontname="serif"; fontsize=11;
 
-  eps [label="[ε]"];
   a [label="[a]"];
   b [label="[b]"];
   aa [label="[a·a]"];
   ab [label="[a·b]"];
   ba [label="[b·a]"];
-  _init [shape=none, label="", width=0.02, height=0.02];
-  _init -> eps;
 
-  { rank=same; eps; }
   { rank=same; a b; }
   { rank=same; aa ab ba; }
 
-  eps -> a [label="[a]", weight=10];
-  eps -> b [label="[b]", weight=10];
-  a -> aa [label="[a]", weight=3];
+  a -> aa [label="[a],[a·a],[a·b]", weight=3];
   a -> ab [label="[b]", weight=3];
-  b -> ba [label="[a]", weight=3];
-  b -> b [label="[b]", weight=1];
-  aa -> aa [label="[a],[b]", weight=1];
-  ab -> a [label="[a]", weight=1];
-  ab -> ab [label="[b]", weight=1];
-  ba -> aa [label="[a]", weight=1];
+  a -> a [label="[b·a]", weight=1];
+  b -> ba [label="[a],[b·a]", weight=3];
+  b -> b [label="[b],[a·b]", weight=1];
+  b -> aa [label="[a·a]", weight=1];
+  aa -> aa [label="[a],[b],[a·a],[a·b],[b·a]", weight=1];
+  ab -> a [label="[a],[b·a]", weight=1];
+  ab -> ab [label="[b],[a·b]", weight=1];
+  ab -> aa [label="[a·a]", weight=1];
+  ba -> aa [label="[a],[a·a],[a·b]", weight=1];
   ba -> b [label="[b]", weight=1];
+  ba -> ba [label="[b·a]", weight=1];
 }

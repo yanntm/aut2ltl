@@ -6,14 +6,16 @@ is one `\\draw` between node names. Changing how the figure looks means editing 
 style; changing where a node sits means editing one coordinate. Nothing is styled
 inline and nothing is repeated.
 
-The figure reads without a legend, and it draws only what the object *is*. Every
-arrow carries its letter as a label — that, not a dash pattern, is how letters are
-told apart — and the letters that agree on a target share one arrow (`a,b`)
-instead of stacking two. Derived facts get no ink of their own -- not a monochrome
+The figure reads without a legend, and it draws only what the object *is*: the
+whole multiplication table, one arrow per entry `M(s, c)`. Every arrow carries the
+classes whose columns take it — that, not a dash pattern, is how they are told
+apart — and the columns that agree on a target share one arrow (`[a],[b]`) instead
+of stacking several. Derived facts get no ink of their own -- not a monochrome
 cycle (a property of the drawn arrows, not an arrow of another kind), not an
-idempotent (a property of the product, not a kind of class). The root is
-marked the way an initial state is, with a short incoming stub from nowhere, which
-is also what makes freshness visible: it is the only arrow that enters it.
+idempotent (a property of the product, not a kind of class). The root, when the
+figure keeps the identity, is marked the way an initial state is, with a short
+incoming stub from nowhere, which is also what makes freshness visible: it is the
+only arrow that enters it. An identity-eliding figure has no root and no stub.
 
 Pure text: the placement is an input (see `layout.py`), not something computed
 here.
@@ -58,16 +60,10 @@ def _tex_class(fig: Figure, cls: int) -> str:
     return f"[{_tex_key(fig, fig.node_of(cls).key)}]"
 
 
-def _tex_arrow_label(fig: Figure, letters: Tuple[int, ...]) -> str:
-    """An arrow's label: the class each of its letters names, ``[a]`` or ``[a],[b]``
-    when several letters take the same step. Aliases (letters of one class) collapse
-    to the single class they name — the lambda line says which letters those were."""
-    seen: List[str] = []
-    for i in letters:
-        tex = _tex_class(fig, fig.letter_class(i))
-        if tex not in seen:
-            seen.append(tex)
-    return ",".join(seen)
+def _tex_arrow_label(fig: Figure, cols: Tuple[int, ...]) -> str:
+    """An arrow's label: the columns that take it, ``[a]`` or ``[a],[b·a]`` when
+    several classes multiply the source to the same target. Node order."""
+    return ",".join(_tex_class(fig, c) for c in cols)
 
 
 def _tex_lambda(fig: Figure) -> str:
@@ -109,39 +105,40 @@ def _loop_dir(fig: Figure, pos: Placement, cls: int) -> str:
 
 
 def _arrows(fig: Figure) -> "List[Arrow]":
-    """The drawn arrows: the figure's edges grouped by endpoint pair, so the two
-    letters that agree on a target share one arrow labeled ``a,b`` rather than
-    stacking two. Canonical order: by source node, then by least letter."""
+    """The drawn arrows: the figure's edges grouped by endpoint pair, so the columns
+    that agree on a target share one arrow labeled ``[a],[b]`` rather than stacking
+    one arrow each. Canonical order: by source node, then by least column."""
     rank = {nd.cls: i for i, nd in enumerate(fig.nodes)}
     grouped: Dict[Tuple[int, int], List[int]] = {}
     marks: Dict[Tuple[int, int], Tuple[bool, bool]] = {}
     for e in fig.edges:
         pair = (e.src, e.dst)
-        grouped.setdefault(pair, []).append(e.letter_index)
+        grouped.setdefault(pair, []).append(e.col)
         tree, cyc = marks.get(pair, (False, False))
         marks[pair] = (tree or e.is_tree, cyc or e.is_cycle)
 
     out: List[Arrow] = []
-    for (src, dst), letters in grouped.items():
+    for (src, dst), cols in grouped.items():
         tree, cyc = marks[(src, dst)]
+        ordered = tuple(sorted(cols, key=lambda c: rank[c]))
         out.append(Arrow(
-            src=src, dst=dst, letters=tuple(sorted(letters)),
-            label=",".join(fig.naming.names[i] for i in sorted(letters)),
+            src=src, dst=dst, cols=ordered,
+            label=",".join(fig.label_of(c) for c in ordered),
             is_tree=tree, is_cycle=cyc, is_loop=(src == dst),
             # anti-parallel pairs both bend left: that is what splits them into
             # the usual two arcs, and it is where the doubled swaps show up.
             bend=((dst, src) in grouped and src != dst)))
-    out.sort(key=lambda ar: (rank[ar.src], ar.letters[0]))
+    out.sort(key=lambda ar: (rank[ar.src], rank[ar.cols[0]]))
     return out
 
 
 @dataclass(frozen=True)
 class Arrow:
-    """One drawn arrow: an endpoint pair and the letters that share it."""
+    """One drawn arrow: an endpoint pair and the columns of ``M`` that share it."""
 
     src: int
     dst: int
-    letters: Tuple[int, ...]
+    cols: Tuple[int, ...]
     label: str
     is_tree: bool
     is_cycle: bool
@@ -187,15 +184,17 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
         out.append(f"  \\node[{style}] ({nd.ident}) at ({x:.1f},{y:.1f}) "
                    f"{{${_tex_class(fig, nd.cls)}$}};")
 
-    root = next(nd for nd in fig.nodes if nd.is_root)
-    rx, ry = pos[root.cls]
-    # The stub comes from wherever the graph is not: from above when the root
-    # sits on top of everything (a top-down layout), from the left otherwise.
-    top = all(pos[nd.cls][1] < ry for nd in fig.nodes if not nd.is_root)
-    sx, sy = (rx, ry + INIT_STUB_CM) if top else (rx - INIT_STUB_CM, ry)
-    out += ["", "  % the root is the adjoined identity: a source, marked like an "
-                "initial state",
-            f"  \\draw[init] ({sx:.1f},{sy:.1f}) -- ({root.ident});", ""]
+    root = fig.root()             # None when the identity is elided: no stub then
+    if root is not None:
+        rx, ry = pos[root.cls]
+        # The stub comes from wherever the graph is not: from above when the root
+        # sits on top of everything (a top-down layout), from the left otherwise.
+        top = all(pos[nd.cls][1] < ry for nd in fig.nodes if not nd.is_root)
+        sx, sy = (rx, ry + INIT_STUB_CM) if top else (rx - INIT_STUB_CM, ry)
+        out += ["", "  % the root is the adjoined identity: a source, marked like an "
+                    "initial state",
+                f"  \\draw[init] ({sx:.1f},{sy:.1f}) -- ({root.ident});"]
+    out.append("")
 
     loops = loops or {}
     for ar in _arrows(fig):
@@ -205,7 +204,7 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
             via = f"[bend left={BEND_ANGLE}]" if ar.bend else ""
         src, dst = fig.node_of(ar.src).ident, fig.node_of(ar.dst).ident
         out.append(f"  \\draw[arrow] ({src}) to{via} "
-                   f"node[lbl] {{${_tex_arrow_label(fig, ar.letters)}$}} ({dst});")
+                   f"node[lbl] {{${_tex_arrow_label(fig, ar.cols)}$}} ({dst});")
 
     if pairs:
         xs = [p[0] for p in pos.values()]

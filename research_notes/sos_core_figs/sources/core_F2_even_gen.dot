@@ -7,24 +7,22 @@ digraph core_F2_even {
   label="λ: a ↣ [a], b ↣ [b]\nP = { ([b],[b]), ([b],[a·a]), ([b],[a·b]) }";
   labelloc="b"; labeljust="c"; fontname="serif"; fontsize=11;
 
-  eps [label="[ε]"];
   a [label="[a]"];
   b [label="[b]"];
   aa [label="[a·a]"];
   ab [label="[a·b]"];
-  _init [shape=none, label="", width=0.02, height=0.02];
-  _init -> eps;
 
-  { rank=same; eps; }
   { rank=same; a b; }
   { rank=same; aa ab; }
 
-  eps -> a [label="[a]", weight=10];
-  eps -> b [label="[b]", weight=10];
   a -> aa [label="[a]", weight=3];
   a -> ab [label="[b]", weight=3];
-  b -> b [label="[a],[b]", weight=1];
+  a -> a [label="[a·a]", weight=1];
+  a -> b [label="[a·b]", weight=1];
+  b -> b [label="[a],[b],[a·a],[a·b]", weight=1];
   aa -> a [label="[a]", weight=1];
   aa -> b [label="[b]", weight=1];
-  ab -> ab [label="[a],[b]", weight=1];
+  aa -> aa [label="[a·a]", weight=1];
+  aa -> ab [label="[a·b]", weight=1];
+  ab -> ab [label="[a],[b],[a·a],[a·b]", weight=1];
 }

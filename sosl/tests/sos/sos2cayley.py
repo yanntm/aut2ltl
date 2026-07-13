@@ -6,13 +6,15 @@
         [--rename 'a=a,!a=b']    # display letters, in display order
         [--layout dot|layered]   # node placement (default: dot)
         [--rankdir LR|TB]        # which way the BFS layers run (default: LR)
+        [--keep-identity]        # draw [eps] too (default: elided)
         [--no-pairs]             # ablate the P caption (draw the bare algebra)
         [--reseed]               # redraw the hand-owned tex from the machine, at
                                  # its own coordinates (propagate a restyle)
 
 The drawing itself is `sosl.sos.viz`, the engine's generic `.sos` -> picture
-service. This tool is the *paper* wrapper around it, and adds the one thing a
-figure of record needs: **the two-file convention.**
+service: the full multiplication table of the algebra, `[eps]` elided unless
+`--keep-identity` is passed. This tool is the *paper* wrapper around it, and adds
+the one thing a figure of record needs: **the two-file convention.**
 
 ``<name>_gen.tex`` and ``<name>_gen.dot`` are rewritten on every run — the machine
 artefacts, a deterministic function of the input, never hand-touched. ``<name>.tex``
@@ -116,6 +118,9 @@ def main(argv: List[str]) -> int:
     ap.add_argument("--rename")
     ap.add_argument("--layout", default="dot", choices=("dot", "layered"))
     ap.add_argument("--rankdir", default="LR", choices=("LR", "TB"))
+    ap.add_argument("--keep-identity", action="store_true",
+                    help="draw [eps] as a node and a column (default: elided — its "
+                         "row and column are fixed by the identity axiom)")
     ap.add_argument("--no-pairs", action="store_true",
                     help="ablate the P caption; draw the bare algebra A")
     ap.add_argument("--reseed", action="store_true",
@@ -127,11 +132,13 @@ def main(argv: List[str]) -> int:
         inv = load_invariant(fh.read())
     naming = (Naming.renamed(inv.alphabet, args.rename) if args.rename
               else Naming.machine(inv.alphabet))
-    fig = figure_of(inv, naming)   # asserts freshness: no edge enters [eps]
+    # asserts freshness: no LETTER edge enters [eps] (the identity is adjoined)
+    fig = figure_of(inv, naming, elide_identity=not args.keep_identity)
 
     rename = f" --rename {args.rename}" if args.rename else ""
+    keep = " --keep-identity" if args.keep_identity else ""
     emit(fig, args.out_dir, args.img_dir or args.out_dir, args.name, args.layout,
-         f"sos2cayley {os.path.basename(args.sos)}{rename}", not args.no_pairs,
+         f"sos2cayley {os.path.basename(args.sos)}{rename}{keep}", not args.no_pairs,
          args.rankdir, args.reseed)
     print(pairs_label(fig))
     return 0

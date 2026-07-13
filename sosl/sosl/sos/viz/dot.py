@@ -4,11 +4,12 @@ Generic over any invariant and any alphabet. Two uses: a picture of an arbitrary
 `.sos` (``dot -Tpng``), and the layout oracle whose node placement the finer
 backends reuse (``dot -Tplain``, see `layout.py`). Pure text — no subprocess.
 
-The model's classification maps onto dot attributes: the root gets an incoming
-stub from nowhere (an initial-state marker — and the only arrow that may enter
-it), and every arrow is labeled with the CLASS its letter names. Nothing else is
-inked: the key tree, the idempotents and the monochrome cycles are properties of
-what is drawn, not further things to draw.
+The model's classification maps onto dot attributes: every arrow is labeled with
+the CLASSES whose columns take it, and the root — when the figure keeps the
+identity — gets an incoming stub from nowhere (an initial-state marker, and the
+only arrow that may enter it). Nothing else is inked: the key tree, the
+idempotents and the monochrome cycles are properties of what is drawn, not
+further things to draw.
 """
 from __future__ import annotations
 
@@ -67,24 +68,23 @@ def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True,
     out.append("")
     for nd in fig.nodes:
         out.append(f'  {nd.ident} [label="{class_label(fig, nd.cls)}"];')
-    root = next(nd for nd in fig.nodes if nd.is_root)
-    out += ['  _init [shape=none, label="", width=0.02, height=0.02];',
-            f"  _init -> {root.ident};",   # the root, marked like an initial state
-            ""]
+    root = fig.root()                 # None when the identity is elided: no stub
+    if root is not None:
+        out += ['  _init [shape=none, label="", width=0.02, height=0.02];',
+                f"  _init -> {root.ident};"]   # the root, marked as an initial state
+    out.append("")
 
     for layer in range(fig.layers()):
         same = [nd.ident for nd in fig.nodes if nd.layer == layer]
-        out.append(f'  {{ rank=same; {" ".join(same)}; }}')
+        if same:            # layer 0 is empty when the identity is elided
+            out.append(f'  {{ rank=same; {" ".join(same)}; }}')
     out.append("")
 
-    for (src, dst), letters in grouped(fig).items():
+    rank = {nd.cls: i for i, nd in enumerate(fig.nodes)}
+    for (src, dst), cols in grouped(fig).items():
         marks = [e for e in fig.edges if (e.src, e.dst) == (src, dst)]
-        seen: List[str] = []
-        for i in letters:                       # aliases collapse to one class
-            lab = class_label(fig, fig.letter_class(i))
-            if lab not in seen:
-                seen.append(lab)
-        attrs = [f'label="{",".join(seen)}"',
+        labs = [class_label(fig, c) for c in sorted(cols, key=lambda c: rank[c])]
+        attrs = [f'label="{",".join(labs)}"',
                  f"weight={_weight(fig, src, dst, marks)}"]
         a, b = fig.node_of(src).ident, fig.node_of(dst).ident
         out.append(f'  {a} -> {b} [{", ".join(attrs)}];')
@@ -106,10 +106,10 @@ def _weight(fig: Figure, src: int, dst: int, marks: List) -> int:
 
 
 def grouped(fig: Figure) -> Dict[Tuple[int, int], List[int]]:
-    """The figure's edges by endpoint pair, each with the display indices of the
-    letters that take it. Letters that agree on a target share one arrow, labeled
-    with all of them (``a,b``), rather than stacking one arrow per letter."""
+    """The figure's edges by endpoint pair, each with the class ids of the columns
+    that take it. Columns that agree on a target share one arrow, labeled with all
+    of them (``[a],[b]``), rather than stacking one arrow per column."""
     out: Dict[Tuple[int, int], List[int]] = {}
     for e in fig.edges:
-        out.setdefault((e.src, e.dst), []).append(e.letter_index)
+        out.setdefault((e.src, e.dst), []).append(e.col)
     return out

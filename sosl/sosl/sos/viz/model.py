@@ -1,8 +1,12 @@
-"""The figure model of an invariant: the Cayley graph of the algebra, classified.
+"""The figure model of an invariant: the multiplication table of the algebra,
+classified.
 
-One `Node` per class, one `Edge` per (class, letter), with every fact a drawing
-wants to show already decided — root, idempotents, key tree, monochrome cycles.
-Pure: no coordinates, no subprocess, no output syntax. See `algorithm.md`.
+One `Node` per class, one `Edge` per (class, *column*) — every column of `M`, not
+only the columns the letters name — with every fact a drawing wants to show
+already decided: root, idempotents, key tree, monochrome cycles. The identity is
+elided by default (its row and column are fixed by the axiom); pass
+`elide_identity=False` to keep it. Pure: no coordinates, no subprocess, no output
+syntax. See `algorithm.md`.
 """
 from __future__ import annotations
 
@@ -82,12 +86,12 @@ class Node:
 
 @dataclass(frozen=True)
 class Edge:
-    """One (class, letter) transition ``s -> M(s, λ(x))``, as drawn."""
+    """One entry of the multiplication table, ``s -> M(s, c)``, as drawn: the
+    product of the source class by the class of one *column*."""
 
     src: int                      # class id
-    dst: int                      # class id
-    letter_index: int             # index in the Naming's display order
-    letter_name: str              # display name
+    dst: int                      # class id: M(src, col)
+    col: int                      # class id of the column multiplied by
     is_tree: bool                 # the key-tree (BFS-tree) edge of dst
     is_cycle: bool                # lies on a monochrome cycle of length >= 2
     is_loop: bool                 # src == dst
@@ -95,32 +99,48 @@ class Edge:
 
 @dataclass(frozen=True)
 class Figure:
-    """The classified Cayley graph of one invariant, ready to render."""
+    """The classified multiplication table of one invariant, ready to render."""
 
     inv: Invariant
     naming: Naming
-    nodes: Tuple[Node, ...]       # sorted by shortlex display key
-    edges: Tuple[Edge, ...]       # sorted by (source key, letter index)
+    nodes: Tuple[Node, ...]       # DRAWN classes, sorted by shortlex display key
+    edges: Tuple[Edge, ...]       # sorted by (source key, column key)
+    labels: Tuple[str, ...]       # display label of EVERY class, by class id
+    elided: bool                  # is the identity dropped from the drawing?
 
     def node_of(self, cls: int) -> Node:
-        """The node of class ``cls``."""
+        """The node of class ``cls``. Raises for the identity of an elided figure:
+        it is a class of the algebra but not a thing on the page."""
         for nd in self.nodes:
             if nd.cls == cls:
                 return nd
         raise KeyError(cls)
 
     def label_of(self, cls: int) -> str:
-        """The display label of class ``cls``."""
-        return self.node_of(cls).label
+        """The display label of class ``cls`` — of every class, drawn or not, so
+        that a caption may still name the identity of an elided figure."""
+        return self.labels[cls]
+
+    def columns(self) -> Tuple[int, ...]:
+        """The class ids of the drawn columns of ``M``: every class, minus the
+        identity when it is elided. Node order (shortlex by key)."""
+        return tuple(nd.cls for nd in self.nodes)
+
+    def root(self) -> Optional[Node]:
+        """The identity node ``[ε]``, or None when the figure elides it. The
+        backends mark it the way an initial state is marked; an elided figure has
+        no such node and gets no stub."""
+        return next((nd for nd in self.nodes if nd.is_root), None)
 
     def idempotents(self) -> Tuple[str, ...]:
         """The labels of the idempotent classes, shortlex order."""
         return tuple(nd.label for nd in self.nodes if nd.is_idem)
 
     def cycles(self) -> Dict[str, Tuple[Tuple[str, ...], ...]]:
-        """Per display letter, the monochrome cycles of length >= 2, each as the
-        tuple of its class labels (rotated to start at its shortlex-least node)."""
-        return {name: _cycles_of(self, i) for i, name in enumerate(self.naming.names)}
+        """Per drawn column, the monochrome cycles of length >= 2, each as the tuple
+        of its class labels (rotated to start at its shortlex-least node). Keyed by
+        the column's class label."""
+        return {self.label_of(c): _cycles_of(self, c) for c in self.columns()}
 
     def letter_class(self, letter_index: int) -> int:
         """The class ``λ(x)`` named by the letter at display index ``letter_index``
@@ -188,13 +208,12 @@ def _keys_by_bfs(inv: Invariant, naming: Naming) -> List[Tuple[int, ...]]:
     return [k for k in key]  # type: ignore[misc]
 
 
-def _cycles_of(fig: Figure, li: int) -> Tuple[Tuple[str, ...], ...]:
-    """The cycles of length >= 2 of the functional graph ``s -> M(s, λ(x))`` for
-    the letter of display index ``li``. Out-degree is 1, so one walk per node
-    settles it: follow the successor, stamping the walk id; meeting a node of the
-    *current* walk closes a cycle."""
-    inv, letter = fig.inv, fig.naming.letters[li][0]
-    step = [inv.mult[s][inv.letter_class[letter]] for s in range(inv.n)]
+def _cycles_of(fig: Figure, col: int) -> Tuple[Tuple[str, ...], ...]:
+    """The cycles of length >= 2 of the functional graph ``s -> M(s, col)`` for one
+    column. Out-degree is 1, so one walk per node settles it: follow the successor,
+    stamping the walk id; meeting a node of the *current* walk closes a cycle."""
+    inv = fig.inv
+    step = [inv.mult[s][col] for s in range(inv.n)]
     walk = [-1] * inv.n      # which walk first saw this node
     order = [-1] * inv.n     # its position within that walk
     found: List[Tuple[str, ...]] = []
@@ -215,11 +234,21 @@ def _cycles_of(fig: Figure, li: int) -> Tuple[Tuple[str, ...], ...]:
     return tuple(sorted(found))
 
 
-def figure_of(inv: Invariant, naming: Optional[Naming] = None) -> Figure:
-    """The classified Cayley graph of ``inv`` under ``naming`` (default: the
-    machine's letter order and cube names). Keys are recomputed by BFS in display
-    order — `inv.keys` is shortlex-least in the *machine* order and is not
-    reused. See `algorithm.md`."""
+def figure_of(inv: Invariant, naming: Optional[Naming] = None,
+              elide_identity: bool = True) -> Figure:
+    """The classified multiplication table of ``inv`` under ``naming`` (default:
+    the machine's letter order and cube names): one node per class and one edge per
+    table entry ``M(s, c)``, over EVERY column ``c``.
+
+    ``elide_identity`` (the default) drops ``[ε]`` from the drawing, node and
+    column alike — its row and column are fixed by the identity axiom, so they are
+    the one part of ``M`` a reader reconstructs without being shown it. Pass False
+    to draw the whole table, identity included.
+
+    Keys are recomputed by BFS in display order — `inv.keys` is shortlex-least in
+    the *machine* order and is not reused. The BFS runs over the letters and from
+    the identity in every case: keys are words, and the identity is a class of the
+    algebra whether or not it reaches the page. See `algorithm.md`."""
     naming = naming or Naming.machine(inv.alphabet)
     keys = _keys_by_bfs(inv, naming)
     tok = naming.tokens()
@@ -230,28 +259,34 @@ def figure_of(inv: Invariant, naming: Optional[Naming] = None) -> Figure:
     def ident(k: Sequence[int]) -> str:
         return "".join(tok[i] for i in k) if k else "eps"
 
+    labels = tuple(label(keys[c]) for c in range(inv.n))
     order = sorted(range(inv.n), key=lambda c: (len(keys[c]), keys[c]))
+    drawn = [c for c in order if not (elide_identity and c == inv.identity)]
     nodes = tuple(
-        Node(cls=c, key=keys[c], label=label(keys[c]), ident=ident(keys[c]),
+        Node(cls=c, key=keys[c], label=labels[c], ident=ident(keys[c]),
              layer=len(keys[c]), is_root=(c == inv.identity),
              is_idem=(c != inv.identity and inv.mult[c][c] == c))
-        for c in order)
+        for c in drawn)
 
-    tree = {(_parent(keys, c, inv, naming), keys[c][-1]): c
+    # The key tree is a letter fact: the edge of dst is the one out of its key's
+    # parent, on the COLUMN the key's last letter names.
+    tree = {(_parent(keys, c, inv, naming), inv.letter_class[naming.letters[keys[c][-1]][0]]): c
             for c in range(inv.n) if keys[c]}
-    fig = Figure(inv=inv, naming=naming, nodes=nodes, edges=())
+    fig = Figure(inv=inv, naming=naming, nodes=nodes, edges=(),
+                 labels=labels, elided=elide_identity)
     on_cycle = _cycle_edges(fig)
 
     edges: List[Edge] = []
     for nd in nodes:
-        for i, (a, name) in enumerate(naming.letters):
-            dst = inv.mult[nd.cls][inv.letter_class[a]]
+        for col in fig.columns():
+            dst = inv.mult[nd.cls][col]
             edges.append(Edge(
-                src=nd.cls, dst=dst, letter_index=i, letter_name=name,
-                is_tree=(tree.get((nd.cls, i)) == dst),
-                is_cycle=((nd.cls, i) in on_cycle),
+                src=nd.cls, dst=dst, col=col,
+                is_tree=(tree.get((nd.cls, col)) == dst),
+                is_cycle=((nd.cls, col) in on_cycle),
                 is_loop=(dst == nd.cls)))
-    return Figure(inv=inv, naming=naming, nodes=nodes, edges=tuple(edges))
+    return Figure(inv=inv, naming=naming, nodes=nodes, edges=tuple(edges),
+                  labels=labels, elided=elide_identity)
 
 
 def _parent(keys: Sequence[Word], c: int, inv: Invariant, naming: Naming) -> int:
@@ -265,13 +300,13 @@ def _parent(keys: Sequence[Word], c: int, inv: Invariant, naming: Naming) -> int
 
 
 def _cycle_edges(fig: Figure) -> frozenset:
-    """The set of ``(src, letter_index)`` whose edge lies on a monochrome cycle of
-    length >= 2. Computed on a Figure whose nodes are set (labels are needed) but
-    whose edges are not yet built."""
+    """The set of ``(src, column)`` whose edge lies on a monochrome cycle of length
+    >= 2. Computed on a Figure whose nodes are set (labels are needed) but whose
+    edges are not yet built."""
     marked = set()
-    label_to_cls = {nd.label: nd.cls for nd in fig.nodes}
-    for li in range(len(fig.naming.letters)):
-        for cyc in _cycles_of(fig, li):
+    label_to_cls = {lab: c for c, lab in enumerate(fig.labels)}
+    for col in fig.columns():
+        for cyc in _cycles_of(fig, col):
             for lab in cyc:
-                marked.add((label_to_cls[lab], li))
+                marked.add((label_to_cls[lab], col))
     return frozenset(marked)

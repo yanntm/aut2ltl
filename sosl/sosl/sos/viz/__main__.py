@@ -4,7 +4,13 @@
         [-o <out.dot|.tex|.pdf|.png>]  # format from the extension; default: dot to stdout
         [--rename 'a=a,!a=b']          # display letters, in display order
         [--layout dot|layered]         # node placement (default: dot)
+        [--keep-identity]              # draw [eps] too (default: elided)
         [--no-pairs]                   # ablate the P caption (bare algebra A)
+
+The drawing is the whole multiplication table of `A` — every column of `M`, the
+arrows that agree on a target fused under one comma-separated class list. `[eps]`
+is elided by default (its row and column are fixed by the identity axiom);
+`--keep-identity` draws it.
 
 The object is `<A, P>`: the drawing is the algebra `A`, and `P` rides under it as
 a *caption* — an accepting pair is a pair of classes, not a transition, so it is
@@ -35,6 +41,9 @@ def main(argv: List[str]) -> int:
     ap.add_argument("--rename")
     ap.add_argument("--layout", default="dot", choices=("dot", "layered"))
     ap.add_argument("--rankdir", default="LR", choices=("LR", "TB"))
+    ap.add_argument("--keep-identity", action="store_true",
+                    help="draw [eps] as a node and a column (default: elided — its "
+                         "row and column are fixed by the identity axiom)")
     ap.add_argument("--no-pairs", action="store_true",
                     help="ablate the P caption; draw the bare algebra A")
     args = ap.parse_args(argv[1:])
@@ -45,7 +54,7 @@ def main(argv: List[str]) -> int:
     naming = (Naming.renamed(inv.alphabet, args.rename) if args.rename
               else Naming.machine(inv.alphabet))
     try:
-        fig = figure_of(inv, naming)
+        fig = figure_of(inv, naming, elide_identity=not args.keep_identity)
     except AssertionError as exc:
         print(f"sos_viz: {args.sos} is not a valid invariant: {exc}", file=sys.stderr)
         return 4
