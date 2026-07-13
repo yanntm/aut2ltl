@@ -230,7 +230,10 @@ words through the table: for `u = x₁x₂⋯xₙ ∈ Σ*`,
 `⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being `⟦ε⟧ := λ(ε) = [ε]`; we call
 `⟦u⟧` the fold of `u`.
 
-By associativity the product needs no parentheses, and the fold is a monoid
+The fold is well defined: `M` is a function on all of `𝒞 × 𝒞`, so the product of
+the letter classes always exists, and `M` is associative (Definition 3.1), so its
+value does not depend on how the `n`-fold product is parenthesized — one class per
+word. The fold is moreover a monoid
 morphism — `⟦u·v⟧ = ⟦u⟧·⟦v⟧`, `⟦ε⟧ = [ε]` — the only one agreeing with `λ` on the
 letters: it is §2's sorting map `φ`, realized on the table. On the diagram, `⟦u⟧` is
 exactly where the reading of `u` ends — one letter, one edge, from the root.
