@@ -66,12 +66,13 @@ every object below is machinery for naming and sorting them.
 lasso outside it; and the word `a·b·a·a·b·b·a·a·a·b·b·b·⋯`, its blocks growing forever,
 is no lasso at all — yet `AsThenBs` is pinned by its verdicts on lassos alone.
 
-**Finite words are solved.** For finite words, the problem of sorting all words into
-finitely many bins is solved: a finite **monoid** — an associative product with a
-unit — carries the bins, and a morphism `φ(uv) = φ(u)·φ(v)` does the sorting,
-collapsing concatenation onto finitely many values.
+**On finite words, the object is classical.** Sorting all finite words into finitely
+many bins is the province of the syntactic monoid, a cornerstone of regular language
+theory [PP04]: a finite **monoid** — an associative product with a unit — carries the
+bins, and a morphism `φ(uv) = φ(u)·φ(v)` does the sorting, collapsing concatenation
+onto finitely many values.
 
-On infinite words, exactly one thing more is needed — a way to say "repeat this loop
+On *infinite* words, exactly one thing more is needed — a way to say "repeat this loop
 forever" — because no product of finite pieces expresses `v^ω`. Classically one
 adjoins that single operation, an **ω-power** `s ↦ s^ω`, and obtains a two-sorted
 **ω-semigroup** `S = (S₊, S_ω)`: `S₊` the types of finite words, `S_ω` the types of
