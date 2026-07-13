@@ -26,7 +26,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 from .layout import Placement
-from .model import Figure
+from .model import Figure, wrap
 
 # Self-loop directions, in preference order, with the unit vector each points at.
 LOOP_DIRS: Tuple[Tuple[str, Tuple[float, float]], ...] = (
@@ -62,8 +62,18 @@ def _tex_class(fig: Figure, cls: int) -> str:
 
 def _tex_arrow_label(fig: Figure, cols: Tuple[int, ...]) -> str:
     """An arrow's label: the columns that take it, ``[a]`` or ``[a],[b·a]`` when
-    several classes multiply the source to the same target. Node order."""
-    return ",".join(_tex_class(fig, c) for c in cols)
+    several classes multiply the source to the same target. Node order, wrapped to
+    `WRAP_CHARS` — the label of a full table can list every class, and a long one
+    lies across whatever the arrow passes. The comma stays at the end of the line
+    it breaks, so the list reads on unambiguously."""
+    plain = [f"[{fig.label_of(c)}]" for c in cols]
+    tex = [_tex_class(fig, c) for c in cols]
+    lines = wrap(plain)
+    out: List[str] = []
+    for n, line in enumerate(lines):
+        body = ",".join(tex[i] for i in line)
+        out.append(f"${body},$" if n < len(lines) - 1 else f"${body}$")
+    return r"\\".join(out)
 
 
 def _tex_lambda(fig: Figure) -> str:
@@ -173,7 +183,8 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
     ]
     out += [
         r"  arrow/.style     = {thin, -{Stealth[length=4pt,width=3pt]}},",
-        r"  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white},",
+        r"  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white,",
+        r"                      align=center},   % a long class list wraps (see WRAP_CHARS)",
         r"  pairs/.style     = {anchor=north, font=\small},",
         r"]",
         "",
@@ -204,7 +215,7 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
             via = f"[bend left={BEND_ANGLE}]" if ar.bend else ""
         src, dst = fig.node_of(ar.src).ident, fig.node_of(ar.dst).ident
         out.append(f"  \\draw[arrow] ({src}) to{via} "
-                   f"node[lbl] {{${_tex_arrow_label(fig, ar.cols)}$}} ({dst});")
+                   f"node[lbl] {{{_tex_arrow_label(fig, ar.cols)}}} ({dst});")
 
     if pairs:
         xs = [p[0] for p in pos.values()]

@@ -11,27 +11,28 @@
   root/.style      = {},          % the root needs no ink: the init stub says it
   init/.style      = {semithick, -{Stealth[length=4pt,width=3pt]}},
   arrow/.style     = {thin, -{Stealth[length=4pt,width=3pt]}},
-  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white},
+  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white,
+                      align=center},   % a long class list wraps (see WRAP_CHARS)
   pairs/.style     = {anchor=north, font=\small},
 ]
 
-  \node[class] (a) at (2.8,4.7) {$[a]$};
-  \node[class] (b) at (8.9,4.7) {$[b]$};
-  \node[class] (aa) at (1.0,0.6) {$[a{\cdot}a]$};
-  \node[class] (ab) at (7.1,0.6) {$[a{\cdot}b]$};
+  \node[class] (a) at (2.8,5.0) {$[a]$};
+  \node[class] (b) at (8.9,5.0) {$[b]$};
+  \node[class] (aa) at (1.0,0.8) {$[a{\cdot}a]$};
+  \node[class] (ab) at (7.1,0.8) {$[a{\cdot}b]$};
 
   \draw[arrow] (a) to[bend left=15] node[lbl] {$[a]$} (aa);
   \draw[arrow] (a) to node[lbl] {$[b]$} (ab);
   \draw[arrow] (a) to[loop above] node[lbl] {$[a{\cdot}a]$} (a);
   \draw[arrow] (a) to node[lbl] {$[a{\cdot}b]$} (b);
-  \draw[arrow] (b) to[loop above] node[lbl] {$[a],[b],[a{\cdot}a],[a{\cdot}b]$} (b);
+  \draw[arrow] (b) to[loop above] node[lbl] {$[a],[b],$\\$[a{\cdot}a],$\\$[a{\cdot}b]$} (b);
   \draw[arrow] (aa) to[bend left=15] node[lbl] {$[a]$} (a);
   \draw[arrow] (aa) to node[lbl] {$[b]$} (b);
   \draw[arrow] (aa) to[loop above] node[lbl] {$[a{\cdot}a]$} (aa);
   \draw[arrow] (aa) to node[lbl] {$[a{\cdot}b]$} (ab);
-  \draw[arrow] (ab) to[loop above] node[lbl] {$[a],[b],[a{\cdot}a],[a{\cdot}b]$} (ab);
+  \draw[arrow] (ab) to[loop above] node[lbl] {$[a],[b],$\\$[a{\cdot}a],$\\$[a{\cdot}b]$} (ab);
 
-  \node[pairs] at (5.0,-0.7) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
-  \node[pairs] at (5.0,-1.5) {$P = \{\, ([b],[b]),\; ([b],[a{\cdot}a]),\; ([b],[a{\cdot}b]) \,\}$};
+  \node[pairs] at (5.0,-0.5) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
+  \node[pairs] at (5.0,-1.2) {$P = \{\, ([b],[b]),\; ([b],[a{\cdot}a]),\; ([b],[a{\cdot}b]) \,\}$};
 \end{tikzpicture}
 \end{document}

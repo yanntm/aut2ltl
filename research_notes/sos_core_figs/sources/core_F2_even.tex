@@ -11,7 +11,8 @@
   root/.style      = {},          % the root needs no ink: the init stub says it
   init/.style      = {semithick, -{Stealth[length=4pt,width=3pt]}},
   arrow/.style     = {thin, -{Stealth[length=4pt,width=3pt]}},
-  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white},
+  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white,
+                      align=center},   % a long class list wraps (see WRAP_CHARS)
   pairs/.style     = {anchor=north, font=\small},
 ]
 
@@ -22,14 +23,14 @@
 
   \draw[arrow] (a) to[bend left=15] node[lbl] {$[a]$} (aa);
   \draw[arrow] (a) to node[lbl] {$[b]$} (ab);
-  \draw[arrow] (a) to[loop above] node[lbl] {$[a{\cdot}a]$} (a);
+  \draw[arrow] (a) to[loop left] node[lbl] {$[a{\cdot}a]$} (a);
   \draw[arrow] (a) to node[lbl] {$[a{\cdot}b]$} (b);
-  \draw[arrow] (b) to[loop right] node[lbl] {$[a],[b],[a{\cdot}a],[a{\cdot}b]$} (b);
+  \draw[arrow] (b) to[loop right] node[lbl] {$[a],[b],$\\$[a{\cdot}a],$\\$[a{\cdot}b]$} (b);
   \draw[arrow] (aa) to[bend left=15] node[lbl] {$[a]$} (a);
   \draw[arrow] (aa) to node[lbl] {$[b]$} (b);
-  \draw[arrow] (aa) to[loop above] node[lbl] {$[a{\cdot}a]$} (aa);
+  \draw[arrow] (aa) to[loop right] node[lbl] {$[a{\cdot}a]$} (aa);
   \draw[arrow] (aa) to node[lbl] {$[a{\cdot}b]$} (ab);
-  \draw[arrow] (ab) to[loop left] node[lbl] {$[a],[b],[a{\cdot}a],[a{\cdot}b]$} (ab);
+  \draw[arrow] (ab) to[loop left] node[lbl] {$[a],[b],$\\$[a{\cdot}a],$\\$[a{\cdot}b]$} (ab);
 
   \node[pairs] at (2.2,-3.0) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
   \node[pairs] at (2.2,-3.8) {$P = \{\, ([b],[b]),\; ([b],[a{\cdot}a]),\; ([b],[a{\cdot}b]) \,\}$};

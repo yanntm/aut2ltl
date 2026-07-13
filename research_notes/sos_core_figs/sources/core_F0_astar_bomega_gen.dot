@@ -28,8 +28,8 @@ digraph core_F0_astar_bomega {
   a -> ab [label="[b],[a·b]", weight=3];
   a -> ba [label="[b·a]", weight=1];
   b -> b [label="[ε],[b]", weight=1];
-  b -> ba [label="[a],[a·b],[b·a]", weight=3];
+  b -> ba [label="[a],[a·b],\n[b·a]", weight=3];
   ab -> ab [label="[ε],[b]", weight=1];
-  ab -> ba [label="[a],[a·b],[b·a]", weight=1];
-  ba -> ba [label="[ε],[a],[b],[a·b],[b·a]", weight=1];
+  ab -> ba [label="[a],[a·b],\n[b·a]", weight=1];
+  ba -> ba [label="[ε],[a],\n[b],[a·b],\n[b·a]", weight=1];
 }

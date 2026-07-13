@@ -11,25 +11,26 @@
   root/.style      = {},          % the root needs no ink: the init stub says it
   init/.style      = {semithick, -{Stealth[length=4pt,width=3pt]}},
   arrow/.style     = {thin, -{Stealth[length=4pt,width=3pt]}},
-  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white},
+  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white,
+                      align=center},   % a long class list wraps (see WRAP_CHARS)
   pairs/.style     = {anchor=north, font=\small},
 ]
 
-  \node[class] (a) at (1.0,4.7) {$[a]$};
-  \node[class] (b) at (7.5,4.7) {$[b]$};
-  \node[class] (ab) at (1.0,0.6) {$[a{\cdot}b]$};
-  \node[class] (ba) at (7.5,0.6) {$[b{\cdot}a]$};
+  \node[class] (a) at (1.0,5.4) {$[a]$};
+  \node[class] (b) at (6.8,5.4) {$[b]$};
+  \node[class] (ab) at (1.0,0.8) {$[a{\cdot}b]$};
+  \node[class] (ba) at (6.8,0.8) {$[b{\cdot}a]$};
 
   \draw[arrow] (a) to[loop above] node[lbl] {$[a]$} (a);
   \draw[arrow] (a) to node[lbl] {$[b],[a{\cdot}b]$} (ab);
   \draw[arrow] (a) to node[lbl] {$[b{\cdot}a]$} (ba);
-  \draw[arrow] (b) to node[lbl] {$[a],[a{\cdot}b],[b{\cdot}a]$} (ba);
+  \draw[arrow] (b) to node[lbl] {$[a],[a{\cdot}b],$\\$[b{\cdot}a]$} (ba);
   \draw[arrow] (b) to[loop above] node[lbl] {$[b]$} (b);
-  \draw[arrow] (ab) to node[lbl] {$[a],[a{\cdot}b],[b{\cdot}a]$} (ba);
+  \draw[arrow] (ab) to node[lbl] {$[a],[a{\cdot}b],$\\$[b{\cdot}a]$} (ba);
   \draw[arrow] (ab) to[loop above] node[lbl] {$[b]$} (ab);
-  \draw[arrow] (ba) to[loop above] node[lbl] {$[a],[b],[a{\cdot}b],[b{\cdot}a]$} (ba);
+  \draw[arrow] (ba) to[loop above] node[lbl] {$[a],[b],$\\$[a{\cdot}b],$\\$[b{\cdot}a]$} (ba);
 
-  \node[pairs] at (4.2,-0.7) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
-  \node[pairs] at (4.2,-1.5) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]) \,\}$};
+  \node[pairs] at (3.9,-0.5) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
+  \node[pairs] at (3.9,-1.2) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]) \,\}$};
 \end{tikzpicture}
 \end{document}

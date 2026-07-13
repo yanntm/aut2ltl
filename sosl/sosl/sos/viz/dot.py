@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Dict, List, Tuple
 
-from .model import Figure
+from .model import Figure, wrap
 
 # Rank/node separation, in inches: the ~2.2cm x ~1.4cm grid the figures want.
 RANKSEP_IN = 0.87
@@ -84,13 +84,22 @@ def dot_of(fig: Figure, name: str = "cayley", pairs: bool = True,
     for (src, dst), cols in grouped(fig).items():
         marks = [e for e in fig.edges if (e.src, e.dst) == (src, dst)]
         labs = [class_label(fig, c) for c in sorted(cols, key=lambda c: rank[c])]
-        attrs = [f'label="{",".join(labs)}"',
+        attrs = [f'label="{_wrapped(labs)}"',
                  f"weight={_weight(fig, src, dst, marks)}"]
         a, b = fig.node_of(src).ident, fig.node_of(dst).ident
         out.append(f'  {a} -> {b} [{", ".join(attrs)}];')
 
     out.append("}")
     return "\n".join(out) + "\n"
+
+
+def _wrapped(labs: List[str]) -> str:
+    """The class list of one arrow as a dot label, broken into lines the way the
+    TikZ backend breaks it (`model.wrap`) so that what dot lays out has the shape of
+    what is finally drawn. The comma stays at the end of the line it breaks."""
+    lines = wrap(labs)
+    out = [",".join(labs[i] for i in line) for line in lines]
+    return "\\n".join(s + "," for s in out[:-1]) + ("\\n" if len(out) > 1 else "") + out[-1]
 
 
 def _weight(fig: Figure, src: int, dst: int, marks: List) -> int:

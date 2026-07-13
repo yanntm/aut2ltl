@@ -22,6 +22,26 @@ from ..io.serialize import render_letter
 DOT = "·"
 # The label of the identity class.
 EPSILON = "ε"
+# An arrow label breaks to a new line once a line would exceed this many characters
+# (measured on the plain text, "[a·b]" = 5). A full table's labels list several
+# classes, and one long line is what lies across whatever the arrow passes.
+WRAP_CHARS = 10
+
+
+def wrap(items: Sequence[str], width: int = WRAP_CHARS) -> List[List[int]]:
+    """The indices of ``items`` grouped into lines, greedily: a line takes items
+    until the next one would push it past ``width`` characters (counting the commas
+    that join them). Never empty — an item longer than ``width`` gets its own line.
+    Both backends wrap the same way; only the newline syntax differs."""
+    lines: List[List[int]] = [[]]
+    used = 0
+    for i, it in enumerate(items):
+        if lines[-1] and used + 1 + len(it) > width:
+            lines.append([])
+            used = 0
+        used += (1 if lines[-1] else 0) + len(it)
+        lines[-1].append(i)
+    return lines
 
 
 @dataclass(frozen=True)

@@ -19,10 +19,10 @@ digraph core_F2_even {
   a -> ab [label="[b]", weight=3];
   a -> a [label="[a·a]", weight=1];
   a -> b [label="[a·b]", weight=1];
-  b -> b [label="[a],[b],[a·a],[a·b]", weight=1];
+  b -> b [label="[a],[b],\n[a·a],\n[a·b]", weight=1];
   aa -> a [label="[a]", weight=1];
   aa -> b [label="[b]", weight=1];
   aa -> aa [label="[a·a]", weight=1];
   aa -> ab [label="[a·b]", weight=1];
-  ab -> ab [label="[a],[b],[a·a],[a·b]", weight=1];
+  ab -> ab [label="[a],[b],\n[a·a],\n[a·b]", weight=1];
 }

@@ -11,31 +11,32 @@
   root/.style      = {},          % the root needs no ink: the init stub says it
   init/.style      = {semithick, -{Stealth[length=4pt,width=3pt]}},
   arrow/.style     = {thin, -{Stealth[length=4pt,width=3pt]}},
-  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white},
+  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white,
+                      align=center},   % a long class list wraps (see WRAP_CHARS)
   pairs/.style     = {anchor=north, font=\small},
 ]
 
-  \node[class] (a) at (12.4,4.7) {$[a]$};
-  \node[class] (b) at (1.0,4.7) {$[b]$};
-  \node[class] (aa) at (14.5,0.6) {$[a{\cdot}a]$};
-  \node[class] (ab) at (7.8,0.6) {$[a{\cdot}b]$};
-  \node[class] (ba) at (1.0,0.6) {$[b{\cdot}a]$};
+  \node[class] (a) at (11.6,5.9) {$[a]$};
+  \node[class] (b) at (1.0,5.9) {$[b]$};
+  \node[class] (aa) at (13.7,1.0) {$[a{\cdot}a]$};
+  \node[class] (ab) at (7.0,1.0) {$[a{\cdot}b]$};
+  \node[class] (ba) at (1.0,1.0) {$[b{\cdot}a]$};
 
-  \draw[arrow] (a) to node[lbl] {$[a],[a{\cdot}a],[a{\cdot}b]$} (aa);
+  \draw[arrow] (a) to node[lbl] {$[a],[a{\cdot}a],$\\$[a{\cdot}b]$} (aa);
   \draw[arrow] (a) to[bend left=15] node[lbl] {$[b]$} (ab);
   \draw[arrow] (a) to[loop above] node[lbl] {$[b{\cdot}a]$} (a);
   \draw[arrow] (b) to[bend left=15] node[lbl] {$[a],[b{\cdot}a]$} (ba);
   \draw[arrow] (b) to[loop above] node[lbl] {$[b],[a{\cdot}b]$} (b);
   \draw[arrow] (b) to node[lbl] {$[a{\cdot}a]$} (aa);
-  \draw[arrow] (aa) to[loop above] node[lbl] {$[a],[b],[a{\cdot}a],[a{\cdot}b],[b{\cdot}a]$} (aa);
+  \draw[arrow] (aa) to[loop above] node[lbl] {$[a],[b],$\\$[a{\cdot}a],$\\$[a{\cdot}b],$\\$[b{\cdot}a]$} (aa);
   \draw[arrow] (ab) to[bend left=15] node[lbl] {$[a],[b{\cdot}a]$} (a);
   \draw[arrow] (ab) to[loop above] node[lbl] {$[b],[a{\cdot}b]$} (ab);
   \draw[arrow] (ab) to node[lbl] {$[a{\cdot}a]$} (aa);
-  \draw[arrow] (ba) to node[lbl] {$[a],[a{\cdot}a],[a{\cdot}b]$} (aa);
+  \draw[arrow] (ba) to node[lbl] {$[a],[a{\cdot}a],$\\$[a{\cdot}b]$} (aa);
   \draw[arrow] (ba) to[bend left=15] node[lbl] {$[b]$} (b);
   \draw[arrow] (ba) to[loop above] node[lbl] {$[b{\cdot}a]$} (ba);
 
-  \node[pairs] at (7.8,-0.7) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
-  \node[pairs] at (7.8,-1.5) {$P = \{\, ([a{\cdot}a],[a{\cdot}a]) \,\}$};
+  \node[pairs] at (7.3,-0.3) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
+  \node[pairs] at (7.3,-1.1) {$P = \{\, ([a{\cdot}a],[a{\cdot}a]) \,\}$};
 \end{tikzpicture}
 \end{document}

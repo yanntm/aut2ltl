@@ -1,5 +1,5 @@
 // sos2cayley evenblocks.sos --rename a=a,!a=b
-digraph core_F3_evenblocks {
+digraph core_F3_evenblocks_dot {
   rankdir=TB;
   ranksep=0.87; nodesep=0.55;
   node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];
