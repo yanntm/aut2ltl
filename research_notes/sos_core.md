@@ -368,6 +368,47 @@ linked: `([a],[a])`, `([b],[b])`, `([a·b],[b])`, `([b·a],[a])`, `([b·a],[b])`
 four others fail — `a·a^ω = a^ω` never shows a `b`, and a dead stem stays dead. So
 `P(L) = { ([b],[b]), ([a·b],[b]) }`, the pair set printed beneath the figure.
 
+The two shapes were tailored to lassos, and they pay immediately:
+
+**Lemma 3.7 (substitution).** If `u ≈_L u'` and `v ≈_L v'` (all four words
+nonempty), then `u·v^ω ∈ L ⟺ u'·v'^ω ∈ L`.
+
+*Proof.* Swap the loop: the ω-power shape of `v ≈_L v'`, at `x = u` and `y = ε`,
+gives `u·v^ω ∈ L ⟺ u·v'^ω ∈ L`. Swap the stem: the linear shape of `u ≈_L u'`, at
+`x = y = ε` and `t = v'`, gives `u·v'^ω ∈ L ⟺ u'·v'^ω ∈ L`. ∎
+
+**Theorem 3.8 (canonicity).** For every regular ω-language `L`:
+
+(i) on `𝓘(L)`, the query of Definition 3.4 answers membership in `L` itself —
+every presentation of every lasso receives `L`'s verdict — so the verdict is
+presentation-independent and `L(𝓘(L)) = L`;
+
+(ii) `𝓘` is a **complete invariant**: two regular ω-languages over `Σ` are equal
+iff `𝓘(L)` and `𝓘(L')` are identical, component by component — byte equality once
+serialized, keys and all.
+
+*Proof.* (i) Let `(u, v)` present the lasso `w`, `v` nonempty; the query computes
+`e := ⟦v⟧^ω` and `s := ⟦u⟧·e`. The idempotent power is a power: pick `k ≥ 1` with
+`⟦v⟧^k = e`. Rewrite `w` on the presentation `(u·v^k, v^k)`: the fold is a morphism
+(§3.2), so `⟦u·v^k⟧ = ⟦u⟧·e = s` and `⟦v^k⟧ = e` — the queried pair is unchanged,
+and both coordinates are now folds of nonempty words. By letter-generation
+(Definition 3.6) `s = [u·v^k]` and `e = [v^k]`: the keys satisfy `w_s ≈_L u·v^k`
+and `w_e ≈_L v^k`. Lemma 3.7 substitutes both at once:
+`w = (u·v^k)·(v^k)^ω ∈ L ⟺ w_s·(w_e)^ω ∈ L`, and the right-hand side is, by
+definition, `(s, e) ∈ P(L)`. The query's verdict is membership in `L`, whatever
+the presentation. Lassos determine a regular language [PP04, Ch. I, Cor. 9.8], so
+`L(𝓘(L)) = L`.
+
+(ii) `≈_L`, the shortlex keys, `λ`, `M` and the membership tests of `P(L)` are
+functions of `L` alone, so `L = L'` gives `𝓘(L) = 𝓘(L')` literally. Conversely,
+by (i), `𝓘(L) = 𝓘(L')` gives `L = L(𝓘(L)) = L(𝓘(L')) = L'`. ∎
+
+*Example.* On Figure 1 (`aUGb`), present `aab·b^ω` as `(aab, b)` or as
+`(aabb, bb)`: both queries land on the pair `([a·b], [b])` — here even the *name*
+is stable. That is a feature of `aUGb`, not of the theorem: `Even` (§3.4) answers
+one lasso through two distinct pairs, and Theorem 3.8 is what forces those two
+pairs to one verdict.
+
 ### 3.6 Concrete form, read on the examples
 
 Recall the three running examples (introduced fully in §1): **`GF(aa)`** — infinitely
