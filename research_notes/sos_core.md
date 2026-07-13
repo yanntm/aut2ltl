@@ -59,17 +59,18 @@ edge multiplies on the right by its label.*
 **We only ever look at lassos.** A **lasso** (ultimately-periodic word) is `u·v^ω`: a
 finite **stem** `u`, then a finite nonempty **loop** `v` repeated forever. The
 organizing fact: *two regular ω-languages are equal iff they agree on all lassos*
-[PP04]. Classifying `L` is therefore sorting lassos into finitely many equivalence
-classes, and every object below is machinery for naming and sorting them.
+[PP04]. Classifying `L` is therefore assigning each lasso to one of finitely many
+equivalence classes, and every object below is machinery for naming the classes and
+computing the assignment.
 
 *Example.* `b^ω`, `ab·b^ω` and `aab·(bb)^ω` are lassos of `AsThenBs`; `ba·(ab)^ω` is a
 lasso outside it.
 
-**On finite words, the object is classical.** Sorting all finite words into finitely
+**On finite words, the object is classical.** Classifying all finite words into finitely
 many classes is the province of the syntactic monoid, a cornerstone of regular language
 theory [PP04]: a finite **monoid** — an associative product with a unit — carries the
-classes, and a morphism `φ(uv) = φ(u)·φ(v)` does the sorting, collapsing concatenation
-onto finitely many values.
+classes, and a morphism `φ(uv) = φ(u)·φ(v)` assigns each word its class, collapsing
+concatenation onto finitely many values.
 
 On *infinite* words, exactly one thing more is needed — a way to say "repeat this loop
 forever" — because no product of finite pieces expresses `v^ω`. Classically one
@@ -88,7 +89,7 @@ of Figure 1 — and "loop forever" will be read inside those five, with no secon
 **The idempotent power.** In a finite monoid the powers `s, s², s³, …` of any element
 cannot all be distinct, so the sequence is eventually periodic and contains a unique
 **idempotent**, written `s^ω` — the unique `s^n` (`n ≥ 1`) with `s^n·s^n = s^n`. Now
-read a loop `v` through a recognizer's sorting map `φ`: the values of
+read a loop `v` through a recognizer's morphism `φ`: the values of
 `v, vv, vvv, …` are the powers of `φ(v)`, so they settle on the idempotent `φ(v)^ω`.
 That is how "loop forever" is read without any infinite object at hand: iterate the
 loop's value until it stops changing, and keep that stable value.
@@ -99,7 +100,7 @@ of the *dead* words (`abab` puts an `a` after a `b`, and no continuation rescues
 that), itself idempotent — so `φ(ab)^ω` is the dead value: looping `ab` forever is
 exactly as dead as slipping once.
 
-**A linked pair names a lasso.** Reading `u·v^ω` through the sorting map `φ`
+**A linked pair names a lasso.** Reading `u·v^ω` through the morphism `φ`
 (Ramsey's theorem): the loop
 settles on the idempotent `e = φ(v)^ω` and the stem on `s = φ(u)·e`, with `s·e = s` (the
 stem precedes the loop and is absorbed by it). A **linked pair** is any `(s, e)` with
@@ -235,7 +236,7 @@ the letter classes always exists, and `M` is associative (Definition 3.1), so it
 value does not depend on how the `n`-fold product is parenthesized — one class per
 word. The fold is moreover a monoid
 morphism — `⟦u·v⟧ = ⟦u⟧·⟦v⟧`, `⟦ε⟧ = [ε]` — the only one agreeing with `λ` on the
-letters: it is §2's sorting map `φ`, realized on the table. On the diagram, `⟦u⟧` is
+letters: it is §2's morphism `φ`, realized on the table. On the diagram, `⟦u⟧` is
 exactly where the reading of `u` ends — one letter, one edge, from the root. Finally,
 recall (§3.1) that `(𝒞, M)` is a finite monoid, so every fold admits a unique
 idempotent power `⟦u⟧^ω` — the one power of `⟦u⟧` equal to its own square.
