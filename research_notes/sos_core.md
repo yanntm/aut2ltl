@@ -839,6 +839,97 @@ its `∼lin` is total: the finitary half is blind, and the whole of its non-LTL-
 situation for tail properties, not a corner case, and it is why a construction
 resting on residuals alone cannot even see it.
 
+### 4.4 The theorem: `𝓘(D) = 𝓘(L)`
+
+The two steps assemble into the constructed invariant, and the constructed
+invariant turns out to be §3.3's.
+
+**Definition 4.10 (the constructed invariant).** `𝓘(D) := ⟨𝒜(D), P(D)⟩`:
+
+- `𝒞`: the `∼`-classes of images of nonempty words, plus the adjoined `[ε]`; each
+  word class is keyed by the shortlex-smallest word whose enriched image lies in
+  it;
+- `λ`: `λ(x) :=` the class of `⟨x⟩` for `x ∈ Σ`, and `λ(ε) := [ε]`;
+- `M`: the induced product on word classes — well defined since `∼` is a two-sided
+  congruence (Lemma 4.8), closed since nonempty words concatenate to nonempty
+  words — with `[ε]` the identity by definition;
+- `P(D)`: for each pair `(s, e)` of word classes with `e·e = e` and `s·e = s`,
+  test the single lasso `w_s·(w_e)^ω` on `D`, `w_s` and `w_e` the keys; put
+  `(s, e)` in `P(D)` iff it is accepted.
+
+`𝒜(D)` is an algebra in the sense of Definition 3.1 — `[ε]` is isolated: no letter
+maps to it, and a product of word classes is a word class — and it is
+letter-generated: the fold of a nonempty word unwinds to its `∼`-class,
+`⟦w⟧ = [⟨w⟩]`.
+
+**Theorem 4.11 (the construction is the syntactic invariant).** For all nonempty
+`u, v`:
+
+```
+    ⟨u⟩ ∼ ⟨v⟩   ⟺   u ≈_L v.
+```
+
+Consequently `𝓘(D) = 𝓘(L)`: same classes, same keys, same `λ`, `M` and `P` —
+byte equality with Definition 3.6, whatever `D` presented `L`.
+
+*Proof.* (⟸) Let `u ≈_L v`. For `∼lin`: fix `q ∈ Reach`, say `q = δ(ι, x)`. A
+lasso `y·t^ω` lies in `L(st_{⟨u⟩}(q)) = (x·u)⁻¹L` iff `x·u·y·t^ω ∈ L`, iff (linear
+shape) `x·v·y·t^ω ∈ L`, iff `y·t^ω ∈ L(st_{⟨v⟩}(q))`; two regular ω-languages
+agreeing on all lassos are equal [PP04, Ch. I, Cor. 9.8], so the residuals are
+equal at every slot. For `∼ω`: fix `q = δ(ι, x) ∈ Reach` and `b ∈ EM(D)`; `EM(D)`
+is letter-generated, so `b = ⟨y⟩` for some `y ∈ Σ*`, and `u·y` is nonempty. By the
+collapse (Lemma 4.6), `Aprof(⟨u⟩·b)(q) = A(q, ⟨u·y⟩)` is the verdict of
+`x·(u·y)^ω`, which by the ω-power shape equals the verdict of `x·(v·y)^ω`, which
+is `Aprof(⟨v⟩·b)(q)`.
+
+(⟹) Let `⟨u⟩ ∼ ⟨v⟩`; both shapes of Definition 3.5 must be checked. Linear: for
+`x, y ∈ Σ*`, `t ∈ Σ⁺`, with `q := δ(ι, x) ∈ Reach`:
+`x·u·y·t^ω ∈ L ⟺ y·t^ω ∈ L(st_{⟨u⟩}(q))`, and `∼lin` with the residual equality
+stepping through `y` gives `L(δ(st_{⟨u⟩}(q), y)) = L(δ(st_{⟨v⟩}(q), y))` — so one
+verdict with `v` in place of `u`. ω-power: for `x, y ∈ Σ*`, with `q := δ(ι, x)`:
+`x·(u·y)^ω ∈ L ⟺ A(q, ⟨u·y⟩) = Aprof(⟨u⟩·⟨y⟩)(q)` (Lemma 4.6), and `∼ω` at
+`b = ⟨y⟩` equates it with `Aprof(⟨v⟩·⟨y⟩)(q)`, the verdict of `x·(v·y)^ω`.
+
+The components now match one by one. The map `[⟨u⟩] ↦ [u]` is, by the
+equivalence just proved, a bijection between the word classes of `𝒜(D)` and those
+of `𝒜(L)` under which each class holds exactly the same words — so the shortlex
+keys coincide, `λ` coincides on the letters, and both `M`'s are induced by
+concatenation of the same word classes. For the pair sets: linked pairs correspond
+under the bijection, and both `P(D)` and `P(L)` test the single lasso
+`w_s·(w_e)^ω` built from the shared keys — `D`'s verdict *is* membership in `L` —
+so the tests agree pair by pair. Identical components, identical keys: byte
+equality. ∎
+
+**Corollary 4.12.** (i) `L(𝓘(D)) = L(D)`, and `P(D)` is saturated — Theorem 3.8
+and Corollary 3.11 applied to `𝓘(L)`. (ii) Any two deterministic complete
+Emerson–Lei automata recognizing one language yield the byte-identical invariant.
+
+*Example (canonicity, exhibited).* Compute `𝓘(D)` from the run-parity `GF(aa)` of
+§4.1 — two states, a `Z₂` of transpositions, `|EM| = 10` — and again from the
+**reset** presentation (Figure 6): the same two states, but each letter sends
+*every* state to one place, an aperiodic transition monoid, `|EM| = 7`. The two
+automata are not isomorphic, and their transition monoids disagree even on whether
+a group is present. Both runs return the invariant of §3.4(a), byte for byte: six
+classes, `10 → 6` against `7 → 6`. The transposition was pure presentation, and
+Theorem 4.11's quotient is where it dies — while `Even` and `EvenBlocks` keep
+their `Z₂` (§3.4): those groups are `L`'s own.
+
+![Figure 6 — the reset presentation of GF(aa)](sos_figs/img/gf_aa_reset.png)
+
+*Figure 6 — the reset presentation of `GF(aa)`: `a` sends both states to "just saw
+`a`", whose `a`-self-loop carries the mark; `b` resets both. Read `!a` as this
+paper's `b`. Non-isomorphic to Figure 5's run-parity form, same language, same
+`𝓘`.*
+
+**The algorithm.** The theorem is also the procedure. The seed `R` groups elements
+of `EM(D)` by `∼lin`-class and profile — both read directly off `D`: residual
+equality of reached states, one loop verdict per slot. Moore refinement then
+splits a block whenever two members separate under a right letter,
+`e·⟨x⟩ ≁ f·⟨x⟩`, to fixpoint — at most `|EM(D)|` splits — and by Lemma 4.8 the
+result is exactly `∼`. `P(D)` is one lasso test per candidate linked pair.
+Everything downstream of `EM(D)` is polynomial in its size; the size itself is the
+subject of §5.
+
 ## 9. Complexity
 
 - Two costs, currently blurred, now split: the object is quadratic in `|𝒞|`; the
