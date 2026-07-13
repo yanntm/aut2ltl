@@ -8,23 +8,35 @@ borrow freely, never edit it. Dependents adapt to us, never the reverse.
 
 ## State
 
-**§2 through §3.2 are approved.** Everything else in the paper file — whatever its
-state of polish — is indicative at most: not reference, not important, not binding,
-rewritten when its turn comes.
+**§2 through §3.2 are approved.** **§3.3 (canonicity: Arnold Def 3.5, `𝓘(L)`
+Def 3.6, substitution 3.7, canonicity Thm 3.8, rotation 3.9 in shared-lasso form,
+saturation 3.10, Cor 3.11) and §3.4 (the examples, as invariants — old §3.6 adapted)
+are landed, pending user review.** Old §3.3–3.5 (moves apparatus, acceptance-layer
+definition, residuals) and the old §5 outline are deleted; residuals dropped without
+relocation. Everything else — old §4 "unlocks" outline included — is indicative at
+most, rewritten when its turn comes.
 
 ## TODO queue (next action first)
 
-1. **§3.3 "Canonicity: the invariant of `L`"** — drafted to the spec below, awaiting
-   user review; not in the paper file. Review, amend, land, commit.
-2. Parked, bites when §3.1 reopens: Def 3.1's isolation only constrains `λ`; the S¹
-   axiom (word classes closed under `M`, i.e. `⟦u⟧ = [ε] ⟺ u = ε`) is still missing,
-   and §3.3 needs it abstractly (`𝓘(L)` has it by construction).
-3. PP04 is now searchable (`papers/Perrin_Pin_2004_Book.txt`, OCR with artifacts but
-   readable). §2 cites audited and pinned (Ch. I Cor 9.8; Ch. II Thm 2.1, Thm 5.1,
-   §7). Still to read, feeds §3.3: Ch. II §8 (syntactic congruence — cross-check
-   Arnold), §2.2 (conjugacy of linked pairs — cite it, the notion is classical, as is
-   the Wilke axiom `s(ts)^ω = (st)^ω`; our claim is the congruence collapse, not the
-   identity). Also pending: Thm 5.1 statement verbatim, §7's theorem number.
+1. **User review of §3.3–§3.4** as landed. Then flush the spec below.
+2. **§4 rewrite — the construction** (agreed target): §4.1 recalls deterministic
+   complete Emerson–Lei semantics — pure citation, none of it ours — and introduces
+   the four automata (`aUGb` added to the three); `GF(aa)`'s reset presentation
+   arrives only at the canonicity exhibit. §4.2 onward is our meat: `EM(D)`, the two
+   right relations, the rotation collapse, the algorithm; closer `L(𝓘(D)) = L(D)`.
+   Note: the construction's saturation step reuses Cor 3.11's argument shape
+   (independent verdicts + shared lasso ⟹ saturated); the full biconditional stays
+   parked. Old "§4 unlocks" outline conflicts with this numbering — its fate
+   (post-construction section or Part B) is a user decision at that rewrite.
+3. Parked, bites when §3.1 reopens: Def 3.1's isolation only constrains `λ`; the S¹
+   axiom (word classes closed under `M`, i.e. `⟦u⟧ = [ε] ⟺ u = ε`) is still missing.
+   §3.3's Lemma 3.9 sidesteps it via the explicit letter-generated hypothesis.
+4. PP04 is searchable (`papers/Perrin_Pin_2004_Book.txt`, OCR artifacts, readable).
+   §2 cites audited and pinned (Ch. I Cor 9.8; Ch. II Thm 2.1, Thm 5.1, §7). Still
+   to read: Ch. II §8 (syntactic congruence — cross-check Arnold's Def 3.5), §2.2
+   (conjugacy of linked pairs — pin the cite now used in §3.3), Thm 5.1 statement
+   verbatim, §7's theorem number. Also [Arn85] itself: Def 3.5 is transcribed from
+   the reservoir, not yet checked against the original.
 
 ## §3.3 spec (redraft from here if the draft is lost)
 
