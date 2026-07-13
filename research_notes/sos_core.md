@@ -50,7 +50,8 @@ Consider the language of Carton and Perrin [CP97, Ex. 10] described by `a*·b^ω
 some `a`'s, then `b`'s forever — which we name `aUGb`. Its syntactic ω-semigroup
 is drawn in Figure 1.
 
-![Figure 1 — the invariant of aUGb](sos_core_figs/img/core_F0_astar_bomega.png) ![Figure 1′ — [ε] elided](sos_core_figs/img/core_F0_astar_bomega_b.png)
+| ![Figure 1 — the invariant of aUGb](sos_core_figs/img/core_F0_astar_bomega.png) | ![Figure 1′ — [ε] elided](sos_core_figs/img/core_F0_astar_bomega_b.png) |
+|:--:|:--:|
 
 *Figure 1 (left) — the syntactic ω-semigroup of `aUGb = a*·b^ω`: five classes of
 finite words, the letter map `λ` and the accepting pairs `P` beneath. It is the
