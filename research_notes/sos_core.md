@@ -224,13 +224,16 @@ pair.
 Let us now define the semantics — the language `L(𝓘)` of an invariant `𝓘 = ⟨𝒜, P⟩`.
 For this definition we need to introduce the notion of fold.
 
-**Definition 3.3 (folding).** Let `𝒜 = (𝒞, λ, M)` be an algebra over `Σ`, and
-`u = x₁x₂⋯xₙ ∈ Σ*` a finite word. The **fold** of `u` in `𝒜` is the class
-`⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being `⟦ε⟧ := λ(ε) = [ε]`.
+**Definition 3.3 (folding).** Let `𝒜 = (𝒞, λ, M)` be an algebra over `Σ`. The
+**fold** of `𝒜` is the map `⟦·⟧ : Σ* → 𝒞` extending the letter map to all finite
+words through the table: for `u = x₁x₂⋯xₙ ∈ Σ*`,
+`⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being `⟦ε⟧ := λ(ε) = [ε]`; we call
+`⟦u⟧` the fold of `u`.
 
-The fold is exactly where the reading of `u` ends on the diagram — one letter, one
-edge, from the root. By associativity the product needs no parentheses, and folding
-is compatible with concatenation: `⟦u·v⟧ = ⟦u⟧·⟦v⟧`.
+By associativity the product needs no parentheses, and the fold is a monoid
+morphism — `⟦u·v⟧ = ⟦u⟧·⟦v⟧`, `⟦ε⟧ = [ε]` — the only one agreeing with `λ` on the
+letters: it is §2's sorting map `φ`, realized on the table. On the diagram, `⟦u⟧` is
+exactly where the reading of `u` ends — one letter, one edge, from the root.
 
 **Definition 3.4 (language of an invariant).** Let `𝓘 = ⟨𝒜, P⟩` denote an invariant
 over `Σ`, and `w = u·v^ω ∈ Σ^ω` a lasso, its loop `v` nonempty. Let `e := ⟦v⟧^ω` be
