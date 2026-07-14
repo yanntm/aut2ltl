@@ -31,6 +31,29 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
 
 ## Todo — Engineering (in order; spec head has the details)
 
+0. **Simplify propositional tier — LANDED, recipe effect UNVERIFIED
+   (next action).** `ltl/simplify/context_pass.py` + algorithm.md
+   ("pass 1" propositional tier): a purely-propositional And/Or
+   sibling now asserts as a whole into the context, and a
+   propositional node consumes the context's care-set via
+   `prop_cofactor` (strictly-smaller acceptance = termination). This
+   targets the engine's NNF-guard folding gap —
+   `(a∧b) ∨ ((¬a∨¬b) ∧ XF(a∧b))` should collapse to `F(a∧b)` (guard
+   dies under Shannon, then pass-4 pair-fold). Package tests green:
+   `tests/probes/ltl/simplify/test_context_pass.py` CLEAN,
+   `test_random_equiv.py` 500/500 EQUIVALENT, 21.9% avg shrink, zero
+   growth. **NOT yet confirmed** that it collapses the target
+   specimens at the recipe level: last main run
+   (`survey --use sos2ltl_pairs --logs …`, CSV
+   `logs/rerun-pairs/validation/`) wrote a PARTIAL CSV (diff saw only
+   45 common rows) and size movers barely moved (recurrence_l10 95→94)
+   — re-run the full main, re-diff vs
+   `results/reference/validation/default.csv`, and eyeball
+   `guarantee.ltl:11` (`F(a&b)`, was 33ch/dag10) +
+   `obligation.ltl:4` (`Fa|Gb`, was 53ch/dag13). Specimens picked by
+   joining the two CSVs on `source` for daisy/daisy+strength2 rows
+   over the 20-char bar.
+
 1. **E11 — the decomposition fallback: IMPLEMENTED; operator-memo
    rewrite landed, pendency stall open.**
    `aut2ltl/sos2ltl/cascade/` (algorithm.md there), wired below the
@@ -125,7 +148,12 @@ non-LTL), Wagner ceiling ω³/ω⁴**. Tracked data: `reference/census/`
    (the automata baselines suggest one-piece-per-acceptance-reason);
    the pieces' presentations (the Cayley/Muller reference acceptor —
    deferred, "complete D later"; library gap: the ω-semigroup →
-   Muller automaton source, Perrin–Pin).
+   Muller automaton source, Perrin–Pin). The exact cover-SELECTION
+   optimizer (interval → smallest-algebra member via the bounded
+   quotient test / `hull_π`) is the `sos_giventhat` operation — that
+   link is for giventhat to make, NOT us: giventhat is downstream of
+   this paper in the publication DAG (it cites us [SωSX26]). §5.3b
+   states only the levers + the liberty and stops there.
 
 ## Machinery / conventions (user-set; keep)
 
