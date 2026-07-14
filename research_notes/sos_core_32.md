@@ -1,39 +1,37 @@
-# sos_core_32 — proposed §3.2 (full text) and the re-cut of §3.3+ (v2)
+# sos_core_32 — proposed §3.2–3.3 (full text) and the re-cut of the rest of §3 (v3)
 
-Standalone for review, not yet fused; companion to `sos_core_33.md`. v2 after
-discussion: **one law only** — "generated"/"admissible"/"well-formed" are gone
-from the vocabulary; *saturated* is the adjective, *recognizes* the verb.
-Reachability is not a semantic law: classes no word folds to are inert, and
-trimming them is §3.3's business (canonicity), mentioned once inside `reduce`.
-The law's domain does the work instead: stated on **word classes** (a prose
-term the base paper already uses, no new symbol), saturation is equivalent to
-one-verdict-per-lasso *unconditionally* — the `g·h ∈ 𝒲` side condition and the
-`[ε]` corner case of the previous drafts evaporate.
-
-Item numbering: 3.3 fold, 3.4 saturation, 3.5 query, 3.6 recognition,
-3.7 rotation, 3.8 names — so `sos_core_33.md` §3.9–3.15 still applies as the
-new §3.3, with the citation substitutions listed in Part 2.
+Standalone for review, not yet fused; companion to `sos_core_33.md`. v3 after
+review: definition titles name the defined object with its notation; "query" →
+**reading**; "word classes" deleted — the law quantifies over all classes, the
+rotation lemma is stated on words, the converse is a scoped corollary;
+conjugacy split from saturation and credited to PP04 at the definition; the
+fold example reworked on Figure 1′ around the two §2 lassos; the aUGb example
+now states its structural check; `𝒵` gets a proper definition and its own
+figure (to generate); the old §3.2 is **split in two** — semantics (§3.2) and
+the proofs (§3.3, "One lasso, many names") — and the running examples move
+**before** canonization: §3.4 examples, §3.5 canonization.
 
 ---
 
-## Part 1 — §3.2, full text
+## Part 1 — §3.2 and §3.3, full text
 
-### 3.2 Semantics: the language of an invariant
+### 3.2 Semantics: the language of a saturated invariant
 
 An invariant decides lassos with the data it carries and nothing else: `λ`
 assigns each letter its class, the algebra's `M` extends that assignment to
 every finite word — stem and loop alike — and `P` lists the pairs that accept.
-But §3.1 is syntax only: for an invariant to act as a recognizer of a
-language, its acceptance layer must obey a law. This section extends `λ` to
-words (the fold), states the law (saturation), and proves the law is exactly
-what a semantics requires: a saturated invariant gives every lasso one
-verdict — it recognizes a language (Theorem 3.6).
+But §3.1 is syntax only: for an invariant to recognize a language, its pair
+set must obey a law. This section extends `λ` to words (the fold), states the
+law (saturation), and delivers the semantics: a saturated invariant reads
+every lasso to one verdict, and the accepted lassos form a regular language
+(Theorem 3.8). That the law is exactly right — necessary as well as
+sufficient — is §3.3's subject.
 
-**Definition 3.3 (fold).** Let `𝒜 = (𝒞, λ, M)` be an algebra over `Σ`. The
-**fold** of `𝒜` is the map `⟦·⟧ : Σ* → 𝒞` extending the letter map to all finite
-words through the algebra: for `u = x₁x₂⋯xₙ ∈ Σ*`,
-`⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being `⟦ε⟧ := λ(ε) = [ε]`; we
-call `⟦u⟧` the fold of `u`.
+**Definition 3.3 (fold `⟦u⟧` of a finite word `u`).** Let `𝒜 = (𝒞, λ, M)` be
+an algebra over `Σ`. The **fold** of `𝒜` is the map `⟦·⟧ : Σ* → 𝒞` extending
+the letter map to all finite words through the algebra: for
+`u = x₁x₂⋯xₙ ∈ Σ*`, `⟦u⟧ := λ(x₁)·λ(x₂)·⋯·λ(xₙ)`, the empty product being
+`⟦ε⟧ := λ(ε) = [ε]`; we call `⟦u⟧` the fold of `u`.
 
 The fold is well defined: `M` is a total function and associative
 (Definition 3.1), so the product of the letter classes always exists and its
@@ -42,88 +40,140 @@ moreover a monoid morphism — `⟦u·v⟧ = ⟦u⟧·⟦v⟧`, `⟦ε⟧ = [ε]
 agreeing with `λ` on the letters: on nonempty words it is §2's morphism `φ`,
 realized on the algebra, and the adjoined `[ε]` extends it to the empty word.
 
-*Example.* On Figure 1 (`aUGb`), the fold of a word is where its reading ends —
-one letter, one edge, from the root: `⟦aab⟧ = [a]·[a]·[b] = [a·b]`, and
-`⟦ba⟧ = [b]·[a] = [b·a]`, the dead class.
+*Example.* §2 read two lassos on Figure 1: `aab·b^ω`, in `aUGb`, and
+`ba·(ab)^ω`, outside it. Their pieces fold on Figure 1′, one edge per letter
+from `[ε]`: `⟦aab⟧ = [a·b]` — the first `a` enters `[a]`, the second stays
+there (`[a]·[a] = [a]`, the self-loop), the `b` moves on to `[a·b]`. And
+`⟦ba⟧ = [b]·[a] = [b·a]` — the class of the *dead* words (§3.1): an `a` after
+a `b`, which no continuation rescues, so the walk never leaves it again. The
+loops fold the same way, `⟦b⟧ = [b]` and `⟦ab⟧ = [a·b]`. What the reading of a
+whole lasso does with these four values is Definition 3.7 — the pieces are
+ready.
 
-**Word classes.** Call a class a **word class** when it is the fold of some
-nonempty word. The word classes are closed under `M` — a product of folds is
-the fold of the concatenation — and computable by one breadth-first walk of the
-letter actions from `λ(Σ)`. In the canonical invariants of §3.3 the word
-classes are exactly `𝒞 ∖ {[ε]}`; an arbitrary algebra may also carry classes
-that no word folds to — inert data, as the semantics below makes plain — and
-may fold nonempty words onto its identity.
-
-**The law.** A lasso does not choose its presentation:
-`u·v^ω = (uv)·v^ω = u·(v²)^ω = (u·v₁)·(v₂·v₁)^ω` whenever `v = v₁·v₂` — one
-ω-word, cut differently. Whatever acceptance `P` encodes must not depend on the
-cut, and the moves that change a cut act on classes through one schema — a
+**A lasso does not choose its cut.** §2 read a lasso through a morphism: the
+loop settles on an idempotent `e`, the stem on an `s` absorbed by it, and the
+linked pair `(s, e)` names the lasso. It also warned: one lasso, many names —
+`a·(ba)^ω = ab·(ab)^ω`, one ω-word, presented with the cut between stem and
+loop placed differently. Whatever acceptance `P` encodes must not depend on
+the cut, and the moves that change a cut are generated by one schema — a
 factor carried from the loop's front onto the stem,
-`u·v₁·(v₂v₁)^ω = u·(v₁v₂)^ω`, a **rotation**. The law closes `P` under it.
+`u·v₁·(v₂v₁)^ω = u·(v₁v₂)^ω`. Its image on classes is the classical conjugacy
+of linked pairs; one identity prepares it.
 
-**Definition 3.4 (conjugacy; saturation).** Over an algebra `𝒜`, call two
-pairs of classes **conjugate** when they are connected by the equivalence
-generated by the **rotation steps**
+**Lemma 3.4 (exchange: `c·(dc)^ω = (cd)^ω·c`).** In any algebra, for all
+classes `c, d`: `c·(dc)^ω = (cd)^ω·c`.
+
+*Proof.* Associativity gives `c·(dc)^m = (cd)^m·c` for every `m ≥ 1`. Pick
+`k₁, k₂ ≥ 1` with `(cd)^{k₁} = (cd)^ω` and `(dc)^{k₂} = (dc)^ω`; at
+`m := k₁·k₂` both powers are the idempotent powers simultaneously —
+`(cd)^m = ((cd)^{k₁})^{k₂} = (cd)^ω`, likewise `(dc)^m = (dc)^ω` — so
+`c·(dc)^ω = (cd)^ω·c`. ∎
+
+**Definition 3.5 (conjugate pairs [PP04, Ch. II, Prop. 2.6]).** Over an
+algebra `𝒜`, the **rotation step** at classes `s, c, d` with `s·(cd)^ω = s`
+relates the pairs
 
 ```
-    (s, (c·d)^ω)  ∼  (s·c, (d·c)^ω),        s, c, d word classes with s·(cd)^ω = s.
+    (s, (cd)^ω)   ∼   (s·c, (dc)^ω).
 ```
 
-A pair set `P` is **saturated** when it is closed under conjugacy —
-equivalently, under each rotation step:
+Both are linked pairs: `(cd)^ω` is idempotent and absorbed by hypothesis;
+`(dc)^ω` is idempotent and `(s·c)·(dc)^ω = s·(cd)^ω·c = s·c` by exchange
+(Lemma 3.4). Two linked pairs are **conjugate** when a chain of rotation
+steps connects them. Stem extension is the degenerate step `c = d`: the loop's
+value is unchanged and the stem absorbs one turn.
+
+**Definition 3.6 (saturated invariant).** An invariant `𝓘 = ⟨𝒜, P⟩` is
+**saturated** when `P` is closed under conjugacy: for every rotation step,
 
 ```
     (s, (cd)^ω) ∈ P   ⟺   (s·c, (dc)^ω) ∈ P.
 ```
 
-A **saturated invariant** is an invariant whose pair set is saturated.
+Saturation is a property of finitely many objects: at most `|𝒞|³` triples
+generate rotation steps, each decided inside the algebra — no word, no lasso,
+no language is consulted. Whether an invariant is saturated is thus decided by
+inspection of its components; that this finite condition governs the reading
+of every lasso is Theorem 3.8.
 
-Both sides of a rotation step are linked pairs — `(cd)^ω` is idempotent by
-construction and `s` absorbs it by hypothesis; that the rotated pair is linked
-too is an algebra identity proved with Lemma 3.7. Stem extension is the
-degenerate rotation `c = d`: the loop's value is unchanged and the stem absorbs
-one turn. Conjugacy of linked pairs is classical [PP04, Ch. II, Prop. 2.6];
-saturation is checkable on the algebra — finitely many triples `(s, c, d)`,
-each one product and two lookups.
+*Example.* On Figure 1 (`aUGb`), conjugacy moves nothing: in every rotation
+step the stem absorbs the factor it receives (`s·c = s`) and the rotated loop
+re-folds to the same idempotent (`(dc)^ω = (cd)^ω`), so every linked pair is
+conjugate only to itself. The check: the loops of the six linked pairs are the
+idempotents `[a]`, `[b]`, `[b·a]`. A product `cd` with idempotent power `[a]`
+must equal `[a]`, forcing `c ∈ {[ε], [a]}` — which the stems paired with `[a]`
+(`[a]` and `[b·a]`) absorb, while `dc` stays in `{[a]}`; symmetrically for
+`[b]`, whose stems `[b]`, `[a·b]`, `[b·a]` all absorb `[b]`; and the only stem
+paired with the loop `[b·a]` is `[b·a]` itself, the zero, which absorbs
+everything, while `dc` re-folds to `[b·a]`. Every pair set over this algebra
+is therefore saturated: each of the 2⁶ subsets of the six linked pairs is a
+legal acceptance layer.
 
-*Example.* On Figure 1 (`aUGb`), every conjugacy class is a singleton —
-whatever factor a rotation moves, the dead class absorbs it, and the two
-accepting stems absorb their loops — so every pair set over this algebra is
-saturated, Figure 1's included: each of the 2⁶ subsets of its six linked pairs
-is a legal acceptance layer. The law has teeth on other algebras: the
-discussion below builds the minimal offender, and `Even` (§3.4) houses a
-genuine two-name conjugacy inside a useful invariant.
+**Definition 3.7 (reading of a lasso).** Let `𝓘 = ⟨𝒜, P⟩` be an invariant and
+`α ∈ Σ^ω` a lasso. A **presentation** of `α` is a pair `(u, v)`, `u ∈ Σ*`,
+`v ∈ Σ⁺`, with `α = u·v^ω`. Its **reading** is the pair `(⟦u⟧·e, e)`, where
+`e := ⟦v⟧^ω` — the loop folded to its idempotent power, the stem folded and
+absorbing it — and the reading **accepts** iff that pair belongs to `P`. A
+pair that is the reading of some presentation of `α` is a **name** of `α`.
 
-**Definition 3.5 (presentation; query).** Let `𝓘 = ⟨𝒜, P⟩` be an invariant
-over `Σ`. A **presentation** of a lasso `α ∈ Σ^ω` is a pair `(u, v)` with
-`u ∈ Σ*`, `v ∈ Σ⁺` and `α = u·v^ω`. The presentation **folds to** the pair of
-classes `(⟦u⟧·e, e)`, where `e := ⟦v⟧^ω` is the idempotent power of the fold of
-the loop; and the **query** of `(u, v)` on `𝓘` **accepts** iff that pair is
-listed:
+Every name is a linked pair of folds of nonempty words: `e² = e` and
+`(⟦u⟧·e)·e = ⟦u⟧·e` by construction, and picking `k ≥ 1` with `⟦v⟧^k = e`
+exhibits `e = ⟦v^k⟧` and `⟦u⟧·e = ⟦u·v^k⟧`. Pairs of `P` that name no lasso
+are inert: no reading consults them.
+
+*Example.* On Figure 1′ (`aUGb`), the four values of the fold example
+assemble. For `aab·b^ω` presented `(aab, b)`: the loop's fold `[b]` is already
+idempotent, so `e = [b]`; the stem's fold `[a·b]` absorbs it,
+`[a·b]·[b] = [a·b]`; the reading is `([a·b], [b])`, listed in `P` — accepted.
+For `ba·(ab)^ω` presented `(ba, ab)`: the loop's fold `[a·b]` is not
+idempotent — its square `[b·a]` is, so `e = [b·a]` — and the stem's fold
+`[b·a]` absorbs it; the reading is `([b·a], [b·a])`, not listed — rejected. On
+the drawing, a reading is §3.1's walk made algebraic: a finite path that ends
+circling a cycle, the name recording where the path settled and what the
+cycle folds to.
+
+**A lasso read twice.** A lasso has many presentations, and Definition 3.7
+reads each on its own — nothing yet says two readings of one lasso agree, and
+for an arbitrary pair set they do not. Let `𝒵` be the **mod-2 counter** over
+`Σ = {a, b}`, an algebra built to fail: three classes
+`𝒞 = {[ε], [a], [a·a]}`, both letters sharing one class,
 
 ```
-    (u, v)  accepted   iff   (⟦u⟧·e, e) ∈ P,      e := ⟦v⟧^ω.
+ λ(a) = λ(b) = [a]
+ ·a = ·b :   [ε]↦[a]      [a]↦[a·a]      [a·a]↦[a]
 ```
 
-Say a pair of classes **names** the lasso `α` when some presentation of `α`
-folds to it. A name is a linked pair — `e² = e` by construction, and
-`(⟦u⟧·e)·e = ⟦u⟧·e` — and a pair of word classes: pick `k ≥ 1` with
-`⟦v⟧^k = e`; then `e = ⟦v^k⟧` and `⟦u⟧·e = ⟦u·v^k⟧`, folds of nonempty words.
-Pairs of `P` that name no lasso — non-linked pairs, pairs touching a class no
-word folds to — are inert: no query ever consults them.
+— the fold of a word is the parity of its length.
 
-*Example.* On Figure 1 (`aUGb`), the two presentations we have been reading
-since §2. For `(aab, b)`: the loop folds to `⟦b⟧ = [b]`, already idempotent, so
-`e = [b]`; the stem folds to `⟦aab⟧ = [a·b]` and `[a·b]·[b] = [a·b]`. The pair
-`([a·b], [b])` is in `P`: the query accepts. For `(ba, ab)`: the loop folds to
-`⟦ab⟧ = [a·b]`, not idempotent — its square `[b·a]` is — so `e = [b·a]`; the
-stem folds to `[b·a]` and `[b·a]·[b·a] = [b·a]`. The pair `([b·a], [b·a])` is
-not in `P`: rejected, as §2 announced.
+![Figure Z — the mod-2 counter 𝒵](sos_core_figs/img/core_F4_mod2.png)
 
-**Theorem 3.6 (recognition).** Let `𝓘 = ⟨𝒜, P⟩` be an invariant. The query
-gives every presentation of every lasso one verdict iff `P` is saturated. The
-accepted lassos of a saturated `𝓘` are then exactly the lassos of the regular
-language
+*Figure Z — the mod-2 counter `𝒵`, drawn as Figure 1′ (`[ε]` elided): the
+two-cycle `[a] ⇄ [a·a]`, both legs labeled `[a]` — both letters act as one
+class, and no other edge exists.*
+
+The only idempotent among `[a]`'s powers is `[a·a]`, so `[a]^ω = [a·a]`, and
+the linked pairs are `([a], [a·a])` and `([a·a], [a·a])`. Now read `a^ω`
+twice. Presented `(ε, a)`: `e = [a·a]`, stem `[ε]·[a·a] = [a·a]` — the name
+`([a·a], [a·a])`. Presented `(a, a)`: stem `[a]·[a·a] = [a]` — the name
+`([a], [a·a])`. One ω-word, two names, one per parity of the stem: the fold
+counts the parity of the *cut*, and the cut is the presentation's choice, not
+the word's. A pair set holding one name and not the other — say
+`P = {([a·a], [a·a])}` — reads the single word `a^ω` both accepted and
+rejected: it recognizes nothing. Saturation forbids exactly this: the rotation
+step at `([a·a], [a], [a])` relates the two names, so a saturated `P` holds
+both or neither. Over `𝒵` the saturated pair sets are `∅` and the full
+two-pair set — recognizing (Theorem 3.8) `∅` and `Σ^ω`, the two languages
+blind to the cut. Nor is `𝒵` an artificial pathology: it is the counting core
+of `Even` (§3.4), where the same two-name conjugacy returns with genuine
+acceptance data at stake.
+
+Saturation is exactly what makes the readings of one lasso agree, and the
+agreed verdicts trace a regular language:
+
+**Theorem 3.8 (the language `L(𝓘)` of a saturated invariant).** Let
+`𝓘 = ⟨𝒜, P⟩` be a saturated invariant. Then all presentations of one lasso
+read to one verdict, and the accepted lassos are exactly the lassos of the
+regular language
 
 ```
     L(𝓘)  :=  ⋃ { fold⁻¹(s)·(fold⁻¹(e) ∩ Σ⁺)^ω  :  (s, e) ∈ P,  e·e = e,  s·e = s },
@@ -131,82 +181,73 @@ language
 
 the unique regular language with those lassos: `𝓘` **recognizes** `L(𝓘)`.
 
-Both directions of the iff, and the language identity, rest on the names of
-lassos, and the rest of the section earns them: a witness that saturation is
-necessary (Lemma 3.7), a chase showing it suffices (Lemma 3.8), then the
-assembled proof.
+The proof owes one fact — any two names of one lasso are conjugate — and the
+law owes one justification — that it demands no more than the lassos
+themselves do. Both are the subject of §3.3, where the theorem is proved. The
+sections after it consume it: §3.4 meets the running examples as saturated
+invariants, and §3.5 computes, among all the invariants recognizing one
+language, a canonical one.
 
-**Why the law is exactly right.** First, the violation, made minimal. Let `𝒵`
-be the **mod-2 counter** over `Σ = {a, b}`: three classes
-`𝒞 = {[ε], [a], [a·a]}`, both letters sharing a class — `λ(a) = λ(b) = [a]` —
-and products `[a]·[a] = [a·a]`, `[a·a]·[a] = [a]`, `[a·a]·[a·a] = [a·a]`: the
-fold of a word is the parity of its length. The only idempotent word class is
-`[a·a] = [a]^ω`, and the linked pairs of word classes are `([a], [a·a])` and
-`([a·a], [a·a])`. Now present `a^ω` twice: `(ε, a)` folds to
-`([ε]·[a·a], [a·a]) = ([a·a], [a·a])`, while `(a, a)` folds to
-`([a]·[a·a], [a·a]) = ([a], [a·a])` — one ω-word, two names, one per parity of
-the stem. A pair set holding one name and not the other — say
-`P = {([a·a], [a·a])}` — answers the single word `a^ω` both yes and no: no
-verdict, no language. The flaw is visible in what the fold counts: the parity
-of the *cut* between stem and loop — and the cut is the presentation's choice,
-not the word's. The law forbids exactly this: the rotation step at
-`(s, c, d) = ([a·a], [a], [a])` connects the two names, so a saturated `P`
-holds both or neither. The saturated pair sets over `𝒵` are exactly `∅` and
-the full two-pair set, recognizing `∅` and `Σ^ω` — the two languages blind to
-the cut. That `Σ^ω` here rides on three classes where two suffice (§3.3) is a
-different excess — presentation, not contradiction — and canonization, not the
-law, removes it.
+### 3.3 One lasso, many names
 
-`𝒵` violates by hand; the general fact is that *every* rotation step is
-witnessed by a lasso, so no unsaturated `P` ever survives:
+This section proves Theorem 3.8 and shows the law is tight. The pivot is the
+rotation move §2 promised to reconcile the many names of one lasso, and it
+serves beyond this section: here it delimits the pair sets that mean anything;
+in §3.5 it powers canonization; in §4, the construction from automata.
 
-**Lemma 3.7 (rotation).** Let `s, c, d` be word classes of an algebra `𝒜` with
-`s·(cd)^ω = s`. Then `(s·c, (dc)^ω)` is a linked pair, and some lasso is named
-by both `(s, (cd)^ω)` and `(s·c, (dc)^ω)`.
+**Lemma 3.9 (rotation).** For all `u ∈ Σ*` and `v₁, v₂ ∈ Σ⁺`, the lasso
+`α := u·(v₁v₂)^ω` is named by both pairs of the rotation step at `(s, c, d)`,
+where `c := ⟦v₁⟧`, `d := ⟦v₂⟧` and `s := ⟦u⟧·(cd)^ω`:
 
-*Proof.* First the algebra identities. Associativity gives
-`c·(dc)^m = (cd)^m·c` for every `m ≥ 1`. Pick `k₁, k₂ ≥ 1` with
-`(cd)^{k₁} = (cd)^ω` and `(dc)^{k₂} = (dc)^ω`, and set `m := k₁·k₂`: then
-`(cd)^m = ((cd)^{k₁})^{k₂} = (cd)^ω` and likewise `(dc)^m = (dc)^ω`, so
-`c·(dc)^ω = (cd)^ω·c`. Hence `(dc)^ω` is idempotent and
-`(s·c)·(dc)^ω = s·(cd)^ω·c = s·c`: the rotated pair is linked. Now pick
-nonempty words `u, v₁, v₂` with `⟦u⟧ = s`, `⟦v₁⟧ = c`, `⟦v₂⟧ = d` — they
-exist, the three classes being word classes — and consider the single ω-word
-`α := u·(v₁v₂)^ω`. The presentation `(u, (v₁v₂)^m)` folds to
-`(s·(cd)^ω, (cd)^ω) = (s, (cd)^ω)`; the presentation `(u·v₁, (v₂v₁)^m)` — the
-same ω-word, `u·(v₁v₂)^ω = u·v₁·(v₂v₁)^ω` — folds to
-`(s·c·(dc)^ω, (dc)^ω) = (s·c, (dc)^ω)`. So `α` is named by both. ∎
+```
+    (s, (cd)^ω)    and    (s·c, (dc)^ω).
+```
+
+Consequently every rotation step whose three classes are folds — `s` of any
+word, `c` and `d` of nonempty words — relates two names of one lasso.
+
+*Proof.* `s·(cd)^ω = s` holds by idempotency, so the step exists. Pick
+`m ≥ 1` with `(cd)^m = (cd)^ω` and `(dc)^m = (dc)^ω` simultaneously (as in
+Lemma 3.4). The presentation `(u, (v₁v₂)^m)` of `α` reads to
+`(⟦u⟧·(cd)^ω, (cd)^ω) = (s, (cd)^ω)`. The presentation `(u·v₁, (v₂v₁)^m)` —
+the same ω-word, `u·(v₁v₂)^ω = u·v₁·(v₂v₁)^ω` — reads to
+`(⟦u⟧·c·(dc)^ω, (dc)^ω)`, and `⟦u⟧·c·(dc)^ω = ⟦u⟧·(cd)^ω·c = s·c` by exchange
+(Lemma 3.4). So `α` is named by both. For the consequence: a rotation step at
+folds `s' = ⟦u⟧`, `c = ⟦v₁⟧`, `d = ⟦v₂⟧` with `s'·(cd)^ω = s'` satisfies
+`s := ⟦u⟧·(cd)^ω = s'`. ∎
 
 The missing half is that *all* names of one lasso are conjugate, and it is a
 chase of three moves:
 
-**Lemma 3.8 (the names of a lasso).** In any algebra, any two names of one
-lasso are conjugate.
+**Lemma 3.10 (the names of a lasso).** Any two names of one lasso are
+conjugate.
 
-*Proof.* Three preliminary observations. *(Powering.)* For `k ≥ 1`, the
-presentations `(u, v)` and `(u, v^k)` fold to one pair: the powers of
-`⟦v^k⟧ = ⟦v⟧^k` are powers of `⟦v⟧`, each set holds exactly one idempotent, so
-`⟦v^k⟧^ω = ⟦v⟧^ω =: e`; and the stems agree, `⟦u⟧·e` both. *(Absorption.)*
-`e·⟦v⟧ = ⟦v⟧·e` — powers of one element commute. *(One turn.)* For any word
-class `s` with `s·e = s`, the rotation step at `(s, ⟦v⟧, ⟦v⟧)` — legal: `⟦v⟧`
-is a word class and `(⟦v⟧·⟦v⟧)^ω = e`, so the stem absorbs — connects `(s, e)`
-to `(s·⟦v⟧, e)`.
+*Proof.* Three preliminary observations, for any presentation `(u, v)`, with
+`e := ⟦v⟧^ω`. *(Powering.)* `(u, v)` and `(u, v^k)` (`k ≥ 1`) read to one
+pair: the powers of `⟦v^k⟧ = ⟦v⟧^k` are powers of `⟦v⟧`, each set holds
+exactly one idempotent, so `⟦v^k⟧^ω = e`; and the stems agree, `⟦u⟧·e` both.
+*(Absorption.)* `e·⟦v⟧ = ⟦v⟧·e` — powers of one element commute. *(One
+turn.)* For any class `s` with `s·e = s`, the rotation step at
+`(s, ⟦v⟧, ⟦v⟧)` — whose hypothesis is `s·(⟦v⟧⟦v⟧)^ω = s·e = s` — connects
+`(s, e)` to `(s·⟦v⟧, e)`.
 
 Now let `(u, v)` and `(u', v')` present one lasso `α`, say `|u| ≤ |u'|`
-(conjugacy is symmetric). Both stems are prefixes of `α` and the tail after `u`
-is `v^ω`, so `u' = u·z` with `z` a prefix of `v^ω`: write `z = v^q·v₁` with
-`0 ≤ |v₁| < |v|`, and split `v = v₁·v₂` (`v₂` nonempty). The tail of `α` after
-`u'` is then `(v₂·v₁)^ω`, so `(u', v₂v₁)` is a third presentation of `α`.
+(conjugacy is symmetric). Both stems are prefixes of `α` and the tail after
+`u` is `v^ω`, so `u' = u·z` with `z` a prefix of `v^ω`: write `z = v^q·v₁`
+with `0 ≤ |v₁| < |v|`, and split `v = v₁·v₂` (`v₂` nonempty). The tail of `α`
+after `u'` is then `(v₂·v₁)^ω`, so `(u', v₂v₁)` is a third presentation of
+`α`.
 
 *The names of `(u, v)` and `(u', v₂v₁)` are conjugate.* Choose `m ≥ 1` with
-`⟦v⟧^m = e` and `(⟦v₂⟧⟦v₁⟧)^m = (⟦v₂⟧⟦v₁⟧)^ω =: f` simultaneously (the product
-trick of Lemma 3.7). Applying *(one turn)* `q` times connects `(⟦u⟧·e, e)`, the
-name `(u, v)` folds to, with `(⟦u⟧·⟦v⟧^q·e, e)`, the name `(u·v^q, v)` folds
-to. If `v₁ = ε` that presentation is `(u', v)` and `v₂v₁ = v`: done. Otherwise
-one rotation step at the triple `(⟦u⟧⟦v⟧^q·e, ⟦v₁⟧, ⟦v₂⟧)` — legal: `⟦v₁⟧` and
-`⟦v₂⟧` are word classes, and the stem absorbs `(⟦v₁⟧·⟦v₂⟧)^ω = ⟦v⟧^ω = e` —
-connects it further to `(⟦u⟧⟦v⟧^q·e·⟦v₁⟧, f)`, and that pair is the name
-`(u', v₂v₁)` folds to: by *(absorption)* and `c·(dc)^m = (cd)^m·c`,
+`⟦v⟧^m = e` and `(⟦v₂⟧⟦v₁⟧)^m = (⟦v₂⟧⟦v₁⟧)^ω =: f` simultaneously (as in
+Lemma 3.4). Applying *(one turn)* `q` times connects `(⟦u⟧·e, e)`, the
+reading of `(u, v)`, with `(⟦u⟧·⟦v⟧^q·e, e)`, the reading of `(u·v^q, v)`. If
+`v₁ = ε` that presentation is `(u', v)` and `v₂v₁ = v`: done. Otherwise the
+rotation step at `(⟦u⟧⟦v⟧^q·e, ⟦v₁⟧, ⟦v₂⟧)` — its hypothesis holds, the stem
+absorbing `(⟦v₁⟧·⟦v₂⟧)^ω = ⟦v⟧^ω = e` — connects it further to
+`(⟦u⟧⟦v⟧^q·e·⟦v₁⟧, f)`, and that pair is the reading of `(u', v₂v₁)`: by
+*(absorption)* and the associativity identity
+`⟦v₁⟧·(⟦v₂⟧⟦v₁⟧)^m = (⟦v₁⟧⟦v₂⟧)^m·⟦v₁⟧`,
 
 ```
     ⟦u⟧⟦v⟧^q·e·⟦v₁⟧  =  ⟦u⟧⟦v⟧^{q+m}·⟦v₁⟧  =  ⟦u⟧⟦v⟧^q·⟦v₁⟧·(⟦v₂⟧⟦v₁⟧)^m  =  ⟦u'⟧·f.
@@ -219,158 +260,159 @@ is a common power, `v'^{|v₂v₁|} = (v₂v₁)^{|v'|}` as finite words, and
 `(u', v'^{|v₂v₁|})`, `(u', (v₂v₁)^{|v'|})` and `(u', v₂v₁)`. Chaining: the
 names of `(u, v)` and `(u', v')` are conjugate. ∎
 
-*Proof of Theorem 3.6.* *(Saturated ⟹ one verdict.)* Two presentations of one
-lasso fold to conjugate names (Lemma 3.8); a saturated `P` is closed under the
-rotation steps that generate conjugacy, so conjugate pairs are both in or both
-out of `P` — one verdict.
-
-*(One verdict ⟹ saturated.)* Let word classes `s, c, d` satisfy
-`s·(cd)^ω = s`. Lemma 3.7 exhibits one lasso and two of its presentations
-folding to `(s, (cd)^ω)` and `(s·c, (dc)^ω)`; one verdict on that lasso puts
-the two pairs on one side of `P`.
+*Proof of Theorem 3.8.* *(One verdict.)* Two presentations of one lasso read
+to conjugate names (Lemma 3.10); a saturated `P` is closed under the rotation
+steps that generate conjugacy, so conjugate pairs are both in or both out of
+`P` — one verdict.
 
 *(The accepted lassos are the lassos of `L(𝓘)`.)* Let `α` be accepted: every
-presentation `(u, v)` folds to one pair `(s, e) ∈ P`, `e := ⟦v⟧^ω`. Pick `k`
+presentation `(u, v)` reads to one pair `(s, e) ∈ P`, `e := ⟦v⟧^ω`. Pick `k`
 with `⟦v⟧^k = e`: the stem block `u·v^k` folds to `⟦u⟧·⟦v⟧^k = ⟦u⟧·e = s`, the
 loop blocks `v^k` fold to `e`, so `α = (u·v^k)·(v^k)^ω` lies in the member of
 the union indexed by `(s, e)`. Conversely let `α` be a lasso of `L(𝓘)`:
 `α = w₀·w₁·w₂⋯` with `⟦w₀⟧ = s`, `⟦w_j⟧ = e` for `j ≥ 1`, `(s, e) ∈ P`,
 `e² = e`, `s·e = s`; and let `(u, v)` present `α`. The block boundaries
-`b_j := |w₀⋯w_j|` are infinitely many, so two of them, `m := b_j < m' := b_{j'}`,
-lie beyond `|u|` and agree modulo `|v|`. The prefix `α[0, m) = w₀⋯w_j` folds to
-`s·e^j = s`. Position `m` sits in the `v`-periodic tail at phase
-`r := (m − |u|) mod |v|`: split `v = v₁·v₂` with `|v₁| = r`; the tail of `α`
-after `m` is `(v₂v₁)^ω`, and `m' − m` is a multiple of `|v|`, so the segment
-`α[m, m') = (v₂v₁)^{(m'−m)/|v|}` — nonempty, and folding to `e^{j'−j} = e`.
-Thus `(α[0, m), α[m, m'))` is a presentation of `α` whose loop folds to the
-idempotent `e` directly: it folds to `(s·e, e) = (s, e) ∈ P`. One of `α`'s
-presentations accepts, hence — one verdict — all do.
+`b_j := |w₀⋯w_j|` are infinitely many, so two of them,
+`m := b_j < m' := b_{j'}`, lie beyond `|u|` and agree modulo `|v|`. The prefix
+`α[0, m) = w₀⋯w_j` folds to `s·e^j = s`. Position `m` sits in the `v`-periodic
+tail at phase `r := (m − |u|) mod |v|`: split `v = v₁·v₂` with `|v₁| = r`; the
+tail of `α` after `m` is `(v₂v₁)^ω`, and `m' − m` is a multiple of `|v|`, so
+the segment `α[m, m') = (v₂v₁)^{(m'−m)/|v|}` — nonempty, and folding to
+`e^{j'−j} = e`. Thus `(α[0, m), α[m, m'))` is a presentation of `α` whose loop
+folds to the idempotent `e` directly: it reads to `(s·e, e) = (s, e) ∈ P`. One
+of `α`'s presentations accepts, hence — one verdict — all do.
 
 *(Regularity and uniqueness.)* Each `fold⁻¹(c)` is recognized by the finite
 monoid `(𝒞, M)` through the fold morphism (§2), hence regular; `L(𝓘)` is a
 finite union of sets `X·Y^ω` with `X, Y` regular — ω-rational, hence regular
-[PP04, Ch. II, Thm 7.5]. Two regular ω-languages with the same lassos are equal
-[PP04, Ch. I, Cor. 9.8]. ∎
+[PP04, Ch. II, Thm 7.5]. Two regular ω-languages with the same lassos are
+equal [PP04, Ch. I, Cor. 9.8]. ∎
 
-Theorem 3.6 delivers the section's title: for a saturated invariant — and for
-it alone — `L(𝓘)` is a language, the union its denotation, the query its
-decision procedure: fold the stem, fold the loop to its idempotent power, one
-lookup in `P`. Classes that no word folds to never enter the verdict — an
-invariant may carry them, inertly; it is canonicity, not semantics, that they
-disturb (two saturated invariants recognizing one language must not differ by
-inert data if equality is to be read off the components), and §3.3's
-canonization is where they are discarded. What is still missing is one
-recognizer per language; that is §3.3's business.
+The law is also unavoidable — it demands nothing the lassos do not:
+
+**Corollary 3.11 (the law is tight).** If every lasso reads to one verdict in
+`𝓘`, then `P` is closed under every rotation step whose classes are folds. In
+particular, an invariant all of whose classes are folds is saturated iff its
+readings are consistent.
+
+*Proof.* Let `(s, c, d)` generate a step, all three classes folds. If `c` and
+`d` are folds of nonempty words, Lemma 3.9 exhibits one lasso named by both
+pairs, and one verdict on it puts them on one side of `P`. If `c = [ε]` the
+step is trivial — `s·c = s` and `(dc)^ω = (cd)^ω` — as it is when
+`c = d = [ε]`. If only `d = [ε]`, the step reads `(s, c^ω) ∼ (s·c, c^ω)` with
+`c = ⟦v⟧`, `v` nonempty, and `s = ⟦u⟧` with `s·c^ω = s`: it is the *(one
+turn)* move of Lemma 3.10, witnessed by the readings `(u, v^k)` and
+`(u·v, v^k)` of the one lasso `u·v^ω`. For the last claim: when every class is
+a fold, every step is of the above forms, so consistency forces saturation;
+the converse is Theorem 3.8. ∎
+
+Classes that no word folds to never enter a reading: an invariant may carry
+them, inertly — it is canonicity (§3.5), not semantics, that they disturb, and
+canonization is where they are discarded. On `𝒵`, whose two word-reachable
+pairs Lemma 3.9 ties together, Corollary 3.11 is the earlier diagnosis made
+general: an unsaturated pair set does not merely lack a property — it
+contradicts itself on a single ω-word.
 
 ---
 
-## Part 2 — the re-cut of §3.3+ (pointers, not text)
+## Part 2 — the re-cut of the rest of §3 (pointers, not text)
 
-**§3.3 "Canonization: the syntactic invariant, computed"** = `sos_core_33.md`
-from Definition 3.9 (Arnold) through Corollary 3.15 and the reduce example,
-with the following joints:
+**New section map**: 3.1 syntax (untouched) · 3.2 semantics (Part 1) ·
+3.3 names (Part 1) · **3.4 the examples, as invariants** (old §3.4, moved
+before canonization) · **3.5 canonization** (= `sos_core_33.md` §3.9–3.15).
 
-1. **Drop the migrated preamble** of sos_core_33: its opening paragraph
-   ("Definition 3.4 leaves two debts…"), the "Throughout this section the
-   algebra is generated" paragraph, the "One lasso, many names" block,
-   Lemma 3.5, Definition 3.6, Lemma 3.7, Theorem 3.8 — this content now lives
-   in §3.2 above under the v2 numbering.
+**§3.4 (examples) — old §3.4 with these joints:**
 
-2. **Citation substitutions** inside sos_core_33's §3.9–3.15:
-   - "Theorem 3.8" (admissibility) → **Theorem 3.6 (recognition)** — in
-     Theorem 3.12(i)'s proof, Definition 3.13's `Val` commentary,
-     Theorem 3.14's proof.
-   - "Lemma 3.7" (names) → **Lemma 3.8** — in Theorem 3.12's example and the
-     closing paragraph's PP04 positioning.
-   - "Lemma 3.5" (rotation) → **Lemma 3.7** — in Lemma 3.7's own "product
-     trick" back-reference (now internal to §3.2) and anywhere else cited.
-   - "Definition 3.4" (the query) → **Definition 3.5** where the query is
-     meant (Theorem 3.12(i)).
+1. New intro framing (draft), stating why these three:
 
-3. **Vocabulary purge** throughout sos_core_33's text and the base paper:
-   - *admissible* → **saturated** (Thm 3.12(i), Def 3.13, Thm 3.14, Cor 3.15,
-     final example).
-   - *generated* → dropped; where sos_core_33 says "`𝒜(L)` is generated with
-     `𝒲 = 𝒞 ∖ {[ε]}`" (Def 3.10 commentary), say: **every class of `𝒜(L)` is a
-     word class** — `⟦u⟧ = [u]` for every `u ∈ Σ⁺`, and `⟦u⟧ = [ε]` only for
-     `u = ε`. Same fix inside Theorem 3.14's proof step (a).
-   - the symbol `𝒲` → prose "**the word classes**" (Def 3.13: "partition
-     refinement on the word classes, the identity held out"; `Val(c, d)` for
-     `d` a word class).
-   - *key / keyed* → **representative** — also in the **base text**:
-     Definition 3.6/3.10 ("keyed by its shortlex-smallest member",
-     "`w_s` and `w_e` are the keys") and Theorem 4.11 ("the shortlex keys
-     coincide") become "its representative, the shortlex-smallest member",
-     "`w_s` and `w_e` the representatives", "the representatives coincide".
-   - "table-checkable" and loose "table" idioms → "checkable on the algebra";
-     `M` is referred to as the algebra's `M` (Definition 3.1's *multiplication
-     table* remains its one defined name).
+   > Three more invariants exercise the semantics across its range, and run
+   > through the rest of the paper: `GF(aa)` decides on the **loop** — any
+   > stem forgiven; `Even` on the **stem** — the loop irrelevant once the
+   > first `b` is read; `EvenBlocks` is **blind to the stem** and decides on
+   > the loop under a genuine `Fin/Inf` acceptance. Loop-decided,
+   > stem-decided, stem-blind: the three postures an acceptance layer can
+   > take. Each is met here as its invariant — the letter actions, the laws
+   > that organize them, the drawing; automata wait until §4.
 
-4. **`reduce` gains a trim step** (the one legitimate mention of
-   reachability, per ruling): step 0 — restrict `𝒜` to `⟦Σ*⟧`, one
-   breadth-first walk of the letter actions from `[ε]`; drop `P`-pairs
-   touching discarded classes (inert by §3.2). This also fixes a latent slot
-   bug: Definition 3.13's profiles index slots by `x ∈ 𝒞`; with inert classes
-   present, `Val` at an inert slot reads `P`-entries no lasso constrains and
-   could wrongly split congruent word classes. Trimming first makes every slot
-   a fold. (Also rename the slot letter `x` — booked for letters — e.g. `ℓ`.)
+2. The "Saturation, checked" block cites Definition 3.6 and gains the `𝒵`
+   payoff sentence: the two-name conjugacy of `𝒵` returns inside `Even` —
+   same rotation step `([a·a], [a], [a])`, now with acceptance data at stake;
+   `Even`'s `P` contains neither name, as saturation demands.
+3. "Membership by one fold" says **reading** (Definition 3.7); the licence
+   that one reading suffices is Theorem 3.8.
 
-5. **New opener** for §3.3, replacing the dropped one (draft):
+**§3.5 (canonization) = sos_core_33's §3.9–3.15, with these joints:**
 
-   > A saturated invariant recognizes exactly one language (Theorem 3.6);
+1. **Renumbering**: _33's 3.9→3.12 (Arnold), 3.10→3.13 (invariant of `L`),
+   3.11→3.14 (substitution), 3.12→3.15 (canonicity), 3.13→3.16
+   (profile; reduce), 3.14→3.17 (canonization), 3.15→3.18 (corollary).
+2. **Citation substitutions** inside that text:
+   - "Theorem 3.8" (one-verdict / verdict-of-folds uses: `Val` commentary,
+     canonization proof) → **Theorem 3.8** (unchanged number, new content —
+     verify each use is the *sufficiency* direction);
+   - "Theorem 3.8" where the **converse** is meant — canonicity proof's "so
+     `P(L)` is saturated" — → **Corollary 3.11** (all classes of `𝓘(L)` are
+     folds);
+   - "Lemma 3.7" (names) → **Lemma 3.10**; "Lemma 3.5" (rotation) →
+     **Lemma 3.9**; "Definition 3.4" (query) → **Definition 3.7 (reading)**.
+3. **Vocabulary purge**: *admissible* → **saturated**; *generated* → dropped
+   (where _33 says "`𝒜(L)` is generated with `𝒲 = 𝒞 ∖ {[ε]}`", say: every
+   class of `𝒜(L)` is a fold — `⟦u⟧ = [u]` for `u ∈ Σ⁺`, and `⟦u⟧ = [ε]` only
+   for `u = ε`); the symbol `𝒲` → prose (reduce's refinement runs on
+   `⟦Σ⁺⟧`, the breadth-first image of `λ(Σ)` under the letter actions);
+   *query* → **reading** (`Val` is "the totalized reading"); *key / keyed* →
+   **representative** — also in the base text (old Def 3.6/3.10, Thm 4.11).
+4. **`reduce` gains a trim step 0**: restrict `𝒜` to `⟦Σ*⟧` — one
+   breadth-first walk from `[ε]` — and drop `P`-pairs touching discarded
+   classes (inert, §3.3). This is the one mention of reachability in the
+   paper, and it fixes a latent slot bug: profiles indexed over all of `𝒞`
+   would read, at a non-fold slot, `P`-entries no lasso constrains, and could
+   wrongly split congruent classes. After the trim every slot is a fold.
+   (Also rename Def 3.16's slot letter `x` → `ℓ`; `x` stays a letter of `Σ`.)
+5. **New opener** for §3.5 (draft):
+
+   > A saturated invariant recognizes exactly one language (Theorem 3.8);
    > nothing yet singles out one invariant per language — on `𝒵`, three
-   > classes carried `Σ^ω` where two suffice, and nothing prefers the smaller.
-   > This section closes that gap in two steps: the *target*, one invariant
-   > per language, built on Arnold's congruence [Arn85] (Definition 3.10,
-   > Theorem 3.12); and the *move* that reaches it — `reduce`, a canonization
-   > of any saturated invariant, computed by right multiplications alone, in
-   > polynomial time (Theorem 3.14). A finite word sits in a lasso either in
-   > the stem or inside the loop, and interchangeability must hold in both
-   > positions:
+   > classes carried `Σ^ω` where two suffice, and nothing prefers the
+   > smaller. This section closes the gap in two steps: the *target*, one
+   > invariant per language, built on Arnold's congruence [Arn85]; and the
+   > *move* that reaches it — `reduce`, a canonization of any saturated
+   > invariant, computed by right multiplications alone, in polynomial time.
+   > A finite word sits in a lasso either in the stem or inside the loop, and
+   > interchangeability must hold in both positions:
 
-   …then straight into Definition 3.9. Worth a sentence nearby: `reduce`
+   …then straight into Arnold's definition. Nearby, one sentence: `reduce`
    preserves saturation — a quotient of a saturated invariant is saturated —
    so canonization operates within the recognizers.
+6. **Representative debt**: for an arbitrary invariant, Definition 3.1's
+   representative is a label — nothing forces `⟦representative⟧ =` its class;
+   faithful representatives are a property of the canonical invariants, and
+   `reduce` restores them (re-deriving each as the shortlex-least word
+   folding into the class). One remark at the canonization theorem.
+7. **The closer** ("Rotation has now served twice…"): scope it across
+   §3.2–3.3 (the law) and §3.5 (the computation scheme); keep the
+   two-sided-splitting implementation parenthetical and the Wilke/PP04
+   positioning.
+8. **Final example choice**: keep _33's all-pairs-on-`aUGb` reduce example
+   (legal by §3.2's every-`P`-saturated check), or the cheaper `𝒵` (full
+   pair set → the two-class invariant of `Σ^ω`) — decide at fusion.
 
-6. **Representative debt, owned by §3.3**: for an arbitrary invariant,
-   Definition 3.1's representative is a label — nothing forces
-   `⟦representative⟧ =` its class; faithful representatives are a property of
-   the canonical invariants (and `reduce` restores them, re-deriving each from
-   the shortlex-least word folding into the class). One remark at
-   Theorem 3.14, so a referee doesn't find it first.
-
-7. **The closer** ("Rotation has now served twice…") — adjust scope: the two
-   services now span the two sections, the *law* in §3.2 (Theorem 3.6), the
-   *computation scheme* in §3.3 (Theorem 3.14). Keep the parenthetical on the
-   two-sided-splitting implementation form and the Wilke/PP04 positioning.
-
-8. **Final example choice**: sos_core_33's all-six-pairs-on-`aUGb` reduce
-   example stands (legal by §3.2's every-`P`-saturated remark); `𝒵` (full
-   pair set → the two-class `Σ^ω` invariant) is a cheaper alternative already
-   introduced in §3.2 — pick one at fusion, or keep `aUGb` and let `𝒵` be
-   foreshadowing only.
+**Figure task (engineering / figures pipeline):** `core_F4_mod2.png` — `𝒵`
+drawn in Figure 1′ style, `[ε]` elided: two boxes `[a]`, `[a·a]`, the
+two-cycle with both legs labeled `[a]`, no other edge. Caption in Part 1.
 
 **Ripples elsewhere (booked, not in this file):**
 
-- **Old §3.2 text**: Definition 3.4 "(language of an invariant)" is replaced —
-  the *name* "language of an invariant" is now carried by Theorem 3.6; the old
-  closing paragraph ("That the verdict does not depend on the presentation…
-  subject of the next section") is deleted, superseded.
-- **Letters** (fusion pass): ω-words are `α, β` — finite words own `u, v, w`
-  (Definition 3.5 and Theorem 3.6's proof already conform); Arnold's context
-  letters `x, y ∈ Σ*` (Definition 3.9, Theorem 3.14's proof) collide with the
-  abstract letter `x ∈ Σ` of Definition 3.1 — rename contexts, e.g.
-  `p, q ∈ Σ*`; Definition 3.13's slot `x ∈ 𝒞` → `ℓ` (see item 4).
-- **§3.4**: content unchanged; the "Saturation, checked" example now cites
-  Definition 3.4 (§3.2), and "membership by one fold" is licensed by
-  Theorem 3.12. The `Even` two-name conjugacy fulfills the pointer left in
-  §3.2's saturation example.
-- **§2**: the "One lasso, many names… rotation lemma (§3)" trailer stays
-  valid; optionally sharpen "(§3)" to "(§3.2)" at fusion.
-- **§4**: citation fixes — "§3.3's rotation lemma" (intro of §4.3, proof of
-  Lemma 4.8) becomes "§3.2's Lemma 3.7". The larger §4 reframe (build *some
-  saturated* invariant from `D`, then `reduce` it; slot space collapsing from
-  the classes to the machine's states) is the separate task announced by
-  sos_core_33's closing paragraph — untouched here.
+- **§2**: "One lasso, many names… rotation lemma (§3)" trailer stays valid —
+  sharpen to §3.3 at fusion; §2's linked-pair narrative is now load-bearing
+  for §3.2's "A lasso does not choose its cut" back-reference — no change
+  needed, just don't cut it.
+- **§4**: "§3.3's rotation lemma" → "Lemma 3.9" (section number now
+  coincides); *query* → *reading* where it leaks; the larger §4 reframe
+  (build *some saturated* invariant from `D`, then `reduce`) remains the
+  separate task announced by sos_core_33's closing paragraph.
+- **Letters** (fusion pass): ω-words are `α, β`; Arnold's context letters
+  `x, y ∈ Σ*` collide with the abstract letter `x ∈ Σ` — rename contexts
+  `p, q ∈ Σ*`; Def 3.16's slot `x` → `ℓ` (item 4 above).
 - **§3.1 untouched**: raw pair sets remain pure syntax; saturation is the
-  semantic entry condition, which is the point of the reorganization.
+  semantic entry condition.
