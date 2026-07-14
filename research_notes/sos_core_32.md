@@ -2,8 +2,8 @@
 
 Standalone for review, not yet fused; companion to `sos_core_33.md`. v3 after
 review: definition titles name the defined object with its notation; "query" →
-**reading**; "word classes" deleted — the law quantifies over all classes, the
-rotation lemma is stated on words, the converse is a scoped corollary;
+**reading**; "word classes" deleted — *saturated* is defined over all classes,
+the rotation lemma is stated on words, the converse is a scoped corollary;
 conjugacy split from saturation and credited to PP04 at the definition; the
 fold example reworked on Figure 1′ around the two §2 lassos; the aUGb example
 now states its structural check; `𝒵` gets a proper definition and its own
@@ -19,13 +19,7 @@ the proofs (§3.3, "One lasso, many names") — and the running examples move
 
 An invariant decides lassos with the data it carries and nothing else: `λ`
 assigns each letter its class, the algebra's `M` extends that assignment to
-every finite word — stem and loop alike — and `P` lists the pairs that accept.
-But §3.1 is syntax only: for an invariant to recognize a language, its pair
-set must obey a law. This section extends `λ` to words (the fold), states the
-law (saturation), and delivers the semantics: a saturated invariant reads
-every lasso to one verdict, and the accepted lassos form a regular language
-(Theorem 3.8). That the law is exactly right — necessary as well as
-sufficient — is §3.3's subject.
+whole words, and `P` lists the pairs that accept. The extension is the fold.
 
 **Definition 3.3 (fold `⟦u⟧` of a finite word `u`).** Let `𝒜 = (𝒞, λ, M)` be
 an algebra over `Σ`. The **fold** of `𝒜` is the map `⟦·⟧ : Σ* → 𝒞` extending
@@ -90,11 +84,9 @@ value is unchanged and the stem absorbs one turn.
     (s, (cd)^ω) ∈ P   ⟺   (s·c, (dc)^ω) ∈ P.
 ```
 
-Saturation is a property of finitely many objects: at most `|𝒞|³` triples
-generate rotation steps, each decided inside the algebra — no word, no lasso,
-no language is consulted. Whether an invariant is saturated is thus decided by
-inspection of its components; that this finite condition governs the reading
-of every lasso is Theorem 3.8.
+Whether an invariant is saturated is decided by inspection of its components:
+at most `|𝒞|³` triples generate rotation steps, each decided inside the
+algebra — no word, no lasso, no language is consulted.
 
 *Example.* On Figure 1 (`aUGb`), conjugacy moves nothing: in every rotation
 step the stem absorbs the factor it receives (`s·c = s`) and the rotated loop
@@ -106,8 +98,16 @@ must equal `[a]`, forcing `c ∈ {[ε], [a]}` — which the stems paired with `[
 `[b]`, whose stems `[b]`, `[a·b]`, `[b·a]` all absorb `[b]`; and the only stem
 paired with the loop `[b·a]` is `[b·a]` itself, the zero, which absorbs
 everything, while `dc` re-folds to `[b·a]`. Every pair set over this algebra
-is therefore saturated: each of the 2⁶ subsets of the six linked pairs is a
-legal acceptance layer.
+is therefore saturated, and each of the 2⁶ subsets of the six linked pairs
+recognizes a language: the six pairs sort every lasso of `Σ^ω` into six
+families, and a pair set collects a union of them. `([a],[a])` holds `a^ω`
+alone; `([b],[b])` holds `b^ω`; `([a·b],[b])` the lassos `a⁺b^ω` — at least
+one `a`, then `b`'s forever; `([b·a],[a])` and `([b·a],[b])` the words that
+died — an `a` after a `b` — and still end in `a^ω`, respectively `b^ω`; and
+`([b·a],[b·a])` the lassos where both letters recur forever (`GF a ∧ GF b`).
+`aUGb` itself is the union of the second and third families — its pair set,
+printed under Figure 1; its complement is the other four pairs, one flip of
+`P`.
 
 **Definition 3.7 (reading of a lasso).** Let `𝓘 = ⟨𝒜, P⟩` be an invariant and
 `α ∈ Σ^ω` a lasso. A **presentation** of `α` is a pair `(u, v)`, `u ∈ Σ*`,
@@ -167,8 +167,8 @@ blind to the cut. Nor is `𝒵` an artificial pathology: it is the counting core
 of `Even` (§3.4), where the same two-name conjugacy returns with genuine
 acceptance data at stake.
 
-Saturation is exactly what makes the readings of one lasso agree, and the
-agreed verdicts trace a regular language:
+For a saturated invariant the readings of one lasso agree, and the agreed
+verdicts trace a regular language:
 
 **Theorem 3.8 (the language `L(𝓘)` of a saturated invariant).** Let
 `𝓘 = ⟨𝒜, P⟩` be a saturated invariant. Then all presentations of one lasso
@@ -181,19 +181,13 @@ regular language
 
 the unique regular language with those lassos: `𝓘` **recognizes** `L(𝓘)`.
 
-The proof owes one fact — any two names of one lasso are conjugate — and the
-law owes one justification — that it demands no more than the lassos
-themselves do. Both are the subject of §3.3, where the theorem is proved. The
-sections after it consume it: §3.4 meets the running examples as saturated
-invariants, and §3.5 computes, among all the invariants recognizing one
-language, a canonical one.
+The proof rests on one fact — any two names of one lasso are conjugate — and
+is given in §3.3.
 
 ### 3.3 One lasso, many names
 
-This section proves Theorem 3.8 and shows the law is tight. The pivot is the
-rotation move §2 promised to reconcile the many names of one lasso, and it
-serves beyond this section: here it delimits the pair sets that mean anything;
-in §3.5 it powers canonization; in §4, the construction from automata.
+This section proves Theorem 3.8. Rotation — the move §2 promised would
+reconcile the many names of one lasso — enters first, as a lemma on words.
 
 **Lemma 3.9 (rotation).** For all `u ∈ Σ*` and `v₁, v₂ ∈ Σ⁺`, the lasso
 `α := u·(v₁v₂)^ω` is named by both pairs of the rotation step at `(s, c, d)`,
@@ -288,9 +282,9 @@ finite union of sets `X·Y^ω` with `X, Y` regular — ω-rational, hence regula
 [PP04, Ch. II, Thm 7.5]. Two regular ω-languages with the same lassos are
 equal [PP04, Ch. I, Cor. 9.8]. ∎
 
-The law is also unavoidable — it demands nothing the lassos do not:
+The converse holds wherever a lasso can witness it:
 
-**Corollary 3.11 (the law is tight).** If every lasso reads to one verdict in
+**Corollary 3.11 (a consistent invariant is saturated).** If every lasso reads to one verdict in
 `𝓘`, then `P` is closed under every rotation step whose classes are folds. In
 particular, an invariant all of whose classes are folds is saturated iff its
 readings are consistent.
@@ -331,8 +325,8 @@ before canonization) · **3.5 canonization** (= `sos_core_33.md` §3.9–3.15).
    > first `b` is read; `EvenBlocks` is **blind to the stem** and decides on
    > the loop under a genuine `Fin/Inf` acceptance. Loop-decided,
    > stem-decided, stem-blind: the three postures an acceptance layer can
-   > take. Each is met here as its invariant — the letter actions, the laws
-   > that organize them, the drawing; automata wait until §4.
+   > take. Each is met here as its invariant — the letter actions, the
+   > identities that organize them, the drawing; automata wait until §4.
 
 2. The "Saturation, checked" block cites Definition 3.6 and gains the `𝒵`
    payoff sentence: the two-name conjugacy of `𝒵` returns inside `Even` —
