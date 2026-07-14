@@ -194,38 +194,32 @@ cycle folds to.
 
 **A lasso read twice.** A lasso has many presentations, and Definition 3.7
 reads each on its own — nothing yet says two readings of one lasso agree, and
-for an arbitrary pair set they do not. Let `𝒵` be the **mod-2 counter** over
-`Σ = {a, b}`, a stamp built to fail: three classes
-`𝒞 = {[ε], [a], [a·a]}`, both letters sharing one class,
+for an arbitrary pair set they do not. The witness is the second running
+example (§1): **`Even`** — an even number of `a`'s before the first `b`, then
+anything. Its invariant, studied in §3.4, has five classes; here only the
+`·a` column matters:
 
 ```
- λ(a) = λ(b) = [a]
- ·a = ·b :   [ε]↦[a]      [a]↦[a·a]      [a·a]↦[a]
+ λ(a) = [a],  λ(b) = [b]
+ ·a :  [ε]↦[a]    [a]↦[a·a]   [b]↦[b]     [a·b]↦[a·b]   [a·a]↦[a]
+ ·b :  [ε]↦[b]    [a]↦[a·b]   [b]↦[b]     [a·b]↦[a·b]   [a·a]↦[b]
 ```
 
-— the fold of a word is the parity of its length.
-
-![Figure Z — the mod-2 counter 𝒵](sos_core_figs/img/core_F4_mod2.png)
-
-*Figure Z — the mod-2 counter `𝒵`, drawn as Figure 1′ (`[ε]` elided): the
-two-cycle `[a] ⇄ [a·a]`, both legs labeled `[a]` — both letters act as one
-class, and no other edge exists.*
-
-The only idempotent among `[a]`'s powers is `[a·a]`, so `[a]^ω = [a·a]`, and
-the named ground is `([a], [a·a])` and `([a·a], [a·a])`. Now read `a^ω`
-twice. Presented `(ε, a)`: `e = [a·a]`, stem `[ε]·[a·a] = [a·a]` — the name
-`([a·a], [a·a])`. Presented `(a, a)`: stem `[a]·[a·a] = [a]` — the name
-`([a], [a·a])`. One ω-word, two names, one per parity of the stem: the fold
-counts the parity of the *cut*, and the cut is the presentation's choice, not
-the word's. A pair set holding one name and not the other — say
-`P = {([a·a], [a·a])}` — reads the single word `a^ω` both accepted and
-rejected: it recognizes nothing. Saturation forbids exactly this: the rotation
-step at `([a·a], [a], [a])` relates the two names, so a saturated `P` holds
-both or neither. Over `𝒵` the saturated pair sets are `∅` and the full
-two-pair set — recognizing (Theorem 3.8) `∅` and `Σ^ω`, the two languages
-blind to the cut. Nor is `𝒵` an artificial pathology: it is the counting core
-of `Even` (§3.4), where the same two-name conjugacy returns with genuine
-acceptance data at stake.
+with `P = { ([b],[b]), ([b],[a·a]), ([b],[a·b]) }` — once `[b]` is reached,
+the first `b` read after an even count of `a`'s, every loop accepts
+(Figure 3, §3.4). The `·a` row swaps `[a] ⇄ [a·a]`: the powers of `[a]`
+alternate, the only idempotent among them is `[a·a]`, so `[a]^ω = [a·a]`. Now
+read `a^ω` twice. Presented `(ε, a)`: `e = [a·a]`, stem `[ε]·[a·a] = [a·a]` —
+the name `([a·a], [a·a])`. Presented `(a, a)`: stem `[a]·[a·a] = [a]` — the
+name `([a], [a·a])`. One ω-word, two names, one per parity of the stem: the
+fold counts the parity of the *cut*, and the cut is the presentation's
+choice, not the word's. `Even`'s pair set holds neither name — `a^ω` never
+sees a `b`, both readings must reject, and both do. A pair set holding one
+name and not the other — add the single pair `([a·a], [a·a])` to `P` and
+stop — reads the single word `a^ω` both accepted and rejected: it recognizes
+nothing. Saturation forbids exactly this: the rotation step at
+`([a·a], [a], [a])` relates the two names, so a saturated `P` holds both or
+neither.
 
 For a saturated invariant the readings of one lasso agree, and the agreed
 verdicts trace a regular language:
