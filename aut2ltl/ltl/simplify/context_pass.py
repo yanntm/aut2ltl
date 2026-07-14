@@ -11,6 +11,11 @@ Core ideas:
   (identity-based domination — temporal nodes included).
 - At And, sibling atoms are asserted true for each child; at Or, asserted
   false (Shannon). "Atom" = any non-And/Or child.
+- The propositional tier (algorithm.md, pass 1): a PURELY PROPOSITIONAL
+  And/Or sibling is asserted like an atom (itself true at And / false at
+  Or, as a whole formula), and a purely propositional node under a context
+  is restricted to the context's propositional care-set (prop_cofactor,
+  accepted only when strictly smaller — the termination measure).
 - Temporal siblings are OPENED into now-knowledge instead of staying
   opaque (the initial-state reading of the expansion laws — Gφ ≡ φ ∧ XGφ
   leveraged without materializing the expansion): at And, Gφ asserts the
@@ -96,6 +101,34 @@ def _now_facts(o: "spot.formula", is_and: bool):
     return tuple(body) if body._is(spot.op_Or) else (body,)
 
 
+def _prop_ctx(pos: FrozenSet, neg: FrozenSet) -> "spot.formula | None":
+    """The context's propositional care formula γ = ⋀ pos_prop ∧ ⋀ ¬neg_prop,
+    or None when the context carries no purely propositional member."""
+    parts = [p for p in pos if p.is_boolean()]
+    parts += [spot.formula.Not(n) for n in neg if n.is_boolean()]
+    if not parts:
+        return None
+    return spot.formula.And(parts)
+
+
+def _prop_consume(node: "spot.formula", pos: FrozenSet, neg: FrozenSet) -> "spot.formula | None":
+    """The propositional tier's consumption: restrict a purely propositional
+    `node` to the context's propositional care-set (Coudert–Madre restrict +
+    Minato-ISOP). Accepted only when STRICTLY smaller — the well-founded
+    measure that rules out restrict/re-restrict oscillation. None = no
+    rewrite."""
+    if not node.is_boolean():
+        return None
+    g = _prop_ctx(pos, neg)
+    if g is None:
+        return None
+    from .now_eval import prop_cofactor
+    rep = prop_cofactor(node, g, True)
+    if rep is None or spot.length(rep) >= spot.length(node):
+        return None
+    return rep
+
+
 def _const_fold(f: "spot.formula") -> "spot.formula":
     """Trivial constant folds through unary temporal heads after a body
     rewrite (X(0)→0, G(1)→1, F(0)→0, …). Anything richer is delegated to
@@ -145,6 +178,14 @@ def context_simplify(f: "spot.formula", now_hook=None, bool_hook=None) -> "spot.
             return hit
 
         if _is_bool_node(node):
+            # Propositional tier, consumption half: a purely propositional
+            # And/Or under a context is restricted to the context's
+            # propositional care-set; strictly-smaller acceptance terminates.
+            prep = _prop_consume(node, pos, neg)
+            if prep is not None:
+                out = walk(prep, pos, neg)
+                memo[key] = out
+                return out
             is_and = node._is(spot.op_And)
             # Visit now-fact producers before consumers (stable within rank),
             # so the one-way opening below reaches the most siblings. Sound for
@@ -171,7 +212,17 @@ def context_simplify(f: "spot.formula", now_hook=None, bool_hook=None) -> "spot.
                     # circular-support bug `a & b & (a M b) -> a` (and its U/W
                     # dual `!a | !b | (!a W !b) -> !a`).
                     cur = res_kids[oi] if oi < ki else o
-                    if _is_bool_node(cur) or cur.is_tt() or cur.is_ff():
+                    if cur.is_tt() or cur.is_ff():
+                        continue
+                    if _is_bool_node(cur):
+                        # Propositional tier, contribution half: a purely
+                        # propositional And/Or sibling is asserted like an
+                        # atom, as a whole formula (true at And, false at Or —
+                        # the NNF complement is only reachable via the BDD
+                        # tier, never by identity). Other boolean siblings
+                        # stay skipped: their parts flow through the walk.
+                        if cur.is_boolean():
+                            (add_pos if is_and else add_neg).add(cur)
                         continue
                     # the sibling itself (true at And, false at Or)
                     if cur._is(spot.op_Not):
