@@ -67,9 +67,13 @@ PAIRS_DROP_CM = 1.3
 LOOP_HANG_CM = 1.4
 # Length of the initial-state stub pointing into the root (cm).
 INIT_STUB_CM = 0.9
-# Length of a lambda stub: the letters entering the class they name. A touch longer
-# than the root stub so the letter label clears the class box it points at.
-LAMBDA_STUB_CM = 1.1
+# Length of a lambda stub: the letters entering the class they name. Short — it is a
+# stub, not a node — and drawn with a heavier pen (the `lstub` style); the class box
+# eats part of it, so the letter label still clears the box.
+LAMBDA_STUB_CM = 0.85
+# Lateral tilt of a lambda stub off the vertical, as the x for a unit y: it aims at a
+# top (or bottom) CORNER of the class box rather than straight down its middle. ~29°.
+LAMBDA_TILT = 0.55
 # Vertical gap between the lambda line and the P line (cm).
 CAPTION_GAP_CM = 0.75
 
@@ -170,28 +174,18 @@ def _loop_dir(fig: Figure, pos: Placement, cls: int) -> str:
 
 def _stub_dir(fig: Figure, pos: Placement, cls: int,
               loop_opt: Optional[str]) -> Tuple[float, float]:
-    """The unit vector a λ stub points along, into ``cls`` from outside: the least
-    crowded of the four cardinals (same cone scoring as `_loop_dir`), skipping the
-    one the node's own self-loop already takes so the two never sit on top of each
-    other. Ties break by the `LOOP_DIRS` preference order (above, below, right,
-    left)."""
-    x, y = pos[cls]
-    taken = next((v for opt, v in LOOP_DIRS if opt == loop_opt), None)
-    scored: List[Tuple[int, int, Tuple[float, float]]] = []
-    for rank, (opt, (dx, dy)) in enumerate(LOOP_DIRS):
-        if (dx, dy) == taken:
-            continue
-        crowd = 0
-        for other in fig.nodes:
-            if other.cls == cls:
-                continue
-            ox, oy = pos[other.cls]
-            vx, vy = ox - x, oy - y
-            dist = (vx * vx + vy * vy) ** 0.5
-            if dist < CROWD_CM and (vx * dx + vy * dy) > 0.5 * dist:
-                crowd += 1
-        scored.append((crowd, rank, (dx, dy)))
-    return sorted(scored)[0][2]
+    """The unit vector a λ stub points along, into ``cls`` from outside: mostly
+    vertical with a slight lateral tilt (`LAMBDA_TILT`), aimed at a top CORNER of the
+    box. The lateral side is *outward* — away from the figure's centroid, which is
+    where the fewest edges run, so the stub is least likely to cross one. It points
+    up unless the node's own self-loop already sits above, in which case it flips to a
+    bottom corner so the two do not collide."""
+    cx = sum(p[0] for p in pos.values()) / len(pos)
+    px, _ = pos[cls]
+    lateral = LAMBDA_TILT if px >= cx else -LAMBDA_TILT
+    vy = -1.0 if loop_opt == "loop above" else 1.0
+    norm = (lateral * lateral + 1.0) ** 0.5
+    return (lateral / norm, vy / norm)
 
 
 def _blocked(fig: Figure, pos: Placement, src: int, dst: int) -> bool:
@@ -341,6 +335,8 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
         r"                      minimum width=10mm, minimum height=7mm},",
         r"  root/.style      = {},          % the root needs no ink: the init stub says it",
         r"  init/.style      = {semithick, -{Stealth[length=4pt,width=3pt]}},",
+        r"  lstub/.style     = {thick, -{Stealth[length=5pt,width=4pt]}},",
+        r"                       % a lambda stub: heavier than init, it is a stub not a node",
     ]
     out += [
         r"  arrow/.style     = {thin, -{Stealth[length=4pt,width=3pt]}},",
@@ -386,7 +382,7 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
             lx, ly = x + LAMBDA_STUB_CM * dx, y + LAMBDA_STUB_CM * dy
             out += [f"  \\node[letters] (lam_{nd.ident}) at ({lx:.1f},{ly:.1f}) "
                     f"{{{_tex_letters(names)}}};",
-                    f"  \\draw[init] (lam_{nd.ident}) -- ({nd.ident});"]
+                    f"  \\draw[lstub] (lam_{nd.ident}) -- ({nd.ident});"]
         out.append("")
 
     rank = {nd.cls: i for i, nd in enumerate(fig.nodes)}
