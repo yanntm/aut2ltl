@@ -40,7 +40,7 @@ the universal way of making a semigroup a monoid, and it is deliberate that
 this holds even when `𝒞` owns an internal neutral element. Such an element is a
 class of nonempty words invisible to the language — a genuine behavior,
 loopable, with verdicts of its own — while `[ε]` is the basepoint "no word at
-all", which can never be looped; `Even` (§3.4) exhibits both at once, kept
+all", which can never be looped; `Even` (Figure 2) exhibits both at once, kept
 apart.
 
 **Representation.** The notion is Pin and Straubing's [PS05], where a stamp is
@@ -297,7 +297,7 @@ convention, and it is the form the implementation consumes (Part B).
 
 *Example.* On Figure 1 (`aUGb`), present `aab·b^ω` as `(aab, b)` or as
 `(aabb, bb)`: both land on the name `([a·b], [b])` — here even the name is
-stable. That is a feature of `aUGb`, not of the theorem: `Even` (§3.4) names
+stable. That is a feature of `aUGb`, not of the theorem: `Even` (Figure 2) names
 one lasso through two distinct pairs, and canonicity (Theorem 3.10(i)) is what
 forces those two names to one verdict.
 
@@ -363,20 +363,11 @@ refinement computable on a table.
 
 *Example.* On Figure 1 (`aUGb`), every conjugacy class is a singleton —
 whatever factor a rotation moves, the dead class absorbs it, and the two
-accepting stems absorb their loops — so saturation of `P(aUGb)` is immediate. A
-conjugacy that genuinely pairs two names, and the saturation check it forces,
-is worked on `Even` in §3.4.
-
-### 3.4 The examples, as invariants
-
-- The three languages and their figures carry over from the legacy draft —
-  the figures already draw no `[ε]` vertex, and the letter actions, laws, and
-  pair sets are all in `𝒞`. Class counts quoted as `|𝒞|`: `aUGb` 4, `GF(aa)`
-  5, `Even` 4, `EvenBlocks` 7.
-- `Even`: `[a·a]` is an *internal* neutral element of `𝒞` — nonempty,
-  loopable, with its own verdicts (`(aa)^ω = a^ω` is rejected) — kept apart
-  from the basepoint `[ε]`: the worked illustration of §3.1's freshness
-  discussion.
-- The saturation check on `a^ω` and the hand-reading block (membership by one
-  query, monochrome-cycle test for LTL) carry over; aperiodicity is a property
-  of `𝒞`.
+accepting stems absorb their loops — so saturation of `P(aUGb)` is immediate.
+`Even` (Figure 2) works the check for real: present `a^ω` as `(ε, a)` — the
+loop's class `[a]` has idempotent power `[a]^π = [a·a]`, and the queried pair
+is `([a·a], [a·a])` — or as `(a, a)`, landing on
+`([a]·[a·a], [a·a]) = ([a], [a·a])`: one lasso, two names, connected by the
+conjugacy step at `s = c = d = [a]`. Both pairs are absent from `Even`'s `P`,
+as saturation demands; a pair set containing one but not the other would be
+illegal — its query self-contradictory on the single ω-word `a^ω`.
