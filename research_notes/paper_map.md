@@ -13,19 +13,20 @@ papers live in [`notes/`](../notes/), not here.
 
 ## The core
 
-### [`sos_constructed`](sos_constructed.md) — Constructing the Syntactic ω-Semigroup from a Deterministic Emerson–Lei Automaton
+### [`sos_core`](sos_core.md) — Materializing the Syntactic ω-Semigroup: a Canonical Representation of Regular ω-Languages
 
 The canonical algebra of an ω-regular language, built from an automaton for the
 first time: the acceptance-enriched monoid `EM(D)` supplies a recognizer that
 remembers acceptance along runs, and a rotation lemma collapses Arnold's
 two-sided congruence into right multiplications alone.
-The output is the exportable invariant `𝓘(L) = (𝒞, λ, M, P)` — the semantic
+The output is the exportable invariant `𝓘 = ⟨𝒮, P⟩` — the semantic
 benchmark every other paper here reads from, and whose finite-word
 specialization is the classical syntactic monoid.
 
-*Files:* [`sos_constructed.md`](sos_constructed.md),
-[`sos_constructed_figures.md`](sos_constructed_figures.md); shared figure
-artifacts in [`sos_figs/`](sos_figs/). Cited elsewhere as **[SωS26]**.
+*Files:* [`sos_core.md`](sos_core.md), assembled by `make` from the split parts
+in [`sos_core/`](sos_core/); figure artifacts in
+[`sos_core_figs/`](sos_core_figs/) and [`sos_figs/`](sos_figs/). Cited elsewhere
+as **[SωS26]**.
 
 ---
 
