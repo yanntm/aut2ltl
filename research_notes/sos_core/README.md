@@ -1,8 +1,10 @@
-# sos_core2 — Materializing the Syntactic ω-Semigroup (paper folder)
+# sos_core — Materializing the Syntactic ω-Semigroup (paper folder)
 
-Working draft of the "core" paper, split per section. The legacy monolith
-[`../sos_core.md`](../sos_core.md) is kept untouched as the base this version
-restructures.
+Working draft of the "core" paper, split per section. `make` assembles the parts
+into the single-file paper [`../sos_core.md`](../sos_core.md) — that file is a
+**build artifact**, do not edit it by hand; edit the parts here and re-run
+`make`. (The assembler strips one `../` from figure paths and drops the
+`examples.md` TOC, since the Ex_* pages are inlined right after it.)
 
 ## Reading order / status
 
@@ -11,14 +13,14 @@ restructures.
 | [`s0_front.md`](s0_front.md) | title, abstract, §1 introduction | abstract + intro bullets |
 | [`s2_background.md`](s2_background.md) | §2 background | drafted prose |
 | [`s3_invariant.md`](s3_invariant.md) | §3 the invariant `𝓘 = ⟨𝒮, P⟩` | drafted prose |
-| [`s3_examples.md`](s3_examples.md) | float pages: Fig 2 (four invariants), Fig 3 (five automata) — captions only | drafted; superseded for per-language detail by the worked examples below |
 | [`s4_construction.md`](s4_construction.md) | §4 construction from an automaton | drafted prose — review pending; `EM₊` counts to re-verify |
 | [`s5_end.md`](s5_end.md) | §5 complexity, §6 uses, §7 related work, §8 conclusion | placeholder bullets |
 | [`bib.md`](bib.md) | bibliography | reconstructed — verify against [`../papers/`](../papers/) |
 | [`notation.md`](notation.md) | notation conventions (editors' note, not paper text) | stable |
 
-Concatenating `s0 s2 s3 s3_examples s4 s5_end bib` in order reproduces the
-paper (`s3_examples` holds only floats — LaTeX will place them).
+The [`Makefile`](Makefile) concatenates, in order, `s0 s2 s3_invariant s4 s5_end`
+then the worked examples (`examples.md` + the four `Ex_*.md`) then `bib`;
+`README.md` and `notation.md` stay out of the paper.
 
 ## Worked examples
 
