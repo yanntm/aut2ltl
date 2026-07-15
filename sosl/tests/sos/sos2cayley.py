@@ -8,6 +8,7 @@
         [--rankdir LR|TB]        # which way the BFS layers run (default: LR)
         [--keep-identity]        # draw [eps] too (default: elided)
         [--no-pairs]             # ablate the P caption (draw the bare algebra)
+        [--draw-pairs]           # also DRAW P: a bold doubled loop at each stem s
         [--reseed]               # redraw the hand-owned tex from the machine, at
                                  # its own coordinates (propagate a restyle)
 
@@ -69,7 +70,7 @@ def harvest(tex_path: str, fig: Figure) -> Tuple[Placement, Dict[int, str]]:
 
 def emit(fig: Figure, out_dir: str, img_dir: str, name: str, layout: str,
          provenance: str, pairs: bool = True, rankdir: str = "LR",
-         reseed: bool = False) -> str:
+         reseed: bool = False, pair_edges: bool = False) -> str:
     """Write the machine artefacts and the hand-owned tex under ``out_dir``,
     compile *the hand-owned one* to pdf, and rasterize it into ``img_dir``.
     Returns the hand-owned tex path.
@@ -88,11 +89,12 @@ def emit(fig: Figure, out_dir: str, img_dir: str, name: str, layout: str,
         fh.write(f"// {provenance}\n"
                  + dot_of(fig, name.replace("-", "_"), pairs, rankdir))
     with open(gen_tex, "w") as fh:
-        fh.write(tikz_of(fig, place(fig, layout, rankdir), provenance, pairs))
+        fh.write(tikz_of(fig, place(fig, layout, rankdir), provenance, pairs,
+                         pair_edges=pair_edges))
     if reseed and os.path.exists(tex):
         pos, loops = harvest(tex, fig)    # read BEFORE the truncating open below
         with open(tex, "w") as fh:
-            fh.write(tikz_of(fig, pos, provenance, pairs, loops))
+            fh.write(tikz_of(fig, pos, provenance, pairs, loops, pair_edges))
         print(f"reseeded {tex} from the machine, at its own coordinates")
     elif os.path.exists(tex):
         print(f"kept hand-owned {tex} (machine form refreshed in {gen_tex})")
@@ -123,6 +125,9 @@ def main(argv: List[str]) -> int:
                          "row and column are fixed by the identity axiom)")
     ap.add_argument("--no-pairs", action="store_true",
                     help="ablate the P caption; draw the bare algebra A")
+    ap.add_argument("--draw-pairs", action="store_true",
+                    help="also DRAW the accepting pairs: a bold doubled self-loop at "
+                         "each stem s (s·e = s), labelled with the loop classes e")
     ap.add_argument("--reseed", action="store_true",
                     help="rewrite the hand-owned tex from the machine, keeping its "
                          "coordinates (propagates a restyle without losing placement)")
@@ -137,9 +142,10 @@ def main(argv: List[str]) -> int:
 
     rename = f" --rename {args.rename}" if args.rename else ""
     keep = " --keep-identity" if args.keep_identity else ""
+    drawp = " --draw-pairs" if args.draw_pairs else ""
     emit(fig, args.out_dir, args.img_dir or args.out_dir, args.name, args.layout,
-         f"sos2cayley {os.path.basename(args.sos)}{rename}{keep}", not args.no_pairs,
-         args.rankdir, args.reseed)
+         f"sos2cayley {os.path.basename(args.sos)}{rename}{keep}{drawp}",
+         not args.no_pairs, args.rankdir, args.reseed, args.draw_pairs)
     print(pairs_label(fig))
     return 0
 
