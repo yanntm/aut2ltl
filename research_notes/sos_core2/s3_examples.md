@@ -4,25 +4,43 @@
 figures, pointed at from anywhere in the text (LaTeX will place them,
 likely facing pages near the end). Captions only, up to one paragraph each.*
 
-| ![aUGb](../sos_core_figs/img/core_F0_astar_bomega_b.png) | ![GF(aa)](../sos_core_figs/img/core_F1_gf_aa.png) |
-|:--:|:--:|
-| ![Even](../sos_core_figs/img/core_F2_even.png) | ![EvenBlocks](../sos_core_figs/img/core_F3_evenblocks.png) |
+<table>
+<tr>
+<td align="center"><img src="../sos_core_figs/img/core_F0_astar_bomega_b_pairs.png" alt="aUGb invariant" width="300"></td>
+<td align="center"><img src="../sos_core_figs/img/core_F1_gf_aa_pairs.png" alt="GF(aa) invariant" width="300"></td>
+</tr>
+<tr>
+<td align="center"><b>(a) <code>aUGb</code></b><br>"eventually only <code>b</code>"<br><code>a*·b^ω</code><br>LTL <code>a U G !a</code></td>
+<td align="center"><b>(b) <code>GF(aa)</code></b><br>"infinitely many <code>aa</code>-factors"<br><code>((a|b)*·a·a)^ω</code><br>LTL <code>G F(a ∧ X a)</code></td>
+</tr>
+<tr>
+<td align="center"><img src="../sos_core_figs/img/core_F2_even_pairs.png" alt="Even invariant" width="300"></td>
+<td align="center"><img src="../sos_core_figs/img/core_F3_evenblocks_pairs.png" alt="EvenBlocks invariant" width="300"></td>
+</tr>
+<tr>
+<td align="center"><b>(c) <code>Even</code></b><br>"even # of <code>a</code>'s, a <code>b</code>, then anything"<br><code>(aa)*·b·(a|b)^ω</code><br>PSL <code>{ {a[*2]}[*] ; !a }!</code></td>
+<td align="center"><b>(d) <code>EvenBlocks</code></b><br>"∞-many <code>b</code>'s, eventually every <code>a</code>-block even" (parity of <code>n</code>)<br><code>(a|b)*·((aa)*·b)^ω</code><br>PSL <code>GF!a ∧ FG(!a → X{ {a[*2]}[*] ; !a }!)</code></td>
+</tr>
+</table>
 
-*Figure 2 — the four invariants, complete: for each language the stamp core
+**Figure 2.** The four invariants, complete: for each language the stamp core
 drawn as in Figure 1 — vertices the classes, edges the table, `λ` and `P`
-beneath; the label `𝒞` abbreviates a self-loop carrying every class.
-`aUGb` (top left, 4 classes) repeats Figure 1's left panel for comparison.
-`GF(aa)` (top right, 5 classes): `[a·a]` — "has seen `aa`" — is a two-sided
-zero, every power cycle has period 1 — aperiodic, the LTL side of the cut —
-and the one accepting pair loops at the zero itself: `aa` recurs.
-`Even` (bottom left, 4 classes): `{[a], [a·a]}` is a period-2 cycle, a `Z₂`
-in the algebra — the reason `Even` is not LTL — and `[a·a]` is an internal
-neutral element of `𝒞`, kept apart from the fresh `[ε]` (Definition 3.1);
-`[b]` and `[a·b]` are left zeros, and once `[b]` is reached every loop
-accepts. `EvenBlocks` (bottom right, 7 classes): the same `Z₂` returns, and
-the zero `[b·a·b]` — a completed odd block — is no death sentence: two of the
-six accepting pairs sit at it — what has happened is absorbed, what loops
-forever decides.*
+beneath; the label `𝒞` abbreviates a self-loop carrying every class. Each
+panel names its language three ways — a phrase, an ω-regular word over the two
+letters `{a, b}`, and an LTL/PSL formula. The formulas live over the single
+atom `a`, so the second letter is the literal `!a`; **throughout this paper the
+LTL/PSL forms are read with `b` in place of `!a`.**
+`aUGb` (a, 4 classes) repeats Figure 1's left panel for comparison.
+`GF(aa)` (b, 5 classes): `[a·a]` — "has seen `aa`" — is a two-sided zero,
+every power cycle has period 1 — aperiodic, the LTL side of the cut — and the
+one accepting pair loops at the zero itself: `aa` recurs.
+`Even` (c, 4 classes): `{[a], [a·a]}` is a period-2 cycle, a `Z₂` in the
+algebra — the reason `Even` is not LTL — and `[a·a]` is an internal neutral
+element of `𝒞`, kept apart from the fresh `[ε]` (Definition 3.1); `[b]` and
+`[a·b]` are left zeros, and once `[b]` is reached every loop accepts.
+`EvenBlocks` (d, 7 classes): the same `Z₂` returns, and the zero `[b·a·b]` —
+a completed odd block — is no death sentence: two of the six accepting pairs
+sit at it — what has happened is absorbed, what loops forever decides.
 
 | ![aUGb automaton](../sos_figs/img/aUGb.png) | ![GF(aa) run-parity](../sos_figs/img/gf_aa.png) | ![GF(aa) reset](../sos_figs/img/gf_aa_reset.png) |
 |:--:|:--:|:--:|
