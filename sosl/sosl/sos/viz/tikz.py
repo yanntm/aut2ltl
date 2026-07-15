@@ -66,6 +66,9 @@ LOOSENESS_FAR = 1.8
 PAIR_LOOP_BR = (-55, -25)
 PAIR_LOOP_BL = (-125, -155)
 PAIR_LOOSENESS = 7.0
+# How far the pair loop's label is pushed out along the loop's bisector, off the
+# doubled line so it does not interrupt it (a polar shift on the label node).
+PAIR_LABEL_OUT = "5mm"
 # How far under the lowest node the P caption sits (cm).
 PAIRS_DROP_CM = 1.3
 # Extra drop when a bottom node's self-loop hangs below it: the loop and its label
@@ -440,9 +443,11 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
         for s, es in _pair_groups(fig):
             nd = fig.node_of(s)
             oa, ia = PAIR_LOOP_BR if pos[s][0] >= cx else PAIR_LOOP_BL
-            out.append(f"  \\draw[pair] ({nd.ident}) to[out={oa},in={ia},"
+            bis = (oa + ia) / 2.0            # push the label out along the loop bisector
+            out.append(f"  \\draw[pair] ({nd.ident}) to[out={oa:g},in={ia:g},"
                        f"looseness={PAIR_LOOSENESS}] "
-                       f"node[lbl] {{{_tex_class_list(fig, es)}}} ({nd.ident});")
+                       f"node[lbl,shift={{({bis:g}:{PAIR_LABEL_OUT})}}] "
+                       f"{{{_tex_class_list(fig, es)}}} ({nd.ident});")
 
     if pairs:
         xs = [p[0] for p in pos.values()]
