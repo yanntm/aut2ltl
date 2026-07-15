@@ -6,8 +6,14 @@
 #                   its own coordinates — the way to propagate a change of style or
 #                   of drawn content (a new label rule, a new arc rule) into figures
 #                   that have been placed by hand. `harvest()` in sos2cayley reads
-#                   the coordinates and the self-loop directions back out of the
-#                   .tex, so nothing hand-placed is lost.
+#                   back ONLY the node coordinates and the self-loop directions.
+#
+#   WARNING: reseed keeps coordinates and loop directions, nothing else. Any OTHER
+#   hand geometry — a manual `to[bend ...]` on an arrow, a hand-set pair loop — is
+#   NOT harvested and IS lost on reseed. Re-apply it by hand afterwards (grep the
+#   commit / diff the _gen.tex), then compile that figure directly (do not `make`,
+#   which would reseed it again). That is all; see task_cleanup_export.md at root
+#   for the owed fix that would make this unnecessary.
 #   make clean      drop the LaTeX by-products (keeps .tex, .pdf, .png)
 #
 # Each figure is the FULL multiplication table of its algebra (every column of M,

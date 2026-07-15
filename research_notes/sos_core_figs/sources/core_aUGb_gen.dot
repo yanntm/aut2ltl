@@ -1,0 +1,26 @@
+// sos2cayley aUGb.sos --rename a=a,!a=b
+digraph core_aUGb {
+  rankdir=TB;
+  ranksep=0.87; nodesep=0.55;
+  node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];
+  edge [fontname="serif", fontsize=10, arrowsize=0.7];
+  label="λ: a ↣ [a], b ↣ [b]\nP = { ([b],[b]), ([a·b],[b]) }";
+  labelloc="b"; labeljust="c"; fontname="serif"; fontsize=11;
+
+  a [label="[a]"];
+  b [label="[b]"];
+  ab [label="[a·b]"];
+  ba [label="[b·a]"];
+
+  { rank=same; a b; }
+  { rank=same; ab ba; }
+
+  a -> a [label="[a]", weight=1];
+  a -> ab [label="[b],[a·b]", weight=3];
+  a -> ba [label="[b·a]", weight=1];
+  b -> ba [label="[a],[a·b],\n[b·a]", weight=3];
+  b -> b [label="[b]", weight=1];
+  ab -> ba [label="[a],[a·b],\n[b·a]", weight=1];
+  ab -> ab [label="[b]", weight=1];
+  ba -> ba [label="C", weight=1];
+}

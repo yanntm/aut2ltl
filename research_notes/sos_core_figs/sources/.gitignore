@@ -1,0 +1,5 @@
+# generated artefacts on the way to the image; the .tex is the traceable source
+*.pdf
+*.aux
+*.log
+*.out
