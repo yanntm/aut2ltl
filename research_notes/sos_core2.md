@@ -1,13 +1,14 @@
 # Materializing the Syntactic ω-Semigroup — restructure sketch (§3 drafted, rest bulleted)
 
 *Sketch — 2026-07-15. Section 3 written out around the stamp presentation
-(semigroup stamp on `Σ⁺`, free monoid completion, comprehension-defined `P`);
-all other sections as adjustment bullets against the current draft.*
+(semigroup stamp `𝒮 : Σ⁺ → C` applied as the classifying map, free monoid
+completion `M`, comprehension-defined `P`); all other sections as adjustment
+bullets against the current draft.*
 
 ## 1. Introduction
 
 - Unchanged in substance; contribution 1 rephrased: the object is reified as an
-  invariant `𝓘 = ⟨𝒮, P⟩` — a **stamp** `𝒮` classifying the nonempty finite words
+  invariant `𝓘 = ⟨𝒮, P⟩` — a **stamp** `𝒮` classifying the finite words
   and an acceptance layer `P` of linked pairs over it.
 - Fix the stale internal pointers (canonicity is §3.3, construction §4).
 
@@ -31,8 +32,8 @@ The definition of the invariant
     𝓘(L) = ⟨𝒮, P⟩
 ```
 
-splits in two parts: a **stamp** `𝒮`, classifying the nonempty finite words, and
-an **acceptance layer** `P`, a set of accepted linked pairs. We define the stamp
+splits in two parts: a **stamp** `𝒮`, classifying the finite words, and an
+**acceptance layer** `P`, a set of accepted linked pairs. We define the stamp
 first.
 
 ### 3.1 Syntax: the invariant `𝓘 = ⟨𝒮, P⟩`
@@ -41,86 +42,68 @@ first.
 morphism
 
 ```
-    φ : Σ⁺ → S
+    𝒮 : Σ⁺ → C
 ```
 
-onto a finite semigroup `S`. The elements of `S` are the **classes**, written
-`[w]` for any word `w` with `φ(w) = [w]`; surjectivity says every class is the
-image of at least one nonempty word.
+onto a finite semigroup `C`, whose elements are the **classes**, written `[w]`
+for any word `w` with `𝒮(w) = [w]` — surjectivity says every class is the class
+of at least one nonempty word. The stamp extends to all finite words by
+adjoining a **fresh** identity `[ε]`:
 
-The notion is Pin and Straubing's [PS05], where a stamp is a surjective morphism
-from a free monoid onto a finite monoid; we transpose it to the free semigroup
-`Σ⁺`, since the empty word plays no role in the ω-theory — no ω-word has an
+```
+    M := C ∪ {[ε]},     𝒮(ε) := [ε],
+```
+
+making `𝒮 : Σ* → M` a surjective monoid morphism. The identity is fresh, so
+`𝒮(w) = [ε]` only for `w = ε`; and `M` differs from `C` by exactly that
+basepoint — a product touching a class of words stays in `C`.
+
+Freshness is the canonical choice, not a convenience: adjoining a *new* unit is
+the universal way of making a semigroup a monoid, and it is deliberate that
+this holds even when `C` owns an internal neutral element. Such an element is a
+class of nonempty words invisible to the language — a genuine behavior,
+loopable, with verdicts of its own — while `[ε]` is the basepoint "no word at
+all", which can never be looped; `Even` (§3.4) exhibits both at once, kept
+apart.
+
+**Representation.** The notion is Pin and Straubing's [PS05], where a stamp is
+a surjective morphism from a free monoid onto a finite monoid; we transpose it
+to `Σ⁺` since the empty word plays no role in the ω-theory — no ω-word has an
 empty trace. Because `Σ⁺` is the free semigroup over `Σ`, a stamp is determined
-by its restriction to the letters: writing `λ := φ|_Σ : Σ → S`, the morphism `φ`
-is the unique extension of `λ`,
+by its values on the letters:
 
 ```
-    φ(x₁x₂⋯xₙ) = λ(x₁)·λ(x₂)·⋯·λ(xₙ),
+    𝒮(x₁x₂⋯xₙ) = 𝒮(x₁)·𝒮(x₂)·⋯·𝒮(xₙ),
 ```
 
-and conversely every map `λ : Σ → S` whose image generates `S` extends to a
-stamp. A stamp is therefore *finitely presented* by the data
-
-```
-    𝒮 = (S, λ, ·)
-```
-
-— the finite semigroup, the letter map, the multiplication table — and this
-presentation is the materialization this paper manipulates: the classical object
-is the morphism, what the field has never had in hand is its table.
+and conversely every map `Σ → C` whose image generates `C` extends to a stamp.
+A stamp is therefore *finitely presented* by the data `(C, 𝒮|_Σ, ·)` — the
+finite set of classes, the letter classes, the multiplication table — and this
+presentation is the materialization this paper manipulates: the classical
+object is the morphism, what the field has never had in hand is its table.
 
 *Notation (representatives).* A class is denoted by one of its member words,
-`[a·b]` for the class of `ab`; any member may serve, and nothing below depends on
-the choice. For readability, figures and examples use the shortlex-least member
-(shortest, then alphabetically first) — a naming convention, not data.
+`[a·b]` for the class of `ab`; any member may serve, and nothing below depends
+on the choice. For readability, figures and examples use the shortlex-least
+member (shortest, then alphabetically first) — a naming convention, not data.
 
 *Example.* The stamp of `aUGb = a*·b^ω` (Figure 1) has four classes,
-`S = {[a], [b], [a·b], [b·a]}`, with `λ(a) = [a]`, `λ(b) = [b]`. The table is the
-drawn graph: `[a]·[b] = [a·b]`, `[a·b]·[a] = [b·a]`, and `[b·a]` is a two-sided
-zero — the dead words, once an `a` follows a `b`.
+`C = {[a], [b], [a·b], [b·a]}`, with `𝒮(a) = [a]`, `𝒮(b) = [b]`. The table is
+the drawn graph: `[a]·[b] = [a·b]`, `[a·b]·[a] = [b·a]`, and `[b·a]` is a
+two-sided zero — the dead words, once an `a` follows a `b`.
 
-*Example (the letter map is data).* Over `Σ = {a, b, c}`, the language
+*Example (the letter classes are data).* Over `Σ = {a, b, c}`, the language
 `(a|c)*·b^ω` has the same four classes and the same table: `a` and `c` are
-interchangeable everywhere, `λ(a) = λ(c) = [a]`. Only `λ` tells the two stamps
-apart — which is precisely why [PS05] compare stamps rather than semigroups.
+interchangeable everywhere, `𝒮(a) = 𝒮(c) = [a]`. Only the letter classes tell
+the two stamps apart — which is precisely why [PS05] compare stamps rather than
+semigroups.
 
-**The adjoined identity.** Stems may be empty, so the computations need a value
-for the empty word. We work in the **free monoid completion**
-
-```
-    C := S ∪ {[ε]},
-```
-
-the monoid obtained by adjoining a *fresh* identity `[ε]` to `S` — fresh even
-when `S` already contains a neutral element. This is the canonical completion:
-freely adjoining a unit is the universal way of making a semigroup a monoid (the
-left adjoint of the forgetful functor), and its unit is always a new element.
-The **fold** of the stamp is the extension of `φ` to all finite words,
-
-```
-    ⟦·⟧ : Σ* → C,     ⟦ε⟧ := [ε],     ⟦w⟧ := φ(w)  for w ∈ Σ⁺,
-```
-
-a monoid morphism. Two facts, both by construction rather than by axiom:
-
-- **`[ε]` is isolated**: `⟦u⟧ = [ε]` iff `u = ε` — the adjoined identity is
-  fresh, so no nonempty word folds to it;
-- **`S` absorbs**: for `c ∈ C` and `s ∈ S`, `c·s ∈ S` and `s·c ∈ S` — a product
-  touching a class of words stays one.
-
-The distinction the freshness preserves is semantic, not clerical: a stamp may
-own an *internal* neutral element — a class of nonempty words that are invisible
-to `L`, a genuine behavior, loopable, with its own verdict — and `[ε]`, the
-basepoint "no word at all", which can never be looped. `Even` (§3.4) exhibits
-both at once, kept apart.
-
-**The idempotent power.** In the finite semigroup `S` the powers `s, s², s³, …`
+**The idempotent power.** In the finite semigroup `C` the powers `s, s², s³, …`
 of any class cannot all be distinct, so the sequence is eventually periodic and
 contains a unique **idempotent**, the one power `sⁿ` (`n ≥ 1`) with
-`sⁿ·sⁿ = sⁿ`: the **idempotent power** of `s`. Fix an **exponent** `π` of `S`:
-an integer `n ≥ 1` such that `sⁿ` is idempotent for *every* `s ∈ S` — one
-exists since `S` is finite (e.g. `|S|!`), and which multiple is chosen never
+`sⁿ·sⁿ = sⁿ`: the **idempotent power** of `s`. Fix an **exponent** `π` of `C`:
+an integer `n ≥ 1` such that `sⁿ` is idempotent for *every* `s ∈ C` — one
+exists since `C` is finite (e.g. `|C|!`), and which multiple is chosen never
 matters. We write `s^π` for the idempotent power, following the ω-words
 tradition [PP04]: it is an honest power, computed on the table alone, and the
 notation deliberately avoids `^ω` — in this paper `^ω` always means infinite
@@ -134,11 +117,11 @@ words of `a⁺b⁺` puts an `a` after a `b` — so `[a·b]^π = [b·a]`: looping
 then `b`'s" is exactly as dead as slipping once.
 
 **Definition 3.2 (pair set; invariant).** A **pair set** over a stamp `𝒮` is a
-finite set `P ⊆ S × S` of pairs of classes. An **invariant** is a pair
+finite set `P ⊆ C × C` of pairs of classes. An **invariant** is a pair
 `𝓘 = ⟨𝒮, P⟩`.
 
-The typing is deliberate: `P` lives in `S × S`, entirely inside the semigroup.
-The adjoined `[ε]` appears in no pair — the acceptance layer speaks only of
+The typing is deliberate: `P` lives in `C × C`, entirely inside the semigroup.
+The basepoint `[ε]` appears in no pair — the acceptance layer speaks only of
 words.
 
 *Example.* Figure 1 carries its pair set beneath the drawing:
@@ -146,30 +129,30 @@ words.
 
 ### 3.2 Semantics: the language of an invariant
 
-An invariant decides lassos with the data it carries and nothing else: the fold
-assigns each finite word its class — stem and loop alike — and `P` lists the
-pairs that accept.
+An invariant decides lassos with the data it carries and nothing else: the
+stamp assigns each finite word its class — stem and loop alike — and `P` lists
+the pairs that accept.
 
 **Definition 3.3 (language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an invariant
 over `Σ`, and `w = u·v^ω ∈ Σ^ω` a lasso, its loop `v` nonempty. Let
-`e := ⟦v⟧^π ∈ S` be the idempotent power of the fold of the loop, and
-`s := ⟦u⟧·e ∈ S` — the stem's fold, absorbed by the loop. Then
+`e := 𝒮(v)^π ∈ C` be the idempotent power of the loop's class, and
+`s := 𝒮(u)·e ∈ C` — the stem's class, absorbed by the loop. Then
 
 ```
     w ∈ L(𝓘)   iff   (s, e) ∈ P.
 ```
 
-Both coordinates land in `S`: `e` is the idempotent power of a class of nonempty
-words, and `s = ⟦u⟧·e` is in `S` by absorption even when the stem is empty. The
-query never mentions `[ε]` — nothing that happens forever has an empty trace,
-and here that is a typing fact, not a lemma.
+Both coordinates land in `C`: `e` is the idempotent power of a class of
+nonempty words, and `s = 𝒮(u)·e` is in `C` by absorption even when the stem is
+empty. The query never mentions `[ε]` — nothing that happens forever has an
+empty trace, and here that is a typing fact, not a lemma.
 
-*Example.* On Figure 1 (`aUGb`), the two verdicts. For `aab·b^ω`: the loop folds
-to `[b]`, already idempotent, so `e = [b]`; the stem folds to `[a·b]` and
-`[a·b]·[b] = [a·b]`. The pair `([a·b], [b])` is in `P`: accepted. For
-`ba·(ab)^ω`: the loop folds to `[a·b]`, not idempotent — its square `[b·a]` is —
-so `e = [b·a]`; the stem folds to `[b·a]` and `[b·a]·[b·a] = [b·a]`. The pair
-`([b·a], [b·a])` is not in `P`: rejected.
+*Example.* On Figure 1 (`aUGb`), the two verdicts. For `aab·b^ω`: the loop's
+class `𝒮(b) = [b]` is already idempotent, so `e = [b]`; the stem's class is
+`𝒮(aab) = [a·b]` and `[a·b]·[b] = [a·b]`. The pair `([a·b], [b])` is in `P`:
+accepted. For `ba·(ab)^ω`: the loop's class `𝒮(ab) = [a·b]` is not idempotent —
+its square `[b·a]` is — so `e = [b·a]`; the stem's class is `[b·a]` and
+`[b·a]·[b·a] = [b·a]`. The pair `([b·a], [b·a])` is not in `P`: rejected.
 
 The definition reads `w` through one presentation `(u, v)`, and a lasso has
 many. That the verdict does not depend on the presentation chosen is not
@@ -210,34 +193,35 @@ shape at `x = y = ε`, `t = b`; and `a ≈_L aa` — membership in `L` never cou
 `a`'s. The quotient `Σ⁺/≈_L` has exactly four classes — `a⁺`, `b⁺`, `a⁺b⁺` and
 the dead words — the four vertices of Figure 1.
 
-**Definition 3.5 (the invariant of `L`).** `𝓘(L) := ⟨𝒮(L), P(L)⟩`, where:
+**Definition 3.5 (the invariant of `L`).** `𝓘(L) := ⟨𝒮_L, P(L)⟩`, where:
 
-- `𝒮(L)` is the quotient morphism `φ_L : Σ⁺ → Σ⁺/≈_L` — surjective by
-  construction, a semigroup morphism because `≈_L` is a two-sided congruence: a
-  stamp, the **syntactic stamp** of `L`, presented by `λ(x) := [x]` and the
+- `𝒮_L : Σ⁺ → Σ⁺/≈_L` is the quotient morphism — surjective by construction, a
+  semigroup morphism because `≈_L` is a two-sided congruence: a stamp, the
+  **syntactic stamp** of `L`, with letter classes `𝒮_L(x) = [x]` and the
   induced table `[u]·[v] := [u·v]`;
 - `P(L)` collects the **names of the accepted lassos**:
 
 ```
-    P(L) := { (⟦u⟧·e, e)  :  u ∈ Σ*,  v ∈ Σ⁺,  e = ⟦v⟧^π,  u·v^ω ∈ L }.
+    P(L) := { (𝒮_L(u)·e, e)  :  u ∈ Σ*,  v ∈ Σ⁺,  e = 𝒮_L(v)^π,  u·v^ω ∈ L }.
 ```
 
 The definition of `P(L)` makes no choice: it ranges over *all* presentations of
-*all* accepted lassos and records the pair each one folds to. In particular no
+*all* accepted lassos and records the pair each one lands on. In particular no
 representative is consulted — testing a single lasso per pair, keyed by chosen
 representatives, is how `P(L)` is *computed* (§4), and its correctness is
 Theorem 3.7's content, not part of the definition.
 
 *Example.* Figure 1 is `𝓘(aUGb)` — §2 called the drawing a syntactic
 ω-semigroup, and Definition 3.5 is that claim made precise. The accepted lassos
-are those eventually reading only `b`'s; their stems fold into `{[b], [a·b]}`
+are those eventually reading only `b`'s; their stems land in `{[b], [a·b]}`
 after absorption, their loops settle on `[b]`, and
 `P(L) = { ([b], [b]), ([a·b], [b]) }`, the pair set printed beneath the figure.
 
-Say a pair `(s, e) ∈ S × S` **names** the lasso `u·v^ω` when some presentation
-folds to it — `⟦v⟧^π = e` and `⟦u⟧·e = s`. `P(L)` is, verbatim, the set of names
-of accepted lassos; the debt is that a pair may name several lassos, and a lasso
-bears several names. The two context shapes were tailored to exactly this:
+Say a pair `(s, e) ∈ C × C` **names** the lasso `u·v^ω` when some presentation
+lands on it — `𝒮(v)^π = e` and `𝒮(u)·e = s`. `P(L)` is, verbatim, the set of
+names of accepted lassos; the debt is that a pair may name several lassos, and
+a lasso bears several names. The two context shapes were tailored to exactly
+this:
 
 **Lemma 3.6 (substitution).** If `u ≈_L u'` and `v ≈_L v'` (all four words
 nonempty), then `u·v^ω ∈ L ⟺ u'·v'^ω ∈ L`.
@@ -253,37 +237,38 @@ query of Definition 3.3 answers membership in `L` itself — every presentation 
 every lasso receives `L`'s verdict — and `L(𝓘(L)) = L`;
 
 (ii) `𝓘` is a **complete invariant**: `L = L'` iff there is a semigroup
-isomorphism `θ : S(L) → S(L')` with `θ ∘ φ_L = φ_{L'}` and
-`(θ×θ)(P(L)) = P(L')` — and such a `θ`, when it exists, is unique.
+isomorphism `θ : C_L → C_{L'}` between the class semigroups with
+`θ ∘ 𝒮_L = 𝒮_{L'}` and `(θ×θ)(P(L)) = P(L')` — and such a `θ`, when it exists,
+is unique.
 
 *Proof.* (i) Let `(u, v)` present the lasso `w`, `v` nonempty, and let `(s, e)`
-be the name it folds to: `e = ⟦v⟧^π`, `s = ⟦u⟧·e`. The idempotent power is an
-honest power: rewrite `w` on the presentation `(u·v^π, v^π)` — the same
-ω-word — whose coordinates are nonempty (the loop `v` is), so the fold is the
-quotient morphism on them: `s = [u·v^π]` and
-`e = [v^π]` as congruence classes. Now take any two lassos named `(s, e)` and
-rewrite each this way: their rewritten stems are congruent (both lie in the
-class `s`), their loops congruent (both in `e`), and Lemma 3.6 gives them one
-verdict. So all lassos named `(s, e)` agree with each other — and `P(L)`
-contains `(s, e)` iff that shared verdict is acceptance. The query on any
-presentation of any lasso `w` therefore answers `w ∈ L`; and since lassos
-determine a regular language [PP04, Ch. I, Cor. 9.8], `L(𝓘(L)) = L`.
+be the name it lands on: `e = 𝒮_L(v)^π`, `s = 𝒮_L(u)·e`. The idempotent power
+is an honest power: rewrite `w` on the presentation `(u·v^π, v^π)` — the same
+ω-word — whose coordinates are nonempty (the loop `v` is), so on them `𝒮_L` is
+the quotient morphism: `s = [u·v^π]` and `e = [v^π]` as congruence classes. Now
+take any two lassos named `(s, e)` and rewrite each this way: their rewritten
+stems are congruent (both lie in the class `s`), their loops congruent (both in
+`e`), and Lemma 3.6 gives them one verdict. So all lassos named `(s, e)` agree
+with each other — and `P(L)` contains `(s, e)` iff that shared verdict is
+acceptance. The query on any presentation of any lasso `w` therefore answers
+`w ∈ L`; and since lassos determine a regular language
+[PP04, Ch. I, Cor. 9.8], `L(𝓘(L)) = L`.
 
 (ii) If `L = L'` the two constructions are literally the same. Conversely, a
 `θ` commuting with the stamps carries names to names and `P(L)` onto `P(L')`,
 so the two queries agree on every lasso; by (i) each answers its own language,
 hence `L = L'`. Uniqueness: `θ` is forced on every class by
-`θ([u]) = θ(φ_L(u)) = φ_{L'}(u)`, and `φ_L` is surjective. ∎
+`θ([u]) = θ(𝒮_L(u)) = 𝒮_{L'}(u)`, and `𝒮_L` is surjective. ∎
 
 *Remark (byte equality).* Naming every class by its shortlex-least member turns
 the unique isomorphism of (ii) into the identity on names: two regular
-ω-languages are equal iff the serialized invariants — classes, `λ`, table, `P`,
-under shortlex naming — are byte-identical. Canonicity is the mathematics; byte
-equality is that mathematics plus a naming convention, and it is the form the
-implementation consumes (Part B).
+ω-languages are equal iff the serialized invariants — classes, letter classes,
+table, `P`, under shortlex naming — are byte-identical. Canonicity is the
+mathematics; byte equality is that mathematics plus a naming convention, and it
+is the form the implementation consumes (Part B).
 
 *Example.* On Figure 1 (`aUGb`), present `aab·b^ω` as `(aab, b)` or as
-`(aabb, bb)`: both fold to the name `([a·b], [b])` — here even the name is
+`(aabb, bb)`: both land on the name `([a·b], [b])` — here even the name is
 stable. That is a feature of `aUGb`, not of the theorem: `Even` (§3.4) names one
 lasso through two distinct pairs, and Theorem 3.7(i) is what forces those two
 names to one verdict.
@@ -294,32 +279,32 @@ rotated**: a factor carried from the loop's front onto the stem leaves the
 ω-word unchanged, `u·g·(h·g)^ω = u·(g·h)^ω` — and rotation is the one move that
 changes a lasso's name.
 
-**Lemma 3.8 (rotation).** Let `𝒮` be a stamp and `s, g, h ∈ S` with
+**Lemma 3.8 (rotation).** Let `𝒮` be a stamp and `s, g, h ∈ C` with
 `s·(gh)^π = s`. Then `(s·g, (hg)^π)` is a linked pair, and some lasso is named
 by both `(s, (gh)^π)` and `(s·g, (hg)^π)`.
 
-*Proof.* First the identities in `S`. Associativity gives `g·(hg)^m = (gh)^m·g`
+*Proof.* First the identities in `C`. Associativity gives `g·(hg)^m = (gh)^m·g`
 for every `m ≥ 1`; at `m = π` — one exponent serving `gh` and `hg` alike —
 this reads `g·(hg)^π = (gh)^π·g`. Hence
 `(s·g)·(hg)^π = s·(gh)^π·g = s·g`: the rotated pair is linked.
-By surjectivity of the stamp pick nonempty words `w, p, q` with `φ(w) = s`,
-`φ(p) = g`, `φ(q) = h`, and consider the single ω-word `α := w·(pq)^ω`. The
-presentation `(w, (pq)^π)` folds to `(s·(gh)^π, (gh)^π) = (s, (gh)^π)`; the
-presentation `(w·p, (qp)^π)` — the same ω-word, `w·(pq)^ω = w·p·(qp)^ω` — folds
-to `(s·g·(hg)^π, (hg)^π) = (s·g, (hg)^π)`. So `α` is named by both pairs. ∎
+By surjectivity of the stamp pick nonempty words `w, p, q` with `𝒮(w) = s`,
+`𝒮(p) = g`, `𝒮(q) = h`, and consider the single ω-word `α := w·(pq)^ω`. The
+presentation `(w, (pq)^π)` lands on `(s·(gh)^π, (gh)^π) = (s, (gh)^π)`; the
+presentation `(w·p, (qp)^π)` — the same ω-word, `w·(pq)^ω = w·p·(qp)^ω` — lands
+on `(s·g·(hg)^π, (hg)^π) = (s·g, (hg)^π)`. So `α` is named by both pairs. ∎
 
-Every element named in the lemma lies in `S`, and surjectivity hands each a
+Every element named in the lemma lies in `C`, and surjectivity hands each a
 nonempty word: no corner case guards the identity, because `[ε]` is not there
 to be rotated through.
 
 Call two linked pairs **conjugate** when rotations connect them — the
 equivalence generated by `(s, (gh)^π) ∼ (s·g, (hg)^π)`; the notion is classical
 [PP04, Ch. II, Prop. 2.6]. Stem extension is the degenerate rotation
-`g = h = ⟦v⟧`: the loop's value is unchanged and the stem absorbs one turn —
+`g = h = 𝒮(v)`: the loop's value is unchanged and the stem absorbs one turn —
 why `(u, v)` and `(uv, v)` may name one lasso by two pairs.
 
 **Definition 3.9 (saturation).** A pair set `P` over a stamp is **saturated**
-when it is closed under conjugacy: for all `s, g, h ∈ S` with `s·(gh)^π = s`,
+when it is closed under conjugacy: for all `s, g, h ∈ C` with `s·(gh)^π = s`,
 
 ```
     (s, (gh)^π) ∈ P   ⟺   (s·g, (hg)^π) ∈ P.
@@ -337,7 +322,7 @@ table-checkable: finitely many triples `(s, g, h)`, each one product and two
 lookups. The rotation identity itself is classical: our
 `g·(hg)^π = (gh)^π·g` is the finite shadow of Wilke's axiom
 `s·(ts)^ω = (st)^ω` [PP04, Ch. II, Thm 5.1] — his `^ω` is the genuine
-second-sort ω-power, ours a power in `S` — and conjugacy of
+second-sort ω-power, ours a power in `C` — and conjugacy of
 linked pairs organizes the classical theory [PP04, Ch. II, Prop. 2.8, Cor. 2.9].
 What this paper draws from it is a different service: rotation turns two-sided
 demands about `L` into right-only computations — the engine of the construction
@@ -354,18 +339,18 @@ is worked on `Even` in §3.4.
 
 - The three languages and their figures are **unchanged** — the figures already
   draw no `[ε]` vertex, and the letter actions, laws, and pair sets are all in
-  `S`. Class counts are now quoted as `|S|`: `aUGb` 4, `GF(aa)` 5, `Even` 4,
-  `EvenBlocks` 7 (each `+1` for the completion `C` if one insists on counting
+  `C`. Class counts are now quoted as `|C|`: `aUGb` 4, `GF(aa)` 5, `Even` 4,
+  `EvenBlocks` 7 (each `+1` for the completion `M` if one insists on counting
   the basepoint).
 - `Even`'s paragraph gains its point rather than losing it: `[a·a]` is an
-  *internal* neutral element of `S` — a class of nonempty, loopable words with
+  *internal* neutral element of `C` — a class of nonempty, loopable words with
   its own verdicts (`(aa)^ω = a^ω` is rejected) — kept apart from the basepoint
   `[ε]` by the free completion. The old "the adjoined identity keeps `[ε]`
   apart" remark becomes the worked illustration of §3.1's freshness discussion.
 - The saturation check on `a^ω` (`(ε, a)` vs `(a, a)` naming `([a·a],[a·a])`
   and `([a],[a·a])`) carries over verbatim.
-- The hand-reading block (membership by one fold, monochrome-cycle test for
-  LTL, saturation) carries over verbatim; aperiodicity is a property of `S`
+- The hand-reading block (membership by one query, monochrome-cycle test for
+  LTL, saturation) carries over verbatim; aperiodicity is a property of `C`
   (the adjoined `[ε]` sits in no nontrivial power cycle).
 
 ## 4. The construction: from an automaton to `𝓘(L)`
@@ -381,7 +366,7 @@ is worked on `Even` in §3.4.
   of nonempty words, which is now the native carrier.
 - §4.4: Definition 4.10's key-testing (one lasso `w_s·(w_e)^ω` per candidate
   linked pair, keys = shortlex-least *nonempty* members — total, since every
-  class of `S` has one by surjectivity) is now explicitly the *computation* of
+  class of `C` has one by surjectivity) is now explicitly the *computation* of
   `P`, its correctness delegated to Theorem 3.7. Theorem 4.11 restated at the
   same altitude as canonicity: `⟨u⟩ ∼ ⟨v⟩ ⟺ u ≈_L v`, hence `𝓘(D)` and `𝓘(L)`
   agree up to the unique isomorphism commuting with the stamps — the identity
@@ -391,22 +376,22 @@ is worked on `Even` in §3.4.
 
 ## 5. Complexity
 
-- As current bullets: split invariant cost (quadratic in `|S|`) from
-  construction cost (exponential in `|Q|` worst case); `|S|` the intrinsic
+- As current bullets: split invariant cost (quadratic in `|C|`) from
+  construction cost (exponential in `|Q|` worst case); `|C|` the intrinsic
   complexity of `L`; BDD-friendliness note. Quantitative reporting standardizes
-  on `|S|` — no conditional `±1` across the corpus.
+  on `|C|` — no conditional `±1` across the corpus.
 
 ## 6. What the invariant unlocks
 
 - As current bullets: identity band (byte equality, complement `P ↦ P^c` within
-  the linked pairs of `S`, emptiness, membership by one fold); LTL-definability
-  as aperiodicity of `S`; taxonomy table condensed; the proxy suggestion, one
+  the linked pairs of `C`, emptiness, membership by one query); LTL-definability
+  as aperiodicity of `C`; taxonomy table condensed; the proxy suggestion, one
   paragraph.
 
 ## 7. Related work
 
 - As current bullets; add [PS05] (stamps — the presentation vehicle, and the
-  reason `λ` is part of the object).
+  reason the letter classes are part of the object).
 
 ## 8. Conclusion
 
