@@ -18,7 +18,7 @@ to and from edges do not carry the same classes. This language is indeed aperiod
 hence LTL.
 
 `[a·a]` is the class of all words that contain at least one block of two
-consecutive `a`'s. It is a sink: once two `a`'s in a row have been seen the word
+consecutive `a`'s. It is a sink: once two `a`'s in a row have been seen the stamp classifier
 is content, and any further extension is absorbed and stays in `[a·a]`. A word
 starting with `a` reaches it either from `[a]` or from `[a·b]`, as soon as an
 `a` lands next to another `a`.
