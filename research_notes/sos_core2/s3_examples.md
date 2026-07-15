@@ -6,16 +6,16 @@ likely facing pages near the end). Captions only, up to one paragraph each.*
 
 <table>
 <tr>
-<td valign="top" align="center"><img src="../sos_core_figs/img/core_F0_astar_bomega_b_pairs.png" alt="aUGb invariant"></td>
-<td valign="top" align="center"><img src="../sos_core_figs/img/core_F1_gf_aa_pairs.png" alt="GF(aa) invariant"></td>
+<td valign="top" align="center"><img src="../sos_core_figs/img/core_F0_astar_bomega_b_pairs.png" alt="aUGb invariant" style="width:7cm"></td>
+<td valign="top" align="center"><img src="../sos_core_figs/img/core_F1_gf_aa_pairs.png" alt="GF(aa) invariant" style="width:7cm"></td>
 </tr>
 <tr>
 <td align="center"><b>(a) <code>aUGb</code></b><br>"eventually only <code>b</code>"<br><code>a*·b^ω</code><br>LTL <code>a U G !a</code></td>
 <td align="center"><b>(b) <code>GF(aa)</code></b><br>"infinitely many <code>aa</code>-factors"<br><code>((a|b)*·a·a)^ω</code><br>LTL <code>G F(a ∧ X a)</code></td>
 </tr>
 <tr>
-<td valign="top" align="center"><img src="../sos_core_figs/img/core_F2_even_pairs.png" alt="Even invariant"></td>
-<td valign="top" align="center"><img src="../sos_core_figs/img/core_F3_evenblocks_pairs.png" alt="EvenBlocks invariant"></td>
+<td valign="top" align="center"><img src="../sos_core_figs/img/core_F2_even_pairs.png" alt="Even invariant" style="width:7cm"></td>
+<td valign="top" align="center"><img src="../sos_core_figs/img/core_F3_evenblocks_pairs.png" alt="EvenBlocks invariant" style="width:10cm"></td>
 </tr>
 <tr>
 <td align="center"><b>(c) <code>Even</code></b><br>"even # of <code>a</code>'s, a <code>b</code>, then anything"<br><code>(aa)*·b·(a|b)^ω</code><br>PSL <code>{ {a[*2]}[*] ; !a }!</code></td>
