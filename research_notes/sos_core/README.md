@@ -30,10 +30,10 @@ invariant `𝓘`) plus reading prose:
 
 | Page | Language | Formula | Status |
 |---|---|---|---|
-| [`Ex_aUGb.md`](Ex_aUGb.md) | `a*·b^ω` | LTL `a U G !a` | table done; prose placeholder |
-| [`Ex_GFaa.md`](Ex_GFaa.md) | `GF(aa)` | LTL `G F(a ∧ X a)` | table done; prose placeholder |
-| [`Ex_Even.md`](Ex_Even.md) | `(aa)*·b·(a\|b)^ω` | PSL/SERE `{ {a[*2]}[*] ; !a }!` | table done; prose placeholder |
-| [`Ex_EvenBlocks.md`](Ex_EvenBlocks.md) | `(a\|b)*·((aa)*·b)^ω` | PSL/SERE `GF!a ∧ FG(…)` | table done; prose placeholder |
+| [`Ex_aUGb.md`](Ex_aUGb.md) | `a*·b^ω` | LTL `a U G !a` | done |
+| [`Ex_GFaa.md`](Ex_GFaa.md) | `GF(aa)` | LTL `G F(a ∧ X a)` | done |
+| [`Ex_Even.md`](Ex_Even.md) | `(aa)*·b·(a\|b)^ω` | PSL/SERE `{ {a[*2]}[*] ; !a }!` | done |
+| [`Ex_EvenBlocks.md`](Ex_EvenBlocks.md) | `(a\|b)*·((aa)*·b)^ω` | PSL/SERE `GF!a ∧ FG(…)` | done |
 
 ## Conventions
 
