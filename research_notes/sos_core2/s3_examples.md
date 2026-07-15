@@ -4,24 +4,26 @@
 figures, pointed at from anywhere in the text (LaTeX will place them,
 likely facing pages near the end). Captions only, up to one paragraph each.*
 
-<table>
+<div style="overflow-x:auto">
+<table style="width:max-content">
 <tr>
-<td valign="top" align="center"><img src="../sos_core_figs/img/core_F0_astar_bomega_b_pairs.png" alt="aUGb invariant" width="600"></td>
-<td valign="top" align="center"><img src="../sos_core_figs/img/core_F1_gf_aa_pairs.png" alt="GF(aa) invariant" width="600"></td>
+<td valign="top" align="center"><img src="../sos_core_figs/img/core_F0_astar_bomega_b_pairs.png" alt="aUGb invariant" width="600" style="max-width:none"></td>
+<td valign="top" align="center"><img src="../sos_core_figs/img/core_F1_gf_aa_pairs.png" alt="GF(aa) invariant" width="600" style="max-width:none"></td>
 </tr>
 <tr>
 <td align="center"><b>(a) <code>aUGb</code></b><br>"eventually only <code>b</code>"<br><code>a*·b^ω</code><br>LTL <code>a U G !a</code></td>
 <td align="center"><b>(b) <code>GF(aa)</code></b><br>"infinitely many <code>aa</code>-factors"<br><code>((a|b)*·a·a)^ω</code><br>LTL <code>G F(a ∧ X a)</code></td>
 </tr>
 <tr>
-<td valign="top" align="center"><img src="../sos_core_figs/img/core_F2_even_pairs.png" alt="Even invariant" width="600"></td>
-<td valign="top" align="center"><img src="../sos_core_figs/img/core_F3_evenblocks_pairs.png" alt="EvenBlocks invariant" width="1000"></td>
+<td valign="top" align="center"><img src="../sos_core_figs/img/core_F2_even_pairs.png" alt="Even invariant" width="600" style="max-width:none"></td>
+<td valign="top" align="center"><img src="../sos_core_figs/img/core_F3_evenblocks_pairs.png" alt="EvenBlocks invariant" width="1000" style="max-width:none"></td>
 </tr>
 <tr>
 <td align="center"><b>(c) <code>Even</code></b><br>"even # of <code>a</code>'s, a <code>b</code>, then anything"<br><code>(aa)*·b·(a|b)^ω</code><br>PSL <code>{ {a[*2]}[*] ; !a }!</code></td>
 <td align="center"><b>(d) <code>EvenBlocks</code></b><br>"∞-many <code>b</code>'s, eventually every <code>a</code>-block even" (parity of <code>n</code>)<br><code>(a|b)*·((aa)*·b)^ω</code><br>PSL <code>GF!a ∧ FG(!a → X{ {a[*2]}[*] ; !a }!)</code></td>
 </tr>
 </table>
+</div>
 
 **Figure 2.** The four invariants, complete: for each language the stamp core
 drawn as in Figure 1 — vertices the classes, edges the table, `λ` and `P`
