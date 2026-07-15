@@ -1,33 +1,3 @@
-# Materializing the Syntactic ω-Semigroup — restructure sketch (§3 drafted, rest bulleted)
-
-*Sketch — 2026-07-15. Section 3 written out around the stamp presentation
-(semigroup stamp `𝒮 : Σ⁺ → C` applied as the classifying map, free monoid
-completion `M`, comprehension-defined `P`); all other sections as adjustment
-bullets against the current draft. Notation follows the conventions appended
-at the end of this file.*
-
-## 1. Introduction
-
-- Unchanged in substance; contribution 1 rephrased: the object is reified as an
-  invariant `𝓘 = ⟨𝒮, P⟩` — a **stamp** `𝒮` classifying the finite words
-  and an acceptance layer `P` of linked pairs over it.
-- Fix the stale internal pointers (canonicity is §3.3, construction §4).
-
-## 2. Background
-
-- Unchanged through the ω-semigroup definitions: lassos, monoids/morphisms,
-  the two-sorted recognizer, idempotent power, linked pairs, one-lasso-many-names.
-- One definition promoted to a numbered block here: **presentation of a
-  lasso** — a pair `(u, v) ∈ Σ* × Σ⁺` with `w = u·v^ω`; a **lasso** is an
-  ω-word admitting one. §3 refers to it by name.
-- The paragraph "the second sort will not be carried" now lands one step further:
-  §3 keeps a *semigroup* of word classes — the empty word is not a citizen of the
-  ω-theory, and the identity the computations use is adjoined freely, not carved
-  out of `Σ*`.
-- `aUGb` and Figure 1/1′ unchanged; the figures already draw no `[ε]` vertex, which
-  §3.1 now justifies once and for all (a freely adjoined identity has no incoming
-  edges).
-
 ## 3. The syntactic ω-semigroup as an invariant `𝓘(L)`
 
 The definition of the invariant
@@ -157,7 +127,7 @@ the pairs that accept.
 
 **Definition 3.5 (language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an
 invariant over `Σ`, and let `w ∈ Σ^ω` be a lasso with presentation
-`(u, v) ∈ Σ* × Σ⁺` (§2), `w = u·v^ω`. Set
+`(u, v) ∈ Σ* × Σ⁺` (Definition 2.1), `w = u·v^ω`. Set
 
 ```
     e := 𝒮(v)^π,     s := 𝒮(u)·e.
@@ -382,95 +352,14 @@ is worked on `Even` in §3.4.
 
 ### 3.4 The examples, as invariants
 
-- The three languages and their figures are **unchanged** — the figures already
-  draw no `[ε]` vertex, and the letter actions, laws, and pair sets are all in
-  `C`. Class counts are now quoted as `|C|`: `aUGb` 4, `GF(aa)` 5, `Even` 4,
-  `EvenBlocks` 7 (each `+1` for the completion `M` if one insists on counting
-  the basepoint).
-- `Even`'s paragraph gains its point rather than losing it: `[a·a]` is an
-  *internal* neutral element of `C` — a class of nonempty, loopable words with
-  its own verdicts (`(aa)^ω = a^ω` is rejected) — kept apart from the basepoint
-  `[ε]` by the free completion. The old "the adjoined identity keeps `[ε]`
-  apart" remark becomes the worked illustration of §3.1's freshness discussion.
-- The saturation check on `a^ω` (`(ε, a)` vs `(a, a)` naming `([a·a],[a·a])`
-  and `([a],[a·a])`) carries over verbatim.
-- The hand-reading block (membership by one query, monochrome-cycle test for
-  LTL, saturation) carries over verbatim; aperiodicity is a property of `C`
-  (the adjoined `[ε]` sits in no nontrivial power cycle).
-
-## 4. The construction: from an automaton to `𝓘(L)`
-
-- §4.1 (Emerson–Lei input) unchanged.
-- §4.2: the enriched object becomes the **enriched stamp**: `w ↦ ⟨w⟩` restricted
-  to `Σ⁺` is a surjective semigroup morphism onto `EM₊(D)`, the enriched images
-  of nonempty words; `⟨ε⟩` is the same free completion on the automaton side.
-  Lemma 4.3 (skeleton), Corollary 4.4 (refines Arnold), Proposition 4.5
-  (enrichment necessary) unchanged in substance.
-- §4.3: the two right relations, the rotation-on-runs lemma, and
-  prefix-independence unchanged; all quantifications already range over images
-  of nonempty words, which is now the native carrier.
-- §4.4: Definition 4.10's key-testing (one lasso `u_s·(u_e)^ω` per candidate
-  linked pair, keys `u_s, u_e` = shortlex-least *nonempty* members — total,
-  since every class of `C` has one by surjectivity) is now explicitly the
-  *computation* of `P`, its correctness delegated to canonicity (Theorem 3.10).
-  Theorem 4.11 restated at the same altitude as canonicity:
-  `⟨u⟩ ∼ ⟨v⟩ ⟺ u ≈_L v`, hence `𝓘(D)` and `𝓘(L)` agree up to the unique
-  isomorphism commuting with the stamps — the identity under shortlex naming,
-  byte equality as the serialization remark.
-- The `GF(aa)` two-presentations exhibit and the algorithm paragraph unchanged
-  (`|EM₊|` counts drop by one: the identity is no longer counted).
-
-## 5. Complexity
-
-- As current bullets: split invariant cost (quadratic in `|C|`) from
-  construction cost (exponential in `|Q|` worst case); `|C|` the intrinsic
-  complexity of `L`; BDD-friendliness note. Quantitative reporting standardizes
-  on `|C|` — no conditional `±1` across the corpus.
-
-## 6. What the invariant unlocks
-
-- As current bullets: identity band (byte equality, complement `P ↦ P^c` within
-  the linked pairs of `C`, emptiness, membership by one query); LTL-definability
-  as aperiodicity of `C`; taxonomy table condensed; the proxy suggestion, one
-  paragraph.
-
-## 7. Related work
-
-- As current bullets; add [PS05] (stamps — the presentation vehicle, and the
-  reason the letter classes are part of the object).
-
-## 8. Conclusion
-
-- As current bullets; the rotation lemma stands alone as the mathematical core.
-
----
-
-## Appendix (editors' note): notation conventions
-
-*Not paper text — the paper never states these rules; its notation just obeys
-them. Editors keep them in mind; reusable across papers.*
-
-One base letter per sort; decorations carry roles, never identity.
-
-- **Sorts.** Formal letters `x, x₁, …, xₙ ∈ Σ`; concrete letters `a, b` (a
-  third concrete letter `c` is tolerated in isolated examples). Finite words
-  are `u`/`v` variants: the `u` family for stem-position material (prefixes,
-  stems, tested words), the `v` family for loop-position material. `w` is
-  reserved for ω-words — lassos — with `w = u·v^ω` the canonical shape.
-  Classes: `c, d` for generic elements of the carrier `C` (lowercase of the
-  carrier), `s` for stem classes, `e` (then `f`) for idempotents; acceptance
-  pairs are `(s, e)`. Maps are calligraphic (`𝒮` the stamp) or Greek (`θ` for
-  isomorphisms, `π` the idempotent exponent). `^ω` means infinite repetition,
-  exclusively; the idempotent power is `^π` — no algebra element ever wears
-  `^ω`.
-- **Decorations.** *Prime* = counterpart: a second object of the same sort in
-  the same role, typically a replacement (`u ≈ u'`, `v'`). *Indices `1, 2, …`*
-  = ordered pieces of one object, where concatenation or application order
-  matters (`v = v₁·v₂`, `x₁⋯xₙ`); never used for a mere pair of peers. *Index
-  `0`* = ambient context material, neither counterpart nor piece (`u₀` a stem
-  prefix, `v₀` a loop completion).
-- **Effect.** Statements typecheck by eye: the sort and role of every symbol
-  is readable from its shape. Every definition and statement still opens with
-  a `Let` binder declaring each object's sort (`let u, u' ∈ Σ⁺ …`) — the
-  decorations never carry information the binder does not state; they make it
-  skimmable.
+- The three languages and their figures carry over from the legacy draft —
+  the figures already draw no `[ε]` vertex, and the letter actions, laws, and
+  pair sets are all in `C`. Class counts quoted as `|C|`: `aUGb` 4, `GF(aa)`
+  5, `Even` 4, `EvenBlocks` 7.
+- `Even`: `[a·a]` is an *internal* neutral element of `C` — nonempty,
+  loopable, with its own verdicts (`(aa)^ω = a^ω` is rejected) — kept apart
+  from the basepoint `[ε]`: the worked illustration of §3.1's freshness
+  discussion.
+- The saturation check on `a^ω` and the hand-reading block (membership by one
+  query, monochrome-cycle test for LTL) carry over; aperiodicity is a property
+  of `C`.
