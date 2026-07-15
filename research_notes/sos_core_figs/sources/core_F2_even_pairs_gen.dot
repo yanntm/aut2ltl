@@ -1,0 +1,28 @@
+// sos2cayley even.sos --rename a=a,!a=b --draw-pairs
+digraph core_F2_even_pairs {
+  rankdir=TB;
+  ranksep=0.87; nodesep=0.55;
+  node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];
+  edge [fontname="serif", fontsize=10, arrowsize=0.7];
+  label="λ: a ↣ [a], b ↣ [b]\nP = { ([b],[b]), ([b],[a·a]), ([b],[a·b]) }";
+  labelloc="b"; labeljust="c"; fontname="serif"; fontsize=11;
+
+  a [label="[a]"];
+  b [label="[b]"];
+  aa [label="[a·a]"];
+  ab [label="[a·b]"];
+
+  { rank=same; a b; }
+  { rank=same; aa ab; }
+
+  a -> aa [label="[a]", weight=3];
+  a -> ab [label="[b]", weight=3];
+  a -> a [label="[a·a]", weight=1];
+  a -> b [label="[a·b]", weight=1];
+  b -> b [label="C", weight=1];
+  aa -> a [label="[a]", weight=1];
+  aa -> b [label="[b]", weight=1];
+  aa -> aa [label="[a·a]", weight=1];
+  aa -> ab [label="[a·b]", weight=1];
+  ab -> ab [label="C", weight=1];
+}

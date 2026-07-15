@@ -35,9 +35,17 @@ not an `Invariant`.
 ## 2. Build
 
 ```sh
-make -C research_notes/sos_core_figs          # all four
+make -C research_notes/sos_core_figs          # the figures AND the pairs variants
 make -C research_notes/sos_core_figs clean    # drop LaTeX by-products
 ```
+
+Two families come out: the four elided invariants plus the `--keep-identity`
+twin, and — from the `pairs` target `make` runs — a `_pairs` variant of each
+elided invariant, the same figure with the accepting pairs *drawn* (see §5). A
+pairs variant inherits its base figure's hand placement: the `Makefile` seeds it
+once by copying the base `.tex`, then always reseeds it with `--draw-pairs`, since
+the pair loops are machine (auto bottom-corner) while the coordinates it keeps are
+the base's — nothing hand-owned is lost by the forced reseed.
 
 One figure at a time (from `sosl/`; this is the provenance line of each `.tex`):
 
@@ -103,6 +111,12 @@ is re-derived. So a restyle propagates into a hand-placed figure with **no hand
 edit at all**, and the placement is reproducible rather than a pile of nudges: the
 content is 100% machine, the arrangement is 100% ours, and the two never mix.
 
+Two decorations are 100% machine — not in the harvest set, so a reseed regenerates
+them and there is nothing to hand-tune: the **λ stubs** (elided figures, letters
+entering the class they name from a top corner) and the **pair loops** of a
+`_pairs` variant (§5, bottom-corner `to[out=…,in=…]` loops — deliberately *not* the
+`loop <dir>` form, so `harvest` passes them by).
+
 It refuses rather than half-transplant: if the invariant changed such that a class
 is gone or renamed, `harvest` raises and you re-seed from scratch (delete
 `<name>.tex` and re-run) instead of silently keeping a stale layout.
@@ -135,3 +149,26 @@ cd sosl && python3 -m sosl.sos.viz ../samples/fixtures/hoa/sos/even.sos --rename
   `README.md` / `algorithm.md`.
 - `sosl/tests/sos/sos2cayley.py` — the paper wrapper: the two-file convention of
   §3, and the `P` line.
+
+## 5. Drawing the accepting pairs (`--draw-pairs`)
+
+The default figure typesets `P` as a caption — an accepting pair is a pair of
+classes, not a transition, and forcing it in as an arrow lies about its type. But a
+linked pair `(s, e)` satisfies `s·e = s`, so it is a **self-loop at `s`**, always,
+by construction (verified on every build: `s·e = s` and `e·e = e`). The `_pairs`
+variants exploit exactly that: with `--draw-pairs`, `P` is *drawn* as bold doubled
+self-loops at each stem `s`, labelled with the loop classes `[e]` (pairs sharing a
+stem fuse into one loop), aimed at a bottom corner outward from the centre. They
+ride on top of the plain algebra — a second reading of the same picture — and do not
+remove `[e]` from the plain self-loop it already sits on.
+
+```sh
+# a pairs variant, seeded from its base figure's placement (the Makefile does this):
+cp research_notes/sos_core_figs/sources/core_F1_gf_aa.tex \
+   research_notes/sos_core_figs/sources/core_F1_gf_aa_pairs.tex
+cd sosl && python3 -m tests.sos.sos2cayley \
+  ../research_notes/sos_core_figs/sources/gf_aa.sos --name core_F1_gf_aa_pairs \
+  --out-dir ../research_notes/sos_core_figs/sources \
+  --img-dir ../research_notes/sos_core_figs/img \
+  --rename 'a=a,!a=b' --rankdir TB --reseed --draw-pairs
+```

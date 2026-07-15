@@ -1,0 +1,49 @@
+// sos2cayley evenblocks.sos --rename a=a,!a=b --draw-pairs
+digraph core_F3_evenblocks_pairs {
+  rankdir=TB;
+  ranksep=0.87; nodesep=0.55;
+  node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];
+  edge [fontname="serif", fontsize=10, arrowsize=0.7];
+  label="λ: a ↣ [a], b ↣ [b]\nP = { ([b],[b]), ([a·b],[b]), ([b·a],[a·b·a]), ([a·b·a],[a·b·a]), ([b·a·b],[b]), ([b·a·b],[a·b·a]) }";
+  labelloc="b"; labeljust="c"; fontname="serif"; fontsize=11;
+
+  a [label="[a]"];
+  b [label="[b]"];
+  aa [label="[a·a]"];
+  ab [label="[a·b]"];
+  ba [label="[b·a]"];
+  aba [label="[a·b·a]"];
+  bab [label="[b·a·b]"];
+
+  { rank=same; a b; }
+  { rank=same; aa ab ba; }
+  { rank=same; aba bab; }
+
+  a -> aa [label="[a]", weight=3];
+  a -> ab [label="[b]", weight=3];
+  a -> a [label="[a·a]", weight=1];
+  a -> b [label="[a·b]", weight=1];
+  a -> aba [label="[b·a]", weight=1];
+  a -> ba [label="[a·b·a]", weight=1];
+  a -> bab [label="[b·a·b]", weight=1];
+  b -> ba [label="[a],[b·a]", weight=3];
+  b -> b [label="[b],[a·a]", weight=1];
+  b -> bab [label="[a·b],\n[a·b·a],\n[b·a·b]", weight=1];
+  aa -> a [label="[a]", weight=1];
+  aa -> b [label="[b]", weight=1];
+  aa -> aa [label="[a·a]", weight=1];
+  aa -> ab [label="[a·b]", weight=1];
+  aa -> ba [label="[b·a]", weight=1];
+  aa -> aba [label="[a·b·a]", weight=1];
+  aa -> bab [label="[b·a·b]", weight=1];
+  ab -> aba [label="[a],[b·a]", weight=3];
+  ab -> ab [label="[b],[a·a]", weight=1];
+  ab -> bab [label="[a·b],\n[a·b·a],\n[b·a·b]", weight=1];
+  ba -> b [label="[a],[a·b]", weight=1];
+  ba -> bab [label="[b],[b·a],\n[b·a·b]", weight=3];
+  ba -> ba [label="[a·a],\n[a·b·a]", weight=1];
+  aba -> ab [label="[a],[a·b]", weight=1];
+  aba -> bab [label="[b],[b·a],\n[b·a·b]", weight=1];
+  aba -> aba [label="[a·a],\n[a·b·a]", weight=1];
+  bab -> bab [label="C", weight=1];
+}

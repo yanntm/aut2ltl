@@ -37,10 +37,18 @@ COMMON  = --out-dir $(HERE)/sources --img-dir $(HERE)/img \
           --rename '$(RENAME)' --rankdir TB
 fig     = $(CAYLEY) $(HERE)/sources/$(1).sos --name $(2) $(COMMON) $(RESEED) $(3)
 
-.PHONY: all reseed figures clean
-all:    figures
+# One pairs variant: $(call pairfig,<invariant>,<variant name>,<base name>). The
+# variant inherits the base figure's hand placement — seeded once by copying the
+# base .tex, then always reseeded WITH --draw-pairs, since the pair loops are machine
+# (auto bottom-corner, not harvested) while the node coordinates it keeps are the
+# base's. Nothing hand-owned is lost by the forced reseed.
+pairfig = test -f sources/$(2).tex || cp sources/$(3).tex sources/$(2).tex; \
+          $(CAYLEY) $(HERE)/sources/$(1).sos --name $(2) $(COMMON) --reseed --draw-pairs
+
+.PHONY: all reseed figures pairs clean
+all:    pairs
 reseed: RESEED := --reseed
-reseed: figures
+reseed: pairs
 
 figures:
 	$(call fig,astar_bomega,core_F0_astar_bomega,--keep-identity)
@@ -48,6 +56,14 @@ figures:
 	$(call fig,gf_aa,core_F1_gf_aa)
 	$(call fig,even,core_F2_even)
 	$(call fig,evenblocks,core_F3_evenblocks)
+
+# The accepting pairs drawn on top of the four elided invariants (Figure 2), each a
+# second copy of its base figure with P rendered as bold doubled self-loops.
+pairs: figures
+	$(call pairfig,astar_bomega,core_F0_astar_bomega_b_pairs,core_F0_astar_bomega_b)
+	$(call pairfig,gf_aa,core_F1_gf_aa_pairs,core_F1_gf_aa)
+	$(call pairfig,even,core_F2_even_pairs,core_F2_even)
+	$(call pairfig,evenblocks,core_F3_evenblocks_pairs,core_F3_evenblocks)
 
 clean:
 	rm -f sources/*.aux sources/*.log sources/*.out
