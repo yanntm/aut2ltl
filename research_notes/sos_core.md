@@ -1035,7 +1035,21 @@ label `𝒞` abbreviates a self-loop carrying every class.
 | Det. Emerson–Lei `D` | ![aUGb automaton](sos_figs/img/aUGb.png) |
 | Invariant `𝓘` | ![aUGb invariant](sos_core_figs/img/core_F0_astar_bomega_b_pairs.png) |
 
-*describe here example aUGb*
+`[a]` is the class of finite words `a⁺` only containing `a`. `[a·b]` is words of
+the form `a⁺b⁺` that start with a sequence of `a`'s then a sequence of `b`'s.
+`[b]` is the class `b⁺` of words only containing `b`. `[b·a]` the class of words
+that have met an `a` after `b` (somewhere in the word).
+
+Acceptance is in two pairs: `([b], [b])` representing the word `b^ω`, and
+`([a·b], [b])` the words of the form `a⁺·b^ω`. Note that these are classes:
+`([a·b], [b])` represents `a·b^ω`, `ab·b^ω`, `aabbb·b^ω`, `ab·bbb^ω`, …
+
+Consider the lasso `ababba·b^ω`. Compute
+`𝒮(ababba) = [a]·[b]·[a]·[b]·[b]·[a] = [a·b]·[a·b]·[b·a]` (an arbitrary
+parenthesizing, since `𝒮` is associative); note `[a·b]·[a·b] = [b·a]` and
+`[b·a]` right-extended by anything is still `[b·a]`, so `𝒮(ababba) = [b·a]`. The
+class of `b` is `[b]`. The pair `([b·a], [b])` is not accepted, so the lasso
+represented by `ababba·b^ω` is not in the language.
 
 
 # Example — `GF(aa)`
@@ -1048,7 +1062,29 @@ label `𝒞` abbreviates a self-loop carrying every class.
 | Det. Emerson–Lei `D` | ![GF(aa) run-parity automaton](sos_figs/img/gf_aa.png) |
 | Invariant `𝓘` | ![GF(aa) invariant](sos_core_figs/img/core_F1_gf_aa_pairs.png) |
 
-*describe here example GF(aa)*
+`[a]` is the class of words that start with an `a` and have never seen two
+`a`'s in a row. `[a·b]` is the class of words that start with an `a`, have most
+recently seen a `b`, and so far contain only isolated `a`'s — no block of two.
+These two classes cycle: extending `[a·b]` by `[a]` returns to `[a]`
+(`[a·b]·[a] = [a]`, forgetting that `b`'s were ever seen), and `[a]·[b] = [a·b]`
+goes back. This length-2 cycle is a counter of period 2 in the graph, and it is
+why the language is not LTL.
+
+`[a·a]` is the class of all words that contain at least one block of two
+consecutive `a`'s. It is a sink: once two `a`'s in a row have been seen the word
+is content, and any further extension is absorbed and stays in `[a·a]`. A word
+starting with `a` reaches it either from `[a]` or from `[a·b]`, as soon as an
+`a` lands next to another `a`.
+
+Since acceptance asks for infinitely many such blocks, the only accepted pair is
+`([a·a], [a·a])`, and it is only logical that `[a·a]` be the loop component.
+Less obvious is that the stem component must also be `[a·a]`: this is always
+arrangeable by the rotation lemma, which pushes letters of the looped part back
+into the prefix until the prefix, too, is seen to carry two consecutive `a`'s.
+That is the canonical presentation of all accepted lassos of the language here.
+
+The classes `[b]` and `[b·a]` play the same waiting-room game for words that
+start with a `b`, counting until the first block of two `a`'s is met.
 
 
 # Example — `Even`
@@ -1061,7 +1097,31 @@ label `𝒞` abbreviates a self-loop carrying every class.
 | Det. Emerson–Lei `D` | ![Even automaton](sos_figs/img/even.png) |
 | Invariant `𝓘` | ![Even invariant](sos_core_figs/img/core_F2_even_pairs.png) |
 
-*describe here example Even*
+`[a]` is the class of words that have seen only an odd number of `a`'s (and no
+`b` yet); `[a·a]` the class of words that have seen only an even number of
+`a`'s. Reading one more `a` flips the parity, so `[a]` and `[a·a]` form a small
+strongly connected component — the parity counter. We leave it only by reading a
+`b`.
+
+Where the `b` lands us records the parity at that moment. From `[a]`, an odd
+count, we go to `[a·b]`: the class of all words with an odd number of `a`'s
+before the first `b` — a sequence of `a`'s was left unpaired. It is a sink: any
+extension stays in the same class. From `[a·a]`, an even count, we go to `[b]`.
+
+`[b]` is the most subtle class to interpret. It coalesces not only `b⁺`, as in
+the earlier figures, but also any even number of `a`'s followed by at least one
+`b`. Once `[b]` is reached the recognizer is content, and `[b]` accepts any
+suffix.
+
+Acceptance therefore fixes the stem to `[b]`: an even number of `a`'s until a
+`b` is met. The loop, on the other hand, can be essentially anything — `[a·b]`
+and `[a·a]` canonically cover the cases where it extends by `a`'s — giving the
+three accepted pairs `([b], [b])`, `([b], [a·a])`, `([b], [a·b])`.
+
+Reading a word. Take `aaaba·ba^ω`: the stem `aaaba` gives
+`([a]·[a]·[a])·([b]·[a]) = [a]·[b] = [a·b]`, and the loop `ba` gives
+`[b]·[a] = [b]`; the pair `([a·b], [b])` is not accepted. Try again with `aaba`
+as stem: `([a]·[a])·([b]·[a]) = [a·a]·[b] = [b]`, and `([b], [b])` is accepted.
 
 
 # Example — `EvenBlocks`
@@ -1074,7 +1134,32 @@ label `𝒞` abbreviates a self-loop carrying every class.
 | Det. Emerson–Lei `D` | ![EvenBlocks automaton](sos_figs/img/evenblocks.png) |
 | Invariant `𝓘` | ![EvenBlocks invariant](sos_core_figs/img/core_F3_evenblocks_pairs.png) |
 
-*describe here example EvenBlocks*
+As in `Even`, `[a]` and `[a·a]` are classes of words that have seen only `a`'s,
+in odd and even count respectively. Exiting the SCC with an even number of `a`'s
+before the `b`, in both cases, brings us to class `[b]`. So `[b]`, like in
+`Even`, agglomerates all words with an even number of `a`'s up to a `b`. But
+additionally to `Even`, using the cycle `[b]`/`[b·a]`, `[b]` also agglomerates
+even `a`-blocks interrupted by arbitrary numbers of `b`'s, returning to `[b]`
+after stabilizing. So `[b]` is any sequence made of only even `a`-blocks or
+`b`'s, finishing on a `b`.
+
+Logically `([b], [b])` is accepted, as it covers most of the cases we expected
+to capture. The other accepting pairs all carry either `[b]` in their loop, or
+`[a·b·a]`, which covers the rotated cycle containing only words where every
+block of `a`'s is even in length. All classes can be the stem of at least one
+accepting continuation: the language is prefix agnostic. However every accepting
+stem of an accepted pair of this canonical representation contains at least some
+`b` — a constraint enforced by the canonical form using rotation, since the loop
+must already contain at least one `b` (there are infinitely many). Rotation
+pushes this `b` from the loop back into the stem.
+
+Reading a word. Take `aabaab·baa`, grouped `(aa)·(baab)` and reduced on each
+side before conjoining. `(aa) = [a]·[a] = [a·a]` is the parity cycle;
+`(baab) = [b]·[a]·[a]·[b] = [b·a]·[a]·[b] = [b]·[b] = [b]` runs the `[b]`/`[b·a]`
+cycle, closing on an even count. Conjoining, `[a·a]·[b] = [b]`, so
+`𝒮(aabaab) = [b]`. The loop `baa = [b]·[a]·[a] = [b·a]·[a] = [b]` is idempotent,
+so `e = [b]`. The stem is `s = [b]·[b] = [b]`, and the name `([b], [b])` is
+accepted.
 
 
 ## References
