@@ -3,7 +3,8 @@
 *Sketch — 2026-07-15. Section 3 written out around the stamp presentation
 (semigroup stamp `𝒮 : Σ⁺ → C` applied as the classifying map, free monoid
 completion `M`, comprehension-defined `P`); all other sections as adjustment
-bullets against the current draft.*
+bullets against the current draft. Notation follows the conventions appended
+at the end of this file.*
 
 ## 1. Introduction
 
@@ -48,8 +49,8 @@ surjective semigroup morphism
     𝒮 : Σ⁺ → C
 ```
 
-onto a finite semigroup `C`, whose elements are the **classes**, written `[w]`
-for any nonempty word `w ∈ Σ⁺` with `𝒮(w) = [w]`. The stamp extends to all
+onto a finite semigroup `C`, whose elements are the **classes**, written `[u]`
+for any nonempty word `u ∈ Σ⁺` with `𝒮(u) = [u]`. The stamp extends to all
 finite words by adjoining a **fresh** identity `[ε]`:
 
 ```
@@ -59,7 +60,7 @@ finite words by adjoining a **fresh** identity `[ε]`:
 making `𝒮 : Σ* → M` a surjective monoid morphism.
 
 Two consequences of the definition, used silently everywhere: **`[ε]` is
-isolated** — the identity is fresh, so `𝒮(w) = [ε]` only for `w = ε` — and
+isolated** — the identity is fresh, so `𝒮(u) = [ε]` only for `u = ε` — and
 **`C` absorbs** — `M` differs from `C` by exactly that basepoint, so a product
 touching a class of words stays in `C`. Surjectivity says every class is the
 class of at least one nonempty word.
@@ -104,18 +105,18 @@ interchangeable everywhere, `𝒮(a) = 𝒮(c) = [a]`. Only the letter classes t
 the two stamps apart — which is precisely why [PS05] compare stamps rather than
 semigroups.
 
-In a finite semigroup the powers `s, s², s³, …` of any element cannot all be
+In a finite semigroup the powers `c, c², c³, …` of any element cannot all be
 distinct, so the sequence is eventually periodic and contains exactly one
 idempotent [PP04].
 
 **Definition 3.2 (idempotent power; exponent of a stamp).** Let
-`𝒮 : Σ⁺ → C` be a stamp and `s ∈ C`. The **idempotent power** of `s` is the
-unique idempotent among its powers — the one `sⁿ` (`n ≥ 1`) with `sⁿ·sⁿ = sⁿ`.
-An **exponent** of `𝒮` is an integer `π ≥ 1` such that `s^π` is the idempotent
-power of *every* `s ∈ C`; one exists since `C` is finite (e.g. `|C|!`), and
-which multiple is chosen never matters. We fix one and write `s^π`.
+`𝒮 : Σ⁺ → C` be a stamp and `c ∈ C`. The **idempotent power** of `c` is the
+unique idempotent among its powers — the one `cⁿ` (`n ≥ 1`) with `cⁿ·cⁿ = cⁿ`.
+An **exponent** of `𝒮` is an integer `π ≥ 1` such that `c^π` is the idempotent
+power of *every* `c ∈ C`; one exists since `C` is finite (e.g. `|C|!`), and
+which multiple is chosen never matters. We fix one and write `c^π`.
 
-`s^π` is an honest power, computed on the table alone, and the notation
+`c^π` is an honest power, computed on the table alone, and the notation
 deliberately avoids `^ω` — in this paper `^ω` always means infinite
 repetition, and nothing here is infinite. This idempotent is exactly what
 stands in for the ω-power of the two-sorted recognizers (§2): iterating a
@@ -200,29 +201,36 @@ in the stem or inside the loop, and interchangeability must hold in both
 positions:
 
 **Definition 3.7 (syntactic congruence of an ω-language [Arn85]).** Let
-`L ⊆ Σ^ω` be a regular ω-language. Two nonempty words `u, v ∈ Σ⁺` are
-**syntactically congruent** for `L`, written `u ≈_L v`, when they are
+`L ⊆ Σ^ω` be a regular ω-language. Two nonempty words `u, u' ∈ Σ⁺` are
+**syntactically congruent** for `L`, written `u ≈_L u'`, when they are
 interchangeable in both context shapes:
 
 ```
-    (linear)     ∀ x, y ∈ Σ*, t ∈ Σ⁺ :   x·u·y·t^ω ∈ L  ⟺  x·v·y·t^ω ∈ L
-    (ω-power)    ∀ x, y ∈ Σ*          :   x·(u·y)^ω ∈ L  ⟺  x·(v·y)^ω ∈ L
+    (linear)     ∀ u₀ ∈ Σ*,  ∀ lasso w ∈ Σ^ω :   u₀·u·w ∈ L     ⟺   u₀·u'·w ∈ L
+    (ω-power)    ∀ u₀, v₀ ∈ Σ*               :   u₀·(u·v₀)^ω ∈ L  ⟺   u₀·(u'·v₀)^ω ∈ L
 ```
 
-The linear shape mutates the stem — a finite change, a loop `t` appended to
-complete the lasso; the ω-power shape mutates inside the loop, where the change
-recurs forever. `≈_L` is a two-sided congruence on `Σ⁺` of finite index for
-regular `L` [Arn85], and the coarsest relation with these interchange
-properties — the first of two senses in which the quotient below is minimal.
-Note the domain: the relation lives on `Σ⁺`. The empty word is not comparable —
-the ω-power shape at `y = ε` would have to evaluate `ε^ω`, which is not an
-ω-word — and the quotient below is a semigroup, as Definition 3.1 requires.
+The linear shape mutates the stem — the tested word sits after a finite prefix
+`u₀`, in front of a whole lasso `w`; the ω-power shape mutates inside the
+loop, where the change recurs forever, `v₀` completing each turn. Congruence
+is a property of the word, not of a position: the primes mark the replacement,
+and the relation is instantiated at loop words (`v ≈_L v'`) in the
+substitution lemma (3.9). The linear shape quantifies over lassos where
+Arnold quantifies over a finite completion followed by a nonempty loop — the
+same set of contexts, repackaged on the notion this paper is about. `≈_L` is a
+two-sided congruence on `Σ⁺` of finite index for regular `L` [Arn85], and the
+coarsest relation with these interchange properties — the first of two senses
+in which the quotient below is minimal. Note the domain: the relation lives on
+`Σ⁺`. The empty word is not comparable — the ω-power shape at `v₀ = ε` would
+have to evaluate `ε^ω`, which is not an ω-word — and the quotient below is a
+semigroup, as Definition 3.1 requires.
 
 *Example.* On Figure 1 (`aUGb`), from `L = a*·b^ω` alone: `a ≉_L b` by the
-ω-power shape at `x = y = ε` — `a^ω ∉ L`, `b^ω ∈ L`; `ab ≉_L ba` by the linear
-shape at `x = y = ε`, `t = b`; and `a ≈_L aa` — membership in `L` never counts
-`a`'s. The quotient `Σ⁺/≈_L` has exactly four classes — `a⁺`, `b⁺`, `a⁺b⁺` and
-the dead words — the four vertices of Figure 1.
+ω-power shape at `u₀ = v₀ = ε` — `a^ω ∉ L`, `b^ω ∈ L`; `ab ≉_L ba` by the
+linear shape at `u₀ = ε`, `w = b^ω` — `ab·b^ω ∈ L`, `ba·b^ω ∉ L`; and
+`a ≈_L aa` — membership in `L` never counts `a`'s. The quotient `Σ⁺/≈_L` has
+exactly four classes — `a⁺`, `b⁺`, `a⁺b⁺` and the dead words — the four
+vertices of Figure 1.
 
 **Definition 3.8 (syntactic stamp; syntactic invariant of `L`).** Let
 `L ⊆ Σ^ω` be a regular ω-language, and let `C_L := Σ⁺/≈_L` be its finite
@@ -259,9 +267,9 @@ The two context shapes were tailored to lassos, and they pay immediately:
 **Lemma 3.9 (substitution of congruent words).** Let `u, u', v, v' ∈ Σ⁺` with
 `u ≈_L u'` and `v ≈_L v'`. Then `u·v^ω ∈ L ⟺ u'·v'^ω ∈ L`.
 
-*Proof.* Swap the loop: the ω-power shape of `v ≈_L v'`, at `x = u` and
-`y = ε`, gives `u·v^ω ∈ L ⟺ u·v'^ω ∈ L`. Swap the stem: the linear shape of
-`u ≈_L u'`, at `x = y = ε` and `t = v'`, gives `u·v'^ω ∈ L ⟺ u'·v'^ω ∈ L`. ∎
+*Proof.* Swap the loop: the ω-power shape of `v ≈_L v'`, at `u₀ = u` and
+`v₀ = ε`, gives `u·v^ω ∈ L ⟺ u·v'^ω ∈ L`. Swap the stem: the linear shape of
+`u ≈_L u'`, at `u₀ = ε` and `w = v'^ω`, gives `u·v'^ω ∈ L ⟺ u'·v'^ω ∈ L`. ∎
 
 **Theorem 3.10 (canonicity of the syntactic invariant).** Let `L ⊆ Σ^ω` be a
 regular ω-language.
@@ -309,23 +317,23 @@ forces those two names to one verdict.
 §2 promised a reconciliation: one lasso, many names. The constraint that
 canonicity puts on a pair set has a single generator. **A loop may be
 rotated**: a factor carried from the loop's front onto the stem leaves the
-ω-word unchanged, `u·g·(h·g)^ω = u·(g·h)^ω` — and rotation is the one move
-that changes a lasso's name.
+ω-word unchanged, `u·v₁·(v₂·v₁)^ω = u·(v₁·v₂)^ω` — and rotation is the one
+move that changes a lasso's name.
 
 **Lemma 3.11 (rotation of a name).** Let `𝒮 : Σ⁺ → C` be a stamp and
-`s, g, h ∈ C` with `s·(gh)^π = s`. Then `(s·g, (hg)^π)` is a linked pair, and
-some lasso is named by both `(s, (gh)^π)` and `(s·g, (hg)^π)`.
+`s, c, d ∈ C` with `s·(cd)^π = s`. Then `(s·c, (dc)^π)` is a linked pair, and
+some lasso is named by both `(s, (cd)^π)` and `(s·c, (dc)^π)`.
 
-*Proof.* First the identities in `C`. Associativity gives `g·(hg)^m = (gh)^m·g`
-for every `m ≥ 1`; at `m = π` — one exponent serving `gh` and `hg` alike —
-this reads `g·(hg)^π = (gh)^π·g`. Hence
-`(s·g)·(hg)^π = s·(gh)^π·g = s·g`: the rotated pair is linked.
-By surjectivity of the stamp pick nonempty words `w, p, q ∈ Σ⁺` with
-`𝒮(w) = s`, `𝒮(p) = g`, `𝒮(q) = h`, and consider the single ω-word
-`α := w·(pq)^ω`. The presentation `(w, (pq)^π)` lands on
-`(s·(gh)^π, (gh)^π) = (s, (gh)^π)`; the presentation `(w·p, (qp)^π)` — the
-same ω-word, `w·(pq)^ω = w·p·(qp)^ω` — lands on
-`(s·g·(hg)^π, (hg)^π) = (s·g, (hg)^π)`. So `α` is named by both pairs. ∎
+*Proof.* First the identities in `C`. Associativity gives `c·(dc)^m = (cd)^m·c`
+for every `m ≥ 1`; at `m = π` — one exponent serving `cd` and `dc` alike —
+this reads `c·(dc)^π = (cd)^π·c`. Hence
+`(s·c)·(dc)^π = s·(cd)^π·c = s·c`: the rotated pair is linked.
+By surjectivity of the stamp pick nonempty words `u, v₁, v₂ ∈ Σ⁺` with
+`𝒮(u) = s`, `𝒮(v₁) = c`, `𝒮(v₂) = d`, and consider the single ω-word
+`w := u·(v₁v₂)^ω`. The presentation `(u, (v₁v₂)^π)` lands on
+`(s·(cd)^π, (cd)^π) = (s, (cd)^π)`; the presentation `(u·v₁, (v₂v₁)^π)` — the
+same ω-word, `u·(v₁v₂)^ω = u·v₁·(v₂v₁)^ω` — lands on
+`(s·c·(dc)^π, (dc)^π) = (s·c, (dc)^π)`. So `w` is named by both pairs. ∎
 
 Every element named in the lemma lies in `C`, and surjectivity hands each a
 nonempty word: no corner case guards the identity, because `[ε]` is not there
@@ -333,31 +341,31 @@ to be rotated through.
 
 **Definition 3.12 (conjugate pairs; saturated pair set).** Let `𝒮` be a stamp.
 Two linked pairs of `𝒮` are **conjugate** when rotations connect them:
-conjugacy is the equivalence generated by `(s, (gh)^π) ∼ (s·g, (hg)^π)` over
-the triples `s, g, h ∈ C` with `s·(gh)^π = s` — the notion is classical
+conjugacy is the equivalence generated by `(s, (cd)^π) ∼ (s·c, (dc)^π)` over
+the triples `s, c, d ∈ C` with `s·(cd)^π = s` — the notion is classical
 [PP04, Ch. II, Prop. 2.6]. A pair set `P` over `𝒮` is **saturated** when it is
 closed under conjugacy:
 
 ```
-    (s, (gh)^π) ∈ P   ⟺   (s·g, (hg)^π) ∈ P.
+    (s, (cd)^π) ∈ P   ⟺   (s·c, (dc)^π) ∈ P.
 ```
 
-Stem extension is the degenerate rotation `g = h = 𝒮(v)`: the loop's value is
+Stem extension is the degenerate rotation `c = d = 𝒮(v)`: the loop's value is
 unchanged and the stem absorbs one turn — why `(u, v)` and `(uv, v)` may name
 one lasso by two pairs.
 
 **Corollary 3.13 (saturation of the syntactic invariant).** `P(L)` is
 saturated.
 
-*Proof.* By the rotation lemma (3.11) some lasso `α` is named by both pairs,
+*Proof.* By the rotation lemma (3.11) some lasso `w` is named by both pairs,
 and `P(L)` is the set of names of accepted lassos, whose verdicts, by
 canonicity (Theorem 3.10(i)), agree name-by-name: each of the two pairs is in
-`P(L)` iff `α ∈ L` — both in or both out. ∎
+`P(L)` iff `w ∈ L` — both in or both out. ∎
 
 Saturation is the one law an acceptance layer must obey, and it is
-table-checkable: finitely many triples `(s, g, h)`, each one product and two
+table-checkable: finitely many triples `(s, c, d)`, each one product and two
 lookups. The rotation identity itself is classical: our
-`g·(hg)^π = (gh)^π·g` is the finite shadow of Wilke's axiom
+`c·(dc)^π = (cd)^π·c` is the finite shadow of Wilke's axiom
 `s·(ts)^ω = (st)^ω` [PP04, Ch. II, Thm 5.1] — his `^ω` is the genuine
 second-sort ω-power, ours a power in `C` — and conjugacy of
 linked pairs organizes the classical theory [PP04, Ch. II, Prop. 2.8, Cor. 2.9].
@@ -401,14 +409,14 @@ is worked on `Even` in §3.4.
 - §4.3: the two right relations, the rotation-on-runs lemma, and
   prefix-independence unchanged; all quantifications already range over images
   of nonempty words, which is now the native carrier.
-- §4.4: Definition 4.10's key-testing (one lasso `w_s·(w_e)^ω` per candidate
-  linked pair, keys = shortlex-least *nonempty* members — total, since every
-  class of `C` has one by surjectivity) is now explicitly the *computation* of
-  `P`, its correctness delegated to canonicity (Theorem 3.10). Theorem 4.11
-  restated at the same altitude as canonicity: `⟨u⟩ ∼ ⟨v⟩ ⟺ u ≈_L v`, hence
-  `𝓘(D)` and `𝓘(L)` agree up to the unique isomorphism commuting with the
-  stamps — the identity under shortlex naming, byte equality as the
-  serialization remark.
+- §4.4: Definition 4.10's key-testing (one lasso `u_s·(u_e)^ω` per candidate
+  linked pair, keys `u_s, u_e` = shortlex-least *nonempty* members — total,
+  since every class of `C` has one by surjectivity) is now explicitly the
+  *computation* of `P`, its correctness delegated to canonicity (Theorem 3.10).
+  Theorem 4.11 restated at the same altitude as canonicity:
+  `⟨u⟩ ∼ ⟨v⟩ ⟺ u ≈_L v`, hence `𝓘(D)` and `𝓘(L)` agree up to the unique
+  isomorphism commuting with the stamps — the identity under shortlex naming,
+  byte equality as the serialization remark.
 - The `GF(aa)` two-presentations exhibit and the algorithm paragraph unchanged
   (`|EM₊|` counts drop by one: the identity is no longer counted).
 
@@ -434,3 +442,35 @@ is worked on `Even` in §3.4.
 ## 8. Conclusion
 
 - As current bullets; the rotation lemma stands alone as the mathematical core.
+
+---
+
+## Appendix (editors' note): notation conventions
+
+*Not paper text — the paper never states these rules; its notation just obeys
+them. Editors keep them in mind; reusable across papers.*
+
+One base letter per sort; decorations carry roles, never identity.
+
+- **Sorts.** Formal letters `x, x₁, …, xₙ ∈ Σ`; concrete letters `a, b` (a
+  third concrete letter `c` is tolerated in isolated examples). Finite words
+  are `u`/`v` variants: the `u` family for stem-position material (prefixes,
+  stems, tested words), the `v` family for loop-position material. `w` is
+  reserved for ω-words — lassos — with `w = u·v^ω` the canonical shape.
+  Classes: `c, d` for generic elements of the carrier `C` (lowercase of the
+  carrier), `s` for stem classes, `e` (then `f`) for idempotents; acceptance
+  pairs are `(s, e)`. Maps are calligraphic (`𝒮` the stamp) or Greek (`θ` for
+  isomorphisms, `π` the idempotent exponent). `^ω` means infinite repetition,
+  exclusively; the idempotent power is `^π` — no algebra element ever wears
+  `^ω`.
+- **Decorations.** *Prime* = counterpart: a second object of the same sort in
+  the same role, typically a replacement (`u ≈ u'`, `v'`). *Indices `1, 2, …`*
+  = ordered pieces of one object, where concatenation or application order
+  matters (`v = v₁·v₂`, `x₁⋯xₙ`); never used for a mere pair of peers. *Index
+  `0`* = ambient context material, neither counterpart nor piece (`u₀` a stem
+  prefix, `v₀` a loop completion).
+- **Effect.** Statements typecheck by eye: the sort and role of every symbol
+  is readable from its shape. Every definition and statement still opens with
+  a `Let` binder declaring each object's sort (`let u, u' ∈ Σ⁺ …`) — the
+  decorations never carry information the binder does not state; they make it
+  skimmable.
