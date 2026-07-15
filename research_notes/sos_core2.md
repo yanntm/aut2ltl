@@ -19,6 +19,11 @@ all other sections as adjustment bullets against the current draft.*
   §3 keeps a *semigroup* of word classes — the empty word is not a citizen of the
   ω-theory, and the identity the computations use is adjoined freely, not carved
   out of `Σ*`.
+- Notation split, held paper-wide: `^ω` means infinite — `Σ^ω`, `v^ω`, `S_ω`, and
+  the second-sort ω-power `φ₊(v)^ω` inside this section's recollection of the
+  classical two-sorted recognizer. The idempotent power in a finite semigroup is
+  written `s^π` (§3.1), following the ω-words tradition [PP04]; no algebra
+  element ever wears `^ω`.
 - `aUGb` and Figure 1/1′ unchanged; the figures already draw no `[ε]` vertex, which
   §3.1 now justifies once and for all (a freely adjoined identity has no incoming
   edges).
@@ -118,13 +123,19 @@ both at once, kept apart.
 **The idempotent power.** In the finite semigroup `S` the powers `s, s², s³, …`
 of any class cannot all be distinct, so the sequence is eventually periodic and
 contains a unique **idempotent**, the one power `sⁿ` (`n ≥ 1`) with
-`sⁿ·sⁿ = sⁿ`: the **idempotent power** of `s`, written `s^ω`. The superscript is
-free — the invariant carries no second sort and no ω-power — and this idempotent
-is exactly what stands in for them. It is a computation on the table alone.
+`sⁿ·sⁿ = sⁿ`: the **idempotent power** of `s`. Fix an **exponent** `π` of `S`:
+an integer `n ≥ 1` such that `sⁿ` is idempotent for *every* `s ∈ S` — one
+exists since `S` is finite (e.g. `|S|!`), and which multiple is chosen never
+matters. We write `s^π` for the idempotent power, following the ω-words
+tradition [PP04]: it is an honest power, computed on the table alone, and the
+notation deliberately avoids `^ω` — in this paper `^ω` always means infinite
+repetition, and nothing here is infinite. This idempotent is exactly what
+stands in for the ω-power of the two-sorted recognizers (§2): iterating a
+loop's class until it stabilizes is how "forever" is read on a finite table.
 
 *Example.* On Figure 1 (`aUGb`), `[a]`, `[b]`, `[b·a]` are idempotent, hence
 their own idempotent powers. `[a·b]` is not: `[a·b]·[a·b] = [b·a]` — gluing two
-words of `a⁺b⁺` puts an `a` after a `b` — so `[a·b]^ω = [b·a]`: looping "`a`'s
+words of `a⁺b⁺` puts an `a` after a `b` — so `[a·b]^π = [b·a]`: looping "`a`'s
 then `b`'s" is exactly as dead as slipping once.
 
 **Definition 3.2 (pair set; invariant).** A **pair set** over a stamp `𝒮` is a
@@ -146,7 +157,7 @@ pairs that accept.
 
 **Definition 3.3 (language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an invariant
 over `Σ`, and `w = u·v^ω ∈ Σ^ω` a lasso, its loop `v` nonempty. Let
-`e := ⟦v⟧^ω ∈ S` be the idempotent power of the fold of the loop, and
+`e := ⟦v⟧^π ∈ S` be the idempotent power of the fold of the loop, and
 `s := ⟦u⟧·e ∈ S` — the stem's fold, absorbed by the loop. Then
 
 ```
@@ -213,7 +224,7 @@ the dead words — the four vertices of Figure 1.
 - `P(L)` collects the **names of the accepted lassos**:
 
 ```
-    P(L) := { (⟦u⟧·e, e)  :  u ∈ Σ*,  v ∈ Σ⁺,  e = ⟦v⟧^ω,  u·v^ω ∈ L }.
+    P(L) := { (⟦u⟧·e, e)  :  u ∈ Σ*,  v ∈ Σ⁺,  e = ⟦v⟧^π,  u·v^ω ∈ L }.
 ```
 
 The definition of `P(L)` makes no choice: it ranges over *all* presentations of
@@ -229,7 +240,7 @@ after absorption, their loops settle on `[b]`, and
 `P(L) = { ([b], [b]), ([a·b], [b]) }`, the pair set printed beneath the figure.
 
 Say a pair `(s, e) ∈ S × S` **names** the lasso `u·v^ω` when some presentation
-folds to it — `⟦v⟧^ω = e` and `⟦u⟧·e = s`. `P(L)` is, verbatim, the set of names
+folds to it — `⟦v⟧^π = e` and `⟦u⟧·e = s`. `P(L)` is, verbatim, the set of names
 of accepted lassos; the debt is that a pair may name several lassos, and a lasso
 bears several names. The two context shapes were tailored to exactly this:
 
@@ -251,11 +262,11 @@ isomorphism `θ : S(L) → S(L')` with `θ ∘ φ_L = φ_{L'}` and
 `(θ×θ)(P(L)) = P(L')` — and such a `θ`, when it exists, is unique.
 
 *Proof.* (i) Let `(u, v)` present the lasso `w`, `v` nonempty, and let `(s, e)`
-be the name it folds to: `e = ⟦v⟧^ω`, `s = ⟦u⟧·e`. The idempotent power is a
-power: pick `k ≥ 1` with `⟦v⟧^k = e`. Rewrite `w` on the presentation
-`(u·v^k, v^k)` — the same ω-word — whose coordinates are nonempty (the loop `v`
-is), so the fold is the quotient morphism on them: `s = [u·v^k]` and
-`e = [v^k]` as congruence classes. Now take any two lassos named `(s, e)` and
+be the name it folds to: `e = ⟦v⟧^π`, `s = ⟦u⟧·e`. The idempotent power is an
+honest power: rewrite `w` on the presentation `(u·v^π, v^π)` — the same
+ω-word — whose coordinates are nonempty (the loop `v` is), so the fold is the
+quotient morphism on them: `s = [u·v^π]` and
+`e = [v^π]` as congruence classes. Now take any two lassos named `(s, e)` and
 rewrite each this way: their rewritten stems are congruent (both lie in the
 class `s`), their loops congruent (both in `e`), and Lemma 3.6 gives them one
 verdict. So all lassos named `(s, e)` agree with each other — and `P(L)`
@@ -289,35 +300,34 @@ rotated**: a factor carried from the loop's front onto the stem leaves the
 changes a lasso's name.
 
 **Lemma 3.8 (rotation).** Let `𝒮` be a stamp and `s, g, h ∈ S` with
-`s·(gh)^ω = s`. Then `(s·g, (hg)^ω)` is a linked pair, and some lasso is named
-by both `(s, (gh)^ω)` and `(s·g, (hg)^ω)`.
+`s·(gh)^π = s`. Then `(s·g, (hg)^π)` is a linked pair, and some lasso is named
+by both `(s, (gh)^π)` and `(s·g, (hg)^π)`.
 
 *Proof.* First the identities in `S`. Associativity gives `g·(hg)^m = (gh)^m·g`
-for every `m ≥ 1`. Pick `k₁, k₂ ≥ 1` with `(gh)^{k₁} = (gh)^ω` and
-`(hg)^{k₂} = (hg)^ω`, and set `m := k₁·k₂`: then `(gh)^m = (gh)^ω` and
-`(hg)^m = (hg)^ω` simultaneously, so `g·(hg)^ω = (gh)^ω·g`. Hence `(hg)^ω` is
-idempotent and `(s·g)·(hg)^ω = s·(gh)^ω·g = s·g`: the rotated pair is linked.
+for every `m ≥ 1`; at `m = π` — one exponent serving `gh` and `hg` alike —
+this reads `g·(hg)^π = (gh)^π·g`. Hence
+`(s·g)·(hg)^π = s·(gh)^π·g = s·g`: the rotated pair is linked.
 By surjectivity of the stamp pick nonempty words `w, p, q` with `φ(w) = s`,
 `φ(p) = g`, `φ(q) = h`, and consider the single ω-word `α := w·(pq)^ω`. The
-presentation `(w, (pq)^m)` folds to `(s·(gh)^ω, (gh)^ω) = (s, (gh)^ω)`; the
-presentation `(w·p, (qp)^m)` — the same ω-word, `w·(pq)^ω = w·p·(qp)^ω` — folds
-to `(s·g·(hg)^ω, (hg)^ω) = (s·g, (hg)^ω)`. So `α` is named by both pairs. ∎
+presentation `(w, (pq)^π)` folds to `(s·(gh)^π, (gh)^π) = (s, (gh)^π)`; the
+presentation `(w·p, (qp)^π)` — the same ω-word, `w·(pq)^ω = w·p·(qp)^ω` — folds
+to `(s·g·(hg)^π, (hg)^π) = (s·g, (hg)^π)`. So `α` is named by both pairs. ∎
 
 Every element named in the lemma lies in `S`, and surjectivity hands each a
 nonempty word: no corner case guards the identity, because `[ε]` is not there
 to be rotated through.
 
 Call two linked pairs **conjugate** when rotations connect them — the
-equivalence generated by `(s, (gh)^ω) ∼ (s·g, (hg)^ω)`; the notion is classical
+equivalence generated by `(s, (gh)^π) ∼ (s·g, (hg)^π)`; the notion is classical
 [PP04, Ch. II, Prop. 2.6]. Stem extension is the degenerate rotation
 `g = h = ⟦v⟧`: the loop's value is unchanged and the stem absorbs one turn —
 why `(u, v)` and `(uv, v)` may name one lasso by two pairs.
 
 **Definition 3.9 (saturation).** A pair set `P` over a stamp is **saturated**
-when it is closed under conjugacy: for all `s, g, h ∈ S` with `s·(gh)^ω = s`,
+when it is closed under conjugacy: for all `s, g, h ∈ S` with `s·(gh)^π = s`,
 
 ```
-    (s, (gh)^ω) ∈ P   ⟺   (s·g, (hg)^ω) ∈ P.
+    (s, (gh)^π) ∈ P   ⟺   (s·g, (hg)^π) ∈ P.
 ```
 
 **Corollary 3.10.** `P(L)` is saturated.
@@ -329,8 +339,10 @@ out. ∎
 
 Saturation is the one law an acceptance layer must obey, and it is
 table-checkable: finitely many triples `(s, g, h)`, each one product and two
-lookups. The rotation identity itself is classical — at the semigroup it is
-Wilke's axiom `s·(ts)^ω = (st)^ω` [PP04, Ch. II, Thm 5.1], and conjugacy of
+lookups. The rotation identity itself is classical: our
+`g·(hg)^π = (gh)^π·g` is the finite shadow of Wilke's axiom
+`s·(ts)^ω = (st)^ω` [PP04, Ch. II, Thm 5.1] — his `^ω` is the genuine
+second-sort ω-power, ours a power in `S` — and conjugacy of
 linked pairs organizes the classical theory [PP04, Ch. II, Prop. 2.8, Cor. 2.9].
 What this paper draws from it is a different service: rotation turns two-sided
 demands about `L` into right-only computations — the engine of the construction
