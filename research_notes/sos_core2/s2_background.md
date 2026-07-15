@@ -14,19 +14,10 @@ infinite words. Nothing here is assumed and nothing is deep: each notion, once
 unwrapped, is algebra on a finite set.
 
 Consider the language of Carton and Perrin [CP97, Ex. 10] described by
-`a*·b^ω` — some `a`'s, then `b`'s forever — which we name `aUGb`. Its
-syntactic ω-semigroup is drawn in Figure 1.
-
-![Figure 1 — the invariant of aUGb](../sos_core_figs/img/core_F0_astar_bomega_b.png)
-
-*Figure 1 — the syntactic ω-semigroup of `aUGb = a*·b^ω`: four classes of
-nonempty finite words, the letter classes and the accepting pairs `P` beneath.
-It is the multiplication table represented as a graph: both vertices and edges
-are labeled by classes — following an edge multiplies on the right by its
-label, parallel edges fused into one arrow listing their labels. The class of
-the empty word — the identity of the multiplication — is drawn nowhere: an
-identity moves nothing, so it would add no edge worth reading (§3.1 makes this
-elision structural).*
+`a*·b^ω` — some `a`'s, then `b`'s forever — which we name `aUGb`. It
+accompanies every notion of this section, each computed on it by hand; §3
+assembles the results into one drawn object, its syntactic ω-semigroup
+(Figure 1).
 
 **We only ever look at lassos.** The infinite words this paper computes with
 are the ultimately periodic ones, and they have a finite syntax:
@@ -59,9 +50,24 @@ finite words is recognized by a finite monoid, and among its recognizers one
 is canonical, the **syntactic monoid** — the cornerstone of algebraic language
 theory [PP04].
 
-*Example.* For `aUGb`, concatenation collapses onto five values: the four
-boxes of Figure 1 — `a`'s only, `b`'s only, `a`'s then `b`'s, dead — plus the
-value of the empty word.
+*Example.* For `aUGb`, watch what a finite word can still become, and what it
+becomes when repeated forever. Every nonempty word falls into one of four
+kinds:
+
+* the words of `a⁺` — nothing committed: still the prefix of accepted
+  ω-words, and more `a`'s change nothing;
+* the words of `a⁺b⁺` — committed: still the prefix of accepted ω-words, but
+  only of those continuing with `b`'s forever — one more `a` is fatal;
+* the words of `b⁺` — these lead nowhere new: an accepted future never
+  leaves the kind, and it is the only kind whose infinite repetition is
+  accepted, `b^ω ∈ aUGb`;
+* the dead words `a*b⁺a(a|b)*` — an `a` after a `b`: the prefix of no
+  accepted ω-word, and no ω-power rescues them.
+
+Concatenation never leaves the kinds — `a⁺·a⁺ ⊆ a⁺`, `a⁺·b⁺ ⊆ a⁺b⁺`,
+`b⁺·a⁺` is dead, and dead absorbs everything — so, with the empty word as a
+fifth value, gluing words reduces to a five-entry multiplication table: the
+classifier announced, computed by hand, no automaton consulted.
 
 On *infinite* words, exactly one thing more is needed, because no product of
 finite pieces expresses `v^ω`. One adjustment first: the empty word is the
@@ -105,9 +111,9 @@ semigroup of classes of nonempty words, with a fresh identity adjoined for the
 computations (§3.1) — and replaces `P` by a set of accepting *pairs* of word
 classes.
 
-*Example.* Figure 1 already has this one-sorted shape: four classes of
-nonempty finite words and, beneath the drawing, the acceptance data as pairs
-of classes — no box for an ω-word anywhere.
+*Example.* The four kinds of `aUGb` already have this one-sorted shape: they
+classify nonempty finite words only, and the acceptance data will be pairs of
+kinds — stem, loop — with no class of ω-words anywhere.
 
 **The idempotent power.** In a finite semigroup the powers `c, c², c³, …` of
 any element cannot all be distinct, so the sequence is eventually periodic and
@@ -119,12 +125,12 @@ power of `φ(v)`. That is how "loop forever" is read without any infinite
 object at hand: iterate the loop's value until it stops changing, and keep
 that stable value.
 
-*Example.* On Figure 1 (`aUGb`), the value `φ(b) = [b]` is its own idempotent
-power — more `b`'s change nothing, `[b]·[b] = [b]`. The value `φ(ab) = [a·b]`
-is not: its square `[a·b]·[a·b] = [b·a]` is the value of the *dead* words
-(`abab` puts an `a` after a `b`, and no continuation rescues that), itself
-idempotent — so the idempotent power of `φ(ab)` is `[b·a]`: looping `ab`
-forever is exactly as dead as slipping once.
+*Example.* For `aUGb`, the value `φ(b)` — the kind `b⁺` — is its own
+idempotent power: more `b`'s change nothing, `b⁺·b⁺ ⊆ b⁺`. The value `φ(ab)`
+— the kind `a⁺b⁺` — is not: its square is the dead kind (`abab` puts an `a`
+after a `b`, and no continuation rescues that), itself idempotent — so the
+idempotent power of `φ(ab)` is the dead kind: looping `ab` forever is exactly
+as dead as slipping once.
 
 **A linked pair names a lasso.** Reading `u·v^ω` through the morphism `φ`
 (Ramsey's theorem [PP04, Ch. II, Thm 2.1]): the loop settles on an idempotent
@@ -136,11 +142,13 @@ accepts, hence by its set of **accepting linked pairs** — which is why (§3)
 the acceptance datum of the invariant is a *set of pairs*, not a subset of the
 carrier.
 
-*Example.* Read `aab·b^ω` on Figure 1: the loop's value `[b]` is already
-idempotent, so `e = [b]`; the stem walks `a·a·b` from the root to `[a·b]`,
-which the loop absorbs (`s = [a·b]·[b] = [a·b]`). The pair `([a·b], [b])`
-names the lasso — as it does every lasso with stem in `a⁺b*` and loop in
-`b⁺`.
+*Example.* Read `aab·b^ω` by hand: the loop's value `φ(b)` — the kind `b⁺` —
+is already idempotent, so `e = φ(b)`; the stem's value `φ(aab)` is the kind
+`a⁺b⁺`, which the loop absorbs — `a⁺b⁺·b⁺ ⊆ a⁺b⁺` — so `s = φ(aab)`. The
+pair `(a⁺b⁺, b⁺)` names the lasso — as it does every lasso with stem in
+`a⁺b*` and loop in `b⁺`. And the accepting pairs of `aUGb` read off the four
+roles — accepted means eventually only `b`'s: `(b⁺, b⁺)` and `(a⁺b⁺, b⁺)`,
+nothing else.
 
 **One lasso, many names.** A single ω-word has many presentations —
 `u·v^ω = (uv)·v^ω = u·(v²)^ω = (u·v₁)·(v₂·v₁)^ω` for any split `v = v₁·v₂` —
