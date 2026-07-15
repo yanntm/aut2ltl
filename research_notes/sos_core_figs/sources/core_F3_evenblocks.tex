@@ -13,6 +13,8 @@
   arrow/.style     = {thin, -{Stealth[length=4pt,width=3pt]}},
   lbl/.style       = {font=\small, inner sep=1.5pt, fill=white,
                       align=center},   % a long class list wraps (see WRAP_CHARS)
+  letters/.style   = {font=\small, inner sep=1.5pt, align=center},
+                       % the source letters of a lambda stub: no brackets, math italic
   pairs/.style     = {anchor=north, font=\small},
 ]
 
@@ -24,13 +26,18 @@
   \node[class] (aba) at (0.0,-5.2) {$[a{\cdot}b{\cdot}a]$};
   \node[class] (bab) at (8.8,-5.2) {$[b{\cdot}a{\cdot}b]$};
 
+  % λ: the letters naming each class, entering it as a source (no brackets — a letter is not a class)
+  \node[letters] (lam_a) at (0.0,4.1) {$a$};
+  \draw[init] (lam_a) -- (a);
+  \node[letters] (lam_b) at (8.8,4.1) {$b$};
+  \draw[init] (lam_b) -- (b);
+
   \draw[arrow] (a) to[bend left=15] node[lbl] {$[a]$} (aa);
   \draw[arrow] (a) to node[lbl] {$[b]$} (ab);
   \draw[arrow] (a) to[loop above] node[lbl] {$[a{\cdot}a]$} (a);
   \draw[arrow] (a) to node[lbl] {$[a{\cdot}b]$} (b);
   \draw[arrow] (a) to[out=180,in=180,looseness=1.3] node[lbl] {$[b{\cdot}a]$} (aba);
-  % hand bend, no rule behind it: leaves [a] rightwards and arcs over the middle
-  \draw[arrow] (a) to[bend left=20] node[lbl] {$[a{\cdot}b{\cdot}a]$} (ba);
+  \draw[arrow] (a) to node[lbl] {$[a{\cdot}b{\cdot}a]$} (ba);
   \draw[arrow] (a) to[bend right=20] node[lbl] {$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (b) to[bend left=22] node[lbl] {$[a],[b{\cdot}a]$} (ba);
   \draw[arrow] (b) to[loop above] node[lbl] {$[b],[a{\cdot}a]$} (b);
@@ -44,8 +51,7 @@
   \draw[arrow] (aa) to node[lbl] {$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (ab) to[bend left=22] node[lbl] {$[a],[b{\cdot}a]$} (aba);
   \draw[arrow] (ab) to[loop left] node[lbl] {$[b],[a{\cdot}a]$} (ab);
-  % hand bend, no rule behind it: this one dips under the middle of the figure
-  \draw[arrow] (ab) to[bend right=20] node[lbl] {$[a{\cdot}b],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
+  \draw[arrow] (ab) to node[lbl] {$[a{\cdot}b],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (ba) to[bend left=22] node[lbl] {$[a],[a{\cdot}b]$} (b);
   \draw[arrow] (ba) to node[lbl] {$[b],[b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (ba) to[loop right] node[lbl] {$[a{\cdot}a],$\\$[a{\cdot}b{\cdot}a]$} (ba);
@@ -54,7 +60,6 @@
   \draw[arrow] (aba) to[loop below] node[lbl] {$[a{\cdot}a],$\\$[a{\cdot}b{\cdot}a]$} (aba);
   \draw[arrow] (bab) to[loop below] node[lbl] {$\mathcal{C}$} (bab);
 
-  \node[pairs] at (4.4,-7.9) {$\lambda:\; a \rightarrowtail [a],\;\; b \rightarrowtail [b]$};
-  \node[pairs] at (4.4,-8.7) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
+  \node[pairs] at (4.4,-7.9) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
 \end{tikzpicture}
 \end{document}

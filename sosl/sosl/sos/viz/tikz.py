@@ -15,7 +15,11 @@ cycle (a property of the drawn arrows, not an arrow of another kind), not an
 idempotent (a property of the product, not a kind of class). The root, when the
 figure keeps the identity, is marked the way an initial state is, with a short
 incoming stub from nowhere, which is also what makes freshness visible: it is the
-only arrow that enters it. An identity-eliding figure has no root and no stub.
+only arrow that enters it. An identity-eliding figure has no root and no stub;
+instead it draws `λ` graphically — each letter (group) entering the class it names
+by the same incoming stub, labelled with the letters themselves, no brackets (a
+letter is not a class). So `λ` is read off the picture at the nodes rather than
+from a caption; only a figure that keeps the identity carries the `λ` caption line.
 
 Pure text: the placement is an input (see `layout.py`), not something computed
 here.
@@ -63,6 +67,9 @@ PAIRS_DROP_CM = 1.3
 LOOP_HANG_CM = 1.4
 # Length of the initial-state stub pointing into the root (cm).
 INIT_STUB_CM = 0.9
+# Length of a lambda stub: the letters entering the class they name. A touch longer
+# than the root stub so the letter label clears the class box it points at.
+LAMBDA_STUB_CM = 1.1
 # Vertical gap between the lambda line and the P line (cm).
 CAPTION_GAP_CM = 0.75
 
@@ -119,6 +126,20 @@ def _tex_lambda(fig: Figure) -> str:
     return rf"$\lambda:\; " + r",\;\; ".join(items) + "$"
 
 
+def _tex_letters(names: Tuple[str, ...]) -> str:
+    """The label of a λ stub: the letters that name one class, comma-joined, in math
+    italic and WITHOUT brackets — a letter is not a class, and the missing brackets
+    are what say so. Wrapped by the shared `wrap` so a class named by many letters
+    stays well behaved; the trailing comma stays on the line it breaks."""
+    esc = [n.replace("!", r"\lnot ").replace("&", r"\wedge ") for n in names]
+    lines = wrap(names)
+    out: List[str] = []
+    for n, line in enumerate(lines):
+        body = ",".join(esc[i] for i in line)
+        out.append(f"${body},$" if n < len(lines) - 1 else f"${body}$")
+    return r"\\".join(out)
+
+
 def _tex_pairs(fig: Figure) -> str:
     """The accepting pairs as one math line, ``P = \\{([b],[b]), …\\}``."""
     items = [rf"({_tex_class(fig, s)},{_tex_class(fig, e)})"
@@ -144,6 +165,32 @@ def _loop_dir(fig: Figure, pos: Placement, cls: int) -> str:
             if dist < CROWD_CM and (vx * dx + vy * dy) > 0.5 * dist:
                 crowd += 1
         scored.append((crowd, rank, opt))
+    return sorted(scored)[0][2]
+
+
+def _stub_dir(fig: Figure, pos: Placement, cls: int,
+              loop_opt: Optional[str]) -> Tuple[float, float]:
+    """The unit vector a λ stub points along, into ``cls`` from outside: the least
+    crowded of the four cardinals (same cone scoring as `_loop_dir`), skipping the
+    one the node's own self-loop already takes so the two never sit on top of each
+    other. Ties break by the `LOOP_DIRS` preference order (above, below, right,
+    left)."""
+    x, y = pos[cls]
+    taken = next((v for opt, v in LOOP_DIRS if opt == loop_opt), None)
+    scored: List[Tuple[int, int, Tuple[float, float]]] = []
+    for rank, (opt, (dx, dy)) in enumerate(LOOP_DIRS):
+        if (dx, dy) == taken:
+            continue
+        crowd = 0
+        for other in fig.nodes:
+            if other.cls == cls:
+                continue
+            ox, oy = pos[other.cls]
+            vx, vy = ox - x, oy - y
+            dist = (vx * vx + vy * vy) ** 0.5
+            if dist < CROWD_CM and (vx * dx + vy * dy) > 0.5 * dist:
+                crowd += 1
+        scored.append((crowd, rank, (dx, dy)))
     return sorted(scored)[0][2]
 
 
@@ -299,6 +346,8 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
         r"  arrow/.style     = {thin, -{Stealth[length=4pt,width=3pt]}},",
         r"  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white,",
         r"                      align=center},   % a long class list wraps (see WRAP_CHARS)",
+        r"  letters/.style   = {font=\small, inner sep=1.5pt, align=center},",
+        r"                       % the source letters of a lambda stub: no brackets, math italic",
         r"  pairs/.style     = {anchor=north, font=\small},",
         r"]",
         "",
@@ -322,6 +371,24 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
     out.append("")
 
     loops = loops or {}
+    # λ drawn at the nodes (elided figures only): each letter group enters the class
+    # it names by an init-style stub, labelled with the letters. Steer each stub off
+    # the direction that node's own self-loop already uses.
+    if fig.elided:
+        loop_dir = {ar.src: (loops.get(ar.src) or _loop_dir(fig, pos, ar.src))
+                    for ar in _arrows(fig) if ar.is_loop}
+        out += ["  % λ: the letters naming each class, entering it as a source (no "
+                "brackets — a letter is not a class)"]
+        for names, cls in fig.lambda_map():
+            nd = fig.node_of(cls)
+            dx, dy = _stub_dir(fig, pos, cls, loop_dir.get(cls))
+            x, y = pos[cls]
+            lx, ly = x + LAMBDA_STUB_CM * dx, y + LAMBDA_STUB_CM * dy
+            out += [f"  \\node[letters] (lam_{nd.ident}) at ({lx:.1f},{ly:.1f}) "
+                    f"{{{_tex_letters(names)}}};",
+                    f"  \\draw[init] (lam_{nd.ident}) -- ({nd.ident});"]
+        out.append("")
+
     rank = {nd.cls: i for i, nd in enumerate(fig.nodes)}
     for ar in _arrows(fig):
         if ar.is_loop:
@@ -353,10 +420,15 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
                     for ar in _arrows(fig))
         low = floor - PAIRS_DROP_CM - (LOOP_HANG_CM if hangs else 0.0)
         mid = (min(xs) + max(xs)) / 2.0
-        out += ["", f"  \\node[pairs] at ({mid:.1f},{low:.1f}) "
-                    f"{{{_tex_lambda(fig)}}};",
-                f"  \\node[pairs] at ({mid:.1f},{low - CAPTION_GAP_CM:.1f}) "
-                f"{{{_tex_pairs(fig)}}};"]
+        # An elided figure draws λ at the nodes (the stubs above), so the caption is P
+        # alone; a figure that keeps the identity has no such stubs and captions λ too.
+        out.append("")
+        if not fig.elided:
+            out.append(f"  \\node[pairs] at ({mid:.1f},{low:.1f}) "
+                       f"{{{_tex_lambda(fig)}}};")
+            low -= CAPTION_GAP_CM
+        out.append(f"  \\node[pairs] at ({mid:.1f},{low:.1f}) "
+                   f"{{{_tex_pairs(fig)}}};")
 
     out += [r"\end{tikzpicture}", r"\end{document}", ""]
     return "\n".join(out)
