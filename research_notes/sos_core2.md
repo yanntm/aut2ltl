@@ -19,11 +19,6 @@ all other sections as adjustment bullets against the current draft.*
   §3 keeps a *semigroup* of word classes — the empty word is not a citizen of the
   ω-theory, and the identity the computations use is adjoined freely, not carved
   out of `Σ*`.
-- Notation split, held paper-wide: `^ω` means infinite — `Σ^ω`, `v^ω`, `S_ω`, and
-  the second-sort ω-power `φ₊(v)^ω` inside this section's recollection of the
-  classical two-sorted recognizer. The idempotent power in a finite semigroup is
-  written `s^π` (§3.1), following the ω-words tradition [PP04]; no algebra
-  element ever wears `^ω`.
 - `aUGb` and Figure 1/1′ unchanged; the figures already draw no `[ε]` vertex, which
   §3.1 now justifies once and for all (a freely adjoined identity has no incoming
   edges).
