@@ -9,6 +9,13 @@ one-line **caption** under the picture (`P = { ([b],[b]), … }`), which keeps t
 object whole without lying about its type. The caption is ablatable (`--no-pairs`)
 when only the bare algebra is wanted.
 
+There is one exception, opt-in and sound: `--draw-pairs` (TikZ `pair_edges`) *does*
+draw `P`, but never as arbitrary arrows. A linked pair `(s, e)` has `s·e = s`, so it
+is a **self-loop** at `s` — always, by construction. Drawn as a bold doubled loop at
+`s` labelled with `[e]` (loops sharing a stem fuse), the pairs ride on top of the
+algebra as a second reading without the type lie an accepting *arrow* would be. This
+is a rendering overlay only; the model still typesets `P`.
+
 Three steps: name the letters, recompute the keys, classify.
 
 ## 1. Display letters fix an order
@@ -119,10 +126,15 @@ can. One symbol for "every column" would then denote two different sets dependin
 on the shape of the arrow it sits on. The identity-keeping figure is the one that
 has to be exact about the definitions, so it lists.
 
-With the identity elided there is **no root node**, hence no init stub: the
-backends draw the stub only when the figure has one. Keys are unaffected — they
-are shortlex-least *words*, computed by the letter BFS of step 2 from `[ε]`,
-which is present in the algebra whether or not it is drawn.
+With the identity elided there is **no root node**, hence no root init stub. In its
+place the TikZ backend draws `λ` at the nodes: each letter (group) enters the class
+it names by a stub from a top corner, labelled with the bare letters — no brackets,
+because a letter is not a class. So `λ` is read off the picture (and the caption
+line drops it); an identity-keeping figure has the root stub and captions `λ`
+instead. This is a rendering choice, not a model one — `λ` is `Figure.lambda_map`
+either way. Keys are unaffected — they are shortlex-least *words*, computed by the
+letter BFS of step 2 from `[ε]`, which is present in the algebra whether or not it
+is drawn.
 
 Finally, `Figure.pair_classes` / `Figure.pairs` give `P` as class pairs
 `([s], [e])`, sorted shortlex by stem then loop — the caption line. Text, not

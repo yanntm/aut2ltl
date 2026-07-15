@@ -60,6 +60,12 @@ DIAG_BEND = 20
 # takes the two values, so the arcs do not lie on top of each other.
 LOOSENESS = 1.3
 LOOSENESS_FAR = 1.8
+# A pair loop is a self-loop aimed at a bottom CORNER (out,in angles), the side
+# outward from the centroid, so it clears the node's own straight-down loop when it
+# has one. `looseness` is how far the loop bulges from the box.
+PAIR_LOOP_BR = (-55, -25)
+PAIR_LOOP_BL = (-125, -155)
+PAIR_LOOSENESS = 7.0
 # How far under the lowest node the P caption sits (cm).
 PAIRS_DROP_CM = 1.3
 # Extra drop when a bottom node's self-loop hangs below it: the loop and its label
@@ -110,8 +116,15 @@ def _tex_arrow_label(fig: Figure, cols: Tuple[int, ...]) -> str:
     whose job is to be exact about the definitions does not get to be suggestive."""
     if fig.elided and set(cols) == set(fig.columns()):
         return f"${ALL_CLASSES}$"
-    plain = [f"[{fig.label_of(c)}]" for c in cols]
-    tex = [_tex_class(fig, c) for c in cols]
+    return _tex_class_list(fig, cols)
+
+
+def _tex_class_list(fig: Figure, cls_ids: Tuple[int, ...]) -> str:
+    """A comma-separated list of classes ``[a],[b·a]``, in the order given, wrapped by
+    the shared `wrap` with the trailing comma kept on the line it breaks. The body of
+    an arrow label and of a pair loop's label alike."""
+    plain = [f"[{fig.label_of(c)}]" for c in cls_ids]
+    tex = [_tex_class(fig, c) for c in cls_ids]
     lines = wrap(plain)
     out: List[str] = []
     for n, line in enumerate(lines):
@@ -172,20 +185,15 @@ def _loop_dir(fig: Figure, pos: Placement, cls: int) -> str:
     return sorted(scored)[0][2]
 
 
-def _stub_dir(fig: Figure, pos: Placement, cls: int,
-              loop_opt: Optional[str]) -> Tuple[float, float]:
-    """The unit vector a λ stub points along, into ``cls`` from outside: mostly
-    vertical with a slight lateral tilt (`LAMBDA_TILT`), aimed at a top CORNER of the
-    box. The lateral side is *outward* — away from the figure's centroid, which is
-    where the fewest edges run, so the stub is least likely to cross one. It points
-    up unless the node's own self-loop already sits above, in which case it flips to a
-    bottom corner so the two do not collide."""
+def _stub_dir(fig: Figure, pos: Placement, cls: int) -> Tuple[float, float]:
+    """The unit vector a λ stub points along, into ``cls`` from above: up, with a
+    slight lateral tilt (`LAMBDA_TILT`) at a top CORNER of the box. The lateral side
+    is *outward* — away from the figure's centroid, where the fewest edges run."""
     cx = sum(p[0] for p in pos.values()) / len(pos)
     px, _ = pos[cls]
     lateral = LAMBDA_TILT if px >= cx else -LAMBDA_TILT
-    vy = -1.0 if loop_opt == "loop above" else 1.0
     norm = (lateral * lateral + 1.0) ** 0.5
-    return (lateral / norm, vy / norm)
+    return (lateral / norm, 1.0 / norm)
 
 
 def _blocked(fig: Figure, pos: Placement, src: int, dst: int) -> bool:
@@ -311,12 +319,31 @@ class Arrow:
     bend: bool
 
 
+def _pair_groups(fig: Figure) -> "List[Tuple[int, Tuple[int, ...]]]":
+    """The accepting pairs grouped by stem: for each class ``s`` that carries a pair,
+    the loop classes ``e`` with ``(s, e)`` accepting, in node order. Every pair is
+    linked (``s·e = s``), so it draws as a self-loop at ``s``; several pairs sharing
+    ``s`` fuse into one loop labelled with all their ``e``, as arrows fuse."""
+    rank = {nd.cls: i for i, nd in enumerate(fig.nodes)}
+    groups: Dict[int, List[int]] = {}
+    for s, e in fig.pair_classes():
+        groups.setdefault(s, []).append(e)
+    return [(s, tuple(sorted(groups[s], key=lambda e: rank[e])))
+            for s in sorted(groups, key=lambda s: rank[s])]
+
+
 def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
-            loops: Optional[Dict[int, str]] = None) -> str:
+            loops: Optional[Dict[int, str]] = None, pair_edges: bool = False) -> str:
     """The standalone `.tex` of ``fig`` placed at ``pos``; ``provenance`` is the
     command that produced it, recorded as the first line. ``pairs`` adds P as a
     caption node under the drawing — the object is ``<A, P>`` and only ``A`` has a
     shape, so P is typeset, not drawn.
+
+    ``pair_edges`` additionally *draws* the accepting pairs, on top of the algebra: a
+    bold doubled self-loop at each stem ``s``, labelled with the loop classes ``e``
+    (``s·e = s``, so it is genuinely a loop). It does not replace the plain arrows —
+    the pair loop rides over them, a second reading of the same picture — and does not
+    remove ``e`` from the plain self-loop it shares the class list of. Bottom corners.
 
     ``loops`` overrides the self-loop direction of the given classes. A loop
     direction is placement, exactly like a coordinate: `_loop_dir` only guesses one,
@@ -340,6 +367,9 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
     ]
     out += [
         r"  arrow/.style     = {thin, -{Stealth[length=4pt,width=3pt]}},",
+        r"  pair/.style      = {very thick, double, double distance=1pt,",
+        r"                      -{Stealth[length=6pt,width=5pt]}},",
+        r"                       % an accepting pair (s,e) drawn as a bold doubled loop at s",
         r"  lbl/.style       = {font=\small, inner sep=1.5pt, fill=white,",
         r"                      align=center},   % a long class list wraps (see WRAP_CHARS)",
         r"  letters/.style   = {font=\small, inner sep=1.5pt, align=center},",
@@ -368,16 +398,13 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
 
     loops = loops or {}
     # λ drawn at the nodes (elided figures only): each letter group enters the class
-    # it names by an init-style stub, labelled with the letters. Steer each stub off
-    # the direction that node's own self-loop already uses.
+    # it names by a stub from a top corner, labelled with the letters.
     if fig.elided:
-        loop_dir = {ar.src: (loops.get(ar.src) or _loop_dir(fig, pos, ar.src))
-                    for ar in _arrows(fig) if ar.is_loop}
         out += ["  % λ: the letters naming each class, entering it as a source (no "
                 "brackets — a letter is not a class)"]
         for names, cls in fig.lambda_map():
             nd = fig.node_of(cls)
-            dx, dy = _stub_dir(fig, pos, cls, loop_dir.get(cls))
+            dx, dy = _stub_dir(fig, pos, cls)
             x, y = pos[cls]
             lx, ly = x + LAMBDA_STUB_CM * dx, y + LAMBDA_STUB_CM * dy
             out += [f"  \\node[letters] (lam_{nd.ident}) at ({lx:.1f},{ly:.1f}) "
@@ -405,6 +432,17 @@ def tikz_of(fig: Figure, pos: Placement, provenance: str, pairs: bool = True,
         src, dst = fig.node_of(ar.src).ident, fig.node_of(ar.dst).ident
         out.append(f"  \\draw[arrow] ({src}) to{via} "
                    f"node[lbl] {{{_tex_arrow_label(fig, ar.cols)}}} ({dst});")
+
+    if pair_edges:
+        cx = sum(p[0] for p in pos.values()) / len(pos)
+        out += ["", "  % accepting pairs (s,e): a bold doubled loop at s (s·e = s), "
+                    "labelled with the e's -- a bottom corner outward"]
+        for s, es in _pair_groups(fig):
+            nd = fig.node_of(s)
+            oa, ia = PAIR_LOOP_BR if pos[s][0] >= cx else PAIR_LOOP_BL
+            out.append(f"  \\draw[pair] ({nd.ident}) to[out={oa},in={ia},"
+                       f"looseness={PAIR_LOOSENESS}] "
+                       f"node[lbl] {{{_tex_class_list(fig, es)}}} ({nd.ident});")
 
     if pairs:
         xs = [p[0] for p in pos.values()]

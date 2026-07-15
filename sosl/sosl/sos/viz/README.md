@@ -34,7 +34,11 @@ on failure, never worked around.
 - **The TikZ backend** (`tikz.py`). `tikz_of(fig, placement)` — a standalone
   `.tex` written to be *nudged*: all styling centralized in one `\tikzset`, one
   named `\node` per class at an explicit coordinate, one `\draw` per edge.
-  Restyling is one style; moving a node is one number.
+  Restyling is one style; moving a node is one number. In an elided figure it draws
+  `λ` at the nodes — each letter entering the class it names by a corner stub,
+  bracket-free — instead of the root stub a kept-identity figure carries. With
+  `pair_edges=True` it also *draws* the accepting pairs, as bold doubled self-loops
+  at each stem (`s·e = s`), on top of the algebra.
 - **Placement** (`layout.py`). `place(fig, engine)`: `layered` (pure — column by
   key length) or `dot` (the coordinates GraphViz computes, which untangles what a
   naive layering crosses).
