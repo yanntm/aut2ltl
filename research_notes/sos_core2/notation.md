@@ -10,10 +10,10 @@ One base letter per sort; decorations carry roles, never identity.
   are `u`/`v` variants: the `u` family for stem-position material (prefixes,
   stems, tested words), the `v` family for loop-position material. `w` is
   reserved for ω-words — lassos — with `w = u·v^ω` the canonical shape.
-  Classes: `c, d` for generic elements of the carrier `C` (lowercase of the
+  Classes: `c, d` for generic elements of the carrier `𝒞` (lowercase of the
   carrier), `s` for stem classes, `e` (then `f`) for idempotents; acceptance
   pairs are `(s, e)`. Maps are calligraphic (`𝒮` the stamp) or Greek (`θ` for
-  isomorphisms, `π` the idempotent exponent). `^ω` means infinite repetition,
+  isomorphisms, `λ := 𝒮|_Σ` the letter map, `π` the idempotent exponent). `^ω` means infinite repetition,
   exclusively; the idempotent power is `^π` — no algebra element ever wears
   `^ω`.
 - **Decorations.** *Prime* = counterpart: a second object of the same sort in

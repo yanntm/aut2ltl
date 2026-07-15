@@ -23,8 +23,10 @@ Concatenating `s0 s2 s3 s4 s5_end bib` in order reproduces the paper.
   lives entirely in `s3_invariant.md`); cross-references are name+number
   ("the rotation lemma (3.11)") so they survive edits and file boundaries.
 - Figures live in `../sos_core_figs/` and `../sos_figs/`; paths from these
-  files start with `../`. Figure 1 uses the no-`[ε]` rendering
-  (`core_F0_astar_bomega_b.png`); figure regeneration / caption check pending.
+  files start with `../`. §2 is figure-free (classes computed by hand); Figure 1
+  is a two-panel pair in §3.1 — stamp core (`core_F0_astar_bomega_b.png`) |
+  monoid completion (`core_F0_astar_bomega.png`). Figure adaptation pending
+  (λ as entry arrows agreed; further tweaks under discussion).
 - Didactic goal: standalone — readable by an M2 student with background but
   without Perrin–Pin as a prerequisite. Every classical notion used is
   restituted in §2 or §3, and each is presented as what it is: algebra on
