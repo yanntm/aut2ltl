@@ -13,8 +13,9 @@
 recently seen a `b`, and so far contain only isolated `a`'s — no block of two.
 These two classes cycle: extending `[a·b]` by `[a]` returns to `[a]`
 (`[a·b]·[a] = [a]`, forgetting that `b`'s were ever seen), and `[a]·[b] = [a·b]`
-goes back. This length-2 cycle is a counter of period 2 in the graph, and it is
-why the language is not LTL.
+goes back. Note that this length-2 cycle is not a *counter* of period 2 since 
+to and from edges do not carry the same classes. This language is indeed aperiodic (with p > 1)
+hence LTL.
 
 `[a·a]` is the class of all words that contain at least one block of two
 consecutive `a`'s. It is a sink: once two `a`'s in a row have been seen the word
