@@ -50,7 +50,7 @@
   \draw[arrow] (ba) to[loop above] node[lbl] {$[b{\cdot}a]$} (ba);
 
   % accepting pairs (s,e): a bold doubled loop at s (s·e = s), labelled with the e's -- a bottom corner outward
-  \draw[pair] (aa) to[out=-55,in=-25,looseness=7.0] node[lbl] {$[a{\cdot}a]$} (aa);
+  \draw[pair] (aa) to[out=-55,in=-25,looseness=7.0] node[lbl,shift={(-40:5mm)}] {$[a{\cdot}a]$} (aa);
 
   \node[pairs] at (7.3,-0.7) {$P = \{\, ([a{\cdot}a],[a{\cdot}a]) \,\}$};
 \end{tikzpicture}

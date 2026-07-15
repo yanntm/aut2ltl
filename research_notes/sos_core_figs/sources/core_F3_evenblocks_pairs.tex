@@ -42,7 +42,7 @@
   \draw[arrow] (a) to[loop above] node[lbl] {$[a{\cdot}a]$} (a);
   \draw[arrow] (a) to node[lbl] {$[a{\cdot}b]$} (b);
   \draw[arrow] (a) to[out=180,in=180,looseness=1.3] node[lbl] {$[b{\cdot}a]$} (aba);
-  \draw[arrow] (a) to node[lbl] {$[a{\cdot}b{\cdot}a]$} (ba);
+  \draw[arrow] (a) to[bend left=20] node[lbl] {$[a{\cdot}b{\cdot}a]$} (ba);
   \draw[arrow] (a) to[bend right=20] node[lbl] {$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (b) to[bend left=22] node[lbl] {$[a],[b{\cdot}a]$} (ba);
   \draw[arrow] (b) to[loop above] node[lbl] {$[b],[a{\cdot}a]$} (b);
@@ -56,7 +56,7 @@
   \draw[arrow] (aa) to node[lbl] {$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (ab) to[bend left=22] node[lbl] {$[a],[b{\cdot}a]$} (aba);
   \draw[arrow] (ab) to[loop left] node[lbl] {$[b],[a{\cdot}a]$} (ab);
-  \draw[arrow] (ab) to node[lbl] {$[a{\cdot}b],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
+  \draw[arrow] (ab) to[bend right=20] node[lbl] {$[a{\cdot}b],$\\$[a{\cdot}b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (ba) to[bend left=22] node[lbl] {$[a],[a{\cdot}b]$} (b);
   \draw[arrow] (ba) to node[lbl] {$[b],[b{\cdot}a],$\\$[b{\cdot}a{\cdot}b]$} (bab);
   \draw[arrow] (ba) to[loop right] node[lbl] {$[a{\cdot}a],$\\$[a{\cdot}b{\cdot}a]$} (ba);
@@ -66,11 +66,11 @@
   \draw[arrow] (bab) to[loop below] node[lbl] {$\mathcal{C}$} (bab);
 
   % accepting pairs (s,e): a bold doubled loop at s (s·e = s), labelled with the e's -- a bottom corner outward
-  \draw[pair] (b) to[out=-55,in=-25,looseness=7.0] node[lbl] {$[b]$} (b);
-  \draw[pair] (ab) to[out=-125,in=-155,looseness=7.0] node[lbl] {$[b]$} (ab);
-  \draw[pair] (ba) to[out=-55,in=-25,looseness=7.0] node[lbl] {$[a{\cdot}b{\cdot}a]$} (ba);
-  \draw[pair] (aba) to[out=-125,in=-155,looseness=7.0] node[lbl] {$[a{\cdot}b{\cdot}a]$} (aba);
-  \draw[pair] (bab) to[out=-55,in=-25,looseness=7.0] node[lbl] {$[b],[a{\cdot}b{\cdot}a]$} (bab);
+  \draw[pair] (b) to[out=-55,in=-25,looseness=7.0] node[lbl,shift={(-40:5mm)}] {$[b]$} (b);
+  \draw[pair] (ab) to[out=-125,in=-155,looseness=7.0] node[lbl,shift={(-140:5mm)}] {$[b]$} (ab);
+  \draw[pair] (ba) to[out=-55,in=-25,looseness=7.0] node[lbl,shift={(-40:5mm)}] {$[a{\cdot}b{\cdot}a]$} (ba);
+  \draw[pair] (aba) to[out=-125,in=-155,looseness=7.0] node[lbl,shift={(-140:5mm)}] {$[a{\cdot}b{\cdot}a]$} (aba);
+  \draw[pair] (bab) to[out=-55,in=-25,looseness=7.0] node[lbl,shift={(-40:5mm)}] {$[b],[a{\cdot}b{\cdot}a]$} (bab);
 
   \node[pairs] at (4.4,-7.9) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
 \end{tikzpicture}

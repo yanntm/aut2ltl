@@ -46,7 +46,7 @@
   \draw[arrow] (ab) to[loop left] node[lbl] {$\mathcal{C}$} (ab);
 
   % accepting pairs (s,e): a bold doubled loop at s (s·e = s), labelled with the e's -- a bottom corner outward
-  \draw[pair] (b) to[out=-55,in=-25,looseness=7.0] node[lbl] {$[b],[a{\cdot}a],$\\$[a{\cdot}b]$} (b);
+  \draw[pair] (b) to[out=-55,in=-25,looseness=7.0] node[lbl,shift={(-40:5mm)}] {$[b],[a{\cdot}a],$\\$[a{\cdot}b]$} (b);
 
   \node[pairs] at (2.2,-3.0) {$P = \{\, ([b],[b]),\; ([b],[a{\cdot}a]),\; ([b],[a{\cdot}b]) \,\}$};
 \end{tikzpicture}

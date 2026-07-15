@@ -66,11 +66,11 @@
   \draw[arrow] (bab) to[loop above] node[lbl] {$\mathcal{C}$} (bab);
 
   % accepting pairs (s,e): a bold doubled loop at s (s·e = s), labelled with the e's -- a bottom corner outward
-  \draw[pair] (b) to[out=-55,in=-25,looseness=7.0] node[lbl] {$[b]$} (b);
-  \draw[pair] (ab) to[out=-125,in=-155,looseness=7.0] node[lbl] {$[b]$} (ab);
-  \draw[pair] (ba) to[out=-55,in=-25,looseness=7.0] node[lbl] {$[a{\cdot}b{\cdot}a]$} (ba);
-  \draw[pair] (aba) to[out=-125,in=-155,looseness=7.0] node[lbl] {$[a{\cdot}b{\cdot}a]$} (aba);
-  \draw[pair] (bab) to[out=-55,in=-25,looseness=7.0] node[lbl] {$[b],[a{\cdot}b{\cdot}a]$} (bab);
+  \draw[pair] (b) to[out=-55,in=-25,looseness=7.0] node[lbl,shift={(-40:5mm)}] {$[b]$} (b);
+  \draw[pair] (ab) to[out=-125,in=-155,looseness=7.0] node[lbl,shift={(-140:5mm)}] {$[b]$} (ab);
+  \draw[pair] (ba) to[out=-55,in=-25,looseness=7.0] node[lbl,shift={(-40:5mm)}] {$[a{\cdot}b{\cdot}a]$} (ba);
+  \draw[pair] (aba) to[out=-125,in=-155,looseness=7.0] node[lbl,shift={(-140:5mm)}] {$[a{\cdot}b{\cdot}a]$} (aba);
+  \draw[pair] (bab) to[out=-55,in=-25,looseness=7.0] node[lbl,shift={(-40:5mm)}] {$[b],[a{\cdot}b{\cdot}a]$} (bab);
 
   \node[pairs] at (12.5,-0.7) {$P = \{\, ([b],[b]),\; ([a{\cdot}b],[b]),\; ([b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([a{\cdot}b{\cdot}a],[a{\cdot}b{\cdot}a]),\; ([b{\cdot}a{\cdot}b],[b]),\; ([b{\cdot}a{\cdot}b],[a{\cdot}b{\cdot}a]) \,\}$};
 \end{tikzpicture}
