@@ -44,11 +44,12 @@ prefix — lands elsewhere: `𝒮(aaba) = ([a]·[a])·([b]·[a]) = [a·a]·[b] =
 `s = [b]·[b] = [b]`, and `([b], [b])` is accepted.
 
 One lasso, two names. A word's verdict never depends on its presentation, but
-its name can. Present `b·(ab)^ω` as written: the loop `ab` folds to the sink
-`[a·b]`, already idempotent, and the stem is absorbed, `s = [b]·[a·b] = [b]`:
+its name can. Present `b·(ab)^ω` as written: the loop's class
+`𝒮(ab) = [a]·[b] = [a·b]` is the sink, already idempotent, and the stem is
+absorbed, `s = [b]·[a·b] = [b]`:
 the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
-`b·(ab)^ω = ba·(ba)^ω`, the same ω-word — and the loop now folds to
-`[b]·[a] = [b]`, also idempotent, with `s = [b]·[b] = [b]`: the name
+`b·(ab)^ω = ba·(ba)^ω`, the same ω-word — and the loop's class is now
+`𝒮(ba) = [b]·[a] = [b]`, also idempotent, with `s = [b]·[b] = [b]`: the name
 `([b], [b])`, accepted again. Two distinct pairs naming the one ω-word,
 connected by a single rotation — and both in `P`, as saturation (§3.3)
 demands.

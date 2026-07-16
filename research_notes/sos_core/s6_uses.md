@@ -38,7 +38,7 @@ for `d` in key order; `accept` lists `P` — here the single pair
 export, under the `EM₊`/`b` conventions.)*
 
 The file decides lassos by Definition 3.5 with no further apparatus. For
-`(a·b)^ω`: the loop folds to class `3 = [a·b]`, already idempotent
+`(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 3 = [a·b]`, already idempotent
 (`3·3 = 3`); the empty stem gives `s = e = 3`; and `3 3` is not listed under
 `accept`: rejected — no `aa` recurs.
 
@@ -52,8 +52,9 @@ syntactic invariants over `Σ`, serialized under shortlex keys. Then:
 
 (i) *(equality)* `L = L'` iff the two serializations are byte-identical;
 
-(ii) *(membership)* `u·v^ω ∈ L` is decided by one fold through `λ` and the
-table and one lookup in `P` (Definition 3.5);
+(ii) *(membership)* `u·v^ω ∈ L` is decided by one evaluation of `𝒮` — the
+letter map `λ`, then table products — and one lookup in `P`
+(Definition 3.5);
 
 (iii) *(emptiness, universality)* `L = ∅` iff `P = ∅`, and `L = Σ^ω` iff `P`
 is the set of all linked pairs of `𝒮`;
