@@ -110,9 +110,11 @@ invariant is adjoined fresh by the quotient stamp of §4.4, whatever identities
 `mk_{⟨aaa⟩}(0) = {0}` (the longer word closes an `aa`), `mk_{⟨a⟩}(0) = ∅`.
 The transition monoid identifies them; the enrichment keeps them apart.
 Closing the letters under composition gives `|EM₊| = 9` for this presentation
-of `GF(aa)`, `6` for `Even`, `15` for `EvenBlocks` *(counts to re-verify by
-engineering under the `EM₊` convention — the legacy draft counted the monoid
-with `⟨ε⟩`: 10, 7, 16)*.
+of `GF(aa)`, `6` for `Even` — and the full `16` for `EvenBlocks`, where `⟨ε⟩`,
+being `⟨aa⟩`, is itself an image of nonempty words and nothing is spared. The
+example pages carry the tool's tables, identity included: `|EM¹| = 10, 7, 16`
+folding onto `|𝒞| + 1 = 6, 5, 8` (Ex. 2–4), and `7` onto `5` for `aUGb`
+(Ex. 1).
 
 **Lemma 4.3 (skeleton).** Let `w = u₁u₂⋯` and `w' = u'₁u'₂⋯` be ω-words
 factored into nonempty blocks with the same sequence of enriched images —
@@ -174,10 +176,12 @@ pure encoding, invisible to the marks. `GF(aa)`'s transposition is exactly
 that situation, resolved in §4.4.
 
 *Example (the converse defect: the enriched stamp is too fine).* On the
-`aUGb` automaton, `⟨ba⟩` and `⟨aba⟩` are distinct elements —
-`mk_{⟨ba⟩}(B) = {0}` while `mk_{⟨aba⟩}(B) = ∅` — though `ba ≈_L aba`: both
-are dead, and no context separates them. The next step quotients exactly this
-excess away.
+`aUGb` automaton, `⟨b⟩` and `⟨bb⟩` are distinct elements — the second `b`
+collects, read from the initial state, the mark the first has not yet
+reached: `mk_{⟨b⟩}(A) = ∅` while `mk_{⟨bb⟩}(A) = {0}` — though `b ≈_L bb`:
+membership in `aUGb` never counts `b`'s, and no context separates them
+(ids 1 and 3 of Ex. 1's table). The next step quotients exactly this excess
+away.
 
 ### 4.3 Step 2: the quotient, computed on the right
 
@@ -378,8 +382,7 @@ the **reset** presentation of Figure 2: the same two states, but each letter
 sends *every* state to one place, an aperiodic transition monoid. The two
 automata are not isomorphic, and their transition monoids disagree even on
 whether a group is present. Both runs return the invariant of Ex. 2, byte
-for byte: five classes, `9 → 5` against `6 → 5` *(counts to re-verify with
-the `|EM₊|` sizes above)*. The transposition was pure presentation, and
+for byte: five classes, `9 → 5` against `6 → 5`. The transposition was pure presentation, and
 Theorem 4.11's quotient is where it dies — while `Even` and `EvenBlocks`
 keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 
