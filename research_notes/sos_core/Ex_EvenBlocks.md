@@ -12,9 +12,9 @@
 | Invariant `𝓘` | ![EvenBlocks invariant](../sos_core_figs/img/core_F3_evenblocks_pairs.png) |
 
 As in `Even`, `[a]` and `[a·a]` are the classes of words that have seen only
-`a`'s, in odd and even count — the same parity component, the same period-2
+`a`'s, in odd and even count — the same parity SCC, the same period-2
 power cycle (`[a]·[a] = [a·a]`, `[a·a]·[a] = [a]`): a genuine group, and the
-LTL row's *no*, read off the drawing. A `b` exits the component:
+LTL row's *no*, read off the drawing. A `b` exits the SCC:
 from an even count to `[b]`, from an odd count to `[a·b]` — but unlike
 `Even`, where the first `b` settled everything, no exit is final here.
 

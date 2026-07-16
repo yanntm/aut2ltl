@@ -14,7 +14,8 @@
 `[a]` is the class of words that have seen only an odd number of `a`'s (and no
 `b` yet); `[a·a]` the class of words that have seen only an even — and
 nonzero — number of `a`'s, again with no `b` yet. Reading one more `a` flips
-the parity, so `[a]` and `[a·a]` form a small strongly connected component —
+the parity, so `[a]` and `[a·a]` form a small strongly connected component
+(SCC) —
 the parity counter. We leave it only by reading a `b`. The counter is a
 genuine period-2 power cycle — `[a]·[a] = [a·a]`, `[a·a]·[a] = [a]` — a
 group: the LTL row's *no*, read off the drawing.
