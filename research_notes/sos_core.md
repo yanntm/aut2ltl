@@ -1314,10 +1314,21 @@ The paper's four running languages, numbered Ex. 1–4 and cited that way from
 the prose, each presented on its own page along the same axes: an
 **informal** description, its **ω-regular** word over the two
 letters `{a, b}`, its **formula** (LTL, or PSL/SERE where mod-2 counting takes it
-out of LTL), a **classification** — two facts read off `𝓘` and stated without
-justification: LTL-definability (§6.2) and the Wagner degree (§8) — its
-deterministic **Emerson–Lei automaton** `D` (the input of §4),
-and its syntactic **invariant** `𝓘` (§3). The pages are transverse to the
+out of LTL), a **classification** block, its deterministic **Emerson–Lei
+automaton** `D` (the input of §4), and its syntactic **invariant** `𝓘` (§3).
+
+**The classification block.** Three verdicts head each page — facts about a
+language that are usually hard to come by, here tool-computed from the page's
+invariant; the procedures are out of scope of this paper. *LTL*:
+definability in linear temporal logic, with its stutter sensitivity.
+*Geometry*: the
+rung on the safety–progress ladder of Manna and Pnueli [MP92] — safety,
+guarantee, obligation, recurrence, persistence, reactivity — the coarse view
+of Wagner's hierarchy [Wag79]; `properly` marks an exact position.
+*Recognizer*: the weakest deterministic acceptance recognizing the language,
+tied to the geometry by Landweber's theorem [Lan69] — DBA / DCA abbreviate
+deterministic Büchi / co-Büchi automata, accepting when marked transitions
+recur / eventually cease. The pages are transverse to the
 paper — self-contained, meant to be read at leisure. The formulas live over the single atom
 `a`, so the second letter is the literal `!a`; **throughout this paper the
 LTL/PSL forms are read with `b` in place of `!a`.**
@@ -1339,7 +1350,9 @@ label `𝒞` abbreviates a self-loop carrying every class.
 | Language (informal) | "a finitely until always b" |
 | ω-regular | `a*·b^ω` |
 | LTL | `a U G !a` |
-| Classification | LTL: **yes** (stutter insensitive) — Wagner degree `(2, σ)` |
+| LTL | **yes** — stutter insensitive |
+| Geometry | obligation, properly level 2: a Boolean combination of safety and guarantee, no single one suffices |
+| Recognizer | weak deterministic — one automaton serves as both DBA and DCA |
 | Det. Emerson–Lei `D` | ![aUGb automaton](sos_figs/img/aUGb.png) |
 | Invariant `𝓘` | ![aUGb invariant](sos_core_figs/img/core_F0_astar_bomega_b_pairs.png) |
 
@@ -1352,7 +1365,7 @@ Acceptance is in two pairs: `([b], [b])` representing the word `b^ω`, and
 `([a·b], [b])` the words of the form `a⁺·b^ω`. Note that these are classes:
 `([a·b], [b])` represents `a·b^ω`, `ab·b^ω`, `aabbb·b^ω`, `ab·bbb^ω`, …
 
-The Classification row is a read-off of the drawing: every power sequence
+The LTL row is a read-off of the drawing: every power sequence
 settles with period 1 — `[a]`, `[b]`, `[b·a]` are idempotent, and `[a·b]`
 falls onto the idempotent `[b·a]` in one step — so the invariant is
 aperiodic: LTL.
@@ -1374,7 +1387,9 @@ is not in the language.
 | Language (informal) | "infinitely many aa : an a followed by an a." |
 | ω-regular | `((a\|b)*·a·a)^ω` |
 | LTL | `G F(a ∧ X a)` |
-| Classification | LTL: **yes** (stutter sensitive) — Wagner degree `(ω, σ)` |
+| LTL | **yes** — stutter sensitive |
+| Geometry | recurrence, properly `Gδ`: strictly above every obligation |
+| Recognizer | DBA-proper — deterministic Büchi suffices, no deterministic co-Büchi can |
 | Det. Emerson–Lei `D` | ![GF(aa) run-parity automaton](sos_figs/img/gf_aa.png) |
 | Invariant `𝓘` | ![GF(aa) invariant](sos_core_figs/img/core_F1_gf_aa_pairs.png) |
 
@@ -1389,7 +1404,7 @@ counter: the trip around it multiplies by `[b]` then by `[a]`, two different
 classes, and no single class powers around it — `[a·b]·[a·b] = [a·b]`, while
 `[a]·[a] = [a·a]` leaves. Every power sequence settles with period 1 (though
 only at exponent 2: `[a]` needs one step to stabilize), so the invariant is
-aperiodic — the Classification row's LTL verdict, read off the drawing.
+aperiodic — the LTL row's verdict, read off the drawing.
 
 `[a·a]` is the class of all words that contain at least one block of two
 consecutive `a`'s. It is a sink: once two `a`'s in a row have been seen the
@@ -1426,7 +1441,9 @@ of the loop. Against it, `(ab)^ω`: the loop `𝒮(ab) = [a·b]` is idempotent,
 | Language (informal) | "even number of a's met when first b encountered" |
 | ω-regular | `(aa)*·b·(a\|b)^ω` |
 | PSL/SERE | `{ {a[*2]}[*] ; !a }!` |
-| Classification | LTL: **no** — Wagner degree `(1, σ)` |
+| LTL | **no** |
+| Geometry | guarantee, properly open: a good finite prefix decides |
+| Recognizer | reachability — an accepting sink to reach, the weakest acceptance there is |
 | Det. Emerson–Lei `D` | ![Even automaton](sos_figs/img/even.png) |
 | Invariant `𝓘` | ![Even invariant](sos_core_figs/img/core_F2_even_pairs.png) |
 
@@ -1436,7 +1453,7 @@ nonzero — number of `a`'s, again with no `b` yet. Reading one more `a` flips
 the parity, so `[a]` and `[a·a]` form a small strongly connected component —
 the parity counter. We leave it only by reading a `b`. The counter is a
 genuine period-2 power cycle — `[a]·[a] = [a·a]`, `[a·a]·[a] = [a]` — a
-group: the Classification row's *not LTL*, read off the drawing.
+group: the LTL row's *no*, read off the drawing.
 
 Where the `b` lands us records the parity at that moment. From `[a]`, an odd
 count, we go to `[a·b]`: the class of all words with an odd number of `a`'s
@@ -1480,14 +1497,16 @@ demands.
 | Language (informal) | "Infinitely often b, and all sequences of a are eventually even in length" |
 | ω-regular | `(a\|b)*·((aa)*·b)^ω` |
 | PSL/SERE | `GF!a ∧ FG(!a → X{ {a[*2]}[*] ; !a }!)` |
-| Classification | LTL: **no** — Wagner degree `(ω², σ)` |
+| LTL | **no** |
+| Geometry | reactivity: strictly above recurrence and persistence |
+| Recognizer | parity `{0,1,2}`, proper — a genuine Rabin pair; neither DBA nor DCA |
 | Det. Emerson–Lei `D` | ![EvenBlocks automaton](sos_figs/img/evenblocks.png) |
 | Invariant `𝓘` | ![EvenBlocks invariant](sos_core_figs/img/core_F3_evenblocks_pairs.png) |
 
 As in `Even`, `[a]` and `[a·a]` are the classes of words that have seen only
 `a`'s, in odd and even count — the same parity SCC, the same period-2 power
 cycle (`[a]·[a] = [a·a]`, `[a·a]·[a] = [a]`): a genuine group, and the
-Classification row's *not LTL*, read off the drawing. A `b` exits the SCC:
+LTL row's *no*, read off the drawing. A `b` exits the SCC:
 from an even count to `[b]`, from an odd count to `[a·b]` — but unlike
 `Even`, where the first `b` settled everything, no exit is final here.
 
@@ -1566,11 +1585,11 @@ restructure. Entries marked (†) are not cited by any drafted section
   thesis, UCLA, 1968.
 - **[Kla94]** (†) N. Klarlund. *A homomorphism concept for ω-regularity.*
   CSL 1994.
-- **[Lan69]** (†) L. H. Landweber. *Decision problems for ω-automata.* Math.
+- **[Lan69]** L. H. Landweber. *Decision problems for ω-automata.* Math.
   Systems Theory 3(4) (1969) 376–384.
 - **[MP71]** (†) R. McNaughton, S. Papert. *Counter-Free Automata.* MIT
   Press, 1971.
-- **[MP92]** (†) Z. Manna, A. Pnueli. *The Temporal Logic of Reactive and
+- **[MP92]** Z. Manna, A. Pnueli. *The Temporal Logic of Reactive and
   Concurrent Systems: Specification.* Springer, 1992.
 - **[MS97]** O. Maler, L. Staiger. *On syntactic congruences for
   ω-languages.* TCS 183 (1997) 93–112 (rev. 2008).
@@ -1590,7 +1609,7 @@ restructure. Entries marked (†) are not cited by any drafted section
   properties of regular ω-languages.* Fund. Inform. 83(1–2) (2008).
 - **[Tho79]** W. Thomas. *Star-free regular sets of ω-sequences.*
   Information and Control 42 (1979) 148–156.
-- **[Wag79]** (†) K. Wagner. *On ω-regular sets.* Information and Control 43
+- **[Wag79]** K. Wagner. *On ω-regular sets.* Information and Control 43
   (1979) 123–177.
 - **[Wilke99]** T. Wilke. *Classifying discrete temporal properties.*
   STACS 1999, LNCS 1563, 32–46.
