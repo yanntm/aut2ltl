@@ -13,9 +13,9 @@ into the single-file paper [`../sos_core.md`](../sos_core.md) — that file is a
 | [`s0_front.md`](s0_front.md) | title, abstract, §1 introduction | drafted prose |
 | [`s2_background.md`](s2_background.md) | §2 background | drafted prose |
 | [`s3_invariant.md`](s3_invariant.md) | §3 the invariant `𝓘 = ⟨𝒮, P⟩` | drafted prose |
-| [`s4_construction.md`](s4_construction.md) | §4 construction from an automaton | drafted prose — review pending; `EM₊` counts to re-verify |
+| [`s4_construction.md`](s4_construction.md) | §4 construction from an automaton | drafted prose — review pending; counts tool-verified 2026-07-16 |
 | [`s5_complexity.md`](s5_complexity.md) | §5 complexity | drafted prose |
-| [`s6_uses.md`](s6_uses.md) | §6 identity band + LTL frontier | drafted prose — serialization block to re-verify against tool export |
+| [`s6_uses.md`](s6_uses.md) | §6 identity band + LTL frontier | drafted prose — serialization block verbatim from tool export ([`../sos_core_figs/sources/gf_aa.sos`](../sos_core_figs/sources/gf_aa.sos)) |
 | [`s7_end.md`](s7_end.md) | §7 related work, §8 perspectives, §9 conclusion | drafted prose |
 | [`bib.md`](bib.md) | bibliography | reconstructed — verify against [`../papers/`](../papers/) |
 | [`notation.md`](notation.md) | notation conventions (editors' note, not paper text) | stable |
@@ -45,6 +45,13 @@ stated as fact, friendly wording. Values computed 2026-07-16 by
 [`../sos_core_figs/sources/`](../sos_core_figs/sources/)`*.sos`; the `.cat`
 sidecars committed beside them are the trace (exact Wagner degrees included —
 kept out of the paper boxes).
+
+Each page closes on a construction block — the `EM(D)` table with its fold
+onto `𝒞` — copied from the machine reports
+[`../sos_figs/sources/`](../sos_figs/sources/)`{aUGb,gf_aa,even,evenblocks}.md`
+(regenerable per [`../sos_figs/reproduction.md`](../sos_figs/reproduction.md);
+`aUGb.md` regenerated 2026-07-16) under one mechanical rename, `!a` → `b`;
+the paper's preamble in [`examples.md`](examples.md) states the convention.
 
 ## Conventions
 
