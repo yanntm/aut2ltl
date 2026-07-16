@@ -1,4 +1,4 @@
-# Example — `Even`
+# Example 3 — `Even`
 
 | aspect | `Even` |
 |---|---|
@@ -33,3 +33,13 @@ Reading a word. Take `aaaba·ba^ω`: the stem `aaaba` gives
 `([a]·[a]·[a])·([b]·[a]) = [a]·[b] = [a·b]`, and the loop `ba` gives
 `[b]·[a] = [b]`; the pair `([a·b], [b])` is not accepted. Try again with `aaba`
 as stem: `([a]·[a])·([b]·[a]) = [a·a]·[b] = [b]`, and `([b], [b])` is accepted.
+
+One lasso, two names. A word's verdict never depends on its presentation, but
+its name can. Present `b·(ab)^ω` as written: the loop `ab` folds to the sink
+`[a·b]`, already idempotent, and the stem is absorbed, `s = [b]·[a·b] = [b]`:
+the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
+`b·(ab)^ω = ba·(ba)^ω`, the same ω-word — and the loop now folds to
+`[b]·[a] = [b]`, also idempotent, with `s = [b]·[b] = [b]`: the name
+`([b], [b])`, accepted again. Two distinct pairs naming the one ω-word,
+connected by a single rotation — and both in `P`, as saturation (§3.3)
+demands.
