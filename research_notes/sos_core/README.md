@@ -38,6 +38,11 @@ invariant `𝓘`) plus reading prose:
 | [`Ex_Even.md`](Ex_Even.md) | `(aa)*·b·(a\|b)^ω` | PSL/SERE `{ {a[*2]}[*] ; !a }!` | done |
 | [`Ex_EvenBlocks.md`](Ex_EvenBlocks.md) | `(a\|b)*·((aa)*·b)^ω` | PSL/SERE `GF!a ∧ FG(…)` | done |
 
+Each page carries a `Classification` row — LTL-definability and Wagner
+degree, stated as fact. Values computed 2026-07-16 by `sosl.sos.classify` on
+[`../sos_core_figs/sources/`](../sos_core_figs/sources/)`*.sos`; the `.cat`
+sidecars committed beside them are the trace.
+
 ## Conventions
 
 - All sections obey `notation.md`; numbering is per-section (Definition 3.x

@@ -1,10 +1,12 @@
 # Worked examples
 
 The paper's four running languages, numbered Ex. 1–4 and cited that way from
-the prose, each presented on its own page along the same five axes: an
+the prose, each presented on its own page along the same axes: an
 **informal** description, its **ω-regular** word over the two
 letters `{a, b}`, its **formula** (LTL, or PSL/SERE where mod-2 counting takes it
-out of LTL), its deterministic **Emerson–Lei automaton** `D` (the input of §4),
+out of LTL), a **classification** — two facts read off `𝓘` and stated without
+justification: LTL-definability (§6.2) and the Wagner degree (§8) — its
+deterministic **Emerson–Lei automaton** `D` (the input of §4),
 and its syntactic **invariant** `𝓘` (§3). The pages are transverse to the
 paper — self-contained, meant to be read at leisure. The formulas live over the single atom
 `a`, so the second letter is the literal `!a`; **throughout this paper the
