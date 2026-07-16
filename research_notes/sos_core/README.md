@@ -14,11 +14,14 @@ into the single-file paper [`../sos_core.md`](../sos_core.md) — that file is a
 | [`s2_background.md`](s2_background.md) | §2 background | drafted prose |
 | [`s3_invariant.md`](s3_invariant.md) | §3 the invariant `𝓘 = ⟨𝒮, P⟩` | drafted prose |
 | [`s4_construction.md`](s4_construction.md) | §4 construction from an automaton | drafted prose — review pending; `EM₊` counts to re-verify |
-| [`s5_end.md`](s5_end.md) | §5 complexity, §6 uses, §7 related work, §8 conclusion | placeholder bullets |
+| [`s5_complexity.md`](s5_complexity.md) | §5 complexity | drafted prose |
+| [`s6_uses.md`](s6_uses.md) | §6 identity band + LTL frontier | drafted prose — serialization block to re-verify against tool export |
+| [`s7_end.md`](s7_end.md) | §7 related work, §8 perspectives, §9 conclusion | drafted prose |
 | [`bib.md`](bib.md) | bibliography | reconstructed — verify against [`../papers/`](../papers/) |
 | [`notation.md`](notation.md) | notation conventions (editors' note, not paper text) | stable |
 
-The [`Makefile`](Makefile) concatenates, in order, `s0 s2 s3_invariant s4 s5_end`
+The [`Makefile`](Makefile) concatenates, in order,
+`s0 s2 s3_invariant s4 s5_complexity s6_uses s7_end`
 then the worked examples (`examples.md` + the four `Ex_*.md`) then `bib`;
 `README.md` and `notation.md` stay out of the paper.
 

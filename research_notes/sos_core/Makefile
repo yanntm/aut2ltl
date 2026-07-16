@@ -17,7 +17,9 @@ PARTS := \
 	s2_background.md \
 	s3_invariant.md \
 	s4_construction.md \
-	s5_end.md \
+	s5_complexity.md \
+	s6_uses.md \
+	s7_end.md \
 	examples.md \
 	Ex_aUGb.md \
 	Ex_GFaa.md \
