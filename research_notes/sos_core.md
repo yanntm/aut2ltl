@@ -1311,10 +1311,12 @@ The construction of this paper reifies Arnold's phantom: the syntactic
 # Worked examples
 
 The paper's four running languages, numbered Ex. 1–4 and cited that way from
-the prose, each presented on its own page along the same five axes: an
+the prose, each presented on its own page along the same axes: an
 **informal** description, its **ω-regular** word over the two
 letters `{a, b}`, its **formula** (LTL, or PSL/SERE where mod-2 counting takes it
-out of LTL), its deterministic **Emerson–Lei automaton** `D` (the input of §4),
+out of LTL), a **classification** — two facts read off `𝓘` and stated without
+justification: LTL-definability (§6.2) and the Wagner degree (§8) — its
+deterministic **Emerson–Lei automaton** `D` (the input of §4),
 and its syntactic **invariant** `𝓘` (§3). The pages are transverse to the
 paper — self-contained, meant to be read at leisure. The formulas live over the single atom
 `a`, so the second letter is the literal `!a`; **throughout this paper the
@@ -1337,6 +1339,7 @@ label `𝒞` abbreviates a self-loop carrying every class.
 | Language (informal) | "a finitely until always b" |
 | ω-regular | `a*·b^ω` |
 | LTL | `a U G !a` |
+| Classification | LTL: **yes** (stutter insensitive) — Wagner degree `(2, σ)` |
 | Det. Emerson–Lei `D` | ![aUGb automaton](sos_figs/img/aUGb.png) |
 | Invariant `𝓘` | ![aUGb invariant](sos_core_figs/img/core_F0_astar_bomega_b_pairs.png) |
 
@@ -1349,12 +1352,19 @@ Acceptance is in two pairs: `([b], [b])` representing the word `b^ω`, and
 `([a·b], [b])` the words of the form `a⁺·b^ω`. Note that these are classes:
 `([a·b], [b])` represents `a·b^ω`, `ab·b^ω`, `aabbb·b^ω`, `ab·bbb^ω`, …
 
-Consider the lasso `ababba·b^ω`. Compute
-`𝒮(ababba) = [a]·[b]·[a]·[b]·[b]·[a] = [a·b]·[a·b]·[b·a]` (an arbitrary
-parenthesizing, since `𝒮` is associative); note `[a·b]·[a·b] = [b·a]` and
-`[b·a]` right-extended by anything is still `[b·a]`, so `𝒮(ababba) = [b·a]`. The
-class of `b` is `[b]`. The pair `([b·a], [b])` is not accepted, so the lasso
-represented by `ababba·b^ω` is not in the language.
+The Classification row is a read-off of the drawing: every power sequence
+settles with period 1 — `[a]`, `[b]`, `[b·a]` are idempotent, and `[a·b]`
+falls onto the idempotent `[b·a]` in one step — so the invariant is
+aperiodic: LTL.
+
+Reading a lasso (Definition 3.5). Take `ababba·b^ω`. The loop first:
+`𝒮(b) = [b]` is already idempotent, so `e = [b]`. The stem:
+`𝒮(ababba) = ([a]·[b])·([a]·[b])·([b]·[a]) = [a·b]·[a·b]·[b·a]` (an arbitrary
+parenthesizing, since `𝒮` is associative); `[a·b]·[a·b] = [b·a]`, and `[b·a]`
+right-extended by anything is still `[b·a]`, so `𝒮(ababba) = [b·a]`. The
+queried stem is `s = 𝒮(u)·e = [b·a]·[b]`, and absorption simplifies it away:
+`s = [b·a]`. The name `([b·a], [b])` is not in `P`, so the lasso `ababba·b^ω`
+is not in the language.
 
 
 # Example 2 — `GF(aa)`
@@ -1364,33 +1374,49 @@ represented by `ababba·b^ω` is not in the language.
 | Language (informal) | "infinitely many aa : an a followed by an a." |
 | ω-regular | `((a\|b)*·a·a)^ω` |
 | LTL | `G F(a ∧ X a)` |
+| Classification | LTL: **yes** (stutter sensitive) — Wagner degree `(ω, σ)` |
 | Det. Emerson–Lei `D` | ![GF(aa) run-parity automaton](sos_figs/img/gf_aa.png) |
 | Invariant `𝓘` | ![GF(aa) invariant](sos_core_figs/img/core_F1_gf_aa_pairs.png) |
 
-`[a]` is the class of words that start with an `a` and have never seen two
-`a`'s in a row. `[a·b]` is the class of words that start with an `a`, have most
-recently seen a `b`, and so far contain only isolated `a`'s — no block of two.
-These two classes cycle: extending `[a·b]` by `[a]` returns to `[a]`
-(`[a·b]·[a] = [a]`, forgetting that `b`'s were ever seen), and `[a]·[b] = [a·b]`
-goes back. Note that this length-2 cycle is not a *counter* of period 2 since 
-to and from edges do not carry the same classes. This language is indeed aperiodic (with p > 1)
-hence LTL.
+`[a]` is the class of words that start with an `a`, have never seen two `a`'s
+in a row, and most recently read an `a`. `[a·b]` is the class of words that
+start with an `a`, most recently read a `b`, and so far contain only isolated
+`a`'s — no block of two. The last letter is what separates them: an `a` may
+pair with the next letter, a `b` cannot. These two classes cycle: extending
+`[a·b]` by `[a]` returns to `[a]` (`[a·b]·[a] = [a]`, forgetting that `b`'s
+were ever seen), and `[a]·[b] = [a·b]` goes back. The cycle is *not* a
+counter: the trip around it multiplies by `[b]` then by `[a]`, two different
+classes, and no single class powers around it — `[a·b]·[a·b] = [a·b]`, while
+`[a]·[a] = [a·a]` leaves. Every power sequence settles with period 1 (though
+only at exponent 2: `[a]` needs one step to stabilize), so the invariant is
+aperiodic — the Classification row's LTL verdict, read off the drawing.
 
 `[a·a]` is the class of all words that contain at least one block of two
-consecutive `a`'s. It is a sink: once two `a`'s in a row have been seen the stamp classifier
-is content, and any further extension is absorbed and stays in `[a·a]`. A word
-starting with `a` reaches it either from `[a]` or from `[a·b]`, as soon as an
-`a` lands next to another `a`.
+consecutive `a`'s. It is a sink: once two `a`'s in a row have been seen the
+stamp classifier is content, and any further extension is absorbed and stays
+in `[a·a]`. In the drawing it is entered by reading one more `a` from the two
+classes that end on an unpaired `a`: `[a]`, and `[b·a]` on the `b`-side.
 
-Since acceptance asks for infinitely many such blocks, the only accepted pair is
-`([a·a], [a·a])`, and it is only logical that `[a·a]` be the loop component.
-Less obvious is that the stem component must also be `[a·a]`: this is always
-arrangeable by the rotation lemma, which pushes letters of the looped part back
-into the prefix until the prefix, too, is seen to carry two consecutive `a`'s.
-That is the canonical presentation of all accepted lassos of the language here.
+Since acceptance asks for infinitely many such blocks, the only accepted pair
+is `([a·a], [a·a])`, and it is only logical that `[a·a]` be the loop
+component. Less obvious is that the stem component must also be `[a·a]`: this
+is always arrangeable by the rotation lemma, which pushes letters of the
+looped part back into the prefix until the prefix, too, is seen to carry two
+consecutive `a`'s. That is the canonical presentation of all accepted lassos
+of the language here.
 
 The classes `[b]` and `[b·a]` play the same waiting-room game for words that
-start with a `b`, counting until the first block of two `a`'s is met.
+start with a `b` — `[b]` on a last-read `b`, `[b·a]` on an unpaired `a` —
+until the first block of two `a`'s is met.
+
+Reading a lasso (Definition 3.5). Take `(aab)^ω`, the empty-stem presentation
+`(ε, aab)`. The loop first: `𝒮(aab) = [a]·[a]·[b] = [a·a]·[b] = [a·a]` — the
+sink absorbs — already idempotent, so `e = [a·a]`. The stem is empty, and
+absorption lands the query in `𝒞` anyway: `s = 𝒮(ε)·e = [ε]·[a·a] = [a·a]`.
+The name `([a·a], [a·a])` is in `P`: accepted — an `aa` closes in every turn
+of the loop. Against it, `(ab)^ω`: the loop `𝒮(ab) = [a·b]` is idempotent,
+`s = [ε]·[a·b] = [a·b]`, and `([a·b], [a·b])` is not in `P`: rejected — the
+`a`'s stay isolated forever.
 
 
 # Example 3 — `Even`
@@ -1400,14 +1426,17 @@ start with a `b`, counting until the first block of two `a`'s is met.
 | Language (informal) | "even number of a's met when first b encountered" |
 | ω-regular | `(aa)*·b·(a\|b)^ω` |
 | PSL/SERE | `{ {a[*2]}[*] ; !a }!` |
+| Classification | LTL: **no** — Wagner degree `(1, σ)` |
 | Det. Emerson–Lei `D` | ![Even automaton](sos_figs/img/even.png) |
 | Invariant `𝓘` | ![Even invariant](sos_core_figs/img/core_F2_even_pairs.png) |
 
 `[a]` is the class of words that have seen only an odd number of `a`'s (and no
-`b` yet); `[a·a]` the class of words that have seen only an even number of
-`a`'s. Reading one more `a` flips the parity, so `[a]` and `[a·a]` form a small
-strongly connected component — the parity counter. We leave it only by reading a
-`b`.
+`b` yet); `[a·a]` the class of words that have seen only an even — and
+nonzero — number of `a`'s, again with no `b` yet. Reading one more `a` flips
+the parity, so `[a]` and `[a·a]` form a small strongly connected component —
+the parity counter. We leave it only by reading a `b`. The counter is a
+genuine period-2 power cycle — `[a]·[a] = [a·a]`, `[a·a]·[a] = [a]` — a
+group: the Classification row's *not LTL*, read off the drawing.
 
 Where the `b` lands us records the parity at that moment. From `[a]`, an odd
 count, we go to `[a·b]`: the class of all words with an odd number of `a`'s
@@ -1424,10 +1453,14 @@ Acceptance therefore fixes the stem to `[b]`: an even number of `a`'s until a
 and `[a·a]` canonically cover the cases where it extends by `a`'s — giving the
 three accepted pairs `([b], [b])`, `([b], [a·a])`, `([b], [a·b])`.
 
-Reading a word. Take `aaaba·ba^ω`: the stem `aaaba` gives
-`([a]·[a]·[a])·([b]·[a]) = [a]·[b] = [a·b]`, and the loop `ba` gives
-`[b]·[a] = [b]`; the pair `([a·b], [b])` is not accepted. Try again with `aaba`
-as stem: `([a]·[a])·([b]·[a]) = [a·a]·[b] = [b]`, and `([b], [b])` is accepted.
+Reading a lasso (Definition 3.5). Take `aaaba·(ba)^ω`. The loop first:
+`𝒮(ba) = [b]·[a] = [b]`, already idempotent, so `e = [b]`. The stem:
+`𝒮(aaaba) = ([a]·[a]·[a])·([b]·[a]) = [a]·[b] = [a·b]`, and the queried stem
+is `s = 𝒮(u)·e = [a·b]·[b] = [a·b]` — the sink absorbs. The name
+`([a·b], [b])` is not in `P`: rejected, an odd run of `a`'s was left
+unpaired. A *different* lasso, one `a` shorter — stem `aaba`, an even
+prefix — lands elsewhere: `𝒮(aaba) = ([a]·[a])·([b]·[a]) = [a·a]·[b] = [b]`,
+`s = [b]·[b] = [b]`, and `([b], [b])` is accepted.
 
 One lasso, two names. A word's verdict never depends on its presentation, but
 its name can. Present `b·(ab)^ω` as written: the loop `ab` folds to the sink
@@ -1447,35 +1480,54 @@ demands.
 | Language (informal) | "Infinitely often b, and all sequences of a are eventually even in length" |
 | ω-regular | `(a\|b)*·((aa)*·b)^ω` |
 | PSL/SERE | `GF!a ∧ FG(!a → X{ {a[*2]}[*] ; !a }!)` |
+| Classification | LTL: **no** — Wagner degree `(ω², σ)` |
 | Det. Emerson–Lei `D` | ![EvenBlocks automaton](sos_figs/img/evenblocks.png) |
 | Invariant `𝓘` | ![EvenBlocks invariant](sos_core_figs/img/core_F3_evenblocks_pairs.png) |
 
-As in `Even`, `[a]` and `[a·a]` are classes of words that have seen only `a`'s,
-in odd and even count respectively. Exiting the SCC with an even number of `a`'s
-before the `b`, in both cases, brings us to class `[b]`. So `[b]`, like in
-`Even`, agglomerates all words with an even number of `a`'s up to a `b`. But
-additionally to `Even`, using the cycle `[b]`/`[b·a]`, `[b]` also agglomerates
-even `a`-blocks interrupted by arbitrary numbers of `b`'s, returning to `[b]`
-after stabilizing. So `[b]` is any sequence made of only even `a`-blocks or
-`b`'s, finishing on a `b`.
+As in `Even`, `[a]` and `[a·a]` are the classes of words that have seen only
+`a`'s, in odd and even count — the same parity SCC, the same period-2 power
+cycle (`[a]·[a] = [a·a]`, `[a·a]·[a] = [a]`): a genuine group, and the
+Classification row's *not LTL*, read off the drawing. A `b` exits the SCC:
+from an even count to `[b]`, from an odd count to `[a·b]` — but unlike
+`Even`, where the first `b` settled everything, no exit is final here.
 
-Logically `([b], [b])` is accepted, as it covers most of the cases we expected
-to capture. The other accepting pairs all carry either `[b]` in their loop, or
-`[a·b·a]`, which covers the rotated cycle containing only words where every
-block of `a`'s is even in length. All classes can be the stem of at least one
-accepting continuation: the language is prefix agnostic. However every accepting
-stem of an accepted pair of this canonical representation contains at least some
-`b` — a constraint enforced by the canonical form using rotation, since the loop
-must already contain at least one `b` (there are infinitely many). Rotation
-pushes this `b` from the loop back into the stem.
+`[b]` agglomerates the words made of even `a`-blocks and `b`'s — the leading
+block even as read, every block closed inside the word even, a trailing run
+of `a`'s allowed if even — containing at least one `b`. The cycle
+`[b]`/`[b·a]` grows a trailing block: an unpaired trailing `a` sits in
+`[b·a]`, its partner returns to `[b]`. `[a·b]` and `[a·b·a]` are their twins
+for a leading block left odd — `[a·b·a]` reads the even-block cycle entered
+mid-block, an open run of `a`'s at both ends. The last class, `[b·a·b]` (key
+word `bab`), holds the words that have *completed* an odd block, closed by
+`b`'s on both sides: it is the two-sided zero, absorbing every extension.
+Absorbing is not dead: the language is prefix-independent — no finite prefix
+ever decides membership — and the zero reappears below as an accepting stem.
 
-Reading a word. Take `aabaab·baa`, grouped `(aa)·(baab)` and reduced on each
-side before conjoining. `(aa) = [a]·[a] = [a·a]` is the parity cycle;
-`(baab) = [b]·[a]·[a]·[b] = [b·a]·[a]·[b] = [b]·[b] = [b]` runs the `[b]`/`[b·a]`
-cycle, closing on an even count. Conjoining, `[a·a]·[b] = [b]`, so
-`𝒮(aabaab) = [b]`. The loop `baa = [b]·[a]·[a] = [b·a]·[a] = [b]` is idempotent,
-so `e = [b]`. The stem is `s = [b]·[b] = [b]`, and the name `([b], [b])` is
-accepted.
+Acceptance is six pairs:
+
+```
+P = { ([b], [b]),      ([a·b], [b]),      ([b·a·b], [b]),
+      ([b·a], [a·b·a]), ([b·a·b], [a·b·a]), ([a·b·a], [a·b·a]) }
+```
+
+— exactly the linked pairs whose loop is `[b]` or `[a·b·a]`, the two readings
+of "only even blocks, and `b`'s, forever": block-aligned, or entered
+mid-block. The stems are everything such a loop absorbs — every class
+carrying at least one `b`, the zero included: finitely many completed odd
+blocks are forgiven, prefix independence again. The two all-`a` classes
+appear in no pair: the loop holds infinitely many `b`'s, rotation pushes one
+of them back into the stem, so a canonical stem must carry a `b` — and `[a]`,
+`[a·a]` cannot.
+
+Reading a lasso (Definition 3.5). Take `aabaab·(baa)^ω`. The loop first:
+`𝒮(baa) = ([b]·[a])·[a] = [b·a]·[a] = [b]`, already idempotent, so `e = [b]`.
+The stem, grouped `(aa)·(baab)` and reduced on each side before conjoining:
+`(aa) = [a]·[a] = [a·a]` is the parity cycle;
+`(baab) = ([b]·[a])·([a]·[b]) = [b·a]·[a]·[b] = [b]·[b] = [b]` runs the
+`[b]`/`[b·a]` cycle, closing on an even count. Conjoining,
+`[a·a]·[b] = [b]`, so `𝒮(aabaab) = [b]`. The queried stem is
+`s = 𝒮(u)·e = [b]·[b] = [b]`, and the name `([b], [b])` is in `P`:
+accepted — every block the word completes is even, and `b`'s recur.
 
 
 ## References
