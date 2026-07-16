@@ -47,11 +47,13 @@ These automata are, in practice, the standard machine representation of
 regular ω-languages — the form modern tools exchange and optimize. What the
 format lacks is a canonical form: on finite words minimization yields *the*
 minimal DFA, unique up to isomorphism, while a regular ω-language has no such
-distinguished machine — `GF(aa)` is drawn in Figure 3 as two non-isomorphic
-automata on the same two states, with nothing intrinsic to prefer either.
-§4.4 sends both to one invariant.
+distinguished machine — `GF(aa)` is drawn twice in this paper as two
+non-isomorphic automata on the same two states (Ex. 2 and Figure 2), with
+nothing intrinsic to prefer either. §4.4 sends both to one invariant.
 
-*Example.* The four languages appear as machines in Figure 3. `aUGb` needs
+*Example.* The four languages appear as machines on their pages, Ex. 1–4 —
+the reader is invited to revisit each page's formula and automaton rows now.
+`aUGb` needs
 three states: `A` (initial) loops on `a`; `b` leads to `B`, which loops on
 `b`, that loop carrying the mark `0`; an `a` at `B` falls to a sink absorbing
 both letters unmarked; `Acc = Inf(0)` — a run collects `0` forever iff it
@@ -294,7 +296,7 @@ class forces every prefix to preserve membership. ∎
 *Example.* `EvenBlocks` is prefix-independent — deleting a finite prefix
 changes neither "infinitely many `b`" nor "eventually every completed block
 is even" — so its `∼lin` is total: the finitary half is blind, and the whole
-of its non-LTL-ness (the `Z₂` of Figure 2) is invisible until `∼ω` is
+of its non-LTL-ness (the `Z₂` of Ex. 4) is invisible until `∼ω` is
 computed. This is the generic situation for tail properties, not a corner
 case, and it is why a construction resting on residuals alone cannot even see
 it.
@@ -371,15 +373,30 @@ Theorem 3.10(ii) is the identity. ∎
 language yield the byte-identical invariant.
 
 *Example (canonicity, exhibited).* Compute `𝓘(D)` from the run-parity
-`GF(aa)` of Figure 3 — two states, a `Z₂` of transpositions — and again from
-the **reset** presentation (Figure 3): the same two states, but each letter
+`GF(aa)` of Ex. 2 — two states, a `Z₂` of transpositions — and again from
+the **reset** presentation of Figure 2: the same two states, but each letter
 sends *every* state to one place, an aperiodic transition monoid. The two
 automata are not isomorphic, and their transition monoids disagree even on
-whether a group is present. Both runs return the invariant of Figure 2, byte
+whether a group is present. Both runs return the invariant of Ex. 2, byte
 for byte: five classes, `9 → 5` against `6 → 5` *(counts to re-verify with
 the `|EM₊|` sizes above)*. The transposition was pure presentation, and
-Theorem 4.11's quotient is where it dies — while `Even` and `EvenBlocks` keep
-their `Z₂` (Figure 2): those groups are `L`'s own.
+Theorem 4.11's quotient is where it dies — while `Even` and `EvenBlocks`
+keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
+
+| ![Figure 2 — the reset presentation of GF(aa)](../sos_figs/img/gf_aa_reset.png) |
+|:--:|
+
+| presentation | `\|Q\|` | `a` acts by | group in TM? | `\|EM₊\|` | `𝓘(GF(aa))` |
+|---|:--:|---|:--:|:--:|---|
+| run-parity (Ex. 2) | 2 | transposition | yes — `Z₂` | 9 | Ex. 2's drawing |
+| reset (above) | 2 | reset | no — aperiodic | 6 | *byte-identical* |
+
+*Figure 2 — canonicity, exhibited. The reset presentation of `GF(aa)`: the
+same two states as Ex. 2's machine, but each letter sends every state to one
+place — `a` to the "just saw `a`" state, whose `a`-self-loop carries the
+mark, `b` to the other. Not isomorphic to Ex. 2's automaton, transition
+monoids disagreeing even on whether a group is present, enriched semigroups
+of different sizes — one byte-identical invariant out of both.*
 
 **The algorithm.** The theorem is also the procedure. The seed `R` groups
 elements of `EM₊(D)` by `∼lin`-class and profile — both read directly off

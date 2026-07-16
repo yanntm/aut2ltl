@@ -1,4 +1,4 @@
-# Example — `GF(aa)`
+# Example 2 — `GF(aa)`
 
 | aspect | `GF(aa)` |
 |---|---|

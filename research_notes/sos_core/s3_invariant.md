@@ -40,7 +40,7 @@ the universal way of making a semigroup a monoid, and it is deliberate that
 this holds even when `𝒞` owns an internal neutral element. Such an element is a
 class of nonempty words invisible to the language — a genuine behavior,
 loopable, with verdicts of its own — while `[ε]` is the basepoint "no word at
-all", which can never be looped; `Even` (Figure 2) exhibits both at once, kept
+all", which can never be looped; `Even` (Ex. 3) exhibits both at once, kept
 apart.
 
 **Representation.** The notion is Pin and Straubing's [PS05], where a stamp is
@@ -71,21 +71,24 @@ the drawn graph: `[a]·[b] = [a·b]`, `[a·b]·[a] = [b·a]`, and `[b·a]` is a
 two-sided zero — the dead words, once an `a` follows a `b`. These are §2's
 four kinds, wearing their shortlex names.
 
-| ![Figure 1a — the stamp core](../sos_core_figs/img/core_F0_astar_bomega_b.png) | ![Figure 1b — the monoid completion](../sos_core_figs/img/core_F0_astar_bomega.png) |
+| ![Figure 1a — the stamp core](../sos_core_figs/img/core_F0_astar_bomega_b_pairs.png) | ![Figure 1b — the monoid completion](../sos_core_figs/img/core_F0_astar_bomega.png) |
 |:--:|:--:|
 
-*Figure 1 — `𝓘(aUGb)`, drawn twice. Left — the stamp core, the presentation
-`(𝒞, λ, ·)` of Definition 3.1: the four classes are the vertices, the table
-the edges — following an edge multiplies on the right by its label, parallel
-edges fused into one arrow listing their labels, and the label `𝒞` on the
-zero's self-loop abbreviating all four classes at once: the picture of
-absorption. Beneath the drawing, the letter map `λ` and the pair set `P`
-(Definition 3.4): with the graph, the complete data of the invariant. Right —
-the monoid completion `M = 𝒞 ∪ {[ε]}` of the same stamp: the fresh identity
-drawn in, adding exactly its row — the edges leaving `[ε]`, where the reading
-of a word starts — and its column, `[ε]` joining every self-loop. An identity
-moves nothing: eliding it loses no edge worth reading, and all further figures
-use the left form.*
+*Figure 1 — `𝓘(aUGb)`, drawn twice. Left — the stamp core: the complete data
+of the invariant `⟨𝒮, P⟩` in one drawing. The four classes are the vertices.
+The letter map `λ` is the two entry arrows — `a` enters at `[a]`, `b` at
+`[b]`: where the reading of a word starts. The table is the edges: following
+an edge multiplies on the right by its label; parallel edges are fused into
+one arrow listing their labels; and the label `𝒞` on the zero's self-loop
+abbreviates all four classes at once — the picture of absorption. The
+acceptance layer is drawn on top: an accepting pair `(s, e) ∈ P` is the
+doubled self-loop at the stem class `s`, labeled by its loop class `e` —
+here `([b], [b])` and `([a·b], [b])` — and `P` is restated in full beneath.
+Right — the monoid completion `M = 𝒞 ∪ {[ε]}` of the same stamp, `λ` and `P`
+printed as text: the fresh identity drawn in, adding exactly its row — the
+edges leaving `[ε]` — and its column, `[ε]` joining every self-loop. An
+identity moves nothing: eliding it loses no edge worth reading, and all
+further drawings use the left form.*
 
 *Example (the letter map is data).* Over `Σ = {a, b, c}`, the language
 `(a|c)*·b^ω` has the same four classes and the same table: `a` and `c` are
@@ -297,7 +300,7 @@ convention, and it is the form the implementation consumes (Part B).
 
 *Example.* On Figure 1 (`aUGb`), present `aab·b^ω` as `(aab, b)` or as
 `(aabb, bb)`: both land on the name `([a·b], [b])` — here even the name is
-stable. That is a feature of `aUGb`, not of the theorem: `Even` (Figure 2) names
+stable. That is a feature of `aUGb`, not of the theorem: `Even` (Ex. 3) names
 one lasso through two distinct pairs, and canonicity (Theorem 3.10(i)) is what
 forces those two names to one verdict.
 
@@ -364,7 +367,7 @@ refinement computable on a table.
 *Example.* On Figure 1 (`aUGb`), every conjugacy class is a singleton —
 whatever factor a rotation moves, the dead class absorbs it, and the two
 accepting stems absorb their loops — so saturation of `P(aUGb)` is immediate.
-`Even` (Figure 2) works the check for real: present `a^ω` as `(ε, a)` — the
+`Even` (Ex. 3) works the check for real: present `a^ω` as `(ε, a)` — the
 loop's class `[a]` has idempotent power `[a]^π = [a·a]`, and the queried pair
 is `([a·a], [a·a])` — or as `(a, a)`, landing on
 `([a]·[a·a], [a·a]) = ([a], [a·a])`: one lasso, two names, connected by the

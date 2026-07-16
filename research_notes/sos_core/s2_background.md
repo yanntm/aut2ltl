@@ -17,7 +17,13 @@ Consider the language of Carton and Perrin [CP97, Ex. 10] described by
 `a*·b^ω` — some `a`'s, then `b`'s forever — which we name `aUGb`. It
 accompanies every notion of this section, each computed on it by hand; §3
 assembles the results into one drawn object, its syntactic ω-semigroup
-(Figure 1).
+(Figure 1). Three more languages join it across the paper — `GF(aa)`,
+`Even`, `EvenBlocks` — and the four together are the running examples,
+numbered Ex. 1–4. Each has a one-page table at the end of the paper —
+informal description, ω-regular expression, formula, deterministic
+automaton, invariant, and a guided reading. The pages are transverse to the
+text, meant to be leafed through at leisure, early and often; the prose
+points into them where each earns its keep.
 
 **We only ever look at lassos.** The infinite words this paper computes with
 are the ultimately periodic ones, and they have a finite syntax:

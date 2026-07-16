@@ -45,10 +45,12 @@ invariant `𝓘`) plus reading prose:
   ("the rotation lemma (3.11)") so they survive edits and file boundaries.
 - Figures live in [`../sos_core_figs/`](../sos_core_figs/) and
   [`../sos_figs/`](../sos_figs/); paths from these files start with `../`. §2 is
-  figure-free (classes computed by hand); Figure 1 is a two-panel pair in §3.1 —
-  stamp core (`core_F0_astar_bomega_b.png`) | monoid completion
-  (`core_F0_astar_bomega.png`). Figure adaptation pending (λ as entry arrows
-  agreed; further tweaks under discussion).
+  figure-free (classes computed by hand). Two numbered figures only: Figure 1,
+  the two-panel pair in §3.1 — stamp core with `λ` as entry arrows and pairs
+  drawn on top (`core_F0_astar_bomega_b_pairs.png`) | monoid completion
+  (`core_F0_astar_bomega.png`); Figure 2, the reset presentation of `GF(aa)`
+  in §4.4 (`gf_aa_reset.png`). All other drawings live on the example pages,
+  numbered Ex. 1–4 and cited that way from the prose.
 - Didactic goal: standalone — readable by an M2 student with background but
   without Perrin–Pin as a prerequisite. Every classical notion used is
   restituted in §2 or §3, and each is presented as what it is: algebra on

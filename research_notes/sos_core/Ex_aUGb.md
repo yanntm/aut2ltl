@@ -1,4 +1,4 @@
-# Example — `aUGb`
+# Example 1 — `aUGb`
 
 | aspect | `aUGb` |
 |---|---|
