@@ -50,3 +50,26 @@ The name `([a·a], [a·a])` is in `P`: accepted — an `aa` closes in every turn
 of the loop. Against it, `(ab)^ω`: the loop `𝒮(ab) = [a·b]` is idempotent,
 `s = [ε]·[a·b] = [a·b]`, and `([a·b], [a·b])` is not in `P`: rejected — the
 `a`'s stay isolated forever.
+
+**Construction (§4).** `|EM¹| = 10` elements folding onto `|S(L)₊¹| = 6` —
+the five classes above plus `[ε]`. The enrichment at work: `⟨a⟩` (id 2) and
+`⟨aaa⟩` (id 8) have the *same* state part — the transposition — and differ
+only in marks, the longer word having closed an `aa`; the transition monoid
+identifies them, the enrichment keeps them apart. The fold then does the
+reverse service: four "contains `aa`" behaviors (ids 5, 6, 8, 9), distinct
+as vectors, collapse onto the sink `[a·a]`, and `⟨aba⟩` (id 7) rejoins
+`[a]` — the `Z₂` visible in the `st` column is pure presentation, and §4.4
+is where it dies.
+
+| id | word | st | mk | rmul | → class |
+|---|---|---|---|---|---|
+| 0 | `eps` | [0 1] | [{} {}] | 1 2 | 0 `eps` |
+| 1 | `b` | [0 0] | [{} {}] | 1 3 | 1 `b` |
+| 2 | `a` | [1 0] | [{} {0}] | 4 5 | 2 `a` |
+| 3 | `b;a` | [1 1] | [{} {}] | 1 6 | 3 `b;a` |
+| 4 | `a;b` | [0 0] | [{} {0}] | 4 7 | 4 `a;b` |
+| 5 | `a;a` | [0 1] | [{0} {0}] | 6 8 | 5 `a;a` |
+| 6 | `b;a;a` | [0 0] | [{0} {0}] | 6 9 | 5 `a;a` |
+| 7 | `a;b;a` | [1 1] | [{} {0}] | 4 6 | 2 `a` |
+| 8 | `a;a;a` | [1 0] | [{0} {0}] | 6 5 | 5 `a;a` |
+| 9 | `b;a;a;a` | [1 1] | [{0} {0}] | 6 6 | 5 `a;a` |

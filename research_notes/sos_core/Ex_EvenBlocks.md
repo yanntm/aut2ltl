@@ -55,3 +55,33 @@ The stem, grouped `(aa)·(baab)` and reduced on each side before conjoining:
 `[a·a]·[b] = [b]`, so `𝒮(aabaab) = [b]`. The queried stem is
 `s = 𝒮(u)·e = [b]·[b] = [b]`, and the name `([b], [b])` is in `P`:
 accepted — every block the word completes is even, and `b`'s recur.
+
+**Construction (§4).** `|EM¹| = 16` elements folding onto `|S(L)₊¹| = 8` —
+the seven classes above plus `[ε]`. Here the identity row hosts *two*
+classes at once: `⟨aa⟩ = ⟨ε⟩` — two `a`'s toggle back and collect nothing —
+so id 0's fold column reads both `[ε]` and `[a·a]`, the collision §3.1's
+fresh basepoint is built for (and `EM₊(D)` is the whole monoid: nothing is
+spared, `|EM₊| = 16`). The language lives entirely in the marks: six
+elements (ids 7, 10, 11, 13–15), state maps and mark patterns all varying,
+are one behavior for `L` and fold onto the zero `[b·a·b]`. And unlike
+`GF(aa)`'s page, the parity `Z₂` *survives* the fold — `[a]·[a] = [a·a]`,
+`[a·a]·[a] = [a]` — this group is `L`'s own.
+
+| id | word | st | mk | rmul | → class |
+|---|---|---|---|---|---|
+| 0 | `eps` | [0 1] | [{} {}] | 1 2 | 0 `eps` / 5 `a;a` |
+| 1 | `b` | [0 0] | [{1} {0}] | 3 4 | 1 `b` |
+| 2 | `a` | [1 0] | [{} {}] | 5 0 | 2 `a` |
+| 3 | `b;b` | [0 0] | [{1} {0,1}] | 3 6 | 1 `b` |
+| 4 | `b;a` | [1 1] | [{1} {0}] | 7 1 | 3 `b;a` |
+| 5 | `a;b` | [0 0] | [{0} {1}] | 8 9 | 4 `a;b` |
+| 6 | `b;b;a` | [1 1] | [{1} {0,1}] | 10 3 | 3 `b;a` |
+| 7 | `b;a;b` | [0 0] | [{0,1} {0}] | 10 11 | 6 `b;a;b` |
+| 8 | `a;b;b` | [0 0] | [{0,1} {1}] | 8 12 | 4 `a;b` |
+| 9 | `a;b;a` | [1 1] | [{0} {1}] | 13 5 | 7 `a;b;a` |
+| 10 | `b;b;a;b` | [0 0] | [{0,1} {0,1}] | 10 14 | 6 `b;a;b` |
+| 11 | `b;a;b;a` | [1 1] | [{0,1} {0}] | 7 7 | 6 `b;a;b` |
+| 12 | `a;b;b;a` | [1 1] | [{0,1} {1}] | 10 8 | 7 `a;b;a` |
+| 13 | `a;b;a;b` | [0 0] | [{0} {0,1}] | 10 15 | 6 `b;a;b` |
+| 14 | `b;b;a;b;a` | [1 1] | [{0,1} {0,1}] | 10 10 | 6 `b;a;b` |
+| 15 | `a;b;a;b;a` | [1 1] | [{0} {0,1}] | 13 13 | 6 `b;a;b` |

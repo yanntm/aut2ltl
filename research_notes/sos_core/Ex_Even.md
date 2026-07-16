@@ -54,3 +54,24 @@ the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
 `([b], [b])`, accepted again. Two distinct pairs naming the one ω-word,
 connected by a single rotation — and both in `P`, as saturation (§3.3)
 demands.
+
+**Construction (§4).** `|EM¹| = 7` elements folding onto `|S(L)₊¹| = 5` —
+the four classes above plus `[ε]`. The delicate row is `⟨aa⟩` (id 5): its
+state part is the *identity map* — two `a`'s return every state to itself —
+and only the mark collected at the accepting sink (slot `0`) keeps it apart
+from `⟨ε⟩` (id 0). The quotient keeps them apart too, as §3.1 demands:
+`[a·a]` is a neutral class of nonempty words — its row and column in `𝒞`'s
+table move nothing — while `[ε]` is the fresh basepoint: the
+neutral-vs-identity distinction of §3.1, exhibited by the machine. The fold
+itself merges the mark-only splits `⟨b⟩, ⟨bb⟩` (ids 1, 3) and `⟨ab⟩, ⟨abb⟩`
+(ids 4, 6).
+
+| id | word | st | mk | rmul | → class |
+|---|---|---|---|---|---|
+| 0 | `eps` | [0 1 2 3] | [{} {} {} {}] | 1 2 | 0 `eps` |
+| 1 | `b` | [0 3 0 3] | [{0} {} {} {}] | 3 3 | 1 `b` |
+| 2 | `a` | [0 2 1 3] | [{0} {} {} {}] | 4 5 | 2 `a` |
+| 3 | `b;b` | [0 3 0 3] | [{0} {} {0} {}] | 3 3 | 1 `b` |
+| 4 | `a;b` | [0 0 3 3] | [{0} {} {} {}] | 6 6 | 3 `a;b` |
+| 5 | `a;a` | [0 1 2 3] | [{0} {} {} {}] | 1 2 | 4 `a;a` |
+| 6 | `a;b;b` | [0 0 3 3] | [{0} {0} {} {}] | 6 6 | 3 `a;b` |

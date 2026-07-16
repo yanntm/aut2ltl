@@ -30,6 +30,19 @@ congruence classes, edges are the letter-action table, and the letter map `λ`
 and the saturated set of accepting linked pairs `P` are listed beneath; the
 label `𝒞` abbreviates a self-loop carrying every class.
 
+**The construction table.** Each page closes on the table §4 builds from its
+`D`: every element of the enriched monoid `EM(D)` (Definition 4.2) — its
+state map `st` and collected marks `mk`, one slot per state of the drawing;
+its right multiplications by `b` then by `a` (`rmul`, as element ids) — and,
+in the last column, the class it folds onto in the quotient of §4.3. The
+tables are the construction tool's reports under a single mechanical rename,
+the paper's `b` for the tool's literal `!a` (the single-atom alphabet the
+formulas live over; only the serialized `.sos` of §6.1 keeps the raw
+letters). Everything else is verbatim, the tool's monoid convention
+included: counts are `|EM¹|` folding onto `|S(L)₊¹| = |𝒞| + 1`, identity
+included and printed `eps`; keys read `x;y` for the paper's `x·y`; ids
+enumerate in the tool's letter order, `b` before `a`.
+
 - Ex. 1 — [`aUGb`](Ex_aUGb.md)
 - Ex. 2 — [`GF(aa)`](Ex_GFaa.md)
 - Ex. 3 — [`Even`](Ex_Even.md)
