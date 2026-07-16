@@ -59,7 +59,13 @@ Consider the language of Carton and Perrin [CP97, Ex. 10] described by
 `a*·b^ω` — some `a`'s, then `b`'s forever — which we name `aUGb`. It
 accompanies every notion of this section, each computed on it by hand; §3
 assembles the results into one drawn object, its syntactic ω-semigroup
-(Figure 1).
+(Figure 1). Three more languages join it across the paper — `GF(aa)`,
+`Even`, `EvenBlocks` — and the four together are the running examples,
+numbered Ex. 1–4. Each has a one-page table at the end of the paper —
+informal description, ω-regular expression, formula, deterministic
+automaton, invariant, and a guided reading. The pages are transverse to the
+text, meant to be leafed through at leisure, early and often; the prose
+points into them where each earns its keep.
 
 **We only ever look at lassos.** The infinite words this paper computes with
 are the ultimately periodic ones, and they have a finite syntax:
@@ -250,7 +256,7 @@ the universal way of making a semigroup a monoid, and it is deliberate that
 this holds even when `𝒞` owns an internal neutral element. Such an element is a
 class of nonempty words invisible to the language — a genuine behavior,
 loopable, with verdicts of its own — while `[ε]` is the basepoint "no word at
-all", which can never be looped; `Even` (Figure 2) exhibits both at once, kept
+all", which can never be looped; `Even` (Ex. 3) exhibits both at once, kept
 apart.
 
 **Representation.** The notion is Pin and Straubing's [PS05], where a stamp is
@@ -281,21 +287,24 @@ the drawn graph: `[a]·[b] = [a·b]`, `[a·b]·[a] = [b·a]`, and `[b·a]` is a
 two-sided zero — the dead words, once an `a` follows a `b`. These are §2's
 four kinds, wearing their shortlex names.
 
-| ![Figure 1a — the stamp core](sos_core_figs/img/core_F0_astar_bomega_b.png) | ![Figure 1b — the monoid completion](sos_core_figs/img/core_F0_astar_bomega.png) |
+| ![Figure 1a — the stamp core](sos_core_figs/img/core_F0_astar_bomega_b_pairs.png) | ![Figure 1b — the monoid completion](sos_core_figs/img/core_F0_astar_bomega.png) |
 |:--:|:--:|
 
-*Figure 1 — `𝓘(aUGb)`, drawn twice. Left — the stamp core, the presentation
-`(𝒞, λ, ·)` of Definition 3.1: the four classes are the vertices, the table
-the edges — following an edge multiplies on the right by its label, parallel
-edges fused into one arrow listing their labels, and the label `𝒞` on the
-zero's self-loop abbreviating all four classes at once: the picture of
-absorption. Beneath the drawing, the letter map `λ` and the pair set `P`
-(Definition 3.4): with the graph, the complete data of the invariant. Right —
-the monoid completion `M = 𝒞 ∪ {[ε]}` of the same stamp: the fresh identity
-drawn in, adding exactly its row — the edges leaving `[ε]`, where the reading
-of a word starts — and its column, `[ε]` joining every self-loop. An identity
-moves nothing: eliding it loses no edge worth reading, and all further figures
-use the left form.*
+*Figure 1 — `𝓘(aUGb)`, drawn twice. Left — the stamp core: the complete data
+of the invariant `⟨𝒮, P⟩` in one drawing. The four classes are the vertices.
+The letter map `λ` is the two entry arrows — `a` enters at `[a]`, `b` at
+`[b]`: where the reading of a word starts. The table is the edges: following
+an edge multiplies on the right by its label; parallel edges are fused into
+one arrow listing their labels; and the label `𝒞` on the zero's self-loop
+abbreviates all four classes at once — the picture of absorption. The
+acceptance layer is drawn on top: an accepting pair `(s, e) ∈ P` is the
+doubled self-loop at the stem class `s`, labeled by its loop class `e` —
+here `([b], [b])` and `([a·b], [b])` — and `P` is restated in full beneath.
+Right — the monoid completion `M = 𝒞 ∪ {[ε]}` of the same stamp, `λ` and `P`
+printed as text: the fresh identity drawn in, adding exactly its row — the
+edges leaving `[ε]` — and its column, `[ε]` joining every self-loop. An
+identity moves nothing: eliding it loses no edge worth reading, and all
+further drawings use the left form.*
 
 *Example (the letter map is data).* Over `Σ = {a, b, c}`, the language
 `(a|c)*·b^ω` has the same four classes and the same table: `a` and `c` are
@@ -507,7 +516,7 @@ convention, and it is the form the implementation consumes (Part B).
 
 *Example.* On Figure 1 (`aUGb`), present `aab·b^ω` as `(aab, b)` or as
 `(aabb, bb)`: both land on the name `([a·b], [b])` — here even the name is
-stable. That is a feature of `aUGb`, not of the theorem: `Even` (Figure 2) names
+stable. That is a feature of `aUGb`, not of the theorem: `Even` (Ex. 3) names
 one lasso through two distinct pairs, and canonicity (Theorem 3.10(i)) is what
 forces those two names to one verdict.
 
@@ -574,7 +583,7 @@ refinement computable on a table.
 *Example.* On Figure 1 (`aUGb`), every conjugacy class is a singleton —
 whatever factor a rotation moves, the dead class absorbs it, and the two
 accepting stems absorb their loops — so saturation of `P(aUGb)` is immediate.
-`Even` (Figure 2) works the check for real: present `a^ω` as `(ε, a)` — the
+`Even` (Ex. 3) works the check for real: present `a^ω` as `(ε, a)` — the
 loop's class `[a]` has idempotent power `[a]^π = [a·a]`, and the queried pair
 is `([a·a], [a·a])` — or as `(a, a)`, landing on
 `([a]·[a·a], [a·a]) = ([a], [a·a])`: one lasso, two names, connected by the
@@ -632,11 +641,13 @@ These automata are, in practice, the standard machine representation of
 regular ω-languages — the form modern tools exchange and optimize. What the
 format lacks is a canonical form: on finite words minimization yields *the*
 minimal DFA, unique up to isomorphism, while a regular ω-language has no such
-distinguished machine — `GF(aa)` is drawn in Figure 3 as two non-isomorphic
-automata on the same two states, with nothing intrinsic to prefer either.
-§4.4 sends both to one invariant.
+distinguished machine — `GF(aa)` is drawn twice in this paper as two
+non-isomorphic automata on the same two states (Ex. 2 and Figure 2), with
+nothing intrinsic to prefer either. §4.4 sends both to one invariant.
 
-*Example.* The four languages appear as machines in Figure 3. `aUGb` needs
+*Example.* The four languages appear as machines on their pages, Ex. 1–4 —
+the reader is invited to revisit each page's formula and automaton rows now.
+`aUGb` needs
 three states: `A` (initial) loops on `a`; `b` leads to `B`, which loops on
 `b`, that loop carrying the mark `0`; an `a` at `B` falls to a sink absorbing
 both letters unmarked; `Acc = Inf(0)` — a run collects `0` forever iff it
@@ -879,7 +890,7 @@ class forces every prefix to preserve membership. ∎
 *Example.* `EvenBlocks` is prefix-independent — deleting a finite prefix
 changes neither "infinitely many `b`" nor "eventually every completed block
 is even" — so its `∼lin` is total: the finitary half is blind, and the whole
-of its non-LTL-ness (the `Z₂` of Figure 2) is invisible until `∼ω` is
+of its non-LTL-ness (the `Z₂` of Ex. 4) is invisible until `∼ω` is
 computed. This is the generic situation for tail properties, not a corner
 case, and it is why a construction resting on residuals alone cannot even see
 it.
@@ -956,15 +967,30 @@ Theorem 3.10(ii) is the identity. ∎
 language yield the byte-identical invariant.
 
 *Example (canonicity, exhibited).* Compute `𝓘(D)` from the run-parity
-`GF(aa)` of Figure 3 — two states, a `Z₂` of transpositions — and again from
-the **reset** presentation (Figure 3): the same two states, but each letter
+`GF(aa)` of Ex. 2 — two states, a `Z₂` of transpositions — and again from
+the **reset** presentation of Figure 2: the same two states, but each letter
 sends *every* state to one place, an aperiodic transition monoid. The two
 automata are not isomorphic, and their transition monoids disagree even on
-whether a group is present. Both runs return the invariant of Figure 2, byte
+whether a group is present. Both runs return the invariant of Ex. 2, byte
 for byte: five classes, `9 → 5` against `6 → 5` *(counts to re-verify with
 the `|EM₊|` sizes above)*. The transposition was pure presentation, and
-Theorem 4.11's quotient is where it dies — while `Even` and `EvenBlocks` keep
-their `Z₂` (Figure 2): those groups are `L`'s own.
+Theorem 4.11's quotient is where it dies — while `Even` and `EvenBlocks`
+keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
+
+| ![Figure 2 — the reset presentation of GF(aa)](sos_figs/img/gf_aa_reset.png) |
+|:--:|
+
+| presentation | `\|Q\|` | `a` acts by | group in TM? | `\|EM₊\|` | `𝓘(GF(aa))` |
+|---|:--:|---|:--:|:--:|---|
+| run-parity (Ex. 2) | 2 | transposition | yes — `Z₂` | 9 | Ex. 2's drawing |
+| reset (above) | 2 | reset | no — aperiodic | 6 | *byte-identical* |
+
+*Figure 2 — canonicity, exhibited. The reset presentation of `GF(aa)`: the
+same two states as Ex. 2's machine, but each letter sends every state to one
+place — `a` to the "just saw `a`" state, whose `a`-self-loop carries the
+mark, `b` to the other. Not isomorphic to Ex. 2's automaton, transition
+monoids disagreeing even on whether a group is present, enriched semigroups
+of different sizes — one byte-identical invariant out of both.*
 
 **The algorithm.** The theorem is also the procedure. The seed `R` groups
 elements of `EM₊(D)` by `∼lin`-class and profile — both read directly off
@@ -1284,11 +1310,13 @@ The construction of this paper reifies Arnold's phantom: the syntactic
 
 # Worked examples
 
-The paper's four running languages, each presented on its own page along the
-same five axes: an **informal** description, its **ω-regular** word over the two
+The paper's four running languages, numbered Ex. 1–4 and cited that way from
+the prose, each presented on its own page along the same five axes: an
+**informal** description, its **ω-regular** word over the two
 letters `{a, b}`, its **formula** (LTL, or PSL/SERE where mod-2 counting takes it
 out of LTL), its deterministic **Emerson–Lei automaton** `D` (the input of §4),
-and its syntactic **invariant** `𝓘` (§3). The formulas live over the single atom
+and its syntactic **invariant** `𝓘` (§3). The pages are transverse to the
+paper — self-contained, meant to be read at leisure. The formulas live over the single atom
 `a`, so the second letter is the literal `!a`; **throughout this paper the
 LTL/PSL forms are read with `b` in place of `!a`.**
 
@@ -1302,7 +1330,7 @@ label `𝒞` abbreviates a self-loop carrying every class.
 
 
 
-# Example — `aUGb`
+# Example 1 — `aUGb`
 
 | aspect | `aUGb` |
 |---|---|
@@ -1329,7 +1357,7 @@ class of `b` is `[b]`. The pair `([b·a], [b])` is not accepted, so the lasso
 represented by `ababba·b^ω` is not in the language.
 
 
-# Example — `GF(aa)`
+# Example 2 — `GF(aa)`
 
 | aspect | `GF(aa)` |
 |---|---|
@@ -1365,7 +1393,7 @@ The classes `[b]` and `[b·a]` play the same waiting-room game for words that
 start with a `b`, counting until the first block of two `a`'s is met.
 
 
-# Example — `Even`
+# Example 3 — `Even`
 
 | aspect | `Even` |
 |---|---|
@@ -1401,8 +1429,18 @@ Reading a word. Take `aaaba·ba^ω`: the stem `aaaba` gives
 `[b]·[a] = [b]`; the pair `([a·b], [b])` is not accepted. Try again with `aaba`
 as stem: `([a]·[a])·([b]·[a]) = [a·a]·[b] = [b]`, and `([b], [b])` is accepted.
 
+One lasso, two names. A word's verdict never depends on its presentation, but
+its name can. Present `b·(ab)^ω` as written: the loop `ab` folds to the sink
+`[a·b]`, already idempotent, and the stem is absorbed, `s = [b]·[a·b] = [b]`:
+the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
+`b·(ab)^ω = ba·(ba)^ω`, the same ω-word — and the loop now folds to
+`[b]·[a] = [b]`, also idempotent, with `s = [b]·[b] = [b]`: the name
+`([b], [b])`, accepted again. Two distinct pairs naming the one ω-word,
+connected by a single rotation — and both in `P`, as saturation (§3.3)
+demands.
 
-# Example — `EvenBlocks`
+
+# Example 4 — `EvenBlocks`
 
 | aspect | `EvenBlocks` |
 |---|---|
