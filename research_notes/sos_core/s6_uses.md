@@ -14,33 +14,44 @@ language. The invariant serializes to
 a file that *is* the language. `𝓘(GF(aa))`, in full:
 
 ```
-SOS
-alphabet: a b
-classes: 5
-0 a
-1 b
-2 a·a
-3 a·b
-4 b·a
-letters: a→0  b→1
-table:
-0: 2 3 2 2 0
-1: 4 1 2 1 4
-2: 2 2 2 2 2
-3: 0 3 2 3 0
-4: 2 1 2 2 4
+SOS v1
+ap: a
+classes: 6
+0 eps
+1 !a
+2 a
+3 !a;a
+4 a;!a
+5 a;a
+letters: !a->1 a->2
+mult:
+0: 0 1 2 3 4 5
+1: 1 1 3 3 1 5
+2: 2 4 5 2 5 5
+3: 3 1 5 3 5 5
+4: 4 4 2 2 4 5
+5: 5 5 5 5 5 5
 accept:
-2 2
+5 5
+residuals: 1
+0 eps
+res-step:
+0: 0 0
 ```
 
-Classes are listed by shortlex key; the row `c: …` of `table` gives `c·d`
-for `d` in key order; `accept` lists `P` — here the single pair
-`([a·a], [a·a])`. *(Block to re-verify by engineering against the tool
-export, under the `EM₊`/`b` conventions.)*
+The file is the tool's export, verbatim — the one place the paper keeps the
+raw letters: the alphabet is the single atom and its negation, `ap: a` with
+`!a` for the paper's `b`, and keys read `x;y` for `x·y`. Classes are listed
+by shortlex key, monoid convention: class `0 eps` is the adjoined `[ε]`, so
+`classes: 6` counts `|𝒞| = 5` plus the basepoint. The row `c: …` of `mult`
+gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
+`([a·a], [a·a])`, ids `5 5`. The trailing `residuals:` block is derived
+data — the right congruence, recomputable from the core, so byte equality is
+unaffected; its single class exhibits `GF(aa)`'s prefix-independence.
 
 The file decides lassos by Definition 3.5 with no further apparatus. For
-`(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 3 = [a·b]`, already idempotent
-(`3·3 = 3`); the empty stem gives `s = e = 3`; and `3 3` is not listed under
+`(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 4 = [a·b]`, already idempotent
+(`4·4 = 4`); the empty stem gives `s = e = 4`; and `4 4` is not listed under
 `accept`: rejected — no `aa` recurs.
 
 *Example (canonicity, in bytes).* The two non-isomorphic presentations of
