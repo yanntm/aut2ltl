@@ -1151,7 +1151,7 @@ for `d` in key order; `accept` lists `P` — here the single pair
 export, under the `EM₊`/`b` conventions.)*
 
 The file decides lassos by Definition 3.5 with no further apparatus. For
-`(a·b)^ω`: the loop folds to class `3 = [a·b]`, already idempotent
+`(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 3 = [a·b]`, already idempotent
 (`3·3 = 3`); the empty stem gives `s = e = 3`; and `3 3` is not listed under
 `accept`: rejected — no `aa` recurs.
 
@@ -1165,8 +1165,9 @@ syntactic invariants over `Σ`, serialized under shortlex keys. Then:
 
 (i) *(equality)* `L = L'` iff the two serializations are byte-identical;
 
-(ii) *(membership)* `u·v^ω ∈ L` is decided by one fold through `λ` and the
-table and one lookup in `P` (Definition 3.5);
+(ii) *(membership)* `u·v^ω ∈ L` is decided by one evaluation of `𝒮` — the
+letter map `λ`, then table products — and one lookup in `P`
+(Definition 3.5);
 
 (iii) *(emptiness, universality)* `L = ∅` iff `P = ∅`, and `L = Σ^ω` iff `P`
 is the set of all linked pairs of `𝒮`;
@@ -1546,11 +1547,12 @@ prefix — lands elsewhere: `𝒮(aaba) = ([a]·[a])·([b]·[a]) = [a·a]·[b] =
 `s = [b]·[b] = [b]`, and `([b], [b])` is accepted.
 
 One lasso, two names. A word's verdict never depends on its presentation, but
-its name can. Present `b·(ab)^ω` as written: the loop `ab` folds to the sink
-`[a·b]`, already idempotent, and the stem is absorbed, `s = [b]·[a·b] = [b]`:
+its name can. Present `b·(ab)^ω` as written: the loop's class
+`𝒮(ab) = [a]·[b] = [a·b]` is the sink, already idempotent, and the stem is
+absorbed, `s = [b]·[a·b] = [b]`:
 the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
-`b·(ab)^ω = ba·(ba)^ω`, the same ω-word — and the loop now folds to
-`[b]·[a] = [b]`, also idempotent, with `s = [b]·[b] = [b]`: the name
+`b·(ab)^ω = ba·(ba)^ω`, the same ω-word — and the loop's class is now
+`𝒮(ba) = [b]·[a] = [b]`, also idempotent, with `s = [b]·[b] = [b]`: the name
 `([b], [b])`, accepted again. Two distinct pairs naming the one ω-word,
 connected by a single rotation — and both in `P`, as saturation (§3.3)
 demands.
