@@ -28,37 +28,44 @@ of literature between the definition and a construction. On it we build
 acceptance-enriched stamp, then a right-computable quotient — and prove
 `𝓘(D) = 𝓘(L(D))` against the semantics: one language, one table, whatever
 the presentation. LTL-definability, the safety–progress rung, and the
-weakest deterministic acceptance become read-offs of the one object.
+weakest deterministic acceptance become read-offs of the invariant.
 
 ## 1. Introduction
 
-On finite words, regular language theory has a normal form. The minimal DFA
-is *the* automaton of a language — computed, hashed, compared for sixty
-years — and behind it stands the syntactic monoid, the canonical algebra
-through which the deepest structural facts are read, most famously
-Schützenberger's theorem [Sch65]. On infinite words — the setting of model
-checking and reactive synthesis — there is no analogue: a regular ω-language
-has no minimal deterministic ω-automaton, and every pipeline in the field
-manipulates *presentations*, never languages. Two automata for one language
-share nothing observable; each language-level question must first be argued
-independent of the presentation it is asked on, and equality itself is a
-PSPACE problem, not a comparison.
+On finite words, regular language theory has a normal form. The minimal
+deterministic finite automaton (DFA) is *the* automaton of a language —
+computed, hashed, compared for sixty years — and behind it stands the
+syntactic monoid, the canonical algebra through which the deepest structural
+facts are read, most famously Schützenberger's theorem: star-free equals
+aperiodic [Sch65, PP04]. On infinite words — the setting of model checking
+and reactive synthesis — there is no analogue: a regular ω-language has no
+canonical minimal deterministic ω-automaton, and every pipeline in the field
+manipulates *presentations*, never languages [PP04]. Two automata for one
+language share nothing observable; each language-level question must first
+be argued independent of the presentation it is asked on, and equality
+itself is decided by products and complementation, never by comparison.
 
-The canonical object exists — on paper. Arnold [Arn85] defined the syntactic
-congruence of a regular ω-language: the coarsest congruence saturating it,
-of finite index, whose quotient — the **syntactic ω-semigroup** — is a
-function of the language alone and recognizes it. In principle this is the
-exact ω-analogue of the syntactic monoid; in practice it is a phantom,
-defined everywhere and built nowhere: no tool materializes it from an
-automaton, and the algorithmic accounts of its flagship application —
-deciding LTL-definability — are complexity arguments that emit no algebra
-and no evidence [DG08].
+The canonical algebra exists — on paper. Arnold [Arn85] defined the
+syntactic congruence of a regular ω-language: the coarsest congruence
+saturating it (membership depends only on the classes), of finite index,
+whose quotient — the **syntactic ω-semigroup** — is a function of the
+language alone and recognizes it. In principle this is the exact ω-analogue
+of the syntactic monoid, and it closes the classical chain: linear temporal
+logic (LTL) `=` first-order logic `FO[<]` `=` star-free `=` aperiodic
+syntactic ω-semigroup [Kam68, Tho79, DG08] — every earlier item of the chain
+is a syntax, the last is the semantics, and it is the one this paper builds.
+In practice the syntactic ω-semigroup is a phantom, defined everywhere and
+built nowhere: no tool materializes it from an automaton, and the
+algorithmic accounts of the flagship application — deciding
+LTL-definability — are complexity arguments that emit no algebra and no
+evidence [DG08].
 
 The obstruction is structural, not just size, and its two halves were each
 solved in isolation without ever being combined. First, a recognizer for
 infinite behaviour must remember *acceptance along runs*: the transition
-monoid forgets the marks a run collects, which is exactly what ω-acceptance
-consumes — Carton, Perrin and Pin have a recognizer that keeps them [CPP08],
+monoid forgets the acceptance events along a run, which are exactly what
+ω-acceptance consumes — Carton, Perrin and Pin have a recognizer that keeps
+them [CPP08],
 but reach the syntactic quotient only by saturation over context triples, an
 example rather than a procedure. Second, Arnold's congruence is inherently
 *two-sided*, while the one operation a finite table offers for free is
@@ -67,17 +74,19 @@ finitary–infinitary split [MS97], but compute no quotient, and their loop
 test still hides a two-sided context. This paper supplies the missing
 mathematics and assembles the construction. Our contributions:
 
-1. **The object, reified** (§3). The invariant `𝓘(L) = ⟨𝒮, P⟩`: a stamp
+1. **The invariant** (§3). `𝓘(L) = ⟨𝒮, P⟩`: a stamp
    `𝒮 : Σ⁺ → 𝒞` presented by its classes, letter map and multiplication
    table, and a pair set `P` of linked pairs, with a self-contained
-   lasso-membership semantics (Definition 3.5). Canonicity
+   membership semantics on lassos — the ultimately periodic words `u·v^ω`
+   (Definition 3.5). Canonicity
    (Theorem 3.10) makes it a complete invariant — and, under shortlex
    naming, a normal form: language equality is byte equality of the
    serialized tables.
 
 2. **The rotation lemma** (§3.3). A loop may be rotated — a factor carried
    from the loop's front onto the stem leaves the ω-word unchanged — and
-   this single move generates every renaming of a lasso. Read on contexts,
+   this single move is how two presentations of one ω-word come to
+   disagree. Read on contexts,
    it collapses Arnold's two-sided congruence to a computation by right
    multiplications alone: the structural fact the literature lacked, and
    the engine of the construction.
@@ -90,20 +99,20 @@ mathematics and assembles the construction. Our contributions:
 
 §5 splits the two costs — the construction pays an exponential that
 PSPACE-hardness makes unavoidable, while everything on the finished table is
-polynomial in `|𝒞|`, a size intrinsic to the language. §6 puts the object to
-work: the identity band (equality, complement, membership, witnesses) nearly
-for free, then the LTL frontier as a one-look read-off, exact in both
-directions because the invariant is canonical. §7 positions the neighbours;
-§8 opens the directions the reified object makes available — classification,
-rendering to formulas, a calculus, a census, learning; §9 concludes.
+polynomial in `|𝒞|`, a size intrinsic to the language. §6 puts the invariant
+to work: the identity questions — equality, complement, membership,
+witnesses — nearly for free, then the LTL frontier as a one-look read-off,
+exact in both directions because the invariant is canonical. §7 reviews
+related work; §8 opens the directions the invariant makes available —
+classification, rendering to formulas, a calculus, a census, learning;
+§9 concludes.
 
 Four running examples accompany the paper, met first as tables and only
 later as automata: `aUGb`, the pedagogical thread of §2–§3, and `GF(aa)`,
 `Even`, `EvenBlocks`, chosen to exercise both context shapes of the
-congruence and both sides of the LTL frontier. Each has a one-page card
+congruence and both sides of the LTL frontier. Each has its own page
 (Ex. 1–4) at the end of the paper — language, formula, classification,
-automaton, invariant — transverse to the text and meant to be consulted at
-leisure.
+automaton, invariant.
 
 
 ## 2. Background
@@ -118,13 +127,15 @@ the class the invariant of §3 captures. All examples in this paper live over
 the two-letter alphabet `Σ = {a, b}`. This section fixes the few classical
 notions the invariant rests on, adapting the presentation of Perrin and Pin
 [PP04], each paired with the intuition tying the algebra back to languages of
-infinite words. Nothing here is assumed and nothing is deep: each notion, once
-unwrapped, is algebra on a finite set.
+infinite words. We assume basic comfort with ω-automata and linear temporal
+logic [PP04, MP92]; every algebraic notion, in contrast, is defined here, and
+nothing algebraic is deep: each notion, once unwrapped, is algebra on a
+finite set.
 
 Consider the language of Carton and Perrin [CP97, Ex. 10] described by
 `a*·b^ω` — some `a`'s, then `b`'s forever — which we name `aUGb`. It
 accompanies every notion of this section, each computed on it by hand; §3
-assembles the results into one drawn object, its syntactic ω-semigroup
+assembles the results into one drawing, its syntactic ω-semigroup
 (Figure 1). Three more languages join it across the paper — `GF(aa)`,
 `Even`, `EvenBlocks` — and the four together are the running examples,
 numbered Ex. 1–4. Each has a one-page table at the end of the paper —
@@ -339,8 +350,8 @@ and conversely every map `Σ → 𝒞` whose image generates `𝒞` extends to a
 We write `λ := 𝒮|_Σ` for this restriction, the **letter map**. A stamp is
 therefore *finitely presented* by the data `(𝒞, λ, ·)` — the finite set of
 classes, the letter map, the multiplication table — and this presentation is
-the materialization this paper manipulates: the classical object is the
-morphism, what the field has never had in hand is its table.
+the materialization this paper manipulates: classically the stamp *is* the
+morphism; what the field has never had in hand is its table.
 
 *Notation (representatives).* A class is denoted by one of its member words,
 `[a·b]` for the class of `ab`; any member may serve, and nothing below depends
@@ -1046,7 +1057,7 @@ keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 | ![Figure 2 — the reset presentation of GF(aa)](sos_figs/img/gf_aa_reset.png) |
 |:--:|
 
-| presentation | `\|Q\|` | `a` acts by | group in TM? | `\|EM₊\|` | `𝓘(GF(aa))` |
+| presentation | `\|Q\|` | `a` acts by | group in transition monoid? | `\|EM₊\|` | `𝓘(GF(aa))` |
 |---|:--:|---|:--:|:--:|---|
 | run-parity (Ex. 2) | 2 | transposition | yes — `Z₂` | 9 | Ex. 2's drawing |
 | reset (above) | 2 | reset | no — aperiodic | 6 | *byte-identical* |
@@ -1119,10 +1130,11 @@ nearly for free, then the definability frontier. Throughout, an invariant is
 handled through its finite presentation `(𝒞, λ, ·, P)` under shortlex keys —
 the serialized form the byte-equality remark of §3.3 announced.
 
-### 6.1 The exportable object and the identity band
+### 6.1 The exportable invariant and the identity band
 
-What the field exchanges today is a presentation — an automaton in HOA
-format, one machine among many for its language. The invariant serializes to
+What the field exchanges today is a presentation — an automaton in the
+Hanoi Omega-Automata (HOA) exchange format, one machine among many for its
+language. The invariant serializes to
 a file that *is* the language. `𝓘(GF(aa))`, in full:
 
 ```
@@ -1207,9 +1219,9 @@ nondeterminism. The gain is the target: the flipped invariant is *already
 canonical* — it is `𝓘(L̄)` itself, no re-canonicalization — and it makes a
 structural fact plain: `L` and `L̄` share their entire algebra, and `P`
 alone tells them apart. Equality is where the band has no automaton-level
-rival: deciding `L(D) = L(D')` on presentations is a PSPACE problem, while a
-corpus of serialized invariants deduplicates by hashing — equal languages,
-identical bytes.
+rival: a corpus of `N` presentations deduplicates by `O(N²)` pairwise
+product constructions, a corpus of serialized invariants by hashing — equal
+languages, identical bytes.
 
 ### 6.2 The LTL frontier
 
@@ -1220,7 +1232,7 @@ period `≥ 2` — equivalently, `c^π·c = c^π` for every `c ∈ 𝒞_L`.
 The chain is LTL `=` FO[<] `=` star-free `=` aperiodic syntactic algebra
 [Kam68, Tho79, DG08], the ω-transport of Schützenberger's theorem [Sch65];
 see [DG08] for the consolidated account. What this paper adds is not the
-theorem but the object it reads:
+theorem but the table it is read off:
 
 **Corollary 6.4 (the decision).** On the constructed invariant `𝓘(D)`,
 LTL-definability of `L(D)` is decided by finitely many table products —
@@ -1240,8 +1252,10 @@ period 1: LTL. `Even` and `EvenBlocks` — `[a]·[a] = [a·a]` and
 `[a·a]·[a] = [a]`, a power cycle of period 2: a genuine group, not LTL, and
 the invariant's verdict certifies it.
 
-**A practical instance.** PSL/SERE (IEEE 1850) properly extends LTL and is
-the specification idiom of hardware verification; the mod-2 counting that
+**A practical instance.** The Property Specification Language PSL
+(IEEE 1850), with its sequential extended regular expressions (SEREs),
+properly extends LTL and is the specification idiom of hardware
+verification; the mod-2 counting that
 takes a written property out of LTL lives *syntactically* in an even
 repetition `{·}[*2]`. "Is this PSL property actually LTL?" — simpler, far
 better tool-supported — is asked with no tool to answer it; it is exactly
@@ -1333,7 +1347,8 @@ object of study.
 **Learning the algebra.** The rotation lemma is an observation-table
 discipline: every two-sided demand of the congruence is met by right
 extensions read at prefix-indexed slots (Lemma 4.8) — rows and columns, the
-shape MAT learning consumes. Learning the syntactic ω-semigroup itself from
+shape a minimally-adequate-teacher (MAT) learner consumes. Learning the
+syntactic ω-semigroup itself from
 membership queries on lassos therefore looks feasible — where [AF21] records
 the obstruction for right congruences and the field learns
 presentation-dependent families of acceptors instead [AF16, ABF18].
@@ -1351,7 +1366,7 @@ LTLf-definability [DV13], one level down, where the same tooling gap stands.
 For finite words, the syntactic monoid has carried the algebraic theory of
 regular languages for sixty years: one finite algebra per language,
 canonical, and everything readable from it. For infinite words the analogous
-object — the syntactic ω-semigroup of Arnold — has existed since 1985 on
+algebra — the syntactic ω-semigroup of Arnold — has existed since 1985 on
 paper only.
 
 The obstruction was never size alone; it was structure. A recognizer for
@@ -1368,8 +1383,9 @@ and anything read off them must first be argued independent of that choice.
 The invariant is the language: equality is identity of two files, complement
 flips a set of pairs, membership is a table walk, LTL-definability is the
 absence of a group — and the classical taxonomy of ω-regular languages turns
-into structural facts about one finite object. Beyond verdicts, an object in
-hand invites operation — computing with languages, cataloguing them,
+into structural facts about one finite invariant. Beyond verdicts, the
+invariant in hand invites operation — computing with languages, cataloguing
+them,
 learning them — directions that were closed at the level of presentations.
 The construction of this paper reifies Arnold's phantom: the syntactic
 ω-semigroup is no longer only defined — it is built.
@@ -1395,8 +1411,7 @@ of Wagner's hierarchy [Wag79]; `properly` marks an exact position.
 *Recognizer*: the weakest deterministic acceptance recognizing the language,
 tied to the geometry by Landweber's theorem [Lan69] — DBA / DCA abbreviate
 deterministic Büchi / co-Büchi automata, accepting when marked transitions
-recur / eventually cease. The pages are transverse to the
-paper — self-contained, meant to be read at leisure. The formulas live over the single atom
+recur / eventually cease. Each page is self-contained. The formulas live over the single atom
 `a`, so the second letter is the literal `!a`; **throughout this paper the
 LTL/PSL forms are read with `b` in place of `!a`.**
 
@@ -1572,9 +1587,9 @@ demands.
 | Invariant `𝓘` | ![EvenBlocks invariant](sos_core_figs/img/core_F3_evenblocks_pairs.png) |
 
 As in `Even`, `[a]` and `[a·a]` are the classes of words that have seen only
-`a`'s, in odd and even count — the same parity SCC, the same period-2 power
-cycle (`[a]·[a] = [a·a]`, `[a·a]·[a] = [a]`): a genuine group, and the
-LTL row's *no*, read off the drawing. A `b` exits the SCC:
+`a`'s, in odd and even count — the same parity component, the same period-2
+power cycle (`[a]·[a] = [a·a]`, `[a·a]·[a] = [a]`): a genuine group, and the
+LTL row's *no*, read off the drawing. A `b` exits the component:
 from an even count to `[b]`, from an odd count to `[a·b]` — but unlike
 `Even`, where the first `b` settled everything, no exit is final here.
 
