@@ -351,6 +351,14 @@ first.
 
 ### 3.1 Syntax: the invariant `𝓘 = ⟨𝒮, P⟩`
 
+The stamp packages the classifier of finite words in the vocabulary of §2,
+plus two adjectives. A morphism of *semigroups* is as in Definition 2.3
+minus the identity clause: `𝒮(u·v) = 𝒮(u)·𝒮(v)` alone. A morphism is
+**surjective** — *onto* — when its image is everything: `𝒮(Σ⁺) = 𝒞`, every
+class the class of at least one word. And an element adjoined to a set is
+**fresh** when it is a genuinely new point: the union is disjoint, no
+existing element promoted into the new role.
+
 **Definition 3.1 (stamp over an alphabet).** A **stamp** over `Σ` is a
 surjective semigroup morphism
 
@@ -368,15 +376,21 @@ finite words by adjoining a **fresh** identity `[ε]`:
 
 making `𝒮 : Σ* → M` a surjective monoid morphism.
 
-Two consequences of the definition, used silently everywhere: **`[ε]` is
-isolated** — the identity is fresh, so `𝒮(u) = [ε]` only for `u = ε` — and
-**`𝒞` absorbs** — `M` differs from `𝒞` by exactly that basepoint, so a product
-touching a class of words stays in `𝒞`. Surjectivity says every class is the
-class of at least one nonempty word.
+Each clause of the definition enforces something the rest of the paper
+stands on. *Morphism*: the table determines the whole map — evaluating `𝒮`
+is one lookup per letter, and no argument ever revisits the word itself.
+*Onto a finite `𝒞`*: infinitely many nonempty words collapse onto `|𝒞|²`
+products, and everything from here on is a scan of that table. *Surjective*:
+no spectator classes — every class comes with word witnesses. *The bracket
+`[u]`*: a name, not a set construction — `[u]` is the value `𝒮(u)`, and any
+word with that value may serve as the name. *Fresh*: `[ε]` is **isolated** —
+`𝒮(u) = [ε]` forces `u = ε` — and `𝒞` **absorbs** — `M` differs from `𝒞` by
+exactly that basepoint, so a product touching a class of words stays in `𝒞`.
 
 Freshness is the canonical choice, not a convenience: adjoining a *new* unit is
 the universal way of making a semigroup a monoid, and it is deliberate that
-this holds even when `𝒞` owns an internal neutral element. Such an element is a
+this holds even when `𝒞` owns an internal neutral element — the
+neutral-vs-identity distinction of §2, now enforced. Such an element is a
 class of nonempty words invisible to the language — a genuine behavior,
 loopable, with verdicts of its own — while `[ε]` is the basepoint "no word at
 all", which can never be looped; `Even` (Ex. 3) exhibits both at once, kept
