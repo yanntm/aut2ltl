@@ -841,9 +841,11 @@ invariant is adjoined fresh by the quotient stamp of §4.4, whatever identities
 `mk_{⟨aaa⟩}(0) = {0}` (the longer word closes an `aa`), `mk_{⟨a⟩}(0) = ∅`.
 The transition monoid identifies them; the enrichment keeps them apart.
 Closing the letters under composition gives `|EM₊| = 9` for this presentation
-of `GF(aa)`, `6` for `Even`, `15` for `EvenBlocks` *(counts to re-verify by
-engineering under the `EM₊` convention — the legacy draft counted the monoid
-with `⟨ε⟩`: 10, 7, 16)*.
+of `GF(aa)`, `6` for `Even` — and the full `16` for `EvenBlocks`, where `⟨ε⟩`,
+being `⟨aa⟩`, is itself an image of nonempty words and nothing is spared. The
+example pages carry the tool's tables, identity included: `|EM¹| = 10, 7, 16`
+folding onto `|𝒞| + 1 = 6, 5, 8` (Ex. 2–4), and `7` onto `5` for `aUGb`
+(Ex. 1).
 
 **Lemma 4.3 (skeleton).** Let `w = u₁u₂⋯` and `w' = u'₁u'₂⋯` be ω-words
 factored into nonempty blocks with the same sequence of enriched images —
@@ -905,10 +907,12 @@ pure encoding, invisible to the marks. `GF(aa)`'s transposition is exactly
 that situation, resolved in §4.4.
 
 *Example (the converse defect: the enriched stamp is too fine).* On the
-`aUGb` automaton, `⟨ba⟩` and `⟨aba⟩` are distinct elements —
-`mk_{⟨ba⟩}(B) = {0}` while `mk_{⟨aba⟩}(B) = ∅` — though `ba ≈_L aba`: both
-are dead, and no context separates them. The next step quotients exactly this
-excess away.
+`aUGb` automaton, `⟨b⟩` and `⟨bb⟩` are distinct elements — the second `b`
+collects, read from the initial state, the mark the first has not yet
+reached: `mk_{⟨b⟩}(A) = ∅` while `mk_{⟨bb⟩}(A) = {0}` — though `b ≈_L bb`:
+membership in `aUGb` never counts `b`'s, and no context separates them
+(ids 1 and 3 of Ex. 1's table). The next step quotients exactly this excess
+away.
 
 ### 4.3 Step 2: the quotient, computed on the right
 
@@ -1109,8 +1113,7 @@ the **reset** presentation of Figure 2: the same two states, but each letter
 sends *every* state to one place, an aperiodic transition monoid. The two
 automata are not isomorphic, and their transition monoids disagree even on
 whether a group is present. Both runs return the invariant of Ex. 2, byte
-for byte: five classes, `9 → 5` against `6 → 5` *(counts to re-verify with
-the `|EM₊|` sizes above)*. The transposition was pure presentation, and
+for byte: five classes, `9 → 5` against `6 → 5`. The transposition was pure presentation, and
 Theorem 4.11's quotient is where it dies — while `Even` and `EvenBlocks`
 keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 
@@ -1198,33 +1201,44 @@ language. The invariant serializes to
 a file that *is* the language. `𝓘(GF(aa))`, in full:
 
 ```
-SOS
-alphabet: a b
-classes: 5
-0 a
-1 b
-2 a·a
-3 a·b
-4 b·a
-letters: a→0  b→1
-table:
-0: 2 3 2 2 0
-1: 4 1 2 1 4
-2: 2 2 2 2 2
-3: 0 3 2 3 0
-4: 2 1 2 2 4
+SOS v1
+ap: a
+classes: 6
+0 eps
+1 !a
+2 a
+3 !a;a
+4 a;!a
+5 a;a
+letters: !a->1 a->2
+mult:
+0: 0 1 2 3 4 5
+1: 1 1 3 3 1 5
+2: 2 4 5 2 5 5
+3: 3 1 5 3 5 5
+4: 4 4 2 2 4 5
+5: 5 5 5 5 5 5
 accept:
-2 2
+5 5
+residuals: 1
+0 eps
+res-step:
+0: 0 0
 ```
 
-Classes are listed by shortlex key; the row `c: …` of `table` gives `c·d`
-for `d` in key order; `accept` lists `P` — here the single pair
-`([a·a], [a·a])`. *(Block to re-verify by engineering against the tool
-export, under the `EM₊`/`b` conventions.)*
+The file is the tool's export, verbatim — the one place the paper keeps the
+raw letters: the alphabet is the single atom and its negation, `ap: a` with
+`!a` for the paper's `b`, and keys read `x;y` for `x·y`. Classes are listed
+by shortlex key, monoid convention: class `0 eps` is the adjoined `[ε]`, so
+`classes: 6` counts `|𝒞| = 5` plus the basepoint. The row `c: …` of `mult`
+gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
+`([a·a], [a·a])`, ids `5 5`. The trailing `residuals:` block is derived
+data — the right congruence, recomputable from the core, so byte equality is
+unaffected; its single class exhibits `GF(aa)`'s prefix-independence.
 
 The file decides lassos by Definition 3.5 with no further apparatus. For
-`(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 3 = [a·b]`, already idempotent
-(`3·3 = 3`); the empty stem gives `s = e = 3`; and `3 3` is not listed under
+`(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 4 = [a·b]`, already idempotent
+(`4·4 = 4`); the empty stem gives `s = e = 4`; and `4 4` is not listed under
 `accept`: rejected — no `aa` recurs.
 
 *Example (canonicity, in bytes).* The two non-isomorphic presentations of
@@ -1483,6 +1497,19 @@ congruence classes, edges are the letter-action table, and the letter map `λ`
 and the saturated set of accepting linked pairs `P` are listed beneath; the
 label `𝒞` abbreviates a self-loop carrying every class.
 
+**The construction table.** Each page closes on the table §4 builds from its
+`D`: every element of the enriched monoid `EM(D)` (Definition 4.2) — its
+state map `st` and collected marks `mk`, one slot per state of the drawing;
+its right multiplications by `b` then by `a` (`rmul`, as element ids) — and,
+in the last column, the class it folds onto in the quotient of §4.3. The
+tables are the construction tool's reports under a single mechanical rename,
+the paper's `b` for the tool's literal `!a` (the single-atom alphabet the
+formulas live over; only the serialized `.sos` of §6.1 keeps the raw
+letters). Everything else is verbatim, the tool's monoid convention
+included: counts are `|EM¹|` folding onto `|S(L)₊¹| = |𝒞| + 1`, identity
+included and printed `eps`; keys read `x;y` for the paper's `x·y`; ids
+enumerate in the tool's letter order, `b` before `a`.
+
 
 
 # Example 1 — `aUGb`
@@ -1520,6 +1547,30 @@ right-extended by anything is still `[b·a]`, so `𝒮(ababba) = [b·a]`. The
 queried stem is `s = 𝒮(u)·e = [b·a]·[b]`, and absorption simplifies it away:
 `s = [b·a]`. The name `([b·a], [b])` is not in `P`, so the lasso `ababba·b^ω`
 is not in the language.
+
+**Construction (§4).** The table §4 builds from this page's `D`: the enriched
+monoid, `|EM¹| = 7` elements folding onto `|S(L)₊¹| = 5` — the four classes
+above plus `[ε]`. The excess the quotient removes is two mark-only splits:
+`⟨b⟩ ≠ ⟨bb⟩` (ids 1, 3) and `⟨ab⟩ ≠ ⟨abb⟩` (ids 5, 6) differ solely in a
+mark collected along the way — membership in `aUGb` never counts `b`'s — and
+each pair folds to one class.
+
+| id | word | st | mk | rmul | → class |
+|---|---|---|---|---|---|
+| 0 | `eps` | [0 1 2] | [{} {} {}] | 1 2 | 0 `eps` |
+| 1 | `b` | [0 0 2] | [{0} {} {}] | 3 4 | 1 `b` |
+| 2 | `a` | [2 1 2] | [{0} {} {}] | 5 2 | 2 `a` |
+| 3 | `b;b` | [0 0 2] | [{0} {0} {}] | 3 4 | 1 `b` |
+| 4 | `b;a` | [2 2 2] | [{0} {0} {}] | 4 4 | 3 `b;a` |
+| 5 | `a;b` | [2 0 2] | [{0} {} {}] | 6 4 | 4 `a;b` |
+| 6 | `a;b;b` | [2 0 2] | [{0} {0} {}] | 6 4 | 4 `a;b` |
+
+Reading note: the tool takes the Büchi condition state-based, so the mark
+rides *every* edge leaving the accepting state — including the dead edge into
+the sink, which is why `mk_{⟨a⟩}` shows `{0}` at slot `0`; the drawing above
+paints the transition-based form, the mark on the `b`-loop only. The algebra
+is indifferent — a mark on a dead edge recurs on no run — and the invariant
+is byte-identical either way.
 
 
 # Example 2 — `GF(aa)`
@@ -1574,6 +1625,29 @@ The name `([a·a], [a·a])` is in `P`: accepted — an `aa` closes in every turn
 of the loop. Against it, `(ab)^ω`: the loop `𝒮(ab) = [a·b]` is idempotent,
 `s = [ε]·[a·b] = [a·b]`, and `([a·b], [a·b])` is not in `P`: rejected — the
 `a`'s stay isolated forever.
+
+**Construction (§4).** `|EM¹| = 10` elements folding onto `|S(L)₊¹| = 6` —
+the five classes above plus `[ε]`. The enrichment at work: `⟨a⟩` (id 2) and
+`⟨aaa⟩` (id 8) have the *same* state part — the transposition — and differ
+only in marks, the longer word having closed an `aa`; the transition monoid
+identifies them, the enrichment keeps them apart. The fold then does the
+reverse service: four "contains `aa`" behaviors (ids 5, 6, 8, 9), distinct
+as vectors, collapse onto the sink `[a·a]`, and `⟨aba⟩` (id 7) rejoins
+`[a]` — the `Z₂` visible in the `st` column is pure presentation, and §4.4
+is where it dies.
+
+| id | word | st | mk | rmul | → class |
+|---|---|---|---|---|---|
+| 0 | `eps` | [0 1] | [{} {}] | 1 2 | 0 `eps` |
+| 1 | `b` | [0 0] | [{} {}] | 1 3 | 1 `b` |
+| 2 | `a` | [1 0] | [{} {0}] | 4 5 | 2 `a` |
+| 3 | `b;a` | [1 1] | [{} {}] | 1 6 | 3 `b;a` |
+| 4 | `a;b` | [0 0] | [{} {0}] | 4 7 | 4 `a;b` |
+| 5 | `a;a` | [0 1] | [{0} {0}] | 6 8 | 5 `a;a` |
+| 6 | `b;a;a` | [0 0] | [{0} {0}] | 6 9 | 5 `a;a` |
+| 7 | `a;b;a` | [1 1] | [{} {0}] | 4 6 | 2 `a` |
+| 8 | `a;a;a` | [1 0] | [{0} {0}] | 6 5 | 5 `a;a` |
+| 9 | `b;a;a;a` | [1 1] | [{0} {0}] | 6 6 | 5 `a;a` |
 
 
 # Example 3 — `Even`
@@ -1633,6 +1707,27 @@ the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
 connected by a single rotation — and both in `P`, as saturation (§3.3)
 demands.
 
+**Construction (§4).** `|EM¹| = 7` elements folding onto `|S(L)₊¹| = 5` —
+the four classes above plus `[ε]`. The delicate row is `⟨aa⟩` (id 5): its
+state part is the *identity map* — two `a`'s return every state to itself —
+and only the mark collected at the accepting sink (slot `0`) keeps it apart
+from `⟨ε⟩` (id 0). The quotient keeps them apart too, as §3.1 demands:
+`[a·a]` is a neutral class of nonempty words — its row and column in `𝒞`'s
+table move nothing — while `[ε]` is the fresh basepoint: the
+neutral-vs-identity distinction of §3.1, exhibited by the machine. The fold
+itself merges the mark-only splits `⟨b⟩, ⟨bb⟩` (ids 1, 3) and `⟨ab⟩, ⟨abb⟩`
+(ids 4, 6).
+
+| id | word | st | mk | rmul | → class |
+|---|---|---|---|---|---|
+| 0 | `eps` | [0 1 2 3] | [{} {} {} {}] | 1 2 | 0 `eps` |
+| 1 | `b` | [0 3 0 3] | [{0} {} {} {}] | 3 3 | 1 `b` |
+| 2 | `a` | [0 2 1 3] | [{0} {} {} {}] | 4 5 | 2 `a` |
+| 3 | `b;b` | [0 3 0 3] | [{0} {} {0} {}] | 3 3 | 1 `b` |
+| 4 | `a;b` | [0 0 3 3] | [{0} {} {} {}] | 6 6 | 3 `a;b` |
+| 5 | `a;a` | [0 1 2 3] | [{0} {} {} {}] | 1 2 | 4 `a;a` |
+| 6 | `a;b;b` | [0 0 3 3] | [{0} {0} {} {}] | 6 6 | 3 `a;b` |
+
 
 # Example 4 — `EvenBlocks`
 
@@ -1691,6 +1786,36 @@ The stem, grouped `(aa)·(baab)` and reduced on each side before conjoining:
 `[a·a]·[b] = [b]`, so `𝒮(aabaab) = [b]`. The queried stem is
 `s = 𝒮(u)·e = [b]·[b] = [b]`, and the name `([b], [b])` is in `P`:
 accepted — every block the word completes is even, and `b`'s recur.
+
+**Construction (§4).** `|EM¹| = 16` elements folding onto `|S(L)₊¹| = 8` —
+the seven classes above plus `[ε]`. Here the identity row hosts *two*
+classes at once: `⟨aa⟩ = ⟨ε⟩` — two `a`'s toggle back and collect nothing —
+so id 0's fold column reads both `[ε]` and `[a·a]`, the collision §3.1's
+fresh basepoint is built for (and `EM₊(D)` is the whole monoid: nothing is
+spared, `|EM₊| = 16`). The language lives entirely in the marks: six
+elements (ids 7, 10, 11, 13–15), state maps and mark patterns all varying,
+are one behavior for `L` and fold onto the zero `[b·a·b]`. And unlike
+`GF(aa)`'s page, the parity `Z₂` *survives* the fold — `[a]·[a] = [a·a]`,
+`[a·a]·[a] = [a]` — this group is `L`'s own.
+
+| id | word | st | mk | rmul | → class |
+|---|---|---|---|---|---|
+| 0 | `eps` | [0 1] | [{} {}] | 1 2 | 0 `eps` / 5 `a;a` |
+| 1 | `b` | [0 0] | [{1} {0}] | 3 4 | 1 `b` |
+| 2 | `a` | [1 0] | [{} {}] | 5 0 | 2 `a` |
+| 3 | `b;b` | [0 0] | [{1} {0,1}] | 3 6 | 1 `b` |
+| 4 | `b;a` | [1 1] | [{1} {0}] | 7 1 | 3 `b;a` |
+| 5 | `a;b` | [0 0] | [{0} {1}] | 8 9 | 4 `a;b` |
+| 6 | `b;b;a` | [1 1] | [{1} {0,1}] | 10 3 | 3 `b;a` |
+| 7 | `b;a;b` | [0 0] | [{0,1} {0}] | 10 11 | 6 `b;a;b` |
+| 8 | `a;b;b` | [0 0] | [{0,1} {1}] | 8 12 | 4 `a;b` |
+| 9 | `a;b;a` | [1 1] | [{0} {1}] | 13 5 | 7 `a;b;a` |
+| 10 | `b;b;a;b` | [0 0] | [{0,1} {0,1}] | 10 14 | 6 `b;a;b` |
+| 11 | `b;a;b;a` | [1 1] | [{0,1} {0}] | 7 7 | 6 `b;a;b` |
+| 12 | `a;b;b;a` | [1 1] | [{0,1} {1}] | 10 8 | 7 `a;b;a` |
+| 13 | `a;b;a;b` | [0 0] | [{0} {0,1}] | 10 15 | 6 `b;a;b` |
+| 14 | `b;b;a;b;a` | [1 1] | [{0,1} {0,1}] | 10 10 | 6 `b;a;b` |
+| 15 | `a;b;a;b;a` | [1 1] | [{0} {0,1}] | 13 13 | 6 `b;a;b` |
 
 
 ## References
