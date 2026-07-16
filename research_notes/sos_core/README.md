@@ -10,7 +10,7 @@ into the single-file paper [`../sos_core.md`](../sos_core.md) — that file is a
 
 | File | Content | Status |
 |---|---|---|
-| [`s0_front.md`](s0_front.md) | title, abstract, §1 introduction | abstract + intro bullets |
+| [`s0_front.md`](s0_front.md) | title, abstract, §1 introduction | drafted prose |
 | [`s2_background.md`](s2_background.md) | §2 background | drafted prose |
 | [`s3_invariant.md`](s3_invariant.md) | §3 the invariant `𝓘 = ⟨𝒮, P⟩` | drafted prose |
 | [`s4_construction.md`](s4_construction.md) | §4 construction from an automaton | drafted prose — review pending; `EM₊` counts to re-verify |
