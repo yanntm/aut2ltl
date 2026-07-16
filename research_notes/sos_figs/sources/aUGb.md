@@ -10,7 +10,7 @@ Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` =
 
 ## aUGb
 
-*Input:* `../research_notes/sos_figs/sources/aUGb.hoa`
+*Input:* `research_notes/sos_figs/sources/aUGb.hoa`
 
 ### Deterministic form `D`
 
