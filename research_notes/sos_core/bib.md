@@ -34,11 +34,11 @@ restructure. Entries marked (†) are not cited by any drafted section
   thesis, UCLA, 1968.
 - **[Kla94]** (†) N. Klarlund. *A homomorphism concept for ω-regularity.*
   CSL 1994.
-- **[Lan69]** (†) L. H. Landweber. *Decision problems for ω-automata.* Math.
+- **[Lan69]** L. H. Landweber. *Decision problems for ω-automata.* Math.
   Systems Theory 3(4) (1969) 376–384.
 - **[MP71]** (†) R. McNaughton, S. Papert. *Counter-Free Automata.* MIT
   Press, 1971.
-- **[MP92]** (†) Z. Manna, A. Pnueli. *The Temporal Logic of Reactive and
+- **[MP92]** Z. Manna, A. Pnueli. *The Temporal Logic of Reactive and
   Concurrent Systems: Specification.* Springer, 1992.
 - **[MS97]** O. Maler, L. Staiger. *On syntactic congruences for
   ω-languages.* TCS 183 (1997) 93–112 (rev. 2008).
@@ -58,7 +58,7 @@ restructure. Entries marked (†) are not cited by any drafted section
   properties of regular ω-languages.* Fund. Inform. 83(1–2) (2008).
 - **[Tho79]** W. Thomas. *Star-free regular sets of ω-sequences.*
   Information and Control 42 (1979) 148–156.
-- **[Wag79]** (†) K. Wagner. *On ω-regular sets.* Information and Control 43
+- **[Wag79]** K. Wagner. *On ω-regular sets.* Information and Control 43
   (1979) 123–177.
 - **[Wilke99]** T. Wilke. *Classifying discrete temporal properties.*
   STACS 1999, LNCS 1563, 32–46.
