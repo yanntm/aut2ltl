@@ -1532,7 +1532,8 @@ of the loop. Against it, `(ab)^ω`: the loop `𝒮(ab) = [a·b]` is idempotent,
 `[a]` is the class of words that have seen only an odd number of `a`'s (and no
 `b` yet); `[a·a]` the class of words that have seen only an even — and
 nonzero — number of `a`'s, again with no `b` yet. Reading one more `a` flips
-the parity, so `[a]` and `[a·a]` form a small strongly connected component —
+the parity, so `[a]` and `[a·a]` form a small strongly connected component
+(SCC) —
 the parity counter. We leave it only by reading a `b`. The counter is a
 genuine period-2 power cycle — `[a]·[a] = [a·a]`, `[a·a]·[a] = [a]` — a
 group: the LTL row's *no*, read off the drawing.
@@ -1587,9 +1588,9 @@ demands.
 | Invariant `𝓘` | ![EvenBlocks invariant](sos_core_figs/img/core_F3_evenblocks_pairs.png) |
 
 As in `Even`, `[a]` and `[a·a]` are the classes of words that have seen only
-`a`'s, in odd and even count — the same parity component, the same period-2
+`a`'s, in odd and even count — the same parity SCC, the same period-2
 power cycle (`[a]·[a] = [a·a]`, `[a·a]·[a] = [a]`): a genuine group, and the
-LTL row's *no*, read off the drawing. A `b` exits the component:
+LTL row's *no*, read off the drawing. A `b` exits the SCC:
 from an even count to `[b]`, from an odd count to `[a·b]` — but unlike
 `Even`, where the first `b` settled everything, no exit is final here.
 
