@@ -5,7 +5,9 @@
 | Language (informal) | "a finitely until always b" |
 | ω-regular | `a*·b^ω` |
 | LTL | `a U G !a` |
-| Classification | LTL: **yes** (stutter insensitive) — Wagner degree `(2, σ)` |
+| LTL | **yes** — stutter insensitive |
+| Geometry | obligation, properly level 2: a Boolean combination of safety and guarantee, no single one suffices |
+| Recognizer | weak deterministic — one automaton serves as both DBA and DCA |
 | Det. Emerson–Lei `D` | ![aUGb automaton](../sos_figs/img/aUGb.png) |
 | Invariant `𝓘` | ![aUGb invariant](../sos_core_figs/img/core_F0_astar_bomega_b_pairs.png) |
 
@@ -18,7 +20,7 @@ Acceptance is in two pairs: `([b], [b])` representing the word `b^ω`, and
 `([a·b], [b])` the words of the form `a⁺·b^ω`. Note that these are classes:
 `([a·b], [b])` represents `a·b^ω`, `ab·b^ω`, `aabbb·b^ω`, `ab·bbb^ω`, …
 
-The Classification row is a read-off of the drawing: every power sequence
+The LTL row is a read-off of the drawing: every power sequence
 settles with period 1 — `[a]`, `[b]`, `[b·a]` are idempotent, and `[a·b]`
 falls onto the idempotent `[b·a]` in one step — so the invariant is
 aperiodic: LTL.

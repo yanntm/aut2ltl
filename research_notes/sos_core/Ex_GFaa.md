@@ -5,7 +5,9 @@
 | Language (informal) | "infinitely many aa : an a followed by an a." |
 | ω-regular | `((a\|b)*·a·a)^ω` |
 | LTL | `G F(a ∧ X a)` |
-| Classification | LTL: **yes** (stutter sensitive) — Wagner degree `(ω, σ)` |
+| LTL | **yes** — stutter sensitive |
+| Geometry | recurrence, properly `Gδ`: strictly above every obligation |
+| Recognizer | DBA-proper — deterministic Büchi suffices, no deterministic co-Büchi can |
 | Det. Emerson–Lei `D` | ![GF(aa) run-parity automaton](../sos_figs/img/gf_aa.png) |
 | Invariant `𝓘` | ![GF(aa) invariant](../sos_core_figs/img/core_F1_gf_aa_pairs.png) |
 
@@ -20,7 +22,7 @@ counter: the trip around it multiplies by `[b]` then by `[a]`, two different
 classes, and no single class powers around it — `[a·b]·[a·b] = [a·b]`, while
 `[a]·[a] = [a·a]` leaves. Every power sequence settles with period 1 (though
 only at exponent 2: `[a]` needs one step to stabilize), so the invariant is
-aperiodic — the Classification row's LTL verdict, read off the drawing.
+aperiodic — the LTL row's verdict, read off the drawing.
 
 `[a·a]` is the class of all words that contain at least one block of two
 consecutive `a`'s. It is a sink: once two `a`'s in a row have been seen the

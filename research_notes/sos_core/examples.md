@@ -4,10 +4,21 @@ The paper's four running languages, numbered Ex. 1–4 and cited that way from
 the prose, each presented on its own page along the same axes: an
 **informal** description, its **ω-regular** word over the two
 letters `{a, b}`, its **formula** (LTL, or PSL/SERE where mod-2 counting takes it
-out of LTL), a **classification** — two facts read off `𝓘` and stated without
-justification: LTL-definability (§6.2) and the Wagner degree (§8) — its
-deterministic **Emerson–Lei automaton** `D` (the input of §4),
-and its syntactic **invariant** `𝓘` (§3). The pages are transverse to the
+out of LTL), a **classification** block, its deterministic **Emerson–Lei
+automaton** `D` (the input of §4), and its syntactic **invariant** `𝓘` (§3).
+
+**The classification block.** Three verdicts head each page — facts about a
+language that are usually hard to come by, here tool-computed from the page's
+invariant; the procedures are out of scope of this paper. *LTL*:
+definability in linear temporal logic, with its stutter sensitivity.
+*Geometry*: the
+rung on the safety–progress ladder of Manna and Pnueli [MP92] — safety,
+guarantee, obligation, recurrence, persistence, reactivity — the coarse view
+of Wagner's hierarchy [Wag79]; `properly` marks an exact position.
+*Recognizer*: the weakest deterministic acceptance recognizing the language,
+tied to the geometry by Landweber's theorem [Lan69] — DBA / DCA abbreviate
+deterministic Büchi / co-Büchi automata, accepting when marked transitions
+recur / eventually cease. The pages are transverse to the
 paper — self-contained, meant to be read at leisure. The formulas live over the single atom
 `a`, so the second letter is the literal `!a`; **throughout this paper the
 LTL/PSL forms are read with `b` in place of `!a`.**

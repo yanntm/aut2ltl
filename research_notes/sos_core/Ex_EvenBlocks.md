@@ -5,14 +5,16 @@
 | Language (informal) | "Infinitely often b, and all sequences of a are eventually even in length" |
 | ω-regular | `(a\|b)*·((aa)*·b)^ω` |
 | PSL/SERE | `GF!a ∧ FG(!a → X{ {a[*2]}[*] ; !a }!)` |
-| Classification | LTL: **no** — Wagner degree `(ω², σ)` |
+| LTL | **no** |
+| Geometry | reactivity: strictly above recurrence and persistence |
+| Recognizer | parity `{0,1,2}`, proper — a genuine Rabin pair; neither DBA nor DCA |
 | Det. Emerson–Lei `D` | ![EvenBlocks automaton](../sos_figs/img/evenblocks.png) |
 | Invariant `𝓘` | ![EvenBlocks invariant](../sos_core_figs/img/core_F3_evenblocks_pairs.png) |
 
 As in `Even`, `[a]` and `[a·a]` are the classes of words that have seen only
 `a`'s, in odd and even count — the same parity SCC, the same period-2 power
 cycle (`[a]·[a] = [a·a]`, `[a·a]·[a] = [a]`): a genuine group, and the
-Classification row's *not LTL*, read off the drawing. A `b` exits the SCC:
+LTL row's *no*, read off the drawing. A `b` exits the SCC:
 from an even count to `[b]`, from an odd count to `[a·b]` — but unlike
 `Even`, where the first `b` settled everything, no exit is final here.
 

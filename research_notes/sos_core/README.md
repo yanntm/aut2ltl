@@ -38,10 +38,13 @@ invariant `𝓘`) plus reading prose:
 | [`Ex_Even.md`](Ex_Even.md) | `(aa)*·b·(a\|b)^ω` | PSL/SERE `{ {a[*2]}[*] ; !a }!` | done |
 | [`Ex_EvenBlocks.md`](Ex_EvenBlocks.md) | `(a\|b)*·((aa)*·b)^ω` | PSL/SERE `GF!a ∧ FG(…)` | done |
 
-Each page carries a `Classification` row — LTL-definability and Wagner
-degree, stated as fact. Values computed 2026-07-16 by `sosl.sos.classify` on
+Each page opens on a classification block — three rows: LTL (+ stutter),
+Geometry (MP92 ladder rung), Recognizer (weakest deterministic acceptance) —
+stated as fact, friendly wording. Values computed 2026-07-16 by
+`sosl.sos.classify` on
 [`../sos_core_figs/sources/`](../sos_core_figs/sources/)`*.sos`; the `.cat`
-sidecars committed beside them are the trace.
+sidecars committed beside them are the trace (exact Wagner degrees included —
+kept out of the paper boxes).
 
 ## Conventions
 

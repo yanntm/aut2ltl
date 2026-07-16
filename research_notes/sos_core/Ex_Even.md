@@ -5,7 +5,9 @@
 | Language (informal) | "even number of a's met when first b encountered" |
 | ω-regular | `(aa)*·b·(a\|b)^ω` |
 | PSL/SERE | `{ {a[*2]}[*] ; !a }!` |
-| Classification | LTL: **no** — Wagner degree `(1, σ)` |
+| LTL | **no** |
+| Geometry | guarantee, properly open: a good finite prefix decides |
+| Recognizer | reachability — an accepting sink to reach, the weakest acceptance there is |
 | Det. Emerson–Lei `D` | ![Even automaton](../sos_figs/img/even.png) |
 | Invariant `𝓘` | ![Even invariant](../sos_core_figs/img/core_F2_even_pairs.png) |
 
@@ -15,7 +17,7 @@ nonzero — number of `a`'s, again with no `b` yet. Reading one more `a` flips
 the parity, so `[a]` and `[a·a]` form a small strongly connected component —
 the parity counter. We leave it only by reading a `b`. The counter is a
 genuine period-2 power cycle — `[a]·[a] = [a·a]`, `[a·a]·[a] = [a]` — a
-group: the Classification row's *not LTL*, read off the drawing.
+group: the LTL row's *no*, read off the drawing.
 
 Where the `b` lands us records the parity at that moment. From `[a]`, an odd
 count, we go to `[a·b]`: the class of all words with an odd number of `a`'s
