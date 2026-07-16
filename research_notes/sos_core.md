@@ -978,31 +978,308 @@ size itself is the subject of §5.
 
 ## 5. Complexity
 
-*Placeholder.* Split the two costs: the invariant is quadratic in `|C|`; the
-construction path through `EM₊(D)` is exponential in `|Q|` worst case. `|C|`
-is a language invariant — the intrinsic complexity of `L`. BDD-friendliness
-note.
+Two costs must be kept apart: building the invariant from an automaton, and
+using it once built.
+
+**Building.** The construction is dominated by the size of the enriched
+semigroup: an enriched element is a vector of `|Q|` slots over the local
+domain `Q × 2^Γ` (Definition 4.2), so
+
+```
+    |EM₊(D)| ≤ (|Q|·2^{|Γ|})^{|Q|},
+```
+
+and the `|Q|` in the exponent is the source of the explosion. That a wall
+sits somewhere is a mathematical necessity, not an engineering apology:
+deciding aperiodicity of a regular ω-language — the LTL read-off of §6 — is
+PSPACE-complete, with hardness transferred from finite-word minimal-DFA
+aperiodicity [CH91] and the ω upper bound from [DG08, Prop. 12.3]; the
+surrounding classifications are no cheaper. Everything around the enriched
+semigroup is benign by contrast: each generator acts slot-wise; the seed `R`
+— residual equality of reached states, one loop verdict per slot — and the
+Moore refinement of §4.4 run in time polynomial in `|EM₊(D)|` and `|Q|`; and
+`P(D)` is one lasso test per linked pair. The cost is entirely the size of
+`EM₊(D)`, and that size is intrinsic to the problem, not to the construction.
+
+**Using.** Once built, the sizes change meaning: `|𝒞|` is a function of `L`
+alone (Theorem 4.11) — the intrinsic complexity of the language, the
+ω-analogue of the syntactic monoid's size — where `|Q|` and `|EM₊(D)|` were
+functions of a presentation. The serialized invariant is `O(|𝒞|²)` table
+entries plus a pair set `P ⊆ 𝒞 × 𝒞`, and every operation of §6 is a scan of
+that table. The presentation debt — determinization [Saf88], then `EM₊(D)` —
+is paid once, at entry; nothing downstream ever revisits the automaton.
+
+**Symbolic prospects.** On a more optimistic note, every object and operation
+here is BDD-friendly and the redundancy is high, so a symbolic approach is
+likely to alleviate much of this inherent complexity. The ingredients are all
+Boolean — the alphabet `2^AP`, the mark sets over `Γ`, the positive-Boolean
+`Acc` — and every step is a set operation, not an arithmetic one: closing
+`EM₊(D)` under composition, the two right relations of §4.3, and the
+partition refinement of §4.4 are all images, fixpoints, and quotients over
+sets, native to decision diagrams.
+
 
 ## 6. What the invariant unlocks
 
-*Placeholder.* Identity band near-free from the semantics (byte equality,
-complement `P ↦ P^c` within the linked pairs, emptiness, membership by one
-query); flagship read-off: LTL-definability = aperiodicity of `C`; condensed
-taxonomy table; the proxy suggestion (language-level pipeline steps can
-consume the invariant instead of an automaton) — points at Part B.
+The invariant was built to be used. This section reads decisions off the
+finished table: first the band of identity questions the semantics answers
+nearly for free, then the definability frontier. Throughout, an invariant is
+handled through its finite presentation `(𝒞, λ, ·, P)` under shortlex keys —
+the serialized form the byte-equality remark of §3.3 announced.
+
+### 6.1 The exportable object and the identity band
+
+What the field exchanges today is a presentation — an automaton in HOA
+format, one machine among many for its language. The invariant serializes to
+a file that *is* the language. `𝓘(GF(aa))`, in full:
+
+```
+SOS
+alphabet: a b
+classes: 5
+0 a
+1 b
+2 a·a
+3 a·b
+4 b·a
+letters: a→0  b→1
+table:
+0: 2 3 2 2 0
+1: 4 1 2 1 4
+2: 2 2 2 2 2
+3: 0 3 2 3 0
+4: 2 1 2 2 4
+accept:
+2 2
+```
+
+Classes are listed by shortlex key; the row `c: …` of `table` gives `c·d`
+for `d` in key order; `accept` lists `P` — here the single pair
+`([a·a], [a·a])`. *(Block to re-verify by engineering against the tool
+export, under the `EM₊`/`b` conventions.)*
+
+The file decides lassos by Definition 3.5 with no further apparatus. For
+`(a·b)^ω`: the loop folds to class `3 = [a·b]`, already idempotent
+(`3·3 = 3`); the empty stem gives `s = e = 3`; and `3 3` is not listed under
+`accept`: rejected — no `aa` recurs.
+
+*Example (canonicity, in bytes).* The two non-isomorphic presentations of
+`GF(aa)` in §4.4 — run-parity and reset — both construct exactly this file.
+Language equality of the two inputs is not tested; it is exhibited: one
+language, one file.
+
+**Proposition 6.1 (the identity band).** Let `𝓘(L) = ⟨𝒮, P⟩` and `𝓘(L')` be
+syntactic invariants over `Σ`, serialized under shortlex keys. Then:
+
+(i) *(equality)* `L = L'` iff the two serializations are byte-identical;
+
+(ii) *(membership)* `u·v^ω ∈ L` is decided by one fold through `λ` and the
+table and one lookup in `P` (Definition 3.5);
+
+(iii) *(emptiness, universality)* `L = ∅` iff `P = ∅`, and `L = Σ^ω` iff `P`
+is the set of all linked pairs of `𝒮`;
+
+(iv) *(witness)* every `(s, e) ∈ P` yields, from its keys, the canonical
+lasso `u_s·(u_e)^ω ∈ L`.
+
+*Proof.* (i) is Theorem 3.10(ii) with the byte-equality remark: the unique
+isomorphism is the identity on shortlex names. (ii) is Definition 3.5, whose
+verdict is presentation-independent by Theorem 3.10(i). (iii): every linked
+pair names a lasso — pick `u ∈ s`, `v ∈ e` by surjectivity: `𝒮(v)^π = e` and
+`𝒮(u)·e = s` — so `P = ∅` accepts no lasso and `P` full accepts them all;
+two regular ω-languages agreeing on all lassos are equal
+[PP04, Ch. I, Cor. 9.8], here to `∅` and to `Σ^ω` respectively. (iv): the
+presentation `(u_s, u_e)` lands on `(s, e)` — the keys are nonempty,
+`𝒮(u_e) = e` is idempotent so `e^π = e`, and `𝒮(u_s)·e = s·e = s` — and
+`(s, e) ∈ P` accepts it. ∎
+
+**Proposition 6.2 (complement).** `𝓘(L̄) = ⟨𝒮_L, LP(𝒮_L) ∖ P(L)⟩`, writing
+`LP(𝒮)` for the set of all linked pairs of a stamp: the complement shares
+the stamp — classes, keys, letter map, table — and flips the pair set within
+the linked pairs.
+
+*Proof.* Both context shapes of Definition 3.7 are membership equivalences,
+symmetric in `L` and `L̄`, so `≈_L = ≈_{L̄}` and the syntactic stamps
+coincide, keys included. Every linked pair names at least one lasso (proof
+of 6.1(iii)), and all lassos sharing a name share one verdict
+(Theorem 3.10(i)): the names split, `P(L)` holding those whose lassos lie in
+`L`, and the remaining linked pairs are exactly the names of the lassos of
+`L̄` — that is, `P(L̄)`. ∎
+
+*Remark (what the flip is, and is not).* On our deterministic Emerson–Lei
+input, complementation is already cheap — dualize `Acc` on the same `D` — so
+the flip claims no speedup over the input format; the expensive contrast
+(`2^{Θ(n log n)}` for nondeterministic Büchi [Saf88]) belongs to
+nondeterminism. The gain is the target: the flipped invariant is *already
+canonical* — it is `𝓘(L̄)` itself, no re-canonicalization — and it makes a
+structural fact plain: `L` and `L̄` share their entire algebra, and `P`
+alone tells them apart. Equality is where the band has no automaton-level
+rival: deciding `L(D) = L(D')` on presentations is a PSPACE problem, while a
+corpus of serialized invariants deduplicates by hashing — equal languages,
+identical bytes.
+
+### 6.2 The LTL frontier
+
+**Theorem 6.3 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
+LTL-definable iff `𝒞_L` is **aperiodic**: no class has a power cycle of
+period `≥ 2` — equivalently, `c^π·c = c^π` for every `c ∈ 𝒞_L`.
+
+The chain is LTL `=` FO[<] `=` star-free `=` aperiodic syntactic algebra
+[Kam68, Tho79, DG08], the ω-transport of Schützenberger's theorem [Sch65];
+see [DG08] for the consolidated account. What this paper adds is not the
+theorem but the object it reads:
+
+**Corollary 6.4 (the decision).** On the constructed invariant `𝓘(D)`,
+LTL-definability of `L(D)` is decided by finitely many table products —
+compute `c^π` for each class, test `c^π·c = c^π` — and the verdict is exact
+in both directions, whatever `D` presented the language, because
+`𝓘(D) = 𝓘(L)` (Theorem 4.11). ∎
+
+Canonicity is what the exactness rests on. On a non-canonical recognizer
+only one direction survives: aperiodicity of `EM₊(D)` — or of the transition
+monoid — is inherited by the quotient and thus *sufficient* for LTL, but a
+group there proves nothing, since it can be pure presentation
+(Proposition 4.5's one-state witness; `GF(aa)`'s transposition, which §4.4
+kills). On the four examples: `aUGb` — `[a·b]` falls to the idempotent
+`[b·a]` in one step, every power cycle has period 1: LTL. `GF(aa)` — the
+`Z₂` of its presentation died in the quotient, all five classes settle with
+period 1: LTL. `Even` and `EvenBlocks` — `[a]·[a] = [a·a]` and
+`[a·a]·[a] = [a]`, a power cycle of period 2: a genuine group, not LTL, and
+the invariant's verdict certifies it.
+
+**A practical instance.** PSL/SERE (IEEE 1850) properly extends LTL and is
+the specification idiom of hardware verification; the mod-2 counting that
+takes a written property out of LTL lives *syntactically* in an even
+repetition `{·}[*2]`. "Is this PSL property actually LTL?" — simpler, far
+better tool-supported — is asked with no tool to answer it; it is exactly
+the table check above, and `Even` and `EvenBlocks` are its minimal
+witnesses.
+
 
 ## 7. Related work
 
-*Placeholder.* One positioning sentence per item: Arnold (the congruence),
-MS97 (the display), CPP08 (the recognizer, saturation over triples), PP04
-(the algebraic frame), PS05 (stamps), Wilke, DG08, AF16/AF21/ABF18 (the
-learning obstruction the rotation lemma addresses).
+**Arnold [Arn85].** The syntactic congruence is his: the coarsest congruence
+saturating a rational ω-language, of finite index, with a recognizing
+quotient — three pages from 1985, and the canonicity §3.3 inherits. What the
+note does not contain is a construction: no acceptor input, no algorithm —
+and forty years without either.
 
-## 8. Conclusion
+**Perrin–Pin [PP04]; Wilke.** The algebraic frame — ω-semigroups, linked
+pairs, the lasso-density fact this paper leans on throughout — is theirs.
+Wilke's axiomatization carries the identity `s·(ts)^ω = (st)^ω`; our
+rotation identity `c·(dc)^π = (cd)^π·c` is its finite shadow (§3.3),
+redeployed as a computation scheme rather than an axiom.
 
-*Placeholder.* Both missing structural pieces supplied; `⟨𝒮, P⟩` is the
-deliverable; the rotation lemma stands alone as the mathematical core; the
-companion papers consume the object.
+**Maler–Staiger [MS97].** They display the syntactic congruence as a
+finitary × infinitary conjunction; at the single slot `ι` the finitary half
+is the classical right congruence. No quotient is computed, and the
+infinitary half still quantifies a two-sided context inside the loop.
+§4.3's two relations are that split made right-only, and the rotation lemma
+is the step the display lacks.
+
+**Carton–Perrin–Pin [CPP08].** A recognizer that sees acceptance — Boolean
+transition matrices recording path existence and accepting visits — with the
+syntactic quotient reached by saturation over context triples: an example,
+not a procedure. The enriched stamp plays their matrices' role on
+deterministic Emerson–Lei input; the rotation lemma replaces the saturation.
+
+**Pin–Straubing [PS05].** Stamps: comparing surjective morphisms rather than
+abstract semigroups, the reason the letter map is data (§3.1). We transpose
+the notion from `Σ*` to `Σ⁺`, where the ω-theory lives.
+
+**Diekert–Gastin [DG08].** The consolidated star-free/aperiodic account, and
+the PSPACE aperiodicity argument [DG08, Prop. 12.3] — a nondeterministic
+on-the-fly bound that emits no algebra and no evidence. The construction
+here is its evidence-producing counterpart, at the same worst-case price
+(§5); their formula-extraction induction is the path §8 names for rendering.
+
+**Learning [AF16, ABF18, AF21].** The recorded obstruction: the right
+congruence alone does not characterize an ω-regular language — LTL languages
+with a trivial right congruence exist [AF21] — so the field learns families
+of DFAs [AF16, ABF18], presentation-dependent acceptors. The rotation lemma
+reads the two-sided congruence from right extensions at prefix-indexed
+slots — observation-table shaped (§8).
+
+## 8. Perspectives
+
+The point of an archetype is what it makes routine. Each direction below
+opens on the invariant — the language itself in hand — where the
+automaton-level literature left it closed or presentation-bound; each is one
+claim, not a development.
+
+**Classification beyond the LTL cut.** The acceptance index — Büchi,
+co-Büchi, parity `[i, j]`, Rabin — and, subsuming it, the exact Wagner
+degree are chain and superchain structure of the syntactic algebra
+[CP97, CP99]: data the table carries, computable on it. The finer
+first-order fragments (FO², Σ₂, until rank) likewise pair a variety
+condition on `𝒞` with a topological side condition [DK09, Wilke99].
+
+**Rendering the algebra as a formula.** On the aperiodic side, a defining
+LTL formula is reachable in principle from the algebra by the
+Diekert–Gastin induction [DG08]. Starting from automata, the state of the
+art translates counter-free automata only [BLS22], with no route from an
+arbitrary presentation — nor, without the algebra, a practical way to decide
+eligibility in the first place (§6.2).
+
+**Operating on invariants.** Equality and complement (§6.1) are the
+degenerate cases of a calculus: align two stamps over one common table — the
+one product-priced move — and Boolean combinations of languages become
+pointwise operations on pair sets, re-canonicalized by the quotient of §4.3.
+The costs concentrate where they must: the ω-rational constructors
+(prefixing by a word set, ω-power) and alphabet surgery such as projection
+embed powersets — determinization's price resurfacing exactly there, and
+only there.
+
+**A census of small languages.** Byte-canonicity makes the small ω-regular
+*languages* enumerable: catalogued by `|𝒞|`, one item each, two items
+distinct iff their files differ — where existing censuses enumerate
+machines and meet each language once per presentation. A reference atlas of
+the small languages, deduplicated by the invariant, becomes a well-defined
+object of study.
+
+**Learning the algebra.** The rotation lemma is an observation-table
+discipline: every two-sided demand of the congruence is met by right
+extensions read at prefix-indexed slots (Lemma 4.8) — rows and columns, the
+shape MAT learning consumes. Learning the syntactic ω-semigroup itself from
+membership queries on lassos therefore looks feasible — where [AF21] records
+the obstruction for right congruences and the field learns
+presentation-dependent families of acceptors instead [AF16, ABF18].
+
+**One level down: finite words.** Run on a complete DFA — final states in
+place of marks — the construction degenerates to the classical syntactic
+monoid: the enrichment is vacuous, the ω-power shape disappears with the
+ω-words it quantified over, and the seed is already the congruence — no
+rotation, no refinement. The degenerate case landing on the known answer
+audits the machinery; and the same aperiodicity check of §6.2 then decides
+LTLf-definability [DV13], one level down, where the same tooling gap stands.
+
+## 9. Conclusion
+
+For finite words, the syntactic monoid has carried the algebraic theory of
+regular languages for sixty years: one finite algebra per language,
+canonical, and everything readable from it. For infinite words the analogous
+object — the syntactic ω-semigroup of Arnold — has existed since 1985 on
+paper only.
+
+The obstruction was never size alone; it was structure. A recognizer for
+infinite behaviour must remember acceptance along runs, not endpoints — that
+is the enrichment. And the syntactic congruence is two-sided, while
+everything a finite table offers for free is right-handed — that is the
+rotation lemma: a left context carries no information of its own, it only
+moves the point where a right test is read. The lemma is the mathematical
+core of the paper, and it stands on its own.
+
+What a canonical form changes is the unit of discourse. Automata are
+presentations: every pipeline that manipulates them manipulates a choice,
+and anything read off them must first be argued independent of that choice.
+The invariant is the language: equality is identity of two files, complement
+flips a set of pairs, membership is a table walk, LTL-definability is the
+absence of a group — and the classical taxonomy of ω-regular languages turns
+into structural facts about one finite object. Beyond verdicts, an object in
+hand invites operation — computing with languages, cataloguing them,
+learning them — directions that were closed at the level of presentations.
+The construction of this paper reifies Arnold's phantom: the syntactic
+ω-semigroup is no longer only defined — it is built.
 
 
 # Worked examples
@@ -1067,11 +1344,12 @@ represented by `ababba·b^ω` is not in the language.
 recently seen a `b`, and so far contain only isolated `a`'s — no block of two.
 These two classes cycle: extending `[a·b]` by `[a]` returns to `[a]`
 (`[a·b]·[a] = [a]`, forgetting that `b`'s were ever seen), and `[a]·[b] = [a·b]`
-goes back. This length-2 cycle is a counter of period 2 in the graph, and it is
-why the language is not LTL.
+goes back. Note that this length-2 cycle is not a *counter* of period 2 since 
+to and from edges do not carry the same classes. This language is indeed aperiodic (with p > 1)
+hence LTL.
 
 `[a·a]` is the class of all words that contain at least one block of two
-consecutive `a`'s. It is a sink: once two `a`'s in a row have been seen the word
+consecutive `a`'s. It is a sink: once two `a`'s in a row have been seen the stamp classifier
 is content, and any further extension is absorbed and stays in `[a·a]`. A word
 starting with `a` reaches it either from `[a]` or from `[a·b]`, as soon as an
 `a` lands next to another `a`.
@@ -1110,7 +1388,7 @@ extension stays in the same class. From `[a·a]`, an even count, we go to `[b]`.
 
 `[b]` is the most subtle class to interpret. It coalesces not only `b⁺`, as in
 the earlier figures, but also any even number of `a`'s followed by at least one
-`b`. Once `[b]` is reached the recognizer is content, and `[b]` accepts any
+`b`. Once `[b]` is reached the stamp classifier is content, and `[b]` absorbs any
 suffix.
 
 Acceptance therefore fixes the stem to `[b]`: an even number of `a`'s until a
@@ -1165,10 +1443,9 @@ accepted.
 ## References
 
 *Imported from the legacy `../sos_constructed.md` bibliography (which carries
-page data from the read library), plus [PS05] added by this restructure.
-Entries marked (†) are not cited by the currently drafted sections (s0–s3);
-they back the §5/§6/§7 material still in placeholder form — prune when those
-sections are written. [DV13] is tied to the parked LTLf specialization.*
+page data from the read library), plus [PS05] and [BLS22] added by this
+restructure. Entries marked (†) are not cited by any drafted section
+(s0–s7) — prune at freeze.*
 
 - **[ABF18]** D. Angluin, U. Boker, D. Fisman. *Families of DFAs as acceptors
   of ω-regular languages.* LMCS 14(1) 2018.
@@ -1178,22 +1455,24 @@ sections are written. [DV13] is tied to the parked LTLf specialization.*
   right congruence.* Inf. Comput. 278 (2021).
 - **[Arn85]** A. Arnold. *A syntactic congruence for rational ω-languages.*
   TCS 39 (1985) 333–335.
-- **[CH91]** (†) S. Cho, D. T. Huynh. *Finite-automaton aperiodicity is
+- **[BLS22]** U. Boker, K. Lehtinen, S. Sickert. *On the translation of
+  automata to linear temporal logic.* FoSSaCS 2022, LNCS 13242, 140–160.
+- **[CH91]** S. Cho, D. T. Huynh. *Finite-automaton aperiodicity is
   PSPACE-complete.* TCS 88 (1991) 99–116.
 - **[CP97]** O. Carton, D. Perrin. *Chains and superchains for ω-rational
   sets, automata and semigroups.* Int. J. Algebra Comput. 7(6) (1997) 673–695.
-- **[CP99]** (†) O. Carton, D. Perrin. *The Wagner hierarchy.* Int. J. Algebra
+- **[CP99]** O. Carton, D. Perrin. *The Wagner hierarchy.* Int. J. Algebra
   Comput. 9(5) (1999) 597–620.
 - **[CPP08]** O. Carton, D. Perrin, J.-É. Pin. *Automata and semigroups
   recognizing infinite words.* In *Logic and Automata: History and
   Perspectives*, Amsterdam University Press, 2008.
 - **[DG08]** V. Diekert, P. Gastin. *First-order definable languages.* In
   *Logic and Automata*, 2008.
-- **[DK09]** (†) V. Diekert, M. Kufleitner. *Fragments of first-order logic
+- **[DK09]** V. Diekert, M. Kufleitner. *Fragments of first-order logic
   over infinite words.* STACS 2009; Theory Comput. Syst. 48(3) (2011) 486–516.
-- **[DV13]** (†, parked) G. De Giacomo, M. Y. Vardi. *Linear temporal logic
+- **[DV13]** G. De Giacomo, M. Y. Vardi. *Linear temporal logic
   and linear dynamic logic on finite traces.* IJCAI 2013.
-- **[Kam68]** (†) H. Kamp. *Tense Logic and the Theory of Linear Order.* PhD
+- **[Kam68]** H. Kamp. *Tense Logic and the Theory of Linear Order.* PhD
   thesis, UCLA, 1968.
 - **[Kla94]** (†) N. Klarlund. *A homomorphism concept for ω-regularity.*
   CSL 1994.
@@ -1215,15 +1494,15 @@ sections are written. [DV13] is tied to the parked LTLf specialization.*
   simple fragments of temporal logic using Carton–Michel automata.* LMCS
   9(2:08) (2013).
 - **[Saf88]** S. Safra. *On the complexity of ω-automata.* FOCS 1988, 319–327.
-- **[Sch65]** (†) M. P. Schützenberger. *On finite monoids having only trivial
+- **[Sch65]** M. P. Schützenberger. *On finite monoids having only trivial
   subgroups.* Information and Control 8 (1965) 190–194.
 - **[SW08]** (†) V. Selivanov, K. W. Wagner. *Complexity of topological
   properties of regular ω-languages.* Fund. Inform. 83(1–2) (2008).
-- **[Tho79]** (†) W. Thomas. *Star-free regular sets of ω-sequences.*
+- **[Tho79]** W. Thomas. *Star-free regular sets of ω-sequences.*
   Information and Control 42 (1979) 148–156.
 - **[Wag79]** (†) K. Wagner. *On ω-regular sets.* Information and Control 43
   (1979) 123–177.
-- **[Wilke99]** (†) T. Wilke. *Classifying discrete temporal properties.*
+- **[Wilke99]** T. Wilke. *Classifying discrete temporal properties.*
   STACS 1999, LNCS 1563, 32–46.
 
 
