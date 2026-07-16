@@ -21,7 +21,7 @@ extension stays in the same class. From `[a·a]`, an even count, we go to `[b]`.
 
 `[b]` is the most subtle class to interpret. It coalesces not only `b⁺`, as in
 the earlier figures, but also any even number of `a`'s followed by at least one
-`b`. Once `[b]` is reached the recognizer is content, and `[b]` accepts any
+`b`. Once `[b]` is reached the stamp classifier is content, and `[b]` absorbs any
 suffix.
 
 Acceptance therefore fixes the stem to `[b]`: an even number of `a`'s until a
