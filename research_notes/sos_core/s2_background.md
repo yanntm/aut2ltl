@@ -10,13 +10,15 @@ the class the invariant of §3 captures. All examples in this paper live over
 the two-letter alphabet `Σ = {a, b}`. This section fixes the few classical
 notions the invariant rests on, adapting the presentation of Perrin and Pin
 [PP04], each paired with the intuition tying the algebra back to languages of
-infinite words. Nothing here is assumed and nothing is deep: each notion, once
-unwrapped, is algebra on a finite set.
+infinite words. We assume basic comfort with ω-automata and linear temporal
+logic [PP04, MP92]; every algebraic notion, in contrast, is defined here, and
+nothing algebraic is deep: each notion, once unwrapped, is algebra on a
+finite set.
 
 Consider the language of Carton and Perrin [CP97, Ex. 10] described by
 `a*·b^ω` — some `a`'s, then `b`'s forever — which we name `aUGb`. It
 accompanies every notion of this section, each computed on it by hand; §3
-assembles the results into one drawn object, its syntactic ω-semigroup
+assembles the results into one drawing, its syntactic ω-semigroup
 (Figure 1). Three more languages join it across the paper — `GF(aa)`,
 `Even`, `EvenBlocks` — and the four together are the running examples,
 numbered Ex. 1–4. Each has a one-page table at the end of the paper —

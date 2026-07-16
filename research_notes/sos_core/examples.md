@@ -18,8 +18,7 @@ of Wagner's hierarchy [Wag79]; `properly` marks an exact position.
 *Recognizer*: the weakest deterministic acceptance recognizing the language,
 tied to the geometry by Landweber's theorem [Lan69] — DBA / DCA abbreviate
 deterministic Büchi / co-Büchi automata, accepting when marked transitions
-recur / eventually cease. The pages are transverse to the
-paper — self-contained, meant to be read at leisure. The formulas live over the single atom
+recur / eventually cease. Each page is self-contained. The formulas live over the single atom
 `a`, so the second letter is the literal `!a`; **throughout this paper the
 LTL/PSL forms are read with `b` in place of `!a`.**
 

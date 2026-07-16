@@ -57,8 +57,8 @@ and conversely every map `Σ → 𝒞` whose image generates `𝒞` extends to a
 We write `λ := 𝒮|_Σ` for this restriction, the **letter map**. A stamp is
 therefore *finitely presented* by the data `(𝒞, λ, ·)` — the finite set of
 classes, the letter map, the multiplication table — and this presentation is
-the materialization this paper manipulates: the classical object is the
-morphism, what the field has never had in hand is its table.
+the materialization this paper manipulates: classically the stamp *is* the
+morphism; what the field has never had in hand is its table.
 
 *Notation (representatives).* A class is denoted by one of its member words,
 `[a·b]` for the class of `ab`; any member may serve, and nothing below depends

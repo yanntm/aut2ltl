@@ -386,7 +386,7 @@ keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 | ![Figure 2 — the reset presentation of GF(aa)](../sos_figs/img/gf_aa_reset.png) |
 |:--:|
 
-| presentation | `\|Q\|` | `a` acts by | group in TM? | `\|EM₊\|` | `𝓘(GF(aa))` |
+| presentation | `\|Q\|` | `a` acts by | group in transition monoid? | `\|EM₊\|` | `𝓘(GF(aa))` |
 |---|:--:|---|:--:|:--:|---|
 | run-parity (Ex. 2) | 2 | transposition | yes — `Z₂` | 9 | Ex. 2's drawing |
 | reset (above) | 2 | reset | no — aperiodic | 6 | *byte-identical* |

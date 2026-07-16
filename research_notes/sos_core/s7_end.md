@@ -82,7 +82,8 @@ object of study.
 **Learning the algebra.** The rotation lemma is an observation-table
 discipline: every two-sided demand of the congruence is met by right
 extensions read at prefix-indexed slots (Lemma 4.8) — rows and columns, the
-shape MAT learning consumes. Learning the syntactic ω-semigroup itself from
+shape a minimally-adequate-teacher (MAT) learner consumes. Learning the
+syntactic ω-semigroup itself from
 membership queries on lassos therefore looks feasible — where [AF21] records
 the obstruction for right congruences and the field learns
 presentation-dependent families of acceptors instead [AF16, ABF18].
@@ -100,7 +101,7 @@ LTLf-definability [DV13], one level down, where the same tooling gap stands.
 For finite words, the syntactic monoid has carried the algebraic theory of
 regular languages for sixty years: one finite algebra per language,
 canonical, and everything readable from it. For infinite words the analogous
-object — the syntactic ω-semigroup of Arnold — has existed since 1985 on
+algebra — the syntactic ω-semigroup of Arnold — has existed since 1985 on
 paper only.
 
 The obstruction was never size alone; it was structure. A recognizer for
@@ -117,8 +118,9 @@ and anything read off them must first be argued independent of that choice.
 The invariant is the language: equality is identity of two files, complement
 flips a set of pairs, membership is a table walk, LTL-definability is the
 absence of a group — and the classical taxonomy of ω-regular languages turns
-into structural facts about one finite object. Beyond verdicts, an object in
-hand invites operation — computing with languages, cataloguing them,
+into structural facts about one finite invariant. Beyond verdicts, the
+invariant in hand invites operation — computing with languages, cataloguing
+them,
 learning them — directions that were closed at the level of presentations.
 The construction of this paper reifies Arnold's phantom: the syntactic
 ω-semigroup is no longer only defined — it is built.

@@ -6,10 +6,11 @@ nearly for free, then the definability frontier. Throughout, an invariant is
 handled through its finite presentation `(𝒞, λ, ·, P)` under shortlex keys —
 the serialized form the byte-equality remark of §3.3 announced.
 
-### 6.1 The exportable object and the identity band
+### 6.1 The exportable invariant and the identity band
 
-What the field exchanges today is a presentation — an automaton in HOA
-format, one machine among many for its language. The invariant serializes to
+What the field exchanges today is a presentation — an automaton in the
+Hanoi Omega-Automata (HOA) exchange format, one machine among many for its
+language. The invariant serializes to
 a file that *is* the language. `𝓘(GF(aa))`, in full:
 
 ```
@@ -94,9 +95,9 @@ nondeterminism. The gain is the target: the flipped invariant is *already
 canonical* — it is `𝓘(L̄)` itself, no re-canonicalization — and it makes a
 structural fact plain: `L` and `L̄` share their entire algebra, and `P`
 alone tells them apart. Equality is where the band has no automaton-level
-rival: deciding `L(D) = L(D')` on presentations is a PSPACE problem, while a
-corpus of serialized invariants deduplicates by hashing — equal languages,
-identical bytes.
+rival: a corpus of `N` presentations deduplicates by `O(N²)` pairwise
+product constructions, a corpus of serialized invariants by hashing — equal
+languages, identical bytes.
 
 ### 6.2 The LTL frontier
 
@@ -107,7 +108,7 @@ period `≥ 2` — equivalently, `c^π·c = c^π` for every `c ∈ 𝒞_L`.
 The chain is LTL `=` FO[<] `=` star-free `=` aperiodic syntactic algebra
 [Kam68, Tho79, DG08], the ω-transport of Schützenberger's theorem [Sch65];
 see [DG08] for the consolidated account. What this paper adds is not the
-theorem but the object it reads:
+theorem but the table it is read off:
 
 **Corollary 6.4 (the decision).** On the constructed invariant `𝓘(D)`,
 LTL-definability of `L(D)` is decided by finitely many table products —
@@ -127,8 +128,10 @@ period 1: LTL. `Even` and `EvenBlocks` — `[a]·[a] = [a·a]` and
 `[a·a]·[a] = [a]`, a power cycle of period 2: a genuine group, not LTL, and
 the invariant's verdict certifies it.
 
-**A practical instance.** PSL/SERE (IEEE 1850) properly extends LTL and is
-the specification idiom of hardware verification; the mod-2 counting that
+**A practical instance.** The Property Specification Language PSL
+(IEEE 1850), with its sequential extended regular expressions (SEREs),
+properly extends LTL and is the specification idiom of hardware
+verification; the mod-2 counting that
 takes a written property out of LTL lives *syntactically* in an even
 repetition `{·}[*2]`. "Is this PSL property actually LTL?" — simpler, far
 better tool-supported — is asked with no tool to answer it; it is exactly
