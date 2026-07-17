@@ -13,7 +13,7 @@ rotation identity `c·(dc)^π = (cd)^π·c` is its finite shadow (§3.3),
 redeployed as a computation scheme rather than an axiom.
 
 **Maler–Staiger [MS97].** They display the syntactic congruence as a
-finitary × infinitary conjunction; at the single slot `ι` the finitary half
+finitary × infinitary conjunction; at the single slot `q₀` the finitary half
 is the classical right congruence. No quotient is computed, and the
 infinitary half still quantifies a two-sided context inside the loop.
 §4.3's two relations are that split made right-only, and the rotation lemma

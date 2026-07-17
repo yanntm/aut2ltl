@@ -14,10 +14,10 @@ using it once built.
 
 **Building.** The construction is dominated by the size of the enriched
 semigroup: an enriched element is a vector of `|Q|` slots over the local
-domain `Q × 2^Γ` (Definition 4.2), so
+domain `Q × 2^F` (Definition 4.2), so
 
 ```
-    |EM₊(D)| ≤ (|Q|·2^{|Γ|})^{|Q|},
+    |EM₊(D)| ≤ (|Q|·2^{|F|})^{|Q|},
 ```
 
 and the `|Q|` in the exponent is the source of the explosion. That a wall
@@ -44,8 +44,8 @@ is paid once, at entry; nothing downstream ever revisits the automaton.
 **Symbolic prospects.** On a more optimistic note, every object and operation
 here is BDD-friendly and the redundancy is high, so a symbolic approach is
 likely to alleviate much of this inherent complexity. The ingredients are all
-Boolean — the alphabet `2^AP`, the mark sets over `Γ`, the positive-Boolean
-`Acc` — and every step is a set operation, not an arithmetic one: closing
+Boolean — the alphabet `2^AP`, the mark sets over `F`, the `Inf`/`Fin`
+formula `Acc` — and every step is a set operation, not an arithmetic one: closing
 `EM₊(D)` under composition, the two right relations of §4.3, and the
 partition refinement of §4.4 are all images, fixpoints, and quotients over
 sets, native to decision diagrams.

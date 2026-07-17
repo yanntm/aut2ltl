@@ -11,11 +11,16 @@ One base letter per sort; decorations carry roles, never identity.
   stems, tested words), the `v` family for loop-position material. `w` is
   reserved for ω-words — lassos — with `w = u·v^ω` the canonical shape.
   Classes: `c, d` for generic elements of the carrier `𝒞` (lowercase of the
-  carrier), `s` for stem classes, `e` (then `f`) for idempotents; acceptance
+  carrier), `s` for stem classes, `e` for idempotents; acceptance
   pairs are `(s, e)`. Maps are calligraphic (`𝒮` the stamp) or Greek (`θ` for
   isomorphisms, `λ := 𝒮|_Σ` the letter map, `π` the idempotent exponent). `^ω` means infinite repetition,
   exclusively; the idempotent power is `^π` — no algebra element ever wears
   `^ω`.
+- **Automaton sorts.** States `p, q ∈ Q` — `q₀` the initial state, `p` the
+  running states of a run; marks `f ∈ F`, mark sets `N ⊆ F`; `mk(q, u)` /
+  `mk(q, c)` the marks a finite run collects, `mk^∞` the recurring set.
+  Enriched elements act on states from the right, `q·c` — the state sort on
+  the left keeps the product unambiguous.
 - **Decorations.** *Prime* = counterpart: a second object of the same sort in
   the same role, typically a replacement (`u ≈ u'`, `v'`). *Indices `1, 2, …`*
   = ordered pieces of one object, where concatenation or application order

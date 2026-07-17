@@ -55,14 +55,14 @@ the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
 connected by a single rotation — and both in `P`, as saturation (§3.3)
 demands.
 
-**Construction (§4).** `|EM₊| = 6` elements folding onto the `|𝒞| = 4`
+**Construction (§4).** `|EM₊| = 6` elements quotiented onto the `|𝒞| = 4`
 classes above. The delicate row is `⟨a·a⟩`: its state part is the *identity
 map* — two `a`'s return every state to itself — and only the mark collected
 at the accepting sink (state `0`) keeps it apart from `⟨ε⟩`. The quotient
 keeps them apart too, as §3.1 demands: `[a·a]` is a neutral class of
 nonempty words — its row and column in `𝒞`'s table move nothing — while
 `[ε]` is the fresh basepoint: the neutral-vs-identity distinction of §3.1,
-exhibited by the machine. The fold itself merges the mark-only splits
+exhibited by the machine. The quotient merges the mark-only splits
 `⟨b⟩, ⟨b·b⟩` and `⟨a·b⟩, ⟨a·b·b⟩`.
 
 | ⟨w⟩ | at 0 | at 1 | at 2 | at 3 | ·⟨b⟩ | ·⟨a⟩ | → class |

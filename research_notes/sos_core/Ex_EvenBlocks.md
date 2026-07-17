@@ -56,15 +56,15 @@ The stem, grouped `(aa)·(baab)` and reduced on each side before conjoining:
 `s = 𝒮(u)·e = [b]·[b] = [b]`, and the name `([b], [b])` is in `P`:
 accepted — every block the word completes is even, and `b`'s recur.
 
-**Construction (§4).** `|EM₊| = 16` elements folding onto the `|𝒞| = 7`
+**Construction (§4).** `|EM₊| = 16` elements quotiented onto the `|𝒞| = 7`
 classes above. The first row is the collision §3.1's fresh basepoint is
 built for: `⟨a·a⟩ = ⟨ε⟩` — two `a`'s toggle back and collect nothing — so
 the identity is itself an image of nonempty words, `EM₊` is the whole
 monoid, and the neutral class `[a·a]` is genuine language data. The language
 lives entirely in the marks: six elements — `⟨b·a·b⟩` and its five mark
-variants below it — are one behavior for `L` and fold onto the zero
+variants below it — are one behavior for `L` and merge onto the zero
 `[b·a·b]`. And unlike `GF(aa)`'s page, the parity `Z₂` *survives* the
-fold — `[a]·[a] = [a·a]`, `[a·a]·[a] = [a]` — this group is `L`'s own.
+quotient — `[a]·[a] = [a·a]`, `[a·a]·[a] = [a]` — this group is `L`'s own.
 
 | ⟨w⟩ | at 0 | at 1 | ·⟨b⟩ | ·⟨a⟩ | → class |
 |---|---|---|---|---|---|

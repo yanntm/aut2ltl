@@ -37,8 +37,8 @@ the pair `(δ(q, w), mk(q, w))` — where reading `w` from state `q` lands, and
 the marks collected on the way: the row *is* the element. The `·⟨b⟩`,
 `·⟨a⟩` columns name the element reached by extending on the right by one
 letter — the step the construction iterates, and the table is closed: every
-entry names a row. The last column is the class the row folds onto in the
-quotient of §4.3.
+entry names a row. The last column is the image of the row's element in the
+quotient of §4.3 — its class in `𝒞`.
 
 - Ex. 1 — [`aUGb`](Ex_aUGb.md)
 - Ex. 2 — [`GF(aa)`](Ex_GFaa.md)

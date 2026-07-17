@@ -34,13 +34,13 @@ queried stem is `s = 𝒮(u)·e = [b·a]·[b]`, and absorption simplifies it awa
 `s = [b·a]`. The name `([b·a], [b])` is not in `P`, so the lasso `ababba·b^ω`
 is not in the language.
 
-**Construction (§4).** `|EM₊| = 9` elements folding onto the `|𝒞| = 4`
+**Construction (§4).** `|EM₊| = 9` elements quotiented onto the `|𝒞| = 4`
 classes above. The excess the quotient removes is all mark bookkeeping the
 language ignores:
 `⟨b⟩ ≠ ⟨b·b⟩` and `⟨a·b⟩ ≠ ⟨a·b·b⟩` differ solely in a mark already
 collected — membership never counts `b`'s — and the four dead behaviors
 `⟨b·a⟩, ⟨b·b·a⟩, ⟨a·b·a⟩, ⟨a·b·b·a⟩`, kept apart in `EM₊` by which slots
-happened to see the mark on the way to the sink, fold onto the single zero
+happened to see the mark on the way to the sink, merge onto the single zero
 `[b·a]`.
 
 | ⟨w⟩ | at 0 | at 1 | at 2 | ·⟨b⟩ | ·⟨a⟩ | → class |
