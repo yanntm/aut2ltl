@@ -13,8 +13,8 @@ multiplications alone (§4.3).
 
 ### 4.1 Emerson–Lei automata
 
-Nothing in this subsection is ours: we fix the input format and its
-vocabulary.
+This subsection recalls definitions from the literature, adapted from
+[EL87, PP04]: the input format and its vocabulary.
 
 **Definition 4.1 (deterministic Emerson–Lei automaton).**
 
