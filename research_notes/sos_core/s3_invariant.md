@@ -85,10 +85,12 @@ the drawn graph: `[a]·[b] = [a·b]`, `[a·b]·[a] = [b·a]`, and `[b·a]` is a
 two-sided zero — the dead words, once an `a` follows a `b`. These are §2's
 four kinds, wearing their shortlex names.
 
+---
+
 | ![Figure 1a — the stamp core](../sos_core_figs/img/core_F0_astar_bomega_b_pairs.png) | ![Figure 1b — the monoid completion](../sos_core_figs/img/core_F0_astar_bomega.png) |
 |:--:|:--:|
 
-*Figure 1 — `𝓘(aUGb)`, drawn twice. Left — the stamp core: the complete data
+**Figure 1.** `𝓘(aUGb)`, drawn twice. Left — the stamp core: the complete data
 of the invariant `⟨𝒮, P⟩` in one drawing. The four classes are the vertices.
 The letter map `λ` is the two entry arrows — `a` enters at `[a]`, `b` at
 `[b]`: where the reading of a word starts. The table is the edges: following
@@ -102,7 +104,9 @@ Right — the monoid completion `M = 𝒞 ∪ {[ε]}` of the same stamp, `λ` an
 printed as text: the fresh identity drawn in, adding exactly its row — the
 edges leaving `[ε]` — and its column, `[ε]` joining every self-loop. An
 identity moves nothing: eliding it loses no edge worth reading, and all
-further drawings use the left form.*
+further drawings use the left form.
+
+---
 
 *Example (the letter map is data).* Over `Σ = {a, b, c}`, the language
 `(a|c)*·b^ω` has the same four classes and the same table: `a` and `c` are
