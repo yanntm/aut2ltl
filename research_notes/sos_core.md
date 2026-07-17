@@ -744,8 +744,8 @@ multiplications alone (§4.3).
 
 ### 4.1 Emerson–Lei automata
 
-Nothing in this subsection is ours: we fix the input format and its
-vocabulary.
+This subsection recalls definitions from the literature, adapted from
+[EL87, PP04]: the input format and its vocabulary.
 
 **Definition 4.1 (deterministic Emerson–Lei automaton).**
 
@@ -1899,6 +1899,9 @@ restructure. Entries marked (†) are not cited by any drafted section
   *Logic and Automata*, 2008.
 - **[DK09]** V. Diekert, M. Kufleitner. *Fragments of first-order logic
   over infinite words.* STACS 2009; Theory Comput. Syst. 48(3) (2011) 486–516.
+- **[EL87]** E. A. Emerson, C.-L. Lei. *Modalities for model checking:
+  branching time logic strikes back.* Sci. Comput. Program. 8(3) (1987)
+  275–306.
 - **[DV13]** G. De Giacomo, M. Y. Vardi. *Linear temporal logic
   and linear dynamic logic on finite traces.* IJCAI 2013.
 - **[Kam68]** H. Kamp. *Tense Logic and the Theory of Linear Order.* PhD
