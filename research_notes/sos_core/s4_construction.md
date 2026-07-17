@@ -238,8 +238,9 @@ carried entirely by `∼ω`, with the block-closing extension `d = ⟨b⟩`:
 an odd block forever, violating `Fin(0)` — while `Aprof(⟨aa⟩·⟨b⟩)` accepts at
 both: `(aab)^ω` closes even blocks forever.
 
-**Lemma 4.8 (rotation, on runs).** Let `c₀, c, d ∈ EM(D)` and `q ∈ Reach`. A
-left factor acts on both relations only by re-indexing the slot:
+**Lemma 4.8 (rotation, on runs).** Let `c ∈ EM₊(D)`, `c₀, d ∈ EM(D)` and
+`q ∈ Reach`. A left factor acts on both relations only by re-indexing the
+slot:
 
 ```
     st_{c₀·c}(q) = st_c(st_{c₀}(q))        and
@@ -275,6 +276,13 @@ extension": the coarsest right-invariant equivalence refining `R`.
 `Aprof(c₀·c·d)(q) = Aprof(c·(d·c₀))(st_{c₀}(q))
 = Aprof(c'·(d·c₀))(st_{c₀}(q)) = Aprof(c₀·c'·d)(q)` — the left factor became
 a right extension. With right-invariance, `∼` is a two-sided congruence. ∎
+
+The typing is Definition 3.1's freshness, mirrored in the computation: `c` is
+the image of a nonempty word, so every element whose profile the lemma reads —
+`c₀·c·d`, `c·d·c₀` — lies in `EM₊(D)`, and a profile is only ever a nonempty
+word's loop verdict. The identity is in scope exactly when some nonempty word
+folds onto it (`EvenBlocks`'s `⟨aa⟩ = ⟨ε⟩`), where its verdict is that word's —
+honest; otherwise it bears no profile, as `[ε]` bears no pair.
 
 The lemma is the load-bearing step. Maler and Staiger [MS97] display the
 finitary × infinitary split — at the single slot `ι`, `∼lin` is their
@@ -403,10 +411,21 @@ monoids disagreeing even on whether a group is present, enriched semigroups
 of different sizes — one byte-identical invariant out of both.*
 
 **The algorithm.** The theorem is also the procedure. The seed `R` groups
-elements of `EM₊(D)` by `∼lin`-class and profile — both read directly off
-`D`: residual equality of reached states, one loop verdict per slot. Moore
-refinement then splits a block whenever two members separate under a right
-letter, `c·⟨x⟩ ≁ c'·⟨x⟩`, to fixpoint — at most `|EM₊(D)|` splits — and by
-Lemma 4.8 the result is exactly `∼`. `P(D)` is one lasso test per candidate
-linked pair. Everything downstream of `EM₊(D)` is polynomial in its size; the
-size itself is the subject of §5.
+the elements of `EM₊(D)` by `∼lin`-class and profile. The profiles are
+`|EM₊(D)|·|Q|` loop verdicts, each one walk of a functional graph
+(Lemma 4.6). Residual equality of states is a fixpoint on the same data, one
+level down: seed two states equal when their loop-verdict *columns* agree —
+`A(p, c) = A(q, c)` for every `c ∈ EM₊(D)` — and refine under the letters,
+splitting whenever `δ(p, x)` and `δ(q, x)` fall in distinct blocks, at most
+`|Q|` splits. The seed settles the empty stems — the pure loops read from
+`p` — and refinement closes under letter stems, hence under all stems, so
+the fixpoint is exactly residual equality: two states agreeing on every
+lasso accept one language [PP04, Ch. I, Cor. 9.8]. Moore refinement then
+splits a block of elements
+whenever a right letter separates two members — `c·⟨x⟩` and `c'·⟨x⟩` in
+distinct blocks of the current partition — to fixpoint, at most `|EM₊(D)|`
+splits; the result is stable under every right letter, hence under every
+right element — `EM(D)` is letter-generated — and by Lemma 4.8 it is
+exactly `∼`. `P(D)` is one lasso test per candidate linked pair. Everything
+downstream of `EM₊(D)` is polynomial in its size; the size itself is the
+subject of §5.
