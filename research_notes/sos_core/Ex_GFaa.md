@@ -51,13 +51,13 @@ of the loop. Against it, `(ab)^ω`: the loop `𝒮(ab) = [a·b]` is idempotent,
 `s = [ε]·[a·b] = [a·b]`, and `([a·b], [a·b])` is not in `P`: rejected — the
 `a`'s stay isolated forever.
 
-**Construction (§4).** `|EM₊| = 9` elements quotiented onto the `|𝒞| = 5`
-classes above. The enrichment at work: `⟨a⟩` and `⟨a·a·a⟩` have the *same*
-state part — the transposition — and differ only in marks, the longer word
-having closed an `aa`; the transition monoid identifies them, the enrichment
+**Construction (§4).** `|𝒞_D| = 9` classes quotiented onto the `|𝒞| = 5`
+classes above. The mark map at work: `⟨a⟩` and `⟨a·a·a⟩` have the *same*
+transition map — the transposition — and differ only in marks, the longer word
+having closed an `aa`; the transition monoid identifies them, the mark map
 keeps them apart. The quotient then does the reverse service: four "contains
-`aa`" behaviors — `⟨a·a⟩, ⟨b·a·a⟩, ⟨a·a·a⟩, ⟨b·a·a·a⟩`, distinct as
-vectors — collapse onto the sink `[a·a]`, and `⟨a·b·a⟩` rejoins `[a]` — the
+`aa`" behaviors — `⟨a·a⟩, ⟨b·a·a⟩, ⟨a·a·a⟩, ⟨b·a·a·a⟩`, distinct for
+`≈_D` — collapse onto the sink `[a·a]`, and `⟨a·b·a⟩` rejoins `[a]` — the
 `Z₂` visible in the `at` columns is pure presentation, and §4.4 is where it
 dies.
 

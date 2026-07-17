@@ -55,11 +55,12 @@ the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
 connected by a single rotation — and both in `P`, as saturation (§3.3)
 demands.
 
-**Construction (§4).** `|EM₊| = 6` elements quotiented onto the `|𝒞| = 4`
-classes above. The delicate row is `⟨a·a⟩`: its state part is the *identity
-map* — two `a`'s return every state to itself — and only the mark collected
-at the accepting sink (state `0`) keeps it apart from `⟨ε⟩`. The quotient
-keeps them apart too, as §3.1 demands: `[a·a]` is a neutral class of
+**Construction (§4).** `|𝒞_D| = 6` classes quotiented onto the `|𝒞| = 4`
+classes above. The delicate row is `⟨a·a⟩`: its transition map is the
+*identity* — two `a`'s return every state to itself — and only the mark
+collected at the accepting sink (state `0`) sets its mark map apart from
+empty. The quotient
+keeps the distinction too, as §3.1 demands: `[a·a]` is a neutral class of
 nonempty words — its row and column in `𝒞`'s table move nothing — while
 `[ε]` is the fresh basepoint: the neutral-vs-identity distinction of §3.1,
 exhibited by the machine. The quotient merges the mark-only splits

@@ -31,13 +31,15 @@ and the saturated set of accepting linked pairs `P` are listed beneath; the
 label `𝒞` abbreviates a self-loop carrying every class.
 
 **The construction table.** Each page closes on the table §4 builds from its
-`D`: one row per element `⟨w⟩` of the enriched semigroup `EM₊(D)`
-(Definition 4.2), named by its shortlex-least word. The `at q` columns hold
-the pair `(δ(q, w), mk(q, w))` — where reading `w` from state `q` lands, and
-the marks collected on the way: the row *is* the element. The `·⟨b⟩`,
-`·⟨a⟩` columns name the element reached by extending on the right by one
+`D`: one row per class of the automaton congruence `≈_D`
+(Definition 4.2), written `⟨w⟩` for the class of its shortlex-least word `w`.
+The `at q` columns hold
+`(δ(q, w), mk(q, w))` — where reading `w` from state `q` lands, and
+the marks collected on the way: the two maps that determine the class, so
+the row *is* the class. The `·⟨b⟩`,
+`·⟨a⟩` columns name the class reached by extending on the right by one
 letter — the step the construction iterates, and the table is closed: every
-entry names a row. The last column is the image of the row's element in the
+entry names a row. The last column is the image of the row's class in the
 quotient of §4.3 — its class in `𝒞`.
 
 - Ex. 1 — [`aUGb`](Ex_aUGb.md)
