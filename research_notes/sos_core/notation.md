@@ -21,9 +21,10 @@ One base letter per sort; decorations carry roles, never identity.
   `p` a generic or second state; marks `f ∈ F`, mark sets `N ⊆ F`;
   `mk(q, u)` / `mk(q, c)` the marks a finite run collects, `mk^∞` the
   recurring set. `δ` is a function, on letters and words alike — the paper
-  never writes transitions as triples or arrows.
-  Enriched elements act on states from the right, `q·c` — the state sort on
-  the left keeps the product unambiguous.
+  never writes transitions as triples or arrows. `δ` and `mk` accept classes
+  of the automaton congruence `≈_D` as second argument (well defined, §4.2:
+  a class is its transition map and mark map) — the only action notation;
+  there is no `q·c`.
 - **Decorations.** *Prime* = counterpart: a second object of the same sort in
   the same role, typically a replacement (`u ≈ u'`, `v'`). *Indices `1, 2, …`*
   = ordered pieces of one object, where concatenation or application order

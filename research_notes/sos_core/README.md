@@ -46,13 +46,16 @@ stated as fact, friendly wording. Values computed 2026-07-16 by
 sidecars committed beside them are the trace (exact Wagner degrees included —
 kept out of the paper boxes).
 
-Each page closes on a construction block — the `EM₊(D)` table with its fold
+Each page closes on a construction block — the table of the automaton
+congruence classes (`𝒞_D`, one row per class = its two maps) with its fold
 onto `𝒞` — pasted verbatim from the generated
 [`../sos_figs/sources/`](../sos_figs/sources/)`*.emtable.md`
 (`make -C ../sos_figs` refreshes the reports then renders the paper notation
 via `em_table.py`, rename `!a` → `b`). Regenerated 2026-07-17, after the
 importer fix forcing transition-based mark placement (marks on recurring
-edges only) — which corrected `aUGb`'s enriched semigroup to `|EM₊| = 9`.
+edges only) — which corrected `aUGb`'s table to `|𝒞_D| = 9`. (The generator
+and its files keep the historical `EM`/emtable naming; only the paper
+vocabulary changed.)
 
 ## Conventions
 
