@@ -6,7 +6,8 @@ into two independently checkable halves (the collapse), each seeded here:
   - ``~lin`` — pointwise residual equality: elements ``e, f`` agree when the
     states ``st_e(q)`` and ``st_f(q)`` accept the same omega-language, for
     every ``q``. The base is `residual_classes`, the language equivalence of
-    the automaton's states, computed once on ``D`` with no monoid involved.
+    the automaton's states, recovered from the loop-verdict matrix the
+    profiles already hold — no external decision procedure.
   - ``~omega`` — right-invariant profile equality: ``Aprof(e.b) = Aprof(f.b)``
     for every right extension ``b``. The seed is `profile`, the per-state
     verdict of iterating an element forever.
@@ -14,7 +15,9 @@ into two independently checkable halves (the collapse), each seeded here:
 The rotation lemma makes a left factor act on the seeds only by re-indexing a
 state slot, so the coarsest **right**-invariant equivalence refining the seed
 pair is the full two-sided congruence: one Moore refinement to fixpoint
-(`refine`) computes ``~ = ~lin ∧ ~omega`` exactly.
+computes ``~ = ~lin ∧ ~omega`` exactly. `refine` is that engine, shared by
+both levels: on the monoid's right table for ``~``, on the letter maps of
+``D`` for the residual base.
 """
 from __future__ import annotations
 
@@ -30,12 +33,25 @@ Profile = Tuple[bool, ...]
 forever from ``q``."""
 
 
-def residual_classes(aut: "spot.twa_graph") -> List[int]:
+def residual_classes(mon: Monoid, prof: Sequence[Profile]) -> List[int]:
     """The residual class of every state: ``out[q] == out[q']`` iff the
-    languages accepted from ``q`` and ``q'`` are equal (``spot.language_map``
-    on a deterministic input; the class id is the smallest state index
-    recognizing the language — stable labels, not dense ones)."""
-    return list(spot.language_map(aut))
+    omega-languages accepted from ``q`` and ``q'`` are equal — dense ids in
+    order of first appearance.
+
+    State-level Moore refinement on the loop-verdict matrix. The seed is the
+    profile *column* of each state (``A(q, c)`` for every element ``c`` — the
+    verdicts of all pure loops from ``q``, the empty-stem lassos; the identity
+    column is constant, hence inert). Refinement under the letter maps closes
+    the agreement under letter stems, hence — ``EM1`` being letter-generated —
+    under all stems; by lasso density the fixpoint is exactly language
+    equivalence of states."""
+    n_states: int = len(mon.elems[0])
+    letters: List[int] = mon.right[0]        # identity row: letter elements
+    delta: List[List[int]] = [
+        [mon.elems[le][q][0] for le in letters] for q in range(n_states)]
+    seed: List[Tuple[bool, ...]] = [
+        tuple(p[q] for p in prof) for q in range(n_states)]
+    return refine(delta, seed)
 
 
 def profile(acc: "spot.acc_cond", elem: Elem) -> Profile:
@@ -68,18 +84,20 @@ def profile(acc: "spot.acc_cond", elem: Elem) -> Profile:
     return tuple(out)  # type: ignore[arg-type]
 
 
-def refine(mon: Monoid, seed: Sequence[Hashable]) -> List[int]:
-    """The coarsest refinement of ``seed`` stable under every right-translation
-    ``e -> e.letter`` of ``mon`` — class ids per element. Each round appends
-    the classes of all letter-successors to each element's label; the class
-    count is non-decreasing and bounded by ``len(mon)``, so the loop
-    terminates. When the seed components are right-invariant (both of ours
-    are), the fixpoint is the syntactic congruence on the monoid."""
+def refine(succ: Sequence[Sequence[int]], seed: Sequence[Hashable]) -> List[int]:
+    """The coarsest refinement of ``seed`` stable under every translation
+    ``i -> succ[i][a]`` — class ids per node, dense in first-appearance order.
+    Each round appends the classes of all successors to each node's label; the
+    class count is non-decreasing and bounded by ``len(succ)``, so the loop
+    terminates. The Moore engine of both congruence levels: on the monoid's
+    right table the fixpoint is the syntactic congruence (the seed components
+    are right-invariant), on the letter maps of ``D`` it is state language
+    equivalence."""
     labels = _canon(seed)
     while True:
         sigs: List[Tuple[int, Tuple[int, ...]]] = [
-            (labels[e], tuple(labels[j] for j in mon.right[e]))
-            for e in range(len(mon))
+            (labels[i], tuple(labels[j] for j in succ[i]))
+            for i in range(len(succ))
         ]
         new = _canon(sigs)
         if max(new) == max(labels):
