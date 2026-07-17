@@ -46,12 +46,13 @@ stated as fact, friendly wording. Values computed 2026-07-16 by
 sidecars committed beside them are the trace (exact Wagner degrees included —
 kept out of the paper boxes).
 
-Each page closes on a construction block — the `EM(D)` table with its fold
-onto `𝒞` — copied from the machine reports
-[`../sos_figs/sources/`](../sos_figs/sources/)`{aUGb,gf_aa,even,evenblocks}.md`
-(regenerable per [`../sos_figs/reproduction.md`](../sos_figs/reproduction.md);
-`aUGb.md` regenerated 2026-07-16) under one mechanical rename, `!a` → `b`;
-the paper's preamble in [`examples.md`](examples.md) states the convention.
+Each page closes on a construction block — the `EM₊(D)` table with its fold
+onto `𝒞` — pasted verbatim from the generated
+[`../sos_figs/sources/`](../sos_figs/sources/)`*.emtable.md`
+(`make -C ../sos_figs` refreshes the reports then renders the paper notation
+via `em_table.py`, rename `!a` → `b`). Regenerated 2026-07-17, after the
+importer fix forcing transition-based mark placement (marks on recurring
+edges only) — which corrected `aUGb`'s enriched semigroup to `|EM₊| = 9`.
 
 ## Conventions
 
