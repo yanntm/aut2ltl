@@ -4,7 +4,7 @@ We now construct the invariant. The input is an automaton `D` for `L`, in the
 most general deterministic form in use — throughout this section `L := L(D)`.
 The output is `𝓘(D)`, and the destination is Theorem 4.11: `𝓘(D) = 𝓘(L)` —
 not merely *an* invariant denoting `L`, but the syntactic invariant of §3.3
-itself, byte for byte, whatever presentation `D` was. The construction is two
+itself, whatever presentation `D` was. The construction is two
 steps, and both are stamp-shaped: an enrichment of the automaton's transition
 structure until acceptance is algebraic — the result is a stamp, rough but
 sound (§4.2) — and a canonicalization: the quotient by Arnold's congruence
@@ -229,9 +229,16 @@ What remains is to merge elements of `EM₊(D)` exactly when the words they
 image are congruent — interchangeable in every stem, in every loop.
 Interchangeability is a two-sided demand: a word sits in a lasso between a
 left context and a right one. A semigroup's table, meanwhile, offers one
-operation for free: multiply on the right. The gap is closed by the rotation
-lemma (3.11) read on runs: a left factor carries no information of its own; it
-only shifts the slot where a right test is read.
+operation for free: multiply on the right. This subsection closes that gap
+in three moves. *The collapse* (Lemma 4.6): a lasso's verdict depends on its
+stem only through the one state it reaches, so all acceptance data condenses
+into the finitely many loop verdicts `A(q, c)`. *The seed* (Definition 4.7):
+two relations compare elements through residuals and verdicts, by right
+extensions alone. *The rotation* (Lemma 4.8) — Lemma 3.11 read on runs: a
+left factor carries no information of its own, it only shifts the slot where
+a right test is read — so the coarsest right-invariant refinement of the
+seed is already Arnold's two-sided congruence, and partition refinement
+computes it.
 
 **Lemma 4.6 (loop verdict; collapse).** For `c ∈ EM₊(D)` and `q ∈ Q`, the
 iteration `q, q·c, q·c², …` closes a cycle; `mk^∞(q, c) ⊆ F` is the union of
@@ -276,6 +283,13 @@ carried entirely by `∼ω`, with the block-closing extension `d = ⟨b⟩`:
 an odd block forever, violating `Fin(0)` — while `A(q, ⟨aa⟩·⟨b⟩)` accepts at
 both: `(aab)^ω` closes even blocks forever.
 
+*Remark (prefix-independence).* The example is the generic situation, not a
+corner case: `L` is prefix-independent (`u₀·w ∈ L ⟺ w ∈ L` for all
+`u₀ ∈ Σ*`, `w ∈ Σ^ω`) iff every residual equals `L` — determinism gives one
+residual per reached state — iff `∼lin` is total, and then all
+discrimination rides on `∼ω`. Tail properties live here, and it is why a
+construction resting on residuals alone cannot even see them.
+
 **Lemma 4.8 (rotation, on runs).** Let `c ∈ EM₊(D)`, `c₀, d ∈ EM(D)` and
 `q ∈ Reach`. A left factor acts on both relations only by re-indexing the
 slot:
@@ -316,11 +330,11 @@ extension": the coarsest right-invariant equivalence refining `R`.
 a right extension. With right-invariance, `∼` is a two-sided congruence. ∎
 
 The typing is Definition 3.1's freshness, mirrored in the computation: `c` is
-the image of a nonempty word, so every element whose profile the lemma reads —
-`c₀·c·d`, `c·d·c₀` — lies in `EM₊(D)`, and a profile is only ever a nonempty
-word's loop verdict. The identity is in scope exactly when it is the image of a
-nonempty word (`EvenBlocks`'s `⟨aa⟩ = ⟨ε⟩`), where its verdict is that word's —
-honest; otherwise it bears no profile, as `[ε]` bears no pair.
+the image of a nonempty word, so every element whose verdicts the lemma reads —
+`c₀·c·d`, `c·d·c₀` — lies in `EM₊(D)`, and a loop verdict is only ever a
+nonempty word's. The identity is in scope exactly when it is the image of a
+nonempty word (`EvenBlocks`'s `⟨aa⟩ = ⟨ε⟩`), where its verdicts are that
+word's — honest; otherwise it bears none, as `[ε]` bears no pair.
 
 The lemma is the load-bearing step. Maler and Staiger [MS97] display the
 finitary × infinitary split — at the single slot `q₀`, `∼lin` is their
@@ -333,24 +347,6 @@ free. It is also an observation-table discipline — right extensions at
 prefix-indexed slots — answering the obstruction Angluin and Fisman record
 for ω-learning [AF21]; and a coarsest right-invariant refinement is precisely
 what partition refinement computes (§4.4).
-
-**Proposition 4.9 (prefix-independence, as a theorem not a case).** `L` is
-prefix-independent (`u₀·w ∈ L ⟺ w ∈ L` for all `u₀ ∈ Σ*`, `w ∈ Σ^ω`) iff `L`
-has a single residual iff `∼lin` is total. In that case all discrimination is
-carried by `∼ω`.
-
-*Proof.* Prefix-independence says every residual `u⁻¹L` equals `L`;
-determinism gives one residual per reached state, all equal, so `∼lin`, which
-compares residuals of reached states, is total. Conversely a single residual
-class forces every prefix to preserve membership. ∎
-
-*Example.* `EvenBlocks` is prefix-independent — deleting a finite prefix
-changes neither "infinitely many `b`" nor "eventually every completed block
-is even" — so its `∼lin` is total: the finitary half is blind, and the whole
-of its non-LTL-ness (the `Z₂` of Ex. 4) is invisible until `∼ω` is
-computed. This is the generic situation for tail properties, not a corner
-case, and it is why a construction resting on residuals alone cannot even see
-it.
 
 ### 4.4 The theorem: `𝓘(D) = 𝓘(L)`
 
@@ -428,25 +424,35 @@ language yield the byte-identical invariant.
 the **reset** presentation of Figure 2: the same two states, but each letter
 sends *every* state to one place, an aperiodic transition monoid. The two
 automata are not isomorphic, and their transition monoids disagree even on
-whether a group is present. Both runs return the invariant of Ex. 2, byte
-for byte: five classes, `9 → 5` against `6 → 5`. The transposition was pure presentation, and
+whether a group is present. Both runs return the invariant of Ex. 2,
+identically: five classes, `9 → 5` against `6 → 5`. The transposition was pure presentation, and
 Theorem 4.11's quotient is where it dies — while `Even` and `EvenBlocks`
 keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 
-| ![Figure 2 — the reset presentation of GF(aa)](../sos_figs/img/gf_aa_reset.png) |
-|:--:|
+---
+
+<table>
+<tr>
+<td align="center"><img src="../sos_figs/img/gf_aa_reset.png" alt="GF(aa) reset automaton" width="280"></td>
+<td valign="middle">
 
 | presentation | `\|Q\|` | `a` acts by | group in transition monoid? | `\|EM₊\|` | `𝓘(GF(aa))` |
 |---|:--:|---|:--:|:--:|---|
 | run-parity (Ex. 2) | 2 | transposition | yes — `Z₂` | 9 | Ex. 2's drawing |
-| reset (above) | 2 | reset | no — aperiodic | 6 | *byte-identical* |
+| reset (left) | 2 | reset | no — aperiodic | 6 | *identical* |
 
-*Figure 2 — canonicity, exhibited. The reset presentation of `GF(aa)`: the
+</td>
+</tr>
+</table>
+
+**Figure 2.** Canonicity, exhibited. The reset presentation of `GF(aa)`: the
 same two states as Ex. 2's machine, but each letter sends every state to one
 place — `a` to the "just saw `a`" state, whose `a`-self-loop carries the
 mark, `b` to the other. Not isomorphic to Ex. 2's automaton, transition
 monoids disagreeing even on whether a group is present, enriched semigroups
-of different sizes — one byte-identical invariant out of both.*
+of different sizes — the identical invariant out of both.
+
+---
 
 **The algorithm.** The theorem is also the procedure. The seed `R` groups
 the elements of `EM₊(D)` by their residuals and loop verdicts at every
