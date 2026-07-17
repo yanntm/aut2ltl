@@ -4,8 +4,9 @@ The pipeline, station by station (`pipeline`), then the freeze (`invariant_of`):
 
   1. letter elements of ``D`` over the alphabet (`enriched`);
   2. the closed enriched monoid ``EM1(D)`` under a size cap (`closure`);
-  3. the two congruence seeds — per-element residual vectors (``~lin``) and
-     acceptance profiles (``~omega``) — refined to the syntactic congruence
+  3. the two congruence seeds — acceptance profiles (``~omega``) first, then
+     the per-element residual vectors (``~lin``, whose state-class base is
+     read off the profile columns) — refined to the syntactic congruence
      ``~`` (`congruence`);
   4. the freeze: quotient the images of **non-empty** words by ``~``, adjoin
      the identity as a *fresh* class, read the accepting linked pairs off the
@@ -57,12 +58,12 @@ def pipeline(aut: "spot.twa_graph", cap: int = 20000) -> Optional[SosData]:
     mon: Optional[Monoid] = close(letters, aut.num_states(), cap)
     if mon is None:
         return None
-    st_cls: List[int] = residual_classes(aut)
-    lin: List[Tuple[int, ...]] = [
-        tuple(st_cls[st] for (st, _mk) in el) for el in mon.elems]
     acc = aut.acc()
     prof: List[Profile] = [profile(acc, el) for el in mon.elems]
-    cls: List[int] = refine(mon, list(zip(lin, prof)))
+    st_cls: List[int] = residual_classes(mon, prof)
+    lin: List[Tuple[int, ...]] = [
+        tuple(st_cls[st] for (st, _mk) in el) for el in mon.elems]
+    cls: List[int] = refine(mon.right, list(zip(lin, prof)))
     return SosData(aut=aut, alphabet=alphabet,
                    init=aut.get_init_state_number(),
                    mon=mon, cls=cls, prof=prof)
