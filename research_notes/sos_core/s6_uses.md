@@ -94,7 +94,7 @@ gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
 data — the right congruence, recomputable from the core, so byte equality is
 unaffected; its single class exhibits `GFaa`'s prefix-independence.
 
-The file decides lassos by the query of Definition 3.5 with no further
+The file decides lasso membership (Definition 3.5) with no further
 apparatus. For
 `(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 4 = [a·b]`, already idempotent
 (`4·4 = 4`); the empty stem gives `s = e = 4`; and `4 4` is not listed under
@@ -121,8 +121,9 @@ language, one file.
 > lasso `u_s·(u_e)^ω ∈ L`.
 
 *Proof.* (i) is canonicity (Theorem 3.10(ii)) with the byte-equality remark:
-the unique isomorphism is the identity on shortlex names. (ii) is the query
-of Definition 3.5, whose verdict is presentation-independent by canonicity
+the unique isomorphism is the identity on shortlex names. (ii) is lasso
+membership (Definition 3.5), whose verdict is presentation-independent by
+canonicity
 (Theorem 3.10(i)). (iii): every linked
 pair names a lasso — pick `u ∈ s`, `v ∈ e` by surjectivity: `𝒮(v)^π = e` and
 `𝒮(u)·e = s` — so `P = ∅` accepts no lasso and `P` full accepts them all;

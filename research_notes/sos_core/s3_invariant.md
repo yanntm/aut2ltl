@@ -163,7 +163,7 @@ An invariant decides lassos with the data it carries and nothing else: the
 stamp assigns each finite word its class — stem and loop alike — and `P` lists
 the pairs that accept.
 
-> **Definition 3.5 (language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an
+> **Definition 3.5 (lasso membership; language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an
 > invariant over `Σ`, and let `w ∈ Σ^ω` be a lasso with presentation
 > `(u, v) ∈ Σ* × Σ⁺` (Definition 2.1), `w = u·v^ω`. Set
 >
@@ -283,7 +283,7 @@ The two context shapes were tailored to lassos, and they pay immediately:
 > regular ω-language.
 >
 > (i) All lassos sharing a name share `L`'s verdict; consequently, on `𝓘(L)`,
-> the query of Definition 3.5 answers membership in `L` itself — every
+> lasso membership (Definition 3.5) is membership in `L` itself — every
 > presentation of every lasso receives `L`'s verdict — and `L(𝓘(L)) = L`.
 
 (ii) `𝓘` is a **complete invariant**: for regular `L, L' ⊆ Σ^ω`, `L = L'` iff

@@ -69,8 +69,8 @@ in the same SCC may receive opposite verdicts — `(aab)^ω` and `(ab)^ω` both
 live in `EvenBlocks`'s single SCC (Ex. 4), accepted and rejected — and the
 marks around the closed cycle carry the whole verdict. Some power `v^k` of
 the loop closes its cycle in a single turn — the machine shadow of the
-idempotent power (Definition 3.2), and the reason the membership test of
-Definition 3.5 queries `𝒮(v)^π`.
+idempotent power (Definition 3.2), and the reason lasso membership
+(Definition 3.5) queries `𝒮(v)^π`.
 
 Emerson–Lei acceptance is the most general ω-regular acceptance — Büchi,
 co-Büchi, Rabin, Muller are special shapes — and every regular `L` is `L(D)`
@@ -206,7 +206,7 @@ far `EM₊(D)` is from that quotient.
 `L(D)` is "infinitely many `a`'s". The transition monoid is trivial — every
 word is the identity map on `{p}` — so any stamp built on a quotient of it
 gives `a` and `b` one class, the queries of `a^ω` and `b^ω` coincide
-(Definition 3.5), and the two receive one verdict. But `a^ω ∈ L(D)` and
+(lasso membership, Definition 3.5), and the two receive one verdict. But `a^ω ∈ L(D)` and
 `b^ω ∉ L(D)`. The enriched elements do separate them:
 `mk(p, ⟨a⟩) = {0} ≠ ∅ = mk(p, ⟨b⟩)`. ∎
 
