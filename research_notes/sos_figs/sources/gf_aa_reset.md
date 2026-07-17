@@ -1,23 +1,23 @@
 # SoS algebra summary — GF(aa) reset
 
-Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` = transition monoid; a group in `TM` may be a presentation artifact, a group in `S(L)₊` is intrinsic (⇔ not LTL-definable).
+Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` = transition monoid; a group in `TM` may be a presentation artifact (the LTL-definability verdict, which turns on a group in `S(L)₊` itself, belongs to the definability engine, not this algebra summary).
 
 ## Fingerprints
 
-| input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM | grp S(L)₊ | LTL? | evidence |
-|---|---|---|---|---|---|---|---|
-| GF(aa) reset | 2 | 7 | 6 | no | no | yes | LTL — DG DAG 19 nodes / flat tree 1,991,717 (0.001s) |
+| input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM |
+|---|---|---|---|---|
+| GF(aa) reset | 2 | 7 | 6 | no |
 
 ## GF(aa) reset
 
-*Input:* `research_notes/sos_figs/sources/gf_aa_reset.hoa`
+*Input:* `../research_notes/sos_figs/sources/gf_aa_reset.hoa`
 
 ### Deterministic form `D`
 
 ```hoa
 HOA: v1
 States: 2
-Start: 0
+Start: 1
 AP: 1 "a"
 acc-name: Buchi
 Acceptance: 1 Inf(0)
@@ -25,11 +25,11 @@ properties: trans-labels explicit-labels trans-acc complete
 properties: deterministic
 --BODY--
 State: 0
-[0] 0 {0}
-[!0] 1
+[!0] 0
+[0] 1
 State: 1
-[0] 0
-[!0] 1
+[!0] 0
+[0] 1 {0}
 --END--
 ```
 
@@ -40,12 +40,12 @@ State: 1
 | id | word | st | mk | rmul | → class |
 |---|---|---|---|---|---|
 | 0 | `eps` | [0 1] | [{} {}] | 1 2 | 0 `eps` |
-| 1 | `!a` | [1 1] | [{} {}] | 1 3 | 1 `!a` |
-| 2 | `a` | [0 0] | [{0} {}] | 4 5 | 2 `a` |
-| 3 | `!a;a` | [0 0] | [{} {}] | 1 5 | 3 `!a;a` |
-| 4 | `a;!a` | [1 1] | [{0} {}] | 4 2 | 4 `a;!a` |
-| 5 | `a;a` | [0 0] | [{0} {0}] | 6 5 | 5 `a;a` |
-| 6 | `a;a;!a` | [1 1] | [{0} {0}] | 6 5 | 5 `a;a` |
+| 1 | `!a` | [0 0] | [{} {}] | 1 3 | 1 `!a` |
+| 2 | `a` | [1 1] | [{} {0}] | 4 5 | 2 `a` |
+| 3 | `!a;a` | [1 1] | [{} {}] | 1 5 | 3 `!a;a` |
+| 4 | `a;!a` | [0 0] | [{} {0}] | 4 2 | 4 `a;!a` |
+| 5 | `a;a` | [1 1] | [{0} {0}] | 6 5 | 5 `a;a` |
+| 6 | `a;a;!a` | [0 0] | [{0} {0}] | 6 5 | 5 `a;a` |
 
 ### Canonical algebra `S(L)₊¹`
 

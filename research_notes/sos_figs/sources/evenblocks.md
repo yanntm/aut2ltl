@@ -1,16 +1,16 @@
 # SoS algebra summary — EvenBlocks
 
-Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` = transition monoid; a group in `TM` may be a presentation artifact, a group in `S(L)₊` is intrinsic (⇔ not LTL-definable).
+Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` = transition monoid; a group in `TM` may be a presentation artifact (the LTL-definability verdict, which turns on a group in `S(L)₊` itself, belongs to the definability engine, not this algebra summary).
 
 ## Fingerprints
 
-| input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM | grp S(L)₊ | LTL? | evidence |
-|---|---|---|---|---|---|---|---|
-| EvenBlocks | 2 | 16 | 8 | yes | yes | no | NOT LTL — F2 (ω-power), p=2 u=[] v=[a] y=[a; !a] |
+| input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM |
+|---|---|---|---|---|
+| EvenBlocks | 2 | 16 | 8 | yes |
 
 ## EvenBlocks
 
-*Input:* `research_notes/sos_figs/sources/evenblocks.hoa`
+*Input:* `../research_notes/sos_figs/sources/evenblocks.hoa`
 
 ### Deterministic form `D`
 

@@ -4,6 +4,12 @@ Every command is run from the repository root. Diagnostics are single-input and
 self-bound (≤ 15 s). The tools live in [`sosl/tests/sos/`](../../tests/sos) — see
 that folder's `README.md` for a source map.
 
+**Makefile.** `make` in this directory refreshes the algebra reports
+(`sources/*.md`, §2/§5 below) and renders the paper-facing EM tables
+(`sources/*.emtable.md`, via [`em_table.py`](em_table.py), rename
+`a=a,!a=b`); `make sos` refreshes the `.sos` exports and runs the canonicity
+diff (§3). The commands below remain the step-by-step reference.
+
 ## 0. Prerequisites
 
 Spot (`ltl2tgba`, `autfilt`, the `spot` Python module) and `rsvg-convert`
@@ -149,8 +155,16 @@ algebra is indifferent: `.sos` and the tables in `aUGb.md` are byte-identical
 either way (a mark on an edge into a rejecting sink is reachable by no accepting
 run), which is why only the drawing takes the file verbatim.
 
+*Update (2026-07-17):* `sosl.sos.build.canonical` now enforces the
+transition-based placement itself — after postprocess it strips acceptance
+marks from every edge that leaves its SCC, so no import returns a state-based
+painting. The hand edit above is no longer load-bearing for the algebra (the
+`EM` dump now matches the drawn automaton: `|EM¹| = 10` for `aUGb`, the dead
+words splitting into four mark variants); it is kept because it is the form
+the fixture and the drawing document.
+
 `D` has 3 states (initial `1` looping on `a`, accepting `0` looping on `!a`,
-rejecting sink `2`), `|EM¹| = 7`, `|S(L)₊¹| = 5`, no group in the transition
+rejecting sink `2`), `|EM¹| = 10`, `|S(L)₊¹| = 5`, no group in the transition
 monoid — LTL by construction. Same language as
 [`sos_core_figs/sources/astar_bomega.sos`](../sos_core_figs/sources/astar_bomega.sos),
 which the other figure set builds from the formula instead.

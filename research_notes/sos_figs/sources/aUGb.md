@@ -6,11 +6,11 @@ Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` =
 
 | input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM |
 |---|---|---|---|---|
-| aUGb | 3 | 7 | 5 | no |
+| aUGb | 3 | 10 | 5 | no |
 
 ## aUGb
 
-*Input:* `research_notes/sos_figs/sources/aUGb.hoa`
+*Input:* `../research_notes/sos_figs/sources/aUGb.hoa`
 
 ### Deterministic form `D`
 
@@ -26,7 +26,7 @@ properties: deterministic stutter-invariant very-weak
 --BODY--
 State: 0
 [!0] 0 {0}
-[0] 2 {0}
+[0] 2
 State: 1
 [!0] 0
 [0] 1
@@ -37,17 +37,20 @@ State: 2
 
 ### Enriched monoid `EM(D)` → `S(L)₊`
 
-`|EM¹| = 7` elements folding onto `|S(L)₊¹| = 5` classes. `rmul` is right-multiplication by each letter (`!a`, `a`), as `EM` element ids. The identity element hosts two classes (`[eps]` and any neutral non-empty class).
+`|EM¹| = 10` elements folding onto `|S(L)₊¹| = 5` classes. `rmul` is right-multiplication by each letter (`!a`, `a`), as `EM` element ids. The identity element hosts two classes (`[eps]` and any neutral non-empty class).
 
 | id | word | st | mk | rmul | → class |
 |---|---|---|---|---|---|
 | 0 | `eps` | [0 1 2] | [{} {} {}] | 1 2 | 0 `eps` |
 | 1 | `!a` | [0 0 2] | [{0} {} {}] | 3 4 | 1 `!a` |
-| 2 | `a` | [2 1 2] | [{0} {} {}] | 5 2 | 2 `a` |
-| 3 | `!a;!a` | [0 0 2] | [{0} {0} {}] | 3 4 | 1 `!a` |
-| 4 | `!a;a` | [2 2 2] | [{0} {0} {}] | 4 4 | 3 `!a;a` |
-| 5 | `a;!a` | [2 0 2] | [{0} {} {}] | 6 4 | 4 `a;!a` |
-| 6 | `a;!a;!a` | [2 0 2] | [{0} {0} {}] | 6 4 | 4 `a;!a` |
+| 2 | `a` | [2 1 2] | [{} {} {}] | 5 2 | 2 `a` |
+| 3 | `!a;!a` | [0 0 2] | [{0} {0} {}] | 3 6 | 1 `!a` |
+| 4 | `!a;a` | [2 2 2] | [{0} {} {}] | 4 4 | 3 `!a;a` |
+| 5 | `a;!a` | [2 0 2] | [{} {} {}] | 7 8 | 4 `a;!a` |
+| 6 | `!a;!a;a` | [2 2 2] | [{0} {0} {}] | 6 6 | 3 `!a;a` |
+| 7 | `a;!a;!a` | [2 0 2] | [{} {0} {}] | 7 9 | 4 `a;!a` |
+| 8 | `a;!a;a` | [2 2 2] | [{} {} {}] | 8 8 | 3 `!a;a` |
+| 9 | `a;!a;!a;a` | [2 2 2] | [{} {0} {}] | 9 9 | 3 `!a;a` |
 
 ### Canonical algebra `S(L)₊¹`
 

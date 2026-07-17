@@ -1,16 +1,16 @@
 # SoS algebra summary — GF(aa)
 
-Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` = transition monoid; a group in `TM` may be a presentation artifact, a group in `S(L)₊` is intrinsic (⇔ not LTL-definable).
+Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` = transition monoid; a group in `TM` may be a presentation artifact (the LTL-definability verdict, which turns on a group in `S(L)₊` itself, belongs to the definability engine, not this algebra summary).
 
 ## Fingerprints
 
-| input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM | grp S(L)₊ | LTL? | evidence |
-|---|---|---|---|---|---|---|---|
-| GF(aa) | 2 | 10 | 6 | yes | no | yes | LTL — DG DAG 19 nodes / flat tree 1,991,717 (0.001s) |
+| input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM |
+|---|---|---|---|---|
+| GF(aa) | 2 | 10 | 6 | yes |
 
 ## GF(aa)
 
-*Input:* `research_notes/sos_figs/sources/gf_aa_parity.hoa`
+*Input:* `../research_notes/sos_figs/sources/gf_aa_parity.hoa`
 
 ### Deterministic form `D`
 
