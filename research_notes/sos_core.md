@@ -108,7 +108,7 @@ makes available — classification, rendering to formulas, a calculus, a
 census, learning; §8 concludes.
 
 Four running examples accompany the paper, met first as tables and only
-later as automata: `aUGb`, the pedagogical thread of §2–§3, and `GF(aa)`,
+later as automata: `aUGb`, the pedagogical thread of §2–§3, and `GFaa`,
 `Even`, `EvenBlocks`, chosen to exercise both context shapes of the
 congruence and both sides of the LTL frontier. Each has its own page
 (Ex. 1–4) at the end of the paper — language, formula, classification,
@@ -136,7 +136,7 @@ Consider the language of Carton and Perrin [CP97, Ex. 10] described by
 `a*·b^ω` — some `a`'s, then `b`'s forever — which we name `aUGb`. It
 accompanies every notion of this section, each computed on it by hand; §3
 assembles the results into one drawing, its syntactic ω-semigroup
-(Figure 1). Three more languages join it across the paper — `GF(aa)`,
+(Figure 1). Three more languages join it across the paper — `GFaa`,
 `Even`, `EvenBlocks` — and the four together are the running examples,
 numbered Ex. 1–4. Each has a one-page table at the end of the paper —
 informal description, ω-regular expression, formula, deterministic
@@ -804,8 +804,8 @@ in the same SCC may receive opposite verdicts — `(aab)^ω` and `(ab)^ω` both
 live in `EvenBlocks`'s single SCC (Ex. 4), accepted and rejected — and the
 marks around the closed cycle carry the whole verdict. Some power `v^k` of
 the loop closes its cycle in a single turn — the machine shadow of the
-idempotent power (Definition 3.2), and the reason Definition 3.5 queries
-`𝒮(v)^π`.
+idempotent power (Definition 3.2), and the reason the membership test of
+Definition 3.5 queries `𝒮(v)^π`.
 
 Emerson–Lei acceptance is the most general ω-regular acceptance — Büchi,
 co-Büchi, Rabin, Muller are special shapes — and every regular `L` is `L(D)`
@@ -820,7 +820,7 @@ These automata are, in practice, the standard machine representation of
 regular ω-languages — the form modern tools exchange and optimize. What the
 format lacks is a canonical form: on finite words minimization yields *the*
 minimal DFA, unique up to isomorphism, while a regular ω-language has no such
-distinguished machine — `GF(aa)` is drawn twice in this paper as two
+distinguished machine — `GFaa` is drawn twice in this paper as two
 non-isomorphic automata on the same two states (Ex. 2 and Figure 2), with
 nothing intrinsic to prefer either. §4.4 sends both to one invariant.
 
@@ -831,7 +831,7 @@ three states, numbered as drawn on its page: the initial state `1` loops on
 `a`; `b` leads to state `0`, which loops on `b`, that loop carrying the mark
 `0`; an `a` at state `0` falls to the sink `2`, absorbing both letters
 unmarked; `Acc = Inf(0)` — a run collects `0` forever iff it
-eventually reads only `b`'s. `GF(aa)` tracks the parity of the running block
+eventually reads only `b`'s. `GFaa` tracks the parity of the running block
 of `a`'s on two states: `a` *transposes* them — a `Z₂` in the maps
 `q ↦ δ(q, u)` — and the transposition closing an `aa` carries the mark; `b`
 resets, unmarked; `Acc = Inf(0)`. `Even` needs four states: the parity pair,
@@ -881,12 +881,12 @@ Definition 3.1's freshness is designed for: the basepoint `[ε]` of the final
 invariant is adjoined fresh by the quotient stamp of §4.4, whatever identities
 `EM₊(D)` happens to own.
 
-*Example.* On the two-state `GF(aa)`, the elements `⟨a⟩` and `⟨aaa⟩` have the
+*Example.* On the two-state `GFaa`, the elements `⟨a⟩` and `⟨aaa⟩` have the
 *same* state part — the transposition — and differ only in marks:
 `mk(0, ⟨aaa⟩) = {0}` (the longer word closes an `aa`), `mk(0, ⟨a⟩) = ∅`.
 The transition monoid identifies them; the enrichment keeps them apart.
 Closing the letters under composition gives `|EM₊| = 9` for this presentation
-of `GF(aa)`, `6` for `Even` — and the full `16` for `EvenBlocks`, where `⟨ε⟩`,
+of `GFaa`, `6` for `Even` — and the full `16` for `EvenBlocks`, where `⟨ε⟩`,
 being `⟨aa⟩`, is itself an image of nonempty words and nothing is spared;
 `aUGb` closes at `9`. The example pages carry the four tables in full, one
 row per element with its image in `𝒞`: `9 → 4`, `9 → 5`, `6 → 4`, `16 → 7`
@@ -915,7 +915,8 @@ prefix hides which block collected them.
 > stamp factors through the enriched one: there is a unique — and surjective —
 > semigroup morphism `ρ : EM₊(D) → 𝒞_L` with `𝒮_L = ρ ∘ 𝒮_D`.
 
-*Proof.* Both shapes of Definition 3.7 compare ω-words that factor into
+*Proof.* Both shapes of Arnold's congruence (Definition 3.7) compare ω-words
+that factor into
 nonempty blocks with equal enriched images. Linear shape: for `u₀ ∈ Σ*` and a
 lasso `w = v₀·v^ω`, the words `u₀·u·w` and `u₀·u'·w` factor as
 `u₀ | u | v₀ | v | v | ⋯` against `u₀ | u' | v₀ | v | v | ⋯` (empty context
@@ -948,7 +949,7 @@ The starkness is the message: a trivial transition monoid under a nontrivial
 language. No state bookkeeping recovers acceptance — the marks along the run
 are irreducible data, and the enrichment is the smallest way to keep them. It
 is also why a group in a transition monoid proves nothing about `L`: it can be
-pure encoding, invisible to the marks. `GF(aa)`'s transposition is exactly
+pure encoding, invisible to the marks. `GFaa`'s transposition is exactly
 that situation, resolved in §4.4.
 
 *Example (the converse defect: the enriched stamp is too fine).* On the
@@ -970,7 +971,8 @@ in three moves. *The collapse* (Lemma 4.6): a lasso's verdict depends on its
 stem only through the one state it reaches, so all acceptance data condenses
 into the finitely many loop verdicts `A(q, c)`. *The seed* — the lasso
 equivalence (Definition 4.7): elements compared through residuals and
-verdicts, by right extensions alone. *The rotation* (Lemma 4.8) — Lemma 3.11 read on runs: a
+verdicts, by right extensions alone. *The rotation* (Lemma 4.8) — the rotation lemma (3.11)
+read on runs: a
 left factor carries no information of its own, it only shifts the slot where
 a right test is read — so the coarsest right-invariant refinement of the
 seed is already Arnold's two-sided congruence, and partition refinement
@@ -1048,7 +1050,8 @@ construction resting on residuals alone cannot even see them.
 
 *Proof.* The state identity is the action law of Definition 4.2. For the verdict identity,
 read the loop `(c₀·c·d)^ω` from `q` as `c₀·(c·d·c₀)^ω` — one rotation, the
-move of Lemma 3.11 applied to a context: the factor `c₀` is carried from the
+move of the rotation lemma (3.11) applied to a context: the factor `c₀` is
+carried from the
 loop's front onto the stem. That prefix is read once, its marks recur never,
 so the verdict is the loop verdict of `c·d·c₀` from the state the prefix
 reaches — the collapse (Lemma 4.6): `A(q, c₀·c·d) = A(q·c₀, c·d·c₀)`.
@@ -1111,7 +1114,8 @@ invariant turns out to be §3.3's: one language, one object.
 >   `u_e` the keys; put `(s, e)` in `P(D)` iff it is accepted.
 
 `P(D)` is the computation promised in §3.3: one keyed lasso per pair, where
-Definition 3.8 ranges over all presentations of all accepted lassos. That the
+the syntactic pair set of Definition 3.8 ranges over all presentations of
+all accepted lassos. That the
 single test suffices is canonicity — all lassos sharing a name share `L`'s
 verdict (Theorem 3.10(i)) — once the theorem below identifies the quotient
 stamp with the syntactic one.
@@ -1143,7 +1147,8 @@ for `u₀ ∈ Σ*` and a lasso `w`, with `q := δ(q₀, u₀) ∈ Reach`:
 `u₀·u·w ∈ L ⟺ w ∈ L(q·⟨u⟩)`, and `∼lin` equates that residual with
 `L(q·⟨u'⟩)` — one verdict with `u'` in place of `u`. ω-power: for
 `u₀, v₀ ∈ Σ*`, with `q := δ(q₀, u₀)`: the verdict of `u₀·(u·v₀)^ω` is
-`A(q, ⟨u⟩·⟨v₀⟩)` (Lemma 4.6), and `∼ω` at `d = ⟨v₀⟩` equates it with
+`A(q, ⟨u⟩·⟨v₀⟩)` (the collapse, Lemma 4.6), and `∼ω` at `d = ⟨v₀⟩` equates
+it with
 `A(q, ⟨u'⟩·⟨v₀⟩)`, the verdict of `u₀·(u'·v₀)^ω`.
 
 Equality of the two kernels makes the two stamps equal: a quotient of `Σ⁺`
@@ -1161,7 +1166,7 @@ stamps have equal linked pairs, and for each linked pair `(s, e)`:
 > invariant.
 
 *Example (canonicity, exhibited).* Compute `𝓘(D)` from the run-parity
-`GF(aa)` of Ex. 2 — two states, a `Z₂` of transpositions — and again from
+`GFaa` of Ex. 2 — two states, a `Z₂` of transpositions — and again from
 the **reset** presentation of Figure 2: the same two states, but each letter
 sends *every* state to one place, an aperiodic transition monoid. The two
 automata are not isomorphic, and their transition monoids disagree even on
@@ -1174,10 +1179,10 @@ keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 
 <table>
 <tr>
-<td align="center"><img src="sos_figs/img/gf_aa_reset.png" alt="GF(aa) reset automaton" width="280"></td>
+<td align="center"><img src="sos_figs/img/gf_aa_reset.png" alt="GFaa reset automaton" width="280"></td>
 <td valign="middle">
 
-| presentation | `\|Q\|` | `a` acts by | group in transition monoid? | `\|EM₊\|` | `𝓘(GF(aa))` |
+| presentation | `\|Q\|` | `a` acts by | group in transition monoid? | `\|EM₊\|` | `𝓘(GFaa)` |
 |---|:--:|---|:--:|:--:|---|
 | run-parity (Ex. 2) | 2 | transposition | yes — `Z₂` | 9 | Ex. 2's drawing |
 | reset (left) | 2 | reset | no — aperiodic | 6 | *identical* |
@@ -1186,7 +1191,7 @@ keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 </tr>
 </table>
 
-**Figure 2.** Canonicity, exhibited. The reset presentation of `GF(aa)`: the
+**Figure 2.** Canonicity, exhibited. The reset presentation of `GFaa`: the
 same two states as Ex. 2's machine, but each letter sends every state to one
 place — `a` to the "just saw `a`" state, whose `a`-self-loop carries the
 mark, `b` to the other. Not isomorphic to Ex. 2's automaton, transition
@@ -1198,7 +1203,7 @@ of different sizes — the identical invariant out of both.
 **The algorithm.** The theorem is also the procedure. The seed `R` groups
 the elements of `EM₊(D)` by their residuals and loop verdicts at every
 reachable slot; the `|EM₊(D)|·|Q|` verdicts each cost one walk of a
-functional graph (Lemma 4.6). Residual equality of states is a fixpoint on the same data, one
+functional graph (the loop verdict, Lemma 4.6). Residual equality of states is a fixpoint on the same data, one
 level down: seed two states equal when their loop-verdict *columns* agree —
 `A(p, c) = A(q, c)` for every `c ∈ EM₊(D)` — and refine under the letters,
 splitting whenever `δ(p, x)` and `δ(q, x)` fall in distinct blocks, at most
@@ -1274,7 +1279,7 @@ sets, native to decision diagrams.
 What the field exchanges today is a presentation — an automaton in the
 Hanoi Omega-Automata (HOA) exchange format, one machine among many for its
 language. The invariant serializes to
-a file that *is* the language. `𝓘(GF(aa))`, in full:
+a file that *is* the language. `𝓘(GFaa)`, in full:
 
 ```
 SOS v1
@@ -1310,7 +1315,7 @@ by shortlex key, monoid convention: class `0 eps` is the adjoined `[ε]`, so
 gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
 `([a·a], [a·a])`, ids `5 5`. The trailing `residuals:` block is derived
 data — the right congruence, recomputable from the core, so byte equality is
-unaffected; its single class exhibits `GF(aa)`'s prefix-independence.
+unaffected; its single class exhibits `GFaa`'s prefix-independence.
 
 The file decides lassos by the query of Definition 3.5 with no further
 apparatus. For
@@ -1319,7 +1324,7 @@ apparatus. For
 `accept`: rejected — no `aa` recurs.
 
 *Example (canonicity, in bytes).* The two non-isomorphic presentations of
-`GF(aa)` in §4.4 — run-parity and reset — both construct exactly this file.
+`GFaa` in §4.4 — run-parity and reset — both construct exactly this file.
 Language equality of the two inputs is not tested; it is exhibited: one
 language, one file.
 
@@ -1355,7 +1360,8 @@ presentation `(u_s, u_e)` lands on `(s, e)` — the keys are nonempty,
 > the stamp — classes, keys, letter map, table — and flips the pair set within
 > the linked pairs.
 
-*Proof.* Both context shapes of Definition 3.7 are membership equivalences,
+*Proof.* Both context shapes of Arnold's congruence (Definition 3.7) are
+membership equivalences,
 symmetric in `L` and `L̄`, so `≈_L = ≈_{L̄}` and the syntactic stamps
 coincide, keys included. Every linked pair names at least one lasso (proof
 of 5.1(iii)), and all lassos sharing a name share one verdict — canonicity
@@ -1386,7 +1392,7 @@ The chain is LTL `=` FO[<] `=` star-free `=` aperiodic syntactic algebra
 see [DG08] for the consolidated account. What this paper adds is not the
 theorem but the table it is read off:
 
-> **Corollary 5.4 (the decision).** On the constructed invariant `𝓘(D)`,
+> **Corollary 5.4 (deciding LTL-definability).** On the constructed invariant `𝓘(D)`,
 > LTL-definability of `L(D)` is decided by finitely many table products —
 > compute `c^π` for each class, test `c^π·c = c^π` — and the verdict is exact
 > in both directions, whatever `D` presented the language, because
@@ -1396,9 +1402,9 @@ Canonicity is what the exactness rests on. On a non-canonical recognizer
 only one direction survives: aperiodicity of `EM₊(D)` — or of the transition
 monoid — is inherited by the quotient and thus *sufficient* for LTL, but a
 group there proves nothing, since it can be pure presentation
-(Proposition 4.5's one-state witness; `GF(aa)`'s transposition, which §4.4
+(Proposition 4.5's one-state witness; `GFaa`'s transposition, which §4.4
 kills). On the four examples: `aUGb` — `[a·b]` falls to the idempotent
-`[b·a]` in one step, every power cycle has period 1: LTL. `GF(aa)` — the
+`[b·a]` in one step, every power cycle has period 1: LTL. `GFaa` — the
 `Z₂` of its presentation died in the quotient, all five classes settle with
 period 1: LTL. `Even` and `EvenBlocks` — `[a]·[a] = [a·a]` and
 `[a·a]·[a] = [a]`, a power cycle of period 2: a genuine group, not LTL, and
@@ -1498,7 +1504,8 @@ object of study.
 
 **Learning the algebra.** The rotation lemma is an observation-table
 discipline: every two-sided demand of the congruence is met by right
-extensions read at prefix-indexed slots (Lemma 4.8) — rows and columns, the
+extensions read at prefix-indexed slots (rotation on runs, Lemma 4.8) —
+rows and columns, the
 shape a minimally-adequate-teacher (MAT) learner consumes. Learning the
 syntactic ω-semigroup itself from
 membership queries on lassos therefore looks feasible — where [AF21] records
@@ -1645,9 +1652,9 @@ happened to see the mark on the way to the sink, merge onto the single zero
 | `⟨a·b·b·a⟩` | `(2, ∅)` | `(2, {0})` | `(2, ∅)` | `⟨a·b·b·a⟩` | `⟨a·b·b·a⟩` | `[b·a]` |
 
 
-# Example 2 — `GF(aa)`
+# Example 2 — `GFaa`
 
-| aspect | `GF(aa)` |
+| aspect | `GFaa` |
 |---|---|
 | Language (informal) | "infinitely many aa : an a followed by an a." |
 | ω-regular | `((a\|b)*·a·a)^ω` |
@@ -1655,8 +1662,8 @@ happened to see the mark on the way to the sink, merge onto the single zero
 | LTL | **yes** — stutter sensitive |
 | Geometry | recurrence, properly `Gδ`: strictly above every obligation |
 | Recognizer | DBA-proper — deterministic Büchi suffices, no deterministic co-Büchi can |
-| Det. Emerson–Lei `D` | ![GF(aa) run-parity automaton](sos_figs/img/gf_aa.png) |
-| Invariant `𝓘` | ![GF(aa) invariant](sos_core_figs/img/core_F1_gf_aa_pairs.png) |
+| Det. Emerson–Lei `D` | ![GFaa run-parity automaton](sos_figs/img/gf_aa.png) |
+| Invariant `𝓘` | ![GFaa invariant](sos_core_figs/img/core_F1_gf_aa_pairs.png) |
 
 `[a]` is the class of words that start with an `a`, have never seen two `a`'s
 in a row, and most recently read an `a`. `[a·b]` is the class of words that
@@ -1863,7 +1870,7 @@ the identity is itself an image of nonempty words, `EM₊` is the whole
 monoid, and the neutral class `[a·a]` is genuine language data. The language
 lives entirely in the marks: six elements — `⟨b·a·b⟩` and its five mark
 variants below it — are one behavior for `L` and merge onto the zero
-`[b·a·b]`. And unlike `GF(aa)`'s page, the parity `Z₂` *survives* the
+`[b·a·b]`. And unlike `GFaa`'s page, the parity `Z₂` *survives* the
 quotient — `[a]·[a] = [a·a]`, `[a·a]·[a] = [a]` — this group is `L`'s own.
 
 | ⟨w⟩ | at 0 | at 1 | ·⟨b⟩ | ·⟨a⟩ | → class |
