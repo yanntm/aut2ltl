@@ -1,8 +1,9 @@
 """C5 cross-check — spec: "Cross-check `≃` against the explicit tool's
 residual classes on every conformance instance."
 
-The explicit side is `sosl.sos.core.congruence.residual_classes`, i.e.
-`spot.language_map` on a deterministic graph. Here it runs on the RAW
+The explicit side is `spot.language_map` on a deterministic graph — an
+oracle independent of the sosl core (which computes its own residual base
+from loop verdicts). Here it runs on the RAW
 parsed automaton (no import postprocess), so its state numbering is the
 digest's and the two partitions compare state-for-state: the engine's
 Phase 4 `residual_classes()` (classes ordered by least member) must
