@@ -90,10 +90,15 @@ lemmas make `~` computable without ever multiplying on the left:
       e ~ω  f   ⟺  ∀ b ∈ EM¹ :  Aprof(e·b) = Aprof(f·b)     (right-invariant profile equality)
   ```
 
-  The linear half is computed **once on `D`, with no monoid involved**:
-  `residual_classes` delegates state language-equivalence to
-  `spot.language_map` (deterministic input — one dualized complement per
-  state), and an element's `~lin` datum is just its vector of reached-state
+  The linear half is recovered **from the loop-verdict matrix already in
+  hand** — no external decision procedure. By lasso density `L(p) = L(q)`
+  iff `A(st_s(p), c) = A(st_s(q), c)` for every stem `s` and loop `c`, so
+  `residual_classes` runs a state-level Moore refinement: seed each state
+  with its profile *column* (`A(q, c)` for every `c` — the empty-stem
+  lassos; the identity column is constant, hence inert), split under the
+  letter maps to fixpoint. Letter stems generate all stems (`EM¹` is
+  letter-generated), so the fixpoint is exactly language equivalence of
+  states; an element's `~lin` datum is just its vector of reached-state
   classes. The ω half is a right-congruence condition seeded by profiles.
 - **Rotation (4.4).** A left factor `a` acts on both seeds only by
   re-indexing the state slot — `st_{a·e}(q) = st_e(st_a(q))` for `~lin`, and
@@ -105,9 +110,10 @@ lemmas make `~` computable without ever multiplying on the left:
 
 `refine` realizes this: seed the partition by the pair, split a block
 whenever right-multiplication by a letter separates two members, iterate to
-fixpoint (Moore refinement, at most `|EM|` splits). **Theorem 4.5:** the
-final blocks are exactly the classes of the syntactic congruence —
-`EM(D)/~ = S(L)₊`.
+fixpoint (Moore refinement, at most `|EM|` splits). The engine is shared
+with `residual_classes` — same loop, run on the letter maps of `D` instead
+of the right table. **Theorem 4.5:** the final blocks are exactly the
+classes of the syntactic congruence — `EM(D)/~ = S(L)₊`.
 
 Degenerate cases need no special-casing (§4): a prefix-independent language
 has one residual class, `~lin` is total, and all discrimination rides on the
@@ -160,9 +166,10 @@ is specified in `sos/algorithm.md`.
 The dominant object is `|EM(D)|`, bounded by `(|Q|·2^{|C|})^{|Q|}`; the cap
 converts the explosion into an honest `None` (the decision problems downstream
 of this object are PSPACE-hard, so a cap somewhere is a necessity, not an
-apology). Around it: residual classes cost one language-equivalence sweep on
-`D`, once; profiles `O(|EM|·|Q|)`; refinement `O(|EM|·|Σ|)` per split; the
-freeze is quadratic in the class count.
+apology). Around it: profiles `O(|EM|·|Q|)`; residual classes read the
+profile columns (`O(|EM|·|Q|)` transpose) then Moore-refine at `O(|Q|·|Σ|)`
+per split, at most `|Q|` splits; congruence refinement `O(|EM|·|Σ|)` per
+split; the freeze is quadratic in the class count.
 
 ## Regression fingerprints
 
@@ -189,13 +196,14 @@ and an aperiodic transition monoid, one identical invariant).
 ```
               D  (deterministic complete Emerson–Lei form)
                    │
-      ┌────────────┴────────────┐
- congruence.residual_classes   enriched.py ── letter elements (Key I)
- the ~lin base (spot)              │
-      │                        closure.py ── EM¹(D), reps, right table
-      │                            │
-      │                        congruence.profile ── the ~ω seed
-      └────────────┬───────────────┘
+              enriched.py ── letter elements (Key I)
+                   │
+              closure.py ── EM¹(D), reps, right table
+                   │
+              congruence.profile ── the loop-verdict matrix, the ~ω seed
+                   │
+              congruence.residual_classes ── the ~lin base: state-level
+                   │                         Moore on the profile columns
              congruence.refine ── the congruence ~ (Key II)
                    │
               quotient.py ── pipeline / freeze: word classes,
@@ -203,7 +211,8 @@ and an aperiodic transition monoid, one identical invariant).
               canonical.py ── the shared normal form -> Invariant
 ```
 
-Layering: `core` consumes spot and the `sos` root data structures
-(`Alphabet`, `Invariant`), nothing else. It neither normalizes its input
-(D arrives in the required form) nor owns resource policy (the cap is a
-parameter): every function here is pure in what it is handed.
+Layering: `core` consumes spot (reading `D`, evaluating `Acc` on mark sets)
+and the `sos` root data structures (`Alphabet`, `Invariant`), nothing else.
+It neither normalizes its input (D arrives in the required form) nor owns
+resource policy (the cap is a parameter): every function here is pure in
+what it is handed.
