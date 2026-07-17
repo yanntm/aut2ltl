@@ -137,7 +137,8 @@ presentation `(u_s, u_e)` lands on `(s, e)` — the keys are nonempty,
 > the stamp — classes, keys, letter map, table — and flips the pair set within
 > the linked pairs.
 
-*Proof.* Both context shapes of Definition 3.7 are membership equivalences,
+*Proof.* Both context shapes of Arnold's congruence (Definition 3.7) are
+membership equivalences,
 symmetric in `L` and `L̄`, so `≈_L = ≈_{L̄}` and the syntactic stamps
 coincide, keys included. Every linked pair names at least one lasso (proof
 of 5.1(iii)), and all lassos sharing a name share one verdict — canonicity
@@ -168,7 +169,7 @@ The chain is LTL `=` FO[<] `=` star-free `=` aperiodic syntactic algebra
 see [DG08] for the consolidated account. What this paper adds is not the
 theorem but the table it is read off:
 
-> **Corollary 5.4 (the decision).** On the constructed invariant `𝓘(D)`,
+> **Corollary 5.4 (deciding LTL-definability).** On the constructed invariant `𝓘(D)`,
 > LTL-definability of `L(D)` is decided by finitely many table products —
 > compute `c^π` for each class, test `c^π·c = c^π` — and the verdict is exact
 > in both directions, whatever `D` presented the language, because

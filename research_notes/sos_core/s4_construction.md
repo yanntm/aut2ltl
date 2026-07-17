@@ -69,8 +69,8 @@ in the same SCC may receive opposite verdicts — `(aab)^ω` and `(ab)^ω` both
 live in `EvenBlocks`'s single SCC (Ex. 4), accepted and rejected — and the
 marks around the closed cycle carry the whole verdict. Some power `v^k` of
 the loop closes its cycle in a single turn — the machine shadow of the
-idempotent power (Definition 3.2), and the reason Definition 3.5 queries
-`𝒮(v)^π`.
+idempotent power (Definition 3.2), and the reason the membership test of
+Definition 3.5 queries `𝒮(v)^π`.
 
 Emerson–Lei acceptance is the most general ω-regular acceptance — Büchi,
 co-Büchi, Rabin, Muller are special shapes — and every regular `L` is `L(D)`
@@ -180,7 +180,8 @@ prefix hides which block collected them.
 > stamp factors through the enriched one: there is a unique — and surjective —
 > semigroup morphism `ρ : EM₊(D) → 𝒞_L` with `𝒮_L = ρ ∘ 𝒮_D`.
 
-*Proof.* Both shapes of Definition 3.7 compare ω-words that factor into
+*Proof.* Both shapes of Arnold's congruence (Definition 3.7) compare ω-words
+that factor into
 nonempty blocks with equal enriched images. Linear shape: for `u₀ ∈ Σ*` and a
 lasso `w = v₀·v^ω`, the words `u₀·u·w` and `u₀·u'·w` factor as
 `u₀ | u | v₀ | v | v | ⋯` against `u₀ | u' | v₀ | v | v | ⋯` (empty context
@@ -235,7 +236,8 @@ in three moves. *The collapse* (Lemma 4.6): a lasso's verdict depends on its
 stem only through the one state it reaches, so all acceptance data condenses
 into the finitely many loop verdicts `A(q, c)`. *The seed* — the lasso
 equivalence (Definition 4.7): elements compared through residuals and
-verdicts, by right extensions alone. *The rotation* (Lemma 4.8) — Lemma 3.11 read on runs: a
+verdicts, by right extensions alone. *The rotation* (Lemma 4.8) — the rotation lemma (3.11)
+read on runs: a
 left factor carries no information of its own, it only shifts the slot where
 a right test is read — so the coarsest right-invariant refinement of the
 seed is already Arnold's two-sided congruence, and partition refinement
@@ -313,7 +315,8 @@ construction resting on residuals alone cannot even see them.
 
 *Proof.* The state identity is the action law of Definition 4.2. For the verdict identity,
 read the loop `(c₀·c·d)^ω` from `q` as `c₀·(c·d·c₀)^ω` — one rotation, the
-move of Lemma 3.11 applied to a context: the factor `c₀` is carried from the
+move of the rotation lemma (3.11) applied to a context: the factor `c₀` is
+carried from the
 loop's front onto the stem. That prefix is read once, its marks recur never,
 so the verdict is the loop verdict of `c·d·c₀` from the state the prefix
 reaches — the collapse (Lemma 4.6): `A(q, c₀·c·d) = A(q·c₀, c·d·c₀)`.
@@ -376,7 +379,8 @@ invariant turns out to be §3.3's: one language, one object.
 >   `u_e` the keys; put `(s, e)` in `P(D)` iff it is accepted.
 
 `P(D)` is the computation promised in §3.3: one keyed lasso per pair, where
-Definition 3.8 ranges over all presentations of all accepted lassos. That the
+the syntactic pair set of Definition 3.8 ranges over all presentations of
+all accepted lassos. That the
 single test suffices is canonicity — all lassos sharing a name share `L`'s
 verdict (Theorem 3.10(i)) — once the theorem below identifies the quotient
 stamp with the syntactic one.
@@ -408,7 +412,8 @@ for `u₀ ∈ Σ*` and a lasso `w`, with `q := δ(q₀, u₀) ∈ Reach`:
 `u₀·u·w ∈ L ⟺ w ∈ L(q·⟨u⟩)`, and `∼lin` equates that residual with
 `L(q·⟨u'⟩)` — one verdict with `u'` in place of `u`. ω-power: for
 `u₀, v₀ ∈ Σ*`, with `q := δ(q₀, u₀)`: the verdict of `u₀·(u·v₀)^ω` is
-`A(q, ⟨u⟩·⟨v₀⟩)` (Lemma 4.6), and `∼ω` at `d = ⟨v₀⟩` equates it with
+`A(q, ⟨u⟩·⟨v₀⟩)` (the collapse, Lemma 4.6), and `∼ω` at `d = ⟨v₀⟩` equates
+it with
 `A(q, ⟨u'⟩·⟨v₀⟩)`, the verdict of `u₀·(u'·v₀)^ω`.
 
 Equality of the two kernels makes the two stamps equal: a quotient of `Σ⁺`
@@ -463,7 +468,7 @@ of different sizes — the identical invariant out of both.
 **The algorithm.** The theorem is also the procedure. The seed `R` groups
 the elements of `EM₊(D)` by their residuals and loop verdicts at every
 reachable slot; the `|EM₊(D)|·|Q|` verdicts each cost one walk of a
-functional graph (Lemma 4.6). Residual equality of states is a fixpoint on the same data, one
+functional graph (the loop verdict, Lemma 4.6). Residual equality of states is a fixpoint on the same data, one
 level down: seed two states equal when their loop-verdict *columns* agree —
 `A(p, c) = A(q, c)` for every `c ∈ EM₊(D)` — and refine under the letters,
 splitting whenever `δ(p, x)` and `δ(q, x)` fall in distinct blocks, at most

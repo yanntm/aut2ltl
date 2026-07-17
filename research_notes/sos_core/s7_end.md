@@ -81,7 +81,8 @@ object of study.
 
 **Learning the algebra.** The rotation lemma is an observation-table
 discipline: every two-sided demand of the congruence is met by right
-extensions read at prefix-indexed slots (Lemma 4.8) — rows and columns, the
+extensions read at prefix-indexed slots (rotation on runs, Lemma 4.8) —
+rows and columns, the
 shape a minimally-adequate-teacher (MAT) learner consumes. Learning the
 syntactic ω-semigroup itself from
 membership queries on lassos therefore looks feasible — where [AF21] records
