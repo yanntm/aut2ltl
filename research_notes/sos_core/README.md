@@ -51,11 +51,9 @@ congruence classes (`𝒞_D`, one row per class = its two maps) with its fold
 onto `𝒞` — pasted verbatim from the generated
 [`../sos_figs/sources/`](../sos_figs/sources/)`*.emtable.md`
 (`make -C ../sos_figs` refreshes the reports then renders the paper notation
-via `em_table.py`, rename `!a` → `b`). Regenerated 2026-07-17, after the
-importer fix forcing transition-based mark placement (marks on recurring
-edges only) — which corrected `aUGb`'s table to `|𝒞_D| = 9`. (The generator
-and its files keep the historical `EM`/emtable naming; only the paper
-vocabulary changed.)
+via `em_table.py`, rename `!a` → `b`; the generator and its files keep the
+historical `EM`/emtable naming). Marks are transition-based, placed on
+recurring edges only.
 
 ## Conventions
 
