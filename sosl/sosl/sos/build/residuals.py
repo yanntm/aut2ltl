@@ -13,21 +13,31 @@ Its output is the optional trailer of a `.sos` figure export (see
 from __future__ import annotations
 
 from collections import deque
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from ..alphabet import EMPTY, Alphabet, Word
-from ..core.congruence import residual_classes
+from ..core.closure import Monoid, close
+from ..core.congruence import Profile, profile, residual_classes
 from ..core.enriched import Elem, letter_elems
 from ..residuals import Residuals
 from .importer import import_hoa
 
 
-def residuals_of_hoa(path: str) -> Residuals:
-    """The canonical `Residuals` of the language of HOA file ``path``."""
+def residuals_of_hoa(path: str, cap: int = 20000) -> Residuals:
+    """The canonical `Residuals` of the language of HOA file ``path``.
+
+    The state partition is the core's (`residual_classes` off the closed
+    monoid's loop verdicts), so this raises ``ValueError`` when the monoid
+    closure blows ``cap`` — callers only ask for residuals of languages whose
+    invariant was constructible."""
     aut = import_hoa(path)
     alphabet = Alphabet.of(ap.ap_name() for ap in aut.ap())
     letters: List[Elem] = letter_elems(aut, alphabet)
-    st_cls: List[int] = residual_classes(aut)     # state -> residual id
+    mon: Optional[Monoid] = close(letters, aut.num_states(), cap)
+    if mon is None:
+        raise ValueError(f"{path}: monoid closure blew the cap ({cap})")
+    prof: List[Profile] = [profile(aut.acc(), el) for el in mon.elems]
+    st_cls: List[int] = residual_classes(mon, prof)   # state -> residual id
     init: int = aut.get_init_state_number()
 
     def step_state(state: int, mask: int) -> int:
