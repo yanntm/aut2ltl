@@ -41,6 +41,6 @@ entry names a row. The last column is the image of the row's element in the
 quotient of §4.3 — its class in `𝒞`.
 
 - Ex. 1 — [`aUGb`](Ex_aUGb.md)
-- Ex. 2 — [`GF(aa)`](Ex_GFaa.md)
+- Ex. 2 — [`GFaa`](Ex_GFaa.md)
 - Ex. 3 — [`Even`](Ex_Even.md)
 - Ex. 4 — [`EvenBlocks`](Ex_EvenBlocks.md)

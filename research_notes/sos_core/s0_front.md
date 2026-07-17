@@ -106,7 +106,7 @@ makes available — classification, rendering to formulas, a calculus, a
 census, learning; §8 concludes.
 
 Four running examples accompany the paper, met first as tables and only
-later as automata: `aUGb`, the pedagogical thread of §2–§3, and `GF(aa)`,
+later as automata: `aUGb`, the pedagogical thread of §2–§3, and `GFaa`,
 `Even`, `EvenBlocks`, chosen to exercise both context shapes of the
 congruence and both sides of the LTL frontier. Each has its own page
 (Ex. 1–4) at the end of the paper — language, formula, classification,

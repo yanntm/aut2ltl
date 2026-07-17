@@ -63,7 +63,7 @@ the identity is itself an image of nonempty words, `EM₊` is the whole
 monoid, and the neutral class `[a·a]` is genuine language data. The language
 lives entirely in the marks: six elements — `⟨b·a·b⟩` and its five mark
 variants below it — are one behavior for `L` and merge onto the zero
-`[b·a·b]`. And unlike `GF(aa)`'s page, the parity `Z₂` *survives* the
+`[b·a·b]`. And unlike `GFaa`'s page, the parity `Z₂` *survives* the
 quotient — `[a]·[a] = [a·a]`, `[a·a]·[a] = [a]` — this group is `L`'s own.
 
 | ⟨w⟩ | at 0 | at 1 | ·⟨b⟩ | ·⟨a⟩ | → class |

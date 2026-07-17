@@ -19,7 +19,7 @@ Consider the language of Carton and Perrin [CP97, Ex. 10] described by
 `a*·b^ω` — some `a`'s, then `b`'s forever — which we name `aUGb`. It
 accompanies every notion of this section, each computed on it by hand; §3
 assembles the results into one drawing, its syntactic ω-semigroup
-(Figure 1). Three more languages join it across the paper — `GF(aa)`,
+(Figure 1). Three more languages join it across the paper — `GFaa`,
 `Even`, `EvenBlocks` — and the four together are the running examples,
 numbered Ex. 1–4. Each has a one-page table at the end of the paper —
 informal description, ω-regular expression, formula, deterministic

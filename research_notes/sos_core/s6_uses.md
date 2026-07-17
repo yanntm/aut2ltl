@@ -56,7 +56,7 @@ sets, native to decision diagrams.
 What the field exchanges today is a presentation — an automaton in the
 Hanoi Omega-Automata (HOA) exchange format, one machine among many for its
 language. The invariant serializes to
-a file that *is* the language. `𝓘(GF(aa))`, in full:
+a file that *is* the language. `𝓘(GFaa)`, in full:
 
 ```
 SOS v1
@@ -92,7 +92,7 @@ by shortlex key, monoid convention: class `0 eps` is the adjoined `[ε]`, so
 gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
 `([a·a], [a·a])`, ids `5 5`. The trailing `residuals:` block is derived
 data — the right congruence, recomputable from the core, so byte equality is
-unaffected; its single class exhibits `GF(aa)`'s prefix-independence.
+unaffected; its single class exhibits `GFaa`'s prefix-independence.
 
 The file decides lassos by the query of Definition 3.5 with no further
 apparatus. For
@@ -101,7 +101,7 @@ apparatus. For
 `accept`: rejected — no `aa` recurs.
 
 *Example (canonicity, in bytes).* The two non-isomorphic presentations of
-`GF(aa)` in §4.4 — run-parity and reset — both construct exactly this file.
+`GFaa` in §4.4 — run-parity and reset — both construct exactly this file.
 Language equality of the two inputs is not tested; it is exhibited: one
 language, one file.
 
@@ -178,9 +178,9 @@ Canonicity is what the exactness rests on. On a non-canonical recognizer
 only one direction survives: aperiodicity of `EM₊(D)` — or of the transition
 monoid — is inherited by the quotient and thus *sufficient* for LTL, but a
 group there proves nothing, since it can be pure presentation
-(Proposition 4.5's one-state witness; `GF(aa)`'s transposition, which §4.4
+(Proposition 4.5's one-state witness; `GFaa`'s transposition, which §4.4
 kills). On the four examples: `aUGb` — `[a·b]` falls to the idempotent
-`[b·a]` in one step, every power cycle has period 1: LTL. `GF(aa)` — the
+`[b·a]` in one step, every power cycle has period 1: LTL. `GFaa` — the
 `Z₂` of its presentation died in the quotient, all five classes settle with
 period 1: LTL. `Even` and `EvenBlocks` — `[a]·[a] = [a·a]` and
 `[a·a]·[a] = [a]`, a power cycle of period 2: a genuine group, not LTL, and

@@ -1,6 +1,6 @@
-# Example 2 — `GF(aa)`
+# Example 2 — `GFaa`
 
-| aspect | `GF(aa)` |
+| aspect | `GFaa` |
 |---|---|
 | Language (informal) | "infinitely many aa : an a followed by an a." |
 | ω-regular | `((a\|b)*·a·a)^ω` |
@@ -8,8 +8,8 @@
 | LTL | **yes** — stutter sensitive |
 | Geometry | recurrence, properly `Gδ`: strictly above every obligation |
 | Recognizer | DBA-proper — deterministic Büchi suffices, no deterministic co-Büchi can |
-| Det. Emerson–Lei `D` | ![GF(aa) run-parity automaton](../sos_figs/img/gf_aa.png) |
-| Invariant `𝓘` | ![GF(aa) invariant](../sos_core_figs/img/core_F1_gf_aa_pairs.png) |
+| Det. Emerson–Lei `D` | ![GFaa run-parity automaton](../sos_figs/img/gf_aa.png) |
+| Invariant `𝓘` | ![GFaa invariant](../sos_core_figs/img/core_F1_gf_aa_pairs.png) |
 
 `[a]` is the class of words that start with an `a`, have never seen two `a`'s
 in a row, and most recently read an `a`. `[a·b]` is the class of words that

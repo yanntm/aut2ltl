@@ -85,7 +85,7 @@ These automata are, in practice, the standard machine representation of
 regular ω-languages — the form modern tools exchange and optimize. What the
 format lacks is a canonical form: on finite words minimization yields *the*
 minimal DFA, unique up to isomorphism, while a regular ω-language has no such
-distinguished machine — `GF(aa)` is drawn twice in this paper as two
+distinguished machine — `GFaa` is drawn twice in this paper as two
 non-isomorphic automata on the same two states (Ex. 2 and Figure 2), with
 nothing intrinsic to prefer either. §4.4 sends both to one invariant.
 
@@ -96,7 +96,7 @@ three states, numbered as drawn on its page: the initial state `1` loops on
 `a`; `b` leads to state `0`, which loops on `b`, that loop carrying the mark
 `0`; an `a` at state `0` falls to the sink `2`, absorbing both letters
 unmarked; `Acc = Inf(0)` — a run collects `0` forever iff it
-eventually reads only `b`'s. `GF(aa)` tracks the parity of the running block
+eventually reads only `b`'s. `GFaa` tracks the parity of the running block
 of `a`'s on two states: `a` *transposes* them — a `Z₂` in the maps
 `q ↦ δ(q, u)` — and the transposition closing an `aa` carries the mark; `b`
 resets, unmarked; `Acc = Inf(0)`. `Even` needs four states: the parity pair,
@@ -146,12 +146,12 @@ Definition 3.1's freshness is designed for: the basepoint `[ε]` of the final
 invariant is adjoined fresh by the quotient stamp of §4.4, whatever identities
 `EM₊(D)` happens to own.
 
-*Example.* On the two-state `GF(aa)`, the elements `⟨a⟩` and `⟨aaa⟩` have the
+*Example.* On the two-state `GFaa`, the elements `⟨a⟩` and `⟨aaa⟩` have the
 *same* state part — the transposition — and differ only in marks:
 `mk(0, ⟨aaa⟩) = {0}` (the longer word closes an `aa`), `mk(0, ⟨a⟩) = ∅`.
 The transition monoid identifies them; the enrichment keeps them apart.
 Closing the letters under composition gives `|EM₊| = 9` for this presentation
-of `GF(aa)`, `6` for `Even` — and the full `16` for `EvenBlocks`, where `⟨ε⟩`,
+of `GFaa`, `6` for `Even` — and the full `16` for `EvenBlocks`, where `⟨ε⟩`,
 being `⟨aa⟩`, is itself an image of nonempty words and nothing is spared;
 `aUGb` closes at `9`. The example pages carry the four tables in full, one
 row per element with its image in `𝒞`: `9 → 4`, `9 → 5`, `6 → 4`, `16 → 7`
@@ -213,7 +213,7 @@ The starkness is the message: a trivial transition monoid under a nontrivial
 language. No state bookkeeping recovers acceptance — the marks along the run
 are irreducible data, and the enrichment is the smallest way to keep them. It
 is also why a group in a transition monoid proves nothing about `L`: it can be
-pure encoding, invisible to the marks. `GF(aa)`'s transposition is exactly
+pure encoding, invisible to the marks. `GFaa`'s transposition is exactly
 that situation, resolved in §4.4.
 
 *Example (the converse defect: the enriched stamp is too fine).* On the
@@ -426,7 +426,7 @@ stamps have equal linked pairs, and for each linked pair `(s, e)`:
 > invariant.
 
 *Example (canonicity, exhibited).* Compute `𝓘(D)` from the run-parity
-`GF(aa)` of Ex. 2 — two states, a `Z₂` of transpositions — and again from
+`GFaa` of Ex. 2 — two states, a `Z₂` of transpositions — and again from
 the **reset** presentation of Figure 2: the same two states, but each letter
 sends *every* state to one place, an aperiodic transition monoid. The two
 automata are not isomorphic, and their transition monoids disagree even on
@@ -439,10 +439,10 @@ keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 
 <table>
 <tr>
-<td align="center"><img src="../sos_figs/img/gf_aa_reset.png" alt="GF(aa) reset automaton" width="280"></td>
+<td align="center"><img src="../sos_figs/img/gf_aa_reset.png" alt="GFaa reset automaton" width="280"></td>
 <td valign="middle">
 
-| presentation | `\|Q\|` | `a` acts by | group in transition monoid? | `\|EM₊\|` | `𝓘(GF(aa))` |
+| presentation | `\|Q\|` | `a` acts by | group in transition monoid? | `\|EM₊\|` | `𝓘(GFaa)` |
 |---|:--:|---|:--:|:--:|---|
 | run-parity (Ex. 2) | 2 | transposition | yes — `Z₂` | 9 | Ex. 2's drawing |
 | reset (left) | 2 | reset | no — aperiodic | 6 | *identical* |
@@ -451,7 +451,7 @@ keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 </tr>
 </table>
 
-**Figure 2.** Canonicity, exhibited. The reset presentation of `GF(aa)`: the
+**Figure 2.** Canonicity, exhibited. The reset presentation of `GFaa`: the
 same two states as Ex. 2's machine, but each letter sends every state to one
 place — `a` to the "just saw `a`" state, whose `a`-self-loop carries the
 mark, `b` to the other. Not isomorphic to Ex. 2's automaton, transition
