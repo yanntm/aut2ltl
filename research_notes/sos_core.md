@@ -97,15 +97,15 @@ mathematics and assembles the construction. Our contributions:
    Theorem 4.11 closes the loop against the semantics: `𝓘(D) = 𝓘(L(D))`,
    byte for byte, whatever presentation `D` was.
 
-§5 splits the two costs — the construction pays an exponential that
-PSPACE-hardness makes unavoidable, while everything on the finished table is
-polynomial in `|𝒞|`, a size intrinsic to the language. §6 puts the invariant
-to work: the identity questions — equality, complement, membership,
-witnesses — nearly for free, then the LTL frontier as a one-look read-off,
-exact in both directions because the invariant is canonical. §7 reviews
-related work; §8 opens the directions the invariant makes available —
-classification, rendering to formulas, a calculus, a census, learning;
-§9 concludes.
+§5 puts the invariant to work: first the split of the two costs — the
+construction pays an exponential that PSPACE-hardness makes unavoidable,
+while everything on the finished table is polynomial in `|𝒞|`, a size
+intrinsic to the language — then the identity questions — equality,
+complement, membership, witnesses — nearly for free, and the LTL frontier
+as a one-look read-off, exact in both directions because the invariant is
+canonical. §6 reviews related work; §7 opens the directions the invariant
+makes available — classification, rendering to formulas, a calculus, a
+census, learning; §8 concludes.
 
 Four running examples accompany the paper, met first as tables and only
 later as automata: `aUGb`, the pedagogical thread of §2–§3, and `GF(aa)`,
@@ -649,7 +649,7 @@ turns the unique isomorphism of Theorem 3.10(ii) into the identity on names:
 two regular ω-languages are equal iff the serialized invariants — classes,
 letter map, table, `P`, under shortlex naming — are byte-identical.
 Canonicity is the mathematics; byte equality is that mathematics plus a naming
-convention, and it is the form the serialized invariant of §6.1 puts to work.
+convention, and it is the form the serialized invariant of §5.2 puts to work.
 
 *Example.* On Figure 1 (`aUGb`), present `aab·b^ω` as `(aab, b)` or as
 `(aabb, bb)`: both land on the name `([a·b], [b])` — here even the name is
@@ -1159,10 +1159,19 @@ splits; the result is stable under every right letter, hence under every
 right element — `EM(D)` is letter-generated — and by Lemma 4.8 it is
 exactly `∼`. `P(D)` is one lasso test per candidate linked pair. Everything
 downstream of `EM₊(D)` is polynomial in its size; the size itself is the
-subject of §5.
+subject of §5.1.
 
 
-## 5. Complexity
+## 5. What the invariant unlocks
+
+The invariant was built to be used. This section first splits the cost of
+building the table from the cost of using it, then reads decisions off the
+finished table: the band of identity questions the semantics answers nearly
+for free, and the definability frontier. Throughout, an invariant is handled
+through its finite presentation `(𝒞, λ, ·, P)` under shortlex keys — the
+serialized form the byte-equality remark of §3.3 announced.
+
+### 5.1 Complexity
 
 Two costs must be kept apart: building the invariant from an automaton, and
 using it once built.
@@ -1177,8 +1186,8 @@ domain `Q × 2^Γ` (Definition 4.2), so
 
 and the `|Q|` in the exponent is the source of the explosion. That a wall
 sits somewhere is a mathematical necessity, not an engineering apology:
-deciding aperiodicity of a regular ω-language — the LTL read-off of §6 — is
-PSPACE-complete, with hardness transferred from finite-word minimal-DFA
+deciding aperiodicity of a regular ω-language — the LTL read-off of §5.3 —
+is PSPACE-complete, with hardness transferred from finite-word minimal-DFA
 aperiodicity [CH91] and the ω upper bound from [DG08, Prop. 12.3]; the
 surrounding classifications are no cheaper. Everything around the enriched
 semigroup is benign by contrast: each generator acts slot-wise; the loop
@@ -1192,7 +1201,7 @@ lasso test per linked pair. The cost is entirely the size of
 alone (Theorem 4.11) — the intrinsic complexity of the language, the
 ω-analogue of the syntactic monoid's size — where `|Q|` and `|EM₊(D)|` were
 functions of a presentation. The serialized invariant is `O(|𝒞|²)` table
-entries plus a pair set `P ⊆ 𝒞 × 𝒞`, and every operation of §6 is a scan of
+entries plus a pair set `P ⊆ 𝒞 × 𝒞`, and every operation below is a scan of
 that table. The presentation debt — determinization [Saf88], then `EM₊(D)` —
 is paid once, at entry; nothing downstream ever revisits the automaton.
 
@@ -1205,16 +1214,7 @@ Boolean — the alphabet `2^AP`, the mark sets over `Γ`, the positive-Boolean
 partition refinement of §4.4 are all images, fixpoints, and quotients over
 sets, native to decision diagrams.
 
-
-## 6. What the invariant unlocks
-
-The invariant was built to be used. This section reads decisions off the
-finished table: first the band of identity questions the semantics answers
-nearly for free, then the definability frontier. Throughout, an invariant is
-handled through its finite presentation `(𝒞, λ, ·, P)` under shortlex keys —
-the serialized form the byte-equality remark of §3.3 announced.
-
-### 6.1 The exportable invariant and the identity band
+### 5.2 The exportable invariant and the identity band
 
 What the field exchanges today is a presentation — an automaton in the
 Hanoi Omega-Automata (HOA) exchange format, one machine among many for its
@@ -1267,7 +1267,7 @@ The file decides lassos by Definition 3.5 with no further apparatus. For
 Language equality of the two inputs is not tested; it is exhibited: one
 language, one file.
 
-**Proposition 6.1 (the identity band).** Let `𝓘(L) = ⟨𝒮, P⟩` and `𝓘(L')` be
+**Proposition 5.1 (the identity band).** Let `𝓘(L) = ⟨𝒮, P⟩` and `𝓘(L')` be
 syntactic invariants over `Σ`, serialized under shortlex keys. Then:
 
 (i) *(equality)* `L = L'` iff the two serializations are byte-identical;
@@ -1293,7 +1293,7 @@ presentation `(u_s, u_e)` lands on `(s, e)` — the keys are nonempty,
 `𝒮(u_e) = e` is idempotent so `e^π = e`, and `𝒮(u_s)·e = s·e = s` — and
 `(s, e) ∈ P` accepts it. ∎
 
-**Proposition 6.2 (complement).** `𝓘(L̄) = ⟨𝒮_L, LP(𝒮_L) ∖ P(L)⟩`, writing
+**Proposition 5.2 (complement).** `𝓘(L̄) = ⟨𝒮_L, LP(𝒮_L) ∖ P(L)⟩`, writing
 `LP(𝒮)` for the set of all linked pairs of a stamp: the complement shares
 the stamp — classes, keys, letter map, table — and flips the pair set within
 the linked pairs.
@@ -1301,7 +1301,7 @@ the linked pairs.
 *Proof.* Both context shapes of Definition 3.7 are membership equivalences,
 symmetric in `L` and `L̄`, so `≈_L = ≈_{L̄}` and the syntactic stamps
 coincide, keys included. Every linked pair names at least one lasso (proof
-of 6.1(iii)), and all lassos sharing a name share one verdict
+of 5.1(iii)), and all lassos sharing a name share one verdict
 (Theorem 3.10(i)): the names split, `P(L)` holding those whose lassos lie in
 `L`, and the remaining linked pairs are exactly the names of the lassos of
 `L̄` — that is, `P(L̄)`. ∎
@@ -1318,9 +1318,9 @@ rival: a corpus of `N` presentations deduplicates by `O(N²)` pairwise
 product constructions, a corpus of serialized invariants by hashing — equal
 languages, identical bytes.
 
-### 6.2 The LTL frontier
+### 5.3 The LTL frontier
 
-**Theorem 6.3 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
+**Theorem 5.3 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
 LTL-definable iff `𝒞_L` is **aperiodic**: no class has a power cycle of
 period `≥ 2` — equivalently, `c^π·c = c^π` for every `c ∈ 𝒞_L`.
 
@@ -1329,7 +1329,7 @@ The chain is LTL `=` FO[<] `=` star-free `=` aperiodic syntactic algebra
 see [DG08] for the consolidated account. What this paper adds is not the
 theorem but the table it is read off:
 
-**Corollary 6.4 (the decision).** On the constructed invariant `𝓘(D)`,
+**Corollary 5.4 (the decision).** On the constructed invariant `𝓘(D)`,
 LTL-definability of `L(D)` is decided by finitely many table products —
 compute `c^π` for each class, test `c^π·c = c^π` — and the verdict is exact
 in both directions, whatever `D` presented the language, because
@@ -1358,7 +1358,7 @@ the table check above, and `Even` and `EvenBlocks` are its minimal
 witnesses.
 
 
-## 7. Related work
+## 6. Related work
 
 **Arnold [Arn85].** The syntactic congruence is his: the coarsest congruence
 saturating a rational ω-language, of finite index, with a recognizing
@@ -1393,16 +1393,16 @@ the notion from `Σ*` to `Σ⁺`, where the ω-theory lives.
 the PSPACE aperiodicity argument [DG08, Prop. 12.3] — a nondeterministic
 on-the-fly bound that emits no algebra and no evidence. The construction
 here is its evidence-producing counterpart, at the same worst-case price
-(§5); their formula-extraction induction is the path §8 names for rendering.
+(§5.1); their formula-extraction induction is the path §7 names for rendering.
 
 **Learning [AF16, ABF18, AF21].** The recorded obstruction: the right
 congruence alone does not characterize an ω-regular language — LTL languages
 with a trivial right congruence exist [AF21] — so the field learns families
 of DFAs [AF16, ABF18], presentation-dependent acceptors. The rotation lemma
 reads the two-sided congruence from right extensions at prefix-indexed
-slots — observation-table shaped (§8).
+slots — observation-table shaped (§7).
 
-## 8. Perspectives
+## 7. Perspectives
 
 The point of an archetype is what it makes routine. Each direction below
 opens on the invariant — the language itself in hand — where the
@@ -1421,9 +1421,9 @@ LTL formula is reachable in principle from the algebra by the
 Diekert–Gastin induction [DG08]. Starting from automata, the state of the
 art translates counter-free automata only [BLS22], with no route from an
 arbitrary presentation — nor, without the algebra, a practical way to decide
-eligibility in the first place (§6.2).
+eligibility in the first place (§5.3).
 
-**Operating on invariants.** Equality and complement (§6.1) are the
+**Operating on invariants.** Equality and complement (§5.2) are the
 degenerate cases of a calculus: align two stamps over one common table — the
 one product-priced move — and Boolean combinations of languages become
 pointwise operations on pair sets, re-canonicalized by the quotient of §4.3.
@@ -1453,10 +1453,10 @@ place of marks — the construction degenerates to the classical syntactic
 monoid: the enrichment is vacuous, the ω-power shape disappears with the
 ω-words it quantified over, and the seed is already the congruence — no
 rotation, no refinement. The degenerate case landing on the known answer
-audits the machinery; and the same aperiodicity check of §6.2 then decides
+audits the machinery; and the same aperiodicity check of §5.3 then decides
 LTLf-definability [DV13], one level down, where the same tooling gap stands.
 
-## 9. Conclusion
+## 8. Conclusion
 
 For finite words, the syntactic monoid has carried the algebraic theory of
 regular languages for sixty years: one finite algebra per language,
