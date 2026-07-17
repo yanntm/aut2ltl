@@ -92,7 +92,7 @@ mathematics and assembles the construction. Our contributions:
 3. **The construction** (§4). From any deterministic Emerson–Lei automaton
    `D`: an acceptance-enriched stamp — sound but too fine — then the
    quotient by two right-only relations, computed by partition refinement.
-   Theorem 4.11 closes the loop against the semantics: `𝓘(D) = 𝓘(L(D))`,
+   Theorem 4.10 closes the loop against the semantics: `𝓘(D) = 𝓘(L(D))`,
    byte for byte, whatever presentation `D` was.
 
 §5 puts the invariant to work: first the split of the two costs — the

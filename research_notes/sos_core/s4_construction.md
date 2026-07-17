@@ -2,7 +2,7 @@
 
 We now construct the invariant. The input is an automaton `D` for `L`, in the
 most general deterministic form in use — throughout this section `L := L(D)`.
-The output is `𝓘(D)`, and the destination is Theorem 4.11: `𝓘(D) = 𝓘(L)` —
+The output is `𝓘(D)`, and the destination is Theorem 4.10: `𝓘(D) = 𝓘(L)` —
 not merely *an* invariant denoting `L`, but the syntactic invariant of §3.3
 itself, whatever presentation `D` was. The construction is two
 steps, and both are stamp-shaped: an enrichment of the automaton's transition
@@ -260,13 +260,14 @@ sits at `p₀·⟨v⟩ⁱ` at the block boundaries, collecting `mk(p₀·⟨v⟩
 between: the boundary sequence closes the cycle of the iteration, the marks
 around that cycle recur, and no other mark does. ∎
 
-> **Definition 4.7 (lasso equivalence).** The **lasso equivalence** on
-> `EM₊(D)` is the conjunction `∼ := ∼lin ∧ ∼ω` of two relations, compared at
-> every reachable slot: for `c, c' ∈ EM₊(D)`,
+> **Definition 4.7 (lasso equivalence).** The **lasso equivalence** `∼` on
+> `EM₊(D)` is the equivalence relation comparing elements at every reachable
+> slot, through residuals and loop verdicts: for `c, c' ∈ EM₊(D)`,
 >
 > ```
 >     c ∼lin c'   ⟺   ∀ q ∈ Reach :                 L(q·c) = L(q·c') ;
->     c ∼ω  c'   ⟺   ∀ q ∈ Reach, ∀ d ∈ EM(D) :    A(q, c·d) = A(q, c'·d).
+>     c ∼ω  c'   ⟺   ∀ q ∈ Reach, ∀ d ∈ EM(D) :    A(q, c·d) = A(q, c'·d) ;
+>     c ∼   c'   ⟺   c ∼lin c'  and  c ∼ω c'.
 > ```
 
 The slots are `Reach`, not `Q`: an unreachable state names no context. The
@@ -359,7 +360,7 @@ what partition refinement computes (§4.4).
 The two steps assemble into the constructed invariant, and the constructed
 invariant turns out to be §3.3's: one language, one object.
 
-> **Definition 4.10 (the constructed invariant).** `𝓘(D) := ⟨𝒮_D/∼, P(D)⟩`,
+> **Definition 4.9 (the constructed invariant).** `𝓘(D) := ⟨𝒮_D/∼, P(D)⟩`,
 > where:
 >
 > - `𝒮_D/∼ : Σ⁺ → 𝒞_D := EM₊(D)/∼`, sending `u` to the `∼`-class of
@@ -380,7 +381,7 @@ single test suffices is canonicity — all lassos sharing a name share `L`'s
 verdict (Theorem 3.10(i)) — once the theorem below identifies the quotient
 stamp with the syntactic one.
 
-> **Theorem 4.11 (the construction is the syntactic invariant).** Let `D` be
+> **Theorem 4.10 (the construction is the syntactic invariant).** Let `D` be
 > a deterministic complete Emerson–Lei automaton, `L = L(D)`, `∼` the lasso
 > equivalence (Definition 4.7), and `≈_L` Arnold's syntactic congruence for
 > `L` (Definition 3.7). For all `u, u' ∈ Σ⁺`:
@@ -415,10 +416,10 @@ is determined by its congruence — the same classes as sets of words, the
 same letter images, the same induced product — so `𝒮_D/∼ = 𝒮_L`. Equal
 stamps have equal linked pairs, and for each linked pair `(s, e)`:
 `(s, e) ∈ P(D)` iff the keyed lasso `u_s·(u_e)^ω` is in `L(D) = L`
-(Definition 4.10) iff `(s, e) ∈ P(L)` — by canonicity (Theorem 3.10(i)). So
+(Definition 4.9) iff `(s, e) ∈ P(L)` — by canonicity (Theorem 3.10(i)). So
 `P(D) = P(L)`, and `𝓘(D) = 𝓘(L)`. ∎
 
-> **Corollary 4.12 (two automata, one invariant).** (i) `L(𝓘(D)) = L(D)`,
+> **Corollary 4.11 (two automata, one invariant).** (i) `L(𝓘(D)) = L(D)`,
 > and `P(D)` is saturated — canonicity (Theorem 3.10) and saturation
 > (Corollary 3.13) applied to `𝓘(L)`. (ii) Any two deterministic complete
 > Emerson–Lei automata recognizing one language construct the identical
@@ -431,7 +432,7 @@ sends *every* state to one place, an aperiodic transition monoid. The two
 automata are not isomorphic, and their transition monoids disagree even on
 whether a group is present. Both runs return the invariant of Ex. 2,
 identically: five classes, `9 → 5` against `6 → 5`. The transposition was pure presentation, and
-Theorem 4.11's quotient is where it dies — while `Even` and `EvenBlocks`
+Theorem 4.10's quotient is where it dies — while `Even` and `EvenBlocks`
 keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 
 ---

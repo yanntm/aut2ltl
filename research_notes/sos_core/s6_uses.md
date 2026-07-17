@@ -34,7 +34,8 @@ lasso test per linked pair. The cost is entirely the size of
 `EM₊(D)`, and that size is intrinsic to the problem, not to the construction.
 
 **Using.** Once built, the sizes change meaning: `|𝒞|` is a function of `L`
-alone (Theorem 4.11) — the intrinsic complexity of the language, the
+alone (the construction theorem 4.10) — the intrinsic complexity of the
+language, the
 ω-analogue of the syntactic monoid's size — where `|Q|` and `|EM₊(D)|` were
 functions of a presentation. The serialized invariant is `O(|𝒞|²)` table
 entries plus a pair set `P ⊆ 𝒞 × 𝒞`, and every operation below is a scan of
@@ -46,7 +47,7 @@ here is BDD-friendly and the redundancy is high, so a symbolic approach is
 likely to alleviate much of this inherent complexity. The ingredients are all
 Boolean — the alphabet `2^AP`, the mark sets over `F`, the `Inf`/`Fin`
 formula `Acc` — and every step is a set operation, not an arithmetic one: closing
-`EM₊(D)` under composition, the two right relations of §4.3, and the
+`EM₊(D)` under composition, the lasso equivalence of §4.3, and the
 partition refinement of §4.4 are all images, fixpoints, and quotients over
 sets, native to decision diagrams.
 
@@ -93,7 +94,8 @@ gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
 data — the right congruence, recomputable from the core, so byte equality is
 unaffected; its single class exhibits `GF(aa)`'s prefix-independence.
 
-The file decides lassos by Definition 3.5 with no further apparatus. For
+The file decides lassos by the query of Definition 3.5 with no further
+apparatus. For
 `(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 4 = [a·b]`, already idempotent
 (`4·4 = 4`); the empty stem gives `s = e = 4`; and `4 4` is not listed under
 `accept`: rejected — no `aa` recurs.
@@ -118,9 +120,10 @@ language, one file.
 > (iv) *(witness)* every `(s, e) ∈ P` yields, from its keys, the canonical
 > lasso `u_s·(u_e)^ω ∈ L`.
 
-*Proof.* (i) is Theorem 3.10(ii) with the byte-equality remark: the unique
-isomorphism is the identity on shortlex names. (ii) is Definition 3.5, whose
-verdict is presentation-independent by Theorem 3.10(i). (iii): every linked
+*Proof.* (i) is canonicity (Theorem 3.10(ii)) with the byte-equality remark:
+the unique isomorphism is the identity on shortlex names. (ii) is the query
+of Definition 3.5, whose verdict is presentation-independent by canonicity
+(Theorem 3.10(i)). (iii): every linked
 pair names a lasso — pick `u ∈ s`, `v ∈ e` by surjectivity: `𝒮(v)^π = e` and
 `𝒮(u)·e = s` — so `P = ∅` accepts no lasso and `P` full accepts them all;
 two regular ω-languages agreeing on all lassos are equal
@@ -137,7 +140,7 @@ presentation `(u_s, u_e)` lands on `(s, e)` — the keys are nonempty,
 *Proof.* Both context shapes of Definition 3.7 are membership equivalences,
 symmetric in `L` and `L̄`, so `≈_L = ≈_{L̄}` and the syntactic stamps
 coincide, keys included. Every linked pair names at least one lasso (proof
-of 5.1(iii)), and all lassos sharing a name share one verdict
+of 5.1(iii)), and all lassos sharing a name share one verdict — canonicity
 (Theorem 3.10(i)): the names split, `P(L)` holding those whose lassos lie in
 `L`, and the remaining linked pairs are exactly the names of the lassos of
 `L̄` — that is, `P(L̄)`. ∎
@@ -169,7 +172,7 @@ theorem but the table it is read off:
 > LTL-definability of `L(D)` is decided by finitely many table products —
 > compute `c^π` for each class, test `c^π·c = c^π` — and the verdict is exact
 > in both directions, whatever `D` presented the language, because
-> `𝓘(D) = 𝓘(L)` (Theorem 4.11). ∎
+> `𝓘(D) = 𝓘(L)` — the construction theorem (4.10). ∎
 
 Canonicity is what the exactness rests on. On a non-canonical recognizer
 only one direction survives: aperiodicity of `EM₊(D)` — or of the transition
