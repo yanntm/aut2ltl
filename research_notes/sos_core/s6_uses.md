@@ -12,12 +12,12 @@ serialized form the byte-equality remark of §3.3 announced.
 Two costs must be kept apart: building the invariant from an automaton, and
 using it once built.
 
-**Building.** The construction is dominated by the size of the enriched
-semigroup: an enriched element is a vector of `|Q|` slots over the local
-domain `Q × 2^F` (Definition 4.2), so
+**Building.** The construction is dominated by the size of the automaton
+stamp's carrier: a class of `≈_D` is its two maps — a vector of `|Q|` slots
+over the local domain `Q × 2^F` (§4.2) — so
 
 ```
-    |EM₊(D)| ≤ (|Q|·2^{|F|})^{|Q|},
+    |𝒞_D| ≤ (|Q|·2^{|F|})^{|Q|},
 ```
 
 and the `|Q|` in the exponent is the source of the explosion. That a wall
@@ -25,21 +25,21 @@ sits somewhere is a mathematical necessity, not an engineering apology:
 deciding aperiodicity of a regular ω-language — the LTL read-off of §5.3 —
 is PSPACE-complete, with hardness transferred from finite-word minimal-DFA
 aperiodicity [CH91] and the ω upper bound from [DG08, Prop. 12.3]; the
-surrounding classifications are no cheaper. Everything around the enriched
-semigroup is benign by contrast: each generator acts slot-wise; the loop
-verdicts cost one functional-graph walk per element; the residual partition
-of the states and the congruence on the elements are two Moore refinements
-over the closed table, polynomial in `|EM₊(D)|` and `|Q|`; and `P(D)` is one
+surrounding classifications are no cheaper. Everything around `𝒞_D` is
+benign by contrast: each letter acts slot-wise; the loop
+verdicts cost one functional-graph walk per class; the residual partition
+of the states and the congruence on the classes are two Moore refinements
+over the closed table, polynomial in `|𝒞_D|` and `|Q|`; and `P(D)` is one
 lasso test per linked pair. The cost is entirely the size of
-`EM₊(D)`, and that size is intrinsic to the problem, not to the construction.
+`𝒞_D`, and that size is intrinsic to the problem, not to the construction.
 
 **Using.** Once built, the sizes change meaning: `|𝒞|` is a function of `L`
 alone (the construction theorem 4.10) — the intrinsic complexity of the
 language, the
-ω-analogue of the syntactic monoid's size — where `|Q|` and `|EM₊(D)|` were
+ω-analogue of the syntactic monoid's size — where `|Q|` and `|𝒞_D|` were
 functions of a presentation. The serialized invariant is `O(|𝒞|²)` table
 entries plus a pair set `P ⊆ 𝒞 × 𝒞`, and every operation below is a scan of
-that table. The presentation debt — determinization [Saf88], then `EM₊(D)` —
+that table. The presentation debt — determinization [Saf88], then `𝒞_D` —
 is paid once, at entry; nothing downstream ever revisits the automaton.
 
 **Symbolic prospects.** On a more optimistic note, every object and operation
@@ -47,7 +47,7 @@ here is BDD-friendly and the redundancy is high, so a symbolic approach is
 likely to alleviate much of this inherent complexity. The ingredients are all
 Boolean — the alphabet `2^AP`, the mark sets over `F`, the `Inf`/`Fin`
 formula `Acc` — and every step is a set operation, not an arithmetic one: closing
-`EM₊(D)` under composition, the lasso equivalence of §4.3, and the
+`𝒞_D` under composition, the lasso equivalence of §4.3, and the
 partition refinement of §4.4 are all images, fixpoints, and quotients over
 sets, native to decision diagrams.
 
@@ -177,7 +177,7 @@ theorem but the table it is read off:
 > `𝓘(D) = 𝓘(L)` — the construction theorem (4.10). ∎
 
 Canonicity is what the exactness rests on. On a non-canonical recognizer
-only one direction survives: aperiodicity of `EM₊(D)` — or of the transition
+only one direction survives: aperiodicity of `𝒞_D` — or of the transition
 monoid — is inherited by the quotient and thus *sufficient* for LTL, but a
 group there proves nothing, since it can be pure presentation
 (Proposition 4.5's one-state witness; `GFaa`'s transposition, which §4.4

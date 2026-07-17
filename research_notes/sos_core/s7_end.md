@@ -22,7 +22,7 @@ is the step the display lacks.
 **Carton–Perrin–Pin [CPP08].** A recognizer that sees acceptance — Boolean
 transition matrices recording path existence and accepting visits — with the
 syntactic quotient reached by saturation over context triples: an example,
-not a procedure. The enriched stamp plays their matrices' role on
+not a procedure. The automaton stamp plays their matrices' role on
 deterministic Emerson–Lei input; the rotation lemma replaces the saturation.
 
 **Pin–Straubing [PS05].** Stamps: comparing surjective morphisms rather than
@@ -91,7 +91,7 @@ presentation-dependent families of acceptors instead [AF16, ABF18].
 
 **One level down: finite words.** Run on a complete DFA — final states in
 place of marks — the construction degenerates to the classical syntactic
-monoid: the enrichment is vacuous, the ω-power shape disappears with the
+monoid: the mark maps add nothing, the ω-power shape disappears with the
 ω-words it quantified over, and the seed is already the congruence — no
 rotation, no refinement. The degenerate case landing on the known answer
 audits the machinery; and the same aperiodicity check of §5.3 then decides
@@ -107,7 +107,7 @@ paper only.
 
 The obstruction was never size alone; it was structure. A recognizer for
 infinite behaviour must remember acceptance along runs, not endpoints — that
-is the enrichment. And the syntactic congruence is two-sided, while
+is the mark map. And the syntactic congruence is two-sided, while
 everything a finite table offers for free is right-handed — that is the
 rotation lemma: a left context carries no information of its own, it only
 moves the point where a right test is read. The lemma is the mathematical

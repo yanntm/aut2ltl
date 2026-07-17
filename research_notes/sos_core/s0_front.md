@@ -22,8 +22,9 @@ their serialized invariants are byte-identical. The mathematical core is a
 rotation lemma: Arnold's two-sided syntactic congruence is computable by
 right multiplications alone — the structural fact missing from forty years
 of literature between the definition and a construction. On it we build
-`𝓘(D)` from any deterministic Emerson–Lei automaton `D` — an
-acceptance-enriched stamp, then a right-computable quotient — and prove
+`𝓘(D)` from any deterministic Emerson–Lei automaton `D` — the automaton
+stamp, classifying words by their runs, then a right-computable quotient —
+and prove
 `𝓘(D) = 𝓘(L(D))` against the semantics: one language, one table, whatever
 the presentation. LTL-definability, the safety–progress rung, and the
 weakest deterministic acceptance become read-offs of the invariant.
@@ -90,7 +91,8 @@ mathematics and assembles the construction. Our contributions:
    the engine of the construction.
 
 3. **The construction** (§4). From any deterministic Emerson–Lei automaton
-   `D`: an acceptance-enriched stamp — sound but too fine — then the
+   `D`: the automaton stamp — words classified by transition map and mark
+   map, sound but too fine — then the
    quotient by two right-only relations, computed by partition refinement.
    Theorem 4.10 closes the loop against the semantics: `𝓘(D) = 𝓘(L(D))`,
    byte for byte, whatever presentation `D` was.
