@@ -252,13 +252,11 @@ sits at `p₀·⟨v⟩ⁱ` at the block boundaries, collecting `mk(p₀·⟨v⟩
 between: the boundary sequence closes the cycle of the iteration, the marks
 around that cycle recur, and no other mark does. ∎
 
-**Definition 4.7 (the two right relations).** The **profile** restricts the
-loop verdict to the reachable slots: `Aprof : EM₊(D) → (Reach → {0, 1})`,
-`Aprof(c) := (q ↦ A(q, c))`. For `c, c' ∈ EM₊(D)`:
+**Definition 4.7 (the two right relations).** For `c, c' ∈ EM₊(D)`:
 
 ```
-    c ∼lin c'   ⟺   ∀ q ∈ Reach :   L(q·c) = L(q·c') ;
-    c ∼ω  c'    ⟺   ∀ d ∈ EM(D) :   Aprof(c·d) = Aprof(c'·d) ;
+    c ∼lin c'   ⟺   ∀ q ∈ Reach :                 L(q·c) = L(q·c') ;
+    c ∼ω  c'    ⟺   ∀ q ∈ Reach, ∀ d ∈ EM(D) :    A(q, c·d) = A(q, c'·d) ;
 ```
 
 and `∼ := ∼lin ∧ ∼ω`. The slots are `Reach`, not `Q`: an unreachable state
@@ -274,8 +272,8 @@ close, under every right completion. Neither mentions a left context.
 `D`, `⟨aa⟩ = ⟨ε⟩`. `∼lin` is total: the language is prefix-independent, both
 states accept exactly `EvenBlocks`. The separation of `⟨a⟩` from `⟨aa⟩` is
 carried entirely by `∼ω`, with the block-closing extension `d = ⟨b⟩`:
-`Aprof(⟨a⟩·⟨b⟩) = Aprof(⟨ab⟩)` rejects at both slots — the loop `ab` closes
-an odd block forever, violating `Fin(0)` — while `Aprof(⟨aa⟩·⟨b⟩)` accepts at
+`A(q, ⟨a⟩·⟨b⟩) = A(q, ⟨ab⟩)` rejects at both slots — the loop `ab` closes
+an odd block forever, violating `Fin(0)` — while `A(q, ⟨aa⟩·⟨b⟩)` accepts at
 both: `(aab)^ω` closes even blocks forever.
 
 **Lemma 4.8 (rotation, on runs).** Let `c ∈ EM₊(D)`, `c₀, d ∈ EM(D)` and
@@ -284,28 +282,28 @@ slot:
 
 ```
     q·(c₀·c) = (q·c₀)·c        and
-    Aprof(c₀·c·d)(q) = Aprof(c·d·c₀)(q·c₀).
+    A(q, c₀·c·d) = A(q·c₀, c·d·c₀).
 ```
 
-Consequently, with `R` the equivalence "same `∼lin`-class and same profile
-`Aprof`", the relation `∼` is the coarsest right-invariant equivalence
-refining `R`, and it is a two-sided congruence on `EM₊(D)`.
+Consequently, with `R` the equivalence comparing both data at every
+reachable slot — `c R c'` iff `L(q·c) = L(q·c')` and `A(q, c) = A(q, c')`
+for all `q ∈ Reach` — the relation `∼` is the coarsest right-invariant
+equivalence refining `R`, and it is a two-sided congruence on `EM₊(D)`.
 
-*Proof.* The state identity is the action law of Definition 4.2. For the profile identity,
+*Proof.* The state identity is the action law of Definition 4.2. For the verdict identity,
 read the loop `(c₀·c·d)^ω` from `q` as `c₀·(c·d·c₀)^ω` — one rotation, the
 move of Lemma 3.11 applied to a context: the factor `c₀` is carried from the
 loop's front onto the stem. That prefix is read once, its marks recur never,
 so the verdict is the loop verdict of `c·d·c₀` from the state the prefix
-reaches (Lemma 4.6): `Aprof(c₀·c·d)(q) = A(q·c₀, c·d·c₀)
-= Aprof(c·d·c₀)(q·c₀)`.
+reaches (Lemma 4.6): `A(q, c₀·c·d) = A(q·c₀, c·d·c₀)`.
 
 *Right-invariance.* Both halves of the seed survive a right factor: residual
 equality steps through letters (`L(p) = L(p')` gives
 `L(δ(p, x)) = x⁻¹L(p) = x⁻¹L(p') = L(δ(p', x))`), so `c ∼lin c'` gives
-`c·d ∼lin c'·d`; and `Aprof(c·d·d') = Aprof(c'·d·d')` is an instance of
+`c·d ∼lin c'·d`; and `A(q, c·d·d') = A(q, c'·d·d')` is an instance of
 `c ∼ω c'`. Hence `∼` is right-invariant.
 
-*Coarsest.* Suppose `c·d R c'·d` for every `d ∈ EM(D)`: the profile half over
+*Coarsest.* Suppose `c·d R c'·d` for every `d ∈ EM(D)`: the verdict half over
 all `d` is `c ∼ω c'`, and the `∼lin` half at `d = ⟨ε⟩` is `c ∼lin c'` — so
 `c ∼ c'`. Conversely `c ∼ c'` gives `c·d ∼ c'·d` (right-invariance), hence
 `c·d R c'·d` for every `d`. So `∼` is exactly "`R`-equal under every right
@@ -313,8 +311,8 @@ extension": the coarsest right-invariant equivalence refining `R`.
 
 *Two-sided.* For a left factor `c₀`: `c₀·c ∼lin c₀·c'` since
 `q·(c₀·c) = (q·c₀)·c` and `q·c₀ ∈ Reach`; and
-`Aprof(c₀·c·d)(q) = Aprof(c·(d·c₀))(q·c₀)
-= Aprof(c'·(d·c₀))(q·c₀) = Aprof(c₀·c'·d)(q)` — the left factor became
+`A(q, c₀·c·d) = A(q·c₀, c·(d·c₀))
+= A(q·c₀, c'·(d·c₀)) = A(q, c₀·c'·d)` — the left factor became
 a right extension. With right-invariance, `∼` is a two-sided congruence. ∎
 
 The typing is Definition 3.1's freshness, mirrored in the computation: `c` is
@@ -397,17 +395,17 @@ shape) `u₀·u'·w ∈ L ⟺ w ∈ L(q·⟨u'⟩)`; two regular ω-languages ag
 on all lassos are equal [PP04, Ch. I, Cor. 9.8], so the residuals are equal
 at every slot. For `∼ω`: fix `q = δ(q₀, u₀) ∈ Reach` and `d ∈ EM(D)`; `EM(D)`
 is letter-generated, so `d = ⟨v₀⟩` for some `v₀ ∈ Σ*`, and `u·v₀` is
-nonempty. By the collapse (Lemma 4.6), `Aprof(⟨u⟩·d)(q) = A(q, ⟨u·v₀⟩)` is
+nonempty. By the collapse (Lemma 4.6), `A(q, ⟨u⟩·d) = A(q, ⟨u·v₀⟩)` is
 the verdict of `u₀·(u·v₀)^ω`, which by the ω-power shape equals the verdict
-of `u₀·(u'·v₀)^ω`, which is `Aprof(⟨u'⟩·d)(q)`.
+of `u₀·(u'·v₀)^ω`, which is `A(q, ⟨u'⟩·d)`.
 
 (⟹) Let `⟨u⟩ ∼ ⟨u'⟩`; both shapes of Definition 3.7 must be checked. Linear:
 for `u₀ ∈ Σ*` and a lasso `w`, with `q := δ(q₀, u₀) ∈ Reach`:
 `u₀·u·w ∈ L ⟺ w ∈ L(q·⟨u⟩)`, and `∼lin` equates that residual with
 `L(q·⟨u'⟩)` — one verdict with `u'` in place of `u`. ω-power: for
 `u₀, v₀ ∈ Σ*`, with `q := δ(q₀, u₀)`: the verdict of `u₀·(u·v₀)^ω` is
-`Aprof(⟨u⟩·⟨v₀⟩)(q)` (Lemma 4.6), and `∼ω` at `d = ⟨v₀⟩` equates it with
-`Aprof(⟨u'⟩·⟨v₀⟩)(q)`, the verdict of `u₀·(u'·v₀)^ω`.
+`A(q, ⟨u⟩·⟨v₀⟩)` (Lemma 4.6), and `∼ω` at `d = ⟨v₀⟩` equates it with
+`A(q, ⟨u'⟩·⟨v₀⟩)`, the verdict of `u₀·(u'·v₀)^ω`.
 
 The components now match one by one. The equivalence says the two stamps
 `𝒮_D/∼` and `𝒮_L` have the same kernel, so they are the same quotient of
@@ -451,9 +449,9 @@ monoids disagreeing even on whether a group is present, enriched semigroups
 of different sizes — one byte-identical invariant out of both.*
 
 **The algorithm.** The theorem is also the procedure. The seed `R` groups
-the elements of `EM₊(D)` by `∼lin`-class and profile. The profiles are
-`|EM₊(D)|·|Q|` loop verdicts, each one walk of a functional graph
-(Lemma 4.6). Residual equality of states is a fixpoint on the same data, one
+the elements of `EM₊(D)` by their residuals and loop verdicts at every
+reachable slot; the `|EM₊(D)|·|Q|` verdicts each cost one walk of a
+functional graph (Lemma 4.6). Residual equality of states is a fixpoint on the same data, one
 level down: seed two states equal when their loop-verdict *columns* agree —
 `A(p, c) = A(q, c)` for every `c ∈ EM₊(D)` — and refine under the letters,
 splitting whenever `δ(p, x)` and `δ(q, x)` fall in distinct blocks, at most
