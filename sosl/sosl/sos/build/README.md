@@ -11,18 +11,17 @@ ground truth of the soundness harness.
   and hand it back as a `sos` invariant, serializable to the same
   canonical form the learner emits.
 
-This is mostly an **adapter**: the acceptance-enriched monoid it starts from is
-computed by the in-repo definability pipeline (`tests/probes/dg_common` over
-`aut2ltl/bls/definability`), which is spot-backed and heavy. This module wraps
-that behind the `sos` vocabulary so the teacher and the validator can
-use one reference without knowing where it comes from.
+This is an **adapter** over the canonical construction (`sos.core`): spot
+enters only through the importer (`canonical` — determinize, complete,
+transition-based Emerson-Lei), and the resource policy (the closure cap, the
+`ReferenceError` on blowing it) lives here. The algebra itself — enriched
+monoid, congruence, fresh-identity freeze — is `sos.core`'s, documented in
+`core/algorithm.md`.
 
-It is not *only* plumbing, though. The pipeline quotients over monoid
-*elements*, which merges a non-empty word into the identity whenever their
-enriched elements coincide (e.g. `!a` in one-state `GF a`) — a
-presentation-dependent class count that breaks byte-equality. Adjoining the
-identity as a **fresh** element, so no word class collides with it, is this
-wrapper's own obligation. See `algorithm.md`.
+`residuals_of_hoa` reads the residual (right-congruence) automaton off the
+same construction: the state partition comes from the core's
+`residual_classes` on the closed monoid's loop verdicts, keyed canonically by
+shortlex-least reaching words.
 
 ## Who uses it, who must not
 
@@ -35,8 +34,8 @@ wrapper's own obligation. See `algorithm.md`.
 
 ## See also
 
-`algorithm.md` — the fresh-identity adjunction this wrapper owns (the one part
-that is not plumbing) and the regression fingerprints it must reproduce. The
-enriched-monoid construction underneath lives in the definability pipeline
-(`aut2ltl/bls/definability`, `docs/algorithm.md`), not here. The specification
-of record is `research_notes/sos_learning_spec.md` §1.1.
+`algorithm.md` — why the fresh-identity adjunction matters (the canonicity
+argument and its fingerprints; the obligation itself is discharged by
+`sos.core`'s freeze today). The construction underneath is `sos.core`
+(`core/algorithm.md`). The specification of record is
+`research_notes/sos_learning_spec.md` §1.1.
