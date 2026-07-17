@@ -17,10 +17,11 @@ deciding aperiodicity of a regular ω-language — the LTL read-off of §6 — i
 PSPACE-complete, with hardness transferred from finite-word minimal-DFA
 aperiodicity [CH91] and the ω upper bound from [DG08, Prop. 12.3]; the
 surrounding classifications are no cheaper. Everything around the enriched
-semigroup is benign by contrast: each generator acts slot-wise; the seed `R`
-— residual equality of reached states, one loop verdict per slot — and the
-Moore refinement of §4.4 run in time polynomial in `|EM₊(D)|` and `|Q|`; and
-`P(D)` is one lasso test per linked pair. The cost is entirely the size of
+semigroup is benign by contrast: each generator acts slot-wise; the loop
+verdicts cost one functional-graph walk per element; the residual partition
+of the states and the congruence on the elements are two Moore refinements
+over the closed table, polynomial in `|EM₊(D)|` and `|Q|`; and `P(D)` is one
+lasso test per linked pair. The cost is entirely the size of
 `EM₊(D)`, and that size is intrinsic to the problem, not to the construction.
 
 **Using.** Once built, the sizes change meaning: `|𝒞|` is a function of `L`
