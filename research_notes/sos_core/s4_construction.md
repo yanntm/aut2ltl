@@ -54,9 +54,10 @@ nothing intrinsic to prefer either. §4.4 sends both to one invariant.
 *Example.* The four languages appear as machines on their pages, Ex. 1–4 —
 the reader is invited to revisit each page's formula and automaton rows now.
 `aUGb` needs
-three states: `A` (initial) loops on `a`; `b` leads to `B`, which loops on
-`b`, that loop carrying the mark `0`; an `a` at `B` falls to a sink absorbing
-both letters unmarked; `Acc = Inf(0)` — a run collects `0` forever iff it
+three states, numbered as drawn on its page: the initial state `1` loops on
+`a`; `b` leads to state `0`, which loops on `b`, that loop carrying the mark
+`0`; an `a` at state `0` falls to the sink `2`, absorbing both letters
+unmarked; `Acc = Inf(0)` — a run collects `0` forever iff it
 eventually reads only `b`'s. `GF(aa)` tracks the parity of the running block
 of `a`'s on two states: `a` *transposes* them — a `Z₂` in the maps
 `q ↦ δ(q, u)` — and the transposition closing an `aa` carries the mark; `b`
@@ -111,10 +112,10 @@ invariant is adjoined fresh by the quotient stamp of §4.4, whatever identities
 The transition monoid identifies them; the enrichment keeps them apart.
 Closing the letters under composition gives `|EM₊| = 9` for this presentation
 of `GF(aa)`, `6` for `Even` — and the full `16` for `EvenBlocks`, where `⟨ε⟩`,
-being `⟨aa⟩`, is itself an image of nonempty words and nothing is spared. The
-example pages carry the tool's tables, identity included: `|EM¹| = 10, 7, 16`
-folding onto `|𝒞| + 1 = 6, 5, 8` (Ex. 2–4), and `7` onto `5` for `aUGb`
-(Ex. 1).
+being `⟨aa⟩`, is itself an image of nonempty words and nothing is spared;
+`aUGb` closes at `9`. The example pages carry the four tables in full, one
+row per element with its fold onto `𝒞`: `9 → 4`, `9 → 5`, `6 → 4`, `16 → 7`
+(Ex. 1–4).
 
 **Lemma 4.3 (skeleton).** Let `w = u₁u₂⋯` and `w' = u'₁u'₂⋯` be ω-words
 factored into nonempty blocks with the same sequence of enriched images —
@@ -176,12 +177,12 @@ pure encoding, invisible to the marks. `GF(aa)`'s transposition is exactly
 that situation, resolved in §4.4.
 
 *Example (the converse defect: the enriched stamp is too fine).* On the
-`aUGb` automaton, `⟨b⟩` and `⟨bb⟩` are distinct elements — the second `b`
-collects, read from the initial state, the mark the first has not yet
-reached: `mk_{⟨b⟩}(A) = ∅` while `mk_{⟨bb⟩}(A) = {0}` — though `b ≈_L bb`:
-membership in `aUGb` never counts `b`'s, and no context separates them
-(ids 1 and 3 of Ex. 1's table). The next step quotients exactly this excess
-away.
+`aUGb` automaton, `⟨ba⟩` and `⟨aba⟩` are distinct elements —
+`mk_{⟨ba⟩}(0) = {0}` while `mk_{⟨aba⟩}(0) = ∅` — though `ba ≈_L aba`: both
+are dead, and no context separates them. Ex. 1's table holds four such dead
+variants, kept apart only by which slots saw the mark on the way to the
+sink, one zero class under all of them. The next step quotients exactly this
+excess away.
 
 ### 4.3 Step 2: the quotient, computed on the right
 
