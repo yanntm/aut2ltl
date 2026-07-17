@@ -16,9 +16,12 @@ One base letter per sort; decorations carry roles, never identity.
   isomorphisms, `λ := 𝒮|_Σ` the letter map, `π` the idempotent exponent). `^ω` means infinite repetition,
   exclusively; the idempotent power is `^π` — no algebra element ever wears
   `^ω`.
-- **Automaton sorts.** States `p, q ∈ Q` — `q₀` the initial state, `p` the
-  running states of a run; marks `f ∈ F`, mark sets `N ⊆ F`; `mk(q, u)` /
-  `mk(q, c)` the marks a finite run collects, `mk^∞` the recurring set.
+- **Automaton sorts.** States `p, q ∈ Q` — `q₀` the initial state,
+  `q₁, q₂, …` the states of a run (index 0 ambient, indices ≥ 1 the pieces),
+  `p` a generic or second state; marks `f ∈ F`, mark sets `N ⊆ F`;
+  `mk(q, u)` / `mk(q, c)` the marks a finite run collects, `mk^∞` the
+  recurring set. `δ` is a function, on letters and words alike — the paper
+  never writes transitions as triples or arrows.
   Enriched elements act on states from the right, `q·c` — the state sort on
   the left keeps the product unambiguous.
 - **Decorations.** *Prime* = counterpart: a second object of the same sort in
