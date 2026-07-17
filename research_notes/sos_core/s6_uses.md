@@ -103,20 +103,20 @@ The file decides lassos by Definition 3.5 with no further apparatus. For
 Language equality of the two inputs is not tested; it is exhibited: one
 language, one file.
 
-**Proposition 5.1 (the identity band).** Let `𝓘(L) = ⟨𝒮, P⟩` and `𝓘(L')` be
-syntactic invariants over `Σ`, serialized under shortlex keys. Then:
-
-(i) *(equality)* `L = L'` iff the two serializations are byte-identical;
-
-(ii) *(membership)* `u·v^ω ∈ L` is decided by one evaluation of `𝒮` — the
-letter map `λ`, then table products — and one lookup in `P`
-(Definition 3.5);
-
-(iii) *(emptiness, universality)* `L = ∅` iff `P = ∅`, and `L = Σ^ω` iff `P`
-is the set of all linked pairs of `𝒮`;
-
-(iv) *(witness)* every `(s, e) ∈ P` yields, from its keys, the canonical
-lasso `u_s·(u_e)^ω ∈ L`.
+> **Proposition 5.1 (the identity band).** Let `𝓘(L) = ⟨𝒮, P⟩` and `𝓘(L')` be
+> syntactic invariants over `Σ`, serialized under shortlex keys. Then:
+>
+> (i) *(equality)* `L = L'` iff the two serializations are byte-identical;
+>
+> (ii) *(membership)* `u·v^ω ∈ L` is decided by one evaluation of `𝒮` — the
+> letter map `λ`, then table products — and one lookup in `P`
+> (Definition 3.5);
+>
+> (iii) *(emptiness, universality)* `L = ∅` iff `P = ∅`, and `L = Σ^ω` iff `P`
+> is the set of all linked pairs of `𝒮`;
+>
+> (iv) *(witness)* every `(s, e) ∈ P` yields, from its keys, the canonical
+> lasso `u_s·(u_e)^ω ∈ L`.
 
 *Proof.* (i) is Theorem 3.10(ii) with the byte-equality remark: the unique
 isomorphism is the identity on shortlex names. (ii) is Definition 3.5, whose
@@ -129,10 +129,10 @@ presentation `(u_s, u_e)` lands on `(s, e)` — the keys are nonempty,
 `𝒮(u_e) = e` is idempotent so `e^π = e`, and `𝒮(u_s)·e = s·e = s` — and
 `(s, e) ∈ P` accepts it. ∎
 
-**Proposition 5.2 (complement).** `𝓘(L̄) = ⟨𝒮_L, LP(𝒮_L) ∖ P(L)⟩`, writing
-`LP(𝒮)` for the set of all linked pairs of a stamp: the complement shares
-the stamp — classes, keys, letter map, table — and flips the pair set within
-the linked pairs.
+> **Proposition 5.2 (complement).** `𝓘(L̄) = ⟨𝒮_L, LP(𝒮_L) ∖ P(L)⟩`, writing
+> `LP(𝒮)` for the set of all linked pairs of a stamp: the complement shares
+> the stamp — classes, keys, letter map, table — and flips the pair set within
+> the linked pairs.
 
 *Proof.* Both context shapes of Definition 3.7 are membership equivalences,
 symmetric in `L` and `L̄`, so `≈_L = ≈_{L̄}` and the syntactic stamps
@@ -156,20 +156,20 @@ languages, identical bytes.
 
 ### 5.3 The LTL frontier
 
-**Theorem 5.3 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
-LTL-definable iff `𝒞_L` is **aperiodic**: no class has a power cycle of
-period `≥ 2` — equivalently, `c^π·c = c^π` for every `c ∈ 𝒞_L`.
+> **Theorem 5.3 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
+> LTL-definable iff `𝒞_L` is **aperiodic**: no class has a power cycle of
+> period `≥ 2` — equivalently, `c^π·c = c^π` for every `c ∈ 𝒞_L`.
 
 The chain is LTL `=` FO[<] `=` star-free `=` aperiodic syntactic algebra
 [Kam68, Tho79, DG08], the ω-transport of Schützenberger's theorem [Sch65];
 see [DG08] for the consolidated account. What this paper adds is not the
 theorem but the table it is read off:
 
-**Corollary 5.4 (the decision).** On the constructed invariant `𝓘(D)`,
-LTL-definability of `L(D)` is decided by finitely many table products —
-compute `c^π` for each class, test `c^π·c = c^π` — and the verdict is exact
-in both directions, whatever `D` presented the language, because
-`𝓘(D) = 𝓘(L)` (Theorem 4.11). ∎
+> **Corollary 5.4 (the decision).** On the constructed invariant `𝓘(D)`,
+> LTL-definability of `L(D)` is decided by finitely many table products —
+> compute `c^π` for each class, test `c^π·c = c^π` — and the verdict is exact
+> in both directions, whatever `D` presented the language, because
+> `𝓘(D) = 𝓘(L)` (Theorem 4.11). ∎
 
 Canonicity is what the exactness rests on. On a non-canonical recognizer
 only one direction survives: aperiodicity of `EM₊(D)` — or of the transition

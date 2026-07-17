@@ -20,22 +20,22 @@ class the class of at least one word. And an element adjoined to a set is
 **fresh** when it is a genuinely new point: the union is disjoint, no
 existing element promoted into the new role.
 
-**Definition 3.1 (stamp over an alphabet).** A **stamp** over `Σ` is a
-surjective semigroup morphism
-
-```
-    𝒮 : Σ⁺ → 𝒞
-```
-
-onto a finite semigroup `𝒞`, whose elements are the **classes**, written `[u]`
-for any nonempty word `u ∈ Σ⁺` with `𝒮(u) = [u]`. The stamp extends to all
-finite words by adjoining a **fresh** identity `[ε]`:
-
-```
-    M := 𝒞 ∪ {[ε]},     𝒮(ε) := [ε],
-```
-
-making `𝒮 : Σ* → M` a surjective monoid morphism.
+> **Definition 3.1 (stamp over an alphabet).** A **stamp** over `Σ` is a
+> surjective semigroup morphism
+>
+> ```
+>     𝒮 : Σ⁺ → 𝒞
+> ```
+>
+> onto a finite semigroup `𝒞`, whose elements are the **classes**, written `[u]`
+> for any nonempty word `u ∈ Σ⁺` with `𝒮(u) = [u]`. The stamp extends to all
+> finite words by adjoining a **fresh** identity `[ε]`:
+>
+> ```
+>     M := 𝒞 ∪ {[ε]},     𝒮(ε) := [ε],
+> ```
+>
+> making `𝒮 : Σ* → M` a surjective monoid morphism.
 
 Each clause of the definition enforces something the rest of the paper
 stands on. *Morphism*: the table determines the whole map — evaluating `𝒮`
@@ -117,12 +117,12 @@ In a finite semigroup the powers `c, c², c³, …` of any element cannot all be
 distinct, so the sequence is eventually periodic and contains exactly one
 idempotent [PP04].
 
-**Definition 3.2 (idempotent power; exponent of a stamp).** Let
-`𝒮 : Σ⁺ → 𝒞` be a stamp and `c ∈ 𝒞`. The **idempotent power** of `c` is the
-unique idempotent among its powers — the one `cⁿ` (`n ≥ 1`) with `cⁿ·cⁿ = cⁿ`.
-An **exponent** of `𝒮` is an integer `π ≥ 1` such that `c^π` is the idempotent
-power of *every* `c ∈ 𝒞`; one exists since `𝒞` is finite (e.g. `|𝒞|!`), and
-which multiple is chosen never matters. We fix one and write `c^π`.
+> **Definition 3.2 (idempotent power; exponent of a stamp).** Let
+> `𝒮 : Σ⁺ → 𝒞` be a stamp and `c ∈ 𝒞`. The **idempotent power** of `c` is the
+> unique idempotent among its powers — the one `cⁿ` (`n ≥ 1`) with `cⁿ·cⁿ = cⁿ`.
+> An **exponent** of `𝒮` is an integer `π ≥ 1` such that `c^π` is the idempotent
+> power of *every* `c ∈ 𝒞`; one exists since `𝒞` is finite (e.g. `|𝒞|!`), and
+> which multiple is chosen never matters. We fix one and write `c^π`.
 
 `c^π` is an honest power, computed on the table alone, and the notation
 deliberately avoids `^ω` — in this paper `^ω` always means infinite
@@ -135,19 +135,19 @@ their own idempotent powers. `[a·b]` is not: `[a·b]·[a·b] = [b·a]` — glui
 words of `a⁺b⁺` puts an `a` after a `b` — so `[a·b]^π = [b·a]`: looping "`a`'s
 then `b`'s" is exactly as dead as slipping once.
 
-**Definition 3.3 (linked pair of classes).** Let `𝒮 : Σ⁺ → 𝒞` be a stamp. A
-**linked pair** of `𝒮` is a pair of classes `(s, e) ∈ 𝒞 × 𝒞` with `e·e = e`
-and `s·e = s`: the loop class `e` is idempotent, and it absorbs the stem class
-`s`.
+> **Definition 3.3 (linked pair of classes).** Let `𝒮 : Σ⁺ → 𝒞` be a stamp. A
+> **linked pair** of `𝒮` is a pair of classes `(s, e) ∈ 𝒞 × 𝒞` with `e·e = e`
+> and `s·e = s`: the loop class `e` is idempotent, and it absorbs the stem class
+> `s`.
 
 *Example.* On Figure 1 (`aUGb`), `([a·b], [b])` is linked: `[b]` is idempotent
 and `[a·b]·[b] = [a·b]`. The pair `([a], [b])` is not: `[a]·[b] = [a·b] ≠ [a]`
 — a stem that ends before `b`'s begin is not absorbed by them.
 
-**Definition 3.4 (pair set; invariant over an alphabet).** Let `𝒮` be a stamp
-over `Σ`. A **pair set** over `𝒮` is a finite set `P ⊆ 𝒞 × 𝒞` of linked pairs
-of `𝒮`. An **invariant** over `Σ` is a pair `𝓘 = ⟨𝒮, P⟩` of a stamp and a pair
-set over it.
+> **Definition 3.4 (pair set; invariant over an alphabet).** Let `𝒮` be a stamp
+> over `Σ`. A **pair set** over `𝒮` is a finite set `P ⊆ 𝒞 × 𝒞` of linked pairs
+> of `𝒮`. An **invariant** over `Σ` is a pair `𝓘 = ⟨𝒮, P⟩` of a stamp and a pair
+> set over it.
 
 The typing is deliberate: `P` lives in `𝒞 × 𝒞`, entirely inside the semigroup.
 The basepoint `[ε]` appears in no pair — the acceptance layer speaks only of
@@ -163,15 +163,15 @@ An invariant decides lassos with the data it carries and nothing else: the
 stamp assigns each finite word its class — stem and loop alike — and `P` lists
 the pairs that accept.
 
-**Definition 3.5 (language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an
-invariant over `Σ`, and let `w ∈ Σ^ω` be a lasso with presentation
-`(u, v) ∈ Σ* × Σ⁺` (Definition 2.1), `w = u·v^ω`. Set
-
-```
-    e := 𝒮(v)^π,     s := 𝒮(u)·e.
-```
-
-Then `w ∈ L(𝓘)` iff `(s, e) ∈ P`.
+> **Definition 3.5 (language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an
+> invariant over `Σ`, and let `w ∈ Σ^ω` be a lasso with presentation
+> `(u, v) ∈ Σ* × Σ⁺` (Definition 2.1), `w = u·v^ω`. Set
+>
+> ```
+>     e := 𝒮(v)^π,     s := 𝒮(u)·e.
+> ```
+>
+> Then `w ∈ L(𝓘)` iff `(s, e) ∈ P`.
 
 The queried pair is a linked pair of `𝒮`: `e` is idempotent as an idempotent
 power, and `s·e = 𝒮(u)·e·e = s`. Both coordinates land in `𝒞` — `e` is the
@@ -187,9 +187,9 @@ accepted. For `ba·(ab)^ω`: the loop's class `𝒮(ab) = [a·b]` is not idempot
 its square `[b·a]` is — so `e = [b·a]`; the stem's class is `[b·a]` and
 `[b·a]·[b·a] = [b·a]`. The pair `([b·a], [b·a])` is not in `P`: rejected.
 
-**Definition 3.6 (name of a lasso).** Let `𝒮` be a stamp over `Σ`. A linked
-pair `(s, e)` of `𝒮` **names** the lasso `w` when some presentation
-`(u, v) ∈ Σ* × Σ⁺` of `w` lands on it: `𝒮(v)^π = e` and `𝒮(u)·e = s`.
+> **Definition 3.6 (name of a lasso).** Let `𝒮` be a stamp over `Σ`. A linked
+> pair `(s, e)` of `𝒮` **names** the lasso `w` when some presentation
+> `(u, v) ∈ Σ* × Σ⁺` of `w` lands on it: `𝒮(v)^π = e` and `𝒮(u)·e = s`.
 
 Definition 3.5 thus queries one name of `w` — the one its given presentation
 lands on. A lasso bears several names: already `(u, v)` and `(u·v, v)` present
@@ -208,15 +208,15 @@ classifying relation is Arnold's [Arn85]. A finite word sits in a lasso either
 in the stem or inside the loop, and interchangeability must hold in both
 positions:
 
-**Definition 3.7 (syntactic congruence of an ω-language [Arn85]).** Let
-`L ⊆ Σ^ω` be a regular ω-language. Two nonempty words `u, u' ∈ Σ⁺` are
-**syntactically congruent** for `L`, written `u ≈_L u'`, when they are
-interchangeable in both context shapes:
-
-```
-    (linear)     ∀ u₀ ∈ Σ*,  ∀ lasso w ∈ Σ^ω :   u₀·u·w ∈ L     ⟺   u₀·u'·w ∈ L
-    (ω-power)    ∀ u₀, v₀ ∈ Σ*               :   u₀·(u·v₀)^ω ∈ L  ⟺   u₀·(u'·v₀)^ω ∈ L
-```
+> **Definition 3.7 (syntactic congruence of an ω-language [Arn85]).** Let
+> `L ⊆ Σ^ω` be a regular ω-language. Two nonempty words `u, u' ∈ Σ⁺` are
+> **syntactically congruent** for `L`, written `u ≈_L u'`, when they are
+> interchangeable in both context shapes:
+>
+> ```
+>     (linear)     ∀ u₀ ∈ Σ*,  ∀ lasso w ∈ Σ^ω :   u₀·u·w ∈ L     ⟺   u₀·u'·w ∈ L
+>     (ω-power)    ∀ u₀, v₀ ∈ Σ*               :   u₀·(u·v₀)^ω ∈ L  ⟺   u₀·(u'·v₀)^ω ∈ L
+> ```
 
 The linear shape mutates the stem — the tested word sits after a finite prefix
 `u₀`, in front of a whole lasso `w`; the ω-power shape mutates inside the
@@ -240,23 +240,23 @@ linear shape at `u₀ = ε`, `w = b^ω` — `ab·b^ω ∈ L`, `ba·b^ω ∉ L`; 
 exactly four classes — `a⁺`, `b⁺`, `a⁺b⁺` and the dead words — the four
 vertices of Figure 1.
 
-**Definition 3.8 (syntactic stamp; syntactic invariant of `L`).** Let
-`L ⊆ Σ^ω` be a regular ω-language, and let `𝒞_L := Σ⁺/≈_L` be its finite
-semigroup of congruence classes. The **syntactic stamp** of `L` is the
-quotient morphism
-
-```
-    𝒮_L : Σ⁺ → 𝒞_L
-```
-
-— surjective by construction, a semigroup morphism because `≈_L` is a
-two-sided congruence — with letter map `λ(x) = [x]` and the induced
-table `[u]·[v] := [u·v]`. The **syntactic invariant** of `L` is
-`𝓘(L) := ⟨𝒮_L, P(L)⟩`, where `P(L)` collects the names of the lassos of `L`:
-
-```
-    P(L) := { (𝒮_L(u)·e, e)  :  u ∈ Σ*,  v ∈ Σ⁺,  e = 𝒮_L(v)^π,  u·v^ω ∈ L }.
-```
+> **Definition 3.8 (syntactic stamp; syntactic invariant of `L`).** Let
+> `L ⊆ Σ^ω` be a regular ω-language, and let `𝒞_L := Σ⁺/≈_L` be its finite
+> semigroup of congruence classes. The **syntactic stamp** of `L` is the
+> quotient morphism
+>
+> ```
+>     𝒮_L : Σ⁺ → 𝒞_L
+> ```
+>
+> — surjective by construction, a semigroup morphism because `≈_L` is a
+> two-sided congruence — with letter map `λ(x) = [x]` and the induced
+> table `[u]·[v] := [u·v]`. The **syntactic invariant** of `L` is
+> `𝓘(L) := ⟨𝒮_L, P(L)⟩`, where `P(L)` collects the names of the lassos of `L`:
+>
+> ```
+>     P(L) := { (𝒮_L(u)·e, e)  :  u ∈ Σ*,  v ∈ Σ⁺,  e = 𝒮_L(v)^π,  u·v^ω ∈ L }.
+> ```
 
 The definition of `P(L)` makes no choice: it ranges over *all* presentations
 of *all* accepted lassos and records the name each one lands on. In particular
@@ -272,19 +272,19 @@ after absorption, their loops settle on `[b]`, and
 
 The two context shapes were tailored to lassos, and they pay immediately:
 
-**Lemma 3.9 (substitution of congruent words).** Let `u, u', v, v' ∈ Σ⁺` with
-`u ≈_L u'` and `v ≈_L v'`. Then `u·v^ω ∈ L ⟺ u'·v'^ω ∈ L`.
+> **Lemma 3.9 (substitution of congruent words).** Let `u, u', v, v' ∈ Σ⁺` with
+> `u ≈_L u'` and `v ≈_L v'`. Then `u·v^ω ∈ L ⟺ u'·v'^ω ∈ L`.
 
 *Proof.* Swap the loop: the ω-power shape of `v ≈_L v'`, at `u₀ = u` and
 `v₀ = ε`, gives `u·v^ω ∈ L ⟺ u·v'^ω ∈ L`. Swap the stem: the linear shape of
 `u ≈_L u'`, at `u₀ = ε` and `w = v'^ω`, gives `u·v'^ω ∈ L ⟺ u'·v'^ω ∈ L`. ∎
 
-**Theorem 3.10 (canonicity of the syntactic invariant).** Let `L ⊆ Σ^ω` be a
-regular ω-language.
-
-(i) All lassos sharing a name share `L`'s verdict; consequently, on `𝓘(L)`,
-the query of Definition 3.5 answers membership in `L` itself — every
-presentation of every lasso receives `L`'s verdict — and `L(𝓘(L)) = L`.
+> **Theorem 3.10 (canonicity of the syntactic invariant).** Let `L ⊆ Σ^ω` be a
+> regular ω-language.
+>
+> (i) All lassos sharing a name share `L`'s verdict; consequently, on `𝓘(L)`,
+> the query of Definition 3.5 answers membership in `L` itself — every
+> presentation of every lasso receives `L`'s verdict — and `L(𝓘(L)) = L`.
 
 (ii) `𝓘` is a **complete invariant**: for regular `L, L' ⊆ Σ^ω`, `L = L'` iff
 there is a semigroup isomorphism `θ : 𝒞_L → 𝒞_{L'}` with `θ ∘ 𝒮_L = 𝒮_{L'}`
@@ -328,9 +328,9 @@ rotated**: a factor carried from the loop's front onto the stem leaves the
 ω-word unchanged, `u·v₁·(v₂·v₁)^ω = u·(v₁·v₂)^ω` — and rotation is the one
 move that changes a lasso's name.
 
-**Lemma 3.11 (rotation of a name).** Let `𝒮 : Σ⁺ → 𝒞` be a stamp and
-`s, c, d ∈ 𝒞` with `s·(cd)^π = s`. Then `(s·c, (dc)^π)` is a linked pair, and
-some lasso is named by both `(s, (cd)^π)` and `(s·c, (dc)^π)`.
+> **Lemma 3.11 (rotation of a name).** Let `𝒮 : Σ⁺ → 𝒞` be a stamp and
+> `s, c, d ∈ 𝒞` with `s·(cd)^π = s`. Then `(s·c, (dc)^π)` is a linked pair, and
+> some lasso is named by both `(s, (cd)^π)` and `(s·c, (dc)^π)`.
 
 *Proof.* First the identities in `𝒞`. Associativity gives `c·(dc)^m = (cd)^m·c`
 for every `m ≥ 1`; at `m = π` — one exponent serving `cd` and `dc` alike —
@@ -347,23 +347,23 @@ Every element named in the lemma lies in `𝒞`, and surjectivity hands each a
 nonempty word: no corner case guards the identity, because `[ε]` is not there
 to be rotated through.
 
-**Definition 3.12 (conjugate pairs; saturated pair set).** Let `𝒮` be a stamp.
-Two linked pairs of `𝒮` are **conjugate** when rotations connect them:
-conjugacy is the equivalence generated by `(s, (cd)^π) ∼ (s·c, (dc)^π)` over
-the triples `s, c, d ∈ 𝒞` with `s·(cd)^π = s` — the notion is classical
-[PP04, Ch. II, Prop. 2.6]. A pair set `P` over `𝒮` is **saturated** when it is
-closed under conjugacy:
-
-```
-    (s, (cd)^π) ∈ P   ⟺   (s·c, (dc)^π) ∈ P.
-```
+> **Definition 3.12 (conjugate pairs; saturated pair set).** Let `𝒮` be a stamp.
+> Two linked pairs of `𝒮` are **conjugate** when rotations connect them:
+> conjugacy is the equivalence generated by `(s, (cd)^π) ∼ (s·c, (dc)^π)` over
+> the triples `s, c, d ∈ 𝒞` with `s·(cd)^π = s` — the notion is classical
+> [PP04, Ch. II, Prop. 2.6]. A pair set `P` over `𝒮` is **saturated** when it is
+> closed under conjugacy:
+>
+> ```
+>     (s, (cd)^π) ∈ P   ⟺   (s·c, (dc)^π) ∈ P.
+> ```
 
 Stem extension is the degenerate rotation `c = d = 𝒮(v)`: the loop's value is
 unchanged and the stem absorbs one turn — why `(u, v)` and `(uv, v)` may name
 one lasso by two pairs.
 
-**Corollary 3.13 (saturation of the syntactic invariant).** `P(L)` is
-saturated.
+> **Corollary 3.13 (saturation of the syntactic invariant).** `P(L)` is
+> saturated.
 
 *Proof.* By the rotation lemma (3.11) some lasso `w` is named by both pairs,
 and `P(L)` is the set of names of accepted lassos, whose verdicts, by
