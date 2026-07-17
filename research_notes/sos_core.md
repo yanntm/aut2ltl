@@ -94,7 +94,7 @@ mathematics and assembles the construction. Our contributions:
 3. **The construction** (§4). From any deterministic Emerson–Lei automaton
    `D`: an acceptance-enriched stamp — sound but too fine — then the
    quotient by two right-only relations, computed by partition refinement.
-   Theorem 4.11 closes the loop against the semantics: `𝓘(D) = 𝓘(L(D))`,
+   Theorem 4.10 closes the loop against the semantics: `𝓘(D) = 𝓘(L(D))`,
    byte for byte, whatever presentation `D` was.
 
 §5 puts the invariant to work: first the split of the two costs — the
@@ -737,7 +737,7 @@ illegal — its query self-contradictory on the single ω-word `a^ω`.
 
 We now construct the invariant. The input is an automaton `D` for `L`, in the
 most general deterministic form in use — throughout this section `L := L(D)`.
-The output is `𝓘(D)`, and the destination is Theorem 4.11: `𝓘(D) = 𝓘(L)` —
+The output is `𝓘(D)`, and the destination is Theorem 4.10: `𝓘(D) = 𝓘(L)` —
 not merely *an* invariant denoting `L`, but the syntactic invariant of §3.3
 itself, whatever presentation `D` was. The construction is two
 steps, and both are stamp-shaped: an enrichment of the automaton's transition
@@ -995,13 +995,14 @@ sits at `p₀·⟨v⟩ⁱ` at the block boundaries, collecting `mk(p₀·⟨v⟩
 between: the boundary sequence closes the cycle of the iteration, the marks
 around that cycle recur, and no other mark does. ∎
 
-> **Definition 4.7 (lasso equivalence).** The **lasso equivalence** on
-> `EM₊(D)` is the conjunction `∼ := ∼lin ∧ ∼ω` of two relations, compared at
-> every reachable slot: for `c, c' ∈ EM₊(D)`,
+> **Definition 4.7 (lasso equivalence).** The **lasso equivalence** `∼` on
+> `EM₊(D)` is the equivalence relation comparing elements at every reachable
+> slot, through residuals and loop verdicts: for `c, c' ∈ EM₊(D)`,
 >
 > ```
 >     c ∼lin c'   ⟺   ∀ q ∈ Reach :                 L(q·c) = L(q·c') ;
->     c ∼ω  c'   ⟺   ∀ q ∈ Reach, ∀ d ∈ EM(D) :    A(q, c·d) = A(q, c'·d).
+>     c ∼ω  c'   ⟺   ∀ q ∈ Reach, ∀ d ∈ EM(D) :    A(q, c·d) = A(q, c'·d) ;
+>     c ∼   c'   ⟺   c ∼lin c'  and  c ∼ω c'.
 > ```
 
 The slots are `Reach`, not `Q`: an unreachable state names no context. The
@@ -1094,7 +1095,7 @@ what partition refinement computes (§4.4).
 The two steps assemble into the constructed invariant, and the constructed
 invariant turns out to be §3.3's: one language, one object.
 
-> **Definition 4.10 (the constructed invariant).** `𝓘(D) := ⟨𝒮_D/∼, P(D)⟩`,
+> **Definition 4.9 (the constructed invariant).** `𝓘(D) := ⟨𝒮_D/∼, P(D)⟩`,
 > where:
 >
 > - `𝒮_D/∼ : Σ⁺ → 𝒞_D := EM₊(D)/∼`, sending `u` to the `∼`-class of
@@ -1115,7 +1116,7 @@ single test suffices is canonicity — all lassos sharing a name share `L`'s
 verdict (Theorem 3.10(i)) — once the theorem below identifies the quotient
 stamp with the syntactic one.
 
-> **Theorem 4.11 (the construction is the syntactic invariant).** Let `D` be
+> **Theorem 4.10 (the construction is the syntactic invariant).** Let `D` be
 > a deterministic complete Emerson–Lei automaton, `L = L(D)`, `∼` the lasso
 > equivalence (Definition 4.7), and `≈_L` Arnold's syntactic congruence for
 > `L` (Definition 3.7). For all `u, u' ∈ Σ⁺`:
@@ -1150,10 +1151,10 @@ is determined by its congruence — the same classes as sets of words, the
 same letter images, the same induced product — so `𝒮_D/∼ = 𝒮_L`. Equal
 stamps have equal linked pairs, and for each linked pair `(s, e)`:
 `(s, e) ∈ P(D)` iff the keyed lasso `u_s·(u_e)^ω` is in `L(D) = L`
-(Definition 4.10) iff `(s, e) ∈ P(L)` — by canonicity (Theorem 3.10(i)). So
+(Definition 4.9) iff `(s, e) ∈ P(L)` — by canonicity (Theorem 3.10(i)). So
 `P(D) = P(L)`, and `𝓘(D) = 𝓘(L)`. ∎
 
-> **Corollary 4.12 (two automata, one invariant).** (i) `L(𝓘(D)) = L(D)`,
+> **Corollary 4.11 (two automata, one invariant).** (i) `L(𝓘(D)) = L(D)`,
 > and `P(D)` is saturated — canonicity (Theorem 3.10) and saturation
 > (Corollary 3.13) applied to `𝓘(L)`. (ii) Any two deterministic complete
 > Emerson–Lei automata recognizing one language construct the identical
@@ -1166,7 +1167,7 @@ sends *every* state to one place, an aperiodic transition monoid. The two
 automata are not isomorphic, and their transition monoids disagree even on
 whether a group is present. Both runs return the invariant of Ex. 2,
 identically: five classes, `9 → 5` against `6 → 5`. The transposition was pure presentation, and
-Theorem 4.11's quotient is where it dies — while `Even` and `EvenBlocks`
+Theorem 4.10's quotient is where it dies — while `Even` and `EvenBlocks`
 keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 
 ---
@@ -1251,7 +1252,8 @@ lasso test per linked pair. The cost is entirely the size of
 `EM₊(D)`, and that size is intrinsic to the problem, not to the construction.
 
 **Using.** Once built, the sizes change meaning: `|𝒞|` is a function of `L`
-alone (Theorem 4.11) — the intrinsic complexity of the language, the
+alone (the construction theorem 4.10) — the intrinsic complexity of the
+language, the
 ω-analogue of the syntactic monoid's size — where `|Q|` and `|EM₊(D)|` were
 functions of a presentation. The serialized invariant is `O(|𝒞|²)` table
 entries plus a pair set `P ⊆ 𝒞 × 𝒞`, and every operation below is a scan of
@@ -1263,7 +1265,7 @@ here is BDD-friendly and the redundancy is high, so a symbolic approach is
 likely to alleviate much of this inherent complexity. The ingredients are all
 Boolean — the alphabet `2^AP`, the mark sets over `F`, the `Inf`/`Fin`
 formula `Acc` — and every step is a set operation, not an arithmetic one: closing
-`EM₊(D)` under composition, the two right relations of §4.3, and the
+`EM₊(D)` under composition, the lasso equivalence of §4.3, and the
 partition refinement of §4.4 are all images, fixpoints, and quotients over
 sets, native to decision diagrams.
 
@@ -1310,7 +1312,8 @@ gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
 data — the right congruence, recomputable from the core, so byte equality is
 unaffected; its single class exhibits `GF(aa)`'s prefix-independence.
 
-The file decides lassos by Definition 3.5 with no further apparatus. For
+The file decides lassos by the query of Definition 3.5 with no further
+apparatus. For
 `(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 4 = [a·b]`, already idempotent
 (`4·4 = 4`); the empty stem gives `s = e = 4`; and `4 4` is not listed under
 `accept`: rejected — no `aa` recurs.
@@ -1335,9 +1338,10 @@ language, one file.
 > (iv) *(witness)* every `(s, e) ∈ P` yields, from its keys, the canonical
 > lasso `u_s·(u_e)^ω ∈ L`.
 
-*Proof.* (i) is Theorem 3.10(ii) with the byte-equality remark: the unique
-isomorphism is the identity on shortlex names. (ii) is Definition 3.5, whose
-verdict is presentation-independent by Theorem 3.10(i). (iii): every linked
+*Proof.* (i) is canonicity (Theorem 3.10(ii)) with the byte-equality remark:
+the unique isomorphism is the identity on shortlex names. (ii) is the query
+of Definition 3.5, whose verdict is presentation-independent by canonicity
+(Theorem 3.10(i)). (iii): every linked
 pair names a lasso — pick `u ∈ s`, `v ∈ e` by surjectivity: `𝒮(v)^π = e` and
 `𝒮(u)·e = s` — so `P = ∅` accepts no lasso and `P` full accepts them all;
 two regular ω-languages agreeing on all lassos are equal
@@ -1354,7 +1358,7 @@ presentation `(u_s, u_e)` lands on `(s, e)` — the keys are nonempty,
 *Proof.* Both context shapes of Definition 3.7 are membership equivalences,
 symmetric in `L` and `L̄`, so `≈_L = ≈_{L̄}` and the syntactic stamps
 coincide, keys included. Every linked pair names at least one lasso (proof
-of 5.1(iii)), and all lassos sharing a name share one verdict
+of 5.1(iii)), and all lassos sharing a name share one verdict — canonicity
 (Theorem 3.10(i)): the names split, `P(L)` holding those whose lassos lie in
 `L`, and the remaining linked pairs are exactly the names of the lassos of
 `L̄` — that is, `P(L̄)`. ∎
@@ -1386,7 +1390,7 @@ theorem but the table it is read off:
 > LTL-definability of `L(D)` is decided by finitely many table products —
 > compute `c^π` for each class, test `c^π·c = c^π` — and the verdict is exact
 > in both directions, whatever `D` presented the language, because
-> `𝓘(D) = 𝓘(L)` (Theorem 4.11). ∎
+> `𝓘(D) = 𝓘(L)` — the construction theorem (4.10). ∎
 
 Canonicity is what the exactness rests on. On a non-canonical recognizer
 only one direction survives: aperiodicity of `EM₊(D)` — or of the transition
