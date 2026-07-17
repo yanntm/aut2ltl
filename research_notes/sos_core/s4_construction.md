@@ -428,4 +428,4 @@ splits; the result is stable under every right letter, hence under every
 right element — `EM(D)` is letter-generated — and by Lemma 4.8 it is
 exactly `∼`. `P(D)` is one lasso test per candidate linked pair. Everything
 downstream of `EM₊(D)` is polynomial in its size; the size itself is the
-subject of §5.
+subject of §5.1.

@@ -1,4 +1,4 @@
-## 7. Related work
+## 6. Related work
 
 **Arnold [Arn85].** The syntactic congruence is his: the coarsest congruence
 saturating a rational ω-language, of finite index, with a recognizing
@@ -33,16 +33,16 @@ the notion from `Σ*` to `Σ⁺`, where the ω-theory lives.
 the PSPACE aperiodicity argument [DG08, Prop. 12.3] — a nondeterministic
 on-the-fly bound that emits no algebra and no evidence. The construction
 here is its evidence-producing counterpart, at the same worst-case price
-(§5); their formula-extraction induction is the path §8 names for rendering.
+(§5.1); their formula-extraction induction is the path §7 names for rendering.
 
 **Learning [AF16, ABF18, AF21].** The recorded obstruction: the right
 congruence alone does not characterize an ω-regular language — LTL languages
 with a trivial right congruence exist [AF21] — so the field learns families
 of DFAs [AF16, ABF18], presentation-dependent acceptors. The rotation lemma
 reads the two-sided congruence from right extensions at prefix-indexed
-slots — observation-table shaped (§8).
+slots — observation-table shaped (§7).
 
-## 8. Perspectives
+## 7. Perspectives
 
 The point of an archetype is what it makes routine. Each direction below
 opens on the invariant — the language itself in hand — where the
@@ -61,9 +61,9 @@ LTL formula is reachable in principle from the algebra by the
 Diekert–Gastin induction [DG08]. Starting from automata, the state of the
 art translates counter-free automata only [BLS22], with no route from an
 arbitrary presentation — nor, without the algebra, a practical way to decide
-eligibility in the first place (§6.2).
+eligibility in the first place (§5.3).
 
-**Operating on invariants.** Equality and complement (§6.1) are the
+**Operating on invariants.** Equality and complement (§5.2) are the
 degenerate cases of a calculus: align two stamps over one common table — the
 one product-priced move — and Boolean combinations of languages become
 pointwise operations on pair sets, re-canonicalized by the quotient of §4.3.
@@ -93,10 +93,10 @@ place of marks — the construction degenerates to the classical syntactic
 monoid: the enrichment is vacuous, the ω-power shape disappears with the
 ω-words it quantified over, and the seed is already the congruence — no
 rotation, no refinement. The degenerate case landing on the known answer
-audits the machinery; and the same aperiodicity check of §6.2 then decides
+audits the machinery; and the same aperiodicity check of §5.3 then decides
 LTLf-definability [DV13], one level down, where the same tooling gap stands.
 
-## 9. Conclusion
+## 8. Conclusion
 
 For finite words, the syntactic monoid has carried the algebraic theory of
 regular languages for sixty years: one finite algebra per language,

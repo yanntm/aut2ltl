@@ -310,7 +310,7 @@ turns the unique isomorphism of Theorem 3.10(ii) into the identity on names:
 two regular ω-languages are equal iff the serialized invariants — classes,
 letter map, table, `P`, under shortlex naming — are byte-identical.
 Canonicity is the mathematics; byte equality is that mathematics plus a naming
-convention, and it is the form the serialized invariant of §6.1 puts to work.
+convention, and it is the form the serialized invariant of §5.2 puts to work.
 
 *Example.* On Figure 1 (`aUGb`), present `aab·b^ω` as `(aab, b)` or as
 `(aabb, bb)`: both land on the name `([a·b], [b])` — here even the name is

@@ -95,15 +95,15 @@ mathematics and assembles the construction. Our contributions:
    Theorem 4.11 closes the loop against the semantics: `𝓘(D) = 𝓘(L(D))`,
    byte for byte, whatever presentation `D` was.
 
-§5 splits the two costs — the construction pays an exponential that
-PSPACE-hardness makes unavoidable, while everything on the finished table is
-polynomial in `|𝒞|`, a size intrinsic to the language. §6 puts the invariant
-to work: the identity questions — equality, complement, membership,
-witnesses — nearly for free, then the LTL frontier as a one-look read-off,
-exact in both directions because the invariant is canonical. §7 reviews
-related work; §8 opens the directions the invariant makes available —
-classification, rendering to formulas, a calculus, a census, learning;
-§9 concludes.
+§5 puts the invariant to work: first the split of the two costs — the
+construction pays an exponential that PSPACE-hardness makes unavoidable,
+while everything on the finished table is polynomial in `|𝒞|`, a size
+intrinsic to the language — then the identity questions — equality,
+complement, membership, witnesses — nearly for free, and the LTL frontier
+as a one-look read-off, exact in both directions because the invariant is
+canonical. §6 reviews related work; §7 opens the directions the invariant
+makes available — classification, rendering to formulas, a calculus, a
+census, learning; §8 concludes.
 
 Four running examples accompany the paper, met first as tables and only
 later as automata: `aUGb`, the pedagogical thread of §2–§3, and `GF(aa)`,
