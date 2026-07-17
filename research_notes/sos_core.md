@@ -502,7 +502,7 @@ An invariant decides lassos with the data it carries and nothing else: the
 stamp assigns each finite word its class — stem and loop alike — and `P` lists
 the pairs that accept.
 
-> **Definition 3.5 (language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an
+> **Definition 3.5 (lasso membership; language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an
 > invariant over `Σ`, and let `w ∈ Σ^ω` be a lasso with presentation
 > `(u, v) ∈ Σ* × Σ⁺` (Definition 2.1), `w = u·v^ω`. Set
 >
@@ -622,7 +622,7 @@ The two context shapes were tailored to lassos, and they pay immediately:
 > regular ω-language.
 >
 > (i) All lassos sharing a name share `L`'s verdict; consequently, on `𝓘(L)`,
-> the query of Definition 3.5 answers membership in `L` itself — every
+> lasso membership (Definition 3.5) is membership in `L` itself — every
 > presentation of every lasso receives `L`'s verdict — and `L(𝓘(L)) = L`.
 
 (ii) `𝓘` is a **complete invariant**: for regular `L, L' ⊆ Σ^ω`, `L = L'` iff
@@ -804,8 +804,8 @@ in the same SCC may receive opposite verdicts — `(aab)^ω` and `(ab)^ω` both
 live in `EvenBlocks`'s single SCC (Ex. 4), accepted and rejected — and the
 marks around the closed cycle carry the whole verdict. Some power `v^k` of
 the loop closes its cycle in a single turn — the machine shadow of the
-idempotent power (Definition 3.2), and the reason the membership test of
-Definition 3.5 queries `𝒮(v)^π`.
+idempotent power (Definition 3.2), and the reason lasso membership
+(Definition 3.5) queries `𝒮(v)^π`.
 
 Emerson–Lei acceptance is the most general ω-regular acceptance — Büchi,
 co-Büchi, Rabin, Muller are special shapes — and every regular `L` is `L(D)`
@@ -941,7 +941,7 @@ far `EM₊(D)` is from that quotient.
 `L(D)` is "infinitely many `a`'s". The transition monoid is trivial — every
 word is the identity map on `{p}` — so any stamp built on a quotient of it
 gives `a` and `b` one class, the queries of `a^ω` and `b^ω` coincide
-(Definition 3.5), and the two receive one verdict. But `a^ω ∈ L(D)` and
+(lasso membership, Definition 3.5), and the two receive one verdict. But `a^ω ∈ L(D)` and
 `b^ω ∉ L(D)`. The enriched elements do separate them:
 `mk(p, ⟨a⟩) = {0} ≠ ∅ = mk(p, ⟨b⟩)`. ∎
 
@@ -1317,7 +1317,7 @@ gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
 data — the right congruence, recomputable from the core, so byte equality is
 unaffected; its single class exhibits `GFaa`'s prefix-independence.
 
-The file decides lassos by the query of Definition 3.5 with no further
+The file decides lasso membership (Definition 3.5) with no further
 apparatus. For
 `(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 4 = [a·b]`, already idempotent
 (`4·4 = 4`); the empty stem gives `s = e = 4`; and `4 4` is not listed under
@@ -1344,8 +1344,9 @@ language, one file.
 > lasso `u_s·(u_e)^ω ∈ L`.
 
 *Proof.* (i) is canonicity (Theorem 3.10(ii)) with the byte-equality remark:
-the unique isomorphism is the identity on shortlex names. (ii) is the query
-of Definition 3.5, whose verdict is presentation-independent by canonicity
+the unique isomorphism is the identity on shortlex names. (ii) is lasso
+membership (Definition 3.5), whose verdict is presentation-independent by
+canonicity
 (Theorem 3.10(i)). (iii): every linked
 pair names a lasso — pick `u ∈ s`, `v ∈ e` by surjectivity: `𝒮(v)^π = e` and
 `𝒮(u)·e = s` — so `P = ∅` accepts no lasso and `P` full accepts them all;
