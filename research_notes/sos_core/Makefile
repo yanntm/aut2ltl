@@ -15,7 +15,10 @@ OUT   := ../sos_core.md
 PARTS := \
 	s0_front.md \
 	s2_background.md \
-	s3_invariant.md \
+	s3a_object.md \
+	s3b_canonicity.md \
+	s3c_rotation.md \
+	s3d_canonicalization.md \
 	s4_construction.md \
 	s6_uses.md \
 	s7_end.md \
