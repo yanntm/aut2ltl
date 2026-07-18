@@ -25,7 +25,7 @@ settles with period 1 — `[a]`, `[b]`, `[b·a]` are idempotent, and `[a·b]`
 falls onto the idempotent `[b·a]` in one step — so the invariant is
 aperiodic: LTL.
 
-Reading a lasso (Definition 3.5). Take `ababba·b^ω`. The loop first:
+Reading a lasso (Definition 3.4). Take `ababba·b^ω`. The loop first:
 `𝒮(b) = [b]` is already idempotent, so `e = [b]`. The stem:
 `𝒮(ababba) = ([a]·[b])·([a]·[b])·([b]·[a]) = [a·b]·[a·b]·[b·a]` (an arbitrary
 parenthesizing, since `𝒮` is associative); `[a·b]·[a·b] = [b·a]`, and `[b·a]`
@@ -34,7 +34,7 @@ queried stem is `s = 𝒮(u)·e = [b·a]·[b]`, and absorption simplifies it awa
 `s = [b·a]`. The name `([b·a], [b])` is not in `P`, so the lasso `ababba·b^ω`
 is not in the language.
 
-**Construction (§4).** `|𝒞_D| = 9` classes quotiented onto the `|𝒞| = 4`
+**Construction (§5).** `|𝒞_D| = 9` classes quotiented onto the `|𝒞| = 4`
 classes above. The excess the quotient removes is all mark bookkeeping the
 language ignores:
 `⟨b⟩ ≠ ⟨b·b⟩` and `⟨a·b⟩ ≠ ⟨a·b·b⟩` differ solely in a mark already

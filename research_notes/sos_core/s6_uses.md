@@ -14,7 +14,7 @@ using it once built.
 
 **Building.** The construction is dominated by the size of the automaton
 stamp's carrier: a class of `≈_D` is its two maps — a vector of `|Q|` slots
-over the local domain `Q × 2^F` (§4.2) — so
+over the local domain `Q × 2^F` (§5.2) — so
 
 ```
     |𝒞_D| ≤ (|Q|·2^{|F|})^{|Q|},
@@ -22,7 +22,7 @@ over the local domain `Q × 2^F` (§4.2) — so
 
 and the `|Q|` in the exponent is the source of the explosion. That a wall
 sits somewhere is a mathematical necessity, not an engineering apology:
-deciding aperiodicity of a regular ω-language — the LTL read-off of §5.3 —
+deciding aperiodicity of a regular ω-language — the LTL read-off of §6.3 —
 is PSPACE-complete, with hardness transferred from finite-word minimal-DFA
 aperiodicity [CH91] and the ω upper bound from [DG08, Prop. 12.3]; the
 surrounding classifications are no cheaper. Everything around `𝒞_D` is
@@ -34,7 +34,7 @@ lasso test per linked pair. The cost is entirely the size of
 `𝒞_D`, and that size is intrinsic to the problem, not to the construction.
 
 **Using.** Once built, the sizes change meaning: `|𝒞|` is a function of `L`
-alone (the construction theorem 4.10) — the intrinsic complexity of the
+alone (Theorem III) — the intrinsic complexity of the
 language, the
 ω-analogue of the syntactic monoid's size — where `|Q|` and `|𝒞_D|` were
 functions of a presentation. The serialized invariant is `O(|𝒞|²)` table
@@ -47,8 +47,8 @@ here is BDD-friendly and the redundancy is high, so a symbolic approach is
 likely to alleviate much of this inherent complexity. The ingredients are all
 Boolean — the alphabet `2^AP`, the mark sets over `F`, the `Inf`/`Fin`
 formula `Acc` — and every step is a set operation, not an arithmetic one: closing
-`𝒞_D` under composition, the lasso equivalence of §4.3, and the
-partition refinement of §4.4 are all images, fixpoints, and quotients over
+`𝒞_D` under composition, the test equivalence of §5.3, and the
+partition refinement of §5.3 are all images, fixpoints, and quotients over
 sets, native to decision diagrams.
 
 ### 6.2 The exportable invariant and the identity band
@@ -94,25 +94,25 @@ gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
 data — the right congruence, recomputable from the core, so byte equality is
 unaffected; its single class exhibits `GFaa`'s prefix-independence.
 
-The file decides lasso membership (Definition 3.5) with no further
+The file decides lasso membership (Definition 3.4) with no further
 apparatus. For
 `(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 4 = [a·b]`, already idempotent
 (`4·4 = 4`); the empty stem gives `s = e = 4`; and `4 4` is not listed under
 `accept`: rejected — no `aa` recurs.
 
 *Example (canonicity, in bytes).* The two non-isomorphic presentations of
-`GFaa` in §4.4 — run-parity and reset — both construct exactly this file.
+`GFaa` in §5.4 — run-parity and reset — both construct exactly this file.
 Language equality of the two inputs is not tested; it is exhibited: one
 language, one file.
 
-> **Proposition 5.1 (the identity band).** Let `𝓘(L) = ⟨𝒮, P⟩` and `𝓘(L')` be
+> **Proposition 6.1 (the identity band).** Let `𝓘(L) = ⟨𝒮, P⟩` and `𝓘(L')` be
 > syntactic invariants over `Σ`, serialized under shortlex keys. Then:
 >
 > (i) *(equality)* `L = L'` iff the two serializations are byte-identical;
 >
 > (ii) *(membership)* `u·v^ω ∈ L` is decided by one evaluation of `𝒮` — the
 > letter map `λ`, then table products — and one lookup in `P`
-> (Definition 3.5);
+> (Definition 3.4);
 >
 > (iii) *(emptiness, universality)* `L = ∅` iff `P = ∅`, and `L = Σ^ω` iff `P`
 > is the set of all linked pairs of `𝒮`;
@@ -120,11 +120,11 @@ language, one file.
 > (iv) *(witness)* every `(s, e) ∈ P` yields, from its keys, the canonical
 > lasso `u_s·(u_e)^ω ∈ L`.
 
-*Proof.* (i) is canonicity (Theorem 3.10(ii)) with the byte-equality remark:
+*Proof.* (i) is canonicity (Theorem I(ii)) with the byte-equality remark:
 the unique isomorphism is the identity on shortlex names. (ii) is lasso
-membership (Definition 3.5), whose verdict is presentation-independent by
+membership (Definition 3.4), whose verdict is presentation-independent by
 canonicity
-(Theorem 3.10(i)). (iii): every linked
+(Theorem I(i)). (iii): every linked
 pair names a lasso — pick `u ∈ s`, `v ∈ e` by surjectivity: `𝒮(v)^π = e` and
 `𝒮(u)·e = s` — so `P = ∅` accepts no lasso and `P` full accepts them all;
 two regular ω-languages agreeing on all lassos are equal
@@ -133,17 +133,17 @@ presentation `(u_s, u_e)` lands on `(s, e)` — the keys are nonempty,
 `𝒮(u_e) = e` is idempotent so `e^π = e`, and `𝒮(u_s)·e = s·e = s` — and
 `(s, e) ∈ P` accepts it. ∎
 
-> **Proposition 5.2 (complement).** `𝓘(L̄) = ⟨𝒮_L, LP(𝒮_L) ∖ P(L)⟩`, writing
+> **Proposition 6.2 (complement).** `𝓘(L̄) = ⟨𝒮_L, LP(𝒮_L) ∖ P(L)⟩`, writing
 > `LP(𝒮)` for the set of all linked pairs of a stamp: the complement shares
 > the stamp — classes, keys, letter map, table — and flips the pair set within
 > the linked pairs.
 
-*Proof.* Both context shapes of Arnold's congruence (Definition 3.7) are
+*Proof.* Both context shapes of Arnold's congruence (Definition 3.5) are
 membership equivalences,
 symmetric in `L` and `L̄`, so `≈_L = ≈_{L̄}` and the syntactic stamps
 coincide, keys included. Every linked pair names at least one lasso (proof
-of 5.1(iii)), and all lassos sharing a name share one verdict — canonicity
-(Theorem 3.10(i)): the names split, `P(L)` holding those whose lassos lie in
+of 6.1(iii)), and all lassos sharing a name share one verdict — canonicity
+(Theorem I(i)): the names split, `P(L)` holding those whose lassos lie in
 `L`, and the remaining linked pairs are exactly the names of the lassos of
 `L̄` — that is, `P(L̄)`. ∎
 
@@ -161,7 +161,7 @@ languages, identical bytes.
 
 ### 6.3 The LTL frontier
 
-> **Theorem 5.3 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
+> **Theorem 6.1 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
 > LTL-definable iff `𝒞_L` is **aperiodic**: no class has a power cycle of
 > period `≥ 2` — equivalently, `c^π·c = c^π` for every `c ∈ 𝒞_L`.
 
@@ -170,17 +170,17 @@ The chain is LTL `=` FO[<] `=` star-free `=` aperiodic syntactic algebra
 see [DG08] for the consolidated account. What this paper adds is not the
 theorem but the table it is read off:
 
-> **Corollary 5.4 (deciding LTL-definability).** On the constructed invariant `𝓘(D)`,
+> **Corollary 6.1 (deciding LTL-definability).** On the constructed invariant `𝓘(D)`,
 > LTL-definability of `L(D)` is decided by finitely many table products —
 > compute `c^π` for each class, test `c^π·c = c^π` — and the verdict is exact
 > in both directions, whatever `D` presented the language, because
-> `𝓘(D) = 𝓘(L)` — the construction theorem (4.10). ∎
+> `𝓘(D) = 𝓘(L)` — the construction (Theorem III). ∎
 
 Canonicity is what the exactness rests on. On a non-canonical recognizer
 only one direction survives: aperiodicity of `𝒞_D` — or of the transition
 monoid — is inherited by the quotient and thus *sufficient* for LTL, but a
 group there proves nothing, since it can be pure presentation
-(Proposition 4.5's one-state witness; `GFaa`'s transposition, which §4.4
+(Proposition 5.1's one-state witness; `GFaa`'s transposition, which §5.4
 kills). On the four examples: `aUGb` — `[a·b]` falls to the idempotent
 `[b·a]` in one step, every power cycle has period 1: LTL. `GFaa` — the
 `Z₂` of its presentation died in the quotient, all five classes settle with

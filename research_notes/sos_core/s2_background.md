@@ -206,8 +206,8 @@ nothing else.
 
 **One lasso, many names.** A single ω-word has many presentations —
 `u·v^ω = (uv)·v^ω = u·(v²)^ω = (u·v₁)·(v₂·v₁)^ω` for any split `v = v₁·v₂` —
-and, as §3 shows, these need not name it by the same linked pair. Reconciling
-them is not bookkeeping: it is the **rotation lemma** (3.11), the paper's
+and, as §4 shows, these need not name it by the same linked pair. Reconciling
+them is not bookkeeping: it is the **rotation lemma** (Lemma 4.1), the paper's
 structural pivot, and the one nontrivial constraint the invariant must
 satisfy.
 

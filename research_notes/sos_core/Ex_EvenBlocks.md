@@ -46,7 +46,7 @@ appear in no pair: the loop holds infinitely many `b`'s, rotation pushes one
 of them back into the stem, so a canonical stem must carry a `b` — and `[a]`,
 `[a·a]` cannot.
 
-Reading a lasso (Definition 3.5). Take `aabaab·(baa)^ω`. The loop first:
+Reading a lasso (Definition 3.4). Take `aabaab·(baa)^ω`. The loop first:
 `𝒮(baa) = ([b]·[a])·[a] = [b·a]·[a] = [b]`, already idempotent, so `e = [b]`.
 The stem, grouped `(aa)·(baab)` and reduced on each side before conjoining:
 `(aa) = [a]·[a] = [a·a]` is the parity cycle;
@@ -56,7 +56,7 @@ The stem, grouped `(aa)·(baab)` and reduced on each side before conjoining:
 `s = 𝒮(u)·e = [b]·[b] = [b]`, and the name `([b], [b])` is in `P`:
 accepted — every block the word completes is even, and `b`'s recur.
 
-**Construction (§4).** `|𝒞_D| = 16` classes quotiented onto the `|𝒞| = 7`
+**Construction (§5).** `|𝒞_D| = 16` classes quotiented onto the `|𝒞| = 7`
 classes above. The first row is the situation §3.1's fresh basepoint is
 built for: `⟨a·a⟩`'s transition map is the identity and its mark map is
 empty — two `a`'s toggle back and collect nothing — a neutral class of

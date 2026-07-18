@@ -9,14 +9,14 @@ and forty years without either.
 **Perrin–Pin [PP04]; Wilke.** The algebraic frame — ω-semigroups, linked
 pairs, the lasso-density fact this paper leans on throughout — is theirs.
 Wilke's axiomatization carries the identity `s·(ts)^ω = (st)^ω`; our
-rotation identity `c·(dc)^π = (cd)^π·c` is its finite shadow (§3.4),
+rotation identity `c·(dc)^π = (cd)^π·c` is its finite shadow (§4.1),
 redeployed as a computation scheme rather than an axiom.
 
 **Maler–Staiger [MS97].** They display the syntactic congruence as a
 finitary × infinitary conjunction; at the single slot `q₀` the finitary half
 is the classical right congruence. No quotient is computed, and the
 infinitary half still quantifies a two-sided context inside the loop.
-§4.3's two relations are that split made right-only, and the rotation lemma
+§5.3's two relations are that split made right-only, and the rotation lemma
 is the step the display lacks.
 
 **Carton–Perrin–Pin [CPP08].** A recognizer that sees acceptance — Boolean
@@ -33,14 +33,14 @@ the notion from `Σ*` to `Σ⁺`, where the ω-theory lives.
 the PSPACE aperiodicity argument [DG08, Prop. 12.3] — a nondeterministic
 on-the-fly bound that emits no algebra and no evidence. The construction
 here is its evidence-producing counterpart, at the same worst-case price
-(§5.1); their formula-extraction induction is the path §7 names for rendering.
+(§6.1); their formula-extraction induction is the path §8 names for rendering.
 
 **Learning [AF16, ABF18, AF21].** The recorded obstruction: the right
 congruence alone does not characterize an ω-regular language — LTL languages
 with a trivial right congruence exist [AF21] — so the field learns families
 of DFAs [AF16, ABF18], presentation-dependent acceptors. The rotation lemma
 reads the two-sided congruence from right extensions at prefix-indexed
-slots — observation-table shaped (§7).
+slots — observation-table shaped (§8).
 
 ## 8. Perspectives
 
@@ -61,12 +61,12 @@ LTL formula is reachable in principle from the algebra by the
 Diekert–Gastin induction [DG08]. Starting from automata, the state of the
 art translates counter-free automata only [BLS22], with no route from an
 arbitrary presentation — nor, without the algebra, a practical way to decide
-eligibility in the first place (§5.3).
+eligibility in the first place (§6.3).
 
-**Operating on invariants.** Equality and complement (§5.2) are the
+**Operating on invariants.** Equality and complement (§6.2) are the
 degenerate cases of a calculus: align two stamps over one common table — the
 one product-priced move — and Boolean combinations of languages become
-pointwise operations on pair sets, re-canonicalized by the quotient of §4.3.
+pointwise operations on pair sets, re-canonicalized by canonicalization (Theorem II).
 The costs concentrate where they must: the ω-rational constructors
 (prefixing by a word set, ω-power) and alphabet surgery such as projection
 embed powersets — determinization's price resurfacing exactly there, and
@@ -81,7 +81,7 @@ object of study.
 
 **Learning the algebra.** The rotation lemma is an observation-table
 discipline: every two-sided demand of the congruence is met by right
-extensions read at prefix-indexed slots (rotation on runs, Lemma 4.8) —
+extensions read at prefix-indexed slots (left invariance, Lemma 4.3) —
 rows and columns, the
 shape a minimally-adequate-teacher (MAT) learner consumes. Learning the
 syntactic ω-semigroup itself from
@@ -94,7 +94,7 @@ place of marks — the construction degenerates to the classical syntactic
 monoid: the mark maps add nothing, the ω-power shape disappears with the
 ω-words it quantified over, and the seed is already the congruence — no
 rotation, no refinement. The degenerate case landing on the known answer
-audits the machinery; and the same aperiodicity check of §5.3 then decides
+audits the machinery; and the same aperiodicity check of §6.3 then decides
 LTLf-definability [DV13], one level down, where the same tooling gap stands.
 
 ## 9. Conclusion

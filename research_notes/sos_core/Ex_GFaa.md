@@ -42,7 +42,7 @@ The classes `[b]` and `[b·a]` play the same waiting-room game for words that
 start with a `b` — `[b]` on a last-read `b`, `[b·a]` on an unpaired `a` —
 until the first block of two `a`'s is met.
 
-Reading a lasso (Definition 3.5). Take `(aab)^ω`, the empty-stem presentation
+Reading a lasso (Definition 3.4). Take `(aab)^ω`, the empty-stem presentation
 `(ε, aab)`. The loop first: `𝒮(aab) = [a]·[a]·[b] = [a·a]·[b] = [a·a]` — the
 sink absorbs — already idempotent, so `e = [a·a]`. The stem is empty, and
 absorption lands the query in `𝒞` anyway: `s = 𝒮(ε)·e = [ε]·[a·a] = [a·a]`.
@@ -51,14 +51,14 @@ of the loop. Against it, `(ab)^ω`: the loop `𝒮(ab) = [a·b]` is idempotent,
 `s = [ε]·[a·b] = [a·b]`, and `([a·b], [a·b])` is not in `P`: rejected — the
 `a`'s stay isolated forever.
 
-**Construction (§4).** `|𝒞_D| = 9` classes quotiented onto the `|𝒞| = 5`
+**Construction (§5).** `|𝒞_D| = 9` classes quotiented onto the `|𝒞| = 5`
 classes above. The mark map at work: `⟨a⟩` and `⟨a·a·a⟩` have the *same*
 transition map — the transposition — and differ only in marks, the longer word
 having closed an `aa`; the transition monoid identifies them, the mark map
 keeps them apart. The quotient then does the reverse service: four "contains
 `aa`" behaviors — `⟨a·a⟩, ⟨b·a·a⟩, ⟨a·a·a⟩, ⟨b·a·a·a⟩`, distinct for
 `≈_D` — collapse onto the sink `[a·a]`, and `⟨a·b·a⟩` rejoins `[a]` — the
-`Z₂` visible in the `at` columns is pure presentation, and §4.4 is where it
+`Z₂` visible in the `at` columns is pure presentation, and §5.4 is where it
 dies.
 
 | ⟨w⟩ | at 0 | at 1 | ·⟨b⟩ | ·⟨a⟩ | → class |

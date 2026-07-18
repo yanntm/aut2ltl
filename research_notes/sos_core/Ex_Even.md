@@ -35,7 +35,7 @@ Acceptance therefore fixes the stem to `[b]`: an even number of `a`'s until a
 and `[a·a]` canonically cover the cases where it extends by `a`'s — giving the
 three accepted pairs `([b], [b])`, `([b], [a·a])`, `([b], [a·b])`.
 
-Reading a lasso (Definition 3.5). Take `aaaba·(ba)^ω`. The loop first:
+Reading a lasso (Definition 3.4). Take `aaaba·(ba)^ω`. The loop first:
 `𝒮(ba) = [b]·[a] = [b]`, already idempotent, so `e = [b]`. The stem:
 `𝒮(aaaba) = ([a]·[a]·[a])·([b]·[a]) = [a]·[b] = [a·b]`, and the queried stem
 is `s = 𝒮(u)·e = [a·b]·[b] = [a·b]` — the sink absorbs. The name
@@ -52,10 +52,10 @@ the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
 `b·(ab)^ω = ba·(ba)^ω`, the same ω-word — and the loop's class is now
 `𝒮(ba) = [b]·[a] = [b]`, also idempotent, with `s = [b]·[b] = [b]`: the name
 `([b], [b])`, accepted again. Two distinct pairs naming the one ω-word,
-connected by a single rotation — and both in `P`, as saturation (§3.4)
+connected by a single rotation — and both in `P`, as saturation (§4.1)
 demands.
 
-**Construction (§4).** `|𝒞_D| = 6` classes quotiented onto the `|𝒞| = 4`
+**Construction (§5).** `|𝒞_D| = 6` classes quotiented onto the `|𝒞| = 4`
 classes above. The delicate row is `⟨a·a⟩`: its transition map is the
 *identity* — two `a`'s return every state to itself — and only the mark
 collected at the accepting sink (state `0`) sets its mark map apart from
