@@ -322,6 +322,8 @@ stable. That is a feature of `aUGb`, not of the theorem: `Even` (Ex. 3) names
 one lasso through two distinct pairs, and canonicity (Theorem 3.10(i)) is what
 forces those two names to one verdict.
 
+### 3.4 Rotation and saturation
+
 §2 promised a reconciliation: one lasso, many names. The constraint that
 canonicity puts on a pair set has a single generator. **A loop may be
 rotated**: a factor carried from the loop's front onto the stem leaves the

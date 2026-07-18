@@ -52,7 +52,7 @@ the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
 `b·(ab)^ω = ba·(ba)^ω`, the same ω-word — and the loop's class is now
 `𝒮(ba) = [b]·[a] = [b]`, also idempotent, with `s = [b]·[b] = [b]`: the name
 `([b], [b])`, accepted again. Two distinct pairs naming the one ω-word,
-connected by a single rotation — and both in `P`, as saturation (§3.3)
+connected by a single rotation — and both in `P`, as saturation (§3.4)
 demands.
 
 **Construction (§4).** `|𝒞_D| = 6` classes quotiented onto the `|𝒞| = 4`

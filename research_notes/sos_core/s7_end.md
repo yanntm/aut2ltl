@@ -9,7 +9,7 @@ and forty years without either.
 **Perrin–Pin [PP04]; Wilke.** The algebraic frame — ω-semigroups, linked
 pairs, the lasso-density fact this paper leans on throughout — is theirs.
 Wilke's axiomatization carries the identity `s·(ts)^ω = (st)^ω`; our
-rotation identity `c·(dc)^π = (cd)^π·c` is its finite shadow (§3.3),
+rotation identity `c·(dc)^π = (cd)^π·c` is its finite shadow (§3.4),
 redeployed as a computation scheme rather than an axiom.
 
 **Maler–Staiger [MS97].** They display the syntactic congruence as a
