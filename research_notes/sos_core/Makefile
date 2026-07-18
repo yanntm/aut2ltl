@@ -17,9 +17,9 @@ PARTS := \
 	s2_background.md \
 	s3a_object.md \
 	s3b_canonicity.md \
-	s3c_rotation.md \
-	s3d_canonicalization.md \
-	s4_construction.md \
+	s4a_rotation.md \
+	s4b_canonicalization.md \
+	s5_construction.md \
 	s6_uses.md \
 	s7_end.md \
 	examples.md \

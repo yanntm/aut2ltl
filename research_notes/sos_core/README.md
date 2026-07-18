@@ -10,21 +10,21 @@ into the single-file paper [`../sos_core.md`](../sos_core.md) — that file is a
 
 | File | Content | Status |
 |---|---|---|
-| [`s0_front.md`](s0_front.md) | title, abstract, §1 introduction | drafted prose — contributions to re-anchor on §3.5 |
-| [`s2_background.md`](s2_background.md) | §2 background | drafted prose |
-| [`s3a_object.md`](s3a_object.md) | §3 intro, §3.1 syntax, §3.2 semantics | drafted prose |
-| [`s3b_canonicity.md`](s3b_canonicity.md) | §3.3 canonicity + Def 3.11 (denoting invariant) | drafted prose |
-| [`s3c_rotation.md`](s3c_rotation.md) | §3.4 rotation, saturation, well-formedness (3.12–3.15) | new restructure — [PP04, Ch. I] primitive-period cite in 3.15 to verify |
-| [`s3d_canonicalization.md`](s3d_canonicalization.md) | §3.5 canonicalization (3.16–3.21) | new restructure — first draft |
-| [`s3_invariant.md`](s3_invariant.md) | **reservoir** — pre-split §3, out of the build; `rm` when s3a–s3d are stable | retired from PARTS |
-| [`s4_construction.md`](s4_construction.md) | §4 construction from an automaton | drafted prose — awaiting §4 rewrite against §3.5 (entry = denoting invariant, slot compression); §3 cross-refs stale (3.11→3.12 etc.), sweep once §3 stable |
-| [`s6_uses.md`](s6_uses.md) | §5 uses: identity band + LTL frontier | drafted prose — serialization block verbatim from tool export ([`../sos_core_figs/sources/gf_aa.sos`](../sos_core_figs/sources/gf_aa.sos)) |
-| [`s7_end.md`](s7_end.md) | §6 related work, §7 perspectives, §8 conclusion | drafted prose — §3.4 refs to re-check after restructure |
+| [`s0_front.md`](s0_front.md) | title, abstract, §1 introduction | drafted prose — contributions to re-anchor on §4 (rotation + canonicalization) |
+| [`s2_background.md`](s2_background.md) | §2 background | drafted prose — §3 refs to re-check after restructure |
+| [`s3a_object.md`](s3a_object.md) | §3 intro, §3.1 syntax, §3.2 semantics (Defs 3.1–3.4) | drafted prose |
+| [`s3b_canonicity.md`](s3b_canonicity.md) | §3.3 canonicity (Defs 3.5–3.6, Lemma 3.1, **Theorem I**) | drafted prose |
+| [`s4a_rotation.md`](s4a_rotation.md) | §4 opening (Def 4.1 denoting) + §4.1 rotation, saturation, well-formedness (Lemma 4.1, Def 4.2, Cor 4.1, Prop 4.1) | new restructure — [PP04, Ch. I] primitive-period cite in Prop 4.1 to verify |
+| [`s4b_canonicalization.md`](s4b_canonicalization.md) | §4.2 canonicalization (Def 4.3, Lemmas 4.2–4.3, **Theorem II**, Cor 4.2) | new restructure — first draft |
+| [`s3_invariant.md`](s3_invariant.md) | **reservoir** — pre-split §3, out of the build; `rm` when s3a/s3b/s4a/s4b are stable | retired from PARTS |
+| [`s5_construction.md`](s5_construction.md) | §5 construction from an automaton | drafted prose — awaiting rewrite against §4 (entry = denoting invariant, slot compression, **Theorem III**); §3/§4 cross-refs stale, sweep once §3–§4 stable; headings renumbered 4.x→5.x |
+| [`s6_uses.md`](s6_uses.md) | §6 uses: identity band + LTL frontier | drafted prose — serialization block verbatim from tool export ([`../sos_core_figs/sources/gf_aa.sos`](../sos_core_figs/sources/gf_aa.sos)); headings renumbered 5.x→6.x, body refs stale |
+| [`s7_end.md`](s7_end.md) | §7 related work, §8 perspectives, §9 conclusion | drafted prose — headings renumbered, body refs stale |
 | [`bib.md`](bib.md) | bibliography | reconstructed — verify against [`../papers/`](../papers/) |
 | [`notation.md`](notation.md) | notation conventions (editors' note, not paper text) | stable |
 
 The [`Makefile`](Makefile) concatenates, in order,
-`s0 s2 s3a s3b s3c s3d s4 s6_uses s7_end`
+`s0 s2 s3a s3b s4a s4b s5_construction s6_uses s7_end`
 then the worked examples (`examples.md` + the four `Ex_*.md`) then `bib`;
 `README.md`, `notation.md` and the reservoir `s3_invariant.md` stay out of
 the paper.
@@ -61,20 +61,24 @@ recurring edges only.
 
 ## Conventions
 
-- All sections obey `notation.md`; numbering is per-section (Definition 3.x
-  spans `s3a`–`s3d`, in order: 3.1–3.6 in `s3a`, 3.7–3.11 in `s3b`,
-  3.12–3.15 in `s3c`, 3.16–3.21 in `s3d`); cross-references are name+number
-  ("the rotation lemma (3.12)") so they survive edits and file boundaries.
-  §3 vocabulary ladder: invariant (3.4) → denoting `L` (3.11) → well-formed
-  (3.13) ⟺ owns a language (3.15) → canonical (3.10), reached by
-  canonicalization (3.20).
+- All sections obey `notation.md`. Numbering: **per-type counters, scoped per
+  section** — Definitions 3.1–3.6, Lemma 3.1 (§3); Definitions 4.1–4.3,
+  Lemmas 4.1–4.3, Proposition 4.1, Corollaries 4.1–4.2 (§4) — every index
+  single-digit. The **main theorems are lettered globally in roman**:
+  Theorem I (canonicity, §3.3), Theorem II (canonicalization, §4.2),
+  Theorem III (the construction, §5 — to be applied in the §5 rewrite).
+  Cross-references are name+number with the type spelled out ("the rotation
+  lemma (Lemma 4.1)", "canonicity (Theorem I)") so they survive edits and
+  file boundaries. Vocabulary ladder: invariant (Def 3.3) → denoting `L`
+  (Def 4.1) → well-formed (Def 4.2) ⟺ owns a language (Prop 4.1) →
+  canonical (Theorem I), reached by canonicalization (Theorem II).
 - Figures live in [`../sos_core_figs/`](../sos_core_figs/) and
   [`../sos_figs/`](../sos_figs/); paths from these files start with `../`. §2 is
   figure-free (classes computed by hand). Two numbered figures only: Figure 1,
   the two-panel pair in §3.1 — stamp core with `λ` as entry arrows and pairs
   drawn on top (`core_F0_astar_bomega_b_pairs.png`) | monoid completion
   (`core_F0_astar_bomega.png`); Figure 2, the reset presentation of `GF(aa)`
-  in §4.4 (`gf_aa_reset.png`). All other drawings live on the example pages,
+  in §5.4 (`gf_aa_reset.png`). All other drawings live on the example pages,
   numbered Ex. 1–4 and cited that way from the prose.
 - Didactic goal: standalone — readable by an M2 student with background but
   without Perrin–Pin as a prerequisite. Every classical notion used is
