@@ -5,7 +5,7 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Working draft — 2026-07-16*
+*Working draft — 2026-07-18*
 
 ## Abstract
 
@@ -20,13 +20,12 @@ equipped with a standalone lasso-membership semantics. This is a canonical norma
 the domain has never had: under shortlex naming, two languages are equal iff
 their serialized invariants are byte-identical. The mathematical core is a
 rotation lemma, to our knowledge new: it makes Arnold's two-sided syntactic
-congruence right-invariant, computable by right multiplications alone and so
-by ordinary partition refinement. This reduction is what turns the
-definition into a construction. On it we build
-`𝓘(D)` from any deterministic Emerson–Lei automaton `D` — the automaton
-stamp, classifying words by their runs, then a right-computable quotient —
-and prove
-`𝓘(D) = 𝓘(L(D))` against the semantics: one language, one table, whatever
+congruence right-invariant — computable by right multiplications alone, and
+so by ordinary partition refinement — and it characterizes the *well-formed*
+invariants, those whose semantics gives every lasso one verdict. Every
+well-formed invariant, however obtained, canonicalizes onto the syntactic
+one; a deterministic Emerson–Lei automaton supplies one, and
+`𝓘(D) = 𝓘(L(D))` follows: one language, one table, whatever
 the presentation. LTL-definability, the safety–progress rung, and the
 weakest deterministic acceptance become read-offs of the invariant.
 
@@ -73,40 +72,32 @@ finitary–infinitary split [MS97], but compute no quotient, and their loop
 test still hides a two-sided context. This paper supplies the missing
 mathematics and assembles the construction. Our contributions:
 
-1. **The invariant** (§3). `𝓘(L) = ⟨𝒮, P⟩` is the syntactic ω-semigroup
-   made concrete, and more than its algebra: a stamp `𝒮 : Σ⁺ → 𝒞` — the
-   finite carrier, presented by classes, letter map and table — with an
-   acceptance layer `P` of linked pairs in place of the abstract second
-   sort. That pairing makes it a recognizer: `𝓘` carries its own membership
-   semantics on lassos `u·v^ω` (Definition 3.5). Canonicity (Theorem 3.10)
-   makes it a complete invariant — under shortlex naming, a normal form:
-   language equality is byte equality of the serialized tables.
+1. **The invariant** (§3). The syntactic ω-semigroup made concrete: a
+   finite classifier of finite words together with a set of accepting
+   stem–loop pairs, carrying its own membership semantics on ultimately
+   periodic words. It is canonical — one language, one object: under
+   shortlex naming, language equality is byte equality of serialized files.
 
-2. **The rotation lemma** (§3.4). A loop may be rotated — a factor carried
-   from the loop's front onto the stem leaves the ω-word unchanged — and
-   this single move is how two presentations of one ω-word come to
-   disagree. Read on contexts,
-   it turns Arnold's two-sided congruence right-invariant — computable by
-   right multiplications alone, hence by ordinary partition refinement. To
-   our knowledge this reduction is new, and it is the engine of the
-   construction.
+2. **Rotation and canonicalization** (§4). A loop may be rotated — a factor
+   carried from the loop's front onto the stem leaves the ω-word
+   unchanged — and this single move is how two presentations of one ω-word
+   come to disagree. The lemma that tames it serves twice: it characterizes
+   the *well-formed* invariants — those whose semantics gives every lasso
+   one verdict — and it turns Arnold's two-sided congruence right-invariant,
+   computable by right multiplications alone, hence by ordinary partition
+   refinement. To our knowledge this reduction is new, and it delivers more
+   than a construction: every well-formed invariant, however obtained,
+   canonicalizes onto the syntactic invariant of its language.
 
-3. **The construction** (§4). From any deterministic Emerson–Lei automaton
-   `D`: the automaton stamp — words classified by transition map and mark
-   map, sound but too fine — then the
-   quotient by two right-only relations, computed by partition refinement.
-   Theorem 4.10 closes the loop against the semantics: `𝓘(D) = 𝓘(L(D))`,
-   byte for byte, whatever presentation `D` was.
+3. **The construction** (§5). From any deterministic Emerson–Lei automaton,
+   a well-formed invariant: words classified by their runs — transition map
+   and mark map — with acceptance read off the states stems reach and the
+   loops that close there; canonicalization does the rest, and two automata
+   for one language construct the identical file.
 
-§5 puts the invariant to work: first the split of the two costs — the
-construction pays an exponential that PSPACE-hardness makes unavoidable,
-while everything on the finished table is polynomial in `|𝒞|`, a size
-intrinsic to the language — then the identity questions — equality,
-complement, membership, witnesses — nearly for free, and the LTL frontier
-as a one-look read-off, exact in both directions because the invariant is
-canonical. §6 reviews related work; §7 opens the directions the invariant
-makes available — classification, rendering to formulas, a calculus, a
-census, learning; §8 concludes.
+§6 puts the invariant to work: costs, the identity questions, the LTL
+frontier. §7 reviews related work; §8 opens the directions the invariant
+makes available; §9 concludes.
 
 The construction is implemented, in the tool `aut2ltl`
 (github.com/yanntm/aut2ltl); this paper is its theoretical ground, and

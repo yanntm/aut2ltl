@@ -10,7 +10,7 @@ into the single-file paper [`../sos_core.md`](../sos_core.md) — that file is a
 
 | File | Content | Status |
 |---|---|---|
-| [`s0_front.md`](s0_front.md) | title, abstract, §1 introduction | drafted prose — contributions to re-anchor on §4 (rotation + canonicalization) |
+| [`s0_front.md`](s0_front.md) | title, abstract, §1 introduction | restructure applied — abstract middle + contributions rewritten (well-formed, canonicalization), abstract pending author review |
 | [`s2_background.md`](s2_background.md) | §2 background | drafted prose — §3 refs to re-check after restructure |
 | [`s3a_object.md`](s3a_object.md) | §3 intro, §3.1 syntax, §3.2 semantics (Defs 3.1–3.4) | drafted prose |
 | [`s3b_canonicity.md`](s3b_canonicity.md) | §3.3 canonicity (Defs 3.5–3.6, Lemma 3.1, **Theorem I**) | drafted prose |
