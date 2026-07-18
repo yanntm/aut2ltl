@@ -135,25 +135,21 @@ their own idempotent powers. `[a·b]` is not: `[a·b]·[a·b] = [b·a]` — glui
 words of `a⁺b⁺` puts an `a` after a `b` — so `[a·b]^π = [b·a]`: looping "`a`'s
 then `b`'s" is exactly as dead as slipping once.
 
-> **Definition 3.3 (linked pair of classes).** Let `𝒮 : Σ⁺ → 𝒞` be a stamp. A
-> **linked pair** of `𝒮` is a pair of classes `(s, e) ∈ 𝒞 × 𝒞` with `e·e = e`
-> and `s·e = s`: the loop class `e` is idempotent, and it absorbs the stem class
-> `s`.
-
-*Example.* On Figure 1 (`aUGb`), `([a·b], [b])` is linked: `[b]` is idempotent
-and `[a·b]·[b] = [a·b]`. The pair `([a], [b])` is not: `[a]·[b] = [a·b] ≠ [a]`
-— a stem that ends before `b`'s begin is not absorbed by them.
-
-> **Definition 3.4 (pair set; invariant over an alphabet).** Let `𝒮` be a stamp
-> over `Σ`. A **pair set** over `𝒮` is a finite set `P ⊆ 𝒞 × 𝒞` of linked pairs
-> of `𝒮`. An **invariant** over `Σ` is a pair `𝓘 = ⟨𝒮, P⟩` of a stamp and a pair
-> set over it.
+> **Definition 3.3 (linked pair; pair set; invariant).** Let `𝒮 : Σ⁺ → 𝒞` be a
+> stamp. A **linked pair** of `𝒮` is a pair of classes `(s, e) ∈ 𝒞 × 𝒞` with
+> `e·e = e` and `s·e = s`: the loop class `e` is idempotent, and it absorbs the
+> stem class `s`. A **pair set** over `𝒮` is a finite set `P ⊆ 𝒞 × 𝒞` of linked
+> pairs of `𝒮`. An **invariant** over `Σ` is a pair `𝓘 = ⟨𝒮, P⟩` of a stamp and
+> a pair set over it.
 
 The typing is deliberate: `P` lives in `𝒞 × 𝒞`, entirely inside the semigroup.
 The basepoint `[ε]` appears in no pair — the acceptance layer speaks only of
 words.
 
-*Example.* Figure 1 carries its pair set beneath the drawing:
+*Example.* On Figure 1 (`aUGb`), `([a·b], [b])` is linked: `[b]` is idempotent
+and `[a·b]·[b] = [a·b]`. The pair `([a], [b])` is not: `[a]·[b] = [a·b] ≠ [a]`
+— a stem that ends before `b`'s begin is not absorbed by them. Figure 1
+carries its pair set beneath the drawing:
 `P = { ([b], [b]), ([a·b], [b]) }` — both pairs linked, both with loop class
 `[b]`.
 
@@ -163,7 +159,7 @@ An invariant decides lassos with the data it carries and nothing else: the
 stamp assigns each finite word its class — stem and loop alike — and `P` lists
 the pairs that accept.
 
-> **Definition 3.5 (lasso membership; language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an
+> **Definition 3.4 (lasso membership; name of a lasso).** Let `𝓘 = ⟨𝒮, P⟩` be an
 > invariant over `Σ`, and let `w ∈ Σ^ω` be a lasso with presentation
 > `(u, v) ∈ Σ* × Σ⁺` (Definition 2.1), `w = u·v^ω`. Set
 >
@@ -171,7 +167,8 @@ the pairs that accept.
 >     e := 𝒮(v)^π,     s := 𝒮(u)·e.
 > ```
 >
-> Then `w ∈ L(𝓘)` iff `(s, e) ∈ P`.
+> Then `w ∈ L(𝓘)` iff `(s, e) ∈ P`. A linked pair **names** the lasso `w` when
+> some presentation of `w` lands on it this way.
 
 The queried pair is a linked pair of `𝒮`: `e` is idempotent as an idempotent
 power, and `s·e = 𝒮(u)·e·e = s`. Both coordinates land in `𝒞` — `e` is the
@@ -187,11 +184,7 @@ accepted. For `ba·(ab)^ω`: the loop's class `𝒮(ab) = [a·b]` is not idempot
 its square `[b·a]` is — so `e = [b·a]`; the stem's class is `[b·a]` and
 `[b·a]·[b·a] = [b·a]`. The pair `([b·a], [b·a])` is not in `P`: rejected.
 
-> **Definition 3.6 (name of a lasso).** Let `𝒮` be a stamp over `Σ`. A linked
-> pair `(s, e)` of `𝒮` **names** the lasso `w` when some presentation
-> `(u, v) ∈ Σ* × Σ⁺` of `w` lands on it: `𝒮(v)^π = e` and `𝒮(u)·e = s`.
-
-Definition 3.5 thus queries one name of `w` — the one its given presentation
+The query thus evaluates one name of `w` — the one its given presentation
 lands on. A lasso bears several names: already `(u, v)` and `(u·v, v)` present
 the same ω-word and may land on distinct pairs. Nothing yet says all names of
 one lasso receive one verdict from `P`; that the semantics is nevertheless
