@@ -330,8 +330,8 @@ nothing else.
 
 **One lasso, many names.** A single ω-word has many presentations —
 `u·v^ω = (uv)·v^ω = u·(v²)^ω = (u·v₁)·(v₂·v₁)^ω` for any split `v = v₁·v₂` —
-and, as §3 shows, these need not name it by the same linked pair. Reconciling
-them is not bookkeeping: it is the **rotation lemma** (3.11), the paper's
+and, as §4 shows, these need not name it by the same linked pair. Reconciling
+them is not bookkeeping: it is the **rotation lemma** (Lemma 4.1), the paper's
 structural pivot, and the one nontrivial constraint the invariant must
 satisfy.
 
@@ -777,18 +777,19 @@ be well-formed — its query self-contradictory on the single ω-word `a^ω`.
 > A well-formed invariant denotes exactly one language, its own: `𝓘` denotes
 > `L` iff `𝓘` is well-formed and `L = L(𝓘)`.
 
-*Proof.* (i, ⟸) All names of one lasso are conjugate. The query of `(u, v)`
-is the name landed on by `(u·v^π, v^π)`; replacing a loop by a power moves no
-name — the idempotent power of `c^k` is `c^π` itself, idempotent and a power
-of `c^k` since `c^{kπ} = c^π`; stem extension is the degenerate rotation. And
-two presentations of one ω-word meet: rotating one letter at a time — each
-move a conjugacy step — brings both stems to one common length, after which
-the two loops spell the same tail of the word from the same position, hence
-are powers of its primitive period [PP04, Ch. I], and power moves finish. A
-saturated `P` holds each conjugacy class of names entirely or not at all: one
-verdict. (⟹) By the rotation lemma (Lemma 4.1) the two pairs of a conjugacy
-step name a common lasso; one verdict on it puts both pairs in `P` or
-neither. (ii) For `(s, e) ∈ P` pick `u ∈ 𝒮⁻¹(s)`, `v ∈ 𝒮⁻¹(e)`: the query of
+*Proof.* (i, ⟸) All names of one lasso are conjugate
+([PP04, Ch. II, Cor. 2.9]; elementarily:). The query of `(u, v)` is the name
+of `(u·v^π, v^π)`, and powers move no name — the idempotent power of `c^k`
+is `c^π`, idempotent and a power of `c^k` since `c^{kπ} = c^π`. A one-letter
+rotation `(u, x·v) ↦ (u·x, v·x)` moves the name by one step of
+Definition 4.2 — the computation of Lemma 4.1's proof, at `c = 𝒮(x)`,
+`d = 𝒮(v)`; stem extension when the loop is `x` alone. Given two
+presentations of one lasso, rotations align the stems on one length; the
+loops `z, z'` then spell the same tail, so `z^{|z'|} = z'^{|z|}` as words,
+and powers finish. Saturation holds each conjugacy class of names entirely
+or not at all: one verdict. (⟹) By the rotation lemma (Lemma 4.1) the two
+pairs of a conjugacy step name a common lasso; one verdict on it puts both
+in `P` or neither. (ii) For `(s, e) ∈ P` pick `u ∈ 𝒮⁻¹(s)`, `v ∈ 𝒮⁻¹(e)`: the query of
 `(u, v)` is `(s·e, e) = (s, e)` — `e` idempotent, `s` absorbed — so the
 union's lassos are the accepted ones, and conversely an accepted lasso,
 rewritten on `(u·v^π, v^π)`, exhibits its stem and loop in the classes of its
@@ -900,8 +901,9 @@ was proved: the rotation lemma, deployed a second time.
 *Proof.* By Lemma 4.2 the quotient stamp and `𝒮_L` are two quotients of `Σ⁺`
 with one kernel, hence one quotient — the same classes as sets of words, the
 same letter map, the same induced table. For the pair sets: a quotient of
-stamps preserves idempotent powers, so a lasso named `(s, e)` by `𝒮` is named
-by the image pair in the quotient; hence `(s, e) ∈ P` iff that lasso lies in
+stamps preserves idempotent powers — the image of `c^π` is idempotent and a
+power of the image of `c`, hence its idempotent power — so a lasso named
+`(s, e)` by `𝒮` is named by the image pair in the quotient; hence `(s, e) ∈ P` iff that lasso lies in
 `L` (Proposition 4.1) iff the image pair lies in `P(L)` (Theorem I(i)) — the
 bit of a pair is constant on `∼`-classes, and the image of `P` is exactly
 `P(L)`. For the refinement: a partition stable under every right letter is
@@ -1241,13 +1243,15 @@ reached by a finite word.
 
 For the `Λ`-family at a fixed `q`: `Λ(d, f)(c·g)`, over all `g ∈ M_D` and
 idempotent `f`, is the membership of `w_g·(w_f)^ω` in the residual
-`L(δ(q, c))`. These representative lassos test every lasso: `y·t^ω` shares
-its name with `w_g·(w_f)^ω` at `g = 𝒮_D(y)`, `f = 𝒮_D(t)^π`, name-sharing
-survives any common finite prefix, and the automaton invariant denotes
-`L(D)` (Corollary 5.1) — one verdict. Agreement of the family for `c` and
-`c'` is therefore agreement of `L(δ(q, c))` and `L(δ(q, c'))` on every
-lasso, which is their equality [PP04, Ch. I, Cor. 9.8]. The `Ω`-family at
-`q` is the displayed `∼ω` by the first identity: `Ω(d)(c·g) = A(q, c·g)`. ∎
+`L(δ(q, c))`. These representative lassos decide every lasso: for arbitrary
+`y·t^ω` put `g = 𝒮_D(y)`, `f = 𝒮_D(t)^π`; then `x·y·t^ω` and
+`x·w_g·(w_f)^ω` share the queried name `(𝒮_D(x)·g·f, f)` for every finite
+`x`, hence share `L(D)`'s verdict (Corollary 5.1) — at `x` reaching
+`δ(q, c)`, this reads `[y·t^ω ∈ L(δ(q, c))] = [w_g·(w_f)^ω ∈ L(δ(q, c))]`.
+Agreement of the family for `c` and `c'` is therefore agreement of the two
+residuals on every lasso, which is their equality [PP04, Ch. I, Cor. 9.8].
+The `Ω`-family at `q` is the displayed `∼ω` by the first identity:
+`Ω(d)(c·g) = A(q, c·g)`. ∎
 
 `∼lin` compares the futures the words open — residual languages of reached
 states — and never looks at marks; `∼ω` compares the loops the words can
@@ -1389,7 +1393,7 @@ using it once built.
 
 **Building.** The construction is dominated by the size of the automaton
 stamp's carrier: a class of `≈_D` is its two maps — a vector of `|Q|` slots
-over the local domain `Q × 2^F` (§4.2) — so
+over the local domain `Q × 2^F` (§5.2) — so
 
 ```
     |𝒞_D| ≤ (|Q|·2^{|F|})^{|Q|},
@@ -1397,7 +1401,7 @@ over the local domain `Q × 2^F` (§4.2) — so
 
 and the `|Q|` in the exponent is the source of the explosion. That a wall
 sits somewhere is a mathematical necessity, not an engineering apology:
-deciding aperiodicity of a regular ω-language — the LTL read-off of §5.3 —
+deciding aperiodicity of a regular ω-language — the LTL read-off of §6.3 —
 is PSPACE-complete, with hardness transferred from finite-word minimal-DFA
 aperiodicity [CH91] and the ω upper bound from [DG08, Prop. 12.3]; the
 surrounding classifications are no cheaper. Everything around `𝒞_D` is
@@ -1409,7 +1413,7 @@ lasso test per linked pair. The cost is entirely the size of
 `𝒞_D`, and that size is intrinsic to the problem, not to the construction.
 
 **Using.** Once built, the sizes change meaning: `|𝒞|` is a function of `L`
-alone (the construction theorem 4.10) — the intrinsic complexity of the
+alone (Theorem III) — the intrinsic complexity of the
 language, the
 ω-analogue of the syntactic monoid's size — where `|Q|` and `|𝒞_D|` were
 functions of a presentation. The serialized invariant is `O(|𝒞|²)` table
@@ -1422,8 +1426,8 @@ here is BDD-friendly and the redundancy is high, so a symbolic approach is
 likely to alleviate much of this inherent complexity. The ingredients are all
 Boolean — the alphabet `2^AP`, the mark sets over `F`, the `Inf`/`Fin`
 formula `Acc` — and every step is a set operation, not an arithmetic one: closing
-`𝒞_D` under composition, the lasso equivalence of §4.3, and the
-partition refinement of §4.4 are all images, fixpoints, and quotients over
+`𝒞_D` under composition, the test equivalence of §5.3, and the
+partition refinement of §5.3 are all images, fixpoints, and quotients over
 sets, native to decision diagrams.
 
 ### 6.2 The exportable invariant and the identity band
@@ -1469,25 +1473,25 @@ gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
 data — the right congruence, recomputable from the core, so byte equality is
 unaffected; its single class exhibits `GFaa`'s prefix-independence.
 
-The file decides lasso membership (Definition 3.5) with no further
+The file decides lasso membership (Definition 3.4) with no further
 apparatus. For
 `(a·b)^ω`: the stamp sends the loop to `𝒮(ab) = 4 = [a·b]`, already idempotent
 (`4·4 = 4`); the empty stem gives `s = e = 4`; and `4 4` is not listed under
 `accept`: rejected — no `aa` recurs.
 
 *Example (canonicity, in bytes).* The two non-isomorphic presentations of
-`GFaa` in §4.4 — run-parity and reset — both construct exactly this file.
+`GFaa` in §5.4 — run-parity and reset — both construct exactly this file.
 Language equality of the two inputs is not tested; it is exhibited: one
 language, one file.
 
-> **Proposition 5.1 (the identity band).** Let `𝓘(L) = ⟨𝒮, P⟩` and `𝓘(L')` be
+> **Proposition 6.1 (the identity band).** Let `𝓘(L) = ⟨𝒮, P⟩` and `𝓘(L')` be
 > syntactic invariants over `Σ`, serialized under shortlex keys. Then:
 >
 > (i) *(equality)* `L = L'` iff the two serializations are byte-identical;
 >
 > (ii) *(membership)* `u·v^ω ∈ L` is decided by one evaluation of `𝒮` — the
 > letter map `λ`, then table products — and one lookup in `P`
-> (Definition 3.5);
+> (Definition 3.4);
 >
 > (iii) *(emptiness, universality)* `L = ∅` iff `P = ∅`, and `L = Σ^ω` iff `P`
 > is the set of all linked pairs of `𝒮`;
@@ -1495,11 +1499,11 @@ language, one file.
 > (iv) *(witness)* every `(s, e) ∈ P` yields, from its keys, the canonical
 > lasso `u_s·(u_e)^ω ∈ L`.
 
-*Proof.* (i) is canonicity (Theorem 3.10(ii)) with the byte-equality remark:
+*Proof.* (i) is canonicity (Theorem I(ii)) with the byte-equality remark:
 the unique isomorphism is the identity on shortlex names. (ii) is lasso
-membership (Definition 3.5), whose verdict is presentation-independent by
+membership (Definition 3.4), whose verdict is presentation-independent by
 canonicity
-(Theorem 3.10(i)). (iii): every linked
+(Theorem I(i)). (iii): every linked
 pair names a lasso — pick `u ∈ s`, `v ∈ e` by surjectivity: `𝒮(v)^π = e` and
 `𝒮(u)·e = s` — so `P = ∅` accepts no lasso and `P` full accepts them all;
 two regular ω-languages agreeing on all lassos are equal
@@ -1508,17 +1512,17 @@ presentation `(u_s, u_e)` lands on `(s, e)` — the keys are nonempty,
 `𝒮(u_e) = e` is idempotent so `e^π = e`, and `𝒮(u_s)·e = s·e = s` — and
 `(s, e) ∈ P` accepts it. ∎
 
-> **Proposition 5.2 (complement).** `𝓘(L̄) = ⟨𝒮_L, LP(𝒮_L) ∖ P(L)⟩`, writing
+> **Proposition 6.2 (complement).** `𝓘(L̄) = ⟨𝒮_L, LP(𝒮_L) ∖ P(L)⟩`, writing
 > `LP(𝒮)` for the set of all linked pairs of a stamp: the complement shares
 > the stamp — classes, keys, letter map, table — and flips the pair set within
 > the linked pairs.
 
-*Proof.* Both context shapes of Arnold's congruence (Definition 3.7) are
+*Proof.* Both context shapes of Arnold's congruence (Definition 3.5) are
 membership equivalences,
 symmetric in `L` and `L̄`, so `≈_L = ≈_{L̄}` and the syntactic stamps
 coincide, keys included. Every linked pair names at least one lasso (proof
-of 5.1(iii)), and all lassos sharing a name share one verdict — canonicity
-(Theorem 3.10(i)): the names split, `P(L)` holding those whose lassos lie in
+of 6.1(iii)), and all lassos sharing a name share one verdict — canonicity
+(Theorem I(i)): the names split, `P(L)` holding those whose lassos lie in
 `L`, and the remaining linked pairs are exactly the names of the lassos of
 `L̄` — that is, `P(L̄)`. ∎
 
@@ -1536,7 +1540,7 @@ languages, identical bytes.
 
 ### 6.3 The LTL frontier
 
-> **Theorem 5.3 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
+> **Theorem 6.1 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
 > LTL-definable iff `𝒞_L` is **aperiodic**: no class has a power cycle of
 > period `≥ 2` — equivalently, `c^π·c = c^π` for every `c ∈ 𝒞_L`.
 
@@ -1545,17 +1549,17 @@ The chain is LTL `=` FO[<] `=` star-free `=` aperiodic syntactic algebra
 see [DG08] for the consolidated account. What this paper adds is not the
 theorem but the table it is read off:
 
-> **Corollary 5.4 (deciding LTL-definability).** On the constructed invariant `𝓘(D)`,
+> **Corollary 6.1 (deciding LTL-definability).** On the constructed invariant `𝓘(D)`,
 > LTL-definability of `L(D)` is decided by finitely many table products —
 > compute `c^π` for each class, test `c^π·c = c^π` — and the verdict is exact
 > in both directions, whatever `D` presented the language, because
-> `𝓘(D) = 𝓘(L)` — the construction theorem (4.10). ∎
+> `𝓘(D) = 𝓘(L)` — the construction (Theorem III). ∎
 
 Canonicity is what the exactness rests on. On a non-canonical recognizer
 only one direction survives: aperiodicity of `𝒞_D` — or of the transition
 monoid — is inherited by the quotient and thus *sufficient* for LTL, but a
 group there proves nothing, since it can be pure presentation
-(Proposition 4.5's one-state witness; `GFaa`'s transposition, which §4.4
+(Proposition 5.1's one-state witness; `GFaa`'s transposition, which §5.4
 kills). On the four examples: `aUGb` — `[a·b]` falls to the idempotent
 `[b·a]` in one step, every power cycle has period 1: LTL. `GFaa` — the
 `Z₂` of its presentation died in the quotient, all five classes settle with
@@ -1585,14 +1589,14 @@ and forty years without either.
 **Perrin–Pin [PP04]; Wilke.** The algebraic frame — ω-semigroups, linked
 pairs, the lasso-density fact this paper leans on throughout — is theirs.
 Wilke's axiomatization carries the identity `s·(ts)^ω = (st)^ω`; our
-rotation identity `c·(dc)^π = (cd)^π·c` is its finite shadow (§3.4),
+rotation identity `c·(dc)^π = (cd)^π·c` is its finite shadow (§4.1),
 redeployed as a computation scheme rather than an axiom.
 
 **Maler–Staiger [MS97].** They display the syntactic congruence as a
 finitary × infinitary conjunction; at the single slot `q₀` the finitary half
 is the classical right congruence. No quotient is computed, and the
 infinitary half still quantifies a two-sided context inside the loop.
-§4.3's two relations are that split made right-only, and the rotation lemma
+§5.3's two relations are that split made right-only, and the rotation lemma
 is the step the display lacks.
 
 **Carton–Perrin–Pin [CPP08].** A recognizer that sees acceptance — Boolean
@@ -1609,14 +1613,14 @@ the notion from `Σ*` to `Σ⁺`, where the ω-theory lives.
 the PSPACE aperiodicity argument [DG08, Prop. 12.3] — a nondeterministic
 on-the-fly bound that emits no algebra and no evidence. The construction
 here is its evidence-producing counterpart, at the same worst-case price
-(§5.1); their formula-extraction induction is the path §7 names for rendering.
+(§6.1); their formula-extraction induction is the path §8 names for rendering.
 
 **Learning [AF16, ABF18, AF21].** The recorded obstruction: the right
 congruence alone does not characterize an ω-regular language — LTL languages
 with a trivial right congruence exist [AF21] — so the field learns families
 of DFAs [AF16, ABF18], presentation-dependent acceptors. The rotation lemma
 reads the two-sided congruence from right extensions at prefix-indexed
-slots — observation-table shaped (§7).
+slots — observation-table shaped (§8).
 
 ## 8. Perspectives
 
@@ -1637,12 +1641,12 @@ LTL formula is reachable in principle from the algebra by the
 Diekert–Gastin induction [DG08]. Starting from automata, the state of the
 art translates counter-free automata only [BLS22], with no route from an
 arbitrary presentation — nor, without the algebra, a practical way to decide
-eligibility in the first place (§5.3).
+eligibility in the first place (§6.3).
 
-**Operating on invariants.** Equality and complement (§5.2) are the
+**Operating on invariants.** Equality and complement (§6.2) are the
 degenerate cases of a calculus: align two stamps over one common table — the
 one product-priced move — and Boolean combinations of languages become
-pointwise operations on pair sets, re-canonicalized by the quotient of §4.3.
+pointwise operations on pair sets, re-canonicalized by canonicalization (Theorem II).
 The costs concentrate where they must: the ω-rational constructors
 (prefixing by a word set, ω-power) and alphabet surgery such as projection
 embed powersets — determinization's price resurfacing exactly there, and
@@ -1657,7 +1661,7 @@ object of study.
 
 **Learning the algebra.** The rotation lemma is an observation-table
 discipline: every two-sided demand of the congruence is met by right
-extensions read at prefix-indexed slots (rotation on runs, Lemma 4.8) —
+extensions read at prefix-indexed slots (left invariance, Lemma 4.3) —
 rows and columns, the
 shape a minimally-adequate-teacher (MAT) learner consumes. Learning the
 syntactic ω-semigroup itself from
@@ -1670,7 +1674,7 @@ place of marks — the construction degenerates to the classical syntactic
 monoid: the mark maps add nothing, the ω-power shape disappears with the
 ω-words it quantified over, and the seed is already the congruence — no
 rotation, no refinement. The degenerate case landing on the known answer
-audits the machinery; and the same aperiodicity check of §5.3 then decides
+audits the machinery; and the same aperiodicity check of §6.3 then decides
 LTLf-definability [DV13], one level down, where the same tooling gap stands.
 
 ## 9. Conclusion
@@ -1710,7 +1714,7 @@ the prose, each presented on its own page along the same axes: an
 **informal** description, its **ω-regular** word over the two
 letters `{a, b}`, its **formula** (LTL, or PSL/SERE where mod-2 counting takes it
 out of LTL), a **classification** block, its deterministic **Emerson–Lei
-automaton** `D` (the input of §4), and its syntactic **invariant** `𝓘` (§3).
+automaton** `D` (the input of §5), and its syntactic **invariant** `𝓘` (§3).
 
 **The classification block.** Three verdicts head each page — facts about a
 language that are usually hard to come by, here tool-computed from the page's
@@ -1735,9 +1739,9 @@ congruence classes, edges are the letter-action table, and the letter map `λ`
 and the saturated set of accepting linked pairs `P` are listed beneath; the
 label `𝒞` abbreviates a self-loop carrying every class.
 
-**The construction table.** Each page closes on the table §4 builds from its
+**The construction table.** Each page closes on the table §5 builds from its
 `D`: one row per class of the automaton congruence `≈_D`
-(Definition 4.2), written `⟨w⟩` for the class of its shortlex-least word `w`.
+(Definition 5.2), written `⟨w⟩` for the class of its shortlex-least word `w`.
 The `at q` columns hold
 `(δ(q, w), mk(q, w))` — where reading `w` from state `q` lands, and
 the marks collected on the way: the two maps that determine the class, so
@@ -1745,7 +1749,7 @@ the row *is* the class. The `·⟨b⟩`,
 `·⟨a⟩` columns name the class reached by extending on the right by one
 letter — the step the construction iterates, and the table is closed: every
 entry names a row. The last column is the image of the row's class in the
-quotient of §4.3 — its class in `𝒞`.
+quotient of §5.3 — its class in `𝒞`.
 
 
 
@@ -1776,7 +1780,7 @@ settles with period 1 — `[a]`, `[b]`, `[b·a]` are idempotent, and `[a·b]`
 falls onto the idempotent `[b·a]` in one step — so the invariant is
 aperiodic: LTL.
 
-Reading a lasso (Definition 3.5). Take `ababba·b^ω`. The loop first:
+Reading a lasso (Definition 3.4). Take `ababba·b^ω`. The loop first:
 `𝒮(b) = [b]` is already idempotent, so `e = [b]`. The stem:
 `𝒮(ababba) = ([a]·[b])·([a]·[b])·([b]·[a]) = [a·b]·[a·b]·[b·a]` (an arbitrary
 parenthesizing, since `𝒮` is associative); `[a·b]·[a·b] = [b·a]`, and `[b·a]`
@@ -1785,7 +1789,7 @@ queried stem is `s = 𝒮(u)·e = [b·a]·[b]`, and absorption simplifies it awa
 `s = [b·a]`. The name `([b·a], [b])` is not in `P`, so the lasso `ababba·b^ω`
 is not in the language.
 
-**Construction (§4).** `|𝒞_D| = 9` classes quotiented onto the `|𝒞| = 4`
+**Construction (§5).** `|𝒞_D| = 9` classes quotiented onto the `|𝒞| = 4`
 classes above. The excess the quotient removes is all mark bookkeeping the
 language ignores:
 `⟨b⟩ ≠ ⟨b·b⟩` and `⟨a·b⟩ ≠ ⟨a·b·b⟩` differ solely in a mark already
@@ -1851,7 +1855,7 @@ The classes `[b]` and `[b·a]` play the same waiting-room game for words that
 start with a `b` — `[b]` on a last-read `b`, `[b·a]` on an unpaired `a` —
 until the first block of two `a`'s is met.
 
-Reading a lasso (Definition 3.5). Take `(aab)^ω`, the empty-stem presentation
+Reading a lasso (Definition 3.4). Take `(aab)^ω`, the empty-stem presentation
 `(ε, aab)`. The loop first: `𝒮(aab) = [a]·[a]·[b] = [a·a]·[b] = [a·a]` — the
 sink absorbs — already idempotent, so `e = [a·a]`. The stem is empty, and
 absorption lands the query in `𝒞` anyway: `s = 𝒮(ε)·e = [ε]·[a·a] = [a·a]`.
@@ -1860,14 +1864,14 @@ of the loop. Against it, `(ab)^ω`: the loop `𝒮(ab) = [a·b]` is idempotent,
 `s = [ε]·[a·b] = [a·b]`, and `([a·b], [a·b])` is not in `P`: rejected — the
 `a`'s stay isolated forever.
 
-**Construction (§4).** `|𝒞_D| = 9` classes quotiented onto the `|𝒞| = 5`
+**Construction (§5).** `|𝒞_D| = 9` classes quotiented onto the `|𝒞| = 5`
 classes above. The mark map at work: `⟨a⟩` and `⟨a·a·a⟩` have the *same*
 transition map — the transposition — and differ only in marks, the longer word
 having closed an `aa`; the transition monoid identifies them, the mark map
 keeps them apart. The quotient then does the reverse service: four "contains
 `aa`" behaviors — `⟨a·a⟩, ⟨b·a·a⟩, ⟨a·a·a⟩, ⟨b·a·a·a⟩`, distinct for
 `≈_D` — collapse onto the sink `[a·a]`, and `⟨a·b·a⟩` rejoins `[a]` — the
-`Z₂` visible in the `at` columns is pure presentation, and §4.4 is where it
+`Z₂` visible in the `at` columns is pure presentation, and §5.4 is where it
 dies.
 
 | ⟨w⟩ | at 0 | at 1 | ·⟨b⟩ | ·⟨a⟩ | → class |
@@ -1920,7 +1924,7 @@ Acceptance therefore fixes the stem to `[b]`: an even number of `a`'s until a
 and `[a·a]` canonically cover the cases where it extends by `a`'s — giving the
 three accepted pairs `([b], [b])`, `([b], [a·a])`, `([b], [a·b])`.
 
-Reading a lasso (Definition 3.5). Take `aaaba·(ba)^ω`. The loop first:
+Reading a lasso (Definition 3.4). Take `aaaba·(ba)^ω`. The loop first:
 `𝒮(ba) = [b]·[a] = [b]`, already idempotent, so `e = [b]`. The stem:
 `𝒮(aaaba) = ([a]·[a]·[a])·([b]·[a]) = [a]·[b] = [a·b]`, and the queried stem
 is `s = 𝒮(u)·e = [a·b]·[b] = [a·b]` — the sink absorbs. The name
@@ -1937,10 +1941,10 @@ the name `([b], [a·b])`, accepted. Rotate one letter onto the stem —
 `b·(ab)^ω = ba·(ba)^ω`, the same ω-word — and the loop's class is now
 `𝒮(ba) = [b]·[a] = [b]`, also idempotent, with `s = [b]·[b] = [b]`: the name
 `([b], [b])`, accepted again. Two distinct pairs naming the one ω-word,
-connected by a single rotation — and both in `P`, as saturation (§3.4)
+connected by a single rotation — and both in `P`, as saturation (§4.1)
 demands.
 
-**Construction (§4).** `|𝒞_D| = 6` classes quotiented onto the `|𝒞| = 4`
+**Construction (§5).** `|𝒞_D| = 6` classes quotiented onto the `|𝒞| = 4`
 classes above. The delicate row is `⟨a·a⟩`: its transition map is the
 *identity* — two `a`'s return every state to itself — and only the mark
 collected at the accepting sink (state `0`) sets its mark map apart from
@@ -2009,7 +2013,7 @@ appear in no pair: the loop holds infinitely many `b`'s, rotation pushes one
 of them back into the stem, so a canonical stem must carry a `b` — and `[a]`,
 `[a·a]` cannot.
 
-Reading a lasso (Definition 3.5). Take `aabaab·(baa)^ω`. The loop first:
+Reading a lasso (Definition 3.4). Take `aabaab·(baa)^ω`. The loop first:
 `𝒮(baa) = ([b]·[a])·[a] = [b·a]·[a] = [b]`, already idempotent, so `e = [b]`.
 The stem, grouped `(aa)·(baab)` and reduced on each side before conjoining:
 `(aa) = [a]·[a] = [a·a]` is the parity cycle;
@@ -2019,7 +2023,7 @@ The stem, grouped `(aa)·(baab)` and reduced on each side before conjoining:
 `s = 𝒮(u)·e = [b]·[b] = [b]`, and the name `([b], [b])` is in `P`:
 accepted — every block the word completes is even, and `b`'s recur.
 
-**Construction (§4).** `|𝒞_D| = 16` classes quotiented onto the `|𝒞| = 7`
+**Construction (§5).** `|𝒞_D| = 16` classes quotiented onto the `|𝒞| = 7`
 classes above. The first row is the situation §3.1's fresh basepoint is
 built for: `⟨a·a⟩`'s transition map is the identity and its mark map is
 empty — two `a`'s toggle back and collect nothing — a neutral class of
