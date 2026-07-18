@@ -38,13 +38,15 @@ reached by a finite word.
 
 For the `Λ`-family at a fixed `q`: `Λ(d, f)(c·g)`, over all `g ∈ M_D` and
 idempotent `f`, is the membership of `w_g·(w_f)^ω` in the residual
-`L(δ(q, c))`. These representative lassos test every lasso: `y·t^ω` shares
-its name with `w_g·(w_f)^ω` at `g = 𝒮_D(y)`, `f = 𝒮_D(t)^π`, name-sharing
-survives any common finite prefix, and the automaton invariant denotes
-`L(D)` (Corollary 5.1) — one verdict. Agreement of the family for `c` and
-`c'` is therefore agreement of `L(δ(q, c))` and `L(δ(q, c'))` on every
-lasso, which is their equality [PP04, Ch. I, Cor. 9.8]. The `Ω`-family at
-`q` is the displayed `∼ω` by the first identity: `Ω(d)(c·g) = A(q, c·g)`. ∎
+`L(δ(q, c))`. These representative lassos decide every lasso: for arbitrary
+`y·t^ω` put `g = 𝒮_D(y)`, `f = 𝒮_D(t)^π`; then `x·y·t^ω` and
+`x·w_g·(w_f)^ω` share the queried name `(𝒮_D(x)·g·f, f)` for every finite
+`x`, hence share `L(D)`'s verdict (Corollary 5.1) — at `x` reaching
+`δ(q, c)`, this reads `[y·t^ω ∈ L(δ(q, c))] = [w_g·(w_f)^ω ∈ L(δ(q, c))]`.
+Agreement of the family for `c` and `c'` is therefore agreement of the two
+residuals on every lasso, which is their equality [PP04, Ch. I, Cor. 9.8].
+The `Ω`-family at `q` is the displayed `∼ω` by the first identity:
+`Ω(d)(c·g) = A(q, c·g)`. ∎
 
 `∼lin` compares the futures the words open — residual languages of reached
 states — and never looks at marks; `∼ω` compares the loops the words can

@@ -93,8 +93,9 @@ was proved: the rotation lemma, deployed a second time.
 *Proof.* By Lemma 4.2 the quotient stamp and `𝒮_L` are two quotients of `Σ⁺`
 with one kernel, hence one quotient — the same classes as sets of words, the
 same letter map, the same induced table. For the pair sets: a quotient of
-stamps preserves idempotent powers, so a lasso named `(s, e)` by `𝒮` is named
-by the image pair in the quotient; hence `(s, e) ∈ P` iff that lasso lies in
+stamps preserves idempotent powers — the image of `c^π` is idempotent and a
+power of the image of `c`, hence its idempotent power — so a lasso named
+`(s, e)` by `𝒮` is named by the image pair in the quotient; hence `(s, e) ∈ P` iff that lasso lies in
 `L` (Proposition 4.1) iff the image pair lies in `P(L)` (Theorem I(i)) — the
 bit of a pair is constant on `∼`-classes, and the image of `P` is exactly
 `P(L)`. For the refinement: a partition stable under every right letter is

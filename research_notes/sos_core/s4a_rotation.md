@@ -111,18 +111,19 @@ be well-formed — its query self-contradictory on the single ω-word `a^ω`.
 > A well-formed invariant denotes exactly one language, its own: `𝓘` denotes
 > `L` iff `𝓘` is well-formed and `L = L(𝓘)`.
 
-*Proof.* (i, ⟸) All names of one lasso are conjugate. The query of `(u, v)`
-is the name landed on by `(u·v^π, v^π)`; replacing a loop by a power moves no
-name — the idempotent power of `c^k` is `c^π` itself, idempotent and a power
-of `c^k` since `c^{kπ} = c^π`; stem extension is the degenerate rotation. And
-two presentations of one ω-word meet: rotating one letter at a time — each
-move a conjugacy step — brings both stems to one common length, after which
-the two loops spell the same tail of the word from the same position, hence
-are powers of its primitive period [PP04, Ch. I], and power moves finish. A
-saturated `P` holds each conjugacy class of names entirely or not at all: one
-verdict. (⟹) By the rotation lemma (Lemma 4.1) the two pairs of a conjugacy
-step name a common lasso; one verdict on it puts both pairs in `P` or
-neither. (ii) For `(s, e) ∈ P` pick `u ∈ 𝒮⁻¹(s)`, `v ∈ 𝒮⁻¹(e)`: the query of
+*Proof.* (i, ⟸) All names of one lasso are conjugate
+([PP04, Ch. II, Cor. 2.9]; elementarily:). The query of `(u, v)` is the name
+of `(u·v^π, v^π)`, and powers move no name — the idempotent power of `c^k`
+is `c^π`, idempotent and a power of `c^k` since `c^{kπ} = c^π`. A one-letter
+rotation `(u, x·v) ↦ (u·x, v·x)` moves the name by one step of
+Definition 4.2 — the computation of Lemma 4.1's proof, at `c = 𝒮(x)`,
+`d = 𝒮(v)`; stem extension when the loop is `x` alone. Given two
+presentations of one lasso, rotations align the stems on one length; the
+loops `z, z'` then spell the same tail, so `z^{|z'|} = z'^{|z|}` as words,
+and powers finish. Saturation holds each conjugacy class of names entirely
+or not at all: one verdict. (⟹) By the rotation lemma (Lemma 4.1) the two
+pairs of a conjugacy step name a common lasso; one verdict on it puts both
+in `P` or neither. (ii) For `(s, e) ∈ P` pick `u ∈ 𝒮⁻¹(s)`, `v ∈ 𝒮⁻¹(e)`: the query of
 `(u, v)` is `(s·e, e) = (s, e)` — `e` idempotent, `s` absorbed — so the
 union's lassos are the accepted ones, and conversely an accepted lasso,
 rewritten on `(u·v^π, v^π)`, exhibits its stem and loop in the classes of its
