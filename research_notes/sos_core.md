@@ -955,21 +955,26 @@ elsewhere.
 
 We now construct the invariant. The input is an automaton `D` for `L`, in the
 most general deterministic form in use — throughout this section `L := L(D)`.
-The output is `𝓘(D)`, and the destination is Theorem 4.10: `𝓘(D) = 𝓘(L)` —
-not merely *an* invariant denoting `L`, but the syntactic invariant of §3.3
-itself, whatever presentation `D` was. The construction is two
-steps, and both are stamp-shaped: the automaton stamp — words classified by
-their runs in full, acceptance included: too fine, but sound (§4.2) — and a
-canonicalization: the quotient by Arnold's congruence
-(Definition 3.7), which the rotation lemma (3.11) makes computable by right
-multiplications alone (§4.3).
+§4 has already paid the heavy debts: to reach `𝓘(L)` it is enough to exhibit
+one well-formed invariant denoting `L` — canonicalization (Theorem II) does
+the rest — and Corollary 4.2 says what to look for: a stamp refining the
+syntactic congruence, carrying its forced pair set. The automaton supplies
+exactly that. Its stamp classifies words by their runs in full, acceptance
+included — too fine, but sound (§5.2); the **collapse** — a lasso's verdict
+depends on its stem only through the one state it reaches — makes the pair
+set a finite table of loop verdicts, and is the entire semantic contribution
+of determinism. Its reward comes in §5.3: on the automaton invariant the
+membership tests of §4.2 factor through states, and the refinement runs on a
+slot set of size `|Q|`. The destination is Theorem III: `𝓘(D) = 𝓘(L)` — not
+merely *an* invariant denoting `L`, but the syntactic invariant of §3
+itself, whatever presentation `D` was.
 
 ### 5.1 Emerson–Lei automata
 
 This subsection recalls definitions from the literature, adapted from
 [EL87, PP04]: the input format and its vocabulary.
 
-> **Definition 4.1 (deterministic Emerson–Lei automaton).**
+> **Definition 5.1 (deterministic Emerson–Lei automaton).**
 >
 > *Syntax.* A **deterministic, complete Emerson–Lei automaton** over `Σ` is
 > `D = (Q, q₀, δ, F, mk, Acc)`: a finite set `Q` of **states**; an **initial
@@ -1023,7 +1028,7 @@ live in `EvenBlocks`'s single SCC (Ex. 4), accepted and rejected — and the
 marks around the closed cycle carry the whole verdict. Some power `v^k` of
 the loop closes its cycle in a single turn — the machine shadow of the
 idempotent power (Definition 3.2), and the reason lasso membership
-(Definition 3.5) queries `𝒮(v)^π`.
+(Definition 3.4) queries `𝒮(v)^π`.
 
 Emerson–Lei acceptance is the most general ω-regular acceptance — Büchi,
 co-Büchi, Rabin, Muller are special shapes — and every regular `L` is `L(D)`
@@ -1040,7 +1045,7 @@ format lacks is a canonical form: on finite words minimization yields *the*
 minimal DFA, unique up to isomorphism, while a regular ω-language has no such
 distinguished machine — `GFaa` is drawn twice in this paper as two
 non-isomorphic automata on the same two states (Ex. 2 and Figure 2), with
-nothing intrinsic to prefer either. §4.4 sends both to one invariant.
+nothing intrinsic to prefer either. §5.4 sends both to one invariant.
 
 *Example.* The four languages appear as machines on their pages, Ex. 1–4 —
 the reader is invited to revisit each page's formula and automaton rows now.
@@ -1060,14 +1065,14 @@ block; `b` returns to even, marked `1` when the block it closes is even, `0`
 when it is odd; `Acc = Fin(0) ∧ Inf(1)` — infinitely many even blocks,
 finitely many odd ones.
 
-### 5.2 Step 1: the automaton stamp
+### 5.2 The automaton invariant
 
 The classical algebra of `D` on finite words is its transition monoid: the
 **transition maps** `δ(·, u) : Q → Q`, `u ∈ Σ⁺`, under composition. It
 forgets what the run collects — the **mark map** `mk(·, u) : Q → 2^F` —
 exactly the data `Acc` consumes. The automaton's own classifier keeps both:
 
-> **Definition 4.2 (automaton congruence; automaton stamp).** Two nonempty
+> **Definition 5.2 (automaton congruence; automaton stamp).** Two nonempty
 > words `u, u' ∈ Σ⁺` are **congruent for `D`**, written `u ≈_D u'`, when
 > they have the same transition map and the same mark map:
 >
@@ -1085,7 +1090,7 @@ exactly the data `Acc` consumes. The automaton's own classifier keeps both:
 
 *Proof (that this is a stamp).* `≈_D` has finite index: at most `|Q|^{|Q|}`
 transition maps, `(2^{|F|})^{|Q|}` mark maps. It is a two-sided congruence by
-§4.1's extension laws: both maps of `u₀·u·u₁` are assembled from the maps of
+§5.1's extension laws: both maps of `u₀·u·u₁` are assembled from the maps of
 its parts — a left context enters only through the state it hands over,
 `δ(q, u₀·u) = δ(δ(q, u₀), u)` and
 `mk(q, u₀·u) = mk(q, u₀) ∪ mk(δ(q, u₀), u)` — so replacing `u` by a word
@@ -1094,14 +1099,15 @@ semigroup and `𝒮_D` a surjective semigroup morphism: a stamp
 (Definition 3.1). ∎
 
 Both maps are shared by all words of a class, so `δ(q, c)` and `mk(q, c)`
-are well defined for `c ∈ 𝒞_D`, and §4.1's laws hold verbatim on classes:
+are well defined for `c ∈ 𝒞_D`, and §5.1's laws hold verbatim on classes:
 the maps of a product are computed from the maps of its factors, no word
-consulted — how §4.4 closes the table. On the completion
-`M_D := 𝒞_D ∪ {[ε]}` (Definition 3.1), the maps extend by §4.1's
+consulted — how §5.3 closes the table. On the completion
+`M_D := 𝒞_D ∪ {[ε]}` (Definition 3.1), the maps extend by §5.1's
 `ε`-clauses: `δ(q, [ε]) = q`, `mk(q, [ε]) = ∅`, with `𝒮_D(ε) := [ε]`.
 
-The stamp is sound (Lemma 4.3) but too fine in general — finer than the
-syntactic one. And `𝒞_D` may own a **neutral class**: on `EvenBlocks`'s
+The stamp is finer than the syntactic one in general — sound, as the
+collapse below establishes, but burdened with bookkeeping the language
+ignores. And `𝒞_D` may own a **neutral class**: on `EvenBlocks`'s
 two-state automaton, `⟨a·a⟩`'s transition map is the identity and its mark
 map is empty — the same maps as `[ε]`, yet a class of nonempty words. That is
 §3.1's neutral-vs-identity distinction, and why `[ε]` is adjoined fresh.
@@ -1113,57 +1119,20 @@ mark map separates them. Closing the letters under right extension gives
 `|𝒞_D| = 9` for this presentation; the example pages carry the four tables
 in full (Ex. 1–4).
 
-> **Lemma 4.3 (skeleton).** Let `w = u₁u₂⋯` and `w' = u'₁u'₂⋯` be ω-words
-> factored into nonempty blocks that are congruent blockwise —
-> `𝒮_D(u_k) = 𝒮_D(u'_k)` for every `k`. Then `w ∈ L ⟺ w' ∈ L`.
+Two boundary facts calibrate the stamp's design: the marks cannot be
+dropped, and the mark bookkeeping overshoots.
 
-*Proof.* Determinism gives each word one run. At the block boundaries the
-runs coincide: `p₀ := q₀` and, inductively,
-`p_k := δ(p_{k-1}, u_k) = δ(p_{k-1}, u'_k)` — congruent blocks share their
-transition map. The marks collected inside block `k` are the mark map's
-value at that slot: `mk(p_{k-1}, u_k) = mk(p_{k-1}, u'_k)`. The two runs
-collect the same marks per block, hence `mk^∞(q₀, w) = mk^∞(q₀, w')` — and
-the criterion queries nothing else. ∎
-
-Blockwise congruence is the needed hypothesis: congruent *prefixes* do not
-suffice. On the one-state automaton of Proposition 4.5 below, `a·a·a⋯` and
-`a·b·b⋯` have congruent prefixes — all collect the mark —
-yet the first is in `L(D)` and the second is not: a union of marks along a
-prefix hides which block collected them.
-
-> **Corollary 4.4 (the automaton congruence refines the syntactic one).** Let
-> `u, u' ∈ Σ⁺`. If `u ≈_D u'` then `u ≈_L u'`. Consequently the syntactic
-> stamp is a further quotient of the automaton stamp: the projection
-> `ρ : 𝒞_D → 𝒞_L`, `ρ(⟨u⟩) := 𝒮_L(u)`, is well defined, surjective, a
-> semigroup morphism — the unique one with `𝒮_L = ρ ∘ 𝒮_D`.
-
-*Proof.* Both shapes of Arnold's congruence (Definition 3.7) compare ω-words
-that factor into congruent nonempty blocks. Linear shape: for `u₀ ∈ Σ*` and a
-lasso `w = v₀·v^ω`, the words `u₀·u·w` and `u₀·u'·w` factor as
-`u₀ | u | v₀ | v | v | ⋯` against `u₀ | u' | v₀ | v | v | ⋯` (empty context
-blocks dropped on both sides at once) — congruent blockwise, `⟨u⟩ = ⟨u'⟩` at
-the one block that differs; the skeleton lemma (4.3) gives one verdict. The
-ω-power shape factors
-as `u₀ | u·v₀ | u·v₀ | ⋯` against `u₀ | u'·v₀ | ⋯`, with
-`⟨u·v₀⟩ = ⟨u⟩·𝒮_D(v₀) = ⟨u'⟩·𝒮_D(v₀)`. For `ρ`: two congruences on the same
-`Σ⁺`, one refining the other — the displayed equation is well defined by the
-implication just proved, morphism and surjectivity are inherited from the two
-quotients, and `𝒮_D` being surjective forces `ρ` on every class. ∎
-
-So `≈_L` lives on the finite semigroup: computing `𝒞_L = Σ⁺/≈_L` is computing
-the kernel of `ρ`, a further quotient of the finite `𝒞_D`. Two boundary facts
-calibrate how far `𝒞_D` is from that quotient.
-
-> **Proposition 4.5 (the mark map is necessary).** No quotient of the transition
-> monoid can serve, in general, as the carrier of a stamp denoting `L(D)`.
+> **Proposition 5.1 (the mark map is necessary).** No quotient of the
+> transition monoid can serve, in general, as the stamp of an invariant
+> denoting `L(D)`.
 
 *Proof (a one-state witness).* Let `D` have one state `p`, both letters of
 `Σ = {a, b}` self-looping, the mark on the `a`-loop only, `Acc = Inf(0)`:
 `L(D)` is "infinitely many `a`'s". The transition monoid is trivial — every
 word is the identity map on `{p}` — so any stamp built on a quotient of it
 gives `a` and `b` one class, the queries of `a^ω` and `b^ω` coincide
-(lasso membership, Definition 3.5), and the two receive one verdict. But `a^ω ∈ L(D)` and
-`b^ω ∉ L(D)`. The mark maps do separate them:
+(lasso membership, Definition 3.4), and the two receive one verdict. But
+`a^ω ∈ L(D)` and `b^ω ∉ L(D)`. The mark maps do separate them:
 `mk(p, a) = {0} ≠ ∅ = mk(p, b)`, so `a ≉_D b`. ∎
 
 The starkness is the message: a trivial transition monoid under a nontrivial
@@ -1172,35 +1141,18 @@ are irreducible data, and keeping them is exactly what `≈_D` adds over the
 transition monoid. It
 is also why a group in a transition monoid proves nothing about `L`: it can be
 pure encoding, invisible to the marks. `GFaa`'s transposition is exactly
-that situation, resolved in §4.4.
+that situation, resolved in §5.4.
 
 *Example (the converse defect: the automaton stamp is too fine).* On the
 `aUGb` automaton, `ba ≉_D aba` —
 `mk(0, ba) = {0}` while `mk(0, aba) = ∅` — though `ba ≈_L aba`: both
 are dead, and no context separates them. Ex. 1's table holds four such dead
 variants, kept apart only by which slots saw the mark on the way to the
-sink, one zero class under all of them. The next step quotients exactly this
-excess away.
+sink, one zero class under all of them.
 
-### 5.3 Step 2: the quotient, computed on the right
+Acceptance remains to be captured, and determinism captures it in one lemma:
 
-What remains is to coarsen `𝒞_D`: merge classes exactly when their words
-are interchangeable — in every stem, in every loop.
-Interchangeability is a two-sided demand: a word sits in a lasso between a
-left context and a right one. A semigroup's table, meanwhile, offers one
-operation for free: multiply on the right. This subsection closes that gap
-in three moves. *The collapse* (Lemma 4.6): a lasso's verdict depends on its
-stem only through the one state it reaches, so all acceptance data condenses
-into the finitely many loop verdicts `A(q, c)`. *The seed* — the lasso
-equivalence (Definition 4.7): classes compared through residuals and
-verdicts, by right extensions alone. *The rotation* (Lemma 4.8) — the rotation lemma (3.11)
-read on runs: a
-left factor carries no information of its own, it only shifts the slot where
-a right test is read — so the coarsest right-invariant refinement of the
-seed is already Arnold's two-sided congruence, and partition refinement
-computes it.
-
-> **Lemma 4.6 (loop verdict; collapse).** For `c ∈ 𝒞_D` and `q ∈ Q`, the
+> **Lemma 5.1 (loop verdict; collapse).** For `c ∈ 𝒞_D` and `q ∈ Q`, the
 > iteration `q, δ(q, c), δ(q, c²), …` closes a cycle; `mk^∞(q, c) ⊆ F` is the
 > union of `mk(p, c)` over the states `p` of that cycle, and the **loop
 > verdict** is
@@ -1220,33 +1172,93 @@ sits at `δ(p₀, ⟨v⟩ⁱ)` at the block boundaries, collecting `mk(δ(p₀, 
 in between: the boundary sequence closes the cycle of the iteration, the marks
 around that cycle recur, and no other mark does. ∎
 
-> **Definition 4.7 (lasso equivalence).** The **lasso equivalence** `∼` on
-> `𝒞_D` is the equivalence relation comparing classes at every reachable
-> slot, through residuals and loop verdicts: for `c, c' ∈ 𝒞_D`,
+> **Definition 5.3 (the automaton invariant).** The **automaton invariant**
+> of `D` is `⟨𝒮_D, P_D⟩`, with
 >
 > ```
->     c ∼lin c'   ⟺   ∀ q ∈ Reach :               L(δ(q, c)) = L(δ(q, c')) ;
->     c ∼ω  c'   ⟺   ∀ q ∈ Reach, ∀ d ∈ M_D :    A(q, c·d) = A(q, c'·d) ;
->     c ∼   c'   ⟺   c ∼lin c'  and  c ∼ω c'.
+>     P_D := { (s, e) linked pair of 𝒮_D  :  A(δ(q₀, s), e) = 1 }.
 > ```
 
-The slots are `Reach`, not `Q`: an unreachable state names no context. The
-extension `d` ranges over the completion `M_D`, basepoint included —
-`d = [ε]` tests the bare loop `c` itself — and `c·d` always lies in `𝒞_D`:
-absorption (§3.1), so a loop verdict is only ever asked of a class of
-nonempty words.
+Each pair's bit is one loop verdict, read at the state its stem reaches: a
+finite table, computed on `D` alone.
+
+> **Corollary 5.1 (the automaton invariant denotes `L(D)`).** `⟨𝒮_D, P_D⟩`
+> is well-formed and denotes `L(D)`.
+
+*Proof.* Let `(u, v)` present a lasso, landing on the name `(s, e)`:
+`e = 𝒮_D(v)^π`, `s = 𝒮_D(u)·e`. These are the values of the normalized
+presentation of the same ω-word — `s = 𝒮_D(u·v^π)`, `e = 𝒮_D(v^π)` — so the
+collapse (Lemma 5.1), applied to `(u·v^π, v^π)`, computes the verdict of
+`u·v^ω` as `A(δ(q₀, s), e)`: exactly the `P_D`-bit of `(s, e)`. Every
+presentation of every lasso thus receives `L(D)`'s verdict — the invariant
+denotes `L(D)`, and is well-formed by Corollary 4.1. ∎
+
+The entry's semantic work ends here, one lemma deep: the stem acts through a
+single state. And soundness settles the converse defect: an invariant
+denoting `L` has a stamp refining the syntactic one (Corollary 4.2), so the
+excess classes of Ex. 1 — the four dead variants under one zero — are
+harmless, and removing them is not the automaton's business but the
+algebra's: canonicalization, whose tests the next subsection compresses.
+
+
+### 5.3 Compression: the tests through states
+
+What remains is to coarsen `𝒞_D`, and §4 already says how: group the classes
+by their membership tests, then refine under right multiplication by the
+letters (Theorem II). Taken literally, the tests read at every slot
+`d ∈ M_D` — a set as large as the stamp itself. Determinism compresses the
+slots to states: on the automaton invariant, a slot enters a test only
+through the state it reaches.
+
+> **Proposition 5.2 (slot compression).** On the automaton invariant, every
+> membership test reads at a state: for all `d ∈ M_D`, `c ∈ 𝒞_D` and
+> idempotent `f ∈ 𝒞_D`,
+>
+> ```
+>     Λ(d, f)(c) = A(δ(q₀, d·c), f)        and        Ω(d)(c) = A(δ(q₀, d), c),
+> ```
+>
+> so slots compress from `M_D` onto `Reach`. At a fixed `q ∈ Reach`,
+> agreement of the `Λ`-tests over all extensions and loops is equality of
+> residual languages, agreement of the `Ω`-tests over all extensions is
+> equality of loop verdicts, and the test equivalence of Definition 4.3
+> becomes, on `𝒞_D`:
+>
+> ```
+>     c ∼lin c'  ⟺  ∀ q ∈ Reach :              L(δ(q, c)) = L(δ(q, c'))
+>     c ∼ω  c'   ⟺  ∀ q ∈ Reach, ∀ g ∈ M_D :   A(q, c·g) = A(q, c'·g)
+>     c ∼   c'   ⟺  c ∼lin c'  and  c ∼ω c'.
+> ```
+
+*Proof.* Each identity computes the verdict of one lasso through the
+collapse, on two of its presentations. `Λ(d, f)(c)` is the `P_D`-bit of
+`(d·c·f, f)` — by Corollary 5.1, the verdict of any lasso it names, say
+`w_d·w_c·(w_f)^ω` on representative words — which the collapse (Lemma 5.1)
+reads as `A(δ(q₀, d·c), f)`; likewise `Ω(d)(c)` is the verdict of
+`w_d·(w_c)^ω`, read as `A(δ(q₀, d), c)`. The slot enters only through
+`δ(q₀, d)`, and `δ(q₀, M_D) = Reach` exactly — every reachable state is
+reached by a finite word.
+
+For the `Λ`-family at a fixed `q`: `Λ(d, f)(c·g)`, over all `g ∈ M_D` and
+idempotent `f`, is the membership of `w_g·(w_f)^ω` in the residual
+`L(δ(q, c))`. These representative lassos test every lasso: `y·t^ω` shares
+its name with `w_g·(w_f)^ω` at `g = 𝒮_D(y)`, `f = 𝒮_D(t)^π`, name-sharing
+survives any common finite prefix, and the automaton invariant denotes
+`L(D)` (Corollary 5.1) — one verdict. Agreement of the family for `c` and
+`c'` is therefore agreement of `L(δ(q, c))` and `L(δ(q, c'))` on every
+lasso, which is their equality [PP04, Ch. I, Cor. 9.8]. The `Ω`-family at
+`q` is the displayed `∼ω` by the first identity: `Ω(d)(c·g) = A(q, c·g)`. ∎
 
 `∼lin` compares the futures the words open — residual languages of reached
 states — and never looks at marks; `∼ω` compares the loops the words can
 close, under every right completion — the two positions a word occupies in a
-lasso, each tested on the right: hence the name. Neither mentions a left
-context.
+lasso, each tested on the right. Neither mentions a left context.
 
 *Example (the two relations divide the labor).* On `EvenBlocks`'s two-state
 `D`, `⟨aa⟩` is the neutral class. `∼lin` is total: the language is
 prefix-independent, both
 states accept exactly `EvenBlocks`. The separation of `⟨a⟩` from `⟨aa⟩` is
-carried entirely by `∼ω`, with the block-closing extension `d = ⟨b⟩`:
+carried entirely by `∼ω`, with the block-closing extension `g = ⟨b⟩`:
 `A(q, ⟨a⟩·⟨b⟩) = A(q, ⟨ab⟩)` rejects at both slots — the loop `ab` closes
 an odd block forever, violating `Fin(0)` — while `A(q, ⟨aa⟩·⟨b⟩)` accepts at
 both: `(aab)^ω` closes even blocks forever.
@@ -1258,139 +1270,72 @@ residual per reached state — iff `∼lin` is total, and then all
 discrimination rides on `∼ω`. Tail properties live here, and it is why a
 construction resting on residuals alone cannot even see them.
 
-> **Lemma 4.8 (rotation, on runs).** Let `c ∈ 𝒞_D`, `c₀, d ∈ M_D` and
-> `q ∈ Reach`. A left factor acts on both relations only by re-indexing the
-> slot:
->
-> ```
->     δ(q, c₀·c) = δ(δ(q, c₀), c)        and
->     A(q, c₀·c·d) = A(δ(q, c₀), c·d·c₀).
-> ```
->
-> Consequently, with `R` the equivalence comparing both data at every
-> reachable slot — `c R c'` iff `L(δ(q, c)) = L(δ(q, c'))` and
-> `A(q, c) = A(q, c')`
-> for all `q ∈ Reach` — the lasso equivalence `∼` is the coarsest
-> right-invariant equivalence refining `R`, and it is a two-sided congruence
-> on `𝒞_D`.
+*Remark (rotation, on runs).* Left invariance (Lemma 4.3), read on the
+machine: `A(q, c₀·c·g) = A(δ(q, c₀), c·g·c₀)` — read the loop `(c₀·c·g)^ω`
+from `q` as `c₀·(c·g·c₀)^ω`: the prefix is read once, its marks recur
+never. A left factor carries no information of its own; it only moves the
+state where a right test is read — right extensions at state-indexed slots,
+an observation-table discipline answering the obstruction Angluin and
+Fisman record for ω-learning [AF21].
 
-*Proof.* The state identity is §4.1's extension law, read on classes. For
-the verdict identity,
-read the loop `(c₀·c·d)^ω` from `q` as `c₀·(c·d·c₀)^ω` — one rotation, the
-move of the rotation lemma (3.11) applied to a context: the factor `c₀` is
-carried from the
-loop's front onto the stem. That prefix is read once, its marks recur never,
-so the verdict is the loop verdict of `c·d·c₀` from the state the prefix
-reaches — the collapse (Lemma 4.6): `A(q, c₀·c·d) = A(δ(q, c₀), c·d·c₀)`.
+**The algorithm.** The construction runs entirely on tables. The table is
+materialized first: a class is stored as its two maps (§5.2), the letter
+classes are read off `δ` and `mk`, and closure under right extension by the
+letters — the maps of a product computed from the maps of its factors, no
+word consulted — yields `𝒞_D`. The seed then groups
+the classes of `𝒞_D` by their compressed tests — residuals and loop
+verdicts at every reachable slot (Proposition 5.2); the `|𝒞_D|·|Q|`
+verdicts each cost one walk of a
+functional graph (the loop verdict, Lemma 5.1). Residual equality of states
+is a fixpoint on the same data, one
+level down: seed two states equal when their loop-verdict *columns* agree —
+`A(p, c) = A(q, c)` for every `c ∈ 𝒞_D` — and refine under the letters,
+splitting whenever `δ(p, x)` and `δ(q, x)` fall in distinct blocks, at most
+`|Q|` splits. The seed settles the empty stems — the pure loops read from
+`p` — and refinement closes under letter stems, hence under all stems, so
+the fixpoint is exactly residual equality: two states agreeing on every
+lasso accept one language [PP04, Ch. I, Cor. 9.8]. Moore refinement then
+splits a block of classes
+whenever a right letter separates two members — `c·⟨x⟩` and `c'·⟨x⟩` in
+distinct blocks of the current partition — to fixpoint, at most `|𝒞_D|`
+splits; the result is stable under every right letter, hence under every
+right element — `𝒞_D` is letter-generated, `𝒮_D` being surjective — and it
+is exactly the test equivalence: Theorem II's refinement, run on the
+compressed slots of Proposition 5.2. Everything
+downstream of `𝒞_D` is polynomial in its size; the size itself is the
+subject of §6.1.
 
-*Right-invariance.* Both halves of the seed survive a right factor: residual
-equality steps through letters (`L(p) = L(p')` gives
-`L(δ(p, x)) = x⁻¹L(p) = x⁻¹L(p') = L(δ(p', x))`), so `c ∼lin c'` gives
-`c·d ∼lin c'·d`; and `A(q, c·d·d') = A(q, c'·d·d')` is an instance of
-`c ∼ω c'`. Hence `∼` is right-invariant.
+### 5.4 Theorem III: `𝓘(D) = 𝓘(L)`
 
-*Coarsest.* Suppose `c·d R c'·d` for every `d ∈ M_D`: the verdict half over
-all `d` is `c ∼ω c'`, and the `∼lin` half at `d = [ε]` is `c ∼lin c'` — so
-`c ∼ c'`. Conversely `c ∼ c'` gives `c·d ∼ c'·d` (right-invariance), hence
-`c·d R c'·d` for every `d`. So `∼` is exactly "`R`-equal under every right
-extension": the coarsest right-invariant equivalence refining `R`.
+The two steps assemble, and the assembled object is §3's.
 
-*Two-sided.* For a left factor `c₀`: `c₀·c ∼lin c₀·c'` since
-`δ(q, c₀·c) = δ(δ(q, c₀), c)` and `δ(q, c₀) ∈ Reach`; and
-`A(q, c₀·c·d) = A(δ(q, c₀), c·(d·c₀))
-= A(δ(q, c₀), c'·(d·c₀)) = A(q, c₀·c'·d)` — the left factor became
-a right extension. With right-invariance, `∼` is a two-sided congruence. ∎
+> **Definition 5.4 (the constructed invariant).** `𝓘(D)` is the
+> canonicalization of the automaton invariant: the quotient
+> `⟨𝒮_D, P_D⟩/∼` of Theorem II, each class keyed by its shortlex-least
+> word.
 
-The typing is §3.1's absorption at work: `c` is a class of nonempty words,
-so every element whose verdicts the lemma reads — `c₀·c·d`, `c·d·c₀` — lies
-in `𝒞_D`. The basepoint `[ε]` bears no verdict, as it bears no pair; a
-neutral class like `EvenBlocks`'s `⟨aa⟩` is a class of nonempty words with
-honest verdicts of its own.
+In practice the quotient's pair set is read off by one lasso test per linked
+pair `(s, e)`: run `u_s·(u_e)^ω` on `D`, the keys naming the classes —
+legitimate because the quotient is well-formed (Theorem II), so all lassos
+sharing a name share the verdict (Proposition 4.1(i)).
 
-The lemma is the load-bearing step. Maler and Staiger [MS97] display the
-finitary × infinitary split — at the single slot `q₀`, `∼lin` is their
-classical right congruence — but their two-sided quantification stays inside
-the loop test; Carton, Perrin and Pin [CPP08] saturate over context triples.
-The conjugation `c₀·c·d ↦ c·d·c₀` — the rotation lemma (3.11) applied to
-contexts instead of names — is the step neither takes, and it is what makes a
-two-sided congruence computable with the one operation a table offers for
-free. It is also an observation-table discipline — right extensions at
-prefix-indexed slots — answering the obstruction Angluin and Fisman record
-for ω-learning [AF21]; and a coarsest right-invariant refinement is precisely
-what partition refinement computes (§4.4).
+> **Theorem III (the construction).** For every deterministic complete
+> Emerson–Lei automaton `D`: `𝓘(D) = 𝓘(L(D))` — the constructed invariant
+> is the syntactic invariant of the language, byte for byte, whatever
+> presentation `D` was.
 
-### 5.4 The theorem: `𝓘(D) = 𝓘(L)`
+*Proof.* The automaton invariant is well-formed and denotes `L(D)`
+(Corollary 5.1), and canonicalization carries any such invariant onto the
+syntactic invariant of its language (Theorem II). ∎
 
-The two steps assemble into the constructed invariant, and the constructed
-invariant turns out to be §3.3's: one language, one object.
+> **Corollary 5.2 (one language, one file).** (i) `L(𝓘(D)) = L(D)`.
+> (ii) Any two deterministic complete Emerson–Lei automata recognizing one
+> language construct the identical invariant — an instance of the general
+> fact that any two well-formed invariants denoting one language
+> canonicalize to one file (Theorem II).
 
-> **Definition 4.9 (the constructed invariant).** `𝓘(D) := ⟨𝒮_D/∼, P(D)⟩`,
-> where:
->
-> - `𝒮_D/∼ : Σ⁺ → 𝒞_D/∼`, sending `u` to the `∼`-class of
->   `𝒮_D(u)`, is the **quotient stamp**: a further quotient of `Σ⁺` —
->   surjective onto a finite semigroup because the lasso
->   equivalence is a two-sided congruence (rotation on runs, Lemma 4.8) —
->   with letter map sending `x` to the class of `⟨x⟩`, and the fresh
->   `[ε]` adjoined by Definition 3.1's completion;
-> - each class is keyed by its shortlex-smallest word — a class of the
->   quotient is a union of `≈_D`-classes, a nonempty set of nonempty words;
-> - `P(D)`: for each linked pair `(s, e)` of the quotient stamp
->   (Definition 3.3), test the single lasso `u_s·(u_e)^ω` on `D`, `u_s` and
->   `u_e` the keys; put `(s, e)` in `P(D)` iff it is accepted.
-
-`P(D)` is the computation promised in §3.3: one keyed lasso per pair, where
-the syntactic pair set of Definition 3.8 ranges over all presentations of
-all accepted lassos. That the
-single test suffices is canonicity — all lassos sharing a name share `L`'s
-verdict (Theorem 3.10(i)) — once the theorem below identifies the quotient
-stamp with the syntactic one.
-
-> **Theorem 4.10 (the construction is the syntactic invariant).** Let `D` be
-> a deterministic complete Emerson–Lei automaton, `L = L(D)`, `∼` the lasso
-> equivalence (Definition 4.7), and `≈_L` Arnold's syntactic congruence for
-> `L` (Definition 3.7). For all `u, u' ∈ Σ⁺`:
->
-> ```
->     𝒮_D(u) ∼ 𝒮_D(u')   ⟺   u ≈_L u'.
-> ```
->
-> Consequently `𝒮_D/∼ = 𝒮_L` — the same quotient of `Σ⁺`, equal, not merely
-> isomorphic — and `𝓘(D) = 𝓘(L)`.
-
-*Proof.* (⟸) Let `u ≈_L u'`. For `∼lin`: fix `q ∈ Reach`, say `q = δ(q₀, u₀)`.
-For every lasso `w`: `w ∈ L(δ(q, ⟨u⟩)) = (u₀·u)⁻¹L ⟺ u₀·u·w ∈ L ⟺` (linear
-shape) `u₀·u'·w ∈ L ⟺ w ∈ L(δ(q, ⟨u'⟩))`; two regular ω-languages agreeing
-on all lassos are equal [PP04, Ch. I, Cor. 9.8], so the residuals are equal
-at every slot. For `∼ω`: fix `q = δ(q₀, u₀) ∈ Reach` and `d ∈ M_D`; `𝒮_D`
-is surjective and `M_D` adds only the basepoint, so `d = 𝒮_D(v₀)` for some
-`v₀ ∈ Σ*`, and `u·v₀` is
-nonempty. By the collapse (Lemma 4.6), `A(q, ⟨u⟩·d) = A(q, ⟨u·v₀⟩)` is
-the verdict of `u₀·(u·v₀)^ω`, which by the ω-power shape equals the verdict
-of `u₀·(u'·v₀)^ω`, which is `A(q, ⟨u'⟩·d)`.
-
-(⟹) Let `⟨u⟩ ∼ ⟨u'⟩`; both shapes of Definition 3.7 must be checked. Linear:
-for `u₀ ∈ Σ*` and a lasso `w`, with `q := δ(q₀, u₀) ∈ Reach`:
-`u₀·u·w ∈ L ⟺ w ∈ L(δ(q, ⟨u⟩))`, and `∼lin` equates that residual with
-`L(δ(q, ⟨u'⟩))` — one verdict with `u'` in place of `u`. ω-power: for
-`u₀, v₀ ∈ Σ*`, with `q := δ(q₀, u₀)`: the verdict of `u₀·(u·v₀)^ω` is
-`A(q, ⟨u⟩·𝒮_D(v₀))` (the collapse, Lemma 4.6), and `∼ω` at `d = 𝒮_D(v₀)`
-equates it with
-`A(q, ⟨u'⟩·𝒮_D(v₀))`, the verdict of `u₀·(u'·v₀)^ω`.
-
-Equality of the two kernels makes the two stamps equal: a quotient of `Σ⁺`
-is determined by its congruence — the same classes as sets of words, the
-same letter images, the same induced product — so `𝒮_D/∼ = 𝒮_L`. Equal
-stamps have equal linked pairs, and for each linked pair `(s, e)`:
-`(s, e) ∈ P(D)` iff the keyed lasso `u_s·(u_e)^ω` is in `L(D) = L`
-(Definition 4.9) iff `(s, e) ∈ P(L)` — by canonicity (Theorem 3.10(i)). So
-`P(D) = P(L)`, and `𝓘(D) = 𝓘(L)`. ∎
-
-> **Corollary 4.11 (two automata, one invariant).** (i) `L(𝓘(D)) = L(D)`,
-> and `P(D)` is saturated — canonicity (Theorem 3.10) and saturation
-> (Corollary 3.13) applied to `𝓘(L)`. (ii) Any two deterministic complete
-> Emerson–Lei automata recognizing one language construct the identical
-> invariant.
+*Proof.* (i) Theorem III with Theorem I(i): `𝓘(L(D))` denotes `L(D)`.
+(ii) Theorem III, applied to each automaton. ∎
 
 *Example (canonicity, exhibited).* Compute `𝓘(D)` from the run-parity
 `GFaa` of Ex. 2 — two states, a `Z₂` of transpositions — and again from
@@ -1399,7 +1344,7 @@ sends *every* state to one place, an aperiodic transition monoid. The two
 automata are not isomorphic, and their transition monoids disagree even on
 whether a group is present. Both runs return the invariant of Ex. 2,
 identically: five classes, `9 → 5` against `6 → 5`. The transposition was pure presentation, and
-Theorem 4.10's quotient is where it dies — while `Even` and `EvenBlocks`
+Theorem III's quotient is where it dies — while `Even` and `EvenBlocks`
 keep their `Z₂` (Ex. 3, Ex. 4): those groups are `L`'s own.
 
 ---
@@ -1426,31 +1371,6 @@ monoids disagreeing even on whether a group is present, automaton stamps
 of different sizes — the identical invariant out of both.
 
 ---
-
-**The algorithm.** The theorem is also the procedure. The table is
-materialized first: a class is stored as its two maps (§4.2), the letter
-classes are read off `δ` and `mk`, and closure under right extension by the
-letters — the maps of a product computed from the maps of its factors, no
-word consulted — yields `𝒞_D`. The seed `R` then groups
-the classes of `𝒞_D` by their residuals and loop verdicts at every
-reachable slot; the `|𝒞_D|·|Q|` verdicts each cost one walk of a
-functional graph (the loop verdict, Lemma 4.6). Residual equality of states is a fixpoint on the same data, one
-level down: seed two states equal when their loop-verdict *columns* agree —
-`A(p, c) = A(q, c)` for every `c ∈ 𝒞_D` — and refine under the letters,
-splitting whenever `δ(p, x)` and `δ(q, x)` fall in distinct blocks, at most
-`|Q|` splits. The seed settles the empty stems — the pure loops read from
-`p` — and refinement closes under letter stems, hence under all stems, so
-the fixpoint is exactly residual equality: two states agreeing on every
-lasso accept one language [PP04, Ch. I, Cor. 9.8]. Moore refinement then
-splits a block of classes
-whenever a right letter separates two members — `c·⟨x⟩` and `c'·⟨x⟩` in
-distinct blocks of the current partition — to fixpoint, at most `|𝒞_D|`
-splits; the result is stable under every right letter, hence under every
-right element — `𝒞_D` is letter-generated, `𝒮_D` being surjective — and by
-rotation on runs
-(Lemma 4.8) it is exactly the lasso equivalence `∼`. `P(D)` is one lasso test per candidate linked pair. Everything
-downstream of `𝒞_D` is polynomial in its size; the size itself is the
-subject of §5.1.
 
 
 ## 6. What the invariant unlocks
