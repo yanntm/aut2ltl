@@ -1,4 +1,4 @@
-## 4. The construction: from an automaton to `𝓘(L)`
+## 5. The construction: from an automaton to `𝓘(L)`
 
 We now construct the invariant. The input is an automaton `D` for `L`, in the
 most general deterministic form in use — throughout this section `L := L(D)`.
@@ -11,7 +11,7 @@ canonicalization: the quotient by Arnold's congruence
 (Definition 3.7), which the rotation lemma (3.11) makes computable by right
 multiplications alone (§4.3).
 
-### 4.1 Emerson–Lei automata
+### 5.1 Emerson–Lei automata
 
 This subsection recalls definitions from the literature, adapted from
 [EL87, PP04]: the input format and its vocabulary.
@@ -107,7 +107,7 @@ block; `b` returns to even, marked `1` when the block it closes is even, `0`
 when it is odd; `Acc = Fin(0) ∧ Inf(1)` — infinitely many even blocks,
 finitely many odd ones.
 
-### 4.2 Step 1: the automaton stamp
+### 5.2 Step 1: the automaton stamp
 
 The classical algebra of `D` on finite words is its transition monoid: the
 **transition maps** `δ(·, u) : Q → Q`, `u ∈ Σ⁺`, under composition. It
@@ -229,7 +229,7 @@ variants, kept apart only by which slots saw the mark on the way to the
 sink, one zero class under all of them. The next step quotients exactly this
 excess away.
 
-### 4.3 Step 2: the quotient, computed on the right
+### 5.3 Step 2: the quotient, computed on the right
 
 What remains is to coarsen `𝒞_D`: merge classes exactly when their words
 are interchangeable — in every stem, in every loop.
@@ -366,7 +366,7 @@ prefix-indexed slots — answering the obstruction Angluin and Fisman record
 for ω-learning [AF21]; and a coarsest right-invariant refinement is precisely
 what partition refinement computes (§4.4).
 
-### 4.4 The theorem: `𝓘(D) = 𝓘(L)`
+### 5.4 The theorem: `𝓘(D) = 𝓘(L)`
 
 The two steps assemble into the constructed invariant, and the constructed
 invariant turns out to be §3.3's: one language, one object.

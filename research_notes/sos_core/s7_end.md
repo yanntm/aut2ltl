@@ -1,4 +1,4 @@
-## 6. Related work
+## 7. Related work
 
 **Arnold [Arn85].** The syntactic congruence is his: the coarsest congruence
 saturating a rational ω-language, of finite index, with a recognizing
@@ -42,7 +42,7 @@ of DFAs [AF16, ABF18], presentation-dependent acceptors. The rotation lemma
 reads the two-sided congruence from right extensions at prefix-indexed
 slots — observation-table shaped (§7).
 
-## 7. Perspectives
+## 8. Perspectives
 
 The point of an archetype is what it makes routine. Each direction below
 opens on the invariant — the language itself in hand — where the
@@ -97,7 +97,7 @@ rotation, no refinement. The degenerate case landing on the known answer
 audits the machinery; and the same aperiodicity check of §5.3 then decides
 LTLf-definability [DV13], one level down, where the same tooling gap stands.
 
-## 8. Conclusion
+## 9. Conclusion
 
 For finite words, the syntactic monoid has carried the algebraic theory of
 regular languages for sixty years: one finite algebra per language,

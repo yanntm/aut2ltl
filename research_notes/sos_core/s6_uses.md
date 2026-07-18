@@ -1,4 +1,4 @@
-## 5. What the invariant unlocks
+## 6. What the invariant unlocks
 
 The invariant was built to be used. This section first splits the cost of
 building the table from the cost of using it, then reads decisions off the
@@ -7,7 +7,7 @@ for free, and the definability frontier. Throughout, an invariant is handled
 through its finite presentation `(𝒞, λ, ·, P)` under shortlex keys — the
 serialized form the byte-equality remark of §3.3 announced.
 
-### 5.1 Complexity
+### 6.1 Complexity
 
 Two costs must be kept apart: building the invariant from an automaton, and
 using it once built.
@@ -51,7 +51,7 @@ formula `Acc` — and every step is a set operation, not an arithmetic one: clos
 partition refinement of §4.4 are all images, fixpoints, and quotients over
 sets, native to decision diagrams.
 
-### 5.2 The exportable invariant and the identity band
+### 6.2 The exportable invariant and the identity band
 
 What the field exchanges today is a presentation — an automaton in the
 Hanoi Omega-Automata (HOA) exchange format, one machine among many for its
@@ -159,7 +159,7 @@ rival: a corpus of `N` presentations deduplicates by `O(N²)` pairwise
 product constructions, a corpus of serialized invariants by hashing — equal
 languages, identical bytes.
 
-### 5.3 The LTL frontier
+### 6.3 The LTL frontier
 
 > **Theorem 5.3 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
 > LTL-definable iff `𝒞_L` is **aperiodic**: no class has a power cycle of
