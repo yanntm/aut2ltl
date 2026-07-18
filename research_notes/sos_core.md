@@ -481,25 +481,21 @@ their own idempotent powers. `[a·b]` is not: `[a·b]·[a·b] = [b·a]` — glui
 words of `a⁺b⁺` puts an `a` after a `b` — so `[a·b]^π = [b·a]`: looping "`a`'s
 then `b`'s" is exactly as dead as slipping once.
 
-> **Definition 3.3 (linked pair of classes).** Let `𝒮 : Σ⁺ → 𝒞` be a stamp. A
-> **linked pair** of `𝒮` is a pair of classes `(s, e) ∈ 𝒞 × 𝒞` with `e·e = e`
-> and `s·e = s`: the loop class `e` is idempotent, and it absorbs the stem class
-> `s`.
-
-*Example.* On Figure 1 (`aUGb`), `([a·b], [b])` is linked: `[b]` is idempotent
-and `[a·b]·[b] = [a·b]`. The pair `([a], [b])` is not: `[a]·[b] = [a·b] ≠ [a]`
-— a stem that ends before `b`'s begin is not absorbed by them.
-
-> **Definition 3.4 (pair set; invariant over an alphabet).** Let `𝒮` be a stamp
-> over `Σ`. A **pair set** over `𝒮` is a finite set `P ⊆ 𝒞 × 𝒞` of linked pairs
-> of `𝒮`. An **invariant** over `Σ` is a pair `𝓘 = ⟨𝒮, P⟩` of a stamp and a pair
-> set over it.
+> **Definition 3.3 (linked pair; pair set; invariant).** Let `𝒮 : Σ⁺ → 𝒞` be a
+> stamp. A **linked pair** of `𝒮` is a pair of classes `(s, e) ∈ 𝒞 × 𝒞` with
+> `e·e = e` and `s·e = s`: the loop class `e` is idempotent, and it absorbs the
+> stem class `s`. A **pair set** over `𝒮` is a finite set `P ⊆ 𝒞 × 𝒞` of linked
+> pairs of `𝒮`. An **invariant** over `Σ` is a pair `𝓘 = ⟨𝒮, P⟩` of a stamp and
+> a pair set over it.
 
 The typing is deliberate: `P` lives in `𝒞 × 𝒞`, entirely inside the semigroup.
 The basepoint `[ε]` appears in no pair — the acceptance layer speaks only of
 words.
 
-*Example.* Figure 1 carries its pair set beneath the drawing:
+*Example.* On Figure 1 (`aUGb`), `([a·b], [b])` is linked: `[b]` is idempotent
+and `[a·b]·[b] = [a·b]`. The pair `([a], [b])` is not: `[a]·[b] = [a·b] ≠ [a]`
+— a stem that ends before `b`'s begin is not absorbed by them. Figure 1
+carries its pair set beneath the drawing:
 `P = { ([b], [b]), ([a·b], [b]) }` — both pairs linked, both with loop class
 `[b]`.
 
@@ -509,7 +505,7 @@ An invariant decides lassos with the data it carries and nothing else: the
 stamp assigns each finite word its class — stem and loop alike — and `P` lists
 the pairs that accept.
 
-> **Definition 3.5 (lasso membership; language of an invariant).** Let `𝓘 = ⟨𝒮, P⟩` be an
+> **Definition 3.4 (lasso membership; name of a lasso).** Let `𝓘 = ⟨𝒮, P⟩` be an
 > invariant over `Σ`, and let `w ∈ Σ^ω` be a lasso with presentation
 > `(u, v) ∈ Σ* × Σ⁺` (Definition 2.1), `w = u·v^ω`. Set
 >
@@ -517,7 +513,8 @@ the pairs that accept.
 >     e := 𝒮(v)^π,     s := 𝒮(u)·e.
 > ```
 >
-> Then `w ∈ L(𝓘)` iff `(s, e) ∈ P`.
+> Then `w ∈ L(𝓘)` iff `(s, e) ∈ P`. A linked pair **names** the lasso `w` when
+> some presentation of `w` lands on it this way.
 
 The queried pair is a linked pair of `𝒮`: `e` is idempotent as an idempotent
 power, and `s·e = 𝒮(u)·e·e = s`. Both coordinates land in `𝒞` — `e` is the
@@ -533,11 +530,7 @@ accepted. For `ba·(ab)^ω`: the loop's class `𝒮(ab) = [a·b]` is not idempot
 its square `[b·a]` is — so `e = [b·a]`; the stem's class is `[b·a]` and
 `[b·a]·[b·a] = [b·a]`. The pair `([b·a], [b·a])` is not in `P`: rejected.
 
-> **Definition 3.6 (name of a lasso).** Let `𝒮` be a stamp over `Σ`. A linked
-> pair `(s, e)` of `𝒮` **names** the lasso `w` when some presentation
-> `(u, v) ∈ Σ* × Σ⁺` of `w` lands on it: `𝒮(v)^π = e` and `𝒮(u)·e = s`.
-
-Definition 3.5 thus queries one name of `w` — the one its given presentation
+The query thus evaluates one name of `w` — the one its given presentation
 lands on. A lasso bears several names: already `(u, v)` and `(u·v, v)` present
 the same ω-word and may land on distinct pairs. Nothing yet says all names of
 one lasso receive one verdict from `P`; that the semantics is nevertheless
@@ -546,7 +539,7 @@ well defined is the subject of the next section.
 
 ### 3.3 Canonicity: the invariant of `L`
 
-Definitions 3.5 and 3.6 leave two debts. A lasso bears many names — nothing
+Definition 3.4 leaves two debts. A lasso bears many names — nothing
 yet says `P` treats them alike. And the query evaluates whatever invariant it
 is handed — nothing yet singles out, among the many invariants denoting one
 language, a canonical one. Both debts are paid at once by building the
@@ -555,7 +548,7 @@ classifying relation is Arnold's [Arn85]. A finite word sits in a lasso either
 in the stem or inside the loop, and interchangeability must hold in both
 positions:
 
-> **Definition 3.7 (syntactic congruence of an ω-language [Arn85]).** Let
+> **Definition 3.5 (syntactic congruence of an ω-language [Arn85]).** Let
 > `L ⊆ Σ^ω` be a regular ω-language. Two nonempty words `u, u' ∈ Σ⁺` are
 > **syntactically congruent** for `L`, written `u ≈_L u'`, when they are
 > interchangeable in both context shapes:
@@ -570,7 +563,7 @@ The linear shape mutates the stem — the tested word sits after a finite prefix
 loop, where the change recurs forever, `v₀` completing each turn. Congruence
 is a property of the word, not of a position: the primes mark the replacement,
 and the relation is instantiated at loop words (`v ≈_L v'`) in the
-substitution lemma (3.9). The linear shape quantifies over lassos where
+substitution lemma (Lemma 3.1). The linear shape quantifies over lassos where
 Arnold quantifies over a finite completion followed by a nonempty loop — the
 same set of contexts, repackaged on the notion this paper is about. `≈_L` is a
 two-sided congruence on `Σ⁺` of finite index for regular `L` [Arn85], and the
@@ -587,7 +580,7 @@ linear shape at `u₀ = ε`, `w = b^ω` — `ab·b^ω ∈ L`, `ba·b^ω ∉ L`; 
 exactly four classes — `a⁺`, `b⁺`, `a⁺b⁺` and the dead words — the four
 vertices of Figure 1.
 
-> **Definition 3.8 (syntactic stamp; syntactic invariant of `L`).** Let
+> **Definition 3.6 (syntactic stamp; syntactic invariant of `L`).** Let
 > `L ⊆ Σ^ω` be a regular ω-language, and let `𝒞_L := Σ⁺/≈_L` be its finite
 > semigroup of congruence classes. The **syntactic stamp** of `L` is the
 > quotient morphism
@@ -609,28 +602,28 @@ The definition of `P(L)` makes no choice: it ranges over *all* presentations
 of *all* accepted lassos and records the name each one lands on. In particular
 no representative is consulted — testing a single lasso per pair, keyed by
 chosen representatives, is how `P(L)` is *computed* (§4), and its correctness
-is the content of canonicity (Theorem 3.10), not part of the definition.
+is the content of canonicity (Theorem I), not part of the definition.
 
 *Example.* Figure 1 is `𝓘(aUGb)` — §2 called the drawing a syntactic
-ω-semigroup, and Definition 3.8 is that claim made precise. The accepted lassos
+ω-semigroup, and Definition 3.6 is that claim made precise. The accepted lassos
 are those eventually reading only `b`'s; their stems land in `{[b], [a·b]}`
 after absorption, their loops settle on `[b]`, and
 `P(L) = { ([b], [b]), ([a·b], [b]) }`, the pair set printed beneath the figure.
 
 The two context shapes were tailored to lassos, and they pay immediately:
 
-> **Lemma 3.9 (substitution of congruent words).** Let `u, u', v, v' ∈ Σ⁺` with
+> **Lemma 3.1 (substitution of congruent words).** Let `u, u', v, v' ∈ Σ⁺` with
 > `u ≈_L u'` and `v ≈_L v'`. Then `u·v^ω ∈ L ⟺ u'·v'^ω ∈ L`.
 
 *Proof.* Swap the loop: the ω-power shape of `v ≈_L v'`, at `u₀ = u` and
 `v₀ = ε`, gives `u·v^ω ∈ L ⟺ u·v'^ω ∈ L`. Swap the stem: the linear shape of
 `u ≈_L u'`, at `u₀ = ε` and `w = v'^ω`, gives `u·v'^ω ∈ L ⟺ u'·v'^ω ∈ L`. ∎
 
-> **Theorem 3.10 (canonicity of the syntactic invariant).** Let `L ⊆ Σ^ω` be a
+> **Theorem I (canonicity of the syntactic invariant).** Let `L ⊆ Σ^ω` be a
 > regular ω-language.
 >
 > (i) All lassos sharing a name share `L`'s verdict; consequently, on `𝓘(L)`,
-> lasso membership (Definition 3.5) is membership in `L` itself — every
+> lasso membership (Definition 3.4) is membership in `L` itself — every
 > presentation of every lasso receives `L`'s verdict — and `L(𝓘(L)) = L`.
 
 (ii) `𝓘` is a **complete invariant**: for regular `L, L' ⊆ Σ^ω`, `L = L'` iff
@@ -644,7 +637,7 @@ honest power: rewrite `w` on the presentation `(u·v^π, v^π)` — the same
 the quotient morphism: `s = [u·v^π]` and `e = [v^π]` as congruence classes.
 Now take any two lassos named `(s, e)` and rewrite each this way: their
 rewritten stems are congruent (both lie in the class `s`), their loops
-congruent (both in `e`), and the substitution lemma (3.9) gives them one
+congruent (both in `e`), and the substitution lemma (Lemma 3.1) gives them one
 verdict. So all lassos named `(s, e)` agree with each other — and `P(L)`
 contains `(s, e)` iff that shared verdict is acceptance. The query on any
 presentation of any lasso `w` therefore answers `w ∈ L`; and since lassos
@@ -657,34 +650,44 @@ hence `L = L'`. Uniqueness: `θ` is forced on every class by
 `θ([u]) = θ(𝒮_L(u)) = 𝒮_{L'}(u)`, and `𝒮_L` is surjective. ∎
 
 *Remark (byte equality).* Naming every class by its shortlex-least member
-turns the unique isomorphism of Theorem 3.10(ii) into the identity on names:
+turns the unique isomorphism of Theorem I(ii) into the identity on names:
 two regular ω-languages are equal iff the serialized invariants — classes,
 letter map, table, `P`, under shortlex naming — are byte-identical.
 Canonicity is the mathematics; byte equality is that mathematics plus a naming
-convention, and it is the form the serialized invariant of §5.2 puts to work.
+convention, and it is the form the serialized invariant of §6.2 puts to work.
 
 *Example.* On Figure 1 (`aUGb`), present `aab·b^ω` as `(aab, b)` or as
 `(aabb, bb)`: both land on the name `([a·b], [b])` — here even the name is
 stable. That is a feature of `aUGb`, not of the theorem: `Even` (Ex. 3) names
-one lasso through two distinct pairs, and canonicity (Theorem 3.10(i)) is what
+one lasso through two distinct pairs, and canonicity (Theorem I(i)) is what
 forces those two names to one verdict.
 
-> **Definition 3.11 (denoting invariant).** An invariant `𝓘 = ⟨𝒮, P⟩` over `Σ`
+
+
+## 4. Rotation and canonicalization
+
+The query of Definition 3.4 evaluates whatever invariant it is handed, and §3
+handed it exactly one: the syntactic invariant, whose canonicity is what makes
+the query answer its language on every presentation. This section widens the
+stage to every invariant that speaks the truth about a language, and closes it
+on one theorem: all of them refine onto the syntactic one, by right
+multiplications alone. The vocabulary first:
+
+> **Definition 4.1 (denoting invariant).** An invariant `𝓘 = ⟨𝒮, P⟩` over `Σ`
 > **denotes** the regular ω-language `L ⊆ Σ^ω` when every presentation of every
-> lasso receives `L`'s verdict from lasso membership (Definition 3.5): for all
+> lasso receives `L`'s verdict from lasso membership (Definition 3.4): for all
 > `(u, v) ∈ Σ* × Σ⁺`,
 >
 > ```
 >     u·v^ω ∈ L    ⟺    (𝒮(u)·e, e) ∈ P,       e = 𝒮(v)^π.
 > ```
 
-Theorem 3.10(i) states that `𝓘(L)` denotes `L`. It is not the only invariant
-that does — §4 builds another, finer, from an automaton — but it is the
-coarsest, and §3.5 proves that every other is carried onto it by partition
+Theorem I(i) states that `𝓘(L)` denotes `L`. It is not the only invariant
+that does — §5 builds another, finer, from an automaton — but it is the
+coarsest, and §4.2 proves that every other is carried onto it by partition
 refinement.
 
-
-### 3.4 Rotation and saturation
+### 4.1 Rotation and saturation
 
 §2 promised a reconciliation: one lasso, many names. The constraint that
 canonicity puts on a pair set has a single generator. **A loop may be
@@ -692,7 +695,7 @@ rotated**: a factor carried from the loop's front onto the stem leaves the
 ω-word unchanged, `u·v₁·(v₂·v₁)^ω = u·(v₁·v₂)^ω` — and rotation is the one
 move that changes a lasso's name.
 
-> **Lemma 3.12 (rotation of a name).** Let `𝒮 : Σ⁺ → 𝒞` be a stamp and
+> **Lemma 4.1 (rotation of a name).** Let `𝒮 : Σ⁺ → 𝒞` be a stamp and
 > `s, c, d ∈ 𝒞` with `s·(cd)^π = s`. Then `(s·c, (dc)^π)` is a linked pair, and
 > some lasso is named by both `(s, (cd)^π)` and `(s·c, (dc)^π)`.
 
@@ -711,7 +714,7 @@ Every element named in the lemma lies in `𝒞`, and surjectivity hands each a
 nonempty word: no corner case guards the identity, because `[ε]` is not there
 to be rotated through.
 
-> **Definition 3.13 (conjugate pairs; saturated pair set; well-formed
+> **Definition 4.2 (conjugate pairs; saturated pair set; well-formed
 > invariant).** Let `𝒮` be a stamp.
 > Two linked pairs of `𝒮` are **conjugate** when rotations connect them:
 > conjugacy is the equivalence generated by `(s, (cd)^π) ∼ (s·c, (dc)^π)` over
@@ -729,11 +732,11 @@ Stem extension is the degenerate rotation `c = d = 𝒮(v)`: the loop's value is
 unchanged and the stem absorbs one turn — why `(u, v)` and `(uv, v)` may name
 one lasso by two pairs.
 
-> **Corollary 3.14 (saturation).** Every invariant denoting a language is
+> **Corollary 4.1 (saturation).** Every invariant denoting a language is
 > well-formed; in particular `𝓘(L)` is.
 
-*Proof.* Conjugacy is generated by the steps of Definition 3.13, and for each
-step the rotation lemma (3.12) names a common lasso by both pairs. An
+*Proof.* Conjugacy is generated by the steps of Definition 4.2, and for each
+step the rotation lemma (Lemma 4.1) names a common lasso by both pairs. An
 invariant denoting `L` answers membership of that lasso through either pair,
 so it contains both or neither. ∎
 
@@ -744,7 +747,7 @@ second-sort ω-power, ours a power in `𝒞` — and conjugacy of
 linked pairs organizes the classical theory [PP04, Ch. II, Prop. 2.8, Cor. 2.9].
 What this paper draws from it is a different service: rotation turns two-sided
 demands about a language into right-only computations — the engine of the
-canonicalization (§3.5), where it collapses Arnold's two-sided congruence to a
+canonicalization (§4.2), where it collapses Arnold's two-sided congruence to a
 right-invariant refinement computable on a table.
 
 *Example.* On Figure 1 (`aUGb`), every conjugacy class is a singleton —
@@ -758,10 +761,10 @@ conjugacy step at `s = c = d = [a]`. Both pairs are absent from `Even`'s `P`,
 as saturation demands; a pair set containing one but not the other would not
 be well-formed — its query self-contradictory on the single ω-word `a^ω`.
 
-> **Proposition 3.15 (the language of a well-formed invariant).** Let
+> **Proposition 4.1 (the language of a well-formed invariant).** Let
 > `𝓘 = ⟨𝒮, P⟩` be an invariant.
 >
-> (i) Lasso membership (Definition 3.5) gives every lasso one verdict — the
+> (i) Lasso membership (Definition 3.4) gives every lasso one verdict — the
 > same through all its presentations — iff `𝓘` is well-formed.
 >
 > (ii) A well-formed `𝓘` therefore defines a language on lassos, and it is
@@ -783,86 +786,90 @@ move a conjugacy step — brings both stems to one common length, after which
 the two loops spell the same tail of the word from the same position, hence
 are powers of its primitive period [PP04, Ch. I], and power moves finish. A
 saturated `P` holds each conjugacy class of names entirely or not at all: one
-verdict. (⟹) By the rotation lemma (3.12) the two pairs of a conjugacy step
-name a common lasso; one verdict on it puts both pairs in `P` or neither.
-(ii) For `(s, e) ∈ P` pick `u ∈ 𝒮⁻¹(s)`, `v ∈ 𝒮⁻¹(e)`: the query of `(u, v)`
-is `(s·e, e) = (s, e)` — `e` idempotent, `s` absorbed — so the union's lassos
-are the accepted ones, and conversely an accepted lasso, rewritten on
-`(u·v^π, v^π)`, exhibits its stem and loop in the classes of its accepting
-name. Each class is a regular language of finite words — recognized by the
-finite `𝒞` through `𝒮` — so the union is ω-regular; and a regular ω-language
-is fixed by its lassos [PP04, Ch. I, Cor. 9.8]. ∎
+verdict. (⟹) By the rotation lemma (Lemma 4.1) the two pairs of a conjugacy
+step name a common lasso; one verdict on it puts both pairs in `P` or
+neither. (ii) For `(s, e) ∈ P` pick `u ∈ 𝒮⁻¹(s)`, `v ∈ 𝒮⁻¹(e)`: the query of
+`(u, v)` is `(s·e, e) = (s, e)` — `e` idempotent, `s` absorbed — so the
+union's lassos are the accepted ones, and conversely an accepted lasso,
+rewritten on `(u·v^π, v^π)`, exhibits its stem and loop in the classes of its
+accepting name. Each class is a regular language of finite words — recognized
+by the finite `𝒞` through `𝒮` — so the union is ω-regular; and a regular
+ω-language is fixed by its lassos [PP04, Ch. I, Cor. 9.8]. ∎
 
 Well-formedness is the one law of the semantics: an invariant obeying
 conjugacy owns a language, and an invariant violating it owns none — some
 lasso receives two verdicts. The law is checkable on the invariant itself,
 one conjugacy step at a time, with no language in sight. The syntactic
-invariant is the well-formed invariant that is also canonical; §3.5 closes
+invariant is the well-formed invariant that is also canonical; §4.2 closes
 the circle: every well-formed invariant is carried onto the syntactic
 invariant of its own language.
 
 
-### 3.5 Canonicalization: from any well-formed invariant to the syntactic one
+### 4.2 Canonicalization: from any well-formed invariant to the syntactic one
 
-Canonicity (Theorem 3.10) made the syntactic invariant unique. This
+Canonicity (Theorem I) made the syntactic invariant unique. This
 subsection makes it reachable: from any well-formed invariant `𝓘 = ⟨𝒮, P⟩` —
-writing `L := L(𝓘)` throughout (Proposition 3.15) — the syntactic invariant
+writing `L := L(𝓘)` throughout (Proposition 4.1) — the syntactic invariant
 `𝓘(L)` is computed by merging classes, nothing else. What stands in the way
 is inherited from Arnold: two classes may merge exactly when their words are
 interchangeable in every context, and interchangeability is a two-sided
 demand — a word sits in a lasso between a left context and a right one —
 while the one operation the table of `𝒞` offers for free is multiplication
 on the right. The rotation lemma closes this gap in its second service: the
-first (§3.4) forced saturation; the second converts every left demand into a
+first (§4.1) forced saturation; the second converts every left demand into a
 right computation.
 
-> **Definition 3.16 (membership tests).** Let `𝓘 = ⟨𝒮, P⟩` be a well-formed
-> invariant, `M = 𝒞 ∪ {[ε]}` its completion. For a **slot** `d ∈ M` and an
-> idempotent `f ∈ 𝒞`, the **membership tests** on classes `c ∈ 𝒞` are
+> **Definition 4.3 (membership tests; test equivalence).** Let `𝓘 = ⟨𝒮, P⟩` be
+> a well-formed invariant, `M = 𝒞 ∪ {[ε]}` its completion. For a **slot**
+> `d ∈ M` and an idempotent `f ∈ 𝒞`, the **membership tests** on classes
+> `c ∈ 𝒞` are
 >
 > ```
 >     Λ(d, f)(c) := [ (d·c·f, f) ∈ P ]            (linear test)
 >     Ω(d)(c)    := [ (d·c^π, c^π) ∈ P ]          (ω test)
 > ```
+>
+> The **test equivalence** `∼` on `𝒞` compares classes under every right
+> extension: `c ∼ c'` iff `Λ(d, f)(c·g) = Λ(d, f)(c'·g)` and
+> `Ω(d)(c·g) = Ω(d)(c'·g)` for every `d, g ∈ M` and idempotent `f ∈ 𝒞`.
 
 Each test poses one lasso membership question to a class: by
-Proposition 3.15, `Λ(d, f)(c)` is the membership in `L` of every lasso whose
+Proposition 4.1, `Λ(d, f)(c)` is the membership in `L` of every lasso whose
 stem reads `d` then `c` and whose loop settles on `f`, and `Ω(d)(c)` the
 membership of looping `c` itself from `d`. The typing is §3.1's absorption
 once more: both queried pairs are linked — `(d·c·f)·f = d·c·f` and
 `(d·c^π)·c^π = d·c^π` — and lie in `𝒞 × 𝒞`; slots range over the completion,
 `[ε]` serving as the empty context, while the tested class is a class of
-nonempty words: no test loops the basepoint.
+nonempty words: no test loops the basepoint. The equivalence is
+right-invariant by construction — the coarsest right-invariant equivalence
+under which all tests agree, the closure over `g` of bare agreement at
+`g = [ε]`.
 
-> **Lemma 3.17 (the tests characterize the congruence).** Let `u, u' ∈ Σ⁺`
-> with `c = 𝒮(u)`, `c' = 𝒮(u')`. Then `u ≈_L u'` iff for every slot `d ∈ M`,
-> every `g ∈ M`, and every idempotent `f ∈ 𝒞`:
+> **Lemma 4.2 (the tests characterize the congruence).** For all `u, u' ∈ Σ⁺`:
 >
 > ```
->     Λ(d, f)(c·g) = Λ(d, f)(c'·g)      and      Ω(d)(c·g) = Ω(d)(c'·g).
+>     u ≈_L u'    ⟺    𝒮(u) ∼ 𝒮(u').
 > ```
 
-*Proof.* A linear context `u₀·_·w` of Definition 3.7, its lasso `w` presented
-`(y, t)`, evaluates on `u` to the membership of `u₀·u·y·t^ω` in `L`, which is
-the bit of its queried name — the pair `(d·c·g·f, f)` at `d = 𝒮(u₀)`,
-`g = 𝒮(y)`, `f = 𝒮(t)^π` — that is, to `Λ(d, f)(c·g)`; an ω-power context
-`u₀·(_·v₀)^ω` evaluates to `Ω(d)(c·g)` at `g = 𝒮(v₀)`. Surjectivity runs the
-translation both ways: every element of `M` is the value of a finite word,
-`[ε]` of the empty one, and every idempotent `f` is `𝒮(t)^π` for any `t` with
-`𝒮(t) = f`. ∎
+*Proof.* Write `c = 𝒮(u)`, `c' = 𝒮(u')`. A linear context `u₀·_·w` of
+Definition 3.5, its lasso `w` presented `(y, t)`, evaluates on `u` to the
+membership of `u₀·u·y·t^ω` in `L`, which is the bit of its queried name — the
+pair `(d·c·g·f, f)` at `d = 𝒮(u₀)`, `g = 𝒮(y)`, `f = 𝒮(t)^π` — that is, to
+`Λ(d, f)(c·g)`; an ω-power context `u₀·(_·v₀)^ω` evaluates to `Ω(d)(c·g)` at
+`g = 𝒮(v₀)`. Surjectivity runs the translation both ways: every element of
+`M` is the value of a finite word, `[ε]` of the empty one, and every
+idempotent `f` is `𝒮(t)^π` for any `t` with `𝒮(t) = f`. So the contexts
+separating `u` from `u'` and the tests separating `c·g` from `c'·g` are the
+same facts about `L`, and the two agreements coincide. ∎
 
-> **Definition 3.18 (test equivalence).** The **test equivalence** `∼` on `𝒞`
-> is the relation of Lemma 3.17: `c ∼ c'` iff all membership tests agree on
-> `c·g` and `c'·g`, for every `g ∈ M`.
-
-> **Lemma 3.19 (left invariance).** The test equivalence is a two-sided
+> **Lemma 4.3 (left invariance).** The test equivalence is a two-sided
 > congruence on `𝒞`.
 
-*Proof.* Right invariance is Definition 3.18's closure over `g`. Let
+*Proof.* Right invariance is Definition 4.3's closure over `g`. Let
 `c ∼ c'` and `b ∈ 𝒞`. *Linear tests:* `Λ(d, f)((b·c)·g) = Λ(d·b, f)(c·g)` —
 associativity alone: the left factor shifts the slot, and slots are
 universally quantified. *ω tests:* the pairs queried by `Ω(d)((b·c)·g)` and
-by `Ω(d·b)(c·(g·b))` are conjugate in one step of Definition 3.13. Write
+by `Ω(d·b)(c·(g·b))` are conjugate in one step of Definition 4.2. Write
 `x := b`, `y := c·g`: the pairs are `(d·(x·y)^π, (x·y)^π)` and
 `(d·x·(y·x)^π, (y·x)^π)`, both linked, one exponent serving `x·y` and `y·x`
 alike; the conjugacy step applies at `s := d·(x·y)^π` — indeed
@@ -882,27 +889,26 @@ A left factor acts on a linear test by shifting its slot, and on an ω test by
 rotating the loop — a right extension read at a shifted slot. No new identity
 was proved: the rotation lemma, deployed a second time.
 
-> **Theorem 3.20 (canonicalization).** Let `𝓘 = ⟨𝒮, P⟩` be a well-formed
-> invariant and `L = L(𝓘)`. Then the test equivalence is the pushforward of
-> Arnold's congruence — `𝒮(u) ∼ 𝒮(u') ⟺ u ≈_L u'` for all `u, u' ∈ Σ⁺` — and
-> the quotient invariant `𝓘/∼`, the quotient stamp with the image pair set,
-> is `𝓘(L)`: the same quotient of `Σ⁺`, byte-identical under shortlex keys.
-> Moreover `∼` is computed on the table by partition refinement: group the
-> classes by their membership tests, then split under right multiplication by
-> the letters until stable — at most `|𝒞|` splits.
+> **Theorem II (canonicalization).** Let `𝓘 = ⟨𝒮, P⟩` be a well-formed
+> invariant and `L = L(𝓘)`. The quotient invariant `𝓘/∼` — the quotient stamp
+> with the image pair set — is `𝓘(L)`: the same quotient of `Σ⁺`,
+> byte-identical under shortlex keys. Moreover `∼` is computed on the table by
+> partition refinement: group the classes by their membership tests, then
+> split under right multiplication by the letters until stable — at most `|𝒞|`
+> splits.
 
-*Proof.* The displayed equivalence is Lemma 3.17. Two congruences on `Σ⁺`
-with one kernel are one quotient — the same classes as sets of words, the
-same letter map, the same induced table — so the quotient stamp is `𝒮_L`.
-For the pair sets: a quotient of stamps preserves idempotent powers, so a
-lasso named `(s, e)` by `𝒮` is named by the image pair in the quotient; hence
-`(s, e) ∈ P` iff that lasso lies in `L` (Proposition 3.15) iff the image pair
-lies in `P(L)` (Theorem 3.10(i)) — the bit of a pair is constant on
-`∼`-classes, and the image of `P` is exactly `P(L)`. For the refinement: a
-partition stable under every right letter is stable under every right
-extension — the letters generate `𝒞`, `𝒮` being surjective — so the fixpoint
-is exactly the closure Definition 3.18 demands; and every split separates
-classes that Lemma 3.17 proves `≈_L`-inequivalent, so at most `|𝒞|` occur. ∎
+*Proof.* By Lemma 4.2 the quotient stamp and `𝒮_L` are two quotients of `Σ⁺`
+with one kernel, hence one quotient — the same classes as sets of words, the
+same letter map, the same induced table. For the pair sets: a quotient of
+stamps preserves idempotent powers, so a lasso named `(s, e)` by `𝒮` is named
+by the image pair in the quotient; hence `(s, e) ∈ P` iff that lasso lies in
+`L` (Proposition 4.1) iff the image pair lies in `P(L)` (Theorem I(i)) — the
+bit of a pair is constant on `∼`-classes, and the image of `P` is exactly
+`P(L)`. For the refinement: a partition stable under every right letter is
+stable under every right extension — the letters generate `𝒞`, `𝒮` being
+surjective — so the fixpoint is exactly the closure Definition 4.3 demands;
+and every split separates classes that Lemma 4.2 proves `≈_L`-inequivalent,
+so at most `|𝒞|` occur. ∎
 
 *Example (a parity ghost).* Tensor `aUGb`'s stamp with length parity:
 `𝒮×(u) := (𝒮(u), |u| mod 2)`, eight classes, with pair set
@@ -912,11 +918,11 @@ Figure 1's, so `𝓘×` is well-formed and `L(𝓘×) = aUGb`. The tests dissolv
 the ghost at the first grouping: every bit factors through the first
 coordinate, so `(c, 0)` and `(c, 1)` share all tests, and right
 multiplication keeps them paired — the refinement is stable at once, and the
-quotient is Figure 1: four classes, the parity gone. §4 replays the scene at
+quotient is Figure 1: four classes, the parity gone. §5 replays the scene at
 scale: its automaton stamp for `aUGb` carries nine classes of mark
 bookkeeping (Ex. 1), refined onto the same four.
 
-> **Corollary 3.21 (the invariants denoting `L`).** Let `L` be regular and
+> **Corollary 4.2 (the invariants denoting `L`).** Let `L` be regular and
 > `𝒮 : Σ⁺ → 𝒞` a stamp whose kernel refines `≈_L` — `𝒮(u) = 𝒮(u')` implies
 > `u ≈_L u'`. There is exactly one pair set over `𝒮` making the invariant
 > denote `L`: the names of the accepted lassos,
@@ -929,23 +935,23 @@ bookkeeping (Ex. 1), refined onto the same four.
 
 *Proof.* Existence: two presentations landing on one name have, rewritten on
 `(u·v^π, v^π)`, `𝒮`-congruent stems and loops, hence `≈_L`-congruent ones,
-and the substitution lemma (3.9) gives their lassos one verdict — the
+and the substitution lemma (Lemma 3.1) gives their lassos one verdict — the
 displayed `P` answers every query with `L`'s verdict. Uniqueness: every
 linked pair is the queried name of some lasso — surjectivity picks a
 presentation — whose verdict forces the pair's bit. Conversely, an invariant
 denoting `L` has a kernel refining `≈_L` — classes with one value agree on
-all membership tests, hence on all Arnold contexts (Lemma 3.17) — and
+all membership tests, hence on all Arnold contexts (Lemma 4.2) — and
 carries the forced pair set. ∎
 
 An invariant denoting `L` exists at every refinement of the syntactic stamp
 and nowhere else; it is well-formed; and canonicalization carries it onto
 `𝓘(L)`, by right multiplications on its own table. Obtaining one is a
-question about presentations, not about the algebra: §4 answers it for the
-deterministic automata of the field, and the directions of §7 answer it
+question about presentations, not about the algebra: §5 answers it for the
+deterministic automata of the field, and the directions of §8 answer it
 elsewhere.
 
 
-## 4. The construction: from an automaton to `𝓘(L)`
+## 5. The construction: from an automaton to `𝓘(L)`
 
 We now construct the invariant. The input is an automaton `D` for `L`, in the
 most general deterministic form in use — throughout this section `L := L(D)`.
@@ -958,7 +964,7 @@ canonicalization: the quotient by Arnold's congruence
 (Definition 3.7), which the rotation lemma (3.11) makes computable by right
 multiplications alone (§4.3).
 
-### 4.1 Emerson–Lei automata
+### 5.1 Emerson–Lei automata
 
 This subsection recalls definitions from the literature, adapted from
 [EL87, PP04]: the input format and its vocabulary.
@@ -1054,7 +1060,7 @@ block; `b` returns to even, marked `1` when the block it closes is even, `0`
 when it is odd; `Acc = Fin(0) ∧ Inf(1)` — infinitely many even blocks,
 finitely many odd ones.
 
-### 4.2 Step 1: the automaton stamp
+### 5.2 Step 1: the automaton stamp
 
 The classical algebra of `D` on finite words is its transition monoid: the
 **transition maps** `δ(·, u) : Q → Q`, `u ∈ Σ⁺`, under composition. It
@@ -1176,7 +1182,7 @@ variants, kept apart only by which slots saw the mark on the way to the
 sink, one zero class under all of them. The next step quotients exactly this
 excess away.
 
-### 4.3 Step 2: the quotient, computed on the right
+### 5.3 Step 2: the quotient, computed on the right
 
 What remains is to coarsen `𝒞_D`: merge classes exactly when their words
 are interchangeable — in every stem, in every loop.
@@ -1313,7 +1319,7 @@ prefix-indexed slots — answering the obstruction Angluin and Fisman record
 for ω-learning [AF21]; and a coarsest right-invariant refinement is precisely
 what partition refinement computes (§4.4).
 
-### 4.4 The theorem: `𝓘(D) = 𝓘(L)`
+### 5.4 The theorem: `𝓘(D) = 𝓘(L)`
 
 The two steps assemble into the constructed invariant, and the constructed
 invariant turns out to be §3.3's: one language, one object.
@@ -1447,7 +1453,7 @@ downstream of `𝒞_D` is polynomial in its size; the size itself is the
 subject of §5.1.
 
 
-## 5. What the invariant unlocks
+## 6. What the invariant unlocks
 
 The invariant was built to be used. This section first splits the cost of
 building the table from the cost of using it, then reads decisions off the
@@ -1456,7 +1462,7 @@ for free, and the definability frontier. Throughout, an invariant is handled
 through its finite presentation `(𝒞, λ, ·, P)` under shortlex keys — the
 serialized form the byte-equality remark of §3.3 announced.
 
-### 5.1 Complexity
+### 6.1 Complexity
 
 Two costs must be kept apart: building the invariant from an automaton, and
 using it once built.
@@ -1500,7 +1506,7 @@ formula `Acc` — and every step is a set operation, not an arithmetic one: clos
 partition refinement of §4.4 are all images, fixpoints, and quotients over
 sets, native to decision diagrams.
 
-### 5.2 The exportable invariant and the identity band
+### 6.2 The exportable invariant and the identity band
 
 What the field exchanges today is a presentation — an automaton in the
 Hanoi Omega-Automata (HOA) exchange format, one machine among many for its
@@ -1608,7 +1614,7 @@ rival: a corpus of `N` presentations deduplicates by `O(N²)` pairwise
 product constructions, a corpus of serialized invariants by hashing — equal
 languages, identical bytes.
 
-### 5.3 The LTL frontier
+### 6.3 The LTL frontier
 
 > **Theorem 5.3 (the aperiodicity cut — classical).** A regular `L ⊆ Σ^ω` is
 > LTL-definable iff `𝒞_L` is **aperiodic**: no class has a power cycle of
@@ -1648,7 +1654,7 @@ the table check above, and `Even` and `EvenBlocks` are its minimal
 witnesses.
 
 
-## 6. Related work
+## 7. Related work
 
 **Arnold [Arn85].** The syntactic congruence is his: the coarsest congruence
 saturating a rational ω-language, of finite index, with a recognizing
@@ -1692,7 +1698,7 @@ of DFAs [AF16, ABF18], presentation-dependent acceptors. The rotation lemma
 reads the two-sided congruence from right extensions at prefix-indexed
 slots — observation-table shaped (§7).
 
-## 7. Perspectives
+## 8. Perspectives
 
 The point of an archetype is what it makes routine. Each direction below
 opens on the invariant — the language itself in hand — where the
@@ -1747,7 +1753,7 @@ rotation, no refinement. The degenerate case landing on the known answer
 audits the machinery; and the same aperiodicity check of §5.3 then decides
 LTLf-definability [DV13], one level down, where the same tooling gap stands.
 
-## 8. Conclusion
+## 9. Conclusion
 
 For finite words, the syntactic monoid has carried the algebraic theory of
 regular languages for sixty years: one finite algebra per language,
