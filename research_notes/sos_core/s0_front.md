@@ -12,16 +12,17 @@ With significant inputs from
 The syntactic ω-semigroup of a regular ω-language is its canonical algebra:
 presentation-independent and complete — it determines membership, equality,
 and every definability property of the language. Defined by Arnold in 1985,
-it has, to our knowledge, never been built from an automaton. We build it,
-and we reify it: the invariant `𝓘(L) = ⟨𝒮, P⟩` — a stamp `𝒮 : Σ⁺ → 𝒞`
-classifying the finite words by a finite table, and an acceptance layer `P`
-of linked pairs over it — equipped with a standalone lasso-membership
-semantics. This is a canonical normal form for regular ω-languages, which
+this abstract algebra has, to our knowledge, never been materialized as a
+concrete computable finite object. We define it through the invariant
+`𝓘(L) = ⟨𝒮, P⟩`: a stamp `𝒮 : Σ⁺ → 𝒞` classifying the finite words by a
+finite table, together with an acceptance layer `P` of linked pairs over it,
+equipped with a standalone lasso-membership semantics. This is a canonical normal form for regular ω-languages, which
 the domain has never had: under shortlex naming, two languages are equal iff
 their serialized invariants are byte-identical. The mathematical core is a
-rotation lemma: Arnold's two-sided syntactic congruence is computable by
-right multiplications alone — the structural fact missing from forty years
-of literature between the definition and a construction. On it we build
+rotation lemma, to our knowledge new: it makes Arnold's two-sided syntactic
+congruence right-invariant, computable by right multiplications alone and so
+by ordinary partition refinement. This reduction is what turns the
+definition into a construction. On it we build
 `𝓘(D)` from any deterministic Emerson–Lei automaton `D` — the automaton
 stamp, classifying words by their runs, then a right-computable quotient —
 and prove
@@ -53,11 +54,10 @@ of the syntactic monoid, and it closes the classical chain: linear temporal
 logic (LTL) `=` first-order logic `FO[<]` `=` star-free `=` aperiodic
 syntactic ω-semigroup [Kam68, Tho79, DG08] — every earlier item of the chain
 is a syntax, the last is the semantics, and it is the one this paper builds.
-In practice the syntactic ω-semigroup is a phantom, defined everywhere and
-built nowhere: no tool materializes it from an automaton, and the
-algorithmic accounts of the flagship application — deciding
-LTL-definability — are complexity arguments that emit no algebra and no
-evidence [DG08].
+In practice the syntactic ω-semigroup is a phantom: to our knowledge no
+tool materializes it from an automaton, and the algorithmic accounts of the
+flagship application — deciding LTL-definability — are complexity arguments
+that emit no algebra and no evidence [DG08].
 
 The obstruction is structural, not just size, and its two halves were each
 solved in isolation without ever being combined. First, a recognizer for
@@ -73,22 +73,23 @@ finitary–infinitary split [MS97], but compute no quotient, and their loop
 test still hides a two-sided context. This paper supplies the missing
 mathematics and assembles the construction. Our contributions:
 
-1. **The invariant** (§3). `𝓘(L) = ⟨𝒮, P⟩`: a stamp
-   `𝒮 : Σ⁺ → 𝒞` presented by its classes, letter map and multiplication
-   table, and a pair set `P` of linked pairs, with a self-contained
-   membership semantics on lassos — the ultimately periodic words `u·v^ω`
-   (Definition 3.5). Canonicity
-   (Theorem 3.10) makes it a complete invariant — and, under shortlex
-   naming, a normal form: language equality is byte equality of the
-   serialized tables.
+1. **The invariant** (§3). `𝓘(L) = ⟨𝒮, P⟩` is the syntactic ω-semigroup
+   made concrete, and more than its algebra: a stamp `𝒮 : Σ⁺ → 𝒞` — the
+   finite carrier, presented by classes, letter map and table — with an
+   acceptance layer `P` of linked pairs in place of the abstract second
+   sort. That pairing makes it a recognizer: `𝓘` carries its own membership
+   semantics on lassos `u·v^ω` (Definition 3.5). Canonicity (Theorem 3.10)
+   makes it a complete invariant — under shortlex naming, a normal form:
+   language equality is byte equality of the serialized tables.
 
-2. **The rotation lemma** (§3.3). A loop may be rotated — a factor carried
+2. **The rotation lemma** (§3.4). A loop may be rotated — a factor carried
    from the loop's front onto the stem leaves the ω-word unchanged — and
    this single move is how two presentations of one ω-word come to
    disagree. Read on contexts,
-   it collapses Arnold's two-sided congruence to a computation by right
-   multiplications alone: the structural fact the literature lacked, and
-   the engine of the construction.
+   it turns Arnold's two-sided congruence right-invariant — computable by
+   right multiplications alone, hence by ordinary partition refinement. To
+   our knowledge this reduction is new, and it is the engine of the
+   construction.
 
 3. **The construction** (§4). From any deterministic Emerson–Lei automaton
    `D`: the automaton stamp — words classified by transition map and mark
@@ -106,6 +107,10 @@ as a one-look read-off, exact in both directions because the invariant is
 canonical. §6 reviews related work; §7 opens the directions the invariant
 makes available — classification, rendering to formulas, a calculus, a
 census, learning; §8 concludes.
+
+The construction is implemented, in the tool `aut2ltl`
+(github.com/yanntm/aut2ltl); this paper is its theoretical ground, and
+neither the implementation nor its empirical evaluation is presented here.
 
 Four running examples accompany the paper, met first as tables and only
 later as automata: `aUGb`, the pedagogical thread of §2–§3, and `GFaa`,
