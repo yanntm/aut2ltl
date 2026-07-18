@@ -19,7 +19,8 @@ PARTS := \
 	s3b_canonicity.md \
 	s4a_rotation.md \
 	s4b_canonicalization.md \
-	s5_construction.md \
+	s5a_entry.md \
+	s5b_theorem.md \
 	s6_uses.md \
 	s7_end.md \
 	examples.md \

@@ -17,17 +17,19 @@ into the single-file paper [`../sos_core.md`](../sos_core.md) — that file is a
 | [`s4a_rotation.md`](s4a_rotation.md) | §4 opening (Def 4.1 denoting) + §4.1 rotation, saturation, well-formedness (Lemma 4.1, Def 4.2, Cor 4.1, Prop 4.1) | new restructure — [PP04, Ch. I] primitive-period cite in Prop 4.1 to verify |
 | [`s4b_canonicalization.md`](s4b_canonicalization.md) | §4.2 canonicalization (Def 4.3, Lemmas 4.2–4.3, **Theorem II**, Cor 4.2) | new restructure — first draft |
 | [`s3_invariant.md`](s3_invariant.md) | **reservoir** — pre-split §3, out of the build; `rm` when s3a/s3b/s4a/s4b are stable | retired from PARTS |
-| [`s5_construction.md`](s5_construction.md) | §5 construction from an automaton | drafted prose — awaiting rewrite against §4 (entry = denoting invariant, slot compression, **Theorem III**); §3/§4 cross-refs stale, sweep once §3–§4 stable; headings renumbered 4.x→5.x |
+| [`s5a_entry.md`](s5a_entry.md) | §5 intro; §5.1 EL automata (Def 5.1); §5.2 the automaton invariant (Def 5.2–5.3, Prop 5.1, Lemma 5.1 collapse, Cor 5.1 denotes) | new restructure — first draft |
+| [`s5b_theorem.md`](s5b_theorem.md) | §5.3 compression (Prop 5.2, algorithm); §5.4 **Theorem III**, Cor 5.2, Figure 2 | new restructure — first draft |
+| [`s5_construction.md`](s5_construction.md) | **reservoir** — pre-rewrite §5, out of the build; `rm` when s5a/s5b are stable | retired from PARTS |
 | [`s6_uses.md`](s6_uses.md) | §6 uses: identity band + LTL frontier | drafted prose — serialization block verbatim from tool export ([`../sos_core_figs/sources/gf_aa.sos`](../sos_core_figs/sources/gf_aa.sos)); headings renumbered 5.x→6.x, body refs stale |
 | [`s7_end.md`](s7_end.md) | §7 related work, §8 perspectives, §9 conclusion | drafted prose — headings renumbered, body refs stale |
 | [`bib.md`](bib.md) | bibliography | reconstructed — verify against [`../papers/`](../papers/) |
 | [`notation.md`](notation.md) | notation conventions (editors' note, not paper text) | stable |
 
 The [`Makefile`](Makefile) concatenates, in order,
-`s0 s2 s3a s3b s4a s4b s5_construction s6_uses s7_end`
+`s0 s2 s3a s3b s4a s4b s5a s5b s6_uses s7_end`
 then the worked examples (`examples.md` + the four `Ex_*.md`) then `bib`;
-`README.md`, `notation.md` and the reservoir `s3_invariant.md` stay out of
-the paper.
+`README.md`, `notation.md` and the reservoirs `s3_invariant.md` and
+`s5_construction.md` stay out of the paper.
 
 ## Worked examples
 
@@ -63,10 +65,11 @@ recurring edges only.
 
 - All sections obey `notation.md`. Numbering: **per-type counters, scoped per
   section** — Definitions 3.1–3.6, Lemma 3.1 (§3); Definitions 4.1–4.3,
-  Lemmas 4.1–4.3, Proposition 4.1, Corollaries 4.1–4.2 (§4) — every index
-  single-digit. The **main theorems are lettered globally in roman**:
-  Theorem I (canonicity, §3.3), Theorem II (canonicalization, §4.2),
-  Theorem III (the construction, §5 — to be applied in the §5 rewrite).
+  Lemmas 4.1–4.3, Proposition 4.1, Corollaries 4.1–4.2 (§4); Definitions
+  5.1–5.4, Lemma 5.1, Propositions 5.1–5.2, Corollaries 5.1–5.2 (§5) —
+  every index single-digit. The **main theorems are lettered globally in
+  roman**: Theorem I (canonicity, §3.3), Theorem II (canonicalization,
+  §4.2), Theorem III (the construction, §5.4).
   Cross-references are name+number with the type spelled out ("the rotation
   lemma (Lemma 4.1)", "canonicity (Theorem I)") so they survive edits and
   file boundaries. Vocabulary ladder: invariant (Def 3.3) → denoting `L`
