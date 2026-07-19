@@ -1,4 +1,5 @@
 HOA: v1
+name: "a_once = a & XG!a"
 States: 3
 Start: 1
 AP: 1 "a"

@@ -1,23 +1,23 @@
 # SoS algebra summary — a_once
 
-Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` = transition monoid; a group in `TM` may be a presentation artifact, a group in `S(L)₊` is intrinsic (⇔ not LTL-definable).
+Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` = transition monoid; a group in `TM` may be a presentation artifact (the LTL-definability verdict, which turns on a group in `S(L)₊` itself, belongs to the definability engine, not this algebra summary).
 
 ## Fingerprints
 
-| input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM | grp S(L)₊ | LTL? | evidence |
-|---|---|---|---|---|---|---|---|
-| a_once | 3 | 4 | 4 | no | no | yes | LTL — DG DAG 14 nodes / flat tree 93,674 (0.001s) |
+| input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM |
+|---|---|---|---|---|
+| a_once | 3 | 7 | 4 | no |
 
 ## a_once
 
-*Input:* `research_notes/sos_figs/sources/a_once.hoa`
+*Input:* `../research_notes/sos_figs/sources/a_once.hoa`
 
 ### Deterministic form `D`
 
 ```hoa
 HOA: v1
 States: 3
-Start: 0
+Start: 1
 AP: 1 "a"
 acc-name: Buchi
 Acceptance: 1 Inf(0)
@@ -25,11 +25,11 @@ properties: trans-labels explicit-labels trans-acc complete
 properties: deterministic very-weak
 --BODY--
 State: 0
-[0] 1 {0}
-[!0] 2 {0}
+[!0] 0 {0}
+[0] 2
 State: 1
-[!0] 1 {0}
-[0] 2 {0}
+[0] 0
+[!0] 2
 State: 2
 [t] 2
 --END--
@@ -37,14 +37,17 @@ State: 2
 
 ### Enriched monoid `EM(D)` → `S(L)₊`
 
-`|EM¹| = 4` elements folding onto `|S(L)₊¹| = 4` classes. `rmul` is right-multiplication by each letter (`!a`, `a`), as `EM` element ids. The identity element hosts two classes (`[eps]` and any neutral non-empty class).
+`|EM¹| = 7` elements folding onto `|S(L)₊¹| = 4` classes. `rmul` is right-multiplication by each letter (`!a`, `a`), as `EM` element ids. The identity element hosts two classes (`[eps]` and any neutral non-empty class).
 
 | id | word | st | mk | rmul | → class |
 |---|---|---|---|---|---|
 | 0 | `eps` | [0 1 2] | [{} {} {}] | 1 2 | 0 `eps` |
-| 1 | `!a` | [2 1 2] | [{0} {0} {}] | 1 3 | 1 `!a` |
-| 2 | `a` | [1 2 2] | [{0} {0} {}] | 2 3 | 2 `a` |
-| 3 | `!a;a` | [2 2 2] | [{0} {0} {}] | 3 3 | 3 `!a;a` |
+| 1 | `!a` | [0 2 2] | [{0} {} {}] | 1 3 | 1 `!a` |
+| 2 | `a` | [2 0 2] | [{} {} {}] | 4 5 | 2 `a` |
+| 3 | `!a;a` | [2 2 2] | [{0} {} {}] | 3 3 | 3 `!a;a` |
+| 4 | `a;!a` | [2 0 2] | [{} {0} {}] | 4 6 | 2 `a` |
+| 5 | `a;a` | [2 2 2] | [{} {} {}] | 5 5 | 3 `!a;a` |
+| 6 | `a;!a;a` | [2 2 2] | [{} {0} {}] | 6 6 | 3 `!a;a` |
 
 ### Canonical algebra `S(L)₊¹`
 

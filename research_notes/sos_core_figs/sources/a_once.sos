@@ -13,3 +13,11 @@ mult:
 3: 3 3 3 3
 accept:
 2 1
+residuals: 3
+0 eps
+1 !a
+2 a
+res-step:
+0: 1 2
+1: 1 1
+2: 2 1

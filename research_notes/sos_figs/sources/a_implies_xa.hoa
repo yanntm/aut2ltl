@@ -1,11 +1,12 @@
 HOA: v1
+name: "a_implies_xa = a -> Xa"
 States: 4
 Start: 2
 AP: 1 "a"
 acc-name: Buchi
 Acceptance: 1 Inf(0)
 properties: trans-labels explicit-labels state-acc complete
-properties: deterministic very-weak
+properties: deterministic terminal very-weak
 --BODY--
 State: 0 {0}
 [0] 1
