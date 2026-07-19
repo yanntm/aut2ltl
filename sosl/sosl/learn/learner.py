@@ -3,9 +3,16 @@
     fill; close; consist   -- to a closed, consistent fixpoint
     saturate               -- the two-sided-congruence sweep (restart on a split)
     export                 -- the belief: the table's invariant, canonicalized
+    replay                 -- the belief against the evidence, query-free;
+                              a contradiction is a discordant lasso with the
+                              teacher's bit already in hand -> chain, restart
     equiv                  -- ask the teacher, on the belief
       Equivalent     -> the belief is I(L); stop
       Counterexample -> process (chains) and restart
+
+The equivalence query is posed only at quiescence: the belief contradicts no
+bit of evidence — every lasso ever queried, under any presentation, is
+predicted with the teacher's own answer.
 
 The hypothesis shipped to every equivalence query is an `Invariant` — a
 well-formed algebraic object, never a bare classifier. Exporting it is legal
@@ -35,7 +42,19 @@ from sosl.learn.saturate import saturate
 from sosl.learn.table import Table
 from sosl.sos.alphabet import Alphabet
 from sosl.sos.invariant import Invariant
+from sosl.sos.lasso import Lasso
 from sosl.trace import TRACE_ON, trace
+
+
+def _evidence_discordance(table: Table, belief: Invariant) -> Optional[Lasso]:
+    """The first witnessed bit ``belief`` contradicts — a discordant lasso
+    whose teacher bit is already in hand — or ``None`` when the belief is
+    evidence-coherent. Query-free: a replay of `Invariant.member` over the
+    ledger, in first-query order."""
+    for lasso, bit in table.evidence.items():
+        if belief.member(lasso) != bit:
+            return lasso
+    return None
 
 
 def _make_consistent(table: Table, p: Partition) -> bool:
@@ -99,6 +118,13 @@ def learn(
             continue
         # The sweep just certified a two-sided congruence: the belief exists.
         belief = export(p, table.query_lasso, check=False)
+        dis = _evidence_discordance(table, belief)
+        if dis is not None:
+            if TRACE_ON:
+                trace("LEARN", f"evidence discordance stem={dis.stem} "
+                      f"loop={dis.loop} (replay, zero queries)")
+            process_counterexample(table, p, dis)
+            continue
         n_equiv += 1
         if TRACE_ON:
             trace("LEARN", f"round {n_equiv}: classes={p.n} "
