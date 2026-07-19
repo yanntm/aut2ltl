@@ -33,3 +33,23 @@ class Lasso:
             raise ValueError("loop power must be >= 1")
         vk = self.loop * k
         return Lasso(self.stem + vk, vk)
+
+    def canonical(self) -> "Lasso":
+        """The unique normal form of the denoted infinite word: the loop
+        reduced to its primitive root, then the stem shortened while its last
+        letter matches the loop's last (``u.a . (x.a)^omega = u . (a.x)^omega``
+        — the letter carried around the wrap). Minimal stem plus primitive
+        loop pin the presentation completely, so two lassos denote the same
+        infinite word iff their canonical forms are equal — the key of any
+        by-word memoization."""
+        v = self.loop
+        m = len(v)
+        for d in range(1, m):
+            if m % d == 0 and v[:d] * (m // d) == v:
+                v = v[:d]
+                break
+        u = self.stem
+        while u and u[-1] == v[-1]:
+            v = (u[-1],) + v[:-1]
+            u = u[:-1]
+        return Lasso(u, v)
