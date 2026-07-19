@@ -52,13 +52,13 @@ mode); its rows are committed and reused, `ours` re-derived via
 
 ## Work items — engineering
 
-1. **The EQ-by-EQ animation** — step through what the learner believes at each
-   equivalence query. Not started.
-2. ROLL's 262 total + 177 partial failures are **unattributed**:
+1. ROLL's 262 total + 177 partial failures are **unattributed**:
    `baseline.py` records a `detail` that `census_e3` drops. Needs a re-run to
    say timeout vs crash.
-3. Scripts under `tests/sosl/` still carry the dead `Config(saturation=…)` /
-   `NOSAT_EXACT` names; four were fixed by use, the unrun ones are unchecked.
+2. Scripts under `tests/sosl/` still carry the dead `Config(saturation=…)` /
+   `NOSAT_EXACT` names; the unrun ones are unchecked. (`fig_learner_exports`
+   was one such — its stall path used a removed `learn(saturation=…)`; now
+   rewritten to capture the first-EQ belief, stall dropped.)
 
 The letter-class frontier idea is **withdrawn** — implemented, measured
 (sound on all 6222, but +48% equivalence queries at 2–3 AP for a membership
