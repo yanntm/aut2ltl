@@ -33,9 +33,10 @@ carries **current work items + pointers only**, no history.
    with no query); every column minted, none seeded. Include the hand-derived
    named-case expectations (first mints, day-one beliefs, first
    counterexamples). Engineering is blocked on this.
-2. **§3 sweep**: Definitions 3.1/3.2 still seed `R = {ε} ∪ Σ` — rows must
-   start `{ε}` and grow by promotion only; day-one example material and
-   §3.2's forward references follow the new bootstrap and vocabulary.
+2. **§3 sweep**: day-one example material (Tables 1–2 and surrounding
+   prose still present the seeded-column initialization) and §3.2's
+   forward references follow the new bootstrap and vocabulary — with the
+   regenerated traces.
 3. **§5 edits** (section stays): proofs argue from the normal form (they
    currently say "both checks clean"); add the two opened lemmas —
    confluence (fixpoint belief independent of pinned resolution order),
