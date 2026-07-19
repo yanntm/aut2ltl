@@ -41,13 +41,20 @@ def main(argv: List[str]) -> int:
         return 2
 
     rows: List[dict] = []
+    guard: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    cert: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
     with open(src, newline="") as fh:
         for r in csv.DictReader(fh):
-            if r["config_id"] != "default":
+            leg = r["config_id"]
+            guard[leg]["firings"] += int(r["n_guard_firings"])
+            guard[leg]["cases"] += 1 if int(r["n_guard_firings"]) > 0 else 0
+            cert[leg][r["eq_certification"] or "none"] += 1
+            if leg != "default":
                 continue
             cat = load_category(_sos_of(r["case_id"]))
             rows.append({
                 "case": r["case_id"], "N": int(r["ref_classes"]),
+                "sigma": 2 ** int(r["ap_count"]),
                 "splits": int(r["n_splits"]), "fill": int(r["n_member_fill"]),
                 "member": int(r["n_member_total"]), "equiv": int(r["n_equiv"]),
                 "wall": float(r["wall_seconds"]), "verdict": r["verdict"],
@@ -89,6 +96,25 @@ def main(argv: List[str]) -> int:
                  f"{'yes' if not over else 'NO — ' + str(over[:5])}.**")
     lines.append("")
 
+    walls = sorted(r["wall"] for r in rows)
+    worst = max(rows, key=lambda r: r["wall"])
+    lines.append(f"Wall time (default leg): **{sum(walls):.0f} s total** over "
+                 f"{len(rows)} languages — median {_median(walls):.2f} s, "
+                 f"p99 {walls[int(len(walls) * 0.99)]:.1f} s, worst "
+                 f"{worst['wall']:.1f} s (`{worst['case']}`, N={worst['N']}).")
+    lines.append("")
+
+    # Oracle guard + certification tallies, per leg (all legs of the CSV).
+    lines.append("## Oracle guard and certification, per leg")
+    lines.append("")
+    lines.append("| leg | guard firings | cases with ≥1 firing | certifications |")
+    lines.append("|---|--:|--:|---|")
+    for leg in sorted(guard):
+        certs = ", ".join(f"{k}: {v}" for k, v in sorted(cert[leg].items()))
+        lines.append(f"| `{leg}` | {guard[leg]['firings']} "
+                     f"| {guard[leg]['cases']} | {certs} |")
+    lines.append("")
+
     # SoS acceptance-class ventilation: the LTL cut and the Wagner degree.
     lines.append("## Ventilation by SoS category")
     lines.append("")
@@ -96,8 +122,8 @@ def main(argv: List[str]) -> int:
                  "median cost on each side:")
     lines.append("")
     lines.append("| definability | languages | SOUND | median N | median splits "
-                 "| median member |")
-    lines.append("|---|--:|--:|--:|--:|--:|")
+                 "| median member | splits/N | member/(N²·\\|Σ\\|) | median wall (s) |")
+    lines.append("|---|--:|--:|--:|--:|--:|--:|--:|--:|")
     for label, pred in (("LTL (aperiodic)", True), ("non-LTL", False),
                         ("uncategorized", None)):
         grp = [r for r in rows if r["ltl"] is pred]
@@ -108,12 +134,16 @@ def main(argv: List[str]) -> int:
             f"| {label} | {len(grp)} | {ok} "
             f"| {_median([r['N'] for r in grp]):.0f} "
             f"| {_median([r['splits'] for r in grp]):.0f} "
-            f"| {_median([r['member'] for r in grp]):.0f} |")
+            f"| {_median([r['member'] for r in grp]):.0f} "
+            f"| {_median([r['splits'] / r['N'] for r in grp]):.2f} "
+            f"| {_median([r['member'] / (r['N'] ** 2 * r['sigma']) for r in grp]):.2f} "
+            f"| {_median([r['wall'] for r in grp]):.2f} |")
     lines.append("")
     lines.append("By Wagner degree ϕ = (γ, s):")
     lines.append("")
-    lines.append("| ϕ | class | languages | SOUND | median N | median splits |")
-    lines.append("|---|---|--:|--:|--:|--:|")
+    lines.append("| ϕ | class | languages | SOUND | median N | median splits "
+                 "| splits/N | member/(N²·\\|Σ\\|) | median wall (s) |")
+    lines.append("|---|---|--:|--:|--:|--:|--:|--:|--:|")
     by_phi: Dict[str, List[dict]] = defaultdict(list)
     for r in rows:
         by_phi[r["phi"]].append(r)
@@ -124,7 +154,10 @@ def main(argv: List[str]) -> int:
         lines.append(
             f"| {phi} | {cls} | {len(grp)} | {ok} "
             f"| {_median([r['N'] for r in grp]):.0f} "
-            f"| {_median([r['splits'] for r in grp]):.0f} |")
+            f"| {_median([r['splits'] for r in grp]):.0f} "
+            f"| {_median([r['splits'] / r['N'] for r in grp]):.2f} "
+            f"| {_median([r['member'] / (r['N'] ** 2 * r['sigma']) for r in grp]):.2f} "
+            f"| {_median([r['wall'] for r in grp]):.2f} |")
     lines.append("")
 
     OUT.mkdir(parents=True, exist_ok=True)
