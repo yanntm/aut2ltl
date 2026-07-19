@@ -14,7 +14,7 @@ That cap is read back from `cluster/config.sh` — sourced, not copied, so the
 planner cannot drift from the runner it plans for. Nothing needs naming twice,
 and neither command below takes a flag:
 
-    python3 -m survey.cluster.plan --folder samples/benchmark -o cmds.txt
+    python3 -m survey.cluster.plan --folder samples/benchmark/inputs -o cmds.txt
     RUN=$(cluster/oarrun.sh cmds.txt)
 
 Most examples finish in milliseconds, so packing to the worst case is nearly free

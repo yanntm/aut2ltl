@@ -7,7 +7,7 @@ to see where `best` wins/loses at scale before promoting it to the default.
 
 It is run with the **survey** harness (it has no runner of its own):
 
-    aut2ltl_survey --folder samples/benchmark --use default --use best --logs logs
+    aut2ltl_survey --folder samples/benchmark/inputs --use default --use best --logs logs
 
 survey routes HOA vs LTL by content, applies a strict per-input budget, and emits
 one flat CSV per run with a per-technique summary. Compare two runs with

@@ -11,7 +11,7 @@ summary and trace go to stderr. Each example keeps the `source` it was discovere
 with, which is what makes the shards reassemble into a CSV comparable, row for
 row, with an unsharded run.
 
-    python3 -m survey.cluster.shard --folder samples/benchmark --slice 0:8 \
+    python3 -m survey.cluster.shard --folder samples/benchmark/inputs --slice 0:8 \
         --out shard.csv
 """
 from __future__ import annotations

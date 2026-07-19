@@ -31,7 +31,7 @@ rm -rf logs/rerun
 mkdir -p logs/rerun/{validation,kinska,benchmark}
 python3 -m survey --folder samples/validation --logs logs/rerun/validation > logs/rerun/validation/SUMMARY.txt
 python3 -m survey --folder samples/kinska     --logs logs/rerun/kinska     > logs/rerun/kinska/SUMMARY.txt
-python3 -m survey --folder samples/benchmark  --logs logs/rerun/benchmark  > logs/rerun/benchmark/SUMMARY.txt
+python3 -m survey --folder samples/benchmark/inputs --logs logs/rerun/benchmark > logs/rerun/benchmark/SUMMARY.txt
 
 # 2. diff each new run against its committed reference (keyed on source; exits 1 on a regression)
 python3 -m survey.diff.results results/reference/validation/default.csv logs/rerun/validation/survey_*.csv
@@ -74,8 +74,9 @@ lands in the ignored `logs/cluster/$RUN/`, exactly as a local rerun lands in
 `logs/cluster/$RUN/results.csv` to step 2 in place of
 `logs/rerun/<corpus>/survey_*.csv` — the shards carry each example's original
 `source`, so the merged CSV is row-for-row comparable with the reference — and then
-step 3 adopts it, or does not. Swap the `--folder` for `samples/benchmark` or
-`samples/kinska`; nothing else changes.
+step 3 adopts it, or does not. Swap the `--folder` for `samples/benchmark/inputs`
+(one folder deeper — `samples/benchmark/corpus/` is a derived language tier, not
+bench input) or `samples/kinska`; nothing else changes.
 
 No shard writes a `SUMMARY.txt` — each summarized only its own slice, into its own
 `logs/cluster/$RUN/logs/<idx>.err`. Rebuild the run's summary from the merged CSV
