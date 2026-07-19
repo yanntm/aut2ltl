@@ -168,3 +168,37 @@ rejecting sink `2`), `|EM¹| = 10`, `|S(L)₊¹| = 5`, no group in the transitio
 monoid — LTL by construction. Same language as
 [`sos_core_figs/sources/astar_bomega.sos`](../sos_core_figs/sources/astar_bomega.sos),
 which the other figure set builds from the formula instead.
+
+## 7. The stall specimens — `a_implies_xa` and `a_once` (learning paper, Figure 3)
+
+The two permanent-stall specimens of the learning paper
+(`research_notes/sos_learning.md` §2.3/§4.2). Discovered by a census of the
+smallest automaton shapes; *reproduced* from their formulas — the census's
+role is discovery only, the artifacts below depend on nothing but the LTL:
+
+```sh
+ltl2tgba -D -C --name='a_implies_xa = a -> Xa' 'a -> Xa' -H \
+  > research_notes/sos_figs/sources/a_implies_xa.hoa
+ltl2tgba -D -C --name='a_once = a & XG!a' 'a & XG!a' -H \
+  > research_notes/sos_figs/sources/a_once.hoa
+autfilt -q --equivalent-to=<(ltl2tgba 'a -> Xa') research_notes/sos_figs/sources/a_implies_xa.hoa && echo EQUIV
+autfilt -q --equivalent-to=<(ltl2tgba 'a & XG!a') research_notes/sos_figs/sources/a_once.hoa && echo EQUIV
+```
+
+Reports and `.sos` exports are `make reports` / `make sos` in this directory
+(the exports land in `../sos_core_figs/sources/`, where the invariant
+drawings consume them — regenerate those with `make one-a_implies_xa` /
+`make one-a_once` there). The automaton drawings go through
+[`draw_tgba.py`](draw_tgba.py) — the Figure 3 renderer, which relabels
+`!a → b` to the paper's two-letter alphabet (its pydoc states the convention):
+
+```sh
+python3 research_notes/sos_figs/draw_tgba.py research_notes/sos_figs/sources/a_implies_xa.hoa research_notes/sos_figs/img/a_implies_xa.png
+python3 research_notes/sos_figs/draw_tgba.py research_notes/sos_figs/sources/a_once.hoa research_notes/sos_figs/img/a_once.png
+```
+
+Expected: `a_implies_xa` — 4-state D, `|S(L)₊¹| = 5`, LTL, six accepting
+pairs; `a_once` — 3-state D, `|S(L)₊¹| = 4`, LTL, the single pair
+`([a],[!a])`. Both invariants byte-identical (modulo the `residuals:`
+trailer) to what the original census emission produced: the specimens'
+algebra is presentation-independent, as it must be.

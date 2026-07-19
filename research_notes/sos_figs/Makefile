@@ -32,6 +32,8 @@ reports:
 	$(call report,gf_aa_reset,GF(aa) reset,gf_aa_reset)
 	$(call report,even,Even,even)
 	$(call report,evenblocks,EvenBlocks,evenblocks)
+	$(call report,a_implies_xa,a_implies_xa,a_implies_xa)
+	$(call report,a_once,a_once,a_once)
 
 tables:
 	$(call emtable,aUGb)
@@ -45,4 +47,6 @@ sos:
 	$(BUILDSOS) $(HERE)/sources/even.hoa         --sos ../samples/fixtures/hoa/sos/even.sos --residuals > /dev/null
 	$(BUILDSOS) $(HERE)/sources/evenblocks.hoa   --sos ../samples/fixtures/hoa/sos/evenblocks.sos --residuals > /dev/null
 	$(BUILDSOS) $(HERE)/sources/aUGb.hoa         --sos $(HERE)/sources/aUGb.sos --residuals > /dev/null
+	$(BUILDSOS) $(HERE)/sources/a_implies_xa.hoa --sos $(HERE)/../sos_core_figs/sources/a_implies_xa.sos --residuals > /dev/null
+	$(BUILDSOS) $(HERE)/sources/a_once.hoa       --sos $(HERE)/../sos_core_figs/sources/a_once.sos --residuals > /dev/null
 	diff ../../samples/fixtures/hoa/sos/gf_aa.sos ../../samples/fixtures/hoa/sos/gf_aa_reset.sos && echo CANONICITY-OK
