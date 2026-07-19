@@ -121,15 +121,3 @@ The closest prior work, Urbat and Schröder's algebraic automata learning
 needs infinitely many alphabet letters, one per possible loop, known in
 advance. The rotation lemma supplies the missing finiteness; §7 details the
 comparison.
-
-Five examples accompany the paper, each with its automaton and target
-algebra drawn in §2.3. Three run through the text — `GF(aa)`, whose
-presentation carries a spurious group the algebra destroys; `Even`, the
-canonical mod-2 language; and `EvenBlocks`, its prefix-independent twin,
-invisible to every right-congruence-seeded approach. Two of them are traced
-live through §3–§5, and their traces share a punchline: both languages hand
-the learner the same wrong merge, and the repairs route through the two
-opposite shapes of Arnold's congruence. The last two, `a → Xa` and
-`a ∧ XG¬a`, are the stall specimens, found by exhaustive search over the
-smallest instances: the reef where every learner without the sweep runs
-aground.
