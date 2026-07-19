@@ -179,12 +179,14 @@ def main(argv: List[str]) -> int:
             if ran % 100 == 0:
                 rate = ran / (time.time() - t0)
                 eta = (total - n) / rate / 60 if rate else 0
-                print(f"  {n}/{total}  ran={ran}  {dict(sorted(tally.items()))}"
+                kv = " ".join(f"{v}:{c}" for v, c in sorted(tally.items()))
+                print(f"  {n}/{total}  ran={ran}  {kv}"
                       f"  {rate:.1f}/s  eta~{eta:.0f}m",
                       file=sys.stderr, flush=True)
     fh.close()
 
-    print(f"done: {ran} new runs; verdicts {dict(sorted(tally.items()))}",
+    kv = " ".join(f"{v}:{c}" for v, c in sorted(tally.items()))
+    print(f"done: {ran} new runs; verdicts {kv}",
           file=sys.stderr, flush=True)
     print(str(csv_path))
     return 0
