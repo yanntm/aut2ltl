@@ -33,11 +33,26 @@ automata, and precisely the gap the algebra fills.
 
 **Algebraic learning.** Van Heerdt, Sammartino and Silva's CALF [vHSS17] frames
 automata learning categorically but instantiates no ω-algorithm. The decisive
-step is Urbat and Schröder [US20], discussed in §1: the syntactic algebra is,
-abstractly, the right and learnable target (`Syn(L) ≅ Min(lin(L))`), and the
-Wilke-algebra instance stalls on an infinite alphabet of ω-power letters — the
-finiteness supplied here by the rotation lemma. Counterexample processing in §4
-adapts the binary-search analysis of Rivest and Schapire [RS93].
+step is Urbat and Schröder [US20], and the relationship is precise.
+Generically, for languages recognized by a monad `T`, they prove that the
+syntactic `T`-algebra is the minimal automaton of a *linearized* language
+over the alphabet of an automata presentation of the free algebra —
+`Syn(L) ≅ Min(lin(L))` [US20, Thm 5.14] — and learn that automaton by a
+generalized L\*. Instantiated to Wilke algebras this covers ω-regular
+languages, in principle. In instance it is not effective: the presentation
+validating the isomorphism carries the sorted alphabet
+`Σ₊,ω = {ω} ∪ {·v^ω : v ∈ Σ⁺}`, whose letters are *operations* — `ω` sends
+`w` to `w^ω`, and `·v^ω` sends `w` to `w·v^ω`: one letter per finite word
+`v`, Arnold's ω-power contexts recast as an *infinite alphabet* — while the
+finite restriction to `{ω}` alone is only a *weak* presentation, outside the
+theorem, of which [US20] itself notes that the resulting learned object
+resembles a family of DFAs. The rotation lemma is exactly the missing
+finiteness: no ω-power context need be an alphabet letter known in advance,
+because a counterexample-driven harvest of at most `|𝒞|` ω-columns reaches
+the same congruence (§4, Theorem 5.1). [US20] settles what the target is;
+this paper makes the ω-instance an algorithm, and runs it. Counterexample
+processing in §4 adapts the binary-search analysis of Rivest and Schapire
+[RS93].
 
 **The algebra itself.** The two-sorted finite-word/ω-word algebra is Wilke's
 [Wil93], in the ω-semigroup form of Perrin and Pin [PP04]; the congruence is
@@ -50,22 +65,17 @@ without an effective ω-instance; this paper learns that target, effectively.
 
 ## 8. Conclusion
 
-The syntactic ω-semigroup was constructible [SωS26]; it is also learnable, and by
-the same mechanism: the rotation lemma, which there collapsed a two-sided
-congruence into right computations on a table, here splits into a harvest
-procedure and a saturation rule — rows, columns, and representative slots of
-lasso queries. On the way we met a finding worth the trip: two-sided columns are
-*not enough*, because membership's error signal is one-sided, and without the
-saturation sweep the table stalls on a correct acceptor strictly coarser than
-the algebra — permanently, already on `a → Xa` (Proposition 4.4), where the
-stalled export is not even associative — indeed a certified stall never
-carries an algebra at all (Theorem 5.3) — a stall beyond counterexample-guided
-refinement, dissolved by the same slot collapse. The learner's limit is not an acceptor
-chosen from a family but the canonical invariant of the language — the object
-definability questions are read from — so learning and classification cease to
+The syntactic ω-semigroup was constructible [SωS26]; it is now learnable,
+and by the same mechanism. The rotation lemma, which on the construction
+side made the two-sided congruence computable from an automaton, splits on
+the learner's side in two: a harvest, where every counterexample pays for a
+new table column, and a saturation sweep of checks that cost no queries.
+The sweep is the surprise: without it the learner stalls — permanently,
+already on `a → Xa` — on a hypothesis that is certified correct as an
+acceptor yet provably carries no algebra, and no counterexample ever
+arrives to save it. With it, the learner's limit is not an acceptor chosen
+from a family but the language's syntactic invariant, the object
+definability questions are read from: learning and classification cease to
 be separate activities. A complement-closed census of 6222 languages bears
-this out: the learner reconstructs every canonical invariant byte-for-byte,
-and on half of them — right congruences falling as many as
-fifty-three classes short, prefix-independent languages among them — the
-algebra is reached only by the saturation sweep, the two-example finding of
-§4.2 made generic.
+this out — every invariant reconstructed byte-for-byte, half of the census
+reached only through the sweep.
