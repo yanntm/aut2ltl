@@ -21,7 +21,7 @@ PARTS := \
 	s4b_gap.md \
 	s4c_sweep.md \
 	s5_correctness.md \
-	s6_eval.md \
+	s6_experiments.md \
 	s7_end.md \
 	bib.md
 
