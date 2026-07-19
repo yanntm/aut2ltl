@@ -5,7 +5,7 @@ product, not a hand-edited file. Every figure below is recomputed from the
 `results.csv` in each directory.
 
 - date: 2026-07-19
-- git: 6d501677a
+- git: afe69d6df
 
 These campaigns run hand-chosen specimens, not the catalogue (that is
 `reference/census/`). Each is a **gate**: it asserts its claim and exits nonzero if
@@ -14,12 +14,12 @@ census, they do not depend on the corpus, so a re-run *is* a reproduction.
 
 ## `e0/`
 
-The E0 gate: zero failures, zero budget overruns, zero crashes on the named specimens. The permanent specimens certify `ACCEPTOR_ONLY` under no-saturation (spec §9 P4/F5), and the Even/EvenBlocks ledgers are byte-stable (row P5).
+The E0 gate: zero failures, zero budget overruns, zero crashes on the named specimens. Every case learns the canonical invariant byte-equal to its reference, and the Even/EvenBlocks ledgers are byte-stable (row P5).
 
-- 10 runs = 6 case(s) x 3 config(s)
-- verdicts: **ACCEPTOR_ONLY** 2, **SOUND** 8
+- 6 runs = 6 case(s) x 1 config(s)
+- verdicts: **SOUND** 6
 - cases: `a_implies_xa`, `a_once`, `even`, `evenblocks`, `gf_aa_parity`, `gf_aa_reset`
-- configs: `default`, `exact`, `no-sat-exact`
+- configs: `default`
 - artifacts: `results.csv, e0_report.md, e4_transcripts.md`
 
 Regenerate (from `sosl/`) — the campaign is its own gate, so a nonzero exit *is* the

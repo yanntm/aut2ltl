@@ -35,9 +35,9 @@ class Campaign(NamedTuple):
 CAMPAIGNS: List[Campaign] = [
     Campaign("e0", "tests.sosl.campaign_e0",
              "The E0 gate: zero failures, zero budget overruns, zero crashes on the "
-             "named specimens. The permanent specimens certify `ACCEPTOR_ONLY` under "
-             "no-saturation (spec §9 P4/F5), and the Even/EvenBlocks ledgers are "
-             "byte-stable (row P5).",
+             "named specimens. Every case learns the canonical invariant byte-equal "
+             "to its reference, and the Even/EvenBlocks ledgers are byte-stable "
+             "(row P5).",
              "results.csv, e0_report.md, e4_transcripts.md"),
     Campaign("m4b", "tests.sosl.campaign_m4b",
              "The E1 cost bound holds on the named cases, and the E2 stall classes "

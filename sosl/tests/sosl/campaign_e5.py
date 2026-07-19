@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 from sosl.experiment.driver import run_matrix
-from sosl.experiment.manifest import NAMED_CASES
+from sosl.experiment.manifest import DEFAULT, NAMED_CASES
 from sosl.experiment.report import e5_report
 from sosl.experiment.run import Config
 
@@ -29,8 +29,9 @@ def main() -> int:
     cases = [c for c in NAMED_CASES if c.case_id in CASES]
     matrix: List[Tuple] = []
     for policy in POLICIES:
-        cfg = Config(f"cex-{policy}", saturation=True, eq_mode="bounded",
-                     cex_policy=policy)
+        # the default leg, varied on the one axis E5 studies
+        cfg = Config(**{**DEFAULT.__dict__, "config_id": f"cex-{policy}",
+                        "cex_policy": policy})
         matrix += [(c, cfg) for c in cases]
 
     campaign = run_matrix(matrix, str(OUT))

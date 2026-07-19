@@ -1,11 +1,7 @@
-case_id,config_id,seed,ap_count,ref_classes,learned_classes,n_member_total,n_member_fill,n_member_harvest,n_member_saturation,n_member_pcache,n_equiv,n_splits,n_columns_lin,n_columns_om,n_saturation_checks,n_saturation_escalations,n_classes_initial,stall_class,n_guard_firings,guard_fired_final,cex_policy,max_cex_stem,max_cex_loop,max_query_word_len,eq_certification,wall_seconds,verdict,detail
-gf_aa_parity,default,0,1,6,6,74,51,4,9,10,2,3,0,4,4,2,3,n/a,1,0,minimal,0,3,5,exact,0.004,SOUND,
-gf_aa_reset,default,0,1,6,6,74,51,4,9,10,2,3,0,4,4,2,3,n/a,1,0,minimal,0,3,5,exact,0.003,SOUND,
-even,default,0,1,5,5,51,32,4,7,8,2,2,2,1,3,1,3,n/a,1,0,minimal,0,3,5,exact,0.003,SOUND,
-evenblocks,default,0,1,8,8,99,67,4,14,14,2,5,0,4,4,2,3,n/a,1,0,minimal,0,3,6,exact,0.004,SOUND,
-a_implies_xa,default,0,1,5,5,43,32,0,2,9,1,1,0,3,2,1,4,n/a,0,0,minimal,0,0,4,exact,0.002,SOUND,
-a_once,default,0,1,4,4,35,26,3,2,4,2,2,2,1,3,1,2,n/a,0,0,minimal,1,1,5,exact,0.002,SOUND,
-a_implies_xa,no-sat-exact,0,1,5,4,21,17,0,0,4,1,0,0,2,0,0,4,permanent,0,0,minimal,0,0,4,exact,0.002,ACCEPTOR_ONLY,"non-saturated fixpoint: export byte-differs, hypothesis sound"
-a_implies_xa,exact,0,1,5,5,43,32,0,2,9,1,1,0,3,2,1,4,n/a,0,0,minimal,0,0,4,exact,0.002,SOUND,
-a_once,no-sat-exact,0,1,4,3,18,13,3,0,2,2,1,1,1,0,0,2,permanent,0,0,minimal,1,1,3,exact,0.002,ACCEPTOR_ONLY,"non-saturated fixpoint: export byte-differs, hypothesis sound"
-a_once,exact,0,1,4,4,35,26,3,2,4,2,2,2,1,3,1,2,n/a,0,0,minimal,1,1,5,exact,0.002,SOUND,
+case_id,config_id,seed,ap_count,ref_classes,learned_classes,n_member_total,n_member_fill,n_member_harvest,n_member_saturation,n_member_pcache,n_equiv,n_splits,n_columns_lin,n_columns_om,n_saturation_checks,n_saturation_escalations,n_classes_initial,stall_class,n_guard_firings,guard_fired_final,cex_policy,max_cex_stem,max_cex_loop,max_query_word_len,eq_certification,export_associative,fixpoint_congruent,wall_seconds,verdict,detail
+gf_aa_parity,default,0,1,6,6,31,22,3,1,5,2,4,0,4,5,2,2,,-1,-1,minimal,0,3,5,exact,true,true,0.002,SOUND,
+gf_aa_reset,default,0,1,6,6,31,22,3,1,5,2,4,0,4,5,2,2,,-1,-1,minimal,0,3,5,exact,true,true,0.001,SOUND,
+even,default,0,1,5,5,25,17,4,1,3,2,3,3,0,4,1,2,,-1,-1,minimal,0,3,3,exact,true,true,0.001,SOUND,
+evenblocks,default,0,1,8,8,44,34,3,2,5,2,6,0,4,5,2,2,,-1,-1,minimal,0,3,6,exact,true,true,0.001,SOUND,
+a_implies_xa,default,0,1,5,5,20,13,3,0,4,2,3,3,0,4,2,2,,-1,-1,minimal,0,2,4,exact,true,true,0.001,SOUND,
+a_once,default,0,1,4,4,10,7,1,1,1,2,2,2,0,3,1,2,,-1,-1,minimal,1,1,4,exact,true,true,0.001,SOUND,
