@@ -1,10 +1,9 @@
 ## 6. Evaluation
 
-*⟨The census sweep is complete on every shape but the largest, which
-supplies the large-`N` tail; counts that depend on it can only grow and are
-marked. Open, marked ⟨TBD-M4⟩ below: the shape manifest (§6.1), a wall-time
-note (§6.2), the per-shape confirmation of §6.3's exhaustive negative, and
-the LTL-agreement count (§6.4).⟩*
+*⟨Open, marked ⟨TBD-M4⟩ below: §6.3's final counts, gap distribution, and
+per-shape confirmation of the exhaustive negative (the E2 drop, pending the
+prefix-independence recount), plus the section's remaining 3938-era numbers
+to restate from the committed 6222 record.⟩*
 
 The algorithm of §3–5 is implemented as a pure query learner: its only source
 of truth is the teacher interface, and no automaton is ever visible to it. The
@@ -49,10 +48,11 @@ coarser than the algebra (§4.2) but incomparable with it. The oracle
 therefore asserts functionality on the built graph at every query, and a
 firing hands the query to the fallback — the product of the automaton with
 the hypothesis's transformation closure, which needs no such assumption —
-so certification stays exact except on the handful of runs where the
-fallback exceeds its work cap ⟨TBD-M4: the guard and cap tallies⟩: those
-certify by bounded enumeration on the default leg, standing on
-byte-equality, and are recorded as deferred on the ablation leg. The
+so certification stays exact wherever the fallback finishes inside its work
+cap — in the event, everywhere: the guard fires on 2694 of the 6222
+default-leg runs (3398 firings) and the fallback finished within its cap on
+every one, so every default-leg certification is exact; only the ablation
+leg records runs that never reach certification, deferred (§6.3). The
 ablation leg of §6.3 leans
 hardest on that exactness — a permanence verdict certifies a *non-canonical*
 fixpoint, the one claim byte-equality cannot re-validate — while every other
@@ -85,8 +85,9 @@ its LTL verdict. The three running examples are mandatory in every
 experiment, as are the two permanent-stall specimens of §4.2. The smallest
 shape at which non-LTL languages appear, `2state1ap1acc` (129 languages; its
 parity twin re-presents the same languages), is enumerated exhaustively and
-carries §6.3's exhaustive claims. ⟨TBD-M4: the full shape-family manifest
-with per-shape counts.⟩
+carries §6.3's exhaustive claims. Every language appears exactly once, and
+every language with a small presentation is in the catalogue; per-shape
+composition is corpus provenance, not evaluation data.
 
 **Reproducibility and validation.** Runs are deterministic — the sweep's scan
 order is pinned (§4.3), counterexamples are minimal — so the traces of §3–5 are
@@ -148,7 +149,10 @@ the genuinely ω-counting half is the expensive half:
 | non-LTL | 1006 | 17 | 13 | 349 |
 
 The group structure that defeats LTL-definability is also what the learner
-pays to reconstruct. ⟨TBD-M4: a wall-time note.⟩
+pays to reconstruct — though only through `N`: normalized by the designed
+bounds, cost is classification-blind. Wall time stays modest: the full
+default-leg sweep totals 10733 s, median 0.12 s per language, the worst case
+49.6 s at `N = 68`.
 
 ### 6.3 The saturation ablation (Q2)
 
@@ -272,7 +276,9 @@ direction claim.⟩
 
 The comparison's result is capability. From the learned invariant,
 LTL-definability is a read-off — the aperiodicity test of §2.2 — computed
-on every case, agreeing with ground truth ⟨TBD-M4: n cases⟩; from an FDFA it is
+on every case, agreeing with ground truth on all 6222 — every default-leg
+run certifies exact, so the read-off is evaluated on an invariant byte-equal
+to the reference; from an FDFA it is
 not answerable without a further construction. One learner returns the
 language's algebra, from which definability is read; the other returns an
 acceptor, from which it is not.
