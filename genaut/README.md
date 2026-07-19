@@ -163,6 +163,16 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
 3. **Regenerate `corpus/SHAPES.md`** — the funnel table, joined from the tgba + det
    census.md by `shapes_table.py` (cheap, no re-run).
 
+**Imported sources.** The pipeline is not tied to the enumeration: any
+presentation collection enters at step 2 via `gen/import_inputs.py`, which
+walks a folder of HOA files and `.ltl` lists (one HOA per input, named for its
+origin) into a valid `--in` for `canonize.py` under any tag. Budgets
+(`--timeout` / `--cap` / `--max-sos`, skip-and-record into `census.md`) bound
+inputs the census shapes never produce; `flatten.py` orders a non-shape tag
+after every census shape. The benchmark's language tier
+(`samples/benchmark/corpus/`) is built exactly this way — plain calls, no
+benchmark-specific code.
+
        python3 genaut/shapes_table.py
 
 4. **Survey / classify** — genaut's corpora are just more reference corpora. Run
@@ -213,7 +223,12 @@ detailed in [`gen/algorithm.md`](gen/algorithm.md).
                        enumerate.py  enumerate -> reduce -> 2 dedup gates -> write
                                      raw/<tag>/<tag>_<id>.hoa + census.md.
                        canonize.py   a tgba shape -> canonical D (det/) + 𝓘 (sos/),
-                                     deduped by the syntactic key + census.md.
+                                     deduped by the syntactic key + census.md;
+                                     --timeout/--cap/--max-sos budgets for
+                                     imported sources (skip-and-record).
+                       import_inputs.py  a mixed inputs folder (HOA + .ltl
+                                     lists) -> one canonical HOA per input, a
+                                     valid --in for canonize.py.
                        rebuild.py    loop canonize over shapes (skip built; --force).
                        flatten.py    cross-shape union -> corpus/flat/ (det + sos +
                                      census.md), deduped by language; ends by
