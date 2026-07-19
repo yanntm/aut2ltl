@@ -63,9 +63,9 @@ carries an algebra at all (Theorem 5.3) — a stall beyond counterexample-guided
 refinement, dissolved by the same slot collapse. The learner's limit is not an acceptor
 chosen from a family but the canonical invariant of the language — the object
 definability questions are read from — so learning and classification cease to
-be separate activities. A complement-closed census of 3938 languages bears
+be separate activities. A complement-closed census of 6222 languages bears
 this out: the learner reconstructs every canonical invariant byte-for-byte,
-and on over a thousand of them — right congruences falling as many as
+and on half of them — right congruences falling as many as
 fifty-three classes short, prefix-independent languages among them — the
 algebra is reached only by the saturation sweep, the two-example finding of
 §4.2 made generic.

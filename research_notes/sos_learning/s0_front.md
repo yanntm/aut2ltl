@@ -5,8 +5,8 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Shadow draft — rev. 2026-07-19. Remaining `⟨TBD: …⟩` placeholders await the
-§6.3 ablation exhibits and the restatements they gate.*
+*Shadow draft — rev. 2026-07-19. Every §6 figure traces to the committed
+census record via the report companion.*
 
 ## Abstract
 
@@ -46,9 +46,9 @@ approach learns one of three competing canonical families of DFAs — none of th
 the language's own algebra, all of them acceptors, answering no definability
 question by themselves; this learner converges to the one object such questions
 are read from — and two learned invariants are compared by byte-equality, whereas
-acceptors need a product construction. On a complement-closed census of 3938
+acceptors need a product construction. On a complement-closed census of 6222
 ω-regular languages the learner reconstructs every canonical invariant
-byte-for-byte, at class counts past a hundred; over a thousand of them stall
+byte-for-byte, at class counts past two hundred; half of them stall
 permanently without the sweep — the right congruence falling as many as
 fifty-three classes short of an algebra that counterexample-guided refinement
 provably never reaches — and the family includes prefix-independent
@@ -144,9 +144,9 @@ Myhill–Nerode's failure at ω seemed to forbid is what this paper is for.
    algebra at all (§5, Theorem 5.3).
 5. An implementation as a pure query learner, and an evaluation against the
    canonical target: byte-exact reconstruction across a complement-closed
-   census of 3938 languages (`N` past 100, zero mismatches), the query bounds
+   census of 6222 languages (`N` past 200, zero mismatches), the query bounds
    of Proposition 5.4 confirmed (harvest logarithmic in counterexample
-   length), saturation shown indispensable on a family of over a thousand
+   length), saturation shown indispensable on a family of over three thousand
    permanent stalls whose canonical algebras are provably beyond
    counterexample-guided refinement — prefix-independent languages among
    them, the ω-power left action of Corollary 4.7 realized — and a comparison
