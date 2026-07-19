@@ -13,7 +13,7 @@ is free.
 """
 from __future__ import annotations
 
-from typing import Callable, Dict, Iterator, Tuple
+from typing import Callable, Dict, Iterator, Optional, Tuple
 
 from sosl.sos.lasso import Lasso
 
@@ -39,6 +39,11 @@ class Evidence:
             cached = self._member(key)
             self._bits[key] = cached
         return cached
+
+    def peek(self, lasso: Lasso) -> Optional[bool]:
+        """The ledger's bit for the denoted word if it has ever been queried
+        (under any presentation), else ``None`` — never a teacher query."""
+        return self._bits.get(lasso.canonical())
 
     def items(self) -> Iterator[Tuple[Lasso, bool]]:
         """The witnessed bits, canonical lasso each, in first-query order —
