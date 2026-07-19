@@ -1,0 +1,6 @@
+CAT v1
+ltl: yes
+stutter: sensitive
+phi: 2,sigma
+coords: 0 0 1 2
+class: properly Σ₂

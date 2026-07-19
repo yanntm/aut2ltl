@@ -1,0 +1,6 @@
+CAT v1
+ltl: yes
+stutter: invariant
+phi: 0,pi
+coords: 0 -1 0 -1
+class: universal — trivial closed
