@@ -70,27 +70,38 @@ def _cmp(ours: int, theirs: int) -> int:
     return (ours > theirs) - (ours < theirs)
 
 
+def _complete(kinds: "Dict[str, Tuple[int, int, int]]") -> bool:
+    """Is this language comparable — ours plus **all three** ROLL modes?
+
+    A paired metric reads ROLL's best mode, so a language where some modes
+    failed would compare a min over three against a min over one or two: not
+    the same statistic. The comparison set is therefore the languages ROLL
+    decides completely, within the per-run timeout `baseline` applies; a mode
+    that does not return is ROLL's failure, and the language leaves the
+    comparison rather than being scored on its survivors."""
+    if "ours" not in kinds or kinds["ours"][1] < 0:
+        return False
+    return all(m in kinds and kinds[m][0] >= 0 and kinds[m][1] >= 0
+               for m in MODES)
+
+
 def _coverage(by_case: "Dict[str, Dict[str, Tuple[int, int, int]]]") -> str:
     """The comparison's coverage, stated rather than left implicit: how many
-    languages each side produced a result for, and how many are dropped from
-    every paired count because no ROLL mode returned one.
-
-    A paired metric is computed only where both sides have a number, so ROLL's
-    failures shrink the comparison set. Reporting the shrinkage is the honest
-    form: silently dropping them would credit the baseline with a corpus it did
-    not finish."""
+    languages each side decided, and how many leave the paired counts."""
     ours = sum(1 for k in by_case.values()
                if "ours" in k and k["ours"][1] >= 0)
     per_mode = {m: sum(1 for k in by_case.values()
                        if m in k and k[m][1] >= 0) for m in MODES}
+    full = sum(1 for k in by_case.values() if _complete(k))
     none_ok = sum(1 for k in by_case.values()
                   if not any(m in k and k[m][1] >= 0 for m in MODES))
-    return (f"**Coverage.** Ours returns a result on **{ours}** of "
-            f"{len(by_case)} languages; ROLL on "
-            + ", ".join(f"{per_mode[m]} ({m})" for m in MODES)
-            + f". On **{none_ok}** languages no ROLL mode returns one, so every "
-              "paired count below excludes them — the comparison set is "
-              f"{len(by_case) - none_ok}, not {len(by_case)}.")
+    partial = len(by_case) - full - none_ok
+    return (f"**Coverage.** Ours decides **{ours}** of {len(by_case)} languages; "
+            "ROLL decides " + ", ".join(f"{per_mode[m]} ({m})" for m in MODES)
+            + f". ROLL decides all three modes on **{full}**, some but not all "
+              f"on {partial}, and none on {none_ok}. Every paired count below is "
+              f"over the **{full}** languages ROLL decides completely — a "
+              "partially-failed language is not scored on its surviving modes.")
 
 
 def _query_section(by_case: "Dict[str, Dict[str, Tuple[int, int, int]]]",
@@ -115,10 +126,10 @@ def _query_section(by_case: "Dict[str, Dict[str, Tuple[int, int, int]]]",
                 mq[k].append(m)
             if e >= 0:
                 eq[k].append(e)
-        ours = kinds.get("ours")
-        theirs = [kinds[m] for m in MODES if m in kinds and kinds[m][1] >= 0]
-        if not ours or ours[1] < 0 or not theirs:
+        if not _complete(kinds):
             continue
+        ours = kinds["ours"]
+        theirs = [kinds[m] for m in MODES]
         key = ltl_of.get(case)
         best_mq = min(t[1] for t in theirs)
         best_eq = min((t[2] for t in theirs if t[2] >= 0), default=-1)
@@ -190,14 +201,15 @@ def _summary(csv_path: Path) -> None:
         n = kinds.get("ours", (-1, -1, -1))[0]
         if n >= 0:
             our_N.append(n)
-        best = -1
         for m in MODES:
             v = kinds.get(m, (-1, -1, -1))[0]
             if v >= 0:
                 fdfa[m].append(v)
-                best = v if best < 0 else min(best, v)
-        if best < 0 or n < 0:
+        # The size comparison, like the query one, runs only where ROLL decided
+        # all three modes: "ROLL's smallest FDFA" must be a min over three.
+        if not _complete(kinds):
             continue
+        best = min(kinds[m][0] for m in MODES)
         if n < best:
             smaller += 1; ltl_cmp[key][0] += 1
         elif n > best:
