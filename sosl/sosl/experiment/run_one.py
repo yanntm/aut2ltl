@@ -1,7 +1,7 @@
 """One learner run, in its own process, printing its `RunStats` as a CSV row.
 
     python3 -m sosl.experiment.run_one CASE_ID HOA [--sos REF] [--budget S]
-                                       [--config default|exact|no-sat-bounded|no-sat-exact]
+                                       [--config default|bounded]
 
 The child half of the bounded runner (`run.run_case_bounded`). It exists so a run
 can be bounded from *outside* the interpreter: `run_case`'s own budget is a
@@ -21,11 +21,11 @@ import csv
 import sys
 from typing import List, Optional
 
-from sosl.experiment.manifest import DEFAULT, EXACT, NOSAT_BOUNDED, NOSAT_EXACT
+from sosl.experiment.manifest import BOUNDED, DEFAULT
 from sosl.experiment.run import Config, run_case
 from sosl.experiment.stats import csv_row
 
-CONFIGS = {c.config_id: c for c in (DEFAULT, EXACT, NOSAT_BOUNDED, NOSAT_EXACT)}
+CONFIGS = {c.config_id: c for c in (DEFAULT, BOUNDED)}
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -34,7 +34,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("hoa")
     ap.add_argument("--sos", default=None, metavar="REF",
                     help="precomputed reference .sos (the census fast path)")
-    ap.add_argument("--config", default="no-sat-exact", choices=sorted(CONFIGS))
+    ap.add_argument("--config", default="default", choices=sorted(CONFIGS))
     ap.add_argument("--budget", type=int, default=None, metavar="S",
                     help="the run's own (cooperative) budget; the parent's kill "
                          "is the hard one")

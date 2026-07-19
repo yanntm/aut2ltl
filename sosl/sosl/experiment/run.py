@@ -36,37 +36,28 @@ from sosl.contract import Counterexample
 from sosl.experiment.stats import RunStats, parse_row
 from sosl.learn.columns import Column, LinCol
 from sosl.learn.export import export
-from sosl.learn.learner import (
-    _build_hypothesis,
-    _stabilize,
-    process_counterexample,
-)
+from sosl.learn.learner import _stabilize, process_counterexample
 from sosl.learn.partition import Partition
-from sosl.learn.saturate import find_left_divergence, saturate
+from sosl.learn.saturate import saturate
 from sosl.learn.table import Table
 from sosl.sos import Lasso, dump_invariant, load_invariant
 from sosl.sos.alphabet import Word, shortlex_key
 from sosl.sos.build import ReferenceError, reference_of_hoa
-from sosl.sos.hypothesis import Hypothesis, loop_reps
 from sosl.sos.invariant import Invariant
 from sosl.sos.io.serialize import render_word
 from sosl.teacher import HoaTeacher
-from sosl.teacher.equiv import resolve_prediction
-from sosl.teacher.exact import ExactTooLarge
 
 
 @dataclass
 class Config:
     """One learner configuration: the axes the campaign sweeps.
 
-    ``config_id`` names the row in the CSV; ``saturation`` toggles the two-sided
-    sweep (off = the M2 / E2 ablation); ``eq_mode`` selects the teacher's
+    ``config_id`` names the row in the CSV; ``eq_mode`` selects the teacher's
     equivalence oracle (``bounded`` / ``exact``); ``cex_policy`` is recorded
-    verbatim (only ``minimal`` is wired before E5). Budgets are per case.
+    verbatim. Budgets are per case.
     """
 
     config_id: str
-    saturation: bool = True
     eq_mode: str = "bounded"        # bounded | exact
     eq_bound: int = 8
     cex_policy: str = "minimal"     # minimal | first | padded:<k>
@@ -188,19 +179,9 @@ def _lassos_upto(ab: object, stem_max: int, loop_max: int):
                     yield Lasso(tuple(stem), tuple(loop))
 
 
-def hyp_acceptor_ok(teacher: HoaTeacher, hyp: Hypothesis, bound: int = 3) -> bool:
-    """Spec §9 P1: the Cayley hypothesis' own predictions agree with the teacher
-    over all lassos up to ``bound``. MUST hold at any fixpoint."""
-    loops = loop_reps(hyp)
-    for la in _lassos_upto(teacher.alphabet, bound, bound):
-        if resolve_prediction(teacher.member, hyp, la, loops) != teacher.member(la):
-            return False
-    return True
-
-
 def inv_acceptor_ok(inv: Invariant, teacher: HoaTeacher, bound: int = 3) -> bool:
-    """Spec §9 F2: the exported invariant's read-off agrees with the teacher over
-    all lassos up to ``bound`` (may legitimately fail on a non-saturated run)."""
+    """Diagnostic: the invariant's read-off agrees with the teacher over all
+    lassos up to ``bound``."""
     for la in _lassos_upto(teacher.alphabet, bound, bound):
         if inv.member(la) != teacher.member(la):
             return False
@@ -234,9 +215,6 @@ def run_case(case_id: str, hoa_path: str, config: Config,
             return RunResult(stats)
         teacher = HoaTeacher.of_hoa(hoa_path, eq_mode=config.eq_mode,
                                     reference=ref_inv)
-        # A leg that certifies stalls (the ablation) must record OVERSIZE rather
-        # than escape to bounded: a bounded answer cannot certify permanence.
-        teacher.cap_escape = config.saturation
         teacher.eq_bound = config.eq_bound
         teacher.cex_policy = config.cex_policy
         stats.ap_count = len(teacher.alphabet.aps)
@@ -245,40 +223,22 @@ def run_case(case_id: str, hoa_path: str, config: Config,
         result = _drive(teacher, config, stats)
         table, p, inv, ledger, eq_cert = result
 
-        # `inv is None` is an export refusal (non-congruent certified fixpoint,
-        # spec §3.2 step 6): the class count is then the fixpoint's own.
-        stats.learned_classes = inv.n if inv is not None else p.n
+        stats.learned_classes = inv.n
         stats.eq_certification = eq_cert
-        stats.n_guard_firings = len(teacher.guard_firings)
-        stats.guard_fired_final = int(teacher.last_query_fired)
         n_lin = sum(isinstance(c, LinCol) for c in table.columns)
         stats.n_columns_lin = n_lin
         stats.n_columns_om = len(table.columns) - n_lin
         stats.n_splits = stats.learned_classes - stats.n_classes_initial
+        stats.export_associative = \
+            "true" if inv.associativity_witness() is None else "false"
 
-        assoc_witness = None
-        if inv is not None:
-            assoc_witness = inv.associativity_witness()
-            stats.export_associative = "true" if assoc_witness is None else "false"
-
-        byte_equal = inv is not None and _norm(ref_dump) == _norm(dump_invariant(inv))
-        p1_ok = hyp_acceptor_ok(teacher, _build_hypothesis(table, p),
-                                config.acceptor_bound)
-        stats.stall_class = _classify_stall(stats, byte_equal, config.saturation)
-        stats.verdict, stats.detail = _classify_verdict(
-            byte_equal, p1_ok, config, stats)
-        if assoc_witness is not None:
-            stats.detail = (stats.detail + "; " if stats.detail else "") + \
-                f"non-associative export, witness triple {assoc_witness}"
+        byte_equal = _norm(ref_dump) == _norm(dump_invariant(inv))
+        stats.verdict, stats.detail = (
+            ("SOUND", "") if byte_equal
+            else ("FAIL", "learned invariant byte-differs from reference"))
         return RunResult(stats, inv, ledger, _signature(table, p))
     except _Budget:
         stats.verdict = "BUDGET"
-        return RunResult(stats)
-    except ExactTooLarge as exc:
-        # The exact oracle could not build its closure — a capability limit, not
-        # a soundness failure (the learner never produced a wrong byte here).
-        stats.verdict = "OVERSIZE"
-        stats.detail = f"OVERSIZE:{exc}"
         return RunResult(stats)
     except Exception as exc:  # noqa: BLE001 -- a run records its own fault, never aborts
         # A leaked exception is a run that never completed, not a run that
@@ -293,10 +253,11 @@ def run_case(case_id: str, hoa_path: str, config: Config,
 
 
 def _drive(teacher: HoaTeacher, config: Config, stats: RunStats):
-    """The instrumented main loop; fills ``stats`` counters (and
-    ``fixpoint_congruent``) in place and returns
-    ``(table, partition, invariant-or-None, ledger, eq_certification)`` —
-    ``None`` when the export was refused (non-congruent certified fixpoint)."""
+    """The instrumented main loop; fills ``stats`` counters in place and
+    returns ``(table, partition, invariant, ledger, eq_certification)``. The
+    hypothesis shipped to every equivalence query is the belief: the table's
+    invariant, exported (phase ``pcache``) after the saturation sweep runs
+    clean."""
     ab = teacher.alphabet
     counts: Dict[str, int] = defaultdict(int)
     phase = ["fill"]
@@ -329,17 +290,20 @@ def _drive(teacher: HoaTeacher, config: Config, stats: RunStats):
                                     before.n, p.n, _describe_split(ab, before, p)))
             pending = None
 
-        if config.saturation:
-            phase[0] = "saturation"
-            n_sat_checks += 1
-            lbl = saturate(table, p)
-            if lbl is not None:
-                n_sat += 1
-                pending = ("saturation", lbl, table.columns[-1], p)
-                continue
+        phase[0] = "saturation"
+        n_sat_checks += 1
+        lbl = saturate(table, p)
+        if lbl is not None:
+            n_sat += 1
+            pending = ("saturation", lbl, table.columns[-1], p)
+            continue
 
+        # The sweep just certified a two-sided congruence: export the belief
+        # and pose the equivalence query on it.
+        phase[0] = "pcache"
+        inv = export(p, member, check=False)
         n_equiv += 1
-        res = teacher.equiv(_build_hypothesis(table, p))
+        res = teacher.equiv(inv)
         if not isinstance(res, Counterexample):
             eq_cert = res.strategy
             break
@@ -350,23 +314,7 @@ def _drive(teacher: HoaTeacher, config: Config, stats: RunStats):
         chain = process_counterexample(table, p, res.lasso)
         pending = ("cex " + _lasso_repr(ab, res.lasso), chain, table.columns[-1], p)
 
-    # The Lemma 5.2 congruence classification, then export or refusal (spec
-    # §3.2 step 6). On a saturated run the final sweep just ran clean, so
-    # "true" is recorded without recomputation; on the ablation the check
-    # phase runs once (zero queries) and a dirty check refuses the export —
-    # there is no algebra to read off (Theorem 5.3).
-    if config.saturation:
-        stats.fixpoint_congruent = "true"
-        congruent = True
-    else:
-        congruent = find_left_divergence(table, p) is None
-        stats.fixpoint_congruent = "true" if congruent else "false"
-
-    inv: Optional[Invariant] = None
-    if congruent:
-        phase[0] = "pcache"
-        inv = export(p, member, check=False)
-
+    stats.fixpoint_congruent = "true"
     stats.n_classes_initial = n_initial
     stats.n_member_fill = counts.get("fill", 0)
     stats.n_member_harvest = counts.get("harvest", 0)
@@ -394,44 +342,6 @@ def _signature(table: Table, p: Partition) -> Signature:
     keys = sorted((p.rep[c] for c in range(p.n)), key=shortlex_key)
     rows = [(render_word(ab, key), table.bit_row(key)) for key in keys]
     return Signature(header, rows)
-
-
-def _classify_stall(stats: RunStats, byte_equal: bool, saturation: bool) -> str:
-    """Spec §7 / §9 P6 stall class — a **per-language** property read from the
-    **no-saturation + exact** leg alone. A saturation-on run does not exhibit a
-    stall, so it is ``n/a`` (never ``transient``/``permanent`` — that mislabel
-    contradicts Proposition 4.4 when E2 aggregates). Under no saturation: a
-    surviving (non-byte-equal) fixpoint is ``permanent`` (trustworthy only when
-    ``eq_certification`` is exact); a byte-equal run is ``transient`` if a coarser
-    fixpoint preceded the canonical one, else ``none``."""
-    if saturation:
-        return "n/a"
-    if not byte_equal:
-        return "permanent"
-    if 0 <= stats.n_classes_initial < stats.learned_classes:
-        return "transient"
-    return "none"
-
-
-def _classify_verdict(byte_equal: bool, p1_ok: bool, config: Config,
-                      stats: RunStats):
-    """The run verdict (spec §7): ``SOUND`` on byte-equality; ``ACCEPTOR_ONLY``
-    for a non-saturated run whose Cayley hypothesis is still acceptance-correct
-    (re-glossed 2026-07-11: "correct acceptor, no algebra — export refused" on
-    the exact leg; a congruent-but-byte-different export remains possible only
-    under a ``bounded`` oracle); ``FAIL`` otherwise (a P1 failure, or a byte
-    mismatch the config does not excuse). Returns ``(verdict, detail)``."""
-    if byte_equal:
-        return ("SOUND", "") if p1_ok else ("FAIL", "byte-equal but P1 red (bug)")
-    if not p1_ok:
-        return "FAIL", "P1 red: hypothesis predictions disagree with teacher"
-    if not config.saturation:
-        if stats.fixpoint_congruent == "false":
-            return ("ACCEPTOR_ONLY",
-                    "export refused: certified fixpoint is not a congruence (Lemma 5.2)")
-        return ("ACCEPTOR_ONLY",
-                "non-saturated congruent fixpoint: export byte-differs, hypothesis sound")
-    return "FAIL", "byte-differs under saturation (expected byte-equal)"
 
 
 # -- the bounded run (the sweep's entry point) --------------------------------

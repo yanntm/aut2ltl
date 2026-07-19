@@ -65,65 +65,30 @@ NAMED_CASES: List[Case] = [
 ]
 
 
-# Configuration axes the campaign sweeps. The default leg certifies `exact`: a
-# bounded certification is complete only in the limit, so it is kept for
-# black-box teachers, diagnostics, and the cap-escape of a guard-fired query
-# whose closure fallback blows its work cap (spec §3.2 default escalation).
-DEFAULT = Config("default", saturation=True, eq_mode="exact")
-EXACT = Config("exact", saturation=True, eq_mode="exact")
-NOSAT_BOUNDED = Config("no-sat-bounded", saturation=False, eq_mode="bounded")
-NOSAT_EXACT = Config("no-sat-exact", saturation=False, eq_mode="exact")
+# Configuration axes the campaign sweeps. The default leg certifies `exact`:
+# a bounded certification is complete only in the limit, so it is kept for
+# black-box teachers and diagnostics.
+DEFAULT = Config("default", eq_mode="exact")
+BOUNDED = Config("bounded", eq_mode="bounded")
 
-CONFIGS: List[Config] = [DEFAULT, EXACT, NOSAT_BOUNDED, NOSAT_EXACT]
+CONFIGS: List[Config] = [DEFAULT, BOUNDED]
 
 
 def is_permanent(case: Case) -> bool:
-    """A proven-permanent-stall specimen (spec §9 P4/F5)."""
+    """A proven-permanent-stall specimen of the boundary theorem (paper §6)."""
     return "permanent-specimen" in case.tags
 
 
 def e0_runs() -> List[Tuple[Case, Config]]:
-    """The E0 validation matrix (spec §6 E0, ordered).
-
-    Every named case runs under ``default`` (the campaign's headline config,
-    which must be SOUND everywhere). The two permanent specimens additionally run
-    under ``no-sat-exact`` — the exact-mode fixture that must certify their
-    stalled fixpoints (spec §9 P4). ``exact`` (saturation on) also runs on the
-    specimens as the canonical cross-check."""
-    runs: List[Tuple[Case, Config]] = [(c, DEFAULT) for c in NAMED_CASES]
-    for c in NAMED_CASES:
-        if is_permanent(c):
-            runs.append((c, NOSAT_EXACT))
-            runs.append((c, EXACT))
-    return runs
-
-
-# Expected stall class of each named case under the E2 ablation leg
-# (`--no-saturation --eq-mode exact`, spec §6 E2). The two specimens are proven
-# permanent (Prop. 4.4); every other named case resolves its pre-equivalence
-# stall and reaches canonical (transient) or was never coarse (none).
-E2_EXPECT: dict = {
-    "gf_aa_parity": "transient",
-    "gf_aa_reset": "transient",
-    "even": "transient",
-    "evenblocks": "transient",
-    "a_implies_xa": "permanent",
-    "a_once": "permanent",
-}
+    """The validation matrix: every named case under ``default`` (the
+    campaign's headline config, which must be SOUND everywhere)."""
+    return [(c, DEFAULT) for c in NAMED_CASES]
 
 
 def e1_runs() -> List[Tuple[Case, Config]]:
     """The E1 scaling matrix: every named case under ``default`` — E1 is a view
     of the default-config run metrics against the reference class count."""
     return [(c, DEFAULT) for c in NAMED_CASES]
-
-
-def e2_runs() -> List[Tuple[Case, Config]]:
-    """The E2 ablation matrix: every named case under both the canonical
-    ``default`` (saturation on) and the ablation ``no-sat-exact`` leg (spec §6:
-    with exact equivalence, every surviving stall is provably permanent)."""
-    return ([(c, DEFAULT) for c in NAMED_CASES]
-            + [(c, NOSAT_EXACT) for c in NAMED_CASES])
 
 
 def case_by_id(case_id: str) -> Optional[Case]:
