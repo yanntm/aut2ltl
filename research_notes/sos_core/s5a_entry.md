@@ -97,9 +97,9 @@ nothing intrinsic to prefer either. §5.4 sends both to one invariant.
 *Example.* The four languages appear as machines on their pages, Ex. 1–4 —
 the reader is invited to revisit each page's formula and automaton rows now.
 `aUGb` needs
-three states, numbered as drawn on its page: the initial state `1` loops on
-`a`; `b` leads to state `0`, which loops on `b`, that loop carrying the mark
-`0`; an `a` at state `0` falls to the sink `2`, absorbing both letters
+three states, numbered as drawn on its page: the initial state `0` loops on
+`a`; `b` leads to state `1`, which loops on `b`, that loop carrying the mark
+`0`; an `a` at state `1` falls to the sink `2`, absorbing both letters
 unmarked; `Acc = Inf(0)` — a run collects `0` forever iff it
 eventually reads only `b`'s. `GFaa` tracks the parity of the running block
 of `a`'s on two states: `a` *transposes* them — a `Z₂` in the maps

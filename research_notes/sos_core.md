@@ -1043,9 +1043,9 @@ nothing intrinsic to prefer either. §5.4 sends both to one invariant.
 *Example.* The four languages appear as machines on their pages, Ex. 1–4 —
 the reader is invited to revisit each page's formula and automaton rows now.
 `aUGb` needs
-three states, numbered as drawn on its page: the initial state `1` loops on
-`a`; `b` leads to state `0`, which loops on `b`, that loop carrying the mark
-`0`; an `a` at state `0` falls to the sink `2`, absorbing both letters
+three states, numbered as drawn on its page: the initial state `0` loops on
+`a`; `b` leads to state `1`, which loops on `b`, that loop carrying the mark
+`0`; an `a` at state `1` falls to the sink `2`, absorbing both letters
 unmarked; `Acc = Inf(0)` — a run collects `0` forever iff it
 eventually reads only `b`'s. `GFaa` tracks the parity of the running block
 of `a`'s on two states: `a` *transposes* them — a `Z₂` in the maps
@@ -1791,15 +1791,15 @@ happened to see the mark on the way to the sink, merge onto the single zero
 
 | ⟨w⟩ | at 0 | at 1 | at 2 | ·⟨b⟩ | ·⟨a⟩ | → class |
 |---|---|---|---|---|---|---|
-| `⟨b⟩` | `(0, {0})` | `(0, ∅)` | `(2, ∅)` | `⟨b·b⟩` | `⟨b·a⟩` | `[b]` |
-| `⟨a⟩` | `(2, ∅)` | `(1, ∅)` | `(2, ∅)` | `⟨a·b⟩` | `⟨a⟩` | `[a]` |
-| `⟨b·b⟩` | `(0, {0})` | `(0, {0})` | `(2, ∅)` | `⟨b·b⟩` | `⟨b·b·a⟩` | `[b]` |
-| `⟨b·a⟩` | `(2, {0})` | `(2, ∅)` | `(2, ∅)` | `⟨b·a⟩` | `⟨b·a⟩` | `[b·a]` |
-| `⟨a·b⟩` | `(2, ∅)` | `(0, ∅)` | `(2, ∅)` | `⟨a·b·b⟩` | `⟨a·b·a⟩` | `[a·b]` |
+| `⟨b⟩` | `(1, ∅)` | `(1, {0})` | `(2, ∅)` | `⟨b·b⟩` | `⟨b·a⟩` | `[b]` |
+| `⟨a⟩` | `(0, ∅)` | `(2, ∅)` | `(2, ∅)` | `⟨a·b⟩` | `⟨a⟩` | `[a]` |
+| `⟨b·b⟩` | `(1, {0})` | `(1, {0})` | `(2, ∅)` | `⟨b·b⟩` | `⟨b·b·a⟩` | `[b]` |
+| `⟨b·a⟩` | `(2, ∅)` | `(2, {0})` | `(2, ∅)` | `⟨b·a⟩` | `⟨b·a⟩` | `[b·a]` |
+| `⟨a·b⟩` | `(1, ∅)` | `(2, ∅)` | `(2, ∅)` | `⟨a·b·b⟩` | `⟨a·b·a⟩` | `[a·b]` |
 | `⟨b·b·a⟩` | `(2, {0})` | `(2, {0})` | `(2, ∅)` | `⟨b·b·a⟩` | `⟨b·b·a⟩` | `[b·a]` |
-| `⟨a·b·b⟩` | `(2, ∅)` | `(0, {0})` | `(2, ∅)` | `⟨a·b·b⟩` | `⟨a·b·b·a⟩` | `[a·b]` |
+| `⟨a·b·b⟩` | `(1, {0})` | `(2, ∅)` | `(2, ∅)` | `⟨a·b·b⟩` | `⟨a·b·b·a⟩` | `[a·b]` |
 | `⟨a·b·a⟩` | `(2, ∅)` | `(2, ∅)` | `(2, ∅)` | `⟨a·b·a⟩` | `⟨a·b·a⟩` | `[b·a]` |
-| `⟨a·b·b·a⟩` | `(2, ∅)` | `(2, {0})` | `(2, ∅)` | `⟨a·b·b·a⟩` | `⟨a·b·b·a⟩` | `[b·a]` |
+| `⟨a·b·b·a⟩` | `(2, {0})` | `(2, ∅)` | `(2, ∅)` | `⟨a·b·b·a⟩` | `⟨a·b·b·a⟩` | `[b·a]` |
 
 
 # Example 2 — `GFaa`
@@ -1938,7 +1938,7 @@ demands.
 **Construction (§5).** `|𝒞_D| = 6` classes quotiented onto the `|𝒞| = 4`
 classes above. The delicate row is `⟨a·a⟩`: its transition map is the
 *identity* — two `a`'s return every state to itself — and only the mark
-collected at the accepting sink (state `0`) sets its mark map apart from
+collected at the accepting sink (state `1`) sets its mark map apart from
 empty. The quotient
 keeps the distinction too, as §3.1 demands: `[a·a]` is a neutral class of
 nonempty words — its row and column in `𝒞`'s table move nothing — while
@@ -1948,12 +1948,12 @@ exhibited by the machine. The quotient merges the mark-only splits
 
 | ⟨w⟩ | at 0 | at 1 | at 2 | at 3 | ·⟨b⟩ | ·⟨a⟩ | → class |
 |---|---|---|---|---|---|---|---|
-| `⟨b⟩` | `(0, {0})` | `(3, ∅)` | `(0, ∅)` | `(3, ∅)` | `⟨b·b⟩` | `⟨b·b⟩` | `[b]` |
-| `⟨a⟩` | `(0, {0})` | `(2, ∅)` | `(1, ∅)` | `(3, ∅)` | `⟨a·b⟩` | `⟨a·a⟩` | `[a]` |
-| `⟨b·b⟩` | `(0, {0})` | `(3, ∅)` | `(0, {0})` | `(3, ∅)` | `⟨b·b⟩` | `⟨b·b⟩` | `[b]` |
-| `⟨a·b⟩` | `(0, {0})` | `(0, ∅)` | `(3, ∅)` | `(3, ∅)` | `⟨a·b·b⟩` | `⟨a·b·b⟩` | `[a·b]` |
-| `⟨a·a⟩` | `(0, {0})` | `(1, ∅)` | `(2, ∅)` | `(3, ∅)` | `⟨b⟩` | `⟨a⟩` | `[a·a]` |
-| `⟨a·b·b⟩` | `(0, {0})` | `(0, {0})` | `(3, ∅)` | `(3, ∅)` | `⟨a·b·b⟩` | `⟨a·b·b⟩` | `[a·b]` |
+| `⟨b⟩` | `(1, ∅)` | `(1, {0})` | `(3, ∅)` | `(3, ∅)` | `⟨b·b⟩` | `⟨b·b⟩` | `[b]` |
+| `⟨a⟩` | `(2, ∅)` | `(1, {0})` | `(0, ∅)` | `(3, ∅)` | `⟨a·b⟩` | `⟨a·a⟩` | `[a]` |
+| `⟨b·b⟩` | `(1, {0})` | `(1, {0})` | `(3, ∅)` | `(3, ∅)` | `⟨b·b⟩` | `⟨b·b⟩` | `[b]` |
+| `⟨a·b⟩` | `(3, ∅)` | `(1, {0})` | `(1, ∅)` | `(3, ∅)` | `⟨a·b·b⟩` | `⟨a·b·b⟩` | `[a·b]` |
+| `⟨a·a⟩` | `(0, ∅)` | `(1, {0})` | `(2, ∅)` | `(3, ∅)` | `⟨b⟩` | `⟨a⟩` | `[a·a]` |
+| `⟨a·b·b⟩` | `(3, ∅)` | `(1, {0})` | `(1, {0})` | `(3, ∅)` | `⟨a·b·b⟩` | `⟨a·b·b⟩` | `[a·b]` |
 
 
 # Example 4 — `EvenBlocks`

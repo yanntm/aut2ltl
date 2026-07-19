@@ -163,7 +163,7 @@ painting. The hand edit above is no longer load-bearing for the algebra (the
 words splitting into four mark variants); it is kept because it is the form
 the fixture and the drawing document.
 
-`D` has 3 states (initial `1` looping on `a`, accepting `0` looping on `!a`,
+`D` has 3 states (initial `0` looping on `a`, accepting `1` looping on `!a`,
 rejecting sink `2`), `|EM¹| = 10`, `|S(L)₊¹| = 5`, no group in the transition
 monoid — LTL by construction. Same language as
 [`sos_core_figs/sources/astar_bomega.sos`](../sos_core_figs/sources/astar_bomega.sos),
