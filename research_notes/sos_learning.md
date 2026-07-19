@@ -867,21 +867,27 @@ Two exhibits, one mechanism, and both minimal:
 | `a ∧ XG¬a` | 4 | 3 — one counterexample | `[b] = [b·a]` | `x = a` only | accepts `a^ω` |
 
 "One class short" undersells the defect. Export the stalled fixpoint of
-`a → Xa` by §5's recipe, `c·c' := fold(c, rep(c'))`, next to the
-canonical algebra of the language:
+`a → Xa` by §5's recipe, `c·c' := fold(c, rep(c'))`, and draw it next to the
+canonical algebra of the language (Figure 5):
 
-```
-    canonical table  (5 classes)           stalled export  (4 classes)
-    ·     ε    b    a    ab   aa           ·     ε    b    a    ab
-    ε     ε    b    a    ab   aa           ε     ε    b    a    ab
-    b     b    b    b    b    b            b     b    b    b    b
-    a     a    ab   aa   aa   aa           a     a    ab   b    b
-    ab    ab   ab   ab   ab   ab           ab    ab   ab   ab   ab
-    aa    aa   aa   aa   aa   aa
-```
+<table>
+<tr>
+<td align="center"><img src="sos_core_figs/img/a_implies_xa_pairs.png" alt="canonical invariant of a implies Xa" width="260"></td>
+<td align="center"><img src="sos_core_figs/img/sosl_a_implies_xa_stall_pairs.png" alt="stalled export of a implies Xa" width="260"></td>
+</tr>
+<tr>
+<td align="center"><b>(a) canonical <code>𝓘(a → Xa)</code></b>, 5 classes<br>(Figure 3(c), repeated for comparison).</td>
+<td align="center"><b>(b) the stalled export</b>, 4 classes:<br><code>[b]</code> is the merged <code>C₁</code> — the canonical<br><code>[aa]</code> swallowed — and <code>[a·b]</code> is <code>C₀</code>.</td>
+</tr>
+</table>
 
-(cells name classes by their keys; in the stalled table `[b]` is the merged
-`C₁` and `[ab]` is `C₀`). The stalled table is **not associative**:
+**Figure 5.** The certified stall, drawn with Figure 2's conventions. The
+merge is visible — (a)'s two accepting idempotents `[b]` and `[aa]`, six
+pairs, are one node and two pairs in (b) — and what no drawing can show is
+the deeper defect: (b)'s table is *not associative*, and the prose below
+reads the two bracketings of `[a]·[a]·[a]` off its edges.
+
+The stalled table is **not associative**:
 `([a]·[a])·[a] = [b]·[a] = [b]`, but `[a]·([a]·[a]) = [a]·[b] = [ab]`.
 The first bracketing folds the literal word `aaa` and lands where it should;
 the second substitutes the merged class's representative `b` into the middle
