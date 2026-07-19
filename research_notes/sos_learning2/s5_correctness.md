@@ -16,20 +16,27 @@ language ([SωS26, Thm II]), and a well-formed invariant denotes exactly one
 language, its own ([SωS26, Prop 4.1]). ∎
 
 **Theorem 5.2 (no false assent; the limit is `𝓘(L)`).** The loop terminates
-after at most `N` class splits and at most `N` equivalence queries. An
-exact equivalence oracle assents *iff* `K_i = L`; when it assents, the
-belief is exactly `𝓘(L)` — byte-equal, under shortlex keys, to the output
-of the construction of [SωS26], whatever automaton the teacher held.
+after at most `N` class splits and at most `N + V` equivalence queries,
+`V` the number of grounding events — a speculative word verified, each of
+its cells at most once (§3.1), so `V` is finite and `V = 0` on a run whose
+proxies are all truthful. An exact equivalence oracle assents *iff*
+`K_i = L`; when it assents, the belief is exactly `𝓘(L)` — byte-equal,
+under shortlex keys, to the output of the construction of [SωS26],
+whatever automaton the teacher held.
 
 *Proof.* *Progress.* Every mechanism that keeps a round going splits a
-class: a promotion introduces a frontier word differing from every row on
-some column, a consistency mint separates the violating pair on the minted
+class or permanently grounds speculation: a promotion introduces a
+verified frontier word differing from every row on some column, a
+consistency mint separates the violating pair on real bits at the minted
 column, a stamp escalation (Lemma 4.4), a pair escalation (Lemma 4.5), and
-a harvest (Theorem 4.3) each split a class. Every such witness is an Arnold
-context separating two concrete words, so distinct classes are
-`≈_L`-distinct at all times, and `|𝒞_T| ≤ N` bounds the total; each
-equivalence query either assents or funds a harvest split, so at most `N`
-are posed. *No false assent.* By Theorem 5.1 the presented belief denotes
+a harvest (Theorem 4.3) each split a class — or, when the convicted word
+was speculative, ground it: its corrected bits re-merge it elsewhere,
+witnessed at the minted column, and a grounded cell never speculates
+again. Every split's witness is an Arnold context separating two concrete
+queried words, so distinct classes are `≈_L`-distinct at all times, and
+`|𝒞_T| ≤ N` bounds the splits; grounding events are bounded by the cells,
+each grounded once. Each equivalence query either assents or funds a
+harvest event, so at most `N + V` are posed. *No false assent.* By Theorem 5.1 the presented belief denotes
 exactly `K_i`; two ω-regular languages agreeing on all lassos are equal
 (§2.2), so an exact oracle assents iff `K_i = L`. *Canonicity.* When it
 assents, the belief — the syntactic invariant of `K_i` (Theorem 5.1) — is
@@ -51,14 +58,20 @@ every split still witnesses a genuine `≈_L`-separation; only the
 coincidence with `𝓘(L)` is certified no further than the oracle checked.
 
 **Proposition 5.3 (query complexity).** Recall `N` — the class count of the
-canonical target, identity included (§2.2) — and write `ℓ` for the longest
-counterexample returned. The learner poses at most `N` equivalence queries
-and `O(N²·|Σ| + N·log(N·ℓ))` membership queries, itemized by mechanism:
+canonical target, identity included (§2.2) — write `ℓ` for the longest
+counterexample returned, and `k ≤ |Σ|` for the number of letter classes of
+the target. The learner poses at most `N + V` equivalence queries
+(Theorem 5.2) and `O(N²·|Σ| + N·log(N·ℓ))` membership queries — the entry
+term `O(N²·k + N·|Σ|)` when every proxy is truthful — itemized by
+mechanism:
 
-- *table entries* — `O(N·|Σ|)` table words (at most `N` rows, each with its
-  `|Σ|`-letter frontier) against `O(N)` columns (one initial; every other
-  column is minted by an event that also splits a class, so at most one per
-  split);
+- *table entries* — `O(N·k + |Σ| + V)` queried table words: at most `N`
+  rows, each with its `k`-rep frontier, the letters themselves, and one
+  grounding per verified cell (the collapse, §3.1) — never more than the
+  `O(N·|Σ|)` full frontier, since a cell is queried or grounded at most
+  once — against `O(N)` columns (one initial; every other column is minted
+  by an event that also splits a class or grounds a word, so at most one
+  per such event);
 - *per harvest split* (at most one per equivalence query) — one junction
   query and one binary search over a chain of length
   `|w'| + |z'| = O(N·ℓ)` (the normalization power is at most `2N`), so
@@ -79,6 +92,12 @@ lengths — themselves harvested substrings of counterexamples, or
 canonical target `N` is the honest yardstick — `N` can be exponentially
 larger than a smallest acceptor (Proposition 5.4 makes both directions of
 the size comparison exact), and §7 measures exactly that.
+
+The two counts trade against each other through `V`: a proxy that is wrong
+costs its grounding and possibly the equivalence query that pointed at it,
+a proxy that is right costs nothing at all — `k/|Σ|` is the entry factor a
+run earns on the languages whose letters genuinely collapse. §7 measures
+both sides on the corpus.
 
 The converse of the yardstick is the selling point: on languages with
 trivial or near-trivial right congruence — `EvenBlocks`, `FG(a ∨ Xa)`
