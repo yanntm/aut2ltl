@@ -111,6 +111,10 @@ sosl:
 	$(call pairfig,sosl_even_day1,sosl_even_day1_pairs,sosl_even_day1)
 	$(call fig,sosl_evenblocks_day1,sosl_evenblocks_day1)
 	$(call pairfig,sosl_evenblocks_day1,sosl_evenblocks_day1_pairs,sosl_evenblocks_day1)
+	$(call fig,sosl_a_implies_xa_day1,sosl_a_implies_xa_day1)
+	$(call pairfig,sosl_a_implies_xa_day1,sosl_a_implies_xa_day1_pairs,sosl_a_implies_xa_day1)
+	$(call fig,sosl_a_once_day1,sosl_a_once_day1)
+	$(call pairfig,sosl_a_once_day1,sosl_a_once_day1_pairs,sosl_a_once_day1)
 	$(call fig,sosl_a_implies_xa_stall,sosl_a_implies_xa_stall)
 	$(call pairfig,sosl_a_implies_xa_stall,sosl_a_implies_xa_stall_pairs,sosl_a_implies_xa_stall)
 
