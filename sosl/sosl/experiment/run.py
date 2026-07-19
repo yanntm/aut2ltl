@@ -36,7 +36,11 @@ from sosl.contract import Counterexample
 from sosl.experiment.stats import RunStats, parse_row
 from sosl.learn.columns import Column, LinCol
 from sosl.learn.export import export
-from sosl.learn.learner import _stabilize, process_counterexample
+from sosl.learn.learner import (
+    _evidence_discordance,
+    _stabilize,
+    process_counterexample,
+)
 from sosl.learn.partition import Partition
 from sosl.learn.saturate import saturate
 from sosl.learn.table import Table
@@ -298,10 +302,20 @@ def _drive(teacher: HoaTeacher, config: Config, stats: RunStats):
             pending = ("saturation", lbl, table.columns[-1], p)
             continue
 
-        # The sweep just certified a two-sided congruence: export the belief
-        # and pose the equivalence query on it.
+        # The sweep just certified a two-sided congruence: export the belief.
         phase[0] = "pcache"
-        inv = export(p, member, check=False)
+        inv = export(p, table.query_lasso, check=False)
+
+        # Evidence coherence: replay the belief against the ledger (zero
+        # queries); a contradiction seeds a chain like any discordance.
+        dis = _evidence_discordance(table, inv)
+        if dis is not None:
+            phase[0] = "harvest"
+            chain = process_counterexample(table, p, dis)
+            pending = ("evidence " + _lasso_repr(ab, dis), chain,
+                       table.columns[-1], p)
+            continue
+
         n_equiv += 1
         res = teacher.equiv(inv)
         if not isinstance(res, Counterexample):
