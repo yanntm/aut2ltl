@@ -20,7 +20,7 @@ report companions are [`../sos_learning_spec.md`](../sos_learning_spec.md) and
 | [`s0_front.md`](s0_front.md) | title, abstract, §1 introduction + contributions + relation to [US20] |
 | [`s2a_mat.md`](s2a_mat.md) | §2 opening + §2.1 active learning in the MAT model |
 | [`s2b_algebra.md`](s2b_algebra.md) | §2.2 the syntactic ω-semigroup as an invariant — the [SωS26] recall |
-| [`s2c_examples.md`](s2c_examples.md) | §2.3 running examples (Figs 1–2) + the teacher |
+| [`s2c_examples.md`](s2c_examples.md) | §2.3 running examples + stall specimens (Figs 1–3) + the teacher |
 | [`s3_table.md`](s3_table.md) | §3 observation table, Cayley hypothesis, prediction (Tables 1–2) |
 | [`s4a_harvest.md`](s4a_harvest.md) | §4.1 the harvest (Lemmas 4.1–4.2, Theorem 4.3, Table 3) |
 | [`s4b_gap.md`](s4b_gap.md) | §4.2 the gap: the permanent stall (Proposition 4.4) |

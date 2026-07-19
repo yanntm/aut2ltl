@@ -17,9 +17,9 @@ both, the wrong merge eventually poisons some prediction, and a later
 equivalence query catches it (a transient stall). But the permanent stall is
 not a hypothetical, and it does not take an exotic language: an exhaustive
 census of the smallest automaton shapes (nondeterministic transition-based
-Büchi over one atomic proposition, §6.1; at one state every fixpoint is
+Büchi over one atomic proposition; at one state every fixpoint is
 canonical, so two states are the smallest possible) finds it already at
-`a → Xa`.
+`a → Xa` — the stall specimen of §2.3, automaton and target in Figure 3.
 
 **Proposition 4.4 (the stall, realized).** Let `L = L(a → Xa)` — if the first
 letter is `a`, so is the second — over `Σ = {a, !a}`. The saturation-free
