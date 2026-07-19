@@ -2,7 +2,10 @@
 
     probe                  -- bootstrap: each letter's omega-power into the
                               evidence, shortlex order
-    fill; close; consist   -- to a closed, consistent fixpoint
+    fill; close; consist   -- to a closed, consistent fixpoint; fill collapses
+                              the frontier by letter classes (proxy bits,
+                              `Table` module doc), and a closedness witness is
+                              `verify`-grounded before it may become a row
     saturate               -- stamp legality: the two-sided-congruence sweep
                               (restart on a split)
     pairs                  -- pair legality: P saturated under conjugacy
@@ -85,6 +88,16 @@ def _stabilize(table: Table) -> Partition:
         p = Partition(table)
         unclosed = p.unclosed()
         if unclosed:
+            # A speculative signature never promotes: ground each witness's
+            # proxied bits first; if any bit moves, regroup before deciding.
+            changed = False
+            for w in unclosed:
+                if table.verify(w):
+                    changed = True
+            if changed:
+                if TRACE_ON:
+                    trace("STAB", "verify: closedness witness corrected, regroup")
+                continue
             if TRACE_ON:
                 trace("STAB", f"close: +{len(unclosed)} rows "
                       f"(rows={len(table.rows)} cols={len(table.columns)} classes={p.n})")
