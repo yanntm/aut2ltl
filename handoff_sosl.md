@@ -6,58 +6,49 @@ carries **current work items + pointers only**, no history.
 
 ## Critical files
 
-1. `research_notes/sos_learning2/README.md` — folder guide: restructure
-   status, part wiring, old→new theorem numbering map. Read first.
-2. `research_notes/sos_learning2.md` — the paper (assembled; edit the parts
-   in `research_notes/sos_learning2/`, then `make`). §4 is the current core:
-   alignment as a fixpoint over evidence, four-constraint normal form,
-   bootstrap with no seeded column.
-3. `research_notes/sos_learning2/algorithm.md` — design brief + engineering
-   deltas. Normative for engineering once theory lands item 1 below.
-4. `research_notes/sos_learning_report.md` — v1 report: provenance of §7's
-   current numbers until the regeneration lands.
-5. Code: `sosl/sosl/` (learner/teacher/experiment); probes + campaigns under
-   `sosl/tests/sosl/` (run from `sosl/`: `python3 -m tests.sosl.<name>`).
-   Gates and unit tests are engineering-internal: keep them green before any
-   learner commit, never report them.
-6. Committed data: `reference/census/` and `reference/campaigns/` — their
+1. `sosl/sosl/learn/algorithm.md` — the learner, normative for engineering:
+   state, the four-constraint normal form, bootstrap, pinned orders,
+   counting conventions. Read first, with `sosl/sosl/README.md` for the map.
+2. `research_notes/sos_learning2.md` — the paper (edit the parts in
+   `research_notes/sos_learning2/`, then `make`); §3–§5 is the theory the
+   code transcribes.
+3. `research_notes/sos_learning_report.md` — the report to update (below).
+4. Working gate: `cd sosl && python3 -m tests.sosl.gate_invariant_contract`.
+5. Committed data: `reference/census/` and `reference/campaigns/` — their
    READMEs carry the regenerate recipes. Cluster interface: `cluster/README.md`.
 
-## Work items — theory
+## Do not trust
 
-1. **Spec the §4 deltas for engineering** (into `algorithm.md`): bootstrap
-   (`R = {ε}`, zero columns; first query = promoted letter's ω-power via the
-   `P`-fill, decides `∅` vs `Σ^ω`; remaining letters' ω-powers probed in
-   shortlex order, discordance → align); evidence coherence as fourth
-   normal-form check (cache replay, query-free; violations seed the chain
-   with no query); every column minted, none seeded. Include the hand-derived
-   named-case expectations (first mints, day-one beliefs, first
-   counterexamples). Engineering is blocked on this.
-2. **§3 sweep**: day-one example material (Tables 1–2 and surrounding
-   prose still present the seeded-column initialization) and §3.2's
-   forward references follow the new bootstrap and vocabulary — with the
-   regenerated traces.
-3. **§5 edits** (section stays): proofs argue from the normal form (they
-   currently say "both checks clean"); add the two opened lemmas —
-   confluence (fixpoint belief independent of pinned resolution order),
-   evidence-coherence implication (implied by morphism+saturation, or
-   strict — adopted either way).
-4. **§6 decision** (user call pending): slated for removal or compression
-   into §4/§7.3; §7.3, contribution 2, and the abstract's stall claims
-   depend on what survives.
-5. **Cross-ref + vocabulary sweep** over §1–§2, §5–§8: old §4 numbering
-   (map in the folder README) and retired reap/sow–harvest wording; then
-   delete the superseded `s4a_reap.md` / `s4b_sow.md`.
+- `research_notes/sos_learning_spec.md` is **stale — do not trust it**. The
+  paper and `learn/algorithm.md` are the only normative documents.
+- Scripts under `sosl/tests/sosl/` are suspect: many import names that no
+  longer exist. Verify before running; a script that gates nothing current
+  is a candidate for **plain removal**, not repair. The gate in critical
+  file 4 is the one known-good entry point.
+- `sosl/sosl/experiment/` (stats fields, report renderers, manifest configs)
+  may lag the learner; align it as needed by the goal, trim what serves
+  nothing.
 
 ## Work items — engineering
 
-1. **Catch up to the rebuilt §4** — blocked on theory item 1; implement
-   against `algorithm.md` + paper §4: bootstrap reformulation, evidence
-   coherence, probe sweep. Traces must match the spec'd expectations on the
-   named cases.
-2. **Full regeneration** (after 1): named-case ledgers, census
-   byte-equality, relaxed leg, §7 per-phase counts — the §7 status note's
-   queue, now including the bootstrap deltas.
+1. **Recompute the report.** Every number in
+   `research_notes/sos_learning_report.md` needs recomputing — reuse none.
+   Deliver: named-case runs (the paper's five, plus `EvenBlocks`) with
+   per-phase ledgers under the counting conventions of `learn/algorithm.md`
+   (member = distinct ω-words; phases fill/harvest/legality/P); census
+   byte-equality at scale; equivalence/counterexample counts per case. All
+   data traceable to git-tracked machine-generated artefacts.
+2. Report any misprediction against the paper's worked examples (§3–§4
+   tables) to theory instead of adapting to it — the paper may need the
+   edit, not the code.
+
+## Work items — theory
+
+1. §7 rewrite from the recomputed report; state the counting convention.
+2. Standing queue: §3 day-one material to the zero-seed bootstrap; §5 proofs
+   from the normal form + the two opened lemmas (confluence,
+   evidence-coherence implication); §6 decision (user call pending);
+   cross-ref sweep, then delete `s4a_reap.md` / `s4b_sow.md`.
 
 ## The corpus
 
