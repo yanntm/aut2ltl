@@ -469,7 +469,7 @@ wall.
 ### 3.1 The observation table
 
 **Definition 3.1 (table).** A table is `T = (R, E_lin, E_ω)` where `R ⊆ Σ*` is a
-finite set of **rows** containing `ε` and `Σ`, observed together with its
+finite set of **rows** containing `ε`, observed together with its
 frontier `R·Σ`, and the columns are of two sorts:
 
 - `E_lin ⊆ Σ* × Σ* × Σ⁺` — **linear columns**; the entry of row `u` at
@@ -506,8 +506,9 @@ table is observed on its **words** `W(T) = R ∪ R·Σ` (rows and frontier).
 offending frontier word is promoted to `R`), and **consistent** when
 `u ≡_T v` implies `u·a ≡_T v·a` for all rows `u, v` and letters `a` — §2.1's
 notions, with two sorts of experiments in place of suffixes. Rows are
-maintained as **access words**: `R` starts as `{ε} ∪ Σ`, and every later row
-is a promoted frontier word `u_c·a`, where the **key** of a class `c`,
+maintained as **access words**: `R` starts as `{ε}`, and every other row is
+a promoted frontier word `u_c·a` — letters included, promoted from `ε`'s
+own frontier (§4.5) — where the **key** of a class `c`,
 written `u_c`, is its shortlex-least row. Two structural facts follow and
 are used below: every letter-prefix of a row is itself a row (rows are only
 ever created by extending a row with one letter), and each promotion adds
