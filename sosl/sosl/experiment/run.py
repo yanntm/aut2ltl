@@ -41,6 +41,7 @@ from sosl.learn.learner import (
     _stabilize,
     process_counterexample,
 )
+from sosl.learn.pairs import saturation_violation
 from sosl.learn.partition import Partition
 from sosl.learn.saturate import saturate
 from sosl.learn.table import Table
@@ -276,6 +277,9 @@ def _drive(teacher: HoaTeacher, config: Config, stats: RunStats):
         return teacher.member(la)
 
     table = Table(ab, member)
+    # Bootstrap probe sweep: each letter's omega-power into the evidence.
+    for a in ab.letters():
+        table.query_lasso(Lasso((), (a,)))
     ledger: List[LedgerRow] = []
     pending: Optional[tuple] = None       # (trigger, chain, column, before_partition)
     n_equiv = n_cex = n_sat = n_sat_checks = 0
@@ -302,8 +306,18 @@ def _drive(teacher: HoaTeacher, config: Config, stats: RunStats):
             pending = ("saturation", lbl, table.columns[-1], p)
             continue
 
-        # The sweep just certified a two-sided congruence: export the belief.
+        # Pair legality: P saturated under conjugacy (bits phase-tagged P).
         phase[0] = "pcache"
+        viol = saturation_violation(table, p)
+        if viol is not None:
+            n_sat += 1
+            phase[0] = "harvest"
+            chain = process_counterexample(table, p, viol)
+            pending = ("pair " + _lasso_repr(ab, viol), chain,
+                       table.columns[-1], p)
+            continue
+
+        # Both legality checks clean: export the belief.
         inv = export(p, table.query_lasso, check=False)
 
         # Evidence coherence: replay the belief against the ledger (zero
