@@ -20,11 +20,22 @@ each tier's `census.md` and composed into `SHAPES.md` by `shapes_table.py`.
 
 Usage:
   python3 genaut/gen/canonize.py <tag> [--in DIR] [--corpus DIR] [--out DIR]
-    <tag>     shape tag, e.g. 2state1ap1acc or 1state2ap2acc_parity
+                                 [--timeout S] [--cap N] [--max-sos BYTES]
+    <tag>     shape tag, e.g. 2state1ap1acc or 1state2ap2acc_parity — or any
+              name for an imported (non-enumerated) source folder
     --in      the TGBA source folder (default <corpus>/tgba/<tag>)
     --corpus  the corpus root to READ (default genaut/corpus)
     --out     the root to WRITE under, in the corpus's own layout (default
               logs/genaut/corpus, ignored scratch)
+    --timeout per-input wall clock in seconds (0 = off, the default; SIGALRM —
+              a wedged native call overshoots)
+    --cap     algebra closure cap handed to `invariant_of` (default 20000)
+    --max-sos reject a language whose `.sos` dump exceeds this many bytes
+              (0 = off, the default)
+
+Enumerated census shapes never trip the budgets; an imported source (e.g. a
+benchmark folder from `gen/import_inputs.py`) can. A tripped budget skips the
+input and records it in `census.md` — nothing is dropped silently.
 
 A run writes only under `--out`; adopting a generated tier into the tracked
 corpus is a separate, deliberate copy.
@@ -55,6 +66,11 @@ from sosl.sos import dump_invariant                     # noqa: E402
 from sosl.sos.build.importer import canonical           # noqa: E402
 from sosl.sos.core.quotient import invariant_of         # noqa: E402
 
+# The per-input deadline (SIGALRM skip-and-record) is shared with the input
+# importer; both stages live in this folder and run as scripts from it.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from import_inputs import Budget, _deadline             # noqa: E402
+
 _CORPUS = os.path.normpath(
     os.path.join(os.path.dirname(__file__), os.pardir, "corpus"))
 
@@ -83,12 +99,16 @@ def _ap_canonical_key() -> "callable":
     return default_key
 
 
-def canonize(tag: str, in_dir: str, out_root: str) -> Dict:
+def canonize(tag: str, in_dir: str, out_root: str, timeout: float = 0.0,
+             cap: int = 20000, max_sos: int = 0) -> Dict:
     """Build the `det/` and `sos/` tiers for one shape from its TGBA folder,
     deduplicating by the syntactic `𝓘` key. Returns the funnel counts.
 
     Reads `in_dir`, writes under `out_root` in the corpus's own layout. The two
-    are distinct roots: a run never writes where it read."""
+    are distinct roots: a run never writes where it read. `timeout` (seconds,
+    0 = off) bounds each input's construction; `cap` bounds the algebra
+    closure; `max_sos` (bytes, 0 = off) rejects an oversized `.sos` dump. Every
+    tripped budget is counted and its input listed in `census.md`."""
     det_dir = os.path.join(out_root, "det", tag)
     sos_dir = os.path.join(out_root, "sos", tag)
     spot_det_dir = os.path.join(out_root, "spot_det", tag)
@@ -102,12 +122,25 @@ def canonize(tag: str, in_dir: str, out_root: str) -> Dict:
     abundance: Counter = Counter()            # 𝓘-hash -> automata realizing it
     sizes: Dict[str, int] = {}                # 𝓘-hash -> |𝒞|
     capped = 0
+    timeouts = 0
+    oversize = 0
+    skipped: List[Dict[str, str]] = []        # every budget-tripped input, with reason
     det_md5: set = set()                      # byte-distinct determinized forms
     det_key: set = set()                      # AP-canonical determinized forms
     det_folded = 0
     for fname in files:
         ident = fname[:-4]                    # <tag>_<id>
-        D = canonical(spot.automaton(os.path.join(in_dir, fname)))
+        try:
+            with _deadline(timeout):
+                D = canonical(spot.automaton(os.path.join(in_dir, fname)))
+                content = dump_hoa(D)
+                key = dump_hoa(spot.automaton(ap_key(D.to_str("hoa"))))
+                inv = invariant_of(D, cap=cap)
+                dump = dump_invariant(inv) if inv is not None else ""
+        except Budget:
+            timeouts += 1
+            skipped.append({"ident": ident, "reason": f"timeout (>{timeout}s)"})
+            continue
 
         # spot_det tier: the SAME deterministic automaton D, deduped
         # *structurally* (md5 → AP-canonical, the TGBA gates) rather than by
@@ -119,8 +152,6 @@ def canonize(tag: str, in_dir: str, out_root: str) -> Dict:
         # canonicalized. Canonicalizing first would defeat the fold: `canon.normalize`
         # orders successors by the printed condition, so `a` and `!a` twins get
         # different state numberings and never converge.
-        content = dump_hoa(D)
-        key = dump_hoa(spot.automaton(ap_key(D.to_str("hoa"))))
         if hashlib.md5(content.encode()).hexdigest() not in det_md5:
             det_md5.add(hashlib.md5(content.encode()).hexdigest())
             if key in det_key:
@@ -130,11 +161,15 @@ def canonize(tag: str, in_dir: str, out_root: str) -> Dict:
                 with open(os.path.join(spot_det_dir, f"{ident}.hoa"), "w") as fh:
                     fh.write(content)
 
-        inv = invariant_of(D)
         if inv is None:                       # algebra closure exceeded its cap
             capped += 1
+            skipped.append({"ident": ident, "reason": f"capped (closure > {cap})"})
             continue
-        dump = dump_invariant(inv)
+        if max_sos and len(dump) > max_sos:   # too large to carry as a committed input
+            oversize += 1
+            skipped.append({"ident": ident,
+                            "reason": f"oversize (.sos {len(dump)} > {max_sos} bytes)"})
+            continue
         h = _ihash(dump)
         abundance[h] += 1
         if h not in seen:                     # first automaton of this language wins
@@ -148,6 +183,7 @@ def canonize(tag: str, in_dir: str, out_root: str) -> Dict:
     langs = len(seen)
     funnel = {
         "tag": tag, "tgba_in": len(files), "capped": capped,
+        "timeout": timeouts, "oversize": oversize,
         "languages": langs,
         "collapse": round(len(files) / langs, 2) if langs else 0.0,
         "abundance_max": max(abundance.values(), default=0),
@@ -158,27 +194,37 @@ def canonize(tag: str, in_dir: str, out_root: str) -> Dict:
         "spot_det": len(det_key), "spot_det_byte": len(det_md5),
         "spot_det_folded": det_folded,
     }
-    _write_census(det_dir, sos_dir, funnel)
+    _write_census(det_dir, sos_dir, funnel, skipped)
     _write_spot_det_census(spot_det_dir, funnel)
     return funnel
 
 
-def _write_census(det_dir: str, sos_dir: str, f: Dict) -> None:
+def _write_census(det_dir: str, sos_dir: str, f: Dict,
+                  skipped: List[Dict[str, str]]) -> None:
     """Record the language-dedup level next to each tier — the funnel step this
     stage owns; `shapes_table.py` joins it to the TGBA census for the full
-    combos -> byte -> AP-canonical -> language funnel."""
+    combos -> byte -> AP-canonical -> language funnel. Every budget-tripped
+    input is listed by name — skipping is recorded, never silent."""
+    cuts = ", ".join(s for s in (
+        f"{f['capped']} capped" if f["capped"] else "",
+        f"{f['timeout']} timeout" if f["timeout"] else "",
+        f"{f['oversize']} oversize" if f["oversize"] else "") if s)
     body = (
         f"# {f['tag']} — canonical (language) dedup\n\n"
         f"- TGBA survivors in (AP-canonical `kept`): {f['tgba_in']}\n"
         f"- **distinct languages (syntactic `𝓘` dedup): {f['languages']}**\n"
         f"- TGBA-to-language collapse: {f['collapse']}x"
-        f"{f' ({f['capped']} capped)' if f['capped'] else ''}\n"
+        f"{f' ({cuts})' if cuts else ''}\n"
         f"- enumeration abundance per language: median {f['abundance_median']}, "
         f"max {f['abundance_max']}\n"
         f"- `N = |𝒞|` over languages: {f['size_min']} / {f['size_median']} / "
         f"{f['size_max']}  (min / median / max)\n\n"
         f"Built by `python3 genaut/gen/canonize.py {f['tag']}` from "
         f"`corpus/tgba/{f['tag']}/`.\n")
+    if skipped:
+        body += ("\n## Skipped (budget-tripped, recorded)\n\n"
+                 + "\n".join(f"- `{s['ident']}`: {s['reason']}" for s in skipped)
+                 + "\n")
     with open(os.path.join(det_dir, "census.md"), "w") as fh:
         fh.write(body)
     with open(os.path.join(sos_dir, "census.md"), "w") as fh:
@@ -220,15 +266,24 @@ def main(argv: List[str]) -> int:
     ap.add_argument("--out", default=_OUT,
                     help="the root to WRITE under, in corpus layout "
                          "(default logs/genaut/corpus, ignored scratch)")
+    ap.add_argument("--timeout", type=float, default=0.0,
+                    help="per-input wall clock in seconds (0 = off, the default)")
+    ap.add_argument("--cap", type=int, default=20000,
+                    help="algebra closure cap for invariant_of (default 20000)")
+    ap.add_argument("--max-sos", type=int, default=0,
+                    help="reject a language whose .sos dump exceeds this many "
+                         "bytes (0 = off, the default)")
     args = ap.parse_args(argv)
     in_dir = args.in_dir or os.path.join(args.corpus, "tgba", args.tag)
     if not os.path.isdir(in_dir):
         print(f"no TGBA source folder: {in_dir}", file=sys.stderr)
         return 1
-    f = canonize(args.tag, in_dir, args.out)
+    f = canonize(args.tag, in_dir, args.out, timeout=args.timeout,
+                 cap=args.cap, max_sos=args.max_sos)
     print(f"[{f['tag']}] {f['tgba_in']} TGBA -> {f['spot_det']} determinized "
           f"forms (structural) -> {f['languages']} languages (semantic) "
-          f"({f['collapse']}x collapse, {f['capped']} capped) "
+          f"({f['collapse']}x collapse, {f['capped']} capped, "
+          f"{f['timeout']} timeout, {f['oversize']} oversize) "
           f"-> {args.out}/{{det,sos,spot_det}}/{f['tag']}/")
     return 0
 
