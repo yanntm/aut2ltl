@@ -92,8 +92,7 @@ contexts.
 (harvest ≈ log₂ ℓ, invariant unchanged):
 `reference/campaigns/e5/` ← `python3 -m tests.sosl.campaign_e5`. DONE.
 
-## Owed, in order
+## Owed
 
-1. §6.4 restatement (keep the correlation, drop the direction claim).
-2. The paper's §6 numbers restated from the committed 6222 record wherever the
-   draft still carries 3938-era values.
+Nothing — every §6 figure is banked and cited; the paper's §6
+(`sos_learning/s6_experiments.md`) is written from this record.

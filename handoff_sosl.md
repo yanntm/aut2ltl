@@ -26,17 +26,10 @@ their CSVs).
 
 ## Work items — theory
 
-1. **Rescope §6.3's prefix-independence claim**: the banked record
-   (`reference/census/e2_summary.md`) shows **231**/3137 prefix-independent
-   permanent stalls; the draft states two witnesses plus complements and a
-   per-shape zero. Shape ventilation is out of the paper's scope — restate
-   from the 231, keeping the two `witness_lock`-certified specimens as the
-   worked witnesses.
-2. Rewrite §6.3's `⟨TBD⟩` paragraphs from `e2_summary.md`, and §6.4's
-   LTL-cut paragraph from `e3_summary.md` — keep the correlation, drop the
-   direction claim.
-3. Sweep the draft for 3938-era numbers and restate from the committed record
-   (§6's preamble marks this).
+1. **Review the rebooted §6** (`sos_learning/s6_experiments.md`, assembled;
+   every number from the committed record via the report). On approval,
+   delete the superseded `s6_eval.md` (kept in the folder, out of the
+   assembly).
 
 ## The corpus
 
