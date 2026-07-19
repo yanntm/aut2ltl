@@ -46,8 +46,15 @@ def main(argv: List[str]) -> int:
     with open(src, newline="") as fh:
         for r in csv.DictReader(fh):
             leg = r["config_id"]
-            guard[leg]["firings"] += int(r["n_guard_firings"])
-            guard[leg]["cases"] += 1 if int(r["n_guard_firings"]) > 0 else 0
+            # `-1` is the sentinel for "this teacher records no guard": keep the
+            # leg's total negative so the renderer reports it as n/a rather than
+            # summing sentinels into a count.
+            fired = int(r["n_guard_firings"])
+            if fired < 0:
+                guard[leg]["firings"] = -1
+            else:
+                guard[leg]["firings"] += fired
+                guard[leg]["cases"] += 1 if fired > 0 else 0
             cert[leg][r["eq_certification"] or "none"] += 1
             if leg != "default":
                 continue
@@ -104,15 +111,29 @@ def main(argv: List[str]) -> int:
                  f"{worst['wall']:.1f} s (`{worst['case']}`, N={worst['N']}).")
     lines.append("")
 
-    # Oracle guard + certification tallies, per leg (all legs of the CSV).
-    lines.append("## Oracle guard and certification, per leg")
+    # Certification tally, per leg (all legs of the CSV). The guard column is
+    # reported only where the teacher actually records firings: a leg whose runs
+    # all carry `-1` has no functionality guard, and summing that sentinel would
+    # print a negative count.
+    lines.append("## Certification, per leg")
     lines.append("")
-    lines.append("| leg | guard firings | cases with ≥1 firing | certifications |")
-    lines.append("|---|--:|--:|---|")
+    guarded = [leg for leg in sorted(guard) if guard[leg]["firings"] >= 0]
+    head = "| leg | certifications |"
+    rule = "|---|---|"
+    if guarded:
+        head = "| leg | guard firings | cases with ≥1 firing | certifications |"
+        rule = "|---|--:|--:|---|"
+    lines.append(head)
+    lines.append(rule)
     for leg in sorted(guard):
         certs = ", ".join(f"{k}: {v}" for k, v in sorted(cert[leg].items()))
-        lines.append(f"| `{leg}` | {guard[leg]['firings']} "
-                     f"| {guard[leg]['cases']} | {certs} |")
+        if guarded:
+            g = guard[leg]
+            firings = str(g["firings"]) if g["firings"] >= 0 else "n/a"
+            cases = str(g["cases"]) if g["firings"] >= 0 else "n/a"
+            lines.append(f"| `{leg}` | {firings} | {cases} | {certs} |")
+        else:
+            lines.append(f"| `{leg}` | {certs} |")
     lines.append("")
 
     # SoS acceptance-class ventilation: the LTL cut and the Wagner degree.

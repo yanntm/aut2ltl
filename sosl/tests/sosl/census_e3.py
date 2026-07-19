@@ -70,6 +70,29 @@ def _cmp(ours: int, theirs: int) -> int:
     return (ours > theirs) - (ours < theirs)
 
 
+def _coverage(by_case: "Dict[str, Dict[str, Tuple[int, int, int]]]") -> str:
+    """The comparison's coverage, stated rather than left implicit: how many
+    languages each side produced a result for, and how many are dropped from
+    every paired count because no ROLL mode returned one.
+
+    A paired metric is computed only where both sides have a number, so ROLL's
+    failures shrink the comparison set. Reporting the shrinkage is the honest
+    form: silently dropping them would credit the baseline with a corpus it did
+    not finish."""
+    ours = sum(1 for k in by_case.values()
+               if "ours" in k and k["ours"][1] >= 0)
+    per_mode = {m: sum(1 for k in by_case.values()
+                       if m in k and k[m][1] >= 0) for m in MODES}
+    none_ok = sum(1 for k in by_case.values()
+                  if not any(m in k and k[m][1] >= 0 for m in MODES))
+    return (f"**Coverage.** Ours returns a result on **{ours}** of "
+            f"{len(by_case)} languages; ROLL on "
+            + ", ".join(f"{per_mode[m]} ({m})" for m in MODES)
+            + f". On **{none_ok}** languages no ROLL mode returns one, so every "
+              "paired count below excludes them — the comparison set is "
+              f"{len(by_case) - none_ok}, not {len(by_case)}.")
+
+
 def _query_section(by_case: "Dict[str, Dict[str, Tuple[int, int, int]]]",
                    ltl_of: "Dict[str, Optional[bool]]") -> List[str]:
     """The paired query-cost tables: per-kind medians, then the head-to-head
@@ -112,6 +135,7 @@ def _query_section(by_case: "Dict[str, Dict[str, Tuple[int, int, int]]]",
              "Membership (one lasso = one query on both sides) and equivalence "
              "queries, per kind. A ROLL count is the whole FDFA family's total, "
              "relative to the Büchi presentation it is handed.", "",
+             _coverage(by_case), "",
              "| metric | ours | ROLL periodic | ROLL syntactic | ROLL recurrent |",
              "|---|--:|--:|--:|--:|"]
     for label, d in (("median MQ", mq), ("median EQ", eq)):
