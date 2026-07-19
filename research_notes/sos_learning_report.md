@@ -76,12 +76,23 @@ every byte-equal run passes it — **Theorem 5.3 with zero counterexamples over
 the catalogue** — dual-symmetric over the 2733 comparable pairs. Counts are
 floors at the stated budget (≥ 3137 permanent; no decided case ever flips).
 
-Prefix-independent permanent stalls: two witnesses plus their complements,
-certified on the canonical invariants (prefix-independence algebraic, every
-minted column ω-sort — `witness_lock` green; complements stated by duality).
+Exhibits at 6222 (source `reference/census/e2_summary.md`, from the
+ablation CSV): stall frequency **3137/6222**; the gap `N − stall` ranges 1
+to 53, head of the distribution:
 
-Stall frequency / gap distribution / per-shape exhaustive negative /
-individual exhibits at 6222: OWED (spec).
+| gap | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | ⋯ | 46 | 48 | 53 |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|:--:|--:|--:|--:|
+| languages | 661 | 533 | 467 | 332 | 242 | 140 | 149 | 99 | 75 | 31 | ⋯ | 2 | 2 | 2 |
+
+Sharpest gap 53: `3state1ap0acc_015752` + dual, `N = 68` stalled at 15.
+Every count is even — dual-symmetric, as the bit-flip symmetry demands.
+Permanence cuts across the LTL boundary: **1741/3137** of the permanent
+stalls are LTL-definable. Prefix-independent permanent stalls: **231/3137**
+(algebraic check on the canonical invariants). The two named specimens
+certified by `witness_lock` (prefix-independence algebraic, every minted
+column ω-sort; complements by duality) remain the paper's worked witnesses;
+the draft's two-witness / per-shape-zero claim is under theory
+reconciliation against the 231.
 
 ## §6.4 — ROLL FDFA baseline
 
