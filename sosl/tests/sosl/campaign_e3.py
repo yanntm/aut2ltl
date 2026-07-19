@@ -20,13 +20,12 @@ from pathlib import Path
 from typing import List
 
 from sosl.experiment.baseline import MODES, ROLL_JAR, roll_case
-from sosl.experiment.manifest import NAMED_CASES
-from sosl.experiment.run import Config, run_case
+from sosl.experiment.manifest import DEFAULT, NAMED_CASES
+from sosl.experiment.run import run_case
 from sosl.sos.build import reference_of_hoa
 
 OUT = Path("tests/sosl/logs/e3")
 WORK = str(OUT / "targets")
-DEFAULT = Config("default", saturation=True, eq_mode="bounded")
 
 
 def main(argv: List[str]) -> int:
