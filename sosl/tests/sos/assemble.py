@@ -24,6 +24,8 @@ import os
 import sys
 from typing import List, Optional, Tuple
 
+import spot
+
 from tests.sos.build_sos import (
     to_hoa_path,
     transition_monoid_has_group,
@@ -162,7 +164,9 @@ def main(argv: List[str]) -> int:
         # a distinct scratch file per formula input so they do not clobber.
         sub = os.path.join(scratch, f"_in{i}")
         path = to_hoa_path(inp, sub) if not os.path.isfile(inp) else inp
-        data = pipeline(import_hoa(path))
+        # The input HOA is the canonical D (sources are import-layer
+        # fixpoints); read it as written — its state numbering is the report's.
+        data = pipeline(spot.automaton(path))
         inv = freeze(data) if data is not None else None
         res = residuals_of_hoa(path) if data is not None else None
         built.append((label, inp, data, inv, res))
