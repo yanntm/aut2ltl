@@ -42,10 +42,10 @@ canonical `.sos` of `a_implies_xa` and `a_once`, with the separating left
 contexts.
 `reference/campaigns/m4b/e2_report.md` ← `python3 -m tests.sosl.campaign_m4b`. DONE.
 
-**§6.1 — shape manifest.** Per-shape table: families, presentations, languages
-after dedup. OWED — emit from `manifest.py`, commit under `reference/census/`.
-Also OWED here: the guard and cap tallies (`n_guard_firings`,
-`eq_certification` cap-escapes per leg — derivable from the sweep CSV).
+**§6.1 — guard and cap tallies.** Per-leg `n_guard_firings` totals and the
+`eq_certification` cross-tab:
+`reference/census/e1_summary.md` ←
+`python3 -m tests.sosl.census_e1 ../reference/census/sweep_results.csv`. DONE.
 
 **§6.2 — cost.**
 - Named-case cost table: `reference/campaigns/e0/results.csv` (default rows). DONE.
@@ -53,8 +53,10 @@ Also OWED here: the guard and cap tallies (`n_guard_firings`,
   `reference/census/sweep_results.csv` →
   `python3 -m tests.sosl.census_e1 ../reference/census/sweep_results.csv` →
   `reference/census/e1_summary.md`. DONE.
-- Wall-time line (total + worst case): OWED — derive from the sweep CSV's
-  `wall_seconds`; extend `census_e1`.
+- Wall-time line (total + worst case) and the size-controlled ventilation
+  (splits/N, member/(N²·|Σ|) — a recorded negative: cost is mediated by N,
+  no per-class claim in the paper): `reference/census/e1_summary.md`, same
+  command as §6.1. DONE.
 
 **§6.3 — the saturation ablation.** All at the stated 60 s budget, floors.
 - Congruence column (Theorem 5.3 at census scale):
@@ -80,8 +82,9 @@ Also OWED here: the guard and cap tallies (`n_guard_firings`,
   the robust comparison axes are output size and capability.
 - Restatement OWED: at 6222 the LTL-cut direction *inverts* vs the draft's
   small-shape numbers — keep the correlation, drop the direction claim.
-- LTL-agreement count: OWED — one sentence; byte-equality of every default-leg
-  run makes the read-off agree with ground truth on every `SOUND` case.
+- LTL-agreement count: all 6222 — byte-equality of every default-leg run
+  (`e1_summary.md` certification tally) makes the read-off agree with ground
+  truth on every case. DONE.
 
 **§6.5 — counterexample sensitivity.** The padding table
 (harvest ≈ log₂ ℓ, invariant unchanged):
@@ -91,7 +94,6 @@ Also OWED here: the guard and cap tallies (`n_guard_firings`,
 
 1. §6.3 at 6222: `census_e2_exhibits` (stall frequency, gap distribution,
    exhibits, per-shape exhaustive negative), reported at the stated budget.
-2. The free fills, no new drop needed: §6.1 shape manifest + guard/cap
-   tallies; §6.2 wall-time line; §6.4 restatement + agreement sentence.
+2. §6.4 restatement (keep the correlation, drop the direction claim).
 3. The paper's §6 numbers restated from the committed 6222 record wherever the
    draft still carries 3938-era values.
