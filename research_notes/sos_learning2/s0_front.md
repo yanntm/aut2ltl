@@ -38,7 +38,8 @@ stalls permanently one class short. On a
 complement-closed census of 6222 languages the learner reconstructs every
 syntactic invariant byte-for-byte; without the legality discipline half of
 them stall permanently; and LTL-definability is read off each learned
-invariant — a question no family of acceptors answers.
+invariant: the aperiodicity check of [SωS26] applied verbatim to the
+learner's output — a decision no current tool derives from an acceptor.
 
 ---
 
@@ -84,7 +85,10 @@ onto the stem leaves the infinite word unchanged — turns every left demand
 of the two-sided congruence into a right computation. And a
 *canonicalization theorem* carries every well-formed invariant, however
 obtained, onto the syntactic invariant of its own language, by partition
-refinement on its own table.
+refinement on its own table. [SωS26]'s larger case is that the invariant,
+rather than any automaton, can serve as the unit of discourse for
+ω-regular languages — identity, complement, classification as facts of one
+file; this paper is that program's learning instance.
 
 This paper shows the same object is learnable, and its design can be said
 in one sentence: **the learner never poses a hypothesis that is not a
@@ -116,7 +120,9 @@ certifies is either the canonical algebra already or carries no algebra at
 all, stalling permanently already on `a → Xa` (§6). The FDFA line and this
 paper thus draw different consequences from one shared observation [AF21]:
 the field enriches the acceptor family on the near side of that boundary;
-the legality discipline is what crosses it.
+the legality discipline is what crosses it, and the rotation lemma —
+embedded already in the invariant's definitions — is what makes the
+crossing computable.
 
 **Contributions.**
 
@@ -137,7 +143,8 @@ the legality discipline is what crosses it.
    reconstructed byte-for-byte; the acceptor-typed relaxation stalls
    permanently on half of them; a comparison to the state-of-the-art FDFA
    learner ROLL shows comparable sizes and queries — with LTL-definability
-   read off our result, and not off theirs (§7).
+   read off our result by [SωS26]'s aperiodicity check, a decision
+   currently tooled on no acceptor representation (§7).
 
 The closest prior work, Urbat and Schröder's algebraic automata learning
 [US20], identified the syntactic algebra as the right learnable target for

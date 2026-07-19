@@ -192,14 +192,19 @@ languages under the same counting rule (one lasso = one membership query).
 Two adaptations follow from ROLL's interface. ROLL learns the language of a
 Büchi automaton, so it receives a state-based Büchi presentation of each
 language (ROLL misreads a transition-based Büchi input as a trivial
-language): the language is the same, the presentation ROLL's, so membership
-counts are presentation-sensitive and the comparison rests on output size
-and capability. And the two learners certify equivalence by different but
-both exact mechanisms — ours the align-and-scan against the language's
-invariant (§2.3), ROLL's its native automaton equivalence (RABIT).
+language): the language is the same, the presentation ROLL's, so ROLL's
+membership counts are relative to that presentation — reported as
+measured, with that caveat, rather than suppressed. And the two learners
+certify equivalence by different but both exact mechanisms — ours the
+align-and-scan against the language's invariant (§2.3), ROLL's its native
+automaton equivalence (RABIT). The paired comparison records, per case
+and per census aggregate: membership and equivalence queries, wall time,
+and output size; the query and time columns land with the regeneration
+(status note above), the sizes below are from the census record.
 
 The named-case paired table (ROLL's size is the summed states of its FDFA,
-leading plus progress DFAs):
+leading plus progress DFAs; ROLL MQ/EQ and runtime columns to be added
+from the regenerated record):
 
 | case | ours `N` (MQ/EQ) | ROLL periodic | syntactic | recurrent |
 |---|---|:--:|:--:|:--:|
@@ -224,13 +229,18 @@ structure that blocks LTL-definability is also what inflates the algebra
 against an acceptor — Proposition 5.4(b)'s mechanism, visible at census
 scale.
 
-The comparison's result is capability. From the learned invariant,
-LTL-definability is a read-off — the aperiodicity test of §2.2 — computed
-on every case and agreeing with ground truth on all 6222: every run
-certifies exact, so the read-off is evaluated on an invariant byte-equal to
-the reference. From an FDFA it is not answerable without a further
-construction. One learner returns the language's algebra, from which
-definability is read; the other returns an acceptor, from which it is not.
+The comparison's second axis is capability, and its attribution matters:
+LTL-definability is not a product of this paper — it is [SωS26]'s solved
+read-off, the aperiodicity test of §2.2 — and the learner inherits it
+because its output *is* the object that read-off consumes. Computed on
+every case, it agrees with ground truth on all 6222: every run certifies
+exact, so the read-off is evaluated on an invariant byte-equal to the
+reference. From an FDFA the question is answerable in principle — build an
+automaton from the family and run the construction of [SωS26] — but no
+tool in the current state of the art implements that route: this is not a
+fact about representations, only about what stands solved on which
+object. One learner returns the object on which definability is already
+decided; the other returns one where it is still a construction away.
 
 ### 7.5 Counterexample sensitivity
 

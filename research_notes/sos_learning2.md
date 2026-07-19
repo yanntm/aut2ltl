@@ -40,7 +40,8 @@ stalls permanently one class short. On a
 complement-closed census of 6222 languages the learner reconstructs every
 syntactic invariant byte-for-byte; without the legality discipline half of
 them stall permanently; and LTL-definability is read off each learned
-invariant — a question no family of acceptors answers.
+invariant: the aperiodicity check of [SωS26] applied verbatim to the
+learner's output — a decision no current tool derives from an acceptor.
 
 ---
 
@@ -86,7 +87,10 @@ onto the stem leaves the infinite word unchanged — turns every left demand
 of the two-sided congruence into a right computation. And a
 *canonicalization theorem* carries every well-formed invariant, however
 obtained, onto the syntactic invariant of its own language, by partition
-refinement on its own table.
+refinement on its own table. [SωS26]'s larger case is that the invariant,
+rather than any automaton, can serve as the unit of discourse for
+ω-regular languages — identity, complement, classification as facts of one
+file; this paper is that program's learning instance.
 
 This paper shows the same object is learnable, and its design can be said
 in one sentence: **the learner never poses a hypothesis that is not a
@@ -118,7 +122,9 @@ certifies is either the canonical algebra already or carries no algebra at
 all, stalling permanently already on `a → Xa` (§6). The FDFA line and this
 paper thus draw different consequences from one shared observation [AF21]:
 the field enriches the acceptor family on the near side of that boundary;
-the legality discipline is what crosses it.
+the legality discipline is what crosses it, and the rotation lemma —
+embedded already in the invariant's definitions — is what makes the
+crossing computable.
 
 **Contributions.**
 
@@ -139,7 +145,8 @@ the legality discipline is what crosses it.
    reconstructed byte-for-byte; the acceptor-typed relaxation stalls
    permanently on half of them; a comparison to the state-of-the-art FDFA
    learner ROLL shows comparable sizes and queries — with LTL-definability
-   read off our result, and not off theirs (§7).
+   read off our result by [SωS26]'s aperiodicity check, a decision
+   currently tooled on no acceptor representation (§7).
 
 The closest prior work, Urbat and Schröder's algebraic automata learning
 [US20], identified the syntactic algebra as the right learnable target for
@@ -210,13 +217,15 @@ can be trivial while `L` is complex [AF21], so there is no minimal
 deterministic acceptor to converge to — and the history of ω-learning (§8)
 is a history of substitute targets: a subclass where the right congruence
 happens to suffice [MP95], encodings into finite words [FCC+08], families
-of DFAs in three competing normal forms [AF16, ABF18]. All are acceptors;
-none is a canonical object of `L` alone. This paper keeps the L\* view and
-changes the target: the canonical object an ω-regular language actually
-owns is the quotient of Arnold's syntactic congruence, materialized as the
-invariant `𝓘(L)` — recalled next — and the discipline of §3 is what makes
-that target reachable through queries: the learner's beliefs are held to
-the same standard as the target, well-formed invariants throughout.
+of DFAs in three canonical normal forms [AF16, ABF18]. All are acceptors —
+the FDFA forms canonical ones, functions of `L` alone — and what none of
+them is, is the language's *algebra*: no composition, hence no idempotents,
+no power orbits, no definability read-off. This paper keeps the L\* view
+and moves the target to that algebra: the quotient of Arnold's syntactic
+congruence, materialized as the invariant `𝓘(L)` — recalled next — and the
+discipline of §3 is what makes it reachable through queries: the learner's
+beliefs are held to the same standard as the target, well-formed
+invariants throughout.
 
 **Conventions.** One lasso membership query counts as one query; equivalence
 queries are counted separately; all bounds are stated against the size of
@@ -1324,6 +1333,22 @@ it — learned here, constructed in [SωS26] — pays `N`. Output-polynomial in
 `N` (Proposition 5.3) is the strongest guarantee compatible with delivering
 the object.
 
+*Remark (an FDFA is the invariant, sliced).* The proof of (a) is worth
+reading structurally. The leading congruence is agreement under the
+*linear* membership tests at the single slot `d = [ε]`, and each progress
+congruence, at leading class `[u]`, is built from the tests read at the
+single slot `d = 𝒮(u)` — the ω tests for the periodic flavor, with
+per-flavor linear clauses added ([SωS26, Def 4.3]). A canonical FDFA is
+thus the algebra's test data *sliced per slot*: canonical quotients of the
+invariant, one per component, computable from it by table scans — with the
+composition discarded, and with it the idempotents, power orbits, and
+group content the read-offs consume. Recovering the invariant from the
+family runs the other way only through a full reconstruction, at the
+exponential price (b) makes exact. We suspect, without pursuing it here,
+that the completeness of the canonical families [AF16] can itself be
+reread this way — each flavor a scheme by which the per-slot slices
+jointly exhaust the tests — and leave the question open.
+
 *Example (the run, completed, on `Even`).* After §4.2's split the table is
 Table 6, and the next round's checks and equivalence query are clean. The
 whole run, Tables 1 → 3(b) → 6: five classes from **two splits — one per
@@ -1701,14 +1726,19 @@ languages under the same counting rule (one lasso = one membership query).
 Two adaptations follow from ROLL's interface. ROLL learns the language of a
 Büchi automaton, so it receives a state-based Büchi presentation of each
 language (ROLL misreads a transition-based Büchi input as a trivial
-language): the language is the same, the presentation ROLL's, so membership
-counts are presentation-sensitive and the comparison rests on output size
-and capability. And the two learners certify equivalence by different but
-both exact mechanisms — ours the align-and-scan against the language's
-invariant (§2.3), ROLL's its native automaton equivalence (RABIT).
+language): the language is the same, the presentation ROLL's, so ROLL's
+membership counts are relative to that presentation — reported as
+measured, with that caveat, rather than suppressed. And the two learners
+certify equivalence by different but both exact mechanisms — ours the
+align-and-scan against the language's invariant (§2.3), ROLL's its native
+automaton equivalence (RABIT). The paired comparison records, per case
+and per census aggregate: membership and equivalence queries, wall time,
+and output size; the query and time columns land with the regeneration
+(status note above), the sizes below are from the census record.
 
 The named-case paired table (ROLL's size is the summed states of its FDFA,
-leading plus progress DFAs):
+leading plus progress DFAs; ROLL MQ/EQ and runtime columns to be added
+from the regenerated record):
 
 | case | ours `N` (MQ/EQ) | ROLL periodic | syntactic | recurrent |
 |---|---|:--:|:--:|:--:|
@@ -1733,13 +1763,18 @@ structure that blocks LTL-definability is also what inflates the algebra
 against an acceptor — Proposition 5.4(b)'s mechanism, visible at census
 scale.
 
-The comparison's result is capability. From the learned invariant,
-LTL-definability is a read-off — the aperiodicity test of §2.2 — computed
-on every case and agreeing with ground truth on all 6222: every run
-certifies exact, so the read-off is evaluated on an invariant byte-equal to
-the reference. From an FDFA it is not answerable without a further
-construction. One learner returns the language's algebra, from which
-definability is read; the other returns an acceptor, from which it is not.
+The comparison's second axis is capability, and its attribution matters:
+LTL-definability is not a product of this paper — it is [SωS26]'s solved
+read-off, the aperiodicity test of §2.2 — and the learner inherits it
+because its output *is* the object that read-off consumes. Computed on
+every case, it agrees with ground truth on all 6222: every run certifies
+exact, so the read-off is evaluated on an invariant byte-equal to the
+reference. From an FDFA the question is answerable in principle — build an
+automaton from the family and run the construction of [SωS26] — but no
+tool in the current state of the art implements that route: this is not a
+fact about representations, only about what stands solved on which
+object. One learner returns the object on which definability is already
+decided; the other returns one where it is still a construction away.
 
 ### 7.5 Counterexample sensitivity
 

@@ -125,8 +125,10 @@ pipeline. The refactor should make the code match the paper, then rerun:
    legality / P; new: escalations by source). Expected invariants of the
    rerun: byte-equality on all 6222; the §7.3 relaxed-leg classification
    unchanged (it is the §6 learner, untouched); `a → Xa` still 1
-   escalation / 0 cex / 1 EQ. Also new measurement: splits by source,
-   frames per run.
+   escalation / 0 cex / 1 EQ. Also new measurements: splits by source,
+   frames per run, and the **paired ROLL comparison extended to
+   membership/equivalence queries and wall time** (per case and census
+   aggregate, presentation caveat noted) — §7.4 reserves the columns.
 6. Purge `fold`/`rep` vocabulary from the refactored code to match the
    paper: letter action, keys, candidate stamp.
 

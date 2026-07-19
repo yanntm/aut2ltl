@@ -59,13 +59,15 @@ can be trivial while `L` is complex [AF21], so there is no minimal
 deterministic acceptor to converge to — and the history of ω-learning (§8)
 is a history of substitute targets: a subclass where the right congruence
 happens to suffice [MP95], encodings into finite words [FCC+08], families
-of DFAs in three competing normal forms [AF16, ABF18]. All are acceptors;
-none is a canonical object of `L` alone. This paper keeps the L\* view and
-changes the target: the canonical object an ω-regular language actually
-owns is the quotient of Arnold's syntactic congruence, materialized as the
-invariant `𝓘(L)` — recalled next — and the discipline of §3 is what makes
-that target reachable through queries: the learner's beliefs are held to
-the same standard as the target, well-formed invariants throughout.
+of DFAs in three canonical normal forms [AF16, ABF18]. All are acceptors —
+the FDFA forms canonical ones, functions of `L` alone — and what none of
+them is, is the language's *algebra*: no composition, hence no idempotents,
+no power orbits, no definability read-off. This paper keeps the L\* view
+and moves the target to that algebra: the quotient of Arnold's syntactic
+congruence, materialized as the invariant `𝓘(L)` — recalled next — and the
+discipline of §3 is what makes it reachable through queries: the learner's
+beliefs are held to the same standard as the target, well-formed
+invariants throughout.
 
 **Conventions.** One lasso membership query counts as one query; equivalence
 queries are counted separately; all bounds are stated against the size of

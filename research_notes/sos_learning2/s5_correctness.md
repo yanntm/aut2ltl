@@ -142,6 +142,22 @@ it — learned here, constructed in [SωS26] — pays `N`. Output-polynomial in
 `N` (Proposition 5.3) is the strongest guarantee compatible with delivering
 the object.
 
+*Remark (an FDFA is the invariant, sliced).* The proof of (a) is worth
+reading structurally. The leading congruence is agreement under the
+*linear* membership tests at the single slot `d = [ε]`, and each progress
+congruence, at leading class `[u]`, is built from the tests read at the
+single slot `d = 𝒮(u)` — the ω tests for the periodic flavor, with
+per-flavor linear clauses added ([SωS26, Def 4.3]). A canonical FDFA is
+thus the algebra's test data *sliced per slot*: canonical quotients of the
+invariant, one per component, computable from it by table scans — with the
+composition discarded, and with it the idempotents, power orbits, and
+group content the read-offs consume. Recovering the invariant from the
+family runs the other way only through a full reconstruction, at the
+exponential price (b) makes exact. We suspect, without pursuing it here,
+that the completeness of the canonical families [AF16] can itself be
+reread this way — each flavor a scheme by which the per-slot slices
+jointly exhaust the tests — and leave the question open.
+
 *Example (the run, completed, on `Even`).* After §4.2's split the table is
 Table 6, and the next round's checks and equivalence query are clean. The
 whole run, Tables 1 → 3(b) → 6: five classes from **two splits — one per
