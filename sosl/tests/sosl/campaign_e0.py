@@ -37,9 +37,9 @@ OUT = Path("tests/sosl/logs/e0")
 # counts (fill/harvest/saturation/pcache), the initial/final class counts, and
 # the escalation count — default config.
 BASELINES: Dict[str, dict] = {
-    "even": dict(init=3, learned=5, fill=32, harvest=4, sat=7, pcache=8,
+    "even": dict(init=2, learned=5, fill=17, harvest=4, sat=1, pcache=3,
                  escalations=1),
-    "evenblocks": dict(init=3, learned=8, fill=67, harvest=4, sat=14, pcache=14,
+    "evenblocks": dict(init=2, learned=8, fill=34, harvest=3, sat=2, pcache=5,
                        escalations=2),
 }
 
