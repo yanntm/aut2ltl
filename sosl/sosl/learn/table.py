@@ -16,14 +16,19 @@ step) is derived separately in `sosl.learn.partition`.
     bit is ``False`` — there is no such omega word — so ``eps`` merges with any
     word congruent to it rather than being forced into its own class.
 
-Every membership query passes through `_q`, which counts them (``n_member``).
+Every membership query passes through the `Evidence` ledger
+(`sosl.learn.evidence`): one teacher query per distinct infinite word across
+the whole run, every later presentation a free replay. ``n_member`` counts the
+actual teacher queries.
 """
 from __future__ import annotations
 
 from typing import Dict, List, Tuple
 
 from sosl.learn.columns import Column, Member, OmCol, is_omega, query
+from sosl.learn.evidence import Evidence
 from sosl.sos.alphabet import EMPTY, Alphabet, Word
+from sosl.sos.lasso import Lasso
 
 
 class Table:
@@ -31,22 +36,25 @@ class Table:
 
     def __init__(self, alphabet: Alphabet, member: Member) -> None:
         self.alphabet = alphabet
-        self._member = member
-        self.n_member = 0
+        self.evidence = Evidence(member)
         self.rows: List[Word] = [EMPTY] + [(a,) for a in alphabet.letters()]
         self.row_set = set(self.rows)
         self.columns: List[Column] = [OmCol(EMPTY, EMPTY)]
         self.entry: Dict[Tuple[Word, int], bool] = {}
 
-    def _q(self, col: Column, w: Word) -> bool:
-        self.n_member += 1
-        return query(col, self._member, w)
+    @property
+    def n_member(self) -> int:
+        """Teacher queries posed so far (evidence cache misses)."""
+        return self.evidence.n_member
 
-    def query_lasso(self, lasso) -> bool:
-        """A counted direct membership query (used by counterexample chains,
-        which query lassos the column machinery does not shape)."""
-        self.n_member += 1
-        return self._member(lasso)
+    def _q(self, col: Column, w: Word) -> bool:
+        return query(col, self.evidence.bit, w)
+
+    def query_lasso(self, lasso: Lasso) -> bool:
+        """A direct membership query through the evidence ledger (used by the
+        chains and the P fill, which query lassos the column machinery does
+        not shape)."""
+        return self.evidence.bit(lasso)
 
     def domain(self) -> List[Word]:
         """Rows then frontier (``rows . Sigma``), de-duplicated, in a stable
