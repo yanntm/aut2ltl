@@ -5,8 +5,14 @@ A `Teacher` answers the two queries of active learning over an unknown
 omega-regular language:
 
   * **membership** — is a given `Lasso` (the word u.v^omega) in L?
-  * **equivalence** — does a `Hypothesis` capture L? If not, return a lasso on
+  * **equivalence** — does a hypothesis capture L? If not, return a lasso on
     which they disagree.
+
+A hypothesis is an `Invariant`, point blank: the learner never poses anything
+that is not a language, and a well-formed invariant denotes exactly one — its
+own. The teacher therefore reads the hypothesis algebraically (its `member`
+read-off is total and normative); no operational prediction, no partial cache,
+no acceptor-shaped object crosses this interface.
 
 The learner in `sosl.learn` is written against this Protocol and nothing else —
 no automaton, no spot, no reference builder. Concrete teachers live in
@@ -18,15 +24,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol, Union
 
-from sosl.sos.hypothesis import Hypothesis
+from sosl.sos.invariant import Invariant
 from sosl.sos.lasso import Lasso
 
 
 @dataclass(frozen=True)
 class Equivalent:
     """The hypothesis agrees with L on every lasso, certified by ``strategy``
-    (e.g. ``"reps"``, ``"bounded:8"``, ``"exact"``) — recorded so a run
-    certified only by an incomplete strategy can be flagged."""
+    (e.g. ``"exact"``, ``"bounded:8"``) — recorded so a run certified only by
+    an incomplete strategy can be flagged."""
 
     strategy: str
 
@@ -55,7 +61,7 @@ class Teacher(Protocol):
         """Is ``lasso`` (the ultimately-periodic word u.v^omega) in L?"""
         ...
 
-    def equiv(self, hypothesis: Hypothesis) -> EquivResult:
-        """Decide whether ``hypothesis`` captures L, returning `Equivalent` or a
-        minimized `Counterexample`."""
+    def equiv(self, hypothesis: Invariant) -> EquivResult:
+        """Decide whether the well-formed invariant ``hypothesis`` denotes L,
+        returning `Equivalent` or a minimized `Counterexample`."""
         ...
