@@ -41,15 +41,14 @@ import statistics
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from sosl.experiment.baseline import MODES, ROLL_JAR, run_roll, to_buchi_hoa
-from sosl.experiment.manifest import (FLAT_CANON_ROOT, flat_canon_cases,
-                                      load_category)
-from sosl.experiment.run import Config, run_case
+from sosl.experiment.manifest import (DEFAULT, FLAT_CANON_ROOT,
+                                      flat_canon_cases, load_category)
+from sosl.experiment.run import run_case
 
 OUT = Path("tests/sosl/logs/census_e3")
-DEFAULT = Config("default", saturation=True, eq_mode="bounded")
 KINDS: Tuple[str, ...] = ("ours",) + MODES
 FIELDS = ["case", "kind", "size", "MQ", "EQ"]
 
@@ -66,34 +65,115 @@ def _done_rows(csv_path: Path) -> Set[Tuple[str, str]]:
         return {(r["case"], r["kind"]) for r in csv.DictReader(fh)}
 
 
+def _cmp(ours: int, theirs: int) -> int:
+    """`-1` / `0` / `+1` as `ours` is below / equal to / above `theirs`."""
+    return (ours > theirs) - (ours < theirs)
+
+
+def _query_section(by_case: "Dict[str, Dict[str, Tuple[int, int, int]]]",
+                   ltl_of: "Dict[str, Optional[bool]]") -> List[str]:
+    """The paired query-cost tables: per-kind medians, then the head-to-head
+    distribution of our membership / equivalence counts against ROLL's cheapest
+    mode, ventilated by the LTL cut.
+
+    A ROLL `#MQ` is already the whole family's total — the leading DFA and every
+    progress DFA draw on one shared membership counter — so a mode's count is
+    directly comparable to ours under the shared counting rule (one lasso = one
+    membership query). It remains relative to the Büchi presentation ROLL is
+    handed (`baseline`), and is reported as measured."""
+    mq: Dict[str, List[int]] = {k: [] for k in KINDS}
+    eq: Dict[str, List[int]] = {k: [] for k in KINDS}
+    ratios: List[float] = []
+    mq_cmp = {True: [0, 0, 0], False: [0, 0, 0], None: [0, 0, 0]}  # less/eq/more
+    eq_cmp = {True: [0, 0, 0], False: [0, 0, 0], None: [0, 0, 0]}
+    for case, kinds in by_case.items():
+        for k, (_, m, e) in kinds.items():
+            if m >= 0:
+                mq[k].append(m)
+            if e >= 0:
+                eq[k].append(e)
+        ours = kinds.get("ours")
+        theirs = [kinds[m] for m in MODES if m in kinds and kinds[m][1] >= 0]
+        if not ours or ours[1] < 0 or not theirs:
+            continue
+        key = ltl_of.get(case)
+        best_mq = min(t[1] for t in theirs)
+        best_eq = min((t[2] for t in theirs if t[2] >= 0), default=-1)
+        mq_cmp[key][_cmp(ours[1], best_mq) + 1] += 1
+        if best_eq >= 0 and ours[2] >= 0:
+            eq_cmp[key][_cmp(ours[2], best_eq) + 1] += 1
+        if best_mq > 0:
+            ratios.append(ours[1] / best_mq)
+
+    def _totals(d) -> List[int]:
+        return [sum(d[k][i] for k in (True, False, None)) for i in range(3)]
+
+    lines = ["## Query cost", "",
+             "Membership (one lasso = one query on both sides) and equivalence "
+             "queries, per kind. A ROLL count is the whole FDFA family's total, "
+             "relative to the Büchi presentation it is handed.", "",
+             "| metric | ours | ROLL periodic | ROLL syntactic | ROLL recurrent |",
+             "|---|--:|--:|--:|--:|"]
+    for label, d in (("median MQ", mq), ("median EQ", eq)):
+        lines.append(f"| {label} | " + " | ".join(
+            f"{_median(d[k]):.0f}" for k in KINDS) + " |")
+    lines.append("")
+    fewer, same, more = _totals(mq_cmp)
+    n = fewer + same + more
+    lines.append(f"**Membership head-to-head over {n} languages** (ours vs "
+                 f"ROLL's cheapest mode): ours fewer **{fewer}**, tied "
+                 f"**{same}**, more **{more}**"
+                 + (f"; median ratio ours/ROLL **{_median(ratios):.2f}**."
+                    if ratios else "."))
+    lines.append("")
+    e_fewer, e_same, e_more = _totals(eq_cmp)
+    if e_fewer + e_same + e_more:
+        lines.append(f"**Equivalence head-to-head** over "
+                     f"{e_fewer + e_same + e_more} languages: ours fewer "
+                     f"**{e_fewer}**, tied **{e_same}**, more **{e_more}**.")
+        lines.append("")
+    lines.append("Ventilated by the LTL cut:")
+    lines.append("")
+    lines.append("| definability | MQ fewer | tied | more | EQ fewer | tied | more |")
+    lines.append("|---|--:|--:|--:|--:|--:|--:|")
+    for label, key in (("LTL (aperiodic)", True), ("non-LTL", False)):
+        row = mq_cmp[key] + eq_cmp[key]
+        if any(row):
+            lines.append(f"| {label} | " + " | ".join(str(v) for v in row) + " |")
+    lines.append("")
+    return lines
+
+
 def _summary(csv_path: Path) -> None:
     """Compute the E3 summary a posteriori from the streamed long-format CSV:
-    pivot per case, then paired medians, the size-comparison distribution, and the
-    LTL-cut ventilation."""
+    pivot per case, then paired medians, the size- and query-cost comparisons,
+    and the LTL-cut ventilation of each."""
     rows: List[dict] = list(csv.DictReader(open(csv_path, newline="")))
-    # case -> kind -> size (ours = class count N, a ROLL mode = FDFA states)
-    by_case: Dict[str, Dict[str, int]] = defaultdict(dict)
+    # case -> kind -> (size, MQ, EQ); ours = class count N, a ROLL mode = FDFA states
+    by_case: Dict[str, Dict[str, Tuple[int, int, int]]] = defaultdict(dict)
     for r in rows:
-        by_case[r["case"]][r["kind"]] = int(r["size"])
+        by_case[r["case"]][r["kind"]] = (int(r["size"]), int(r["MQ"]),
+                                         int(r["EQ"]))
+    ltl_of: Dict[str, Optional[bool]] = {}
 
     our_N: List[int] = []
     fdfa: Dict[str, List[int]] = {m: [] for m in MODES}
     smaller = larger = tied = 0
     ltl_cmp = {True: [0, 0, 0], False: [0, 0, 0], None: [0, 0, 0]}  # s/l/t
     for case, kinds in by_case.items():
-        n = kinds.get("ours", -1)
+        cat = load_category(f"{FLAT_CANON_ROOT}/sos/{case}.sos")
+        key = ltl_of[case] = cat.ltl if cat else None
+        n = kinds.get("ours", (-1, -1, -1))[0]
         if n >= 0:
             our_N.append(n)
         best = -1
         for m in MODES:
-            v = kinds.get(m, -1)
+            v = kinds.get(m, (-1, -1, -1))[0]
             if v >= 0:
                 fdfa[m].append(v)
                 best = v if best < 0 else min(best, v)
         if best < 0 or n < 0:
             continue
-        cat = load_category(f"{FLAT_CANON_ROOT}/sos/{case}.sos")
-        key = cat.ltl if cat else None
         if n < best:
             smaller += 1; ltl_cmp[key][0] += 1
         elif n > best:
@@ -128,6 +208,7 @@ def _summary(csv_path: Path) -> None:
         if s + l + t:
             lines.append(f"| {label} | {s} | {l} | {t} |")
     lines.append("")
+    lines += _query_section(by_case, ltl_of)
     (OUT / "summary.md").write_text("\n".join(lines), encoding="utf-8")
     print(f"E3: {n_langs} langs | median N={_median(our_N):.0f} "
           f"FDFA={{{', '.join(f'{m}:{_median(fdfa[m]):.0f}' for m in MODES)}}}")
