@@ -99,6 +99,10 @@ _DEFAULT_EXCLUDE = ("2state2ap0acc",)
 
 _TAG_RE = re.compile(r"^(\d+)state(\d+)ap(\d+)acc(_parity)?$")
 
+# Sort-key sentinel for an imported (non-enumerated) tier: no shape bound, so it
+# orders after every census shape and never owns a language a shape also emits.
+_NO_SHAPE = 10**6
+
 
 class Source(NamedTuple):
     """One tier folder feeding flat: its shape tag, sort key, and the paired
@@ -138,6 +142,12 @@ def discover(corpus: str, exclude: Tuple[str, ...]) -> List[Source]:
             continue
         parsed = _parse_tag(tag)
         if parsed is None:
+            # An imported (non-enumerated) tier — e.g. a benchmark folder carried
+            # in by gen/import_inputs.py + gen/canonize.py. Not exhaustive, no
+            # shape bound: ordered after every census shape.
+            out.append(Source(tag, _NO_SHAPE, _NO_SHAPE, _NO_SHAPE, "gba", False,
+                              os.path.join(det_root, tag),
+                              os.path.join(corpus, "sos", tag)))
             continue
         n, k, c, family = parsed
         out.append(Source(tag, n, k, c, family, True,
