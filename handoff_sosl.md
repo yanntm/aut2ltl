@@ -21,10 +21,14 @@ carries **current work items + pointers only**, no history.
 
 ## Work items — engineering (in order)
 
-1. **§6.3 at 6222** — `census_e2_exhibits` over the banked ablation record:
-   stall frequency, gap distribution, individual exhibits, per-shape
-   exhaustive negative; everything reported at the stated 60 s budget
-   (counts are floors — spec's budget convention).
+1. **Bank the §6.3 E2 drop** — `python3 -m tests.sosl.census_e2_exhibits
+   ../reference/census/ablation_congruence.csv` (seconds, local; output
+   `tests/sosl/logs/census_e2/flat_canon.md`): 3137 permanent stalls, gap
+   distribution 1..53, prefix-independent **231**/3137, LTL 1741/3137,
+   sharpest gap 53 (`3state1ap0acc_015752` + dual). **Blocked on theory
+   item 1** (the PI count) before committing under `reference/census/`.
+   The script cross-tabs by Wagner degree only — the spec's per-shape
+   exhaustive negative still needs a shape column (prefix of `case_id`).
 2. **Free fills, no new drop needed:** §6.1 shape manifest (emit from
    `manifest.py`, commit under `reference/census/`); §6.1 guard/cap tallies
    and §6.2 wall-time line (both derivable from `sweep_results.csv`); §6.4
@@ -33,11 +37,16 @@ carries **current work items + pointers only**, no history.
 
 ## Work items — theory
 
-1. Integrate the banked 6222-scale results into the paper's remaining `⟨TBD⟩`
+1. **Reconcile the PI count**: the 6222 ablation shows **231**
+   prefix-independent permanent stalls, but the draft states two witnesses
+   plus complements and the spec's per-shape claim is *zero* PI permanent
+   stalls on every exhaustive shape. Restate the claim (or scope it) before
+   engineering banks the E2 drop.
+2. Integrate the banked 6222-scale results into the paper's remaining `⟨TBD⟩`
    markers as engineering delivers them (§6.1 manifest + tallies, §6.2
    wall-time, §6.3 counts, §6.4 restatement — the LTL-cut direction inverts
    at 6222: keep the correlation, drop the direction claim).
-2. Sweep the draft for 3938-era numbers and restate from the committed record.
+3. Sweep the draft for 3938-era numbers and restate from the committed record.
 
 ## The corpus
 
