@@ -1,6 +1,6 @@
 ## 6. Evaluation
 
-*⟨Open, marked ⟨TBD-M4⟩ below: §6.3's final counts, gap distribution, and
+*⟨Open, marked ⟨TBD⟩ below: §6.3's final counts, gap distribution, and
 per-shape confirmation of the exhaustive negative (the E2 drop, pending the
 prefix-independence recount), plus the section's remaining 3938-era numbers
 to restate from the committed 6222 record.⟩*
@@ -93,8 +93,8 @@ composition is corpus provenance, not evaluation data.
 order is pinned (§4.3), counterexamples are minimal — so the traces of §3–5 are
 the transcripts of the corresponding runs. Validation is Theorem 5.1 exercised
 end-to-end: the learned invariant is byte-equal to the constructed reference.
-This holds on every language the sweep has reached — **2492** of the 3938,
-`N` from 2 to 121, zero mismatches ⟨TBD-M4: the completed sweep⟩ — and
+This holds on every language of the catalogue — **all 6222**,
+`N` from 2 to 208, zero mismatches — and
 includes an exhaustive enumeration of the smallest non-LTL shape
 (`2state1ap1acc` and its parity twin). Two automata for `GF(aa)` yield
 byte-identical ledgers and signature matrices: Theorem 5.1's
@@ -171,8 +171,8 @@ performed at census scale; on a handful of languages the ill-defined product
 cannot even reach every class from `ε`.⟩
 
 Permanent stalls are not rare. Of the 2492 languages the census sweep has
-reached, **1180 stall permanently** ⟨TBD-M4: final counts — the unfinished
-largest shape supplies the large-gap tail⟩; the gap between the stalled
+reached, **1180 stall permanently** ⟨TBD: restate this paragraph from the E2 drop —
+3137 permanent at 6222 scale⟩; the gap between the stalled
 right congruence and the syntactic algebra reaches **53** classes (`N = 68`
 stalled at 15, recovered by 3 counterexamples and 12 saturation
 escalations). The head of the gap distribution:
@@ -222,8 +222,9 @@ negative: prefix-independent permanent stalls first arise beyond the
 enumeration wall. Between
 Lemma 4.8's floor and the witnesses' three-priority degree the territory
 stays open: no witness has appeared at deterministic-Büchi, co-Büchi, or
-single-Rabin-pair power. ⟨TBD-M4: the completed sweep's per-shape
-confirmation of the exhaustive negative.⟩
+single-Rabin-pair power. ⟨TBD: the E2 drop's per-shape
+confirmation of the exhaustive negative, pending the prefix-independence
+recount.⟩
 
 At the top of the range a handful of languages exceed the exact oracle's
 reach — their aligned graphs are non-functional and the fallback product
@@ -268,7 +269,7 @@ aperiodic languages the algebra is more often the smaller object (862
 smaller / 534 larger / 89 tied); on non-LTL languages the FDFA usually is
 (240 / 705 / 61): the group structure that blocks LTL-definability is also
 what inflates the algebra against an acceptor — Proposition 5.5(b)'s
-mechanism, already visible at census scale. ⟨TBD-M4: restate this paragraph
+mechanism, already visible at census scale. ⟨TBD: restate this paragraph
 from the committed 6222-scale `e3_summary` — the LTL-cut direction *inverts*
 there (on LTL the algebra is more often the larger object, 1524 v 1842); the
 old headline was a small-shape artifact — keep the correlation, drop the

@@ -5,8 +5,8 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Shadow draft — rev. 2026-07-18. Remaining `⟨TBD: …⟩` placeholders await the
-M4 campaign's completed sweep.*
+*Shadow draft — rev. 2026-07-19. Remaining `⟨TBD: …⟩` placeholders await the
+§6.3 ablation exhibits and the restatements they gate.*
 
 ## Abstract
 

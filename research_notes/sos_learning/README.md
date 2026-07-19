@@ -26,7 +26,7 @@ report companions are [`../sos_learning_spec.md`](../sos_learning_spec.md) and
 | [`s4b_gap.md`](s4b_gap.md) | §4.2 the gap: the permanent stall (Proposition 4.4) |
 | [`s4c_sweep.md`](s4c_sweep.md) | §4.3 left-saturation (Lemma 4.5, Props 4.6–4.8, Tables 4–6, the loop) |
 | [`s5_correctness.md`](s5_correctness.md) | §5 Theorems 5.1/5.3, Lemma 5.2, Props 5.4–5.5, Tables 7–8 |
-| [`s6_eval.md`](s6_eval.md) | §6 evaluation (⟨TBD-M4⟩ markers live here) |
+| [`s6_eval.md`](s6_eval.md) | §6 evaluation (⟨TBD⟩ markers live here) |
 | [`s7_end.md`](s7_end.md) | §7 related work, §8 conclusion |
 | [`bib.md`](bib.md) | bibliography |
 | [`notation.md`](notation.md) | notation conventions (editors' note, not paper text) |
@@ -48,5 +48,5 @@ report companions are [`../sos_learning_spec.md`](../sos_learning_spec.md) and
   their scripts; parts reference them with a leading `../`.
 - The two live traces (`Even`, `EvenBlocks`) run **inline** through §3–§5 as
   numbered tables; no transverse example pages.
-- ⟨TBD-M4⟩ placeholders await the M4 campaign's completed sweep; they are
-  paper text and stay in the parts.
+- ⟨TBD: …⟩ placeholders await the §6.3 ablation exhibits (the E2 drop); they
+  are paper text and stay in the parts.

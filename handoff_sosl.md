@@ -37,7 +37,7 @@ carries **current work items + pointers only**, no history.
    plus complements and the spec's per-shape claim is *zero* PI permanent
    stalls on every exhaustive shape. Restate the claim (or scope it) before
    engineering banks the E2 drop.
-2. Integrate the E2 drop into §6.3's `⟨TBD-M4⟩` markers once banked, and
+2. Integrate the E2 drop into §6.3's `⟨TBD⟩` markers once banked, and
    restate §6.4's LTL-cut paragraph from `e3_summary.md` — the direction
    inverts at 6222: keep the correlation, drop the direction claim.
 3. Sweep the draft for 3938-era numbers and restate from the committed record
