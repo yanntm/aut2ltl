@@ -75,8 +75,8 @@ lands in the ignored `logs/cluster/$RUN/`, exactly as a local rerun lands in
 `logs/rerun/<corpus>/survey_*.csv` — the shards carry each example's original
 `source`, so the merged CSV is row-for-row comparable with the reference — and then
 step 3 adopts it, or does not. Swap the `--folder` for `samples/benchmark/inputs`
-(one folder deeper — `samples/benchmark/corpus/` is a derived language tier, not
-bench input) or `samples/kinska`; nothing else changes.
+or `samples/kinska`; nothing else changes. (The bench inputs are the `inputs/`
+folder only; `samples/benchmark/corpus/` is a derived language tier.)
 
 No shard writes a `SUMMARY.txt` — each summarized only its own slice, into its own
 `logs/cluster/$RUN/logs/<idx>.err`. Rebuild the run's summary from the merged CSV

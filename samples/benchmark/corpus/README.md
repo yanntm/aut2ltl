@@ -28,5 +28,5 @@ tails of the Kinská `counting-*` families; a tripped budget is recorded in
 `{det,sos}/benchmark/census.md`, never dropped silently. Structural claims are
 asserted by `python3 -m tests.corpus.check_corpus` (over `flat_canon/`).
 
-The survey bench reads `samples/benchmark/inputs` — one folder deeper than this
-tier — so these derived automata never join the bench's own input set.
+The survey bench reads `samples/benchmark/inputs`, never this folder, so the
+derived automata stay out of the bench's input set.
