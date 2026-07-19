@@ -1,9 +1,0 @@
-(d′) prefix-independent permanent stalls by origin shape:
-  2state1ap0acc                [exhaustive] permanent=   17 prefix-indep=0
-  2state1ap1acc                [exhaustive] permanent=   61 prefix-indep=0
-  2state1ap2acc_parity         [sampled   ] permanent=  217 prefix-indep=4
-  3state1ap0acc                [exhaustive] permanent= 1885 prefix-indep=0
-  → exhaustive tier total prefix-indep permanent: 0 (expected 0)
-(8) dual-symmetry: 1931 primal/complement pairs; 3790 leg-comparisons asserted, 72 deferred (BUDGET/OVERSIZE on one side — re-run at higher budget for the drop)
-
-GATES OK: exhaustive negative holds; every checked primal/complement pair is dual-symmetric.
