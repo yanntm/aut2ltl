@@ -42,7 +42,25 @@ ltl2tgba -D -C --name='Even = (aa)*.b.Sigma^w  [b := !a]' \
 # Bundle the four into sources/ for a self-contained artifact:
 cp samples/fixtures/hoa/sos/{gf_aa_parity,gf_aa_reset,even,evenblocks}.hoa \
    research_notes/sos_figs/sources/
+
+# Normalize every bundled source to the canonical D print (state 0 initial,
+# trans-acc, load-bearing marks only) — importer.canonical + dump_hoa, the
+# same pair genaut/gen/canonize.py writes the corpus with. Idempotent: the
+# bundled files are fixpoints of this step.
+PYTHONPATH=.:sosl python3 -c "
+import spot
+from aut2ltl.ltl.twa import dump_hoa
+from sosl.sos.build.importer import canonical
+for f in ('gf_aa_parity','gf_aa_reset','even','evenblocks','aUGb'):
+    p='research_notes/sos_figs/sources/%s.hoa'%f
+    out=dump_hoa(canonical(spot.automaton(p)))
+    open(p,'w').write(out)
+"
 ```
+
+The canonical numbering is the one every downstream artifact speaks: the
+drawings (§4), the reports and EM tables (§5, rendered from the file as
+written), and the state ids quoted in both papers' prose.
 
 Language identity against the references (each must print `EQUIV`):
 
@@ -98,11 +116,14 @@ Spot draws the SVG; `rsvg-convert` rasterizes to a page-safe PNG (fixed width,
 aspect preserved).
 
 ```sh
-python3 -m tests.sos.render_svg research_notes/sos_figs/sources/gf_aa_parity.hoa research_notes/sos_figs/img/gf_aa.png
-python3 -m tests.sos.render_svg research_notes/sos_figs/sources/gf_aa_reset.hoa  research_notes/sos_figs/img/gf_aa_reset.png
-python3 -m tests.sos.render_svg research_notes/sos_figs/sources/even.hoa        research_notes/sos_figs/img/even.png
-python3 -m tests.sos.render_svg research_notes/sos_figs/sources/evenblocks.hoa  research_notes/sos_figs/img/evenblocks.png
+python3 -m tests.sos.render_svg --verbatim research_notes/sos_figs/sources/gf_aa_parity.hoa research_notes/sos_figs/img/gf_aa.png
+python3 -m tests.sos.render_svg --verbatim research_notes/sos_figs/sources/gf_aa_reset.hoa  research_notes/sos_figs/img/gf_aa_reset.png
+python3 -m tests.sos.render_svg --verbatim research_notes/sos_figs/sources/even.hoa        research_notes/sos_figs/img/even.png
+python3 -m tests.sos.render_svg --verbatim research_notes/sos_figs/sources/evenblocks.hoa  research_notes/sos_figs/img/evenblocks.png
 ```
+
+`--verbatim` everywhere: the sources are canonical fixpoints (§1) and the
+drawing must show the file's own numbering, not a re-import's.
 
 ## 5. Regenerate the per-example source reports
 
@@ -147,6 +168,10 @@ python3 -m tests.sos.render_svg --verbatim \
 python3 -m tests.sos.assemble research_notes/sos_figs/sources/aUGb.md \
   'aUGb=research_notes/sos_figs/sources/aUGb.hoa'
 ```
+
+The freshly translated file is then normalized by §1's canonicalization loop
+(`aUGb` is in its list) — which today *subsumes* the historical hand edit:
+`importer.canonical` enforces the transition-based mark placement itself.
 
 `--verbatim` draws the file as written. Without it the picture goes through the
 import layer, whose `spot.postprocess` re-infers the state-based reading and so
