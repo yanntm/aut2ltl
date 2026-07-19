@@ -19,13 +19,8 @@ canonical form of the learner's current belief language.
   stem/loop split — is a free replay. `n_member` counts the misses.
 - **Table** (`table.py`) — the private ledger arranging evidence for
   comparison. Rows are *access words*: `R` starts as `{ε}` and grows only by
-  closedness promotions (`rep·letter`); the frontier is `R·Σ`, filled under
-  the **letter collapse**: real queries for rows, letters, and extensions by
-  each letter class's least member (letters sharing a full signature); every
-  other cell holds its rep-cousin's bit as a *proxy* — a bit already in
-  evidence wins, proxies are recomputed at every fill and are never
-  evidence, and `verify` grounds a word (queries its proxied cells) before
-  any structural use. Columns come in two sorts — linear `(x, y, t)`: the bit of `p` is `[x·p·y·t^ω ∈ L]`;
+  closedness promotions (`rep·letter`); the frontier is `R·Σ`. Columns come
+  in two sorts — linear `(x, y, t)`: the bit of `p` is `[x·p·y·t^ω ∈ L]`;
   omega `(x, y)`: the bit is `[x·(p·y)^ω ∈ L]` — and the table opens with
   **no columns at all**: every column of every run is minted by a
   discordance; no experiment is given, all are found. `ε` is a permanent
@@ -49,13 +44,9 @@ one class, witnessed by a genuine Arnold context, so repairs are bounded by
 the target's class count across the entire run.
 
 1. **closed & consistent** — a closedness failure promotes the shortlex-least
-   witness, grounded first (`verify`; if grounding moves a bit the partition
-   is recomputed instead — a speculative signature never promotes); a
-   consistency failure at column `c` mints the migrated column
+   witness; a consistency failure at column `c` mints the migrated column
    (`(x, a·y, t)` linear / `(x, a·y)` omega): the entry of `p` at the mint
-   equals the entry of `p·a` at `c`. Both events must separate on real
-   bits — a pure-proxy difference mirrors its rep cousins, so the same
-   witness fires there and nothing is lost.
+   equals the entry of `p·a` at `c`.
 2. **morphism** (stamp legality, `saturate.py`) — for every table word `p`
    with `rep(class(p)) = r0 ≠ p` and every class `d`, `fold(d, p)` must equal
    `fold(d, r0)`. Zero queries; clean ⟺ the kernel is a two-sided congruence

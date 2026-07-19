@@ -14,12 +14,6 @@ and exposes the semigroup skeleton the learner reasons over:
     algorithm notes), which on a closed & consistent table agrees with the
     word's own class.
 
-Signatures may contain proxy bits (`Table` module doc): the grouping is then
-the *speculative* view, which is exactly what the belief should export. Only
-structural events are held to real bits — an `inconsistency` witness must
-separate on real bits, and closedness promotions go through `Table.verify`
-(the learner's job) before a witness becomes a row.
-
 Also reports the two obstructions the learner must clear: `unclosed` frontier
 witnesses and an `inconsistency` witness.
 """
@@ -105,18 +99,6 @@ class Partition:
                 return i
         return None
 
-    def real_separating_column(self, u: Word, v: Word) -> Optional[int]:
-        """A column index where ``u`` and ``v`` differ *on real bits* — neither
-        cell a proxy — or ``None``. A proxy mirrors another word's evidence and
-        witnesses nothing about its own word, so structural events (a
-        consistency mint) must separate on real bits only."""
-        bu, bv = self.table.bit_row(u), self.table.bit_row(v)
-        proxy = self.table.proxy
-        for i in range(len(bu)):
-            if bu[i] != bv[i] and (u, i) not in proxy and (v, i) not in proxy:
-                return i
-        return None
-
     def inconsistency(self) -> Optional[Tuple[Word, Word, Letter, int]]:
         """A witness ``(p, q, a, col)``: rows ``p, q`` share a class but ``p.a``
         and ``q.a`` do not, separated at column index ``col`` — or ``None`` if
@@ -131,12 +113,7 @@ class Partition:
                     for a in self.table.alphabet.letters():
                         cp, cq = self.class_of[p + (a,)], self.class_of[q + (a,)]
                         if cp != cq:
-                            col = self.real_separating_column(p + (a,), q + (a,))
-                            if col is None:
-                                # Only proxy bits differ. A pure-proxy pair
-                                # mirrors its rep-letter cousins, so the same
-                                # witness fires at the rep letter with real
-                                # bits; a mixed one waits for evidence.
-                                continue
+                            col = self.separating_column(p + (a,), q + (a,))
+                            assert col is not None
                             return (p, q, a, col)
         return None

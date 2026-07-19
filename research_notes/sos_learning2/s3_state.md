@@ -153,25 +153,6 @@ above the frontier line, one ω-column — the entry of word `p` is
 **Table 2.** Day one on `EvenBlocks`: same shape, one telling difference —
 `b·a` joins `⟨a⟩`, so `⟨a⟩` is absorbing under the letter action.
 
-**The letter collapse.** Every class is already a speculation — the absence
-of a separating column — and the fill can spend that trust instead of
-re-checking it cell by cell: where two letters share their full signature,
-the congruence-to-be predicts `u·b ≡ u·â` (the degenerate, one-letter case
-of left invariance), so real queries go only to the rows, the letters, and
-the frontier extensions by each letter class's least member; every other
-cell records its cousin's bit as a **proxy**, a bit already in evidence
-overriding it. A contradicted prediction is the learner's ordinary food:
-the contradicting bit lands in the very cell it was predicted for and the
-repairs of §4 fire unchanged, with blame well-founded by two-sidedness —
-`u·b ≉_L u·â` implies `b ≉_L â`, a split the always-queried letter rows
-exhibit as soon as any column separates the pair. Three disciplines keep
-the checks honest: a proxy is never evidence (not replayed, recomputed at
-every fill), never witnesses a structural event (a pure proxy witness
-mirrors its rep cousins, so nothing is lost), and a promoted word is
-grounded first — rows carry real bits, so keys and every split's witness
-stay genuine. Legality is untouched: a wrong proxy makes the belief wrong,
-never ill-formed; §5 counts the saving and the deferral.
-
 ### 3.2 The belief: a well-formed invariant
 
 **Stamp legality.** The first check asks whether the candidate is an
