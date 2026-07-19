@@ -52,28 +52,18 @@ mode); its rows are committed and reused, `ours` re-derived via
 
 ## Work items — engineering
 
-1. **Expand the frontier by letter classes, not letters.** `Table.domain`
-   builds `rows · Σ` in full and `fill` queries every cell, so a row costs
-   `|Σ|` extensions however λ acts. At the two-sided fixpoint letters sharing
-   a λ-class are interchangeable in every context, so `rows · λ(Σ)` carries
-   the same information: `|Σ|` queries to classify the letters once, then
-   `|rows| · |λ(Σ)|` instead of `|rows| · |Σ|`. Measured ceiling
-   (`tests/sosl/probe_letter_collapse.py`): **2.67× at 3 AP** — 8 letters land
-   in 3 classes on the median language, only 102 of 776 keep all eight — and
-   nothing at 1 AP, rare at 2. Fill dominates membership (18852 of 19731 at
-   `N = 208`), so the saving lands where cost is highest.
-   The learner knows the collapse only from evidence, so use the *current*
-   classes speculatively: a premature merge is a discordance, which the
-   coherence replay and legality already handle by minting a column and
-   restarting. Core change (`learn/table.py`, `learn/partition.py`) — get the
-   user's go before editing.
-2. **The EQ-by-EQ animation** — step through what the learner believes at each
+1. **The EQ-by-EQ animation** — step through what the learner believes at each
    equivalence query. Not started.
-3. ROLL's 262 total + 177 partial failures are **unattributed**:
+2. ROLL's 262 total + 177 partial failures are **unattributed**:
    `baseline.py` records a `detail` that `census_e3` drops. Needs a re-run to
    say timeout vs crash.
-4. Scripts under `tests/sosl/` still carry the dead `Config(saturation=…)` /
+3. Scripts under `tests/sosl/` still carry the dead `Config(saturation=…)` /
    `NOSAT_EXACT` names; four were fixed by use, the unrun ones are unchecked.
+
+The letter-class frontier idea is **withdrawn** — implemented, measured
+(sound on all 6222, but +48% equivalence queries at 2–3 AP for a membership
+win confined to 3 AP), and reverted; do not resurrect without new cause. The
+record is git (`2fe1a36d4` and the six commits it reverts).
 
 ## The corpus
 
