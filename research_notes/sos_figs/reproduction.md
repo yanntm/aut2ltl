@@ -176,11 +176,20 @@ The two permanent-stall specimens of the learning paper
 smallest automaton shapes; *reproduced* from their formulas — the census's
 role is discovery only, the artifacts below depend on nothing but the LTL:
 
+The bundled HOAs are the **canonical D** of each formula, in the corpus form
+(`sosl.sos.build.importer.canonical` + `aut2ltl.ltl.twa.dump_hoa` — the same
+pair `genaut/gen/canonize.py` writes `corpus/det/` with: BFS numbering,
+transition-based marks, marks only where load-bearing):
+
 ```sh
-ltl2tgba -D -C --name='a_implies_xa = a -> Xa' 'a -> Xa' -H \
-  > research_notes/sos_figs/sources/a_implies_xa.hoa
-ltl2tgba -D -C --name='a_once = a & XG!a' 'a & XG!a' -H \
-  > research_notes/sos_figs/sources/a_once.hoa
+PYTHONPATH=.:sosl python3 -c "
+import spot
+from aut2ltl.ltl.twa import dump_hoa
+from sosl.sos.build.importer import canonical
+for f, phi in (('a_implies_xa','a -> Xa'), ('a_once','a & XG!a')):
+    open('research_notes/sos_figs/sources/%s.hoa'%f,'w').write(
+        dump_hoa(canonical(spot.translate(phi, 'det', 'complete'))))
+"
 autfilt -q --equivalent-to=<(ltl2tgba 'a -> Xa') research_notes/sos_figs/sources/a_implies_xa.hoa && echo EQUIV
 autfilt -q --equivalent-to=<(ltl2tgba 'a & XG!a') research_notes/sos_figs/sources/a_once.hoa && echo EQUIV
 ```
