@@ -88,11 +88,9 @@ Sharpest gap 53: `3state1ap0acc_015752` + dual, `N = 68` stalled at 15.
 Every count is even — dual-symmetric, as the bit-flip symmetry demands.
 Permanence cuts across the LTL boundary: **1741/3137** of the permanent
 stalls are LTL-definable. Prefix-independent permanent stalls: **231/3137**
-(algebraic check on the canonical invariants). The two named specimens
+(algebraic check on the canonical invariants). The two named specimens are
 certified by `witness_lock` (prefix-independence algebraic, every minted
-column ω-sort; complements by duality) remain the paper's worked witnesses;
-the draft's two-witness / per-shape-zero claim is under theory
-reconciliation against the 231.
+column ω-sort; complements by duality).
 
 ## §6.4 — ROLL FDFA baseline
 

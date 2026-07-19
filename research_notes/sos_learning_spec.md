@@ -65,9 +65,11 @@ contexts.
   `reference/census/ablation_congruence_summary.md`. DONE — 3137 permanent /
   2336 recovered / 736 undecided / 13 beyond the oracle cap; zero
   counterexamples to Theorem 5.3, dual-symmetric.
-- Stall frequency, gap distribution, per-shape exhaustive negative (zero
-  prefix-independent permanent stalls on every exhaustive shape), the
-  individual exhibits: OWED at 6222 scale via `census_e2_exhibits`.
+- Stall frequency, gap distribution, prefix-independent and LTL cross-tabs,
+  the individual exhibits: `reference/census/e2_summary.md` ←
+  `python3 -m tests.sosl.census_e2_exhibits
+  ../reference/census/ablation_congruence.csv`. DONE — 3137 permanent, gaps
+  1..53, prefix-independent 231, LTL-definable 1741, dual-symmetric.
 - Prefix-independent witnesses: certified by `python3 -m tests.sosl.witness_lock`
   (prefix-independence algebraic on the canonical invariant; every minted
   column ω-sort). Cite the two primals; state complements by duality. DONE.
@@ -92,8 +94,6 @@ contexts.
 
 ## Owed, in order
 
-1. §6.3 at 6222: `census_e2_exhibits` (stall frequency, gap distribution,
-   exhibits, per-shape exhaustive negative), reported at the stated budget.
-2. §6.4 restatement (keep the correlation, drop the direction claim).
-3. The paper's §6 numbers restated from the committed 6222 record wherever the
+1. §6.4 restatement (keep the correlation, drop the direction claim).
+2. The paper's §6 numbers restated from the committed 6222 record wherever the
    draft still carries 3938-era values.
