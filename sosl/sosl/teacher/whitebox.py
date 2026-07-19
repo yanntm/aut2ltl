@@ -22,16 +22,10 @@ from sosl.sos.alphabet import Alphabet, Letter
 from sosl.sos.build import canonical
 from sosl.sos.calculus import PairSet, Table
 from sosl.sos.core.quotient import invariant_of
-from sosl.sos.hypothesis import Hypothesis, loop_reps
 from sosl.sos.invariant import Invariant
 from sosl.sos.lasso import Lasso
-from sosl.teacher.equiv import bounded_counterexample, resolve_prediction
-from sosl.teacher.exact import ExactTooLarge, exact_counterexample
-from sosl.teacher.exact_ref import (
-    NotFunctional,
-    exact_ref_counterexample,
-    reference_table,
-)
+from sosl.teacher.equiv import bounded_counterexample
+from sosl.teacher.exact_ref import exact_ref_counterexample, reference_table
 
 
 def _pump(lasso: Lasso, k: int) -> Lasso:
@@ -59,13 +53,13 @@ class HoaTeacher:
     ``reference`` is the language's invariant, the decision structure of
     ``eq_mode="exact"``. When it is not supplied it is built from the automaton
     on the first exact query and cached; a language whose algebra blows the
-    construction's cap has none, and exact mode then falls back to the
-    transformation-closure oracle (`sosl.teacher.exact`).
+    construction's cap has none, and an exact query then has no decision
+    structure at all.
 
-    ``cap_escape`` lets an exact query whose closure fallback exceeds its work cap
-    answer by bounded enumeration instead of raising: the escape of a leg that a
-    later byte-equality still validates. A leg that certifies a *stall* must leave
-    it off — a bounded answer cannot certify permanence.
+    ``cap_escape`` lets an exact query on such a referenceless language answer
+    by bounded enumeration instead of raising: the escape of a leg that a later
+    byte-equality still validates. A leg whose certificate must be complete
+    leaves it off — a bounded answer certifies nothing beyond its bound.
     """
 
     def __init__(
@@ -83,8 +77,6 @@ class HoaTeacher:
         self._ref_built = reference is not None
         self._ref_table: Optional[Tuple[Table, PairSet]] = None
         self.cap_escape = cap_escape
-        self.guard_firings: List[NotFunctional] = []
-        self.last_query_fired = False
         # AP name -> buddy variable, registered once before any BDD op.
         self._var: Dict[str, int] = {
             ap.ap_name(): self.aut.register_ap(ap) for ap in self.aut.ap()
@@ -178,18 +170,18 @@ class HoaTeacher:
             self._ref_table = reference_table(self._reference)
         return self._ref_table
 
-    def equiv(self, hypothesis: Hypothesis, bound: Optional[int] = None) -> EquivResult:
-        """Decide whether ``hypothesis`` captures L, per ``self.eq_mode``:
+    def equiv(self, hypothesis: Invariant, bound: Optional[int] = None) -> EquivResult:
+        """Decide whether ``hypothesis`` denotes L, per ``self.eq_mode``:
         ``"bounded"`` (lasso enumeration up to ``bound``, default ``eq_bound`` —
         complete only in the limit) or ``"exact"`` (complete). Returns
         `Equivalent` tagged with the certifying strategy, or a minimal
         `Counterexample`.
 
-        Exact mode decides against the reference invariant in the SoS calculus
-        (`sosl.teacher.exact_ref`), which is polynomial. Only a language with no
-        reference — the algebra's closure blew its cap — takes the
-        transformation-closure oracle (`sosl.teacher.exact`), which may raise
-        `ExactTooLarge`."""
+        Exact mode is the align-and-scan of the two invariants in the SoS
+        calculus (`sosl.teacher.exact_ref`): polynomial, zero membership
+        queries. A referenceless language — its algebra's closure blew the
+        construction's cap — has no exact decision structure; the query then
+        raises, or answers ``bounded:<eq_bound>`` under ``cap_escape``."""
         if self.eq_mode == "exact":
             cx, strategy = self._exact(hypothesis)
             if cx is None:
@@ -201,57 +193,36 @@ class HoaTeacher:
             return Equivalent(strategy=f"bounded:{b}" if complete else f"bounded:{b}:capped")
         return Counterexample(lasso=self._policy_cex(cx, hypothesis))
 
-    def _exact(self, hypothesis: Hypothesis) -> Tuple[Optional[Lasso], str]:
+    def _exact(self, hypothesis: Invariant) -> Tuple[Optional[Lasso], str]:
         """The exact decision: ``(minimal counterexample, certifying strategy)``,
-        the lasso being ``None`` when the hypothesis is exactly correct.
-
-        The escalation of spec §3.2. Exact-by-reference decides the query when a
-        reference exists and its aligned graph passes the functionality guard.
-        A firing (recorded in ``guard_firings``, row F10) or a referenceless
-        target sends the query to the transformation-closure oracle. Should that
-        exceed its work cap, `ExactTooLarge` propagates — permanence cannot be
-        certified below the cap — unless ``cap_escape`` is set, when the query
-        falls to ``bounded:<eq_bound>`` instead and says so in its strategy."""
+        the lasso being ``None`` when the hypothesis denotes L."""
         ref = self.reference()
-        self.last_query_fired = False
         if ref is not None:
-            try:
-                cx, _ = exact_ref_counterexample(
-                    self.member, self.alphabet, hypothesis, *ref)
-                return cx, "exact"
-            except NotFunctional as exc:
-                self.guard_firings.append(exc)
-                self.last_query_fired = True
-        try:
-            cx, _ = exact_counterexample(
-                self.member, self.alphabet, hypothesis,
-                self._dst, self._mark, self.init, self.aut.num_states())
-            return cx, "exact"
-        except ExactTooLarge:
-            if not self.cap_escape:
-                raise
+            return exact_ref_counterexample(self.alphabet, hypothesis, *ref), "exact"
+        if not self.cap_escape:
+            raise RuntimeError(
+                "exact equivalence unavailable: the language has no reference "
+                "invariant (construction cap) and cap_escape is off")
         b = self.eq_bound
         cx, complete = bounded_counterexample(self.member, self.alphabet, hypothesis, b)
         return cx, f"bounded:{b}" if complete else f"bounded:{b}:capped"
 
-    def _policy_cex(self, cx: Lasso, hypothesis: Hypothesis) -> Lasso:
+    def _policy_cex(self, cx: Lasso, hypothesis: Invariant) -> Lasso:
         """Apply ``cex_policy`` to the oracle's (minimal) counterexample.
 
         ``minimal`` / ``first`` return it unchanged — both our oracles enumerate
         in minimal (shortlex-least) order, so first-found already *is* minimal.
-        ``padded:<k>`` pumps it by ``k`` (spec §6 E5), but only if the pumped
-        lasso is still a genuine hypothesis/teacher disagreement — otherwise the
-        minimal one is kept (never hand the learner a lasso it predicts correctly,
-        spec §9 F3)."""
+        ``padded:<k>`` pumps it by ``k`` (the counterexample-sensitivity
+        experiment), but only if the pumped lasso is still a genuine
+        hypothesis/teacher disagreement — otherwise the minimal one is kept
+        (never hand the learner a lasso it predicts correctly)."""
         policy = self.cex_policy
         if not policy or policy in ("minimal", "first"):
             return cx
         if policy.startswith("padded:"):
             k = int(policy.split(":", 1)[1])
             padded = _pump(cx, k)
-            loops = loop_reps(hypothesis)
-            if resolve_prediction(self.member, hypothesis, padded, loops) \
-                    != self.member(padded):
+            if hypothesis.member(padded) != self.member(padded):
                 return padded
             return cx
         raise ValueError(f"unknown cex_policy {policy!r}")

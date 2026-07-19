@@ -8,16 +8,18 @@ loop, then shortlex), so the first mismatch found is already minimal — no
 separate minimization pass is needed. Complete in the limit as ``B`` grows;
 incomplete for a fixed ``B``.
 
+The hypothesis is an `Invariant`, so its side of the comparison is its own
+lasso-membership read-off (`Invariant.member`) — total, algebraic, no queries.
 The strategy is written against a bare ``member`` callable (plus the alphabet),
 not a concrete teacher, so it composes with any `sosl.contract.Teacher`.
 """
 from __future__ import annotations
 
 from itertools import product
-from typing import Callable, List, Optional, Sequence, Tuple
+from typing import Callable, Optional, Tuple
 
-from sosl.sos.alphabet import Alphabet, Word
-from sosl.sos.hypothesis import Hypothesis, loop_reps
+from sosl.sos.alphabet import Alphabet
+from sosl.sos.invariant import Invariant
 from sosl.sos.lasso import Lasso
 
 Member = Callable[[Lasso], bool]
@@ -29,31 +31,10 @@ Member = Callable[[Lasso], bool]
 DEFAULT_MAX_LASSOS = 500_000
 
 
-def resolve_prediction(
-    member: Member,
-    h: Hypothesis,
-    lasso: Lasso,
-    loops: Sequence[Optional[Word]],
-) -> bool:
-    """The hypothesis's normative answer for ``lasso``: the cached verdict for
-    the reduced pair, or — on a cache miss — the membership of the pair's
-    representative lasso ``key(s).loop(e)^omega`` (queried through ``member``),
-    where ``loops`` is `sosl.sos.hypothesis.loop_reps` (a non-empty loop
-    representative per class)."""
-    pair = h.stabilized_pair(lasso)
-    cached = h.accept.get(pair)
-    if cached is not None:
-        return cached
-    s, e = pair
-    loop = loops[e]
-    assert loop is not None, "loop class has no non-empty representative"
-    return member(Lasso(h.keys[s], loop))
-
-
 def bounded_counterexample(
     member: Member,
     alphabet: Alphabet,
-    h: Hypothesis,
+    hypothesis: Invariant,
     bound: int,
     max_lassos: int = DEFAULT_MAX_LASSOS,
 ) -> Tuple[Optional[Lasso], bool]:
@@ -63,9 +44,9 @@ def bounded_counterexample(
     search finished, or ``(None, True)`` if none exists within the bound, or
     ``(None, False)`` if the ``max_lassos`` work cap was hit first (the search is
     then inconclusive, not a proof of equivalence)."""
-    assert h.alphabet.aps == alphabet.aps, "hypothesis/teacher alphabet mismatch"
+    assert hypothesis.alphabet.aps == alphabet.aps, \
+        "hypothesis/teacher alphabet mismatch"
     letters = alphabet.letters()
-    loops = loop_reps(h)
     seen = 0
     for slen in range(bound + 1):
         for llen in range(1, bound + 1):
@@ -75,6 +56,6 @@ def bounded_counterexample(
                         return None, False
                     seen += 1
                     lasso = Lasso(stem, loop)
-                    if resolve_prediction(member, h, lasso, loops) != member(lasso):
+                    if hypothesis.member(lasso) != member(lasso):
                         return lasso, True
     return None, True
