@@ -17,8 +17,9 @@ PARTS := \
 	s2b_algebra.md \
 	s2c_examples.md \
 	s3_state.md \
-	s4a_reap.md \
-	s4b_sow.md \
+	s4a_align.md \
+	s4b_escalate.md \
+	s4c_life.md \
 	s5_correctness.md \
 	s6_boundary.md \
 	s7_eval.md \

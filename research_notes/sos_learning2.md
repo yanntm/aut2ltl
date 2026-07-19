@@ -736,107 +736,144 @@ happens to be named truthfully), and §4.1 shows the harvest turning it into
 the column that cracks the name.
 
 
-## 4. The loop: reap and sow
+## 4. Alignment: from discordance to belief
 
-The loop alternates two motions. **Reap**: a disagreement is in hand — turn
-it into a class split. **Sow**: re-stabilize the table, re-certify
-legality, re-export the belief — and, in doing so, surface the next
-disagreements for free. Every split in the entire algorithm is one event in
-three guises:
+Every answer the teacher returns is one of two signals. A **concordant**
+bit — the answer the belief already predicts — is recorded, in the table
+or in the pair cache, and confirms the worldview: no learning happens. A
+**discordant** bit contradicts a prediction, and only there does the
+belief move. Agreement confirms, error teaches — and the learner runs
+this engine with exactly one process, **alignment**: from one
+discordance, by membership queries alone, through a cascade of witnessed
+class splits, to the next belief — the table re-certified legal, its
+export again a well-formed invariant.
+
+By §3.2's prediction rule, every discordance in the entire algorithm has
+one shape:
 
 > **Two concrete lassos bear one name, and the teacher's bits on them
 > differ.**
 
-The name is a pair `(s, e)` of current classes; the two lassos are
-interpolated by a *chain* that substitutes, position by position, a growing
-prefix by its class's key; the chain's bits flip at some adjacent step; the
-flip convicts a frontier word against a row — currently one class, provably
-`≈_L`-distinct — and mints the separating Arnold context as a new column.
-The three guises differ only in where the disagreeing lassos come from:
+Three sources produce it, and they differ only in who finds the lassos.
+The learner's own legality checks catch two — a stamp violation, a
+divergence of actions escalated through two probe queries; a pair
+violation, two conjugate pairs with differing cached bits, refereed on
+their common rotated lasso (§4.2) — both surfaced by pure table
+inspection, zero queries. The third is teacher-found: the lasso returned
+by a failed equivalence query (§4.5), the one discordance the learner
+cannot locate itself. All three feed the same mechanism (§4.1): the name
+is a pair `(s, e)` of current classes; a *chain* interpolates between
+the two lassos, substituting, position by position, a growing prefix by
+its class's key; the chain's bits flip at some adjacent step; the flip
+convicts a frontier word against a row — currently one class, provably
+`≈_L`-distinct — and mints the separating Arnold context as a new
+column. §4.3 assembles split, re-stabilization and re-certification into
+the align procedure; §4.4 gives the structure prefix-independence
+imposes on what alignment mints; §4.5 closes the loop around it —
+bootstrap, then alternation with the teacher.
 
-- the teacher's equivalence counterexample, against the keyed lasso of its
-  name (§4.1 — the only guise that costs an equivalence query);
-- a stamp-legality violation, escalated through two probe queries (§4.2);
-- a pair-legality violation: two conjugate pairs with differing cached
-  bits, whose common rotated lasso the learner queries itself (§4.2).
+### 4.1 The chain: one discordance, one split
 
-### 4.1 Reap: the harvest
+A **context** is a column read as a word-with-a-hole: a linear column
+`C = (x, y, t)` evaluates `C[w] := x·w·y·t^ω`, an ω-column `C = (x, y)`
+evaluates `C[w] := x·(w·y)^ω`; write `[C[w]]` for the teacher's bit on
+the resulting lasso, and `⟨w⟩ := [ε]·w` for the letter action's class of
+any finite word (Lemma 3.3). The chain compares a word against its own
+class's key inside one context:
 
-Let `w·z^ω` be a lasso on which belief and teacher disagree. **Normalize**
+**Lemma 4.1 (substitution chain).** Let the table be closed and
+consistent, `C` a context, and `s = s_1⋯s_k` a finite word with
+`[C[s]] ≠ [C[u_{⟨s⟩}]]`. The **chain**
+
+```
+    χ_j  =  [ C[ u_{⟨s_1⋯s_j⟩} · s_{j+1}⋯s_k ] ]        j = 0..k
+```
+
+— replace a growing prefix of `s` by its class's key — runs from
+`χ_0 = [C[s]]` to `χ_k = [C[u_{⟨s⟩}]]`: its endpoints differ, so some
+adjacent pair flips, and a binary search finds a flip in `O(log k)`
+membership queries. At a flip `χ_j ≠ χ_{j+1}`, the frontier word
+`u = u_{⟨s_1⋯s_j⟩}·s_{j+1}` and the row `v = u_{⟨s_1⋯s_{j+1}⟩}` —
+currently one class — are separated by the **minted column**
+`(x, s_{j+2}⋯s_k·y, t)` (for the ω sort, `(x, s_{j+2}⋯s_k·y)`): a
+genuine Arnold context, so `u ≉_L v`.
+
+*Proof.* The two flipped bits are exactly the entries of `u` and `v` at
+the minted column — substitute and compare, the context absorbing the
+unconsumed suffix `s_{j+2}⋯s_k` into its middle component:
+`C[u·s_{j+2}⋯s_k] = x·u·(s_{j+2}⋯s_k·y)·t^ω`, and for the ω sort
+`x·(u·(s_{j+2}⋯s_k·y))^ω`, likewise for `v`. That `u` and `v` currently
+share a class is Lemma 3.3: `⟨u⟩ = ⟨s_1⋯s_j⟩·s_{j+1} = ⟨s_1⋯s_{j+1}⟩ =
+⟨v⟩` — agreement, coherence, and the action composing over literal
+concatenation. The flip separates them at the minted column, an Arnold
+context, so the separation is genuine. The endpoints: at `j = 0` the key
+of `[ε]` is `ε`, so `χ_0 = [C[s]]`; at `j = k` the whole word is its
+class's key. ∎
+
+The lemma is instantiated four times in the paper — the two halves of
+Theorem 4.2 below, the in-context probe of a stamp escalation
+(Lemma 4.3), and the pair escalation's rotated lasso (Lemma 4.4) —
+always the same search, only the context and the segment changing.
+
+**Processing a discordant lasso.** Let `w·z^ω` be a lasso on which
+teacher and belief disagree. **Normalize**
 `(w', z') := (w·z^k, z^k)`, `k` least with `𝒮_T(z)^k` idempotent
-(`k ≤ 2·|𝒞_T|`) — the same ω-word, now presented so that `s = 𝒮_T(w')`,
-`e = 𝒮_T(z')` is the predicting pair. Write `n = |w'|`, `m = |z'|`.
-Interpolate between the counterexample and the keyed lasso of its name by
-two chains of teacher bits, each replacing a growing prefix by the key of
-its class:
+(`k ≤ 2·|𝒞_T|`) — the same ω-word, now presented so that
+`s = 𝒮_T(w')`, `e = 𝒮_T(z')` is the predicting name. Write `n = |w'|`,
+`m = |z'|`. Two chain instances interpolate between the discordant lasso
+and the keyed lasso of its name:
 
 ```
-    stem chain:   γ_i = [ u_{⟨w'[1..i]⟩} · w'[i+1..n] · z'^ω ∈ L ]          i = 0..n
-    loop chain:   δ_i = [ u_s · ( u_{⟨z'[1..i]⟩} · z'[i+1..m] )^ω ∈ L ]     i = 0..m
+    stem chain  γ:  C = (ε, ε, z') linear, segment w' —
+                    from γ_0 = [w'·z'^ω] to the junction γ_n = [u_s·z'^ω]
+    loop chain  δ:  C = (u_s, ε) ω, segment z' —
+                    from δ_0 = the junction to δ_m = [u_s·(u_e)^ω] = P(s, e)
 ```
 
-Then `γ_0 = [w'·z'^ω ∈ L]` is the teacher's bit on the counterexample,
-`γ_n = δ_0 = [u_s·z'^ω ∈ L]` is the junction, and `δ_m = [u_s·(u_e)^ω ∈ L]`
-is the belief's answer — the cached `P(s, e)`. The concatenated bit sequence
-has differing endpoints, so it flips at an adjacent pair; **one junction
-query** decides the half, and a Rivest–Schapire binary search [RS93] — each
-probe one membership query — finds a flip in `O(log n)` resp. `O(log m)`
-queries.
+**Theorem 4.2 (one discordance, one split).** The concatenated bit
+sequence runs from the teacher's bit on the discordant lasso to the
+belief's answer, so its endpoints differ; **one junction query** decides
+which chain flips, and Lemma 4.1 splits one class — the frontier word
+leaves the row's class — at `O(log(|w| + |𝒞_T|·|z|))` membership queries
+in total (`n ≤ |w| + 2|𝒞_T|·|z|`, `m ≤ 2|𝒞_T|·|z|`). A stem flip mints a
+linear column, a loop flip an ω-column; replacing a prefix *at the head
+of the loop* and letting the ω-column's `(x, y)` format carry the rest
+is the rotation lemma [SωS26, Lem 4.1] enacted — no search over
+rotations is ever needed.
 
-**Lemma 4.1 (stem harvest).** A flip `γ_i ≠ γ_{i+1}` yields the frontier
-word `u = u_{⟨w'[1..i]⟩}·w'[i+1]` and the row `v = u_{⟨w'[1..i+1]⟩}`,
-currently assigned the same class, separated by the **linear column**
-`(ε, w'[i+2..n], z')`.
+*Proof.* `γ_0 = [w'·z'^ω]` is the teacher's bit on the discordant lasso;
+`γ_n = δ_0 = [u_s·z'^ω]` is the junction (the stem chain at `j = n`
+replaces all of `w'` by `u_{⟨w'⟩} = u_s`, and the loop chain at `j = 0`
+touches nothing); `δ_m = [u_s·(u_e)^ω]` is the belief's answer, the
+cached `P(s, e)` (§3.2). The endpoints of the concatenation differ by
+assumption, so one of the two chains has differing endpoints; the
+junction query identifies it, and Lemma 4.1 supplies flip, mint, and
+split. The cost is the junction query plus one binary search over `n`
+resp. `m` positions, with the stated normalization bounds. ∎
 
-**Lemma 4.2 (loop harvest).** A flip `δ_i ≠ δ_{i+1}` yields the frontier
-word `u = u_{⟨z'[1..i]⟩}·z'[i+1]` and the row `v = u_{⟨z'[1..i+1]⟩}`,
-currently assigned the same class, separated by the **ω-column**
-`(u_s, z'[i+2..m])`.
-
-*Proof of both.* The two flipped bits are exactly the entries of `u` and `v`
-at the stated column — substitute and compare — and the columns are Arnold
-contexts, so the separation is genuine: `u ≉_L v`. That `u` and `v`
-currently share a class is Lemma 3.3's agreement. Replacing the prefix *at
-the head of the loop* and letting the ω-column's `(x, y)` format carry the
-rest is the rotation lemma [SωS26, Lem 4.1] enacted: no search over
-rotations is ever needed. ∎
-
-**Theorem 4.3 (harvest).** Each disagreeing lasso funds the flip column and
-splits one class — the frontier word `u` leaves the class of `v` — at a cost
-of `O(log(|w| + |𝒞_T|·|z|))` membership queries: the normalized lengths are
-`n ≤ |w| + 2|𝒞_T|·|z|` and `m ≤ 2|𝒞_T|·|z|`.
-
-*Proof.* A flip exists: the concatenated chain runs from the teacher's bit
-on the counterexample to the belief's (wrong) answer, so its endpoints
-differ, and the junction bit `γ_n = δ_0` decides which half flips. The flip
-splits a class by Lemma 4.1 resp. 4.2: the frontier word `u` differs from
-the row `v` on the minted column, so `u` leaves `v`'s class when the table
-refills. The cost: the two chains total `n + m` positions with the stated
-bounds, and one junction query plus a binary search over a bit sequence
-with differing endpoints finds an adjacent flip in the stated logarithm. ∎
-
-*Example (two counterexamples, one wrong name, two shapes).* The two
-running examples' first equivalence queries return different lassos —
-`Even`'s teacher hands back `(ε, aab)`, `EvenBlocks`' the shortlex-earlier
-`(ε, b·aa)` — but the same failure: each is named `(⟨a⟩, ⟨a⟩)`, i.e.
-answered through the keyed lasso `a·a^ω`, and each is truly in its
-language. Normalization is trivial in both (`k = 1`, so `w' = z'` is the
-loop itself), the stem key is `u_s = a` in both, and the junction query
-routes them oppositely. On `Even`, `[a·(aab)^ω] = 0` — the prepended `a`
-flips the parity — against `γ_0 = [(aab)^ω] = 1`: the flip is in the
-**stem chain**, Table 3(a). On `EvenBlocks`, `[a·(b·aa)^ω] = 1` — a prefix
-cannot harm a prefix-independent language — equal to `γ_0`, so the stem
-chain is flat and the flip is in the **loop chain**, Table 3(c). Both flips
-sit at position `1 → 2` of their chains, but they convict different words:
-from (a), the frontier word `u = u_{⟨a⟩}·a = aa` against the row
+*Example (two discordances, one wrong name, two shapes).* The running
+examples' first discordances are teacher-found — the alternation's first
+equivalence queries (§4.5) return `(ε, aab)` on `Even` and the
+shortlex-earlier `(ε, b·aa)` on `EvenBlocks` — but they carry the same
+failure: each lasso is named `(⟨a⟩, ⟨a⟩)`, i.e. answered through the
+keyed lasso `a·a^ω`, and each is truly in its language. Normalization is
+trivial in both (`k = 1`, so `w' = z'` is the loop itself), the stem key
+is `u_s = a` in both, and the junction query routes them oppositely. On
+`Even`, `[a·(aab)^ω] = 0` — the prepended `a` flips the parity — against
+`γ_0 = [(aab)^ω] = 1`: the flip is in the **stem chain**, Table 3(a). On
+`EvenBlocks`, `[a·(b·aa)^ω] = 1` — a prefix cannot harm a
+prefix-independent language — equal to `γ_0`, so the stem chain is flat
+and the flip is in the **loop chain**, Table 3(c). Both flips sit at
+position `1 → 2` of their chains, but they convict different words: from
+(a), the frontier word `u = u_{⟨a⟩}·a = aa` against the row
 `v = u_{⟨aa⟩} = a`, minting the linear column `(ε, b, aab)`, entries `1`
 for `aa` and `0` for `a` — the parity merge of day one, split; from (c),
 the frontier word `u = u_{⟨b⟩}·a = b·a` against the row
 `v = u_{⟨b·a⟩} = a`, minting the ω-column `(a, a)` — a rotated cousin of
 the `(ε, b)` we exhibited in §3.1, found by the machinery rather than by
 inspection. Tables 3(b) and 3(d) show the tables after the split. Two
-lassos, one wrong name, Arnold's two shapes: the counterexample analysis is
-the two-shape split of the congruence, run backwards.
+lassos, one wrong name, Arnold's two shapes: discordance analysis is the
+two-shape split of the congruence, run backwards.
 
 *(a) `Even`, the stem chain `γ` — replace a growing stem prefix by its
 key:*
@@ -848,7 +885,7 @@ key:*
 | 2 | `aa` | `a` | `a·b·(aab)^ω` | **`0`** |
 | 3 | `aab` | `a` | `a·(aab)^ω` | `0` |
 
-*(b) `Even`, after the stem harvest:*
+*(b) `Even`, after the stem split:*
 
 | word | `(ε,ε)_ω` | **`(ε, b, aab)_lin`** | class |
 |---|:--:|:--:|---|
@@ -869,7 +906,7 @@ growing loop prefix by its key:*
 | 2 | `b·a` | `a` | `a·(a·a)^ω` | **`0`** |
 | 3 | `b·aa` | `a` | `a·(a)^ω` | `0` |
 
-*(d) `EvenBlocks`, after the loop harvest:*
+*(d) `EvenBlocks`, after the loop split:*
 
 | word | `(ε,ε)_ω` | **`(a, a)_ω`** | class |
 |---|:--:|:--:|---|
@@ -877,42 +914,39 @@ growing loop prefix by its key:*
 | `b` | `1` | **`0`** | `⟨b⟩` |
 | **`b·a`** | `0` | **`1`** | **`⟨b·a⟩`** |
 
-**Table 3.** The two first counterexamples, processed (minted column and
-promoted row in bold; `ε`-row and unchanged frontier omitted). In both
-chains, row `i = 1` replaces a one-letter prefix by its own key — a no-op,
-bit unchanged — and the flips sit at `1 → 2`. In (a), row 3 is the junction
-`γ_3 = δ_0`, already `0`: the stem chain flipped, minting a *linear*
-column. In (c) the junction is `1` and the loop chain flips instead,
-minting an *ω-column*; note row 3's lasso is `a·a^ω` — the keyed lasso of
-the name, i.e. the belief's answer, closing the chain. (a) pulls `aa` out
-of `⟨a⟩`; (c) pulls `b·a` out — and in (b) the doomed `a·b` still hides in
-`⟨a⟩`, which is §4.2's catch.
+**Table 3.** The two first teacher-found discordances, processed (minted
+column and promoted row in bold; `ε`-row and unchanged frontier
+omitted). In both chains, row `i = 1` replaces a one-letter prefix by
+its own key — a no-op, bit unchanged — and the flips sit at `1 → 2`. In
+(a), row 3 is the junction `γ_3 = δ_0`, already `0`: the stem chain
+flipped, minting a *linear* column. In (c) the junction is `1` and the
+loop chain flips instead, minting an *ω-column*; note row 3's lasso is
+`a·a^ω` — the keyed lasso of the name, i.e. the belief's answer, closing
+the chain. (a) pulls `aa` out of `⟨a⟩`; (c) pulls `b·a` out — and in (b)
+the doomed `a·b` still hides in `⟨a⟩`, which is §4.2's catch.
 
 
-### 4.2 Sow: the legality escalations
+### 4.2 Self-served: the legality escalations
 
-Re-stabilizing after a split, the learner re-runs the two legality checks
-of §3.2. A clean pass certifies the export; a violation is a disagreement
-caught without the teacher, escalated to a split by the same chain
-mechanism. This subsection gives the two escalations, then the structure
-prefix-independence imposes on both.
+Re-stabilizing after a split — the interior of every align call, §4.3 —
+the learner re-runs the two legality checks of §3.2. A clean pass
+certifies the export; a violation is a discordance caught without the
+teacher, escalated to a split by the same chain.
 
 **Stamp escalation.** The check compares, for every table word `u` with
 key `v := u_{⟨u⟩}`, `u ≠ v`, and every class `d` with key `r := u_d`, the
 actions `d·u` and `d·v` — zero queries.
 
-**Lemma 4.4 (stamp escalation).** If `d·u =: c_a ≠ c_b := d·v`, then two
-membership queries and at most one frozen-prefix binary search yield a new
-separating column and a class split.
+**Lemma 4.3 (stamp escalation).** If `d·u =: c_a ≠ c_b := d·v`, then two
+membership queries and at most one chain yield a new separating column
+and a class split.
 
 *Proof.* Since `c_a ≠ c_b`, some existing column `κ` separates their keys —
 distinct classes differ on some column, by definition of `≡_T`; say
 `κ = (x°, y°, t°)` linear, so the table already holds
-`[x°·u_{c_a}·y°·t°^ω] ≠ [x°·u_{c_b}·y°·t°^ω]` (for the ω-sort
-`κ = (x°, y°)`, read `[x°·(u_c·y°)^ω]` throughout). Query the two candidate
-words under the same context: `A = [x°·r·u·y°·t°^ω]`,
-`B = [x°·r·v·y°·t°^ω]` (ω-sort: `A = [x°·(r·u·y°)^ω]`,
-`B = [x°·(r·v·y°)^ω]`).
+`[κ[u_{c_a}]] ≠ [κ[u_{c_b}]]` (for the ω-sort `κ = (x°, y°)`, read
+`[x°·(u_c·y°)^ω]` throughout). Query the two candidate words under the
+same context: `A = [κ[r·u]]`, `B = [κ[r·v]]`.
 
 - If `A ≠ B`: mint the column that reproduces "`r·w` under `κ`" as a bit on
   the bare candidate `w` — and the two sorts here differ. For a *linear* `κ`
@@ -923,22 +957,25 @@ words under the same context: `A = [x°·r·u·y°·t°^ω]`,
   the period's tail — `(x°·r, y°·r)`. (The bare-prefix form `(x°·r, y°)`
   keeps the period `w·y°` unchanged and need not separate at all: for a
   prefix-independent `L` its added prefix is vacuous outright,
-  Proposition 4.6.) Either way the minted column separates `u` from `v`
+  Proposition 4.5.) Either way the minted column separates `u` from `v`
   directly — a genuine Arnold context — splitting their shared class.
 - If `A = B`: the bits `A, B` cannot both agree with the two differing
-  key bits; say `A ≠ [x°·u_{c_a}·y°·t°^ω]`, where
-  `c_a = d·u = ([ε]·r)·u = [ε]·(r·u)` — the action composing over the
-  literal concatenation `r·u`. So the word `r·u` and its own class's key
-  behave differently under `x°·_·y°·t°^ω`. Run the stem chain of §4.1 on
-  the segment `r·u` with the prefix `x°` **frozen** in place:
-  `γ''_j = [ x° · u_{⟨(r·u)[1..j]⟩} · (r·u)[j+1..] · y°·t°^ω ]`, from
-  `γ''_0 = A` to `γ''_{|ru|} = [x°·u_{c_a}·y°·t°^ω] ≠ A`. The flip exists,
-  binary search finds it, and Lemma 4.1's argument applies verbatim with
-  `x°` frozen: the flip at position `j` separates the frontier word
-  `u_{⟨(r·u)[1..j]⟩}·(r·u)[j+1]` from the row `u_{⟨(r·u)[1..j+1]⟩}` by the
-  column `(x°, (r·u)[j+2..]·y°, t°)` — the prefix is `x°` alone, the
-  unconsumed segment migrating into the middle component. Either way one
-  class splits. ∎
+  key bits; say `A ≠ [κ[u_{c_a}]]`, where
+  `c_a = d·u = ([ε]·r)·u = [ε]·(r·u) = ⟨r·u⟩` — the action composing
+  over the literal concatenation `r·u`. So the segment `r·u` and its own
+  class's key behave differently under `κ`: exactly Lemma 4.1's
+  precondition, with context `κ` and segment `r·u`. The chain
+
+  ```
+      χ_j = [ x° · u_{⟨(r·u)[1..j]⟩} · (r·u)[j+1..] · y°·t°^ω ]
+  ```
+
+  runs from `χ_0 = A` to `χ_{|ru|} = [κ[u_{c_a}]] ≠ A`; the flip exists,
+  binary search finds it, and the minted column
+  `(x°, (r·u)[j+2..]·y°, t°)` — `κ`'s own prefix kept in place, the
+  unconsumed segment migrating into the middle component — splits the
+  frontier word `u_{⟨(r·u)[1..j]⟩}·(r·u)[j+1]` from the row
+  `u_{⟨(r·u)[1..j+1]⟩}`. Either way one class splits. ∎
 
 *Remark (the ω-mint's shape matters).* Implemented with the bare-prefix
 form `(x°·r, y°)`, the escalation on `GF(aa)` — prefix-independent, so the
@@ -969,7 +1006,7 @@ agree. Twenty comparisons, zero queries, two hits — both at `d = ⟨a⟩`, bot
 symptoms of the one wrong merge. In scan order the first to fire is
 `(b·a, ⟨a⟩)`.
 
-Escalate the fired cell (Lemma 4.4): `u = b·a`, `v = b`, `d = ⟨a⟩`,
+Escalate the fired cell (Lemma 4.3): `u = b·a`, `v = b`, `d = ⟨a⟩`,
 `r = a`, diverging actions `c_a = ⟨a⟩·(b·a) = ⟨aa⟩` and
 `c_b = ⟨a⟩·b = ⟨a⟩`. Pause on what fired: `b·a` is *correctly* merged with
 `b` — the divergence arises because its action from `⟨a⟩` walks through the
@@ -984,10 +1021,10 @@ queries — the escalation's only queries — are
 ```
 
 `A = B`: the first branch yields nothing, so we are in the second. Which
-side disagrees with its own class's key? `[ε]·(a·b·a) = c_a = ⟨aa⟩`, whose
-key `aa` holds κ-bit `1 ≠ A` — the `u`-side. Run the frozen-prefix chain on
-the segment `r·u = a·b·a` inside κ's context (here `x° = ε`, so the freeze
-is invisible; a genuinely frozen prefix arises when κ carries one):
+side disagrees with its own class's key? `⟨a·b·a⟩ = c_a = ⟨aa⟩`, whose
+key `aa` holds κ-bit `1 ≠ A` — the `u`-side. Run the chain in `κ`'s own
+context on the segment `r·u = a·b·a` (here `x° = ε`, so `κ` contributes
+no prefix; a genuinely frozen prefix arises when it carries one):
 
 | `j` | prefix of `a·b·a` | its key | queried lasso | bit |
 |:--:|---|:--:|---|:--:|
@@ -1009,7 +1046,7 @@ the separating column is the original ω-column `κ = (ε, ε)`, and the probes
 `A = [(a·ab)^ω] = 1 ≠ 0 = [(a·a)^ω] = B` differ, minting the ω-column
 `(a, a)` directly — the left factor absorbed into the prefix *and* reseeded
 at the period's tail, branch 1's ω-form in action. Same split, other arm:
-one four-class table exercises both branches of Lemma 4.4, and the fixpoint
+one four-class table exercises both branches of Lemma 4.3, and the fixpoint
 is the same five classes either way — only the *trace* needs the pinned
 order. Table 6 shows the resulting table, which is final.
 
@@ -1028,10 +1065,10 @@ reject and joins `⟨ab⟩`; `aa·b` carries the all-one signature of the
 committed accept and joins `⟨b⟩`.
 
 **Pair escalation.** The second check compares cached teacher bits across
-conjugacy steps, and its escalation is the harvest run on a self-generated
-counterexample:
+conjugacy steps, and its escalation is Theorem 4.2 run on a discordance
+the learner finds itself:
 
-**Lemma 4.5 (pair escalation).** Let the stabilized table be stamp-legal,
+**Lemma 4.4 (pair escalation).** Let the stabilized table be stamp-legal,
 with `P` total on the linked pairs of the induced product, and let a
 conjugacy step connect `p₁ = (s, (cd)^π)` and `p₂ = (s·c, (dc)^π)` with
 `P(p₁) ≠ P(p₂)`. Then one membership query and one chain yield a witnessed
@@ -1044,10 +1081,10 @@ names, and the cached bits of the two names differ. Query `b₀ :=
 teacher[w]`; `b₀` disagrees with `P(p₁)` or with `P(p₂)` — say `P(p₁)`,
 the teacher's bit on the keyed lasso of `p₁`. Then `w`, normalized on the
 presentation naming `p₁`, and the keyed lasso of `p₁` are two concrete
-lassos bearing one name with differing teacher bits: exactly the harvest's
-situation, and Theorem 4.3 applies verbatim — junction query, binary
-search, flip, split. The chain lengths are `O(|𝒞_T|²)`: keys have length
-`O(|𝒞_T|)` (Definition 3.2) and the normalization power is at most
+lassos bearing one name with differing teacher bits: exactly the
+discordance shape, and Theorem 4.2 applies verbatim — junction query,
+binary search, flip, split. The chain lengths are `O(|𝒞_T|²)`: keys have
+length `O(|𝒞_T|)` (Definition 3.2) and the normalization power is at most
 `2|𝒞_T|`, so the search costs `O(log |𝒞_T|)` queries. ∎
 
 The escalation needs no new machinery and no equivalence query: the learner
@@ -1057,11 +1094,90 @@ noticed, by pure table inspection, that its own acceptance layer gives one
 use the discipline makes of the teacher's cheapest interface: the belief's
 legality is *tested from inside*.
 
-**Prefix-independence and the two shapes.** The left contexts the
-escalations enforce come in Arnold's two shapes, and prefix-independence
-silences exactly one of them:
 
-**Proposition 4.6 (prefix-independence and the two shapes).** Let `L` be
+### 4.3 Alignment, assembled
+
+One procedure, **stabilize**, drives the table to a certified fixpoint —
+it is where every membership bit lands, concordant bits as recorded
+entries, discordant ones as splits — and **align** is a chain split
+followed by stabilization:
+
+```
+    stabilize:                        # membership queries only
+        loop:
+            fill entries; promote (closure) and mint (consistency)
+                to fixpoint                          (Definition 3.2)
+            stamp check — zero queries; on violation:
+                escalate (Lemma 4.3): split, continue
+            fill P on the linked pairs of the induced product
+                (memoized queries)
+            pair check — zero queries; on violation:
+                escalate (Lemma 4.4): split, continue
+            return 𝓘 := canonicalize ⟨𝒮_T, P⟩       ([SωS26, Thm II])
+
+    align(w·z^ω):                     # teacher's bit ≠ belief's answer
+        chain split (Theorem 4.2)
+        return stabilize
+```
+
+The two levels of discordance are visible in stabilize. Table-level
+discordances — a frontier word matching no row, a consistency
+violation — split directly, by promotion and mint (Definition 3.2), no
+chain needed. Lasso-level discordances — the legality violations — are
+chained down to table level by the escalations of §4.2. Checks are free;
+escalations are bounded by the total number of splits. What stabilize
+returns is the next belief: a well-formed invariant, the syntactic
+invariant of its own belief language (§3.2), reached from one seed
+discordance by membership queries alone.
+
+*Example (the `EvenBlocks` run: one align call).* The whole run is
+bootstrap, one align call, and a certifying equivalence query. The call
+is seeded by the teacher-found discordance traced in §4.1 — the lasso
+`(ε, b·aa)` — and its stabilization fires two stamp escalations,
+carrying the table from four to its eight classes — keys
+`ε, b, a, b·a, a·b, a·a, b·a·b, a·b·a`, the count and keys fixed by the
+reference invariant. Table 7 is the call as a split ledger, one row per
+event, from the implementation's transcript — deterministic under the
+pinned scan and minimal-counterexample policies, and reproducing §4.1's
+row exactly. One reading note: a single mint can split more than one
+class once the table re-stabilizes — rows 2 and 3 each split two.
+
+| # | trigger | chain | minted column | splits | `\|𝒞_T\|` after |
+|:--:|---|---|---|---|:--:|
+| 1 | EQ: `(ε, b·aa)` | loop | `(a, a)_ω` | `b·a` out of `⟨a⟩` | 4 |
+| 2 | stamp escalation | in-context | `(a, b·a)_ω` | `aa` out of `⟨a⟩`; `a·b` out of `⟨b·a⟩` | 6 |
+| 3 | stamp escalation | in-context | `(ε, b)_ω` | `a·b·a` out of `⟨b⟩`; `b·a·b` out of `⟨aa⟩` | 8 |
+
+**Table 7.** The `EvenBlocks` align call as a split ledger: trigger (the
+teacher-found seed, then legality escalations), the chain that processed
+it, the minted column, the words separated. The day-one checks are
+clean — Figure 3(b) is a legal frame — so row 1, §4.1's split, is the
+call's first event; rows 2–3 are the stamp check enforcing
+two-sidedness: no second discordance is ever teacher-found, and the
+run's second equivalence query certifies. Every one of the four columns
+is of the ω-sort: prefix-independence in action (the linear shape is
+blind, Proposition 4.5, so every separation lives in the loop). The
+final escalation mints `(ε, b)` — the very column §3.1 exhibited by
+inspection. The resulting bit-signatures are the fixpoint (the Table 6
+analogue), pairwise distinct — with `[ε]`, the `N = 8` classes of
+`𝓘(EvenBlocks)`:
+
+| word | `(ε,ε)_ω` | `(a,a)_ω` | `(a,b·a)_ω` | `(ε,b)_ω` |
+|---|:--:|:--:|:--:|:--:|
+| `b` | `1` | `0` | `0` | `1` |
+| `a` | `0` | `0` | `1` | `0` |
+| `b·a` | `0` | `1` | `0` | `0` |
+| `a·b` | `0` | `1` | `1` | `0` |
+| `a·a` | `0` | `0` | `0` | `1` |
+| `b·a·b` | `0` | `0` | `0` | `0` |
+| `a·b·a` | `1` | `0` | `0` | `0` |
+
+### 4.4 What alignment mints: prefix-independence and the two shapes
+
+The left contexts the escalations enforce come in Arnold's two shapes,
+and prefix-independence silences exactly one of them:
+
+**Proposition 4.5 (prefix-independence and the two shapes).** Let `L` be
 prefix-independent (`w ∈ L ⟺ σ·w ∈ L` for every finite `σ`). Then the
 prefix slot `x` of every Arnold context is vacuous —
 `x·u·y·t^ω ∈ L ⟺ u·y·t^ω ∈ L` and `x·(u·y)^ω ∈ L ⟺ (u·y)^ω ∈ L` — so the
@@ -1079,7 +1195,7 @@ on `u` under the ω-context `(_·y)^ω` is exactly its behavior under the left
 factor `y`, read as a rotation (§2.2), which deleting finite prefixes never
 touches. ∎
 
-**Corollary 4.7 (a prefix-independent gap is ω-sorted).** Let `L` be
+**Corollary 4.6 (a prefix-independent gap is ω-sorted).** Let `L` be
 prefix-independent. (a) `u ≈_L v` iff `u` and `v` agree under every pure
 right extension (`u·y·t^ω ∈ L ⟺ v·y·t^ω ∈ L` for all `y ∈ Σ*, t ∈ Σ⁺` —
 that is, `u ~_L v`, the right congruence) *and* under every bare ω-power
@@ -1088,7 +1204,7 @@ right congruence identifies but `≈_L` separates are separated by ω-power
 contexts *only*. (b) On the learner's side the sort discipline is absolute:
 every column of every run on `L` is of the ω-sort.
 
-*Proof.* (a) By Proposition 4.6 the prefix `x` is vacuous in both shapes.
+*Proof.* (a) By Proposition 4.5 the prefix `x` is vacuous in both shapes.
 The linear shape's remaining contexts `y·t^ω` range over the lassos of the
 residual languages, which are ω-regular and hence determined by them
 [PP04] — agreement under all of them is exactly `u ~_L v` — and the ω-power
@@ -1096,24 +1212,22 @@ shape's remaining contexts are the bare ω-powers. If `u ~_L v` and
 `u ≉_L v`, the separating Arnold context is therefore of the ω-power shape.
 (b) By induction over the run. The initial column is the ω-column `(ε, ε)`,
 and every mint inherits the sort of the column it derives from: consistency
-mints by Definition 3.2, both branches of a stamp escalation by Lemma 4.4
-(branch 1 reproduces `κ` in `κ`'s own sort; branch 2's frozen chain mints
-`κ`'s sort, the segment migrating into the middle component). The remaining
-sources of columns are chains — the harvest's (Theorem 4.3) and the pair
-escalation's (Lemma 4.5, the same chains) — and on a prefix-independent
+mints by Definition 3.2, both branches of a stamp escalation by Lemma 4.3
+(branch 1 reproduces `κ` in `κ`'s own sort; branch 2 is the chain run in
+`κ`'s own context, minting `κ`'s sort — the segment migrating into the
+middle component). The remaining source of columns is the processing of a
+discordant lasso (Theorem 4.2 — teacher-found, or the pair escalation's
+self-found, Lemma 4.4: the same chains) — and on a prefix-independent
 language every stem chain is *flat*: its bits belong to words differing
-only in their finite prefixes, so every flip lands in the loop chain, and
-Lemma 4.2 mints an ω-column. ∎
+only in their finite prefixes, so every flip lands in the loop chain,
+whose mint is an ω-column (Lemma 4.1). ∎
 
-Table 7's run is the corollary performed — four columns, all ω — and §7.3
-uses it in the other direction, as a certificate: a permanent stall of a
-prefix-independent language must be recovered entirely by ω-sort mints, a
-machine-checkable signature of every such census witness.
+Table 7's run is the corollary performed — four columns, all ω.
 
 Prefix-independence also has a floor, which bounds where such witnesses can
 live at all:
 
-**Lemma 4.8 (prefix-independence needs depth).** A prefix-independent
+**Lemma 4.7 (prefix-independence needs depth).** A prefix-independent
 language that is topologically closed — a safety language — is `∅` or
 `Σ^ω`; dually for open. A nontrivial prefix-independent language is
 therefore neither closed nor open.
@@ -1124,69 +1238,52 @@ by prefix-independence; closedness puts the limit in `L`, so `L = Σ^ω`. An
 open prefix-independent language has a closed prefix-independent
 complement. ∎
 
-### 4.3 The loop, assembled
+### 4.5 The learner's life: bootstrap and alternation
+
+**Bootstrap.** The learner opens on an assumption chosen to be minimal
+and legal at once: *no lasso is accepted* — the empty language, whose
+invariant is the smallest there is (`N = 2`: one absorbing class, the
+adjoined identity, an empty pair set). It is an opening belief, not an
+axiom: about `L` it assumes nothing that an accepted lasso cannot
+refute. Day one replaces it with knowledge scoped by letters: rows
+`R = {ε} ∪ Σ`, the single ω-column `(ε, ε)` — the weakest question a
+context can ask, "is your own ω-power in `L`?" — and one call to
+stabilize. Everything day one does is already the interior machinery:
+fills, promotions, mints — and, when a day-one table is born illegal,
+escalations: on `a → Xa`, bootstrap alone fires a stamp escalation and
+delivers the five-class target before the first equivalence query. On
+the running examples the day-one tables are legal as they
+stand (Tables 1–2), and the exported beliefs are Figure 3's frames.
+
+**Alternation.** The whole learner is now three lines around align:
 
 ```
-    R ← {ε} ∪ Σ;   E_ω ← {(ε, ε)};   E_lin ← ∅
-    repeat:
-        fill entries (membership queries)
-        repair closedness (promote) and consistency (mint) to fixpoint
-        stamp legality: check; on violation escalate (Lemma 4.4):
-            split, restart loop
-        fill P on all linked pairs of the induced product (memoized queries)
-        pair legality: check; on violation escalate (Lemma 4.5):
-            split, restart loop
-        𝓘_i ← canonicalize ⟨𝒮_T, P⟩          ([SωS26, Thm II], zero queries)
-        pose EQ(𝓘_i)
-        if yes: output 𝓘_i — it is 𝓘(L) (§5) — and stop
-        else: normalize the counterexample; junction query; binary-search
-              the flip; mint the harvested column (Lemma 4.1 or 4.2); split
+    learner:
+        R ← {ε} ∪ Σ;   E_ω ← {(ε, ε)};   E_lin ← ∅
+        𝓘_0 ← stabilize                            # bootstrap
+        repeat:
+            pose EQ(𝓘_i)
+            if assent:  output 𝓘_i and stop
+            else:       𝓘_{i+1} ← align(counterexample)
 ```
 
-Legality checks are free; escalations are bounded by the total number of
-splits. A certified round — both checks clean — is exactly the round whose
-export is a well-formed invariant (§3.2): the belief sequence
-`𝓘_0, 𝓘_1, …` is the run's *frame sequence*, each frame an ω-regular
-language, opening at Figure 3 and closing at Figure 2.
+An equivalence query is the **delegated discordance search** — "is there
+a lasso I would get wrong?" — and it is posed exactly at quiescence:
+belief legal, hence internally coherent, both self-served sources
+exhausted — no computation of the learner's own points at any lasso as
+suspect. A failed query contributes precisely one discordant lasso and
+nothing else; even its bit is redundant, the flip of the belief's
+prediction. There is no counterexample-processing phase distinct from
+alignment — the teacher's lasso enters align exactly as a pair
+escalation's self-found one does. And assent is not a learning event at
+all: it is *global* concordance, agreement on every lasso — a
+certificate no finite set of membership bits can supply — and the exit.
+The alternation is thus extreme by design: membership queries as much as
+needed, equivalence queries only when the learner cannot help itself.
 
-*Example (the `EvenBlocks` run, as frames).* Beyond the counterexample
-traced in §4.1, two stamp escalations carry the table from four to its
-eight classes — keys `ε, b, a, b·a, a·b, a·a, b·a·b, a·b·a`, the count and
-keys fixed by the reference invariant. Table 7 is the run as a split
-ledger, one row per event, from the implementation's transcript —
-deterministic under the pinned scan and minimal-counterexample policies,
-and reproducing §4.1's row exactly. One reading note: a single mint can
-split more than one class once the table re-stabilizes — rows 2 and 3 each
-split two.
-
-| # | trigger | chain | minted column | splits | `\|𝒞_T\|` after |
-|:--:|---|---|---|---|:--:|
-| 1 | EQ: `(ε, b·aa)` | loop | `(a, a)_ω` | `b·a` out of `⟨a⟩` | 4 |
-| 2 | stamp escalation | frozen | `(a, b·a)_ω` | `aa` out of `⟨a⟩`; `a·b` out of `⟨b·a⟩` | 6 |
-| 3 | stamp escalation | frozen | `(ε, b)_ω` | `a·b·a` out of `⟨b⟩`; `b·a·b` out of `⟨aa⟩` | 8 |
-
-**Table 7.** The `EvenBlocks` run as a split ledger: trigger (equivalence
-counterexample or legality escalation), the chain that processed it, the
-minted column, the words separated. The day-one checks are clean — Figure
-3(b) is a legal frame — so row 1, §4.1's split, is the run's first event;
-rows 2–3 are the stamp check enforcing two-sidedness — no second
-counterexample is ever needed, and the run's second equivalence query
-certifies. Every one of the four columns is of the ω-sort:
-prefix-independence in action (the linear shape is blind, Proposition 4.6,
-so every separation lives in the loop). The final escalation mints
-`(ε, b)` — the very column §3.1 exhibited by inspection. The resulting
-bit-signatures are the fixpoint (the Table 6 analogue), pairwise
-distinct — with `[ε]`, the `N = 8` classes of `𝓘(EvenBlocks)`:
-
-| word | `(ε,ε)_ω` | `(a,a)_ω` | `(a,b·a)_ω` | `(ε,b)_ω` |
-|---|:--:|:--:|:--:|:--:|
-| `b` | `1` | `0` | `0` | `1` |
-| `a` | `0` | `0` | `1` | `0` |
-| `b·a` | `0` | `1` | `0` | `0` |
-| `a·b` | `0` | `1` | `1` | `0` |
-| `a·a` | `0` | `0` | `0` | `1` |
-| `b·a·b` | `0` | `0` | `0` | `0` |
-| `a·b·a` | `1` | `0` | `0` | `0` |
+The belief sequence `𝓘_0, 𝓘_1, …` is the run's *frame sequence*, each
+frame an ω-regular language, opening at Figure 3 and closing at
+Figure 2; successive frames differ by exactly one align call.
 
 
 ## 5. Correctness and complexity
