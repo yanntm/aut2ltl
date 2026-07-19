@@ -144,8 +144,8 @@ def main(argv: List[str]) -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "flat_canon.md").write_text("\n".join(lines), encoding="utf-8")
 
-    print(f"flat_canon E2: {len(perms)} permanent languages; "
-          f"gaps {dict(sorted(gaps.items()))}")
+    gap_kv = " ".join(f"{g}:{gaps[g]}" for g in sorted(gaps))
+    print(f"flat_canon E2: {len(perms)} permanent languages; gaps {gap_kv}")
     print(f"  prefix-independent {pi_yes}/{len(feats)}; LTL {ltl_yes}/{len(feats)}")
     for r in sharpest:
         print(f"  {r['case']}: ref={r['ref']} stall={r['stall']} gap={r['gap']}")
