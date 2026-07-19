@@ -1,4 +1,4 @@
-# teacher — membership by simulation, equivalence by search
+# teacher — membership by simulation, equivalence by scan
 
 Dev-facing. The two answers a white-box teacher must produce correctly, and
 cheaply enough for a learning campaign.
@@ -22,39 +22,30 @@ pure automaton walking.
 
 ## Equivalence
 
-Three strategies, combinable via `--eq-mode`; default is `reps`, then
-`bounded:8`, then `exact`. Whatever fires, the counterexample is **minimized**
-(shortest stem, then shortest loop, then shortlex) before return — the whole
+The hypothesis is a well-formed `Invariant`, so its side of any comparison is
+its own algebraic lasso read-off — total and normative. Two strategies,
+selected by `eq_mode`; whatever fires, the returned counterexample is
+**minimal** (shortest stem, then shortest loop, then shortlex) — the whole
 run's determinism depends on this.
 
-- **`reps`** — audit lassos built from pairs of hypothesis keys and pairs of
-  reference keys (`key(s), key(e)` for linked `(s, e)`). Fast, incomplete; a
-  first pass that catches most early errors.
-- **`bounded:B`** — exhaustive over lassos with `|u| ≤ B`, `|v| ≤ B`, enumerated
-  through the product of `D` and the hypothesis step automaton so only
-  *distinguishable* candidates are materialized; `B` doubles on demand. Complete
-  in the limit.
-- **`exact`** — decide against the language's reference invariant `R` in the SoS
-  calculus: `align` the hypothesis's Cayley graph with `R` into the
-  letter-generated node set (`≤ n_H·n_R` nodes), then scan the cells
-  `(stem node, loop node)` for one where `R`'s algebraic verdict and the
-  hypothesis's prediction on the cell's canonical lasso disagree. Complete and
-  polynomial; the automaton's only role was to build `R` once.
-- **`exact`, referenceless fallback** — when no reference invariant exists (the
-  algebra's closure blew its cap), decide via the product of `D` with the
-  *transformation closure* of the hypothesis: loop words act on hypothesis
-  classes as functions; close the function monoid under the letters; a
-  mismatchable pair (stem-value, loop-transformation) yields a concrete
-  counterexample. Complete, but exponential in `D`'s presentation, so it carries
-  a work cap and raises `ExactTooLarge` past it.
-
-The teacher records which strategy certified each `eq`; a run certified only by
-`bounded` is flagged in the stats (it is not a full proof of equivalence).
-
-## Self-check (harness layer 1)
-
-Two independent membership implementations — the simulator above and the
-invariant read-off through the reference builder (`sosl.sos.build`) — are
-compared on many seeded random lassos per corpus automaton. Any disagreement is
-a build-stopping bug: it means either the simulator or the reference invariant
-is wrong, and nothing downstream can be trusted until it is resolved.
+- **`exact`** — decide against the language's reference invariant `R` in the
+  SoS calculus: `align` the two stamps into the letter-generated node set
+  (the pairs `(fold_H(w), fold_R(w))`, at most `n_H·n_R` nodes, each keyed by
+  its shortlex-least word), then scan the cells `(stem node, loop node)` in
+  the counterexample discipline, reading one algebraic verdict per side per
+  cell — each side's `Val` on its own component, which by the factoring
+  theorem speaks for every lasso of the cell. The first disagreeing cell's
+  canonical lasso is the globally minimal counterexample (Proposition W of
+  `sosl.sos.calculus.decide`). Complete, polynomial, and **zero membership
+  queries**: the decision reads the two algebras alone. `R` is built once
+  from `D` (or supplied precomputed); after that the automaton leaves the
+  equivalence loop. A language whose algebra blew the construction's cap has
+  no `R` and no exact decision — the query raises, or answers bounded under
+  `cap_escape`.
+- **`bounded:B`** — exhaustive over lassos with `|u| ≤ B`, `1 ≤ |v| ≤ B`,
+  enumerated in the counterexample order (so the first mismatch found is
+  already minimal), each decided by `Invariant.member` against `D`'s
+  simulation. Complete only in the limit; a work cap stops a hopeless sweep
+  and reports the answer as inconclusive rather than certifying. This is the
+  honest strategy for a black-box or referenceless teacher, and the
+  certifying-strategy tag on `Equivalent` is what flags such runs.

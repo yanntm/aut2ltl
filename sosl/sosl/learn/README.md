@@ -6,37 +6,40 @@ deliverable behind `sos_learn`.
 
 ## Services
 
-- **`learn(teacher) → Invariant`.** Drive membership and equivalence queries
-  until the hypothesis is certified equivalent to `L`, then export the
-  canonical invariant. Emits, alongside the invariant:
-  - **run statistics** (query counts by phase, splits, table dimensions, …);
-  - a replayable **audit transcript** — every class split records the column
-    and the two differing membership bits that justified it.
+- **`learn(teacher, alphabet, stats=None) → Invariant`.** Drive membership
+  and equivalence queries until the belief is certified equivalent to `L`.
+  Every hypothesis posed is a well-formed `Invariant` — the canonical form of
+  the learner's current belief language — and the certified belief is `I(L)`,
+  byte-equal to the reference construction. `stats`, when given, receives the
+  run counters (class count, membership/equivalence queries, counterexamples,
+  legality escalations).
 - **Determinism.** Given the teacher's answers, a run is reproducible
-  bit-for-bit (ties are broken by shortlex, and counterexamples arrive
-  minimized). Re-running with the same teacher reproduces the transcript.
-- **Ablation switch.** The saturation phase can be disabled; the learner then
-  still reaches an *acceptance-correct* fixpoint but may miss canonicity — the
-  object of the saturation experiment.
+  bit-for-bit: every scan order is pinned (shortlex / id / first-query order)
+  and counterexamples arrive minimized.
+- **Query economy.** All queries thread through the evidence ledger: one
+  teacher query per distinct infinite word per run, replays free.
 
 ## The one hard constraint
 
 This module depends on **`sosl.contract` and `sosl.sos` only** — never
-`reference`, never `teacher` internals, never spot or `aut2ltl`. Its only
-knowledge of `L` is what the teacher answers. Any import that widens this is a
-layering bug: it would let automaton structure leak into a "learned" result.
+`teacher` internals, never spot or `aut2ltl`. Its only knowledge of `L` is
+what the teacher answers. Any import that widens this is a layering bug: it
+would let automaton structure leak into a "learned" result.
 
 ## Orientation map
 
+    evidence    the run-wide lasso -> bit ledger (canonical omega-word keys)
     table       the observation table (rows, frontier, linear/omega columns)
-    partition   classes from bit-rows; representatives; the step relation
-    fold        ψ(w): letterwise step from [ε]; the ψ == class coherence check
-    pcache      lazy accepting-pair verdicts, never invalidated
-    procedures  fill / close / consist / saturate / counterexample chains
-    export      fixpoint → M, re-key, fill P → canonical Invariant
+    columns     the two column sorts and their lasso shapes
+    partition   classes from bit-rows; keys (reps); step; fold
+    chains      one discordance -> one witnessed class split
+    saturate    stamp legality: the two-sided-congruence sweep + escalation
+    pairs       pair legality: P saturated under conjugacy + escalation
+    export      partition -> canonical Invariant (the belief)
+    learner     bootstrap, probe sweep, the normal-form loop, alternation
 
 ## See also
 
-`algorithm.md` — the learner algorithm proper (the procedures, saturation, the
-counterexample chains, the loop, and the invariants asserted throughout). The
-specification of record is `research_notes/sos_learning_spec.md` §3.2.
+`algorithm.md` — the learner algorithm proper: the state, the four-constraint
+normal form, the chain, the bootstrap, the pinned orders, and the counting
+conventions. The theory is the paper, `research_notes/sos_learning2.md` §3–§5.
