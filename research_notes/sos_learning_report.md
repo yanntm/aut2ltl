@@ -84,8 +84,11 @@ to 53, head of the distribution:
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|:--:|--:|--:|--:|
 | languages | 661 | 533 | 467 | 332 | 242 | 140 | 149 | 99 | 75 | 31 | ⋯ | 2 | 2 | 2 |
 
-Sharpest gap 53: `3state1ap0acc_015752` + dual, `N = 68` stalled at 15.
-Every count is even — dual-symmetric, as the bit-flip symmetry demands.
+Sharpest gap 53: `3state1ap0acc_015752` + dual, `N = 68` stalled at 15; the
+six sharpest specimens form three dual pairs. Verdicts agree on every one of
+the 2733 dual pairs with both sides decided; the raw counts are
+budget-censored floors (a language can be decided while its dual is not), so
+buckets need not pair off.
 Permanence cuts across the LTL boundary: **1741/3137** of the permanent
 stalls are LTL-definable. Prefix-independent permanent stalls: **231/3137**
 (algebraic check on the canonical invariants). The two named specimens are
