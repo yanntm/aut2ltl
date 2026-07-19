@@ -19,7 +19,7 @@ carries **current work items + pointers only**, no history.
 5. Committed data: `reference/census/` and `reference/campaigns/` — their
    READMEs carry the regenerate recipes. Cluster interface: `cluster/README.md`.
 
-## Work items — engineering (in order)
+## Work items — engineering
 
 1. **Bank the §6.3 E2 drop** — `python3 -m tests.sosl.census_e2_exhibits
    ../reference/census/ablation_congruence.csv` (seconds, local; output
@@ -29,11 +29,6 @@ carries **current work items + pointers only**, no history.
    item 1** (the PI count) before committing under `reference/census/`.
    The script cross-tabs by Wagner degree only — the spec's per-shape
    exhaustive negative still needs a shape column (prefix of `case_id`).
-2. **Free fills, no new drop needed:** §6.1 shape manifest (emit from
-   `manifest.py`, commit under `reference/census/`); §6.1 guard/cap tallies
-   and §6.2 wall-time line (both derivable from `sweep_results.csv`); §6.4
-   LTL-agreement sentence.
-3. Parked: lowered-cap re-run of the guard-fired cases.
 
 ## Work items — theory
 
@@ -42,11 +37,11 @@ carries **current work items + pointers only**, no history.
    plus complements and the spec's per-shape claim is *zero* PI permanent
    stalls on every exhaustive shape. Restate the claim (or scope it) before
    engineering banks the E2 drop.
-2. Integrate the banked 6222-scale results into the paper's remaining `⟨TBD⟩`
-   markers as engineering delivers them (§6.1 manifest + tallies, §6.2
-   wall-time, §6.3 counts, §6.4 restatement — the LTL-cut direction inverts
-   at 6222: keep the correlation, drop the direction claim).
-3. Sweep the draft for 3938-era numbers and restate from the committed record.
+2. Integrate the E2 drop into §6.3's `⟨TBD-M4⟩` markers once banked, and
+   restate §6.4's LTL-cut paragraph from `e3_summary.md` — the direction
+   inverts at 6222: keep the correlation, drop the direction claim.
+3. Sweep the draft for 3938-era numbers and restate from the committed record
+   (§6's preamble marks this; §6.2/§6.4 fills are in from `e1_summary.md`).
 
 ## The corpus
 
