@@ -202,9 +202,13 @@ drawings consume them — regenerate those with `make one-a_implies_xa` /
 `!a → b` to the paper's two-letter alphabet (its pydoc states the convention):
 
 ```sh
-python3 research_notes/sos_figs/draw_tgba.py research_notes/sos_figs/sources/a_implies_xa.hoa research_notes/sos_figs/img/a_implies_xa.png
-python3 research_notes/sos_figs/draw_tgba.py research_notes/sos_figs/sources/a_once.hoa research_notes/sos_figs/img/a_once.png
+python3 research_notes/sos_figs/draw_tgba.py --verbatim research_notes/sos_figs/sources/a_implies_xa.hoa research_notes/sos_figs/img/a_implies_xa.png
+python3 research_notes/sos_figs/draw_tgba.py --verbatim research_notes/sos_figs/sources/a_once.hoa research_notes/sos_figs/img/a_once.png
 ```
+
+`--verbatim` draws the bundled HOA exactly as written (state 0 initial, the
+canonical numbering) — the sources are already the import layer's fixpoint,
+and the drawing must not re-parse them through it.
 
 Expected: `a_implies_xa` — 4-state D, `|S(L)₊¹| = 5`, LTL, six accepting
 pairs; `a_once` — 3-state D, `|S(L)₊¹| = 4`, LTL, the single pair
