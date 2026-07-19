@@ -100,5 +100,19 @@ one-a_once:
 	$(call fig,a_once,a_once)
 	$(call pairfig,a_once,a_once_pairs,a_once)
 
+# sos_learning figures (`sosl_` prefix): the learner's intermediate objects —
+# day-one invariants and the §4.2 stalled export — dumped by
+# `python3 -m tests.sosl.fig_learner_exports` (run from sosl/), drawn with the
+# same engine and conventions as the core figures. Built ONLY by `make sosl`;
+# plain `make` / `make reseed` never touch them, and vice versa.
+.PHONY: sosl
+sosl:
+	$(call fig,sosl_even_day1,sosl_even_day1)
+	$(call pairfig,sosl_even_day1,sosl_even_day1_pairs,sosl_even_day1)
+	$(call fig,sosl_evenblocks_day1,sosl_evenblocks_day1)
+	$(call pairfig,sosl_evenblocks_day1,sosl_evenblocks_day1_pairs,sosl_evenblocks_day1)
+	$(call fig,sosl_a_implies_xa_stall,sosl_a_implies_xa_stall)
+	$(call pairfig,sosl_a_implies_xa_stall,sosl_a_implies_xa_stall_pairs,sosl_a_implies_xa_stall)
+
 clean:
 	rm -f sources/*.aux sources/*.log sources/*.out

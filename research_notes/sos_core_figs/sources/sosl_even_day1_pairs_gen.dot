@@ -1,0 +1,17 @@
+// sos2cayley sosl_even_day1.sos --rename a=a,!a=b --draw-pairs
+digraph sosl_even_day1_pairs {
+  rankdir=TB;
+  ranksep=0.87; nodesep=0.55;
+  node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];
+  edge [fontname="serif", fontsize=10, arrowsize=0.7];
+  label="λ: a ↣ [a], b ↣ [b]\nP = { ([b],[a]), ([b],[b]) }";
+  labelloc="b"; labeljust="c"; fontname="serif"; fontsize=11;
+
+  a [label="[a]"];
+  b [label="[b]"];
+
+  { rank=same; a b; }
+
+  a -> a [label="C", weight=1];
+  b -> b [label="C", weight=1];
+}
