@@ -156,6 +156,27 @@ moves to `[a]`; from `[a]`, no letter ever leaves.
 difference — `b·a` folds to `[a]`, so `[a]` is absorbing and the fold sees
 only "have I read an `a` yet".
 
+<table>
+<tr>
+<td align="center"><img src="sos_core_figs/img/sosl_even_day1_pairs.png" alt="Even day-one invariant" width="260"></td>
+<td align="center"><img src="sos_core_figs/img/sosl_evenblocks_day1_pairs.png" alt="EvenBlocks day-one invariant" width="260"></td>
+</tr>
+<tr>
+<td align="center"><b>(a) day one on <code>Even</code></b> (Table 1).<br><code>x·y = x</code>: the stem decides.<br>Denotes <code>b·Σ^ω</code> — "the first letter decides."</td>
+<td align="center"><b>(b) day one on <code>EvenBlocks</code></b> (Table 2).<br><code>[a]</code> absorbing: "have I read an <code>a</code> yet".<br>Denotes <code>FG¬a</code> — "finitely many <code>a</code>".</td>
+</tr>
+</table>
+
+**Figure 4.** The day-one beliefs, drawn with Figure 2's conventions: the
+hypotheses of Tables 1 and 2 as handed to the first equivalence query,
+exported by §5's recipe `c·c' := fold(c, rep(c'))`. The export is legitimate
+this early: both day-one kernels are already two-sided congruences
+(Lemma 5.2's zero-query check — clean on both, mechanically confirmed), and
+both pair sets are conjugacy-closed, so each drawing is a *well-formed
+invariant* — the learner's belief is itself an ω-regular language, rougher
+than the target it will be revised into (Figure 2 (b), (c)). The two algebras
+differ in a single edge — `[b]·[a]`, Table 2's telling entry, drawn.
+
 Now predict the lasso `(ε, b·aa)`, following the definition step by step.
 *Fold the loop:* `ψ(b·aa)` walks `[ε] →_{b} [b] →_a [a] →_a [a]` — the
 middle step crossing the telling entry above — so `c_1 = [a]`. *Find the
