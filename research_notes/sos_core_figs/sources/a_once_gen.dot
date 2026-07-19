@@ -1,0 +1,22 @@
+// sos2cayley a_once.sos --rename a=a,!a=b
+digraph a_once {
+  rankdir=TB;
+  ranksep=0.87; nodesep=0.55;
+  node [shape=box, style=rounded, fontname="serif", margin="0.06,0.03"];
+  edge [fontname="serif", fontsize=10, arrowsize=0.7];
+  label="λ: a ↣ [a], b ↣ [b]\nP = { ([a],[b]) }";
+  labelloc="b"; labeljust="c"; fontname="serif"; fontsize=11;
+
+  a [label="[a]"];
+  b [label="[b]"];
+  aa [label="[a·a]"];
+
+  { rank=same; a b; }
+  { rank=same; aa; }
+
+  a -> aa [label="[a],[a·a]", weight=3];
+  a -> a [label="[b]", weight=1];
+  b -> aa [label="[a],[a·a]", weight=1];
+  b -> b [label="[b]", weight=1];
+  aa -> aa [label="C", weight=1];
+}

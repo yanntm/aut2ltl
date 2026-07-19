@@ -62,6 +62,8 @@ figures:
 	$(call fig,gf_aa,core_F1_gf_aa)
 	$(call fig,even,core_F2_even)
 	$(call fig,evenblocks,core_F3_evenblocks)
+	$(call fig,a_implies_xa,a_implies_xa)
+	$(call fig,a_once,a_once)
 
 # The accepting pairs drawn on top of the four elided invariants (Figure 2), each a
 # second copy of its base figure with P rendered as bold doubled self-loops.
@@ -70,6 +72,8 @@ pairs: figures
 	$(call pairfig,gf_aa,core_F1_gf_aa_pairs,core_F1_gf_aa)
 	$(call pairfig,even,core_F2_even_pairs,core_F2_even)
 	$(call pairfig,evenblocks,core_F3_evenblocks_pairs,core_F3_evenblocks)
+	$(call pairfig,a_implies_xa,a_implies_xa_pairs,a_implies_xa)
+	$(call pairfig,a_once,a_once_pairs,a_once)
 
 clean:
 	rm -f sources/*.aux sources/*.log sources/*.out
