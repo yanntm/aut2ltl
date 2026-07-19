@@ -28,7 +28,14 @@ delegated discordance search, assent the exit). The wired sources are
 (legality escalations), `s4c_life.md` (align assembled,
 prefix-independence, bootstrap + alternation). `s4a_reap.md` and
 `s4b_sow.md` are the superseded §4 sources, unwired but kept until the
-cross-reference sweep. Known-stale until that sweep: §5–§7 cite the old
+cross-reference sweep. Bootstrap is reformulated (§4.5): the learner
+opens on `R = {ε}` with *no columns*; the first query (the promoted
+letter's ω-power, via the `P`-fill) decides `∅` vs `Σ^ω`; the remaining
+letters' ω-powers are probes through the general align path — every
+column of every run is minted, none seeded. The worked tables in §3–§4
+are still transcripts of the seeded-column pipeline; hand-derived
+expectations under the new bootstrap go into the engineering spec (to
+be written), and the tables follow the regenerated record. Known-stale until that sweep: §5–§7 cite the old
 §4 numbering — map: old L4.1+L4.2+T4.3 → L4.1 (chain) + T4.2 (split);
 L4.4 → L4.3; L4.5 → L4.4; P4.6 → P4.5; C4.7 → C4.6; L4.8 → L4.7 — and
 the retired reap/sow–harvest vocabulary. §5 is slated for dissolution by

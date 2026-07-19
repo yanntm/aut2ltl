@@ -113,17 +113,18 @@ residual languages, which are ω-regular and hence determined by them
 [PP04] — agreement under all of them is exactly `u ~_L v` — and the ω-power
 shape's remaining contexts are the bare ω-powers. If `u ~_L v` and
 `u ≉_L v`, the separating Arnold context is therefore of the ω-power shape.
-(b) By induction over the run. The initial column is the ω-column `(ε, ε)`,
-and every mint inherits the sort of the column it derives from: consistency
-mints by Definition 3.2, both branches of a stamp escalation by Lemma 4.3
-(branch 1 reproduces `κ` in `κ`'s own sort; branch 2 is the chain run in
-`κ`'s own context, minting `κ`'s sort — the segment migrating into the
-middle component). The remaining source of columns is the processing of a
-discordant lasso (Theorem 4.2 — teacher-found, or the pair escalation's
-self-found, Lemma 4.4: the same chains) — and on a prefix-independent
+(b) By induction over the run's mints — under the bootstrap of §4.5 no
+column is given: every column is minted. A consistency mint preserves its
+source column's sort (Definition 3.2); a stamp escalation preserves `κ`'s
+sort in both branches (branch 1 reproduces `κ` in `κ`'s own sort; branch 2
+is the chain run in `κ`'s own context, the segment migrating into the
+middle component). Every remaining mint comes from processing a discordant
+lasso (Theorem 4.2 — a bootstrap probe's, the teacher's, or the pair
+escalation's, Lemma 4.4: the same chains), and on a prefix-independent
 language every stem chain is *flat*: its bits belong to words differing
 only in their finite prefixes, so every flip lands in the loop chain,
-whose mint is an ω-column (Lemma 4.1). ∎
+whose mint is an ω-column (Lemma 4.1). The run's first column is therefore
+already ω-sorted, and no later mint can introduce the linear sort. ∎
 
 Table 7's run is the corollary performed — four columns, all ω.
 
@@ -143,31 +144,42 @@ complement. ∎
 
 ### 4.5 The learner's life: bootstrap and alternation
 
-**Bootstrap.** The learner opens on an assumption chosen to be minimal
-and legal at once: *no lasso is accepted* — the empty language, whose
-invariant is the smallest there is (`N = 2`: one absorbing class, the
-adjoined identity, an empty pair set). It is an opening belief, not an
-axiom: about `L` it assumes nothing that an accepted lasso cannot
-refute. Day one replaces it with knowledge scoped by letters: rows
-`R = {ε} ∪ Σ`, the single ω-column `(ε, ε)` — the weakest question a
-context can ask, "is your own ω-power in `L`?" — and one call to
-stabilize. Everything day one does is already the interior machinery:
-fills, promotions, mints — and, when a day-one table is born illegal,
-escalations: on `a → Xa`, bootstrap alone fires a stamp escalation and
-delivers the five-class target before the first equivalence query. On
-the running examples the day-one tables are legal as they
-stand (Tables 1–2), and the exported beliefs are Figure 3's frames.
+**Bootstrap.** The learner opens with the least state the definitions
+admit: `R = {ε}` and no columns at all. Stabilize runs on it as on any
+table: closedness promotes the shortlex-least letter — no other row
+exists to absorb it — and every remaining letter merges with it, no
+column yet separating anything; the induced product is the one-class
+semigroup, both checks are vacuously clean, and the `P`-fill of its
+single linked pair poses the run's first membership query, the ω-power
+of the promoted letter. That single bit decides the zeroth belief: the
+empty language or `Σ^ω`, the two smallest invariants there are
+(`N = 2`). Nothing is ever assumed — the opening belief is the answer
+to the opening query.
 
-**Alternation.** The whole learner is now three lines around align:
+A one-class belief is legality-inert — neither check can fire on it —
+so the learner probes: each remaining letter's ω-power, queried in
+shortlex order and treated by the general rule — concordant, recorded;
+discordant, one align call seeded by `(ε, a)`. **Day one** is the
+belief at the fixpoint of this sweep: every contradiction among the
+opening bits resolved by membership queries alone, no equivalence query
+anywhere. The letter sweep is the minimal self-served probe policy —
+the only experiments available before anything is known — and it is the
+last a-priori experimentation the learner ever performs: every column
+of every run is *minted* by a discordance; no experiment is given, all
+are found.
+
+**Alternation.** The whole learner is now a few lines around align:
 
 ```
     learner:
-        R ← {ε} ∪ Σ;   E_ω ← {(ε, ε)};   E_lin ← ∅
-        𝓘_0 ← stabilize                            # bootstrap
-        repeat:
-            pose EQ(𝓘_i)
-            if assent:  output 𝓘_i and stop
-            else:       𝓘_{i+1} ← align(counterexample)
+        R ← {ε};   E_lin ← ∅;   E_ω ← ∅
+        𝓘 ← stabilize                # the first query decides ∅ vs Σ^ω
+        for each remaining letter a, in shortlex order:    # probe sweep
+            query a^ω; on discordance:  𝓘 ← align((ε, a))
+        repeat:                                            # alternation
+            pose EQ(𝓘)
+            if assent:  output 𝓘 and stop
+            else:       𝓘 ← align(counterexample)
 ```
 
 An equivalence query is the **delegated discordance search** — "is there
@@ -185,5 +197,6 @@ The alternation is thus extreme by design: membership queries as much as
 needed, equivalence queries only when the learner cannot help itself.
 
 The belief sequence `𝓘_0, 𝓘_1, …` is the run's *frame sequence*, each
-frame an ω-regular language, opening at Figure 3 and closing at
-Figure 2; successive frames differ by exactly one align call.
+frame an ω-regular language, opening at the one-class frame the first
+query decides and closing at Figure 2; successive frames differ by
+exactly one align call.

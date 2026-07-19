@@ -16,14 +16,17 @@ one shape:
 > **Two concrete lassos bear one name, and the teacher's bits on them
 > differ.**
 
-Three sources produce it, and they differ only in who finds the lassos.
-The learner's own legality checks catch two — a stamp violation, a
-divergence of actions escalated through two probe queries; a pair
-violation, two conjugate pairs with differing cached bits, refereed on
-their common rotated lasso (§4.2) — both surfaced by pure table
-inspection, zero queries. The third is teacher-found: the lasso returned
-by a failed equivalence query (§4.5), the one discordance the learner
-cannot locate itself. All three feed the same mechanism (§4.1): the name
+The sources differ only in who finds the lassos, and the learner finds
+most of them itself: by **probing** — posing a lasso on its own
+initiative and catching the answer contradicting its belief, the
+bootstrap sweep of §4.5 — and through its **legality checks**, which
+catch two kinds by pure table inspection, zero queries: a stamp
+violation, a divergence of actions escalated through two probe queries;
+a pair violation, two conjugate pairs with differing cached bits,
+refereed on their common rotated lasso (§4.2). The last source is
+**teacher-found**: the lasso returned by a failed equivalence query
+(§4.5), the one discordance the learner cannot locate itself. All feed
+the same mechanism (§4.1): the name
 is a pair `(s, e)` of current classes; a *chain* interpolates between
 the two lassos, substituting, position by position, a growing prefix by
 its class's key; the chain's bits flip at some adjacent step; the flip
@@ -114,10 +117,10 @@ split. The cost is the junction query plus one binary search over `n`
 resp. `m` positions, with the stated normalization bounds. ∎
 
 *Example (two discordances, one wrong name, two shapes).* The running
-examples' first discordances are teacher-found — the alternation's first
-equivalence queries (§4.5) return `(ε, aab)` on `Even` and the
-shortlex-earlier `(ε, b·aa)` on `EvenBlocks` — but they carry the same
-failure: each lasso is named `(⟨a⟩, ⟨a⟩)`, i.e. answered through the
+examples' first *teacher-found* discordances — returned by the
+alternation's first equivalence queries (§4.5), the bootstrap probes
+already aligned — are `(ε, aab)` on `Even` and the shortlex-earlier
+`(ε, b·aa)` on `EvenBlocks`; they carry the same failure: each lasso is named `(⟨a⟩, ⟨a⟩)`, i.e. answered through the
 keyed lasso `a·a^ω`, and each is truly in its language. Normalization is
 trivial in both (`k = 1`, so `w' = z'` is the loop itself), the stem key
 is `u_s = a` in both, and the junction query routes them oppositely. On
