@@ -30,10 +30,11 @@ saturated under conjugacy — and every violation is a free progress signal,
 a disagreement the learner catches on its own and converts, by the same
 chain mechanism that processes the teacher's counterexamples, into a
 witnessed class split. The fixpoint is `𝓘(L)` itself, byte-equal to the
-constructed reference, at output-polynomial query cost. The discipline is
-also necessary: a learner that poses bare acceptors stalls *permanently* —
-already on the two-letter implication `a → Xa`, certified correct by an
-exact oracle, on classes that provably carry no algebra at all. On a
+constructed reference, at output-polynomial query cost. Where the boundary
+lies is itself a theorem: a fixpoint that counterexample-guided refinement
+alone certifies is either the canonical algebra already or carries no
+algebra at all — realized on the two-letter implication `a → Xa`, which
+stalls permanently one class short. On a
 complement-closed census of 6222 languages the learner reconstructs every
 syntactic invariant byte-for-byte; without the legality discipline half of
 them stall permanently; and LTL-definability is read off each learned
@@ -66,9 +67,10 @@ minimal deterministic ω-automaton to converge to, and the history of
 congruence still carries everything [MP95], encodings back into finite words
 [FCC+08], and the standard modern route, *families of DFAs* (FDFAs) in three
 competing canonical forms, the choice among them the learner's [AF16,
-ABF18]. All of these targets are acceptors. None is an object of the
-language alone, and none answers a definability question without further
-construction.
+ABF18]. All of these targets are acceptors. The canonical FDFA forms are
+even functions of the language alone — but each is a *family* of
+one-slot acceptors: none carries the language's algebra, and none answers
+a definability question without further construction.
 
 Yet the canonical object exists. Arnold's syntactic congruence [Arn85]
 quotients finite words by interchangeability in every lasso context — in
@@ -107,11 +109,14 @@ teacher's answers differ — and one chain of membership queries converts it
 into a class split witnessed by a genuine Arnold context. Counterexamples
 and legality violations are processed by the *same* mechanism; the teacher
 is just one of three sources of disagreement, and the cheapest two are
-self-served. The necessity of all this is a theorem, not a scruple: relax
-the belief type to a bare acceptor — the classifier and its verdicts, no
-legality — and the learner stalls *permanently* on a language as plain as
-`a → Xa`, certified correct by an exact oracle, on a class partition that
-provably carries no algebra at all (§6).
+self-served. Where the self-served queries become indispensable is itself
+a theorem: counterexample-guided refinement alone — the engine of every
+ω-learner to date — reaches acceptors and nothing finer; a fixpoint it
+certifies is either the canonical algebra already or carries no algebra at
+all, stalling permanently already on `a → Xa` (§6). The FDFA line and this
+paper thus draw different consequences from one shared observation [AF21]:
+the field enriches the acceptor family on the near side of that boundary;
+the legality discipline is what crosses it.
 
 **Contributions.**
 
@@ -120,12 +125,13 @@ provably carries no algebra at all (§6).
    and equivalence queries, every hypothesis a well-formed invariant, and a
    limit byte-equal to what the construction of [SωS26] produces (§3–§4),
    at output-polynomial query cost (§5).
-2. A typing theorem and its converse. Legal beliefs make the error signal
-   two-sided: no exact oracle ever falsely assents, and the certified
-   fixpoint is the canonical algebra (§5). Necessity: the acceptor-typed
-   relaxation stalls permanently on two-letter LTL formulas, and a
-   certified stall's partition is never a congruence — it carries no
-   algebra to export (§6).
+2. A typing theorem and a boundary theorem. Legal beliefs make the error
+   signal two-sided: no exact oracle ever falsely assents, and the
+   certified fixpoint is the canonical algebra (§5). The boundary, refining
+   [AF21]'s observation: a fixpoint that counterexample-guided refinement
+   alone certifies is either canonical or carries no algebra at all — its
+   partition is never a congruence — realized already on the two-letter
+   `a → Xa`, before the first counterexample (§6).
 3. Experimental evidence from a complete tool implementation: on a
    complement-closed census of 6222 languages every syntactic invariant is
    reconstructed byte-for-byte; the acceptor-typed relaxation stalls

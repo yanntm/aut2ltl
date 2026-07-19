@@ -58,9 +58,8 @@ self-loop carrying every class. These drawings are the paper's answer key:
 the learner reconstructs each of them, byte for byte, from lasso queries
 alone — the automata of Figure 1 stay on the teacher's side of the wall.
 
-Two further specimens — the two-letter LTL formulas `a → Xa` and
-`a ∧ XG¬a` — are the subject of the necessity section, and are introduced
-there (§6, Figure 4).
+Two further two-letter specimens, `a → Xa` and `a ∧ XG¬a`, enter with the
+boundary result (§6, Figure 4).
 
 **The query model, instantiated.** The MAT teacher of §2.1, for this paper:
 membership queries are lassos (`u·v^ω ∈ L`?); equivalence queries take a

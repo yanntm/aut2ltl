@@ -13,14 +13,16 @@ and extracting a nondeterministic Büchi automaton. Angluin and Fisman
 right-congruence automaton with per-state progress DFAs — in three
 canonical flavors (periodic, syntactic, recurrent), the periodic one being
 the FDFA rendering of the `$`-language [LCZL21]; Angluin, Boker and Fisman
-[ABF18] study FDFAs as acceptors in their own right, and the
-trivial-right-congruence obstruction is [AF21]. Li, Chen, Zhang and Liu
-[LCZL21] give the classification-tree FDFA learner implemented in ROLL
-[LSTCX19], our experimental baseline. On the passive side, Bohn and Löding
-extend RPNI to deterministic ω-automata [BL21] and learn deterministic
-Büchi automata from samples by combinations of DFAs [BL22]. Every one of
-these targets is an acceptor — an object outside the belief type this
-paper enforces, and §6 is our account of the cost. Nearest to our
+[ABF18] study FDFAs as acceptors in their own right, and the observation
+that the right congruence under-determines the language is [AF21]. Li,
+Chen, Zhang and Liu [LCZL21] give the classification-tree FDFA learner
+implemented in ROLL [LSTCX19], our experimental baseline. On the passive
+side, Bohn and Löding extend RPNI to deterministic ω-automata [BL21] and
+learn deterministic Büchi automata from samples by combinations of DFAs
+[BL22]. Every one of these targets is an acceptor, and each learner is
+complete for its target; §6's boundary theorem is our account of why
+acceptors are what counterexample-guided refinement reaches — the FDFA
+line and this paper are the two sides of [AF21]'s observation. Nearest to our
 ω-columns in spirit are Michaliszyn and Otop's *loop-index queries* [MO22]:
 alongside membership and equivalence, their teacher reveals, for each
 lasso, after how many letters *the target automaton* enters its final
@@ -78,10 +80,10 @@ automaton, splits on the learner's side into a harvest, where every
 teacher counterexample pays for a witnessed split, and a legality
 discipline, whose checks cost no queries and whose violations the learner
 referees itself. Because a well-formed invariant denotes exactly one
-language, an exact oracle can never falsely assent — and the discipline is
-provably necessary: relaxed to a bare acceptor, the learner stalls
-permanently on a two-letter implication, certified correct, on classes
-that carry no algebra at all. With the discipline, the limit is not an
+language, an exact oracle can never falsely assent — and the boundary is a
+theorem: what counterexample-guided refinement alone certifies is either
+the canonical algebra or no algebra at all, the stall on a two-letter
+implication made general. With the discipline, the limit is not an
 acceptor chosen from a family but the language's syntactic invariant, the
 object definability questions are read from: learning and classification
 cease to be separate activities. A complement-closed census of 6222

@@ -20,7 +20,7 @@ PARTS := \
 	s4a_reap.md \
 	s4b_sow.md \
 	s5_correctness.md \
-	s6_necessity.md \
+	s6_boundary.md \
 	s7_eval.md \
 	s8_end.md \
 	bib.md

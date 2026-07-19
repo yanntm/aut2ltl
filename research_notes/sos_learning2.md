@@ -32,10 +32,11 @@ saturated under conjugacy — and every violation is a free progress signal,
 a disagreement the learner catches on its own and converts, by the same
 chain mechanism that processes the teacher's counterexamples, into a
 witnessed class split. The fixpoint is `𝓘(L)` itself, byte-equal to the
-constructed reference, at output-polynomial query cost. The discipline is
-also necessary: a learner that poses bare acceptors stalls *permanently* —
-already on the two-letter implication `a → Xa`, certified correct by an
-exact oracle, on classes that provably carry no algebra at all. On a
+constructed reference, at output-polynomial query cost. Where the boundary
+lies is itself a theorem: a fixpoint that counterexample-guided refinement
+alone certifies is either the canonical algebra already or carries no
+algebra at all — realized on the two-letter implication `a → Xa`, which
+stalls permanently one class short. On a
 complement-closed census of 6222 languages the learner reconstructs every
 syntactic invariant byte-for-byte; without the legality discipline half of
 them stall permanently; and LTL-definability is read off each learned
@@ -68,9 +69,10 @@ minimal deterministic ω-automaton to converge to, and the history of
 congruence still carries everything [MP95], encodings back into finite words
 [FCC+08], and the standard modern route, *families of DFAs* (FDFAs) in three
 competing canonical forms, the choice among them the learner's [AF16,
-ABF18]. All of these targets are acceptors. None is an object of the
-language alone, and none answers a definability question without further
-construction.
+ABF18]. All of these targets are acceptors. The canonical FDFA forms are
+even functions of the language alone — but each is a *family* of
+one-slot acceptors: none carries the language's algebra, and none answers
+a definability question without further construction.
 
 Yet the canonical object exists. Arnold's syntactic congruence [Arn85]
 quotients finite words by interchangeability in every lasso context — in
@@ -109,11 +111,14 @@ teacher's answers differ — and one chain of membership queries converts it
 into a class split witnessed by a genuine Arnold context. Counterexamples
 and legality violations are processed by the *same* mechanism; the teacher
 is just one of three sources of disagreement, and the cheapest two are
-self-served. The necessity of all this is a theorem, not a scruple: relax
-the belief type to a bare acceptor — the classifier and its verdicts, no
-legality — and the learner stalls *permanently* on a language as plain as
-`a → Xa`, certified correct by an exact oracle, on a class partition that
-provably carries no algebra at all (§6).
+self-served. Where the self-served queries become indispensable is itself
+a theorem: counterexample-guided refinement alone — the engine of every
+ω-learner to date — reaches acceptors and nothing finer; a fixpoint it
+certifies is either the canonical algebra already or carries no algebra at
+all, stalling permanently already on `a → Xa` (§6). The FDFA line and this
+paper thus draw different consequences from one shared observation [AF21]:
+the field enriches the acceptor family on the near side of that boundary;
+the legality discipline is what crosses it.
 
 **Contributions.**
 
@@ -122,12 +127,13 @@ provably carries no algebra at all (§6).
    and equivalence queries, every hypothesis a well-formed invariant, and a
    limit byte-equal to what the construction of [SωS26] produces (§3–§4),
    at output-polynomial query cost (§5).
-2. A typing theorem and its converse. Legal beliefs make the error signal
-   two-sided: no exact oracle ever falsely assents, and the certified
-   fixpoint is the canonical algebra (§5). Necessity: the acceptor-typed
-   relaxation stalls permanently on two-letter LTL formulas, and a
-   certified stall's partition is never a congruence — it carries no
-   algebra to export (§6).
+2. A typing theorem and a boundary theorem. Legal beliefs make the error
+   signal two-sided: no exact oracle ever falsely assents, and the
+   certified fixpoint is the canonical algebra (§5). The boundary, refining
+   [AF21]'s observation: a fixpoint that counterexample-guided refinement
+   alone certifies is either canonical or carries no algebra at all — its
+   partition is never a congruence — realized already on the two-letter
+   `a → Xa`, before the first counterexample (§6).
 3. Experimental evidence from a complete tool implementation: on a
    complement-closed census of 6222 languages every syntactic invariant is
    reconstructed byte-for-byte; the acceptor-typed relaxation stalls
@@ -415,9 +421,8 @@ self-loop carrying every class. These drawings are the paper's answer key:
 the learner reconstructs each of them, byte for byte, from lasso queries
 alone — the automata of Figure 1 stay on the teacher's side of the wall.
 
-Two further specimens — the two-letter LTL formulas `a → Xa` and
-`a ∧ XG¬a` — are the subject of the necessity section, and are introduced
-there (§6, Figure 4).
+Two further two-letter specimens, `a → Xa` and `a ∧ XG¬a`, enter with the
+boundary result (§6, Figure 4).
 
 **The query model, instantiated.** The MAT teacher of §2.1, for this paper:
 membership queries are lassos (`u·v^ω ∈ L`?); equivalence queries take a
@@ -1375,182 +1380,84 @@ escalation's, two-probe repairs in place of whole equivalence rounds — and
 both exported invariants are byte-equal to the reference construction.
 
 
-## 6. Necessity: the acceptor-typed learner stalls
+## 6. The boundary: what counterexamples alone reach
 
-The discipline of §3 is not hygiene; this section proves it is the
-difference between the algebra and an acceptor. Define the **relaxed
-learner**: the same table, closedness, consistency, and harvest — but no
-legality checks, no canonicalization, and a hypothesis that is the bare
-classifier itself: the classes with their letter action, plus the pair
-cache filled on demand. Its prediction on `w·z^ω` is operational — compute
-the action orbit `c_j = [ε]·z^j`, take the least `k` with `c_{2k} = c_k`,
-answer `P([ε]·(w·z^k), c_k)` — and this is precisely the hypothesis shape
-of counterexample-guided ω-learning: a deterministic automaton on classes
-with a verdict table, an FDFA in algebraic clothing.
+The legality discipline is self-motivating — without it there is no
+invariant to present — but it is fair to ask what a learner loses by
+skipping it. The answer is everything past a precise boundary. Define the
+**relaxed learner**: the same table, closedness, consistency, and harvest,
+but no legality checks and no canonicalization; its hypothesis is the bare
+classifier — the classes with their letter action and an on-demand pair
+cache — predicting on `w·z^ω` operationally: compute the action orbit
+`c_j = [ε]·z^j`, take the least `k` with `c_{2k} = c_k`, answer
+`P([ε]·(w·z^k), c_k)`. This is precisely the hypothesis shape of
+counterexample-guided ω-learning: a deterministic automaton on classes with
+a verdict table. Its error signal is one-sided — predictions read the
+literal word through the action and never consult a class under a left
+context — so a merge of `≈_L`-distinct words whose separating prefix no
+harvested column happens to carry is invisible to every prediction. The
+consequence is not hypothetical:
 
-The relaxed learner's error signal is structurally one-sided. Predictions
-read the **literal** words of the queried lasso through the action; they
-never consult the class of a word *embedded under a left context*. So if
-two words `u, v` with `u ≉_L v` are merged, and no harvested column happens
-to carry the separating prefix, nothing observable ever goes wrong: every
-prediction can be correct, the equivalence oracle assents — and the learner
-stops with a partition **coarser than the syntactic congruence**. This is
-the obstruction of [AF21] reborn one level up — the table's *columns* are
-two-sided, but its *error signal* is not — and it is, we believe, the true
-reason no observation-table route to the syntactic algebra existed: the
-missing ingredient is not a cleverer column format, but a query the learner
-poses on its own initiative. §4.2's escalations are those queries; here we
-prove that without them the stall is realized, permanent, and algebraically
-fatal.
-
-**The specimens.** The two witnesses were *searched for* rather than
-chosen: an exhaustive census of the smallest automaton shapes
-(nondeterministic transition-based Büchi over one atomic proposition; at
-one state every fixpoint is canonical, so two states are the smallest
-possible) finds the permanent stall already at two-letter LTL formulas,
-simpler than the classical trivial-right-congruence example `FG(a ∨ Xa)`
-[AF21]:
-
-- **`a → Xa`** — if the first letter is `a`, so is the second. A safety
-  language, LTL-definable; `N = 5`, and its algebra carries *two* accepting
-  idempotents, `[b]` and `[aa]` — right-indistinguishable, separated only
-  by the left context `a`, and that is the trap.
-- **`a ∧ XG¬a`** — the language of the single ω-word `a·b^ω`; `N = 4`. The
-  same trap one step deeper: the canonical `[b·a]` is separated from `[b]`
-  only from the left.
-
-<table>
-<tr>
-<td align="center"><img src="sos_figs/img/a_implies_xa.png" alt="a implies Xa automaton" width="260"></td>
-<td align="center"><img src="sos_figs/img/a_once.png" alt="a and XG not a automaton" width="260"></td>
-</tr>
-<tr>
-<td align="center"><b>(a) <code>a → Xa</code></b><br>4 states, <code>Inf(0)</code> (Büchi).</td>
-<td align="center"><b>(b) <code>a ∧ XG¬a</code></b><br>3 states, <code>Inf(0)</code> (Büchi).</td>
-</tr>
-<tr>
-<td align="center"><img src="sos_core_figs/img/a_implies_xa_pairs.png" alt="a implies Xa syntactic invariant" width="260"></td>
-<td align="center"><img src="sos_core_figs/img/a_once_pairs.png" alt="a once syntactic invariant" width="260"></td>
-</tr>
-<tr>
-<td align="center"><b>(c) <code>𝓘(a → Xa)</code></b>, <code>N = 5</code>.<br>Both committed-in stems <code>[b]</code>, <code>[aa]</code><br>accept with every idempotent loop —<br>six pairs, two stems the stall merges.</td>
-<td align="center"><b>(d) <code>𝓘(a ∧ XG¬a)</code></b>, <code>N = 4</code>.<br>A single accepting pair <code>([a],[b])</code> —<br>the one lasso the language contains.</td>
-</tr>
-</table>
-
-**Figure 4.** The stall specimens: teacher automata (top, edge labels in
-the tool's letters) and target invariants (bottom), drawn with Figure 2's
-conventions. Proposition 6.1 proves the relaxed learner stops one class
-short of each target, certified by an exact oracle.
-
-**Proposition 6.1 (the stall, realized).** Let `L = L(a → Xa)` — if the
+**Proposition 6.1 (a certified stall).** Let `L = L(a → Xa)` — if the
 first letter is `a`, so is the second — over `Σ = {b, a}`. The relaxed
 learner reaches, before its first equivalence query, a closed and
 consistent four-class table — `[ε]`, the singleton `⟨a⟩`, a committed-in
 class `C₁ = b·Σ* ∪ aa·Σ*`, a committed-out class `C₀ = ab·Σ*` — whose
 hypothesis language is exactly `L`. Every equivalence oracle therefore
-assents, bounded or exact; the fixpoint is strictly coarser than the
-syntactic congruence — four classes against `N = 5`: the two accepting
-idempotents `[b]` and `[aa]`, right-indistinguishable but separated by the
-left context `x = a`, stay merged inside `C₁`.
+assents, bounded or exact, and the fixpoint is permanent, one class short
+of `N = 5`: the two accepting idempotents `[b]` and `[aa]`,
+right-indistinguishable but `≈_L`-separated by the left context `a`, stay
+merged inside `C₁`.
 
 *Proof.* Membership of an ω-word depends only on its first two letters, so
-on lassos it is a function of the *commitment* of the literal prefix: every
-word of `C₁` begins a member, every word of `C₀` begins a non-member, and
-the only uncommitted non-empty word is the single letter `a` — the class
-`⟨a⟩` is a singleton. The four-class partition is closed and consistent
-(`C₁` and `C₀` absorb both letters; `a` steps into one or the other), and
-the relaxed learner provably lands on it: every pre-equivalence column has
-prefix `x = ε` — the initial column does, and consistency mints preserve
-the prefix (Definition 3.2) — and an `x = ε` context evaluates any word of
-length ≥ 2 by its commitment alone, so no such column can split `C₁` or
-`C₀`; conversely the inconsistency of `a` against `b` at `(ε, ε)` (their
-`b`-successors' bits differ) forces the mint `(ε, b)` that isolates `⟨a⟩`.
-Now take any lasso `w·z^ω` with predicting pair `s = [ε]·(w·z^k)`,
-`e = [ε]·z^k`. The stem `w·z^k` can never be the word `a`: either it is
-longer than one letter, or `w = ε` and `z = a` — and there `k = 1` fails
-the stabilization test (`[ε]·a = ⟨a⟩` but `[ε]·aa = C₁`), so normalization
-takes `k = 2` and the stem is `aa`. Hence `s ∈ {C₁, C₀}` always, and the
-prediction — the teacher's bit on `u_s·(u_e)^ω`, with `u_{C₁} = b` and
-`u_{C₀} = ab` — equals the commitment of `s`, which equals the truth of the
-queried lasso. No counterexample exists. ∎
-
-The second specimen, `a ∧ XG¬a` — the language of the single ω-word
-`a·b^ω` — stalls the same way one step deeper, and the same argument proves
-it permanent: the canonical `[b·a]` stays merged into `[b]`, again
-separated only by `x = a`. There the alive class `{a·b^m}` squares to the
-dead class, so the loop idempotent `e` is always dead, and the stem class
-`s` stays alive only when the literal `w·z^k` is of the form `a·b^m` —
-which forces a pure-`b` loop, on which the keyed lasso `a·(b)^ω` answers
-correctly; any stray `a` in the loop drags `s` to dead through the literal
-action before the faulty merge can matter — every predicting pair again
-answers with the truth, and no counterexample exists. Two exhibits, one
-mechanism, and both minimal:
-
-| specimen | `N` | stalled fixpoint | merged pair | separated by | export error (read as `(a, a)`) |
-|---|:--:|---|---|:--:|---|
-| `a → Xa` | 5 | **4 — zero counterexamples** | `[b] = [aa]`, both accepting idempotents | `x = a` only | rejects `a^ω` |
-| `a ∧ XG¬a` | 4 | 3 — one counterexample | `[b] = [b·a]` | `x = a` only | accepts `a^ω` |
-
-**No algebra to export.** "One class short" undersells the defect. Force
-the export recipe of §3.2 on the stalled fixpoint of `a → Xa` — the product
-`c·c' := c·u_{c'}`, the action of the key — and draw it next to the
-canonical algebra (Figure 5):
+on lassos it is a function of the *commitment* of the literal prefix:
+every word of `C₁` begins a member, every word of `C₀` a non-member, and
+the only uncommitted non-empty word is the single letter `a`. The
+four-class partition is closed and consistent (`C₁` and `C₀` absorb both
+letters; `a` steps into one or the other), and the relaxed learner
+provably lands on it: every pre-equivalence column has prefix `x = ε` —
+the initial column does, and consistency mints preserve the prefix
+(Definition 3.2) — and an `x = ε` context evaluates any word of length ≥ 2
+by its commitment alone, so no such column can split `C₁` or `C₀`, while
+the inconsistency of `a` against `b` at `(ε, ε)` forces the mint `(ε, b)`
+that isolates `⟨a⟩`. Now take any lasso `w·z^ω`. The normalized stem
+`w·z^k` can never be the word `a` (either it is longer, or `w = ε`,
+`z = a`, where `k = 1` fails the stabilization test and `k = 2` gives stem
+`aa`), so its class is `C₁` or `C₀`, and the prediction — the teacher's
+bit on the keyed lasso, with `u_{C₁} = b`, `u_{C₀} = ab` — equals the
+commitment of the stem, which equals the truth of the queried lasso. No
+counterexample exists. ∎
 
 <table>
 <tr>
-<td align="center"><img src="sos_core_figs/img/a_implies_xa_pairs.png" alt="canonical invariant of a implies Xa" width="260"></td>
-<td align="center"><img src="sos_core_figs/img/sosl_a_implies_xa_stall_pairs.png" alt="stalled export of a implies Xa" width="260"></td>
+<td align="center"><img src="sos_figs/img/a_implies_xa.png" alt="a implies Xa automaton" width="260"></td>
+<td align="center"><img src="sos_core_figs/img/a_implies_xa_pairs.png" alt="a implies Xa syntactic invariant" width="260"></td>
 </tr>
 <tr>
-<td align="center"><b>(a) canonical <code>𝓘(a → Xa)</code></b>, 5 classes<br>(Figure 4(c), repeated for comparison).</td>
-<td align="center"><b>(b) the stalled export</b>, 4 classes:<br><code>⟨b⟩</code> is the merged <code>C₁</code> — the canonical<br><code>[aa]</code> swallowed — and <code>⟨a·b⟩</code> is <code>C₀</code>.</td>
+<td align="center"><b>(a) <code>a → Xa</code></b>: 4 states, <code>Inf(0)</code> (Büchi).</td>
+<td align="center"><b>(b) <code>𝓘(a → Xa)</code></b>, <code>N = 5</code>: both committed-in stems<br><code>[b]</code>, <code>[aa]</code> accept with every idempotent loop —<br>six pairs, two stems the stall merges.</td>
 </tr>
 </table>
 
-**Figure 5.** The certified stall, drawn with Figure 2's conventions. The
-merge is visible — (a)'s two accepting idempotents `[b]` and `[aa]`, six
-pairs, are one node and two pairs in (b) — and what no drawing can show is
-the deeper defect, read off (b)'s edges below: its table is *not
-associative*.
+**Figure 4.** The boundary's exhibit, teacher automaton and target
+invariant (Figure 2's conventions). The specimen was *searched for*: an
+exhaustive census of the smallest one-atom automaton shapes (at one state
+every fixpoint is canonical, so two states are minimal) finds the
+permanent stall already here, simpler than the classical
+trivial-right-congruence example `FG(a ∨ Xa)` [AF21].
 
-The stalled table is **not associative**:
-`(⟨a⟩·⟨a⟩)·⟨a⟩ = ⟨b⟩·⟨a⟩ = ⟨b⟩`, but `⟨a⟩·(⟨a⟩·⟨a⟩) = ⟨a⟩·⟨b⟩ = ⟨ab⟩`.
-The first bracketing reads the literal word `aaa` through the action and
-lands where it should; the second substitutes the merged class's key `b`
-into the middle of the product — and substituting a key mid-product is
-exactly what a merely-right-invariant quotient does not license. The
-relaxed hypothesis is immune, because it reads the literal letters of the
-queried lasso and never substitutes — that is how one partition carries a
-correct acceptor and a broken algebra at once. Broken means broken
-downstream: on a non-associative table the linked-pair reduction is
-bracketing-dependent, so the export does not even define a *language* — its
-verdict depends on how the lasso is written. On [SωS26]'s ladder the defect
-sits below the bottom rung: not associative, the export is not a stamp,
-hence not an invariant that could be well-formed or not, and its read-off
-visibly breaks the one law an invariant's semantics must obey — one lasso,
-one verdict [SωS26, Prop 4.1]. Read `a^ω` as the lasso `(ε, a)`:
-`e = ⟨a⟩² = ⟨b⟩`, `s = [ε]·e = ⟨b⟩`, the pair `(⟨b⟩,⟨b⟩)` — accept,
-agreeing with the teacher. Read the same ω-word as `(a, a)`: the stem class
-now multiplies the merged idempotent, `s = ⟨a⟩·⟨b⟩ = ⟨ab⟩`, pair
-`(⟨ab⟩,⟨b⟩)` — reject. One ω-word, two verdicts, no language. On the second
-specimen the same defect points the other way: the canonical algebra of
-`a ∧ XG¬a` keeps `[a]·[a] = [b·a]` as its own non-accepting idempotent, the
-stalled export merges it into `⟨b⟩`, and the `(a, a)` reading of `a^ω`
-lands on the accepting pair `(⟨a⟩, ⟨b⟩)` — the bit of `a·(b)^ω`, the one
-word the language contains — while its `(ε, a)` reading agrees with the
-teacher.
-
-Both languages are LTL-definable and utterly plain: the flagship stall is a
-two-letter implication, on which the relaxed learner converges and is
-certified by a *complete* equivalence oracle. (Mechanically confirmed: the
-exact oracle of §2.3 certifies both stalled fixpoints — these permanence
-proofs turn the two runs into fixtures for the oracle itself, a
-counterexample there being an oracle bug — and with the legality discipline
-on, both reach their canonical algebras, byte-equal to the reference.)
-
-The general theorem closes the account: *every* exactly-certified stall is
-like these two.
+The same search yields one more two-letter witness, `a ∧ XG¬a` — the
+language of the single ω-word `a·b^ω`, `N = 4`, stalled at 3 after one
+counterexample, the canonical `[b·a]` merged into `[b]` — the fourth named
+case of §7's tables. And "one class short" undersells what is lost: the
+stalled partition supports no export at all. Forcing §3.2's product recipe
+on it yields a table that is not associative —
+`(⟨a⟩·⟨a⟩)·⟨a⟩ = ⟨b⟩·⟨a⟩ = ⟨b⟩` against
+`⟨a⟩·(⟨a⟩·⟨a⟩) = ⟨a⟩·⟨b⟩ = ⟨ab⟩`, the second bracketing substituting a
+key mid-product, which a merely-right-invariant quotient does not
+license — and whose bracketing-dependent read-off gives `a^ω` two
+verdicts: no language. The general theorem says this is no accident of the
+specimen:
 
 **Theorem 6.2 (certified fixpoints: canonical or no algebra).** Let a
 closed, consistent table's relaxed hypothesis be certified by an exact
@@ -1559,9 +1466,10 @@ the following are equivalent: (i) the stamp-legality check is clean (the
 kernel is a congruence, Lemma 3.4); (ii) the export is exactly `𝓘(L)`,
 byte-equal after re-keying. In particular a certified *non-canonical*
 fixpoint — a permanent stall — is never a congruence: its product
-`c·c' = c·u_{c'}` genuinely depends on the choice of keys, and no operation
-on its classes recognizes anything. What the relaxed learner delivers is
-its operational acceptor — correct — and, provably, nothing more.
+`c·c' = c·u_{c'}` genuinely depends on the choice of keys, and no
+operation on its classes recognizes anything. What the relaxed learner
+delivers is its operational acceptor — correct — and, provably, nothing
+more.
 
 *Proof.* (ii)⟹(i): `𝓘(L)`'s classes form a semigroup. (i)⟹(ii): with the
 kernel a congruence (Lemma 3.4), the export is an invariant whose lasso
@@ -1573,32 +1481,30 @@ idempotent power of `𝒮_T(z)` and the predicting pair is
 set to be the names of `L`'s accepted lassos. Every split — promotion,
 consistency mint, harvest — was witnessed by an Arnold context, so `≈_L`
 refines the kernel; the two inclusions pin the kernel to `≈_L`, and the
-export is `𝓘(L)` — byte-equal after re-keying (with (i), the product by
-letter classes *is* the letter action, so the two BFS orders coincide, and
-`P` — teacher bits on keyed lassos — is the forced pair set). *In
-particular*: by (i)⟹(ii), a certified fixpoint whose kernel were a
-congruence would be canonical; a certified stall is non-canonical, so its
-kernel is no congruence, its product depends on keys, and no operation on
-its classes recognizes anything. ∎
+export is `𝓘(L)`, byte-equal after re-keying. *In particular*: a certified
+fixpoint whose kernel were a congruence would be canonical; a certified
+stall is non-canonical, so its kernel is no congruence. ∎
 
-Note the asymmetry the exactness buys: under a bounded oracle a congruent
-relaxed fixpoint may still be a genuine algebra strictly coarser than the
-syntactic quotient — a correct-so-far quotient the oracle was too weak to
-refute. Exactness closes that door: congruent and certified *forces*
-canonical — [SωS26, Cor 4.2]'s *nowhere else*, met from below — so the
-legal/relaxed divide is also the algebra/no-algebra divide. Proposition
-6.1's non-associative display is Theorem 6.2 made concrete on the smallest
-specimen — the display shows *how* the product breaks; the theorem says it
-always does.
+(One asymmetry is worth a sentence: exactness is what closes the door —
+under a bounded oracle a congruent relaxed fixpoint may be a genuine
+algebra strictly coarser than the syntactic one, a correct-so-far quotient
+the oracle was too weak to refute; certified *and* congruent forces
+canonical, [SωS26, Cor 4.2]'s *nowhere else* met from below.)
 
-The section's moral, stated once for the field: the refinement loop that
-drives L\* — and every counterexample-guided ω-learner since — has, at a
-certified stall, nothing left to react to. What breaks the stall must be a
-query the learner poses on its own initiative, and the legality discipline
-is the principled source of such queries: not an optimization, but the
-difference between learning a language's algebra and learning one of its
-acceptors. §7.3 measures how often the difference bites: on half of a
-6222-language census, permanently.
+The right vocabulary for this result is not defect but **boundary**, and
+the boundary is a shared observation. That the right congruence
+under-determines an ω-regular language is [AF21]; the field's two
+responses to it bracket this paper. The FDFA line stays on the near side:
+right-congruence-seeded families of acceptors, which counterexample-guided
+refinement does reach — completely and canonically, at acceptor precision
+[AF16, LCZL21]. This paper wants the far side, where the algebra and its
+read-offs live, and Theorem 6.2 is [AF21]'s observation refined in tighter
+vocabulary: what separates the two sides is not the size of the right
+congruence but the absence, at every certified stall, of a congruence at
+all. Crossing requires a query no counterexample will ever supply, posed
+on the learner's own initiative — the legality escalations of §4.2 are
+exactly those queries. §7.3 measures the boundary at census scale: half of
+6222 languages sit strictly beyond it.
 
 
 ## 7. Evaluation
@@ -1619,9 +1525,9 @@ The algorithm of §3–§5 is implemented as a pure query learner: its only
 source of truth is the teacher interface, and no automaton is ever visible
 to it. The evaluation answers three questions, each measured against the
 canonical target `N`. **Q1 — cost:** do measured queries track the
-output-polynomial bounds of Proposition 5.3? **Q2 — necessity at scale:**
-how often does the relaxed learner of §6 stall, and are the stalls
-permanent? **Q3 — the baseline:** against an established FDFA learner on
+output-polynomial bounds of Proposition 5.3? **Q2 — the boundary at
+scale:** how often does the relaxed learner of §6 stall, and are the
+stalls permanent? **Q3 — the baseline:** against an established FDFA learner on
 identical teachers, what does the algebra cost, and what does it buy? A
 fourth, smaller question calibrates a constant: how sensitive is the cost
 to the teacher's counterexample policy — the `log(N·ℓ)` term of
@@ -1722,7 +1628,7 @@ given its size, the learner is classification-blind. Wall time follows the
 same account: the full census costs 10733 s single-threaded — median
 0.12 s per language, the worst case 49.6 s at `N = 68`.
 
-### 7.3 Necessity at scale (Q2)
+### 7.3 The boundary at scale (Q2)
 
 The relaxed learner of §6 runs under the exact oracle, and each language is
 classified by its stall: **none** — the first closed, consistent fixpoint
@@ -1864,14 +1770,16 @@ and extracting a nondeterministic Büchi automaton. Angluin and Fisman
 right-congruence automaton with per-state progress DFAs — in three
 canonical flavors (periodic, syntactic, recurrent), the periodic one being
 the FDFA rendering of the `$`-language [LCZL21]; Angluin, Boker and Fisman
-[ABF18] study FDFAs as acceptors in their own right, and the
-trivial-right-congruence obstruction is [AF21]. Li, Chen, Zhang and Liu
-[LCZL21] give the classification-tree FDFA learner implemented in ROLL
-[LSTCX19], our experimental baseline. On the passive side, Bohn and Löding
-extend RPNI to deterministic ω-automata [BL21] and learn deterministic
-Büchi automata from samples by combinations of DFAs [BL22]. Every one of
-these targets is an acceptor — an object outside the belief type this
-paper enforces, and §6 is our account of the cost. Nearest to our
+[ABF18] study FDFAs as acceptors in their own right, and the observation
+that the right congruence under-determines the language is [AF21]. Li,
+Chen, Zhang and Liu [LCZL21] give the classification-tree FDFA learner
+implemented in ROLL [LSTCX19], our experimental baseline. On the passive
+side, Bohn and Löding extend RPNI to deterministic ω-automata [BL21] and
+learn deterministic Büchi automata from samples by combinations of DFAs
+[BL22]. Every one of these targets is an acceptor, and each learner is
+complete for its target; §6's boundary theorem is our account of why
+acceptors are what counterexample-guided refinement reaches — the FDFA
+line and this paper are the two sides of [AF21]'s observation. Nearest to our
 ω-columns in spirit are Michaliszyn and Otop's *loop-index queries* [MO22]:
 alongside membership and equivalence, their teacher reveals, for each
 lasso, after how many letters *the target automaton* enters its final
@@ -1929,10 +1837,10 @@ automaton, splits on the learner's side into a harvest, where every
 teacher counterexample pays for a witnessed split, and a legality
 discipline, whose checks cost no queries and whose violations the learner
 referees itself. Because a well-formed invariant denotes exactly one
-language, an exact oracle can never falsely assent — and the discipline is
-provably necessary: relaxed to a bare acceptor, the learner stalls
-permanently on a two-letter implication, certified correct, on classes
-that carry no algebra at all. With the discipline, the limit is not an
+language, an exact oracle can never falsely assent — and the boundary is a
+theorem: what counterexample-guided refinement alone certifies is either
+the canonical algebra or no algebra at all, the stall on a two-letter
+implication made general. With the discipline, the limit is not an
 acceptor chosen from a family but the language's syntactic invariant, the
 object definability questions are read from: learning and classification
 cease to be separate activities. A complement-closed census of 6222

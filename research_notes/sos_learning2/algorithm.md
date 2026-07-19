@@ -75,7 +75,7 @@ queries). Sources:
   (paper Prop 5.3). Canonicalization only merges *in the view*; the
   table keeps witnesses, so nothing un-learns.
 
-## Why it is necessary (paper §6)
+## The boundary (paper §6)
 
 Relax the belief type — pose the bare classifier (classes + letter action
 + on-demand pair cache), skip legality — and the error signal turns
@@ -83,11 +83,15 @@ one-sided: predictions read literal words through the action, never a
 class under a left context. Realized stall: `a → Xa`, four classes vs
 `N = 5`, zero counterexamples, certified by an exact oracle — and the
 stalled partition is *not a congruence*: its forced export is
-non-associative, gives `a^ω` two verdicts, defines no language. General
-theorem: an exactly-certified fixpoint is canonical iff its kernel is a
-congruence — certified stalls carry **no algebra at all** (paper Thm 6.2).
-Census scale: 3137 of 6222 languages stall permanently without the
-discipline.
+non-associative, defines no language. Dichotomy theorem: an
+exactly-certified fixpoint is canonical iff its kernel is a congruence —
+certified stalls carry **no algebra at all** (paper Thm 6.2). Census
+scale: 3137 of 6222 languages sit beyond the boundary. Framing (matters):
+[AF21] — the right congruence under-determines the language — is a
+*shared observation*, not a defect we fix; the FDFA line is complete for
+acceptors on the near side, we cross to the algebra with self-posed
+legality queries; Thm 6.2 is [AF21] refined in tighter vocabulary. Keep
+§6 slim; the discipline is motivated by typing, not by the stall.
 
 ## The oracle (simplification the discipline buys)
 

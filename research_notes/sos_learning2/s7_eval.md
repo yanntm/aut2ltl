@@ -16,9 +16,9 @@ The algorithm of §3–§5 is implemented as a pure query learner: its only
 source of truth is the teacher interface, and no automaton is ever visible
 to it. The evaluation answers three questions, each measured against the
 canonical target `N`. **Q1 — cost:** do measured queries track the
-output-polynomial bounds of Proposition 5.3? **Q2 — necessity at scale:**
-how often does the relaxed learner of §6 stall, and are the stalls
-permanent? **Q3 — the baseline:** against an established FDFA learner on
+output-polynomial bounds of Proposition 5.3? **Q2 — the boundary at
+scale:** how often does the relaxed learner of §6 stall, and are the
+stalls permanent? **Q3 — the baseline:** against an established FDFA learner on
 identical teachers, what does the algebra cost, and what does it buy? A
 fourth, smaller question calibrates a constant: how sensitive is the cost
 to the teacher's counterexample policy — the `log(N·ℓ)` term of
@@ -119,7 +119,7 @@ given its size, the learner is classification-blind. Wall time follows the
 same account: the full census costs 10733 s single-threaded — median
 0.12 s per language, the worst case 49.6 s at `N = 68`.
 
-### 7.3 Necessity at scale (Q2)
+### 7.3 The boundary at scale (Q2)
 
 The relaxed learner of §6 runs under the exact oracle, and each language is
 classified by its stall: **none** — the first closed, consistent fixpoint
