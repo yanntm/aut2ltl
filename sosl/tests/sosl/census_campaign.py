@@ -1,17 +1,14 @@
 """Census-backed campaign over the flat, complement-closed catalogue: learn every
-language under the default (saturation on) and the ablation (`--no-saturation
---eq-mode exact`) configs, **streaming one CSV row per run as it goes**.
+language under the default config, **streaming one CSV row per run as it goes**.
 
-    python3 -m tests.sosl.census_campaign [--config default|ablate|both]
-                                          [--limit N] [--budget S] [--out DIR]
+    python3 -m tests.sosl.census_campaign [--limit N] [--budget S] [--out DIR]
                                           [--cases i:j] [--out-csv FILE]
                                           [--done CSV]
 
 The source is the flat catalogue `genaut/corpus/flat_canon` (one file per
 language up to AP relabeling, closed under complement — the project standard);
-there are no shapes to select. `default` learns with saturation on (soundness +
-E1 cost metrics); `ablate` runs `--no-saturation --eq-mode exact` (E2: with exact
-equivalence every surviving stall is provably permanent).
+there are no shapes to select. The one leg is `default` — soundness plus the E1
+cost metrics — so the sweep is one row per language.
 
 This driver only *produces* the raw per-run data — it prints progress and appends
 `<out>/results.csv` incrementally (genaut style: sweep now, study later). The
@@ -42,7 +39,7 @@ import time
 from pathlib import Path
 from typing import List, Set, Tuple
 
-from sosl.experiment.manifest import DEFAULT, NOSAT_EXACT, flat_canon_cases
+from sosl.experiment.manifest import DEFAULT, flat_canon_cases
 from sosl.experiment.run import Config, run_case_bounded
 from sosl.experiment.stats import CSV_FIELDS, RunStats, csv_row
 
@@ -72,7 +69,6 @@ def _parse_slice(spec: str, n: int) -> Tuple[int, int]:
 
 
 def main(argv: List[str]) -> int:
-    config_sel = "both"
     limit = 0
     budget = PER_CASE_BUDGET
     out = OUT
@@ -83,10 +79,7 @@ def main(argv: List[str]) -> int:
     for i, a in enumerate(argv):
         if i == skip:
             continue
-        if a == "--config":
-            config_sel = argv[i + 1]
-            skip = i + 1
-        elif a == "--limit":
+        if a == "--limit":
             limit = int(argv[i + 1])
             skip = i + 1
         elif a == "--budget":
@@ -119,11 +112,8 @@ def main(argv: List[str]) -> int:
     if limit:
         cases = cases[:limit]
 
-    configs: List[Config] = []
-    if config_sel in ("default", "both"):
-        configs.append(Config(**{**DEFAULT.__dict__, "budget_seconds": budget}))
-    if config_sel in ("ablate", "both"):
-        configs.append(Config(**{**NOSAT_EXACT.__dict__, "budget_seconds": budget}))
+    configs: List[Config] = [
+        Config(**{**DEFAULT.__dict__, "budget_seconds": budget})]
 
     if out_csv:
         csv_path = Path(out_csv)
