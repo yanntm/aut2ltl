@@ -148,18 +148,18 @@ breaks; the theorem says it always does.
 *Example (the run, completed, on `Even`).* After §4.3's split the table is
 Table 6, and the next sweep and equivalence query are clean. The whole run,
 Tables 1 → 3(b) → 6: five classes from **two splits — one per mechanism** (the
-stem chain split `aa` from `a`, the saturation escalation split `a·!a` from
-`a`) — on **three columns** (`(ε,ε)_ω` initial, `(ε, !a, aa!a)_lin` harvested,
-`(ε, a!a, aa!a)_lin` saturated). The BFS re-keying returns
-`ε, !a, a, a!a, aa`, and the exported table `c·c' = fold(c, w_{c'})` is
+stem chain split `aa` from `a`, the saturation escalation split `a·b` from
+`a`) — on **three columns** (`(ε,ε)_ω` initial, `(ε, b, aab)_lin` harvested,
+`(ε, ab, aab)_lin` saturated). The BFS re-keying returns
+`ε, b, a, ab, aa`, and the exported table `c·c' = fold(c, w_{c'})` is
 
 ```
-  ·      [ε]  [!a]  [a]  [a!a]  [aa]
-  [ε]     0    1     2     3     4
-  [!a]    1    1     1     1     1
-  [a]     2    3     4     1     2
-  [a!a]   3    3     3     3     3
-  [aa]    4    1     2     3     4
+  ·      [ε]  [b]  [a]  [ab]  [aa]
+  [ε]     0    1    2    3     4
+  [b]     1    1    1    1     1
+  [a]     2    3    4    1     2
+  [ab]    3    3    3    3     3
+  [aa]    4    1    2    3     4
 ```
 
 — cell for cell the syntactic table of [SωS26], computed there from a
@@ -170,24 +170,24 @@ and the aperiodicity check.
 *(a) linked pairs `(s, e)`, `e` ranging over the idempotents; cell = the
 accept bit of `w_s·(w_e)^ω`, `–` = not linked (`s·e ≠ s`):*
 
-| `s` \ `e` | `[!a]` | `[a!a]` | `[aa]` |
+| `s` \ `e` | `[b]` | `[ab]` | `[aa]` |
 |---|:--:|:--:|:--:|
-| `[!a]` | **1** | **1** | **1** |
+| `[b]` | **1** | **1** | **1** |
 | `[a]` | – | – | `0` |
-| `[a!a]` | `0` | `0` | `0` |
+| `[ab]` | `0` | `0` | `0` |
 | `[aa]` | – | – | `0` |
 
 *(b) power orbits `c, c², c³, …`:*
 
 | `c` | `c²` | `c³` | eventual period |
 |---|:--:|:--:|:--:|
-| `[!a]` | `[!a]` | `[!a]` | 1 |
+| `[b]` | `[b]` | `[b]` | 1 |
 | `[a]` | `[aa]` | `[a]` | **2** |
-| `[a!a]` | `[a!a]` | `[a!a]` | 1 |
+| `[ab]` | `[ab]` | `[ab]` | 1 |
 | `[aa]` | `[aa]` | `[aa]` | 1 |
 
 **Table 7.** The learned `𝓘(Even)`'s two read-offs. (a) Eight linked pairs,
-three accepting — the whole `[!a]` stem row: once the good prefix has
+three accepting — the whole `[b]` stem row: once the good prefix has
 happened, every loop accepts; this is `P`. (b) Power iteration of every
 class: a single orbit of period two, `[a] → [aa] → [a]` — the genuine `Z₂` —
 so `Even` is **not** LTL-definable, read off the learned object in four
@@ -198,7 +198,7 @@ the automaton — the harness's final check.
 `EvenBlocks` completes the same way, and entirely in the ω-sort: beyond the
 counterexample traced in §4.1, two saturation escalations carry the table
 from four to its eight classes — keys
-`ε, !a, a, !a·a, a·!a, a·a, !a·a·!a, a·!a·a`, the count and keys fixed by the
+`ε, b, a, b·a, a·b, a·a, b·a·b, a·b·a`, the count and keys fixed by the
 reference invariant. Table 8 is the run as a split ledger, one row per event,
 from the implementation's transcript — deterministic under the pinned scan
 and minimal-counterexample policies, and reproducing §4.1's row exactly. One
@@ -207,9 +207,9 @@ table re-stabilizes — rows 2 and 3 each split two.
 
 | # | trigger | chain | minted column | splits | `\|𝒞_T\|` after |
 |:--:|---|---|---|---|:--:|
-| 1 | EQ: `(ε, !a·aa)` | loop | `(a, a)_ω` | `!a·a` out of `[a]` | 4 |
-| 2 | sweep escalation | frozen | `(a, !a·a)_ω` | `aa` out of `[a]`; `a·!a` out of `[!a·a]` | 6 |
-| 3 | sweep escalation | frozen | `(ε, !a)_ω` | `a·!a·a` out of `[!a]`; `!a·a·!a` out of `[aa]` | 8 |
+| 1 | EQ: `(ε, b·aa)` | loop | `(a, a)_ω` | `b·a` out of `[a]` | 4 |
+| 2 | sweep escalation | frozen | `(a, b·a)_ω` | `aa` out of `[a]`; `a·b` out of `[b·a]` | 6 |
+| 3 | sweep escalation | frozen | `(ε, b)_ω` | `a·b·a` out of `[b]`; `b·a·b` out of `[aa]` | 8 |
 
 **Table 8.** The `EvenBlocks` run as a split ledger: trigger (equivalence
 counterexample or sweep escalation), the chain that processed it, the minted
@@ -219,20 +219,20 @@ for `Even` — so row 1, §4.1's split, is the run's first event; rows 2–3 are
 enforcing two-sidedness — no second counterexample is ever needed, and the
 run's second equivalence query certifies. Every one of the four columns is
 of the ω-sort: prefix-independence in action (the linear shape is blind —
-Proposition 4.6 — so every separation lives in the loop). The final sweep mints `(ε, !a)` — the very
+Proposition 4.6 — so every separation lives in the loop). The final sweep mints `(ε, b)` — the very
 column §3 exhibited by inspection. The resulting bit-signatures are the
 fixpoint (the Table 6 analogue), pairwise distinct — with `[ε]`, the `N = 8`
 classes of `𝓘(EvenBlocks)`:
 
-| word | `(ε,ε)_ω` | `(a,a)_ω` | `(a,!a·a)_ω` | `(ε,!a)_ω` |
+| word | `(ε,ε)_ω` | `(a,a)_ω` | `(a,b·a)_ω` | `(ε,b)_ω` |
 |---|:--:|:--:|:--:|:--:|
-| `!a` | `1` | `0` | `0` | `1` |
+| `b` | `1` | `0` | `0` | `1` |
 | `a` | `0` | `0` | `1` | `0` |
-| `!a·a` | `0` | `1` | `0` | `0` |
-| `a·!a` | `0` | `1` | `1` | `0` |
+| `b·a` | `0` | `1` | `0` | `0` |
+| `a·b` | `0` | `1` | `1` | `0` |
 | `a·a` | `0` | `0` | `0` | `1` |
-| `!a·a·!a` | `0` | `0` | `0` | `0` |
-| `a·!a·a` | `1` | `0` | `0` | `0` |
+| `b·a·b` | `0` | `0` | `0` | `0` |
+| `a·b·a` | `1` | `0` | `0` | `0` |
 
 The per-phase membership ledgers of the two runs ground Proposition 5.4's
 itemization in the two small instances (`fill` — table entries; `harvest` —

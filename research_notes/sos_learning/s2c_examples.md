@@ -7,11 +7,11 @@ reproduced from [SωS26]:
 - **`GF(aa) := GF(a ∧ Xa)`** — "infinitely many `aa`-factors." It *is* LTL, but a
   natural presentation encodes the letter `a` as a transposition, so its transition
   monoid carries a spurious group. The SωS *destroys* that group.
-- **`Even := (aa)*·!a·Σ^ω`** — over the single atom `a`, an even number of `a`'s then a
-  `!a` then anything; in PSL, the words with a prefix matching the SERE
+- **`Even := (aa)*·b·Σ^ω`** — over the single atom `a`, an even number of `a`'s then a
+  `b` then anything; in PSL, the words with a prefix matching the SERE
   `{a[*2]}[*] ; !a`. The canonical mod-2 language; *not* LTL, its group genuine, and —
   because a prefix fixes the parity — refuted by Arnold's *linear* (first) shape.
-- **`EvenBlocks`** — "infinitely many `!a`'s, and eventually every completed `a`-block
+- **`EvenBlocks`** — "infinitely many `b`'s, and eventually every completed `a`-block
   has even length"; the same `{a[*2]}` even-block SERE, now recurring. Also *not* LTL
   with a genuine mod-2 group, but *prefix-independent*: no finite prefix changes
   membership, so its group is invisible to the linear shape and only Arnold's
@@ -68,11 +68,11 @@ classical trivial-right-congruence example `FG(a ∨ Xa)` [AF21]:
 
 - **`a → Xa`** — if the first letter is `a`, so is the second. A safety
   language, LTL-definable; `N = 5`, and its algebra carries *two* accepting
-  idempotents, `[!a]` and `[aa]` — right-indistinguishable, separated only by
+  idempotents, `[b]` and `[aa]` — right-indistinguishable, separated only by
   the left context `a`, and that is the trap (§4.2).
-- **`a ∧ XG¬a`** — the language of the single ω-word `a·(!a)^ω`;
-  `N = 4`. The same trap one step deeper: the canonical `[!a·a]` is separated
-  from `[!a]` only from the left.
+- **`a ∧ XG¬a`** — the language of the single ω-word `a·b^ω`;
+  `N = 4`. The same trap one step deeper: the canonical `[b·a]` is separated
+  from `[b]` only from the left.
 
 <table>
 <tr>
@@ -88,14 +88,14 @@ classical trivial-right-congruence example `FG(a ∨ Xa)` [AF21]:
 <td align="center"><img src="../sos_core_figs/img/a_once_pairs.png" alt="a once syntactic invariant" width="260"></td>
 </tr>
 <tr>
-<td align="center"><b>(c) <code>𝓘(a → Xa)</code></b>, <code>N = 5</code>.<br>Both committed-in stems <code>[!a]</code>, <code>[aa]</code><br>accept with every idempotent loop —<br>six pairs, two stems the stall merges.</td>
-<td align="center"><b>(d) <code>𝓘(a ∧ XG¬a)</code></b>, <code>N = 4</code>.<br>A single accepting pair <code>([a],[!a])</code> —<br>the one lasso the language contains.</td>
+<td align="center"><b>(c) <code>𝓘(a → Xa)</code></b>, <code>N = 5</code>.<br>Both committed-in stems <code>[b]</code>, <code>[aa]</code><br>accept with every idempotent loop —<br>six pairs, two stems the stall merges.</td>
+<td align="center"><b>(d) <code>𝓘(a ∧ XG¬a)</code></b>, <code>N = 4</code>.<br>A single accepting pair <code>([a],[b])</code> —<br>the one lasso the language contains.</td>
 </tr>
 </table>
 
-**Figure 3.** The stall specimens: teacher automata (top) and target
-invariants (bottom), drawn with Figure 2's conventions (the drawings write
-`b` for `!a`, the figure pool's lettering). §4.2 proves the saturation-free
+**Figure 3.** The stall specimens: teacher automata (top, edge labels in
+the tool's letters) and target invariants (bottom), drawn with Figure 2's
+conventions. §4.2 proves the saturation-free
 learner stops one class short of each target, certified by an exact oracle.
 
 **The query model, instantiated.** The MAT teacher of §2.1, for this paper:

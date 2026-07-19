@@ -22,13 +22,13 @@ canonical, so two states are the smallest possible) finds it already at
 `a → Xa` — the stall specimen of §2.3, automaton and target in Figure 3.
 
 **Proposition 4.4 (the stall, realized).** Let `L = L(a → Xa)` — if the first
-letter is `a`, so is the second — over `Σ = {a, !a}`. The saturation-free
+letter is `a`, so is the second — over `Σ = {b, a}`. The saturation-free
 learner reaches, before its first equivalence query, a closed and consistent
 four-class table — `[ε]`, the singleton `[a]`, a committed-in class
-`C₁ = !a·Σ* ∪ aa·Σ*`, a committed-out class `C₀ = a!a·Σ*` — whose hypothesis
+`C₁ = b·Σ* ∪ aa·Σ*`, a committed-out class `C₀ = ab·Σ*` — whose hypothesis
 language is exactly `L`. Every equivalence oracle therefore assents, bounded
 or exact; the fixpoint is strictly coarser than the syntactic congruence —
-four classes against `N = 5`: the two accepting idempotents `[!a]` and `[aa]`,
+four classes against `N = 5`: the two accepting idempotents `[b]` and `[aa]`,
 right-indistinguishable but separated by the left context `x = a`, stay merged
 inside `C₁` — and the export is broken as an algebra: its multiplication table
 is not associative, and its membership read-off is not even
@@ -45,33 +45,33 @@ provably lands on it: every pre-equivalence column has prefix `x = ε` — the
 initial column does, and consistency mints preserve the prefix
 (Definition 3.2) — and an `x = ε` context evaluates any word of length ≥ 2 by
 its commitment alone, so no such column can split `C₁` or `C₀`; conversely
-the inconsistency of `a` against `!a` at `(ε, ε)` (their `!a`-successors'
-bits differ) forces the mint `(ε, !a)` that isolates `[a]`. Now take any
+the inconsistency of `a` against `b` at `(ε, ε)` (their `b`-successors'
+bits differ) forces the mint `(ε, b)` that isolates `[a]`. Now take any
 lasso `w·z^ω` with predicting pair
 `s = ψ(w·z^k)`, `e = ψ(z^k)`. The stem `w·z^k` can never be the word `a`:
 either it is longer than one letter, or `w = ε` and `z = a` — and there
 `k = 1` fails the stabilization test (`ψ(a) = [a]` but `ψ(aa) = C₁`), so
 normalization takes `k = 2` and the stem is `aa`. Hence `s ∈ {C₁, C₀}`
 always, and the prediction — the teacher's bit on `w_s·(w_e)^ω`, with
-`w_{C₁} = !a` and `w_{C₀} = a!a` — equals the commitment of `s`, which equals
+`w_{C₁} = b` and `w_{C₀} = ab` — equals the commitment of `s`, which equals
 the truth of the queried lasso. No counterexample exists. ∎
 
 The census's second specimen, `a ∧ XG¬a` — the language of the single ω-word
-`a·(!a)^ω` — stalls the same way one step deeper, and the same argument
-proves it permanent: the canonical `[!a·a]` stays
-merged into `[!a]`, again separated only by `x = a`. There the alive class
-`{a·!a^m}` squares to the dead class, so the loop idempotent `e` is always
+`a·(b)^ω` — stalls the same way one step deeper, and the same argument
+proves it permanent: the canonical `[b·a]` stays
+merged into `[b]`, again separated only by `x = a`. There the alive class
+`{a·b^m}` squares to the dead class, so the loop idempotent `e` is always
 dead, and the stem class `s` stays alive only when the literal `w·z^k` is of
-the form `a·!a^m` — which forces a pure-`!a` loop, on which the representative
-lasso `a·(!a)^ω` answers correctly; any stray `a` in the loop drags `s` to
+the form `a·b^m` — which forces a pure-`b` loop, on which the representative
+lasso `a·(b)^ω` answers correctly; any stray `a` in the loop drags `s` to
 dead through the literal fold before the faulty merge can matter — every
 predicting pair again answers with the truth, and no counterexample exists.
 Two exhibits, one mechanism, and both minimal:
 
 | specimen | `N` | stalled fixpoint | merged pair | separated by | export error (read as `(a, a)`) |
 |---|:--:|---|---|:--:|---|
-| `a → Xa` | 5 | **4 — zero counterexamples** | `[!a] = [aa]`, both accepting idempotents | `x = a` only | rejects `a^ω` |
-| `a ∧ XG¬a` | 4 | 3 — one counterexample | `[!a] = [!a·a]` | `x = a` only | accepts `a^ω` |
+| `a → Xa` | 5 | **4 — zero counterexamples** | `[b] = [aa]`, both accepting idempotents | `x = a` only | rejects `a^ω` |
+| `a ∧ XG¬a` | 4 | 3 — one counterexample | `[b] = [b·a]` | `x = a` only | accepts `a^ω` |
 
 "One class short" undersells the defect. Export the stalled fixpoint of
 `a → Xa` by §5's recipe, `c·c' := fold(c, rep(c'))`, next to the
@@ -79,19 +79,19 @@ canonical algebra of the language:
 
 ```
     canonical table  (5 classes)           stalled export  (4 classes)
-    ·      ε    !a   a    a!a  aa          ·      ε    !a   a    a!a
-    ε      ε    !a   a    a!a  aa          ε      ε    !a   a    a!a
-    !a     !a   !a   !a   !a   !a          !a     !a   !a   !a   !a
-    a      a    a!a  aa   aa   aa          a      a    a!a  !a   !a
-    a!a    a!a  a!a  a!a  a!a  a!a         a!a    a!a  a!a  a!a  a!a
-    aa     aa   aa   aa   aa   aa
+    ·     ε    b    a    ab   aa           ·     ε    b    a    ab
+    ε     ε    b    a    ab   aa           ε     ε    b    a    ab
+    b     b    b    b    b    b            b     b    b    b    b
+    a     a    ab   aa   aa   aa           a     a    ab   b    b
+    ab    ab   ab   ab   ab   ab           ab    ab   ab   ab   ab
+    aa    aa   aa   aa   aa   aa
 ```
 
-(cells name classes by their keys; in the stalled table `[!a]` is the merged
-`C₁` and `[a!a]` is `C₀`). The stalled table is **not associative**:
-`([a]·[a])·[a] = [!a]·[a] = [!a]`, but `[a]·([a]·[a]) = [a]·[!a] = [a!a]`.
+(cells name classes by their keys; in the stalled table `[b]` is the merged
+`C₁` and `[ab]` is `C₀`). The stalled table is **not associative**:
+`([a]·[a])·[a] = [b]·[a] = [b]`, but `[a]·([a]·[a]) = [a]·[b] = [ab]`.
 The first bracketing folds the literal word `aaa` and lands where it should;
-the second substitutes the merged class's representative `!a` into the middle
+the second substitutes the merged class's representative `b` into the middle
 of the product — and substituting a representative mid-product is exactly what
 a merely-right congruence does not license. The hypothesis is immune, because
 it folds the literal letters of the queried lasso and never substitutes — that
@@ -104,16 +104,16 @@ export is not a stamp, hence not an invariant that could be well-formed or
 not [SωS26, Defs 3.1, 4.2] — and its read-off visibly breaks the one law an
 invariant's semantics must obey, one lasso one verdict [SωS26, Prop 4.1].
 Read `a^ω` as
-the lasso `(ε, a)`: `e = [a]² = [!a]`, `s = [ε]·e = [!a]`, the pair
-`([!a],[!a])` — accept, agreeing with the teacher. Read the same ω-word as
+the lasso `(ε, a)`: `e = [a]² = [b]`, `s = [ε]·e = [b]`, the pair
+`([b],[b])` — accept, agreeing with the teacher. Read the same ω-word as
 `(a, a)`: the stem class now multiplies the merged idempotent,
-`s = [a]·[!a] = [a!a]`, pair `([a!a],[!a])` — reject. The exhibit table
+`s = [a]·[b] = [ab]`, pair `([ab],[b])` — reject. The exhibit table
 reports this second reading, the shortlex-least divergence from the teacher.
 On the second specimen the same defect points the other way: the canonical
-algebra of `a ∧ XG¬a` keeps `[a]·[a] = [!a·a]` as its own non-accepting
-idempotent, the stalled export merges it into `[!a]`, and the `(a, a)`
-reading of `a^ω` lands on the accepting pair `([a], [!a])` — the bit of
-`a·(!a)^ω`, the one word the language contains — while its `(ε, a)` reading
+algebra of `a ∧ XG¬a` keeps `[a]·[a] = [b·a]` as its own non-accepting
+idempotent, the stalled export merges it into `[b]`, and the `(a, a)`
+reading of `a^ω` lands on the accepting pair `([a], [b])` — the bit of
+`a·(b)^ω`, the one word the language contains — while its `(ε, a)` reading
 agrees with the teacher: one ω-word, two verdicts, no language.
 
 Both languages are LTL-definable and utterly plain: the flagship stall is a

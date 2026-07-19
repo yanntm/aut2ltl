@@ -26,19 +26,19 @@ The two sorts divide the labor exactly as Arnold's two shapes do. On `Even`,
 linear columns already separate everything —
 the stem decides membership. On `EvenBlocks`, *every* linear column is a constant
 row-function (prefix-independence: a stem mutation is swallowed), and the entire
-language lives in the ω-sort: the column `(ε, !a)` separates rows `a` and `aa`,
-since `(a·!a)^ω ∉ L` and `(aa·!a)^ω ∈ L`. A learner without the ω-sort cannot even
+language lives in the ω-sort: the column `(ε, b)` separates rows `a` and `aa`,
+since `(a·b)^ω ∉ L` and `(aa·b)^ω ∈ L`. A learner without the ω-sort cannot even
 represent what distinguishes them — this is [AF21]'s obstruction, met head-on.
 (§4.1 shows the learner *finding* a rotated cousin, `(a, a)`, unaided — and the
-final sweep mints `(ε, !a)` itself, Table 8.)
+final sweep mints `(ε, b)` itself, Table 8.)
 
-*Example (day one, on `Even`).* `Even = (aa)*·!a·Σ^ω` over `Σ = {a, !a}` — an
-even block of `a`, then `!a`, then anything; membership of any word is fixed by
-the parity of the `a`-count before its first `!a`. Initialize `R = {ε, a, !a}`,
+*Example (day one, on `Even`).* `Even = (aa)*·b·Σ^ω` over `Σ = {b, a}` — an
+even block of `a`, then `b`, then anything; membership of any word is fixed by
+the parity of the `a`-count before its first `b`. Initialize `R = {ε, a, b}`,
 `E_ω = {(ε, ε)}`, `E_lin = ∅`; Table 1 is the whole state of knowledge.
-`a` and `!a` split at once, and every frontier word folds into one of them by
+`a` and `b` split at once, and every frontier word folds into one of them by
 its single bit. Two of these merges are quietly wrong — `aa ≉_L a` (alive with
-opposite parity) and `a·!a ≉_L a` (`a·!a` is doomed: its first `!a` closed an
+opposite parity) and `a·b ≉_L a` (`a·b` is doomed: its first `b` closed an
 odd block) — and the single column cannot see either. The run below catches
 both, by two different mechanisms (§4.1, §4.3).
 
@@ -46,12 +46,12 @@ both, by two different mechanisms (§4.1, §4.3).
 |---|:--:|---|
 | `ε` | — | `[ε]` |
 | `a` | `0` | `[a]` |
-| `!a` | `1` | `[!a]` |
+| `b` | `1` | `[b]` |
 | *frontier:* | | |
 | `a·a` | `0` | → `[a]` ✗ |
-| `a·!a` | `0` | → `[a]` ✗ |
-| `!a·a` | `1` | → `[!a]` |
-| `!a·!a` | `1` | → `[!a]` |
+| `a·b` | `0` | → `[a]` ✗ |
+| `b·a` | `1` | → `[b]` |
+| `b·b` | `1` | → `[b]` |
 
 **Table 1.** Day one on `Even`: rows above the frontier line, one ω-column
 (the entry of word `p` is `[p^ω ∈ L]`), `→` the class each frontier word folds
@@ -130,48 +130,48 @@ always a pair of concrete lassos — the queried one and its representative
 collapse — on which the *teacher's own bits differ*.
 
 *Example (a prediction, and its miss).* We now run the prediction procedure in
-slow motion, on `EvenBlocks`: infinitely many `!a`, and eventually every
+slow motion, on `EvenBlocks`: infinitely many `b`, and eventually every
 completed `a`-block has even length — a *block* being a maximal run of `a`,
-*completed* when the next `!a` closes it. Day one (Table 2) has the same shape
-as `Even`'s: the single ω-column splits `a` from `!a`, and every frontier word
-merges by its one bit. One entry deserves a pause: `!a·a` lands with `a` here,
-not with `!a` as it did in `Even` — `(!a·a)^ω` completes an odd block forever,
+*completed* when the next `b` closes it. Day one (Table 2) has the same shape
+as `Even`'s: the single ω-column splits `a` from `b`, and every frontier word
+merges by its one bit. One entry deserves a pause: `b·a` lands with `a` here,
+not with `b` as it did in `Even` — `(b·a)^ω` completes an odd block forever,
 bit `0`. So the hypothesis's worldview is: there are three kinds of finite
-words — the empty one, the pure `!a`-blocks, and *everything that has ever
-seen an `a`*. Its `step` function says exactly that: from `[!a]`, reading `a`
+words — the empty one, the pure `b`-blocks, and *everything that has ever
+seen an `a`*. Its `step` function says exactly that: from `[b]`, reading `a`
 moves to `[a]`; from `[a]`, no letter ever leaves.
 
 | word | `(ε,ε)_ω` | class |
 |---|:--:|---|
 | `ε` | — | `[ε]` |
 | `a` | `0` | `[a]` |
-| `!a` | `1` | `[!a]` |
+| `b` | `1` | `[b]` |
 | *frontier:* | | |
 | `a·a` | `0` | → `[a]` |
-| `a·!a` | `0` | → `[a]` |
-| `!a·a` | `0` | → `[a]`  (≠ `Even`!) |
-| `!a·!a` | `1` | → `[!a]` |
+| `a·b` | `0` | → `[a]` |
+| `b·a` | `0` | → `[a]`  (≠ `Even`!) |
+| `b·b` | `1` | → `[b]` |
 
 **Table 2.** Day one on `EvenBlocks`: same shape as Table 1, one telling
-difference — `!a·a` folds to `[a]`, so `[a]` is absorbing and the fold sees
+difference — `b·a` folds to `[a]`, so `[a]` is absorbing and the fold sees
 only "have I read an `a` yet".
 
-Now predict the lasso `(ε, !a·aa)`, following the definition step by step.
-*Fold the loop:* `ψ(!a·aa)` walks `[ε] →_{!a} [!a] →_a [a] →_a [a]` — the
+Now predict the lasso `(ε, b·aa)`, following the definition step by step.
+*Fold the loop:* `ψ(b·aa)` walks `[ε] →_{b} [b] →_a [a] →_a [a]` — the
 middle step crossing the telling entry above — so `c_1 = [a]`. *Find the
-idempotent power:* `c_2 = ψ((!a·aa)²)` continues the walk from `[a]` —
+idempotent power:* `c_2 = ψ((b·aa)²)` continues the walk from `[a]` —
 absorbed, so `c_2 = [a]` — and the least `k` with `c_{2k} = c_k` is `k = 1`:
 the hypothesis believes `[a]` is already idempotent. *Form the pair:*
-`s = ψ(ε·!a·aa) = [a]`, `e = [a]`. This step is the whole point of a
+`s = ψ(ε·b·aa) = [a]`, `e = [a]`. This step is the whole point of a
 prediction: the hypothesis has just **named** the queried lasso by the pair
-`([a], [a])` — the same name it gives `a·a^ω`, `(a·!a)^ω`, `(!a·a)^ω`, and
+`([a], [a])` — the same name it gives `a·a^ω`, `(a·b)^ω`, `(b·a)^ω`, and
 every other lasso whose folds collapse into `[a]` — and one name gets one
 verdict. *Look up the name:* the cache has no entry for `([a],[a])`, so it
 costs one membership query on the shortlex keys,
-`w_{[a]}·(w_{[a]})^ω = a·a^ω` — rejected, no `!a` at all. Cached; prediction
+`w_{[a]}·(w_{[a]})^ω = a·a^ω` — rejected, no `b` at all. Cached; prediction
 `0`.
 
-The miss: `(!a·aa)^ω ∈ L` — infinitely many `!a`, and every completed block it
+The miss: `(b·aa)^ω ∈ L` — infinitely many `b`, and every completed block it
 ever closes is `aa`, length two. The hypothesis gave one name to two lassos
 that the language distinguishes, and that is all a counterexample ever is in
 this design: the queried lasso and its representative collapse, two concrete
@@ -179,9 +179,9 @@ lassos, teacher bits `1` and `0`.
 
 The minimization policy of §2.3 explains why this exact lasso is the one
 returned. Enumerating stems shortest-first and loops shortest-then-shortlex
-(`!a < a`): `(ε, !a)`, `(ε, a)`, the four two-letter loops, and then
-`(ε, !a!a!a)`, `(ε, !a!a·a)`, `(ε, !a·a!a)` are all predicted correctly — each
+(`b < a`): `(ε, b)`, `(ε, a)`, the four two-letter loops, and then
+`(ε, bbb)`, `(ε, bb·a)`, `(ε, b·ab)` are all predicted correctly — each
 folds to a name whose representative lasso the language happens to treat the
-same way — and `(ε, !a·aa)` is the first place the name `([a],[a])` cracks. A
+same way — and `(ε, b·aa)` is the first place the name `([a],[a])` cracks. A
 misprediction is an equality the table wrongly believes; the harvest of §4.1
 turns this one into the column that refutes it.

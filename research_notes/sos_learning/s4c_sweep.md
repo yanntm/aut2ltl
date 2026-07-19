@@ -54,7 +54,7 @@ is swallowed — separates nothing and never converges; only the reseeded
 period of `(x°·r, y°·r)` carries `r`'s left action into the loop.
 
 *Example (a saturation sweep on `Even`, in full).* Resume `Even` after §4.1's
-split: four classes `[ε], [a], [!a], [aa]`, with `a·!a` still merged into
+split: four classes `[ε], [a], [b], [aa]`, with `a·b` still merged into
 `[a]` — the doomed word still passing for an alive one. The sweep's subjects
 are the five table words that are not class representatives; against the four
 classes `d`, that is twenty checks, each a pure fold computation. Table 4 is
@@ -63,81 +63,81 @@ pinned, for reproducible traces: subjects in shortlex order, classes in key
 order; a different order changes which cell fires first — never the
 fixpoint.)
 
-| `u` (vs `v = rep`) | `d = [ε]` | `d = [!a]` | `d = [a]` | `d = [aa]` |
+| `u` (vs `v = rep`) | `d = [ε]` | `d = [b]` | `d = [a]` | `d = [aa]` |
 |---|:--:|:--:|:--:|:--:|
-| `!a·!a` (vs `!a`) | `[!a]` | `[!a]` | `[a]` | `[!a]` |
-| `!a·a` (vs `!a`) | `[!a]` | `[!a]` | **`[aa]` ≠ `[a]`** | `[!a]` |
-| `a·!a` (vs `a`) | `[a]` | `[!a]` | **`[!a]` ≠ `[aa]`** | `[a]` |
-| `aa·!a` (vs `!a`) | `[!a]` | `[!a]` | `[a]` | `[!a]` |
-| `aa·a` (vs `a`) | `[a]` | `[!a]` | `[aa]` | `[a]` |
+| `b·b` (vs `b`) | `[b]` | `[b]` | `[a]` | `[b]` |
+| `b·a` (vs `b`) | `[b]` | `[b]` | **`[aa]` ≠ `[a]`** | `[b]` |
+| `a·b` (vs `a`) | `[a]` | `[b]` | **`[b]` ≠ `[aa]`** | `[a]` |
+| `aa·b` (vs `b`) | `[b]` | `[b]` | `[a]` | `[b]` |
+| `aa·a` (vs `a`) | `[a]` | `[b]` | `[aa]` | `[a]` |
 
 **Table 4.** The left-saturation sweep on `Even`'s four-class table: cell
 `(u, d)` compares `fold(d, u)` against `fold(d, rep(ψ(u)))`; a single value
 means they agree. Twenty checks, zero queries, two hits — both at `d = [a]`,
 both symptoms of the one wrong merge. In scan order the first to fire is
-`(!a·a, [a])`.
+`(b·a, [a])`.
 
-Escalate the fired cell (Lemma 4.5): `u = !a·a`, `v = !a`, `d = [a]`,
-`r = a`, diverging folds `c_a = fold([a], !a·a) = [aa]` and
-`c_b = fold([a], !a) = [a]`. Pause on what fired: `!a·a` is *correctly*
-merged with `!a` — the divergence arises because its fold from `[a]` walks
+Escalate the fired cell (Lemma 4.5): `u = b·a`, `v = b`, `d = [a]`,
+`r = a`, diverging folds `c_a = fold([a], b·a) = [aa]` and
+`c_b = fold([a], b) = [a]`. Pause on what fired: `b·a` is *correctly*
+merged with `b` — the divergence arises because its fold from `[a]` walks
 through the wrong merge, not because the subject is misplaced. The escalation
 convicts the guilty word anyway. The column separating `rep([aa]) = aa` from
-`rep([a]) = a` is the harvested `κ = (ε, !a, aa!a)`, and the two probe
+`rep([a]) = a` is the harvested `κ = (ε, b, aab)`, and the two probe
 queries — the escalation's only queries — are
 
 ```
-    A = [ a·!a·a ·!a·(aa!a)^ω ] = 0        (r·u under κ's context)
-    B = [ a·!a   ·!a·(aa!a)^ω ] = 0        (r·v under κ's context)
+    A = [ a·b·a ·b·(aab)^ω ] = 0        (r·u under κ's context)
+    B = [ a·b   ·b·(aab)^ω ] = 0        (r·v under κ's context)
 ```
 
 `A = B`: the first branch yields nothing, so we are in the second. Which side
 disagrees with its own fold class? `ψ(r·u) = c_a = [aa]`, whose
 representative `aa` holds κ-bit `1 ≠ A` — the `u`-side. Run the frozen-prefix
-chain on the segment `r·u = a·!a·a` inside κ's context (here `x° = ε`, so the
+chain on the segment `r·u = a·b·a` inside κ's context (here `x° = ε`, so the
 freeze is invisible; a genuinely frozen prefix arises when κ carries one):
 
-| `j` | prefix of `a·!a·a` | its rep | queried lasso | bit |
+| `j` | prefix of `a·b·a` | its rep | queried lasso | bit |
 |:--:|---|:--:|---|:--:|
-| 0 | — | — | `a!aa·!a·(aa!a)^ω` | `0` |
-| 1 | `a` | `a` | `a·!aa·!a·(aa!a)^ω` | `0` |
-| 2 | `a·!a` | `a` | `a·a·!a·(aa!a)^ω` | **`1`** |
-| 3 | `a·!a·a` | `aa` | `aa·!a·(aa!a)^ω` | `1` |
+| 0 | — | — | `aba·b·(aab)^ω` | `0` |
+| 1 | `a` | `a` | `a·ba·b·(aab)^ω` | `0` |
+| 2 | `a·b` | `a` | `a·a·b·(aab)^ω` | **`1`** |
+| 3 | `a·b·a` | `aa` | `aa·b·(aab)^ω` | `1` |
 
-**Table 5.** The escalation's chain: replace a growing prefix of `a·!a·a` by
+**Table 5.** The escalation's chain: replace a growing prefix of `a·b·a` by
 its class representative, query under κ's context. The flip at `j = 1 → 2`
-hands over the frontier word `a·!a` (that is, `rep(ψ(a))·!a`) and the row `a`
-(that is, `rep(ψ(a·!a))`), separated by the minted **linear column
-`(ε, a!a, aa!a)`** — entries `0` for `a·!a`, `1` for `a`. The doomed word
+hands over the frontier word `a·b` (that is, `rep(ψ(a))·b`) and the row `a`
+(that is, `rep(ψ(a·b))`), separated by the minted **linear column
+`(ε, ab, aab)`** — entries `0` for `a·b`, `1` for `a`. The doomed word
 leaves `[a]`.
 
 Two membership bits and a two-probe chain did the work of an equivalence
 round: this merge was transient (the very next equivalence query would have
-returned `(ε, a!a)`), but the sweep neither knew nor needed to know that —
+returned `(ε, ab)`), but the sweep neither knew nor needed to know that —
 and §4.2's permanent stall is caught by nothing else. One
-remark completes the picture: the *other* hit, `(a·!a, [a])`, escalates
-through the **first** branch — there `c_a = [!a]`, `c_b = [aa]`, the
+remark completes the picture: the *other* hit, `(a·b, [a])`, escalates
+through the **first** branch — there `c_a = [b]`, `c_b = [aa]`, the
 separating column is the original ω-column `κ = (ε, ε)`, and the probes
-`A = [(a·a!a)^ω] = 1 ≠ 0 = [(a·a)^ω] = B` differ, minting the ω-column
+`A = [(a·ab)^ω] = 1 ≠ 0 = [(a·a)^ω] = B` differ, minting the ω-column
 `(a, a)` directly — the left factor absorbed into the prefix *and* reseeded
 at the period's tail, branch 1's ω-form in action. Same
 split, other arm: one four-class table exercises both branches of Lemma 4.5,
 and the fixpoint is the same five classes either way — only the *trace*
 needs the pinned order. Table 6 shows the resulting table, which is final.
 
-| word | `(ε,ε)_ω` | `(ε,!a,aa!a)_lin` | **`(ε,a!a,aa!a)_lin`** | class |
+| word | `(ε,ε)_ω` | `(ε,b,aab)_lin` | **`(ε,ab,aab)_lin`** | class |
 |---|:--:|:--:|:--:|---|
 | `a` | `0` | `0` | **`1`** | `[a]` |
-| `!a` | `1` | `1` | **`1`** | `[!a]` |
+| `b` | `1` | `1` | **`1`** | `[b]` |
 | `aa` | `0` | `1` | **`0`** | `[aa]` |
-| **`a·!a`** | `0` | `0` | **`0`** | **`[a!a]`** |
+| **`a·b`** | `0` | `0` | **`0`** | **`[ab]`** |
 
 **Table 6.** `Even` at the fixpoint (saturated column and promoted row in
 bold; `ε`-row omitted). The four bit-signatures are pairwise distinct — with
 `[ε]`, the `N = 5` classes of `𝓘(Even)` — and every frontier word now folds
-cleanly: `a·!a·a` carries the all-zero signature of the absorbing reject and
-joins `[a!a]`; `aa·!a` carries the all-one signature of the committed accept
-and joins `[!a]`.
+cleanly: `a·b·a` carries the all-zero signature of the absorbing reject and
+joins `[ab]`; `aa·b` carries the all-one signature of the committed accept
+and joins `[b]`.
 
 Saturation checks are free; escalations are bounded by the total number of
 splits. The sweep runs after closedness and consistency, before each equivalence

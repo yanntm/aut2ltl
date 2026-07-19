@@ -38,7 +38,7 @@ i.e. the fold never splits a syntactic class — for then the loop orbit, the
 stabilization power, and the predicting pair are all determined by the
 cell. Functionality is not assumed, and it genuinely fails mid-run — the
 fold of a closed, consistent table can *split* a syntactic class beyond its
-table words (realized on a census language: `!a·!a·a ≈_L a·!a·!a`, yet the
+table words (realized on a census language: `b·b·a ≈_L a·b·b`, yet the
 two words fold to different classes), so a mid-run hypothesis is not merely
 coarser than the algebra (§4.2) but incomparable with it. The oracle
 therefore asserts functionality on the built graph at every query, and a

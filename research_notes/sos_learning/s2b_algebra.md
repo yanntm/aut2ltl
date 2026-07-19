@@ -81,8 +81,9 @@ lasso; and `𝓘` is a **complete invariant** — two ω-regular languages over
 the same alphabet are equal iff a (unique) isomorphism matches their
 invariants, and, with each class keyed by its shortlex-least member
 (shortlex throughout this paper uses the letter order of the
-serialization — valuation bitvectors ascending, so `!a < a` in the
-examples), iff the serialized invariants are byte-identical. The target
+serialization — valuation bitvectors ascending; on the examples' alphabet
+`Σ = {b, a}`, where `b` stands in for the valuation `!a` in tool support,
+that order is `b < a`), iff the serialized invariants are byte-identical. The target
 answers definability directly: `L` is LTL-expressible iff no power sequence
 `c, c², c³, …` cycles with period `> 1` — the aperiodicity read-off
 [SωS26, Thm 6.1]. Throughout, `N` counts the classes of the target

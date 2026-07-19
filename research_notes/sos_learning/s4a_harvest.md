@@ -54,23 +54,23 @@ endpoints finds an adjacent flip in the stated logarithm. ∎
 
 *Example (two counterexamples, one wrong name, two shapes).* The two running
 specimens' first equivalence queries return different lassos — `Even`'s
-teacher hands back `(ε, aa!a)`, `EvenBlocks`'s the shortlex-earlier
-`(ε, !a·aa)` — but the same failure: each is predicted `0` through the pair
+teacher hands back `(ε, aab)`, `EvenBlocks`'s the shortlex-earlier
+`(ε, b·aa)` — but the same failure: each is predicted `0` through the pair
 `([a],[a])`, i.e. through the representative lasso `a·a^ω`, and each is truly
 in its language. Normalization is trivial in both (`k = 1`, so `w' = z'` is
 the loop itself), the stem representative is `w_s = a` in both, and the
-junction query routes them oppositely. On `Even`, `[a·(aa!a)^ω] = 0` — the
-prepended `a` flips the parity — against `γ_0 = [(aa!a)^ω] = 1`: the flip is
-in the **stem chain**, Table 3(a). On `EvenBlocks`, `[a·(!a·aa)^ω] = 1` — a
+junction query routes them oppositely. On `Even`, `[a·(aab)^ω] = 0` — the
+prepended `a` flips the parity — against `γ_0 = [(aab)^ω] = 1`: the flip is
+in the **stem chain**, Table 3(a). On `EvenBlocks`, `[a·(b·aa)^ω] = 1` — a
 prefix cannot harm a prefix-independent language — equal to `γ_0`, so the
 stem chain is flat and the flip is in the **loop chain**, Table 3(c). Both
 flips sit at position `1 → 2` of their chains, but they convict different
 words: from (a), the frontier word `u = rep(ψ(a))·a = aa` against the row
-`v = rep(ψ(aa)) = a`, minting the linear column `(ε, !a, aa!a)`, entries `1`
+`v = rep(ψ(aa)) = a`, minting the linear column `(ε, b, aab)`, entries `1`
 for `aa` and `0` for `a` — the parity merge of day one, split; from (c), the
-frontier word `u = rep(ψ(!a))·a = !a·a` against the row
-`v = rep(ψ(!a·a)) = a`, minting the ω-column `(a, a)` — a rotated cousin of
-the `(ε, !a)` we exhibited in §3, found by the machinery rather than by
+frontier word `u = rep(ψ(b))·a = b·a` against the row
+`v = rep(ψ(b·a)) = a`, minting the ω-column `(a, a)` — a rotated cousin of
+the `(ε, b)` we exhibited in §3, found by the machinery rather than by
 inspection. Tables 3(b) and 3(d) show the tables after the split. Two lassos,
 one wrong name, Arnold's two shapes: the counterexample analysis is the
 two-shape split of the congruence, run backwards.
@@ -79,39 +79,39 @@ two-shape split of the congruence, run backwards.
 
 | `i` | prefix | its rep | queried lasso | `γ_i` |
 |:--:|---|:--:|---|:--:|
-| 0 | — | — | `aa!a·(aa!a)^ω` | `1` |
-| 1 | `a` | `a` | `a·a!a·(aa!a)^ω` | `1` |
-| 2 | `aa` | `a` | `a·!a·(aa!a)^ω` | **`0`** |
-| 3 | `aa!a` | `a` | `a·(aa!a)^ω` | `0` |
+| 0 | — | — | `aab·(aab)^ω` | `1` |
+| 1 | `a` | `a` | `a·ab·(aab)^ω` | `1` |
+| 2 | `aa` | `a` | `a·b·(aab)^ω` | **`0`** |
+| 3 | `aab` | `a` | `a·(aab)^ω` | `0` |
 
 *(b) `Even`, after the stem harvest:*
 
-| word | `(ε,ε)_ω` | **`(ε, !a, aa!a)_lin`** | class |
+| word | `(ε,ε)_ω` | **`(ε, b, aab)_lin`** | class |
 |---|:--:|:--:|---|
 | `a` | `0` | **`0`** | `[a]` |
-| `!a` | `1` | **`1`** | `[!a]` |
+| `b` | `1` | **`1`** | `[b]` |
 | **`aa`** | `0` | **`1`** | **`[aa]`** |
 | *frontier:* | | | |
-| `a·!a` | `0` | **`0`** | → `[a]` ✗ still |
-| `aa·!a` | `1` | **`1`** | → `[!a]` |
+| `a·b` | `0` | **`0`** | → `[a]` ✗ still |
+| `aa·b` | `1` | **`1`** | → `[b]` |
 
 *(c) `EvenBlocks`, the loop chain `δ` — stem pinned to `w_s = a`, replace a
 growing loop prefix by its rep:*
 
 | `i` | prefix | its rep | queried lasso | `δ_i` |
 |:--:|---|:--:|---|:--:|
-| 0 | — | — | `a·(!a·aa)^ω` | `1` |
-| 1 | `!a` | `!a` | `a·(!a·aa)^ω` | `1` |
-| 2 | `!a·a` | `a` | `a·(a·a)^ω` | **`0`** |
-| 3 | `!a·aa` | `a` | `a·(a)^ω` | `0` |
+| 0 | — | — | `a·(b·aa)^ω` | `1` |
+| 1 | `b` | `b` | `a·(b·aa)^ω` | `1` |
+| 2 | `b·a` | `a` | `a·(a·a)^ω` | **`0`** |
+| 3 | `b·aa` | `a` | `a·(a)^ω` | `0` |
 
 *(d) `EvenBlocks`, after the loop harvest:*
 
 | word | `(ε,ε)_ω` | **`(a, a)_ω`** | class |
 |---|:--:|:--:|---|
 | `a` | `0` | **`0`** | `[a]` |
-| `!a` | `1` | **`0`** | `[!a]` |
-| **`!a·a`** | `0` | **`1`** | **`[!a·a]`** |
+| `b` | `1` | **`0`** | `[b]` |
+| **`b·a`** | `0` | **`1`** | **`[b·a]`** |
 
 **Table 3.** The two first counterexamples, processed (minted column and
 promoted row in bold; `ε`-row and unchanged frontier omitted). In both
@@ -121,5 +121,5 @@ junction `γ_3 = δ_0`, already `0`: the stem chain flipped, minting a *linear*
 column. In (c) the junction is `1` and the loop chain flips instead, minting
 an *ω-column*; note row 3's lasso is `a·a^ω` — the representative lasso of
 the predicting pair, i.e. the prediction itself, closing the chain. (a) pulls
-`aa` out of `[a]`; (c) pulls `!a·a` out — and in (b) the doomed `a·!a` still
+`aa` out of `[a]`; (c) pulls `b·a` out — and in (b) the doomed `a·b` still
 hides in `[a]`, which is §4.3's catch.
