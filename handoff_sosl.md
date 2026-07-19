@@ -21,27 +21,22 @@ carries **current work items + pointers only**, no history.
 
 ## Work items — engineering
 
-1. **Bank the §6.3 E2 drop** — `python3 -m tests.sosl.census_e2_exhibits
-   ../reference/census/ablation_congruence.csv` (seconds, local; output
-   `tests/sosl/logs/census_e2/flat_canon.md`): 3137 permanent stalls, gap
-   distribution 1..53, prefix-independent **231**/3137, LTL 1741/3137,
-   sharpest gap 53 (`3state1ap0acc_015752` + dual). **Blocked on theory
-   item 1** (the PI count) before committing under `reference/census/`.
-   The script cross-tabs by Wagner degree only — the spec's per-shape
-   exhaustive negative still needs a shape column (prefix of `case_id`).
+None — all §6 data is banked under `reference/census/` (e1/e2/e3 summaries +
+their CSVs).
 
 ## Work items — theory
 
-1. **Reconcile the PI count**: the 6222 ablation shows **231**
-   prefix-independent permanent stalls, but the draft states two witnesses
-   plus complements and the spec's per-shape claim is *zero* PI permanent
-   stalls on every exhaustive shape. Restate the claim (or scope it) before
-   engineering banks the E2 drop.
-2. Integrate the E2 drop into §6.3's `⟨TBD⟩` markers once banked, and
-   restate §6.4's LTL-cut paragraph from `e3_summary.md` — the direction
-   inverts at 6222: keep the correlation, drop the direction claim.
+1. **Rescope §6.3's prefix-independence claim**: the banked record
+   (`reference/census/e2_summary.md`) shows **231**/3137 prefix-independent
+   permanent stalls; the draft states two witnesses plus complements and a
+   per-shape zero. Shape ventilation is out of the paper's scope — restate
+   from the 231, keeping the two `witness_lock`-certified specimens as the
+   worked witnesses.
+2. Rewrite §6.3's `⟨TBD⟩` paragraphs from `e2_summary.md`, and §6.4's
+   LTL-cut paragraph from `e3_summary.md` — keep the correlation, drop the
+   direction claim.
 3. Sweep the draft for 3938-era numbers and restate from the committed record
-   (§6's preamble marks this; §6.2/§6.4 fills are in from `e1_summary.md`).
+   (§6's preamble marks this).
 
 ## The corpus
 
