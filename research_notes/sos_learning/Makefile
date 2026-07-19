@@ -1,6 +1,6 @@
-# Assemble the split paper parts into a single markdown, ../sos_learning2.md.
+# Assemble the split paper parts into a single markdown, ../sos_learning.md.
 #
-#   make            # (re)build ../sos_learning2.md from the parts below
+#   make            # (re)build ../sos_learning.md from the parts below
 #   make clean      # remove the assembled file
 #
 # Only the parts listed in PARTS are paper text; README.md and notation.md are
@@ -9,7 +9,7 @@
 # one level up (research_notes/), so ASM strips exactly one leading ../ from
 # link and img-src targets.
 
-OUT   := ../sos_learning2.md
+OUT   := ../sos_learning.md
 
 PARTS := \
 	s0_front.md \

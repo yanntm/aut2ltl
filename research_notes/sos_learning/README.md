@@ -1,7 +1,7 @@
 # sos_learning — Learning the Syntactic ω-Semigroup (paper folder)
 
 Working draft of the learning paper, split per section. `make` assembles the
-parts into the single-file paper [`../sos_learning2.md`](../sos_learning2.md) —
+parts into the single-file paper [`../sos_learning.md`](../sos_learning.md) —
 that file is a **build artifact**, do not edit it by hand; edit the parts here
 and re-run `make`. (The assembler strips one `../` from figure paths.)
 
