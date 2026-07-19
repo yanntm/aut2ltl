@@ -17,19 +17,19 @@ Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` =
 ```hoa
 HOA: v1
 States: 3
-Start: 1
+Start: 0
 AP: 1 "a"
 acc-name: Buchi
 Acceptance: 1 Inf(0)
 properties: trans-labels explicit-labels trans-acc complete
-properties: deterministic stutter-invariant very-weak
+properties: deterministic
 --BODY--
 State: 0
-[!0] 0 {0}
-[0] 2
+[!0] 1
+[0] 0
 State: 1
-[!0] 0
-[0] 1
+[!0] 1 {0}
+[0] 2
 State: 2
 [t] 2
 --END--
@@ -42,15 +42,15 @@ State: 2
 | id | word | st | mk | rmul | → class |
 |---|---|---|---|---|---|
 | 0 | `eps` | [0 1 2] | [{} {} {}] | 1 2 | 0 `eps` |
-| 1 | `!a` | [0 0 2] | [{0} {} {}] | 3 4 | 1 `!a` |
-| 2 | `a` | [2 1 2] | [{} {} {}] | 5 2 | 2 `a` |
-| 3 | `!a;!a` | [0 0 2] | [{0} {0} {}] | 3 6 | 1 `!a` |
-| 4 | `!a;a` | [2 2 2] | [{0} {} {}] | 4 4 | 3 `!a;a` |
-| 5 | `a;!a` | [2 0 2] | [{} {} {}] | 7 8 | 4 `a;!a` |
+| 1 | `!a` | [1 1 2] | [{} {0} {}] | 3 4 | 1 `!a` |
+| 2 | `a` | [0 2 2] | [{} {} {}] | 5 2 | 2 `a` |
+| 3 | `!a;!a` | [1 1 2] | [{0} {0} {}] | 3 6 | 1 `!a` |
+| 4 | `!a;a` | [2 2 2] | [{} {0} {}] | 4 4 | 3 `!a;a` |
+| 5 | `a;!a` | [1 2 2] | [{} {} {}] | 7 8 | 4 `a;!a` |
 | 6 | `!a;!a;a` | [2 2 2] | [{0} {0} {}] | 6 6 | 3 `!a;a` |
-| 7 | `a;!a;!a` | [2 0 2] | [{} {0} {}] | 7 9 | 4 `a;!a` |
+| 7 | `a;!a;!a` | [1 2 2] | [{0} {} {}] | 7 9 | 4 `a;!a` |
 | 8 | `a;!a;a` | [2 2 2] | [{} {} {}] | 8 8 | 3 `!a;a` |
-| 9 | `a;!a;!a;a` | [2 2 2] | [{} {0} {}] | 9 9 | 3 `!a;a` |
+| 9 | `a;!a;!a;a` | [2 2 2] | [{0} {} {}] | 9 9 | 3 `!a;a` |
 
 ### Canonical algebra `S(L)₊¹`
 

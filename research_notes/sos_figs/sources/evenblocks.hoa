@@ -1,16 +1,16 @@
 HOA: v1
-name: "EvenBlocks = inf many b, eventually every completed a-block even  [b := !a]"
 States: 2
 Start: 0
 AP: 1 "a"
+acc-name: Rabin 1
 Acceptance: 2 Fin(0) & Inf(1)
-acc-name: generalized-Rabin
-properties: trans-labels explicit-labels trans-acc complete deterministic
+properties: trans-labels explicit-labels trans-acc complete
+properties: deterministic
 --BODY--
 State: 0
-[0] 1
 [!0] 0 {1}
+[0] 1
 State: 1
-[0] 0
 [!0] 0 {0}
+[0] 0
 --END--
