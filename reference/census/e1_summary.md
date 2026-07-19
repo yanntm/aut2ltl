@@ -118,39 +118,48 @@ Per-N cost medians (designed bounds: splits ≤ N; fill ~ O(N²·|Σ|)):
 
 **splits ≤ N holds on all 6222 languages: yes.**
 
+Wall time (default leg): **10733 s total** over 6222 languages — median 0.12 s, p99 20.5 s, worst 49.6 s (`2state3ap1acc_parity_02738846096277145868_c`, N=68).
+
+## Oracle guard and certification, per leg
+
+| leg | guard firings | cases with ≥1 firing | certifications |
+|---|--:|--:|---|
+| `default` | 3398 | 2694 | exact: 6222 |
+| `no-sat-exact` | 25288 | 4451 | exact: 5525, none: 697 |
+
 ## Ventilation by SoS category
 
 The LTL-definability cut (aperiodicity of 𝓘(L)), soundness and median cost on each side:
 
-| definability | languages | SOUND | median N | median splits | median member |
-|---|--:|--:|--:|--:|--:|
-| LTL (aperiodic) | 3738 | 3738 | 12 | 9 | 291 |
-| non-LTL | 2484 | 2484 | 20 | 16 | 557 |
+| definability | languages | SOUND | median N | median splits | median member | splits/N | member/(N²·\|Σ\|) | median wall (s) |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|
+| LTL (aperiodic) | 3738 | 3738 | 12 | 9 | 291 | 0.71 | 0.71 | 0.15 |
+| non-LTL | 2484 | 2484 | 20 | 16 | 557 | 0.81 | 0.57 | 0.08 |
 
 By Wagner degree ϕ = (γ, s):
 
-| ϕ | class | languages | SOUND | median N | median splits |
-|---|---|--:|--:|--:|--:|
-| 0,pi | universal — trivial closed | 1 | 1 | 2 | 0 |
-| 0,sigma | empty — trivial open | 1 | 1 | 2 | 0 |
-| 1,delta | clopen — properly Δ₁ | 82 | 82 | 8 | 5 |
-| 1,pi | properly closed — safety | 1430 | 1430 | 21 | 18 |
-| 1,sigma | properly open — guarantee | 1430 | 1430 | 21 | 18 |
-| 2,delta | properly Δ₂ | 18 | 18 | 8 | 5 |
-| 2,pi | properly Π₂ | 68 | 68 | 7 | 4 |
-| 2,sigma | properly Σ₂ | 68 | 68 | 7 | 4 |
-| 3,pi | degree (3, pi) | 40 | 40 | 10 | 7 |
-| 3,sigma | degree (3, sigma) | 40 | 40 | 10 | 7 |
-| 4,pi | degree (4, pi) | 2 | 2 | 18 | 16 |
-| 4,sigma | degree (4, sigma) | 2 | 2 | 18 | 16 |
-| omega*2,pi | one Rabin pair — π side | 49 | 49 | 10 | 6 |
-| omega*2,sigma | one Rabin pair — σ side | 49 | 49 | 10 | 6 |
-| omega+1,delta | self-dual, one derivation (Fork) | 2 | 2 | 4 | 0 |
-| omega,pi | properly Fσ — DCA-proper | 654 | 654 | 6 | 3 |
-| omega,sigma | properly Gδ — DBA-proper | 654 | 654 | 6 | 3 |
-| omega^2,pi | co-parity {0,1,2} — proper | 169 | 169 | 12 | 9 |
-| omega^2,sigma | parity {0,1,2} — proper | 169 | 169 | 12 | 9 |
-| omega^3,pi | degree (omega^3, pi) | 613 | 613 | 23 | 17 |
-| omega^3,sigma | degree (omega^3, sigma) | 613 | 613 | 23 | 17 |
-| omega^4,pi | degree (omega^4, pi) | 34 | 34 | 36 | 29 |
-| omega^4,sigma | degree (omega^4, sigma) | 34 | 34 | 36 | 29 |
+| ϕ | class | languages | SOUND | median N | median splits | splits/N | member/(N²·\|Σ\|) | median wall (s) |
+|---|---|--:|--:|--:|--:|--:|--:|--:|
+| 0,pi | universal — trivial closed | 1 | 1 | 2 | 0 | 0.00 | 0.75 | 0.04 |
+| 0,sigma | empty — trivial open | 1 | 1 | 2 | 0 | 0.00 | 0.75 | 0.04 |
+| 1,delta | clopen — properly Δ₁ | 82 | 82 | 8 | 5 | 0.62 | 0.86 | 0.02 |
+| 1,pi | properly closed — safety | 1430 | 1430 | 21 | 18 | 0.85 | 0.58 | 0.06 |
+| 1,sigma | properly open — guarantee | 1430 | 1430 | 21 | 18 | 0.85 | 0.58 | 0.06 |
+| 2,delta | properly Δ₂ | 18 | 18 | 8 | 5 | 0.62 | 0.87 | 0.03 |
+| 2,pi | properly Π₂ | 68 | 68 | 7 | 4 | 0.67 | 0.91 | 0.04 |
+| 2,sigma | properly Σ₂ | 68 | 68 | 7 | 4 | 0.67 | 0.91 | 0.03 |
+| 3,pi | degree (3, pi) | 40 | 40 | 10 | 7 | 0.70 | 0.79 | 0.03 |
+| 3,sigma | degree (3, sigma) | 40 | 40 | 10 | 7 | 0.70 | 0.79 | 0.04 |
+| 4,pi | degree (4, pi) | 2 | 2 | 18 | 16 | 0.88 | 0.62 | 0.15 |
+| 4,sigma | degree (4, sigma) | 2 | 2 | 18 | 16 | 0.88 | 0.62 | 0.15 |
+| omega*2,pi | one Rabin pair — π side | 49 | 49 | 10 | 6 | 0.65 | 0.75 | 0.17 |
+| omega*2,sigma | one Rabin pair — σ side | 49 | 49 | 10 | 6 | 0.65 | 0.75 | 0.16 |
+| omega+1,delta | self-dual, one derivation (Fork) | 2 | 2 | 4 | 0 | 0.00 | 0.75 | 0.00 |
+| omega,pi | properly Fσ — DCA-proper | 654 | 654 | 6 | 3 | 0.43 | 0.87 | 0.08 |
+| omega,sigma | properly Gδ — DBA-proper | 654 | 654 | 6 | 3 | 0.43 | 0.87 | 0.10 |
+| omega^2,pi | co-parity {0,1,2} — proper | 169 | 169 | 12 | 9 | 0.73 | 0.75 | 0.04 |
+| omega^2,sigma | parity {0,1,2} — proper | 169 | 169 | 12 | 9 | 0.73 | 0.75 | 0.05 |
+| omega^3,pi | degree (omega^3, pi) | 613 | 613 | 23 | 17 | 0.73 | 0.51 | 0.60 |
+| omega^3,sigma | degree (omega^3, sigma) | 613 | 613 | 23 | 17 | 0.73 | 0.51 | 0.60 |
+| omega^4,pi | degree (omega^4, pi) | 34 | 34 | 36 | 29 | 0.86 | 0.39 | 0.66 |
+| omega^4,sigma | degree (omega^4, sigma) | 34 | 34 | 36 | 29 | 0.86 | 0.39 | 1.05 |
