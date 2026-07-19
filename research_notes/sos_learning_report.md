@@ -39,7 +39,24 @@ cost split (same source):
 | LTL (aperiodic) | 3738 | 12 | 9 | 291 |
 | non-LTL | 2484 | 20 | 16 | 557 |
 
-Wall-time line: OWED (spec).
+Wall time (default leg, source `reference/census/e1_summary.md`): **10733 s
+total** over 6222 languages — median 0.12 s, p99 20.5 s, worst 49.6 s
+(`2state3ap1acc_parity_02738846096277145868_c`, N=68) — all under the 60 s
+budget.
+
+Size-controlled ventilation (same source) is a **negative**: with cost
+normalized by the designed bounds (splits/N, member/(N²·|Σ|)) the LTL cut
+nearly vanishes (0.71 vs 0.81 splits/N) and the Wagner ladder shows no
+monotone hardness trend (0.43–0.88 across degrees, DBA/DCA-proper lowest,
+safety/guarantee highest). Classification affects cost only through N; the
+paper reports no per-class claim.
+
+Oracle guard and certification, per leg (§6.1; same source): the
+functionality guard fires on 2694 of 6222 default-leg runs (3398 firings;
+ablation leg 4451 runs, 25288 firings), and the fallback finished within its
+work cap on every run — `eq_certification` is `exact` on all 6222 default
+rows; the ablation leg's 697 uncertified rows are exactly its 665 BUDGET +
+17 CRASH + 15 OVERSIZE runs. Zero cap-escapes on either leg.
 
 ## §6.3 — the saturation ablation
 
@@ -85,8 +102,11 @@ FDFA): smaller **2032**, larger **3574**, tied **354** — a wash inside the
 
 At 6222 the LTL-cut direction *inverts* vs the draft's small-shape numbers —
 the paper keeps the correlation and drops the direction claim (spec). The
-capability column (LTL-definability read-off, ours only) is the result;
-agreement sentence OWED.
+capability column (LTL-definability read-off, ours only) is the result.
+LTL agreement: the read-off agrees with ground truth on **all 6222**
+languages — every default-leg run certifies `exact` (invariant byte-equal to
+the reference, `e1_summary.md` certification tally), so the aperiodicity
+test is evaluated on the reference object itself.
 
 ## §6.5 — counterexample sensitivity
 
