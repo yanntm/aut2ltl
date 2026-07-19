@@ -17,6 +17,10 @@ spec's owed fills.
 - The stalled displays — coarse vs canonical `.sos` with separating left
   contexts (`a_implies_xa` 4 vs 5 classes, `a_once` 3 vs 4):
   `reference/campaigns/m4b/e2_report.md`.
+- Figures 4–5 (the day-one invariants; the stalled export, drawn):
+  probe-dumped `.sos` in `research_notes/sos_core_figs/sources/sosl_*.sos` ←
+  `python3 -m tests.sosl.fig_learner_exports` (asserts the class counts and
+  the day-one pair sets' conjugacy closure); rendered there by `make sosl`.
 
 ## §6.2 — cost
 
