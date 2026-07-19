@@ -1,4 +1,4 @@
-"""Canonical text serialization of invariants (`.sos`) and hypotheses (Cayley).
+"""Canonical text serialization of invariants (`.sos`).
 
 The `.sos` form is a byte-canonical normal form: two invariants over the same AP
 denote the same language iff their `dump_invariant` outputs are byte-equal (the
@@ -15,15 +15,13 @@ unambiguous over a multi-AP alphabet (``a&!b``, not ``{a}``).
 """
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from ..alphabet import EMPTY, Alphabet, Letter, Word
-from ..hypothesis import Hypothesis
 from ..invariant import Invariant
 from ..residuals import Residuals
 
 SOS_MAGIC = "SOS v1"
-CAYLEY_MAGIC = "CAYLEY v1"
 
 
 # --- letters and words -----------------------------------------------------
@@ -164,53 +162,4 @@ def load_invariant(text: str) -> Invariant:
         mult=tuple(mult),
         accept=frozenset(accept),
         identity=keys.index(EMPTY),
-    )
-
-
-# --- hypothesis (Cayley) ---------------------------------------------------
-
-def dump_hypothesis(h: Hypothesis) -> str:
-    """The canonical Cayley text for ``h`` (trailing newline included)."""
-    ab = h.alphabet
-    out: List[str] = [CAYLEY_MAGIC, "ap: " + " ".join(ab.aps), f"classes: {h.n}"]
-    for c in range(h.n):
-        out.append(f"{c} {render_word(ab, h.keys[c])}")
-    out.append(f"start: {h.start}")
-    out.append("step:")
-    for c in range(h.n):
-        out.append(f"{c}: " + " ".join(str(v) for v in h.step[c]))
-    out.append("accept:")
-    for (s, e) in sorted(h.accept):
-        out.append(f"{s} {e} {1 if h.accept[(s, e)] else 0}")
-    return "\n".join(out) + "\n"
-
-
-def load_hypothesis(text: str) -> Hypothesis:
-    """Parse the Cayley text back into a `Hypothesis`."""
-    lines = _nonblank(text)
-    ab, n, i = _read_header(lines, CAYLEY_MAGIC)
-    keys, i = _read_keys(ab, lines, i, n)
-
-    assert lines[i].startswith("start:"), lines[i]
-    start = int(lines[i].split(":")[1])
-    i += 1
-
-    assert lines[i] == "step:", lines[i]
-    i += 1
-    step: List[Tuple[int, ...]] = []
-    for _ in range(n):
-        _cid, _, rest = lines[i].partition(":")
-        step.append(tuple(int(x) for x in rest.split()))
-        i += 1
-
-    assert lines[i] == "accept:", lines[i]
-    i += 1
-    accept: Dict[Tuple[int, int], bool] = {}
-    while i < len(lines):
-        s, e, bit = lines[i].split()
-        accept[(int(s), int(e))] = bit == "1"
-        i += 1
-
-    return Hypothesis(
-        alphabet=ab, keys=tuple(keys), step=tuple(step), accept=accept, start=start
     )

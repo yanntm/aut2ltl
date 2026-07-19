@@ -5,12 +5,9 @@ io/, constructors under build/. No dependency outside this package tree.
 """
 from .alphabet import EMPTY, Alphabet, Letter, Word, shortlex_key
 from .core.canonical import canonicalize
-from .hypothesis import Hypothesis
 from .invariant import Invariant
 from .io.serialize import (
-    dump_hypothesis,
     dump_invariant,
-    load_hypothesis,
     load_invariant,
 )
 from .lasso import Lasso
@@ -24,11 +21,8 @@ __all__ = [
     "shortlex_key",
     "Lasso",
     "Invariant",
-    "Hypothesis",
     "Residuals",
     "canonicalize",
     "dump_invariant",
     "load_invariant",
-    "dump_hypothesis",
-    "load_hypothesis",
 ]
