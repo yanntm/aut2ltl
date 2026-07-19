@@ -59,6 +59,45 @@ self-loop carrying every class. These drawings are the paper's answer key:
 the learner reconstructs each of them, byte for byte, from lasso queries
 alone — the automata of Figure 1 stay on the teacher's side of the wall.
 
+**The stall specimens.** Two more examples run against the grain of the three
+above, and were *searched for* rather than chosen: the smallest languages, by
+class count, that we could find — by exhaustive enumeration of the smallest
+automaton shapes — on which a learner without the saturation sweep of §4.3
+fails *permanently*. Both are two-letter LTL formulas, simpler than the
+classical trivial-right-congruence example `FG(a ∨ Xa)` [AF21]:
+
+- **`a → Xa`** — if the first letter is `a`, so is the second. A safety
+  language, LTL-definable; `N = 5`, and its algebra carries *two* accepting
+  idempotents, `[!a]` and `[aa]` — right-indistinguishable, separated only by
+  the left context `a`, and that is the trap (§4.2).
+- **`a ∧ XG¬a`** — the language of the single ω-word `a·(!a)^ω`;
+  `N = 4`. The same trap one step deeper: the canonical `[!a·a]` is separated
+  from `[!a]` only from the left.
+
+<table>
+<tr>
+<td align="center"><img src="../sos_figs/img/a_implies_xa.png" alt="a implies Xa automaton" width="260"></td>
+<td align="center"><img src="../sos_figs/img/a_once.png" alt="a and XG not a automaton" width="260"></td>
+</tr>
+<tr>
+<td align="center"><b>(a) <code>a → Xa</code></b><br>4 states, <code>Inf(0)</code> (Büchi).</td>
+<td align="center"><b>(b) <code>a ∧ XG¬a</code></b><br>3 states, <code>Inf(0)</code> (Büchi).</td>
+</tr>
+<tr>
+<td align="center"><img src="../sos_core_figs/img/a_implies_xa_pairs.png" alt="a implies Xa syntactic invariant" width="260"></td>
+<td align="center"><img src="../sos_core_figs/img/a_once_pairs.png" alt="a once syntactic invariant" width="260"></td>
+</tr>
+<tr>
+<td align="center"><b>(c) <code>𝓘(a → Xa)</code></b>, <code>N = 5</code>.<br>Both committed-in stems <code>[!a]</code>, <code>[aa]</code><br>accept with every idempotent loop —<br>six pairs, two stems the stall merges.</td>
+<td align="center"><b>(d) <code>𝓘(a ∧ XG¬a)</code></b>, <code>N = 4</code>.<br>A single accepting pair <code>([a],[!a])</code> —<br>the one lasso the language contains.</td>
+</tr>
+</table>
+
+**Figure 3.** The stall specimens: teacher automata (top) and target
+invariants (bottom), drawn with Figure 2's conventions (the drawings write
+`b` for `!a`, the figure pool's lettering). §4.2 proves the saturation-free
+learner stops one class short of each target, certified by an exact oracle.
+
 **The query model, instantiated.** The MAT teacher of §2.1, for this paper:
 membership queries are lassos (`u·v^ω ∈ L`?); equivalence queries take a
 hypothesis `𝓗` (an invariant-shaped tuple, §3) and return a lasso
