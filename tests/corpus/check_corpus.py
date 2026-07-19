@@ -1,7 +1,9 @@
-"""Structural checks on `corpus/{det,sos}/` — the language tier.
+"""Structural checks on the benchmark language tier
+(`samples/benchmark/corpus/flat_canon/{det,sos}/`).
 
-The build (`corpus/canonize.py`) claims four things. This asserts them against the
-committed corpus, not against the build's own bookkeeping:
+The build (the genaut pipeline — see `samples/benchmark/corpus/README.md`)
+claims four things. This asserts them against the committed catalogue, not
+against the build's own bookkeeping:
 
   1. **paired** — `det/` and `sos/` hold the same basenames, one each;
   2. **irredundant** — the `.sos` dumps are pairwise distinct, so no language is
@@ -34,7 +36,7 @@ from sosl.sos.build.importer import canonical  # noqa: E402
 from sosl.sos.core.quotient import invariant_of  # noqa: E402
 from survey.normalize.sos import sos_key  # noqa: E402
 
-_CORPUS = os.path.join(_REPO, "corpus")
+_CORPUS = os.path.join(_REPO, "samples", "benchmark", "corpus", "flat_canon")
 
 
 def main(argv: List[str]) -> int:
