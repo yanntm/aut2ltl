@@ -75,5 +75,30 @@ pairs: figures
 	$(call pairfig,a_implies_xa,a_implies_xa_pairs,a_implies_xa)
 	$(call pairfig,a_once,a_once_pairs,a_once)
 
+# One figure by name (base + its pairs variant where one exists), every other
+# figure untouched:  make one-a_implies_xa,  make one-core_F2_even, ...
+.PHONY: one-core_F0_astar_bomega one-core_F0_astar_bomega_b one-core_F1_gf_aa \
+        one-core_F2_even one-core_F3_evenblocks one-a_implies_xa one-a_once
+one-core_F0_astar_bomega:
+	$(call fig,astar_bomega,core_F0_astar_bomega,--keep-identity)
+one-core_F0_astar_bomega_b:
+	$(call fig,astar_bomega,core_F0_astar_bomega_b)
+	$(call pairfig,astar_bomega,core_F0_astar_bomega_b_pairs,core_F0_astar_bomega_b)
+one-core_F1_gf_aa:
+	$(call fig,gf_aa,core_F1_gf_aa)
+	$(call pairfig,gf_aa,core_F1_gf_aa_pairs,core_F1_gf_aa)
+one-core_F2_even:
+	$(call fig,even,core_F2_even)
+	$(call pairfig,even,core_F2_even_pairs,core_F2_even)
+one-core_F3_evenblocks:
+	$(call fig,evenblocks,core_F3_evenblocks)
+	$(call pairfig,evenblocks,core_F3_evenblocks_pairs,core_F3_evenblocks)
+one-a_implies_xa:
+	$(call fig,a_implies_xa,a_implies_xa)
+	$(call pairfig,a_implies_xa,a_implies_xa_pairs,a_implies_xa)
+one-a_once:
+	$(call fig,a_once,a_once)
+	$(call pairfig,a_once,a_once_pairs,a_once)
+
 clean:
 	rm -f sources/*.aux sources/*.log sources/*.out
