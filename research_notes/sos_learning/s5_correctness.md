@@ -151,18 +151,8 @@ Tables 1 → 3(b) → 6: five classes from **two splits — one per mechanism** 
 stem chain split `aa` from `a`, the saturation escalation split `a·b` from
 `a`) — on **three columns** (`(ε,ε)_ω` initial, `(ε, b, aab)_lin` harvested,
 `(ε, ab, aab)_lin` saturated). The BFS re-keying returns
-`ε, b, a, ab, aa`, and the exported table `c·c' = fold(c, w_{c'})` is
-
-```
-  ·      [ε]  [b]  [a]  [ab]  [aa]
-  [ε]     0    1    2    3     4
-  [b]     1    1    1    1     1
-  [a]     2    3    4    1     2
-  [ab]    3    3    3    3     3
-  [aa]    4    1    2    3     4
-```
-
-— cell for cell the syntactic table of [SωS26], computed there from a
+`ε, b, a, ab, aa`, and the exported table `c·c' = fold(c, w_{c'})` *is*
+Figure 2(b), edge for edge — the same drawing, computed there from a
 deterministic automaton and here from lasso queries alone: Theorem 5.1,
 performed. Two read-offs complete the export (Table 7): the accepting pairs,
 and the aperiodicity check.
