@@ -17,9 +17,11 @@ one shape:
 > differ.**
 
 The sources differ only in who finds the lassos, and the learner finds
-most of them itself: by **probing** — posing a lasso on its own
-initiative and catching the answer contradicting its belief, the
-bootstrap sweep of §4.5 — and through its **legality checks**, which
+most of them itself: by **rereading its evidence** — a bit already
+witnessed that the current belief contradicts, lasso and verdict both
+in hand (§4.3); by **probing** — posing a lasso on its own initiative
+and catching the answer contradicting its belief, the bootstrap sweep
+of §4.5; and through its **legality checks**, which
 catch two kinds by pure table inspection, zero queries: a stamp
 violation, a divergence of actions escalated through two probe queries;
 a pair violation, two conjugate pairs with differing cached bits,
@@ -32,8 +34,8 @@ the two lassos, substituting, position by position, a growing prefix by
 its class's key; the chain's bits flip at some adjacent step; the flip
 convicts a frontier word against a row — currently one class, provably
 `≈_L`-distinct — and mints the separating Arnold context as a new
-column. §4.3 assembles split, re-stabilization and re-certification into
-the align procedure; §4.4 gives the structure prefix-independence
+column. §4.3 assembles the whole into alignment — a fixpoint over the
+learner's evidence; §4.4 gives the structure prefix-independence
 imposes on what alignment mints; §4.5 closes the loop around it —
 bootstrap, then alternation with the teacher.
 

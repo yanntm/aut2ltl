@@ -35,7 +35,18 @@ letters' ω-powers are probes through the general align path — every
 column of every run is minted, none seeded. The worked tables in §3–§4
 are still transcripts of the seeded-column pipeline; hand-derived
 expectations under the new bootstrap go into the engineering spec (to
-be written), and the tables follow the regenerated record. Known-stale until that sweep: §5–§7 cite the old
+be written), and the tables follow the regenerated record.
+
+§4.3 is now functional: state = evidence (the cache of witnessed bits);
+belief = fixpoint of repair under a four-constraint normal form
+(closed/consistent, morphism, saturated, evidence-coherent); align =
+that fixpoint seeded with one discordant lasso. Evidence coherence is a
+*fourth* constraint, adopted (query-free check, violations are free
+discordances). Theory obligations opened by this recast: (1) confluence
+— the fixpoint *belief* is independent of the pinned resolution order
+(the trace is not); (2) whether morphism + saturation already imply
+evidence coherence, or it is a strict strengthening (adopted either
+way). §5's proofs and the spec must eventually account for both. Known-stale until that sweep: §5–§7 cite the old
 §4 numbering — map: old L4.1+L4.2+T4.3 → L4.1 (chain) + T4.2 (split);
 L4.4 → L4.3; L4.5 → L4.4; P4.6 → P4.5; C4.7 → C4.6; L4.8 → L4.7 — and
 the retired reap/sow–harvest vocabulary. §5 is slated for dissolution by

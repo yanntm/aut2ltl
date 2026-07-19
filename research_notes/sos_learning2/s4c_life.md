@@ -1,42 +1,52 @@
 ### 4.3 Alignment, assembled
 
-One procedure, **stabilize**, drives the table to a certified fixpoint —
-it is where every membership bit lands, concordant bits as recorded
-entries, discordant ones as splits — and **align** is a chain split
-followed by stabilization:
+The learner's ground truth is its **evidence** `E`: the finite set of
+teacher bits witnessed so far, one per queried lasso, however the query
+arose — a fill, a probe, a chain step, a `P`-slot, a counterexample.
+Everything else is derived: the table arranges the evidence for
+comparison, the classes partition it, the belief completes it into a
+language. The **normal form** asks four things of the derived state,
+each checkable without a query:
 
-```
-    stabilize:                        # membership queries only
-        loop:
-            fill entries; promote (closure) and mint (consistency)
-                to fixpoint                          (Definition 3.2)
-            stamp check — zero queries; on violation:
-                escalate (Lemma 4.3): split, continue
-            fill P on the linked pairs of the induced product
-                (memoized queries)
-            pair check — zero queries; on violation:
-                escalate (Lemma 4.4): split, continue
-            return 𝓘 := canonicalize ⟨𝒮_T, P⟩       ([SωS26, Thm II])
+- **closed and consistent** — the table presents a classifier
+  (Definition 3.2);
+- **morphism** — the induced product is well defined (Lemma 3.4);
+- **saturated** — the pair set gives one lasso one verdict through all
+  its presentations (§3.2);
+- **evidence-coherent** — the exported belief contradicts no bit of
+  `E`: every prediction replayed against the cache.
 
-    align(w·z^ω):                     # teacher's bit ≠ belief's answer
-        chain split (Theorem 4.2)
-        return stabilize
-```
+**Repair** resolves the first failure in pinned order. Bits the table
+or the pair set demand and the evidence does not yet hold are fetched —
+the confirm motion: evidence grows, nothing moves. A closedness failure
+promotes; a consistency failure mints (Definition 3.2). A morphism
+failure escalates (Lemma 4.3); a saturation failure escalates
+(Lemma 4.4); an evidence failure is a discordant lasso whose teacher
+bit is already in hand — no query at all, the chain directly
+(Theorem 4.2). Every resolution splits at least one class, witnessed by
+an Arnold context.
 
-The two levels of discordance are visible in stabilize. Table-level
-discordances — a frontier word matching no row, a consistency
-violation — split directly, by promotion and mint (Definition 3.2), no
-chain needed. Lasso-level discordances — the legality violations — are
-chained down to table level by the escalations of §4.2. Checks are free;
-escalations are bounded by the total number of splits. What stabilize
-returns is the next belief: a well-formed invariant, the syntactic
-invariant of its own belief language (§3.2), reached from one seed
-discordance by membership queries alone.
+**Align is the fixpoint**: seed the evidence with one discordant lasso,
+repair until the normal form holds. The fixpoint exists and is reached:
+evidence only grows, the partition only refines — every split is
+`≈_L`-witnessed, so distinct classes stay `≈_L`-distinct — and
+refinement is bounded by `N` across the entire run, not per call: at
+most `N` resolutions ever, anywhere. At the fixpoint the export,
+canonicalized ([SωS26, Thm II]), is a well-formed invariant — the
+syntactic invariant of its own belief language (§3.2). That is the
+paper's thesis in one statement:
+
+> **At every fixpoint the belief is an ω-regular language, held in
+> canonical form, contradicting no bit of evidence — a potentially
+> correct worldview, built and rebuilt from membership queries alone.**
+
+Only new evidence can move a fixpoint belief: a bit the learner elects
+to fetch (a probe), or one the teacher is asked to find (§4.5).
 
 *Example (the `EvenBlocks` run: one align call).* The whole run is
 bootstrap, one align call, and a certifying equivalence query. The call
 is seeded by the teacher-found discordance traced in §4.1 — the lasso
-`(ε, b·aa)` — and its stabilization fires two stamp escalations,
+`(ε, b·aa)` — and its repair fires two stamp escalations,
 carrying the table from four to its eight classes — keys
 `ε, b, a, b·a, a·b, a·a, b·a·b, a·b·a`, the count and keys fixed by the
 reference invariant. Table 7 is the call as a split ledger, one row per
@@ -145,19 +155,19 @@ complement. ∎
 ### 4.5 The learner's life: bootstrap and alternation
 
 **Bootstrap.** The learner opens with the least state the definitions
-admit: `R = {ε}` and no columns at all. Stabilize runs on it as on any
-table: closedness promotes the shortlex-least letter — no other row
+admit: `R = {ε}` and no columns at all. Repair runs on it as on any
+state: closedness promotes the shortlex-least letter — no other row
 exists to absorb it — and every remaining letter merges with it, no
 column yet separating anything; the induced product is the one-class
-semigroup, both checks are vacuously clean, and the `P`-fill of its
-single linked pair poses the run's first membership query, the ω-power
-of the promoted letter. That single bit decides the zeroth belief: the
+semigroup, and the `P`-fill of its single linked pair poses the run's
+first membership query, the ω-power of the promoted letter. That single bit decides the zeroth belief: the
 empty language or `Σ^ω`, the two smallest invariants there are
 (`N = 2`). Nothing is ever assumed — the opening belief is the answer
 to the opening query.
 
-A one-class belief is legality-inert — neither check can fire on it —
-so the learner probes: each remaining letter's ω-power, queried in
+A one-class belief coheres with its one bit of evidence — nothing
+self-served remains — so the learner probes: each remaining letter's
+ω-power, queried in
 shortlex order and treated by the general rule — concordant, recorded;
 discordant, one align call seeded by `(ε, a)`. **Day one** is the
 belief at the fixpoint of this sweep: every contradiction among the
@@ -173,7 +183,7 @@ are found.
 ```
     learner:
         R ← {ε};   E_lin ← ∅;   E_ω ← ∅
-        𝓘 ← stabilize                # the first query decides ∅ vs Σ^ω
+        𝓘 ← repair                   # the first query decides ∅ vs Σ^ω
         for each remaining letter a, in shortlex order:    # probe sweep
             query a^ω; on discordance:  𝓘 ← align((ε, a))
         repeat:                                            # alternation
@@ -184,9 +194,11 @@ are found.
 
 An equivalence query is the **delegated discordance search** — "is there
 a lasso I would get wrong?" — and it is posed exactly at quiescence:
-belief legal, hence internally coherent, both self-served sources
-exhausted — no computation of the learner's own points at any lasso as
-suspect. A failed query contributes precisely one discordant lasso and
+the belief in normal form, every self-served finder exhausted —
+evidence reread, legality checked, letters probed — no computation of
+the learner's own points at any lasso as suspect. Answering it is a
+comparison of two languages at invariant level (§2.3), and its return
+is a witness: one lasso in one language and not the other. A failed query contributes precisely one discordant lasso and
 nothing else; even its bit is redundant, the flip of the belief's
 prediction. There is no counterexample-processing phase distinct from
 alignment — the teacher's lasso enters align exactly as a pair
