@@ -3,13 +3,15 @@
 Storage and querying only — the congruence view (classes, representatives,
 step) is derived separately in `sosl.learn.partition`.
 
-  - ``rows`` — the access words (``eps``, the letters, and words promoted by
-    closing); ``row_set`` is their membership set.
+  - ``rows`` — the access words: ``eps`` and words promoted by closing (the
+    shortlex-least letter is the first promotion — with no columns every
+    letter shares the one non-identity class, which has no row);
+    ``row_set`` is their membership set.
   - the *frontier* is ``rows . Sigma``; ``domain()`` is ``rows`` followed by the
     frontier (de-duplicated) — every word the table observes.
-  - ``columns`` — the distinguishing contexts (`sosl.learn.columns`); the table
-    is seeded with the single omega column ``([], [])`` (the bit of ``p`` is
-    whether ``p^omega`` is in L).
+  - ``columns`` — the distinguishing contexts (`sosl.learn.columns`). The
+    table opens with **no columns at all**: every column of every run is
+    minted by a discordance; no experiment is given, all are found.
   - ``entry[(word, col_index)]`` — the cached membership bit, filled lazily by
     `fill`. The empty word is classified like any other: on an omega column
     whose loop would be empty (only ``eps`` on a ``([], [])``-shaped column) the
@@ -25,7 +27,7 @@ from __future__ import annotations
 
 from typing import Dict, List, Tuple
 
-from sosl.learn.columns import Column, Member, OmCol, is_omega, query
+from sosl.learn.columns import Column, Member, is_omega, query
 from sosl.learn.evidence import Evidence
 from sosl.sos.alphabet import EMPTY, Alphabet, Word
 from sosl.sos.lasso import Lasso
@@ -37,9 +39,9 @@ class Table:
     def __init__(self, alphabet: Alphabet, member: Member) -> None:
         self.alphabet = alphabet
         self.evidence = Evidence(member)
-        self.rows: List[Word] = [EMPTY] + [(a,) for a in alphabet.letters()]
+        self.rows: List[Word] = [EMPTY]
         self.row_set = set(self.rows)
-        self.columns: List[Column] = [OmCol(EMPTY, EMPTY)]
+        self.columns: List[Column] = []
         self.entry: Dict[Tuple[Word, int], bool] = {}
 
     @property

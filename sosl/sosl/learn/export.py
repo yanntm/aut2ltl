@@ -21,12 +21,12 @@ contract.
 """
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List
 
 from sosl.learn.columns import Member
 from sosl.learn.partition import Partition
 from sosl.learn.saturate import find_left_divergence
-from sosl.sos.alphabet import Word, shortlex_key
+from sosl.sos.alphabet import Word
 from sosl.sos.core.canonical import canonicalize
 from sosl.sos.invariant import Invariant
 from sosl.sos.lasso import Lasso
@@ -44,13 +44,6 @@ class NotCongruent(Exception):
         self.d = d
         super().__init__(
             f"not a congruence: fold(d={d}, subj={subj}) != fold(d={d}, rep={r0})")
-
-
-def _loop_rep(p: Partition, c: int) -> Optional[Word]:
-    """The shortlex-least non-empty word of class ``c`` (a loop must be
-    non-empty), or ``None`` if the class is strictly the empty word."""
-    cands = [w for w in p.members[c] if w]
-    return min(cands, key=shortlex_key) if cands else None
 
 
 def export(p: Partition, member: Member, check: bool = True) -> Invariant:
@@ -73,13 +66,13 @@ def export(p: Partition, member: Member, check: bool = True) -> Invariant:
 
     accept = set()
     for e in range(n):
-        if mult[e][e] != e:
-            continue
-        loop = _loop_rep(p, e)
-        if loop is None:  # a strictly-empty class cannot be a loop
+        # The identity is never a loop (its key is the empty word).
+        if e == p.start or mult[e][e] != e:
             continue
         for s in range(n):
-            if mult[s][e] == s and member(Lasso(p.rep[s], loop)):
+            # The keyed lasso rep(s).rep(e)^omega — the same bit the pair
+            # legality scan cached, so this fill replays evidence.
+            if mult[s][e] == s and member(Lasso(p.rep[s], p.rep[e])):
                 accept.add((s, e))
 
     return canonicalize(ab, p.start, letter_class, mult, accept)

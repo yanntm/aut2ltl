@@ -1,7 +1,12 @@
 """The main learning loop: drive the teacher until the belief is certified.
 
+    probe                  -- bootstrap: each letter's omega-power into the
+                              evidence, shortlex order
     fill; close; consist   -- to a closed, consistent fixpoint
-    saturate               -- the two-sided-congruence sweep (restart on a split)
+    saturate               -- stamp legality: the two-sided-congruence sweep
+                              (restart on a split)
+    pairs                  -- pair legality: P saturated under conjugacy
+                              (a violation is refereed and chained; restart)
     export                 -- the belief: the table's invariant, canonicalized
     replay                 -- the belief against the evidence, query-free;
                               a contradiction is a discordant lasso with the
@@ -10,9 +15,10 @@
       Equivalent     -> the belief is I(L); stop
       Counterexample -> process (chains) and restart
 
-The equivalence query is posed only at quiescence: the belief contradicts no
-bit of evidence — every lasso ever queried, under any presentation, is
-predicted with the teacher's own answer.
+The equivalence query is posed only at quiescence — the normal form: closed
+and consistent, a genuine morphism, a saturated pair layer, and coherent with
+every bit of evidence (every lasso ever queried, under any presentation, is
+predicted with the teacher's own answer).
 
 The hypothesis shipped to every equivalence query is an `Invariant` — a
 well-formed algebraic object, never a bare classifier. Exporting it is legal
@@ -37,10 +43,11 @@ from sosl.contract import Counterexample, Equivalent, Teacher
 from sosl.learn.chains import process_counterexample
 from sosl.learn.columns import LinCol, OmCol
 from sosl.learn.export import export
+from sosl.learn.pairs import saturation_violation
 from sosl.learn.partition import Partition
 from sosl.learn.saturate import saturate
 from sosl.learn.table import Table
-from sosl.sos.alphabet import Alphabet
+from sosl.sos.alphabet import EMPTY, Alphabet
 from sosl.sos.invariant import Invariant
 from sosl.sos.lasso import Lasso
 from sosl.trace import TRACE_ON, trace
@@ -104,6 +111,11 @@ def learn(
     count, membership queries, equivalence queries, counterexamples, saturation
     escalations)."""
     table = Table(alphabet, teacher.member)
+    # Bootstrap probe sweep (the last a-priori experimentation): each letter's
+    # omega-power into the evidence, shortlex order; the coherence replay
+    # below converts any discordance among these opening bits into a split.
+    for a in alphabet.letters():
+        table.query_lasso(Lasso(EMPTY, (a,)))
     n_equiv = 0
     n_cex = 0
     n_sat = 0
@@ -116,7 +128,17 @@ def learn(
                 trace("LEARN", f"saturation escalation {n_sat}: "
                       f"cols={len(table.columns)} classes(pre-split)={p.n}")
             continue
-        # The sweep just certified a two-sided congruence: the belief exists.
+        # Pair legality: P saturated under conjugacy; a violation is a
+        # refereed discordance, chained like any other.
+        viol = saturation_violation(table, p)
+        if viol is not None:
+            n_sat += 1
+            if TRACE_ON:
+                trace("LEARN", f"pair escalation: stem={viol.stem} "
+                      f"loop={viol.loop}")
+            process_counterexample(table, p, viol)
+            continue
+        # Both legality checks clean: the belief exists.
         belief = export(p, table.query_lasso, check=False)
         dis = _evidence_discordance(table, belief)
         if dis is not None:
