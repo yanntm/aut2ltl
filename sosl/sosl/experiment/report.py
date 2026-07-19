@@ -76,8 +76,8 @@ def e0_report(campaign: CampaignResult) -> str:
     reason = e0_gate(campaign)
     if reason is None:
         lines.append("**E0 gate: PASS** — zero failures, zero budget overruns, "
-                     "zero crashes; the permanent specimens certify ACCEPTOR_ONLY "
-                     "under no-saturation (spec §9 P4/F5).")
+                     "zero crashes; every named case learns the canonical "
+                     "invariant byte-equal to its reference.")
     else:
         lines.append(f"**E0 gate: FAIL** — {reason}.")
     lines.append("")
