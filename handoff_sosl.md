@@ -9,8 +9,8 @@ carries **current work items + pointers only**, no history.
 1. `sosl/sosl/learn/algorithm.md` — the learner, normative for engineering:
    state, the four-constraint normal form, bootstrap, pinned orders,
    counting conventions. Read first, with `sosl/sosl/README.md` for the map.
-2. `research_notes/sos_learning2.md` — the paper (edit the parts in
-   `research_notes/sos_learning2/`, then `make`); §3–§5 is the theory the
+2. `research_notes/sos_learning.md` — the paper (edit the parts in
+   `research_notes/sos_learning/`, then `make`); §3–§5 is the theory the
    code transcribes.
 3. `research_notes/sos_learning_report.md` — the report. Current; its protocol
    notes govern how the numbers may be quoted.

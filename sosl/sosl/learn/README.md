@@ -42,4 +42,4 @@ would let automaton structure leak into a "learned" result.
 
 `algorithm.md` — the learner algorithm proper: the state, the four-constraint
 normal form, the chain, the bootstrap, the pinned orders, and the counting
-conventions. The theory is the paper, `research_notes/sos_learning2.md` §3–§5.
+conventions. The theory is the paper, `research_notes/sos_learning.md` §3–§5.

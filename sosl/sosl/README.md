@@ -16,7 +16,7 @@ The design discipline: **the learner never poses a hypothesis that is not a
 language.** Every equivalence query ships a well-formed `Invariant` — the
 canonical form of the learner's current belief language — and the certified
 limit is `I(L)`, byte-equal to the reference construction. The theory is
-`research_notes/sos_learning2.md`.
+`research_notes/sos_learning.md`.
 
 This is a distinct tool from `aut2ltl`. It reuses some of `aut2ltl`'s
 primitives (HOA loading, the definability pipeline) but its intent is

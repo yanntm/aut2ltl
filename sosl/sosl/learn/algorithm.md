@@ -2,7 +2,7 @@
 
 Dev-facing: the learner's state, the normal form it maintains, the procedures
 that repair it, and the pinned orders that make runs reproducible. The theory
-is the paper (`research_notes/sos_learning2.md`, §3–§5); this file is the
+is the paper (`research_notes/sos_learning.md`, §3–§5); this file is the
 working description the implementation follows.
 
 The design in one sentence: **the learner never poses a hypothesis that is not
