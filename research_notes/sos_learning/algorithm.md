@@ -2,7 +2,7 @@
 
 Editors' note, not paper text. This file is the self-contained statement of
 the algorithm and its design decisions: read it, then the assembled paper
-(`../sos_learning2.md`), and you have the whole thread — no other document
+(`../sos_learning.md`), and you have the whole thread — no other document
 is needed.
 
 ## The one-sentence design

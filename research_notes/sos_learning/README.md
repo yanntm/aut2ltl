@@ -1,53 +1,54 @@
-# sos_learning — Learning the Syntactic ω-Semigroup (paper folder)
+# sos_learning — *Learning the Syntactic ω-Semigroup*
 
-Working draft of the learning paper, split per section. `make` assembles the
-parts into the single-file paper [`../sos_learning.md`](../sos_learning.md) —
-that file is a **build artifact**, do not edit it by hand; edit the parts here
-and re-run `make`. (The assembler strips one `../` from figure paths.)
+The learning paper, built on the vocabulary of the core paper
+(`../sos_core.md`, cited [SωS26]). Self-contained: this folder plus the
+core paper is the whole thread.
 
-The paper stands on the core paper ([`../sos_core.md`](../sos_core.md)), cited
-as **[SωS26]**: prior literature from this paper's point of view. §2.2
-reproduces, in [SωS26]'s notation, exactly the definitions and statements the
-learner consumes; everything else cites pinpoints (Theorem I, Lemma 4.1,
-Lemma 4.3, Cor 4.2, Thm 6.1 — never Theorem II, by design). The spec and
-report companions are [`../sos_learning_spec.md`](../sos_learning_spec.md) and
-[`../sos_learning_report.md`](../sos_learning_report.md).
+- `algorithm.md` — the design in brief: the legal-learner discipline, the
+  split mechanism, why it converges, why it is necessary, and the pending
+  engineering deltas (code refactor + census regeneration). **Read first.**
+- `s0_front.md … s8_end.md`, `bib.md` — the paper parts, assembled by
+  `make` into `../sos_learning.md` (do not edit the assembled file).
+- Figures are referenced from `../sos_figs/` and `../sos_core_figs/`
+  (shared figure folders; the `sosl_*` images are the learner-side
+  frames).
 
-## Reading order / status
+Status: full shadow draft. The theory sections (§3–§6) are current; the
+evaluation numbers in `s7_eval.md` were measured with the pre-reboot
+pipeline and carry a status note — regeneration is item 5 of
+`algorithm.md`'s engineering deltas. Notation: learner's mid-run classes
+`⟨u⟩`, syntactic classes `[u]`, keys `u_c`, letter action `c·w`; no
+`fold`/`rep` vocabulary.
 
-| File | Content |
-|---|---|
-| [`s0_front.md`](s0_front.md) | title, abstract, §1 introduction + contributions + relation to [US20] |
-| [`s2a_mat.md`](s2a_mat.md) | §2 opening + §2.1 active learning in the MAT model |
-| [`s2b_algebra.md`](s2b_algebra.md) | §2.2 the syntactic ω-semigroup as an invariant — the [SωS26] recall |
-| [`s2c_examples.md`](s2c_examples.md) | §2.3 running examples + stall specimens (Figs 1–3) + the teacher |
-| [`s3_table.md`](s3_table.md) | §3 observation table, Cayley hypothesis, prediction (Tables 1–2) |
-| [`s4a_harvest.md`](s4a_harvest.md) | §4.1 the harvest (Lemmas 4.1–4.2, Theorem 4.3, Table 3) |
-| [`s4b_gap.md`](s4b_gap.md) | §4.2 the gap: the permanent stall (Proposition 4.4) |
-| [`s4c_sweep.md`](s4c_sweep.md) | §4.3 left-saturation (Lemma 4.5, Props 4.6–4.8, Tables 4–6, the loop) |
-| [`s5_correctness.md`](s5_correctness.md) | §5 Theorems 5.1/5.3, Lemma 5.2, Props 5.4–5.5, Tables 7–8 |
-| [`s6_experiments.md`](s6_experiments.md) | §6 evaluation, from the committed census record |
-| [`s6_eval.md`](s6_eval.md) | superseded §6 draft — **not assembled** |
-| [`s7_end.md`](s7_end.md) | §7 related work, §8 conclusion |
-| [`bib.md`](bib.md) | bibliography |
-| [`notation.md`](notation.md) | notation conventions (editors' note, not paper text) |
+Restructure in progress: §4 is rebuilt around the *alignment* primitive
+(two signals — concordant bits confirm, discordant bits align; one
+substitution-chain lemma serving all discordance sources; EQ as the
+delegated discordance search, assent the exit). The wired sources are
+`s4a_align.md` (preamble, chain, Theorem 4.2), `s4b_escalate.md`
+(legality escalations), `s4c_life.md` (align assembled,
+prefix-independence, bootstrap + alternation). `s4a_reap.md` and
+`s4b_sow.md` are the superseded §4 sources, unwired but kept until the
+cross-reference sweep. Bootstrap is reformulated (§4.5): the learner
+opens on `R = {ε}` with *no columns*; the first query (the promoted
+letter's ω-power, via the `P`-fill) decides `∅` vs `Σ^ω`; the remaining
+letters' ω-powers are probes through the general align path — every
+column of every run is minted, none seeded. The worked tables in §3–§4
+are still transcripts of the seeded-column pipeline; hand-derived
+expectations under the new bootstrap go into the engineering spec (to
+be written), and the tables follow the regenerated record.
 
-## Conventions
-
-- Notation is [SωS26]'s, wholesale: invariant `𝓘 = ⟨𝒮, P⟩`, stamp
-  `𝒮 : Σ⁺ → 𝒞` finitely presented by `(𝒞, λ, ·)`, fresh identity `[ε]`,
-  completion `M = 𝒞 ∪ {[ε]}`, idempotent power `c^π`, linked pairs, pair set.
-  `N` counts classes identity included (the serialization's `classes:` line).
-  The learner's own objects keep their names: table `T`, fold `ψ`, class set
-  `𝒞_T`, `step`, `rep`/`w_c`. See `notation.md`.
-- Numbering: per-type counters scoped per section (Lemma 4.1 here is the stem
-  harvest; the rotation lemma is always cited as [SωS26, Lem 4.1] — the key
-  disambiguates). Cross-references name+number so they survive edits.
-- Figures are **borrowed, not copied**: automata from
-  [`../sos_figs/img/`](../sos_figs/) and invariant drawings from
-  [`../sos_core_figs/img/`](../sos_core_figs/) — both machine-generated by
-  their scripts; parts reference them with a leading `../`.
-- The two live traces (`Even`, `EvenBlocks`) run **inline** through §3–§5 as
-  numbered tables; no transverse example pages.
-- Every §6 number traces to `reference/census/` and `reference/campaigns/`
-  via `../sos_learning_report.md`.
+§4.3 is now functional: state = evidence (the cache of witnessed bits);
+belief = fixpoint of repair under a four-constraint normal form
+(closed/consistent, morphism, saturated, evidence-coherent); align =
+that fixpoint seeded with one discordant lasso. Evidence coherence is a
+*fourth* constraint, adopted (query-free check, violations are free
+discordances). Theory obligations opened by this recast: (1) confluence
+— the fixpoint *belief* is independent of the pinned resolution order
+(the trace is not); (2) whether morphism + saturation already imply
+evidence coherence, or it is a strict strengthening (adopted either
+way). §5's proofs and the spec must eventually account for both. Known-stale until that sweep: §5–§7 cite the old
+§4 numbering — map: old L4.1+L4.2+T4.3 → L4.1 (chain) + T4.2 (split);
+L4.4 → L4.3; L4.5 → L4.4; P4.6 → P4.5; C4.7 → C4.6; L4.8 → L4.7 — and
+the retired reap/sow–harvest vocabulary. §5 is slated for dissolution by
+redistribution (legality → §3.2, termination/no-false-assent → end of
+§4, complexity itemization → §7.2, FDFA size proposition → §7.4).

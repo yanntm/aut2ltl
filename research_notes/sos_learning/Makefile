@@ -3,8 +3,8 @@
 #   make            # (re)build ../sos_learning.md from the parts below
 #   make clean      # remove the assembled file
 #
-# Only the parts listed in PARTS are paper text; README.md and notation.md are
-# editors' notes and stay out. The parts live in this folder and reference
+# Only the parts listed in PARTS are paper text; README.md and algorithm.md
+# are editors' notes and stay out. The parts live in this folder and reference
 # figures as ../sos_figs/... and ../sos_core_figs/...; the assembled file sits
 # one level up (research_notes/), so ASM strips exactly one leading ../ from
 # link and img-src targets.
@@ -16,13 +16,14 @@ PARTS := \
 	s2a_mat.md \
 	s2b_algebra.md \
 	s2c_examples.md \
-	s3_table.md \
-	s4a_harvest.md \
-	s4b_gap.md \
-	s4c_sweep.md \
+	s3_state.md \
+	s4a_align.md \
+	s4b_escalate.md \
+	s4c_life.md \
 	s5_correctness.md \
-	s6_experiments.md \
-	s7_end.md \
+	s6_boundary.md \
+	s7_eval.md \
+	s8_end.md \
 	bib.md
 
 # One-level-up path fix for links and image sources.

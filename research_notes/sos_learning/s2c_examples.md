@@ -1,8 +1,7 @@
 ### 2.3 The running examples, and the teacher
 
-For the reader who wants to check every
-bit below by hand, here are the running examples — descriptions and automata
-reproduced from [SωS26]:
+For the reader who wants to check every bit below by hand, here are the
+running examples — descriptions and automata reproduced from [SωS26]:
 
 - **`GF(aa) := GF(a ∧ Xa)`** — "infinitely many `aa`-factors." It *is* LTL, but a
   natural presentation encodes the letter `a` as a transposition, so its transition
@@ -59,60 +58,26 @@ self-loop carrying every class. These drawings are the paper's answer key:
 the learner reconstructs each of them, byte for byte, from lasso queries
 alone — the automata of Figure 1 stay on the teacher's side of the wall.
 
-**The stall specimens.** Two more examples run against the grain of the three
-above, and were *searched for* rather than chosen: the smallest languages, by
-class count, that we could find — by exhaustive enumeration of the smallest
-automaton shapes — on which a learner without the saturation sweep of §4.3
-fails *permanently*. Both are two-letter LTL formulas, simpler than the
-classical trivial-right-congruence example `FG(a ∨ Xa)` [AF21]:
-
-- **`a → Xa`** — if the first letter is `a`, so is the second. A safety
-  language, LTL-definable; `N = 5`, and its algebra carries *two* accepting
-  idempotents, `[b]` and `[aa]` — right-indistinguishable, separated only by
-  the left context `a`, and that is the trap (§4.2).
-- **`a ∧ XG¬a`** — the language of the single ω-word `a·b^ω`;
-  `N = 4`. The same trap one step deeper: the canonical `[b·a]` is separated
-  from `[b]` only from the left.
-
-<table>
-<tr>
-<td align="center"><img src="../sos_figs/img/a_implies_xa.png" alt="a implies Xa automaton" width="260"></td>
-<td align="center"><img src="../sos_figs/img/a_once.png" alt="a and XG not a automaton" width="260"></td>
-</tr>
-<tr>
-<td align="center"><b>(a) <code>a → Xa</code></b><br>4 states, <code>Inf(0)</code> (Büchi).</td>
-<td align="center"><b>(b) <code>a ∧ XG¬a</code></b><br>3 states, <code>Inf(0)</code> (Büchi).</td>
-</tr>
-<tr>
-<td align="center"><img src="../sos_core_figs/img/a_implies_xa_pairs.png" alt="a implies Xa syntactic invariant" width="260"></td>
-<td align="center"><img src="../sos_core_figs/img/a_once_pairs.png" alt="a once syntactic invariant" width="260"></td>
-</tr>
-<tr>
-<td align="center"><b>(c) <code>𝓘(a → Xa)</code></b>, <code>N = 5</code>.<br>Both committed-in stems <code>[b]</code>, <code>[aa]</code><br>accept with every idempotent loop —<br>six pairs, two stems the stall merges.</td>
-<td align="center"><b>(d) <code>𝓘(a ∧ XG¬a)</code></b>, <code>N = 4</code>.<br>A single accepting pair <code>([a],[b])</code> —<br>the one lasso the language contains.</td>
-</tr>
-</table>
-
-**Figure 3.** The stall specimens: teacher automata (top, edge labels in
-the tool's letters) and target invariants (bottom), drawn with Figure 2's
-conventions. §4.2 proves the saturation-free
-learner stops one class short of each target, certified by an exact oracle.
+Two further two-letter specimens, `a → Xa` and `a ∧ XG¬a`, enter with the
+boundary result (§6, Figure 4).
 
 **The query model, instantiated.** The MAT teacher of §2.1, for this paper:
 membership queries are lassos (`u·v^ω ∈ L`?); equivalence queries take a
-hypothesis `𝓗` (an invariant-shaped tuple, §3) and return a lasso
-counterexample on failure. The restriction to ultimately-periodic words costs
-nothing — lassos determine `L` (§2.2) — and every query the algorithm ever
-poses is one.
+hypothesis — which, by the discipline of §3, is always a well-formed
+invariant — and return a lasso counterexample on failure. The restriction to
+ultimately-periodic words costs nothing — lassos determine `L` (§2.2) — and
+every query the algorithm ever poses is one.
 
 In our experiments the teacher is built on the construction of [SωS26]:
 membership is one deterministic run, and an equivalence query is decided
 *exactly*, against the language's own invariant `𝓘(L)` — constructed once,
-after which the automaton leaves the equivalence loop. The realization — an
-align-and-scan of the hypothesis against `𝓘(L)`, with a functionality guard
-and a fallback — is detailed with the experimental protocol (§6.1); two of
-its properties are used before then. The returned counterexample is the
-globally *minimal* one (shortest stem, then shortest loop, then shortlex) —
-which makes runs deterministic and the worked examples reproducible; §6
-measures what non-minimal policies cost. And nothing in the learner's
-correctness depends on this realization.
+after which the automaton leaves the equivalence loop. Because hypothesis
+and reference are both genuine invariants, the query is an align-and-scan
+of the *product of the two stamps*: on its reachable pair graph, each cell
+is decided by the one keyed lasso the cell's shortlex keys spell, both
+verdicts factoring through the cell — no further assumption is needed on
+either side. The returned counterexample is the globally *minimal* one
+(shortest stem, then shortest loop, then shortlex), found by BFS on the
+product — which makes runs deterministic and the worked examples
+reproducible; §7 measures what non-minimal policies cost. And nothing in
+the learner's correctness depends on this realization.

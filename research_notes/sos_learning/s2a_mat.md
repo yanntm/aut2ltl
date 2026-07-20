@@ -27,10 +27,11 @@ matches some row's bit-vector) and **consistent** (rows with equal
 bit-vectors have equal one-letter successors) induces a deterministic
 automaton on the row classes — the hypothesis. Each counterexample is
 processed into a new distinguishing experiment that splits at least one row
-class — refinement is *counterexample-guided*, progress arriving exactly when
-the hypothesis is caught being wrong; the binary search of Rivest and Schapire
-[RS93] finds the split with logarithmically many membership queries. §3 will reuse every one of these
-notions, changed only where ω-words force a change.
+class — refinement is *counterexample-guided*, progress arriving exactly
+when the hypothesis is caught being wrong; the binary search of Rivest and
+Schapire [RS93] finds the split with logarithmically many membership
+queries. §3 will reuse every one of these notions, changed only where
+ω-words force a change.
 
 **Why it converges: a canonical target.** The bookkeeping above is not what
 makes L\* work; the Myhill–Nerode theorem is. The right congruence
@@ -55,15 +56,18 @@ are posed on lassos and counterexamples are returned as lassos; this has
 been the standard move since [MP95, FCC+08, AF16]. What breaks is the
 target. Myhill–Nerode fails at ω: the right congruence of an ω-regular `L`
 can be trivial while `L` is complex [AF21], so there is no minimal
-deterministic acceptor to converge to — and the history of ω-learning (§7)
+deterministic acceptor to converge to — and the history of ω-learning (§8)
 is a history of substitute targets: a subclass where the right congruence
 happens to suffice [MP95], encodings into finite words [FCC+08], families
-of DFAs in three competing normal forms [AF16, ABF18]. All are acceptors;
-none is a canonical object of `L` alone. This paper keeps the L\* view and
-changes the target: the canonical object an ω-regular language actually
-owns is the quotient of Arnold's syntactic congruence, materialized as the
-invariant `𝓘(L)` — recalled next — and §§3–5 supply what was missing, a
-query-level route to a *two-sided* congruence.
+of DFAs in three canonical normal forms [AF16, ABF18]. All are acceptors —
+the FDFA forms canonical ones, functions of `L` alone — and what none of
+them is, is the language's *algebra*: no composition, hence no idempotents,
+no power orbits, no definability read-off. This paper keeps the L\* view
+and moves the target to that algebra: the quotient of Arnold's syntactic
+congruence, materialized as the invariant `𝓘(L)` — recalled next — and the
+discipline of §3 is what makes it reachable through queries: the learner's
+beliefs are held to the same standard as the target, well-formed
+invariants throughout.
 
 **Conventions.** One lasso membership query counts as one query; equivalence
 queries are counted separately; all bounds are stated against the size of

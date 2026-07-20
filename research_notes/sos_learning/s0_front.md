@@ -5,8 +5,8 @@
 With significant inputs from
 **Claude (Anthropic)**
 
-*Shadow draft — rev. 2026-07-19. Every §6 figure traces to the committed
-census record via the report companion.*
+*Shadow draft — rev. 2026-07-19. §7's data traces to the committed census
+record; regeneration status in the folder README.*
 
 ## Abstract
 
@@ -15,23 +15,31 @@ algebra: presentation-independent, complete, and the object from which
 membership, equivalence, and every definability property of `L` —
 LTL-definability included — are read. It was recently materialized as a
 computable, serializable invariant `𝓘(L)`, constructed from a deterministic
-automaton [SωS26]. This paper shows the invariant is *learnable*: an
-active-learning algorithm in Angluin's MAT model whose only queries are
-memberships of ultimately-periodic words, and whose limit is `𝓘(L)` itself —
-to our knowledge the first learner for the full ω-regular class whose target
-is a canonical object of the language, rather than an acceptor chosen from a
-family. Counterexamples do half the work: any lasso on which a hypothesis
-errs surrenders a separating table column. The other half they provably
-cannot do: membership's error signal is one-sided, and the learner can
-stabilize on a correct acceptor strictly coarser than the algebra,
-*permanently*, already on a language as plain as `a → Xa` — and such a
-certified stall never carries an algebra at all. What restores two-sidedness
-is a saturation sweep whose checks cost no queries, and with it the fixpoint
-is exactly the syntactic invariant, at output-polynomial query cost. On a
+automaton [SωS26]. This paper shows the invariant is *learnable*, in
+Angluin's MAT model, from lasso membership and equivalence queries alone.
+The design rests on one typing discipline: **the learner never poses a
+hypothesis that is not a language**. Its belief is at all times an
+ω-regular language held in canonical form — every hypothesis it presents is
+a well-formed invariant, the syntactic invariant of its own belief
+language. The discipline pays structurally: a well-formed invariant denotes
+exactly one language, so an exact equivalence oracle can never falsely
+assent, and the permanent stalls that afflict acceptor-typed learners are
+impossible by construction. Keeping the belief legal is cheap: two
+query-free checks — the candidate stamp a genuine morphism, the pair set
+saturated under conjugacy — and every violation is a free progress signal,
+a disagreement the learner catches on its own and converts, by the same
+chain mechanism that processes the teacher's counterexamples, into a
+witnessed class split. The fixpoint is `𝓘(L)` itself, byte-equal to the
+constructed reference, at output-polynomial query cost. Where the boundary
+lies is itself a theorem: a fixpoint that counterexample-guided refinement
+alone certifies is either the canonical algebra already or carries no
+algebra at all — realized on the two-letter implication `a → Xa`, which
+stalls permanently one class short. On a
 complement-closed census of 6222 languages the learner reconstructs every
-syntactic invariant byte-for-byte; half of them stall permanently without
-the sweep; and LTL-definability is read off each learned invariant — a
-question no family of acceptors answers.
+syntactic invariant byte-for-byte; without the legality discipline half of
+them stall permanently; and LTL-definability is read off each learned
+invariant: the aperiodicity check of [SωS26] applied verbatim to the
+learner's output — a decision no current tool derives from an acceptor.
 
 ---
 
@@ -60,9 +68,10 @@ minimal deterministic ω-automaton to converge to, and the history of
 congruence still carries everything [MP95], encodings back into finite words
 [FCC+08], and the standard modern route, *families of DFAs* (FDFAs) in three
 competing canonical forms, the choice among them the learner's [AF16,
-ABF18]. All of these targets are acceptors. None is an object of the
-language alone, and none answers a definability question without further
-construction.
+ABF18]. All of these targets are acceptors. The canonical FDFA forms are
+even functions of the language alone — but each is a *family* of
+one-slot acceptors: none carries the language's algebra, and none answers
+a definability question without further construction.
 
 Yet the canonical object exists. Arnold's syntactic congruence [Arn85]
 quotients finite words by interchangeability in every lasso context — in
@@ -70,54 +79,76 @@ the stem, or inside the loop — and its quotient, the syntactic ω-semigroup,
 is the exact ω-analogue of the syntactic monoid. It was recently
 materialized as the invariant `𝓘(L)`: a finite classifier of finite words
 plus a set of accepting stem–loop pairs, serialized to a byte-canonical
-file, constructed from a deterministic automaton [SωS26]. The key step there
-is a *rotation lemma*: carrying a factor from a loop's front onto the stem
-leaves the infinite word unchanged — a left extension of a loop is nothing
-but a rotation of it.
+file [SωS26]. Two results of that construction matter here beyond the
+object itself. A *rotation lemma* — carrying a factor from a loop's front
+onto the stem leaves the infinite word unchanged — turns every left demand
+of the two-sided congruence into a right computation. And a
+*canonicalization theorem* carries every well-formed invariant, however
+obtained, onto the syntactic invariant of its own language, by partition
+refinement on its own table. [SωS26]'s larger case is that the invariant,
+rather than any automaton, can serve as the unit of discourse for
+ω-regular languages — identity, complement, classification as facts of one
+file; this paper is that program's learning instance.
 
-This paper shows the same object is learnable, and by the same lemma — which
-is not about automata at all. Transported to the query model it splits in
-two. One half turns any lasso the hypothesis gets wrong into a new column of
-the table: counterexamples pay their way, as they do in L\*. The other half
-turns left contexts — the two-sided congruence's whole difficulty — into a
-sweep of table checks that cost no queries at all.
+This paper shows the same object is learnable, and its design can be said
+in one sentence: **the learner never poses a hypothesis that is not a
+language.** Internally it keeps an observation table — rows, two sorts of
+columns matching Arnold's two context shapes, membership bits: the private
+ledger where separations are recorded and open slots tracked. But the table
+is bookkeeping, not belief. Whenever the learner draws a conclusion or
+faces the teacher, it first certifies that its table presents a legal
+algebraic object — two query-free checks: the candidate classifier is a
+genuine semigroup morphism, and the acceptance pairs are saturated under
+conjugacy — and then holds that object in canonical form. What the teacher
+sees, every time, is a *well-formed invariant*: the syntactic invariant of
+the learner's current belief language.
 
-That sweep is not an optimization, and its necessity is the paper's central
-finding — one we did not anticipate. Membership queries can only catch a
-hypothesis that mispredicts some lasso, and that error signal is one-sided:
-the learner can stabilize on a correct *acceptor* strictly coarser than the
-algebra, every prediction right, the equivalence oracle assenting —
-permanently. The stall is not exotic. We searched for the smallest
-realization and found a two-letter implication: on `a → Xa` the sweep-free
-learner converges, with zero counterexamples, one class short of the
-algebra — and we prove no counterexample can ever arrive. Nor is the result
-merely one class short: a certified stall's classes carry no algebra at
-all. The refinement loop that drives L\* — and every ω-learner since — has
-nothing left to react to; what breaks the stall must be a query the learner
-poses on its own initiative. The sweep is that query, and it closes the gap
-exactly.
+The discipline is not hygiene for its own sake; it is where the learning
+happens. A well-formed invariant denotes exactly one language, so if the
+belief is not yet `L`, some lasso disagrees and an exact equivalence oracle
+must surrender it: false assent is impossible. Each legality violation,
+conversely, is a disagreement the learner catches without the teacher —
+two concrete lassos that its own classes name identically, on which the
+teacher's answers differ — and one chain of membership queries converts it
+into a class split witnessed by a genuine Arnold context. Counterexamples
+and legality violations are processed by the *same* mechanism; the teacher
+is just one of three sources of disagreement, and the cheapest two are
+self-served. Where the self-served queries become indispensable is itself
+a theorem: counterexample-guided refinement alone — the engine of every
+ω-learner to date — reaches acceptors and nothing finer; a fixpoint it
+certifies is either the canonical algebra already or carries no algebra at
+all, stalling permanently already on `a → Xa` (§6). The FDFA line and this
+paper thus draw different consequences from one shared observation [AF21]:
+the field enriches the acceptor family on the near side of that boundary;
+the legality discipline is what crosses it, and the rotation lemma —
+embedded already in the invariant's definitions — is what makes the
+crossing computable.
 
 **Contributions.**
 
-1. A learning algorithm for the syntactic invariant `𝓘(L)` of any ω-regular
-   language — to our knowledge the first: plain lasso membership and
-   equivalence queries, no algebra mid-learning, and a limit byte-equal to
-   what the construction of [SωS26] produces (§3–§4).
-2. A structural finding: counterexample-guided refinement is provably not
-   enough at ω. The learner stalls permanently on languages as simple as
-   `a → Xa`, certified correct as an acceptor yet carrying no algebra; a
-   query-free saturation sweep repairs it, the repaired fixpoint is exactly
-   the syntactic invariant, and the query cost is output-polynomial (§4–§5).
+1. A learning algorithm for the syntactic invariant `𝓘(L)` of any
+   ω-regular language — to our knowledge the first: plain lasso membership
+   and equivalence queries, every hypothesis a well-formed invariant, and a
+   limit byte-equal to what the construction of [SωS26] produces (§3–§4),
+   at output-polynomial query cost (§5).
+2. A typing theorem and a boundary theorem. Legal beliefs make the error
+   signal two-sided: no exact oracle ever falsely assents, and the
+   certified fixpoint is the canonical algebra (§5). The boundary, refining
+   [AF21]'s observation: a fixpoint that counterexample-guided refinement
+   alone certifies is either canonical or carries no algebra at all — its
+   partition is never a congruence — realized already on the two-letter
+   `a → Xa`, before the first counterexample (§6).
 3. Experimental evidence from a complete tool implementation: on a
    complement-closed census of 6222 languages every syntactic invariant is
-   reconstructed byte-for-byte, half the census stalls without the sweep,
-   and a comparison to the state-of-the-art FDFA learner ROLL shows
-   comparable sizes and queries — with LTL-definability read off our result,
-   and not off theirs (§6).
+   reconstructed byte-for-byte; the acceptor-typed relaxation stalls
+   permanently on half of them; a comparison to the state-of-the-art FDFA
+   learner ROLL shows comparable sizes and queries — with LTL-definability
+   read off our result by [SωS26]'s aperiodicity check, a decision
+   currently tooled on no acceptor representation (§7).
 
 The closest prior work, Urbat and Schröder's algebraic automata learning
 [US20], identified the syntactic algebra as the right learnable target for
 ω-regular languages — but obtained no effective algorithm: their instance
 needs infinitely many alphabet letters, one per possible loop, known in
-advance. The rotation lemma supplies the missing finiteness; §7 details the
+advance. The rotation lemma supplies the missing finiteness; §8 details the
 comparison.
