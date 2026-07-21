@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from .diagram import DEBUG, Diagram, Node, Rect, duid, mk
+from .stats import tick
 from .shape import LeafShape, Pair, Shape
 
 _MEET: Dict[Tuple[int, int, int], Diagram] = {}
@@ -38,6 +39,7 @@ def meet(shape: Shape, a: Diagram, b: Diagram) -> Diagram:
     if isinstance(shape, LeafShape):
         r = shape.leaf.meet(a, b)
         return None if shape.leaf.is_empty(r) else r
+    tick("node.meet")
     key = (shape.uid, duid(shape, a), duid(shape, b))
     got = _MEET.get(key)
     if got is not None or key in _MEET:
@@ -70,6 +72,7 @@ def join(shape: Shape, a: Diagram, b: Diagram) -> Diagram:
         return a
     if isinstance(shape, LeafShape):
         return shape.leaf.join(a, b)
+    tick("node.join")
     key = (shape.uid, duid(shape, a), duid(shape, b))
     got = _JOIN.get(key)
     if got is not None or key in _JOIN:
@@ -94,6 +97,7 @@ def diff(shape: Shape, a: Diagram, b: Diagram) -> Diagram:
     if isinstance(shape, LeafShape):
         r = shape.leaf.diff(a, b)
         return None if shape.leaf.is_empty(r) else r
+    tick("node.diff")
     key = (shape.uid, duid(shape, a), duid(shape, b))
     got = _DIFF.get(key)
     if got is not None or key in _DIFF:
@@ -129,6 +133,7 @@ def normalize(shape: Pair, rectangles: Sequence[Rect]) -> Optional[Node]:
     Incremental insertion into a maintained disjoint partition — not the
     sign-pattern cell enumeration, which is exponential for the same result.
     """
+    tick("node.normalize")
     head, tail = shape.head, shape.tail
     cells: List[Rect] = []
     for p, s in rectangles:

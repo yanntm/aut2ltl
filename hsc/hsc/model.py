@@ -8,11 +8,15 @@ from __future__ import annotations
 
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
+from .core import expr as E
 from .core.algebra import count, join, size
+from .core.branch import Case, Guard, Put
 from .core.combinators import ID, compose, star, sum_of
 from .core.diagram import Diagram, Node
 from .core.hom import Hom
+from .core.expr import Expr
 from .core.local import Assign, Filter
+from .core.query import split_equiv, theta
 from .core.shape import LeafShape, Pair, Path, Shape, leaf_shape, pair, paths_of
 from .leaves.enum import EnumLeaf
 
@@ -71,8 +75,49 @@ class Model:
             )
         )
 
+    def guard(self, e: Expr) -> Hom:
+        """A predicate over any number of coordinates. Over one coordinate
+        prefer `keep`, which does not travel."""
+        return Guard(e)
+
+    def put(self, name: str, e: Expr) -> Hom:
+        """`assign(name := e)`: a computed write."""
+        return Put(self.paths[name], e)
+
+    def case(self, e: Expr, branches: Dict[Any, Hom], default: Optional[Hom] = None) -> Hom:
+        """Data-dependent control. Branches are invoked once per congruence
+        class, and only for letters the data actually realises."""
+        return Case(e, tuple(sorted(branches.items(), key=lambda kv: repr(kv[0]))), default)
+
     def apply(self, h: Hom, d: Diagram) -> Diagram:
         return h(self.shape, d)
+
+    # ---- the quotient constructor -------------------------------------
+    def theta(self, d: Diagram, e: Expr) -> Dict[Any, Diagram]:
+        """Discovered letter -> the part of `d` it classifies."""
+        return theta(self.shape, d, e)
+
+    def alphabet(self, d: Diagram, e: Expr) -> List[Any]:
+        return sorted(self.theta(d, e), key=repr)
+
+    def residuals_at(self, d: Diagram, e: Expr, name: str) -> List[Any]:
+        """The distinct residual codes `e` curries to at leaf `name` -- the
+        first factor of the cost model, isolated and countable."""
+        code = self._leaf_code(self.shape, d, self.paths[name])
+        return sorted(self.leaves[name].split_equiv(code, e), key=repr)
+
+    def _leaf_code(self, shape: Shape, d: Diagram, path: Path) -> Any:
+        """The union of everything realised at `path`. A shadow convenience:
+        the kernel never needs it."""
+        if isinstance(shape, LeafShape):
+            return d
+        assert isinstance(shape, Pair)
+        out = None
+        for p, s in d.pairs:
+            child = self._leaf_code(shape.head, p, path[1:]) if path[0] == 0 else \
+                    self._leaf_code(shape.tail, s, path[1:])
+            out = child if out is None else self.leaves[shape.at(path).name].join(out, child)
+        return out
 
     # ---- measurement --------------------------------------------------
     def size(self, d: Diagram) -> Dict[int, int]:

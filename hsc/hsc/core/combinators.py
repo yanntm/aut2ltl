@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Tuple
 
 from .algebra import join
+from .stats import tick
 from .diagram import Diagram
 from .hom import Hom
 from .shape import Shape
@@ -21,6 +22,12 @@ class Identity(Hom):
     def _apply(self, shape: Shape, d: Diagram) -> Diagram:
         return d
 
+    def support(self):
+        return frozenset()
+
+    def rerooted(self, bit: int) -> "Identity":
+        return self
+
 
 ID = Identity()
 
@@ -30,6 +37,12 @@ class Compose(Hom):
     """`Compose(f_k, ..., f_1)` applies right to left, like the document's `o`."""
 
     terms: Tuple[Hom, ...]
+
+    def support(self):
+        return frozenset().union(*[t.support() for t in self.terms])
+
+    def rerooted(self, bit: int) -> Hom:
+        return type(self)(tuple(t.rerooted(bit) for t in self.terms))
 
     def _apply(self, shape: Shape, d: Diagram) -> Diagram:
         out = d
@@ -45,6 +58,12 @@ class Sum(Hom):
     """Nondeterministic choice: the join of the branches' results."""
 
     terms: Tuple[Hom, ...]
+
+    def support(self):
+        return frozenset().union(*[t.support() for t in self.terms])
+
+    def rerooted(self, bit: int) -> Hom:
+        return type(self)(tuple(t.rerooted(bit) for t in self.terms))
 
     def _apply(self, shape: Shape, d: Diagram) -> Diagram:
         out: Diagram = None
@@ -66,6 +85,7 @@ class Star(Hom):
     def _apply(self, shape: Shape, d: Diagram) -> Diagram:
         cur = d
         while True:
+            tick("node.star_round")
             nxt = join(shape, cur, self.term(shape, cur))
             if nxt is cur:
                 return cur

@@ -13,23 +13,11 @@ from __future__ import annotations
 from typing import Any, Dict, FrozenSet, Iterable, Tuple
 
 from ..core.leaf import Leaf
+from ..core.stats import bill, reset, tick as _tick
 
 Code = FrozenSet[Any]
 
-COUNTERS: Dict[str, int] = {}
-
-
-def _tick(name: str) -> None:
-    COUNTERS[name] = COUNTERS.get(name, 0) + 1
-
-
-def bill() -> Dict[str, int]:
-    """Leaf-call counters since the last reset."""
-    return dict(COUNTERS)
-
-
-def reset_bill() -> None:
-    COUNTERS.clear()
+reset_bill = reset
 
 
 class EnumLeaf(Leaf):
@@ -70,6 +58,17 @@ class EnumLeaf(Leaf):
     def complement(self, a: Code) -> Code:
         _tick(f"{self.name}.complement")
         return self._top - a
+
+    # ---- the partition primitive
+    def split_equiv(self, a: Code, expr: Any) -> Dict[Any, Code]:
+        """Partition by the residual of `expr` after substituting this leaf's
+        coordinate. Enumerating the carrier is legal and is what this leaf
+        does; a leaf earns its keep by not doing that."""
+        _tick(f"{self.name}.split_equiv")
+        groups: Dict[Any, set] = {}
+        for v in a:
+            groups.setdefault(expr.subst(self.name, v), set()).add(v)
+        return {r: frozenset(vs) for r, vs in groups.items()}
 
     # ---- shadow
     def elements(self, a: Code) -> Iterable[Any]:

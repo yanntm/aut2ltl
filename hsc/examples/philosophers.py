@@ -18,7 +18,7 @@ from typing import Any, Dict, List, Tuple
 from hsc import Model, compose, enum, star, sum_of
 from hsc.core.algebra import diff, join
 from hsc.core.hom import Hom
-from hsc.leaves.enum import bill, reset_bill
+from hsc.core.stats import bill, reset, summary
 
 FREE, TK = "free", "tk"
 THINK, HOLD, EAT = "T", "HL", "E"
@@ -80,9 +80,9 @@ def run(n: int) -> None:
     rs = rules(m, n)
     step = sum_of(*[r for _, _, r in rs])
 
-    reset_bill()
+    reset()
     x = m.apply(star(step), initial(m, n))
-    invoice = bill()
+    invoice = summary()
 
     dead = deadlocked(m, rs, x)
     print(f"--- {n} philosophers ---")
@@ -91,7 +91,7 @@ def run(n: int) -> None:
     print("primes at top cut :", m.root_primes(x))
     print("total primes      :", sum(m.size(x).values()))
     print("deadlocked words  :", m.count(dead))
-    print("leaf calls (star) :", sum(invoice.values()))
+    print("ops during star   :", invoice)
     if n == 4:
         allhold = m.word(**{f"F{i}": TK for i in range(1, 5)},
                          **{f"S{i}": HOLD for i in range(1, 5)})

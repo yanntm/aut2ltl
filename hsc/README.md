@@ -35,13 +35,16 @@ Deliberate simplifying assumptions, each one a named place to grow:
 |---|---|---|
 | Boolean coefficients only | subs are diagrams, never weighted maps | a `Semiring` instance on the sub position |
 | no `Unit` shape | shapes are `Leaf \| Pair`; no data at the point | adding `Unit` to `shape.py` |
-| guards are single-variable | `filter(a<b)` cannot be written | `split_equiv` (see `algorithm.md` §6) |
-| assigns write constants | `assign(a := b+1)` cannot be written | `split_equiv` |
-| no `split_equiv` yet | no `Θ`, no `case`, no discovered alphabets | the next milestone |
-| no term/classifier language | homs are Python objects | the s-expression surface, later |
+| `Star` is plain BFS | fixpoint cost is rounds x events x |X|, not O(representation) | saturation, using `Hom.support()` |
+| `support()` is static | over-approximates for indexed access (`tab[x]`) | a dynamic, minimal `skip` |
+| no semantic merge in `split_equiv` | weak leaf normalisation costs subqueries it could recover | Mechanism 9.3 step 3 |
+| no term-level normal form | operation terms do not dedupe; their applications do | obligation (v) |
+| no s-expression surface | models are built in Python | later, once the classifier seam settles |
 
 What *does* run end to end: shapes with composite heads (so Theorem 6.4's
 internalization is exercised from the first line), the canonical
 decomposition, the full support algebra (meet/join/relative difference,
 no top anywhere), filters, parallel constant assigns, sum, and star —
-enough to compute reachable sets and inspect their congruence towers.
+enough to compute reachable sets and inspect their congruence towers; and
+`split_equiv` with its callers -- multi-variable guards, computed assigns,
+`case`, and the quotient constructor with discovered alphabets.

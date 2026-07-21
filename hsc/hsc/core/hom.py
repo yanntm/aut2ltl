@@ -12,12 +12,12 @@ restored after each action rather than assumed to be preserved by it.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, FrozenSet, Tuple
 
 from .diagram import Diagram, duid
-from .shape import Shape
+from .shape import Path, Shape
 
-_APPLY: Dict[Tuple[int, int, int], Diagram] = {}
+_APPLY: Dict[Any, Diagram] = {}
 
 
 def clear_cache() -> None:
@@ -30,7 +30,7 @@ class Hom:
     def __call__(self, shape: Shape, d: Diagram) -> Diagram:
         if d is None:
             return None  # composition is 0-strict
-        key = (id(type(self)) ^ hash(self), shape.uid, duid(shape, d))
+        key = ((type(self).__name__, self), shape.uid, duid(shape, d))
         got = _APPLY.get(key)
         if got is not None or key in _APPLY:
             return got
@@ -39,6 +39,19 @@ class Hom:
         return out
 
     def _apply(self, shape: Shape, d: Diagram) -> Diagram:
+        raise NotImplementedError
+
+    def support(self) -> "FrozenSet[Path]":
+        """The frontier positions this term reads or writes.
+
+        The support decides the lowest cut at which the term can act, which
+        is the only thing a schedule needs to know about it."""
+        raise NotImplementedError
+
+    def rerooted(self, bit: int) -> "Hom":
+        """The same term seen from one level down, its support paths
+        stripped of a leading `bit`. Defined when every support path starts
+        with that bit -- i.e. when the term lives wholly in that child."""
         raise NotImplementedError
 
     def __mul__(self, other: "Hom") -> "Hom":
