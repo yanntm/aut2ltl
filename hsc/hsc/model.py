@@ -46,6 +46,28 @@ class Model:
         """The singleton diagram at the given assignment of every leaf."""
         return self.cube(**{k: (v,) for k, v in values.items()})
 
+    def rect(self, **codes: Any) -> Diagram:
+        """A rectangle from explicit per-leaf codes, whatever the theory."""
+        missing = set(self.paths) - set(codes)
+        if missing:
+            raise ValueError(f"rect needs every leaf; missing {sorted(missing)}")
+        return self._rect(self.shape, codes)
+
+    def _rect(self, shape: Shape, codes: Dict[str, Any]) -> Diagram:
+        if isinstance(shape, Unit):
+            return ONE
+        if isinstance(shape, LeafShape):
+            code = codes[shape.name]
+            return None if shape.leaf.is_empty(code) else code
+        assert isinstance(shape, Pair)
+        h = self._rect(shape.head, codes)
+        t = self._rect(shape.tail, codes)
+        if h is None or t is None:
+            return None
+        from .core.diagram import mk
+
+        return mk(shape, ((h, t),))
+
     def cube(self, **sets: Any) -> Diagram:
         """A rectangle: independently, each named leaf ranges over its set."""
         missing = set(self.paths) - set(sets)

@@ -108,6 +108,33 @@ class Write(_Descending):
 
 
 @dataclass(frozen=True)
+class Act(_Descending):
+    """Apply a map the leaf exports, at one position.
+
+    `Write` is the special case whose map is a constant. A leaf whose
+    carrier is structured -- a block of bits, a bounded integer -- writes
+    part of its state and keeps the rest, which is a leaf-exported map and
+    not a constant, so the general form is the one an assign needs."""
+
+    path: Path
+    op: Any
+
+    def _at_leaf(self, shape: LeafShape, code: Any) -> Diagram:
+        r = shape.leaf.act(code, self.op)
+        return None if shape.leaf.is_empty(r) else r
+
+    def _below(self) -> "Act":
+        return Act(self.path[1:], self.op)
+
+    def support(self):
+        return frozenset((self.path,))
+
+    def rerooted(self, bit: int) -> "Act":
+        assert self.path and self.path[0] == bit
+        return Act(self.path[1:], self.op)
+
+
+@dataclass(frozen=True)
 class Assign(Hom):
     """Parallel assign: write constants at several positions simultaneously.
 

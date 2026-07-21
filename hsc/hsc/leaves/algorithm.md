@@ -69,3 +69,29 @@ redundant subqueries which the kernel merge recovers retroactively.
 | module | carrier | tier | notes |
 |---|---|---|---|
 | `enum.py` | an explicit finite set | B | codes are frozensets; splits by enumeration, which is honest for a finite carrier and is the baseline every other leaf should beat |
+| `bdd.py` | a block of Boolean bits | B | codes are BuDDy BDDs; currified variables shared by every position; `split_equiv` not yet implemented |
+
+## 5. Currified variables
+
+A theory whose codes are relative rather than absolute lets isomorphic
+positions share them. `bdd.py` allocates **one** variable block, indexed from
+the terminal upward, and every leaf of that theory uses it: a local state is
+one node whatever position holds it, and the manager never learns how many
+positions there are.
+
+This is the "no names" discipline, not a space optimisation -- positions are
+paths, and two equal subterms are one object. It is also where the calculus
+parts company with vtree-based decision forms, in which every variable occurs
+at exactly one place and therefore no two positions can share a code.
+
+Measured: dining philosophers over BDD leaves keeps the BuDDy manager at 32
+nodes for 2, 4 and 8 philosophers, while the shape's own tower grows.
+
+## 6. Exported maps
+
+Beyond the support-algebra tiers, a leaf may export *maps* -- the raw
+material for assigns. A structured carrier needs them: writing one bit of a
+block is not a constant, it is `exists bit . code` conjoined with the new
+value, which is the pushforward of a partial assignment and is
+memory-destructive exactly as an assign should be. `ops.local.Act` applies
+one at a position; `Write` is the special case whose map is a constant.
