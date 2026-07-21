@@ -65,6 +65,64 @@ re-implements the traversal.
 
 ---
 
+## 3b. Blocks travel; leaves get soup
+
+*The intended architecture. The code does not do this yet: `Compose`
+currently applies its parts one after another, which is n full traversals of
+the diagram where this design is one.*
+
+**`skip` is compositional.** A composition skips a level exactly when every
+part does, so a block's footprint is derivable from its parts' and a block
+of operations descends **as one object** for as long as it skips. Support is
+not primarily a hint for a schedule; it is what decides how far a
+composition travels before it has to act.
+
+**A block parenthesises at the level it cannot skip**, splitting along the
+two congruence directions: the part acting on the head goes to the *edge*,
+applied to the primes; the part acting on the tail goes *down*, applied to
+the subs; the node rebuilds through `normalize`. This is the node
+materialising its own congruence and deferring the other, seen from the
+operator side instead of the data side.
+
+```
+apply(block, shape, d):
+    if every part skips this shape:  return d                    # travel through
+    if shape is a leaf:              return leaf.apply_local(d, block)
+    split block across the cut -> (edge parts, tail parts, crossing parts)
+    for (p, s) in d.pairs:  p' = apply(edge parts, head, p)
+                            s' = apply(tail parts, tail, s)
+    normalize
+```
+
+Memoised on `(block, shape, diagram)`; the split is cached per
+`(block, shape)`. Single-position homs are the degenerate case, a block of
+one.
+
+**A leaf is handed a maximal local block, not an opcode.** The framework's
+obligation stops at delivering the whole composition whose support lies in
+one leaf; what the leaf does with it is the theory's business. A BDD theory
+fuses guard and update into one relation over interleaved current/next
+variables and applies it with a single relational product; a finite
+enumerated theory simply executes the parts. The normal form for
+compositions is therefore **per theory**, and the framework must not
+prescribe one.
+
+Splitting a block is licensed by parts with disjoint support commuting —
+the same independence partial-order reduction rests on. That is why §4 and
+§5 below are one question and not two: the rules that let a block reorder
+and fuse are the rules that let it split at a cut and travel.
+
+A part whose support *crosses* a cut can go to neither side. That is
+precisely and only where `split_equiv` fires — the genuinely non-Kronecker
+case, a guard or an assign relating coordinates in different leaves. A
+system whose every event is a tensor of local actions never reaches it,
+which is why a Petri-net-like protocol is entirely blocks travelling and
+leaves fusing, with the quotient constructor never invoked. That fragment is
+the declared regime of §11, named there as exactly the one in which `Θ` is
+never invoked.
+
+---
+
 ## 4. Open: the term normal form
 
 The calculus document canonicalises an elementary term to a strictly
