@@ -8,15 +8,14 @@ from __future__ import annotations
 
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
-from .core import expr as E
 from .core.algebra import count, join, size
-from .core.branch import Case, Guard, Put
-from .core.combinators import ID, compose, star, sum_of
+from .ops.branch import Case, Guard, Put
+from .ops.combinators import ID, compose, star, sum_of
 from .core.diagram import ONE, Diagram, Node
-from .core.hom import Hom
-from .core.expr import Expr
-from .core.local import Assign, Filter
-from .core.query import split_equiv, theta
+from .ops.hom import Hom
+from .classify.expr import Expr
+from .ops.local import Assign, Filter
+from .classify.query import theta
 from .core.shape import (
     UNIT, LeafShape, Pair, Path, Shape, Unit, leaf_shape, pair, paths_of,
 )

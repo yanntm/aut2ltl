@@ -1,8 +1,8 @@
 """hsc — Hierarchical Shape Calculus prototype. See ../README.md and ../algorithm.md."""
 
 from .model import Model, enum
-from .core.combinators import ID, compose, star, sum_of
-from .core.expr import (
+from .ops.combinators import ID, compose, star, sum_of
+from .classify.expr import (
     TRUE, FALSE, const, eq, ind, land, lnot, lor, lt, mod, plus, var,
 )
 

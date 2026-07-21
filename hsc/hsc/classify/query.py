@@ -32,13 +32,13 @@ not a code path but what the merge finds when the structure is there.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Tuple
 
-from .algebra import normalize
-from .diagram import Diagram, Node, Rect, duid
+from ..core.algebra import normalize
+from ..core.diagram import Diagram, Node, Rect, duid
 from .expr import Expr
-from .shape import LeafShape, Pair, Shape
-from .stats import tick
+from ..core.shape import LeafShape, Pair, Shape
+from ..core.stats import tick
 
 # kernel identity: (shape, canonical tuple of piece uids) -> kernel id
 _KERNELS: Dict[Tuple[int, Tuple[int, ...]], int] = {}

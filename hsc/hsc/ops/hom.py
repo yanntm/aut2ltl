@@ -14,8 +14,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, FrozenSet, Tuple
 
-from .diagram import Diagram, duid
-from .shape import Path, Shape
+from ..core.diagram import Diagram, duid
+from ..core.shape import Path, Shape
 
 _APPLY: Dict[Any, Diagram] = {}
 

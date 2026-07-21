@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Tuple
 
 from hsc import Model, compose, enum, star, sum_of
 from hsc.core.algebra import diff, join
-from hsc.core.hom import Hom
+from hsc.ops.hom import Hom
 from hsc.core.stats import bill, reset, summary
 
 FREE, TK = "free", "tk"

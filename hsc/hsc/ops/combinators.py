@@ -10,11 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Tuple
 
-from .algebra import join
-from .stats import tick
-from .diagram import Diagram
+from ..core.algebra import join
+from ..core.stats import tick
+from ..core.diagram import Diagram
 from .hom import Hom
-from .shape import Shape
+from ..core.shape import Shape
 
 
 @dataclass(frozen=True)

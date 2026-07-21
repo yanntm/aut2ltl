@@ -15,13 +15,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, Tuple
 
-from .algebra import join
-from .diagram import Diagram
-from .expr import TRUE, Expr
+from ..core.algebra import join
+from ..core.diagram import Diagram
+from ..classify.expr import TRUE, Expr
 from .hom import Hom
-from .local import _write
-from .query import split_equiv, theta
-from .shape import Path, Shape
+from .local import Write
+from ..classify.query import split_equiv, theta
+from ..core.shape import Path, Shape
 
 
 @dataclass(frozen=True)
@@ -52,7 +52,8 @@ class Put(Hom):
     def _apply(self, shape: Shape, d: Diagram) -> Diagram:
         out: Diagram = None
         for value, piece in theta(shape, d, self.expr).items():
-            out = join(shape, out, _write(shape, piece, self.path, frozenset((value,))))
+            written = Write(self.path, frozenset((value,)))(shape, piece)
+            out = join(shape, out, written)
         return out
 
 

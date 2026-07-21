@@ -19,10 +19,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, List, Tuple
 
-from .algebra import normalize
-from .diagram import Diagram, Node, Rect
+from ..core.algebra import normalize
+from ..core.diagram import Diagram, Node, Rect
 from .hom import Hom
-from .shape import LeafShape, Pair, Path, Shape
+from ..core.shape import LeafShape, Pair, Path, Shape
 
 
 class _Descending(Hom):
@@ -132,8 +132,3 @@ class Assign(Hom):
                 return None
         return out
 
-
-def _write(shape: Shape, d: Diagram, path: Path, code: Any) -> Diagram:
-    """Constant write as a function, for callers holding a piece rather than
-    building a term (the computed assign of `branch.py`)."""
-    return Write(path, code)(shape, d)

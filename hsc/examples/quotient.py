@@ -22,7 +22,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from hsc import Model, const, enum, eq, ind, mod, plus, star, sum_of, var
-from hsc.core.query import clear_cache, kernel_detail, kernel_report
+from hsc.classify.query import clear_cache, kernel_detail, kernel_report
 from hsc.core.stats import bill, reset
 
 from examples import philosophers as ph

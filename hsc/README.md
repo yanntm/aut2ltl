@@ -7,17 +7,21 @@ theory's open obligations.
 
 ## Layout
 
-- `hsc/core/` — the kernel. Shapes, diagrams, the canonical decomposition,
-  the support algebra, homomorphisms. See `hsc/core/README.md`.
-- `hsc/leaves/` — leaf modules (imported support algebras). See
-  `hsc/leaves/README.md`.
+- `hsc/core/` — shapes, diagrams, the canonical decomposition, the support
+  algebra.
+- `hsc/classify/` — the classifier language and `split_equiv`, the
+  traversal backbone.
+- `hsc/ops/` — homomorphisms: local, combinators, classifier-driven.
+- `hsc/leaves/` — one module per imported theory.
+
+Each has a `README.md` (source map) and an `algorithm.md` (the algorithms,
+written before the code). `algorithm.md` at this level is the index and
+states the invariants that cross packages.
 - `hsc/model.py` — modelling sugar: name leaves, build a shape, resolve
   names to frontier paths.
 - `examples/` — runnable systems. `counter.py` (4-bit increment),
   `philosophers.py` (Ex1 of the calculus document).
 - `tests/` — property checks against the brute-force shadow.
-- `algorithm.md` — the algorithms, written before the code. Read it before
-  editing `core/`.
 
 ## Quick start
 
@@ -33,17 +37,22 @@ Deliberate simplifying assumptions, each one a named place to grow:
 
 | assumption | where it bites | lifted by |
 |---|---|---|
-| Boolean coefficients only | the terminal is a singleton, not a coefficient | a `Semiring` instance at the unit sort |
-| no tautological Θ | the claim that `normalize` is a special case of `Θ` is untested | a continuation classifier with diagram-valued labels |
-| `Star` is plain BFS | fixpoint cost is rounds x events x |X|, not O(representation) | saturation, using `Hom.support()` |
-| `support()` is static | over-approximates for indexed access (`tab[x]`) | a dynamic, minimal `skip` |
-| no term-level normal form | operation terms do not dedupe; their applications do | obligation (v) |
+| `Star` is plain BFS | fixpoint cost is rounds x events x \|X\|, not O(representation) | saturation — needs a theory round first, it is not in the calculus document |
+| `support()` is static | over-approximates as soon as an operation reads an index it computes | a minimal, possibly dynamic `skip` |
+| no term normal form | operation terms do not dedupe; their applications do | a confluent rewriting system over commutativity and relative support |
+| one leaf theory (`enum`) | every split is an enumeration, so the third cost factor is nominal | a theory whose codes are structured |
 | no s-expression surface | models are built in Python | later, once the classifier seam settles |
 
-What *does* run end to end: shapes with composite heads (so Theorem 6.4's
-internalization is exercised from the first line), the canonical
-decomposition, the full support algebra (meet/join/relative difference,
-no top anywhere), filters, parallel constant assigns, sum, and star —
-enough to compute reachable sets and inspect their congruence towers; and
-`split_equiv` with its callers -- multi-variable guards, computed assigns,
-`case`, and the quotient constructor with discovered alphabets.
+Not on the plate, on purpose: **inverse images** (undoing a destructive
+assignment needs a reachable set to move within — a different problem), and
+**weights at the terminal** (counting, weighting and provenance are
+classifier codomains, discovered per query; the calculus does not grow a
+terminal algebra to express what a classifier already expresses).
+
+What *does* run end to end: shapes with composite heads, so internalization
+is exercised from the first line; the canonical decomposition; the full
+support algebra with no top anywhere; filters, parallel constant assigns,
+sum and star — enough to compute reachable sets and inspect their congruence
+towers; and `split_equiv` with its callers — multi-coordinate guards,
+computed assigns, `case`, and the quotient constructor with discovered
+alphabets and the kernel merge.
