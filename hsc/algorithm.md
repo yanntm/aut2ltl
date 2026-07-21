@@ -1,0 +1,212 @@
+# hsc — algorithms
+
+Abstract description of the kernel. Written before the code; the code is
+meant to read as its transcription. Section marks `§` refer to
+`research_notes/hsc_core.md`.
+
+---
+
+## 1. Objects
+
+A **shape** is `V ::= ⟨A⟩ | (V_h , V_t)` — a leaf importing a support
+algebra, or an ordered pair. (The unit sort `1` of §3 is omitted in this
+iteration; nothing below depends on its absence except that every shape
+bottoms out in a leaf.) Shapes are interned: structurally equal shapes are
+one object with one `uid`.
+
+A **position** is a path: a tuple of bits, `0` = head, `1` = tail, read
+from the root. The frontier of a shape is its leaves in path order.
+
+A **diagram** over a shape is, by cases on the shape:
+
+- `None` — the adjoined zero, at every shape. Never stored inside a node,
+  never traversed, never a letter (§0, discipline 1).
+- at `⟨A⟩` — a canonical, nonempty leaf code, whatever the leaf module
+  says it is.
+- at `(V_h,V_t)` — a `Node`: a nonempty tuple of pairs `(prime, sub)` with
+  `prime` a nonzero diagram over `V_h`, `sub` a nonzero diagram over
+  `V_t`, the primes pairwise disjoint **(D)** and the subs pairwise
+  distinct **(F)**, sorted by the sub's uid.
+
+**There is one diagram type, not two.** A prime over a composite head is a
+diagram over that head — Theorem 6.4's internalization is the class
+hierarchy, not a later test. The same recursion computes the support
+algebra of a leaf shape (by delegation) and of a pair shape (by recursion).
+
+Nodes are hash-consed on `(shape.uid, ((prime.uid, sub.uid), ...))`, so
+equality is `is` and zero is absence. Leaf codes get uids from a side
+table keyed on `(shape.uid, code)`; this is what gives a total order for
+canonical sorting, and it is the only thing the kernel ever asks of a leaf
+code besides hashability.
+
+---
+
+## 2. `normalize` — Theorem 5.1, operationally
+
+```
+normalize(shape, rectangles) -> Node | None
+```
+
+Input: any finite list of rectangles `(prime, sub)`, overlapping and
+repeating freely. Output: the unique canonical node denoting their sum.
+
+Construction 5.3 read literally enumerates sign-pattern cells and is
+exponential. Instead, insert incrementally into a maintained disjoint
+partition:
+
+```
+cells := []                                  # invariant: primes pairwise disjoint
+for (p, s) in rectangles:
+    if p is zero or s is zero: skip          # smash, before anything is written
+    rem := p
+    next := []
+    for (q, t) in cells:
+        if rem is zero: keep (q,t); continue
+        i := meet(V_h, rem, q)
+        if i is zero: keep (q,t); continue
+        r := diff(V_h, q, i)                 # relative difference — tier G, no top
+        if r nonzero: keep (r, t)
+        emit (i, join(V_t, t, s))            # the overlap takes the joined sub
+        rem := diff(V_h, rem, i)
+    if rem nonzero: emit (rem, s)
+    cells := next
+group cells by sub uid, joining their primes                     # (F)-compression
+sort by sub uid; return None if empty, else the interned node
+```
+
+The two loops are the degeneracy ledger of §5 executed: the skip is *no
+zero subs*, the disjointness maintenance is **(D)**, the grouping is
+**(F)**, and *no zero primes* holds because every emitted prime is a
+nonempty meet or a nonempty relative difference. The all-negative cell of
+Construction 5.3 — the one that would need a top — is never formed,
+because `rem` is only ever *carved out of an input prime*, never out of the
+ambient carrier.
+
+`normalize`, `join` and `diff` are **mutually recursive**: normalizing at a
+cut joins subs one level down, which normalizes at the next cut. This is
+the kernel's central recursion; the memo tables hang off it.
+
+---
+
+## 3. The support algebra, uniformly
+
+Four operations, defined at every shape, each dispatching on the shape:
+
+| op | at `⟨A⟩` | at `(V_h,V_t)` |
+|---|---|---|
+| `is_zero` | code is empty (leaf decides) | the diagram is `None` — a pointer test (§6, Prop. 6.3) |
+| `meet(a,b)` | leaf meet | rectangles `(p∧q, s∧t)` over all pairs, dropping zeros, then `normalize` |
+| `join(a,b)` | leaf join | `normalize(a.pairs + b.pairs)` |
+| `diff(a,b)` | leaf relative difference | see below |
+
+`diff(a, b)` at a pair, per `(p,s)` of `a`: carve `p` against each `(q,t)`
+of `b`, emitting `(p∧q, s∖t)` for the overlaps and `(p ∖ ⋃q, s)` for what
+survives. Every step is a meet or a *relative* difference; no complement
+and no top is formed at any shape, which is the point of tier G.
+
+There is no `top` and no `complement` in the kernel. A leaf may export
+them; nothing here calls them.
+
+Emptiness at a composite shape is a pointer test *because* zero-freeness
+is maintained by construction — the self-maintenance loop of Prop. 6.3.
+Debug mode asserts the invariant at every `normalize`; release mode assumes
+it. A release-mode failure that debug mode would have caught is by
+construction a coefficient-discipline violation.
+
+---
+
+## 4. Homomorphisms
+
+A homomorphism is a Python object with an `apply(shape, diagram)` and a
+cache keyed on `(hom, shape.uid, diagram uid)` — the `(term_id, data_id)`
+cache of the spec. Homs are frozen and hashable; terms are *not*
+canonicalised (§14(v) is open), only their applications are shared.
+
+**Local homs** address one frontier position and recurse down the spine to
+it. At a pair, a path starting `0` transforms the *primes* (which are
+diagrams over the head, so the recursion is the same function), a path
+starting `1` transforms the *subs*.
+
+- `Filter(path, code)` — meet the leaf at `path` with `code`. Nothing else
+  changes; some primes or subs may become zero and drop out. Note the
+  filter is never materialised as data: no cylinder over the other
+  coordinates is built, so no top is needed. This is §4's "two faces" with
+  the bridge deliberately not bought.
+- `Assign(paths_to_codes)` — the parallel assign of §7.1, restricted to
+  constant writes. Replace the leaf code at each listed path. This is
+  memory-destructive, so previously-distinct primes may collide; the
+  collision is exactly what `normalize` merges when the rewritten
+  rectangles are reinserted. Nothing special is needed for it.
+
+Both recursions rebuild bottom-up through `normalize`, so the result is
+canonical by construction — "well-definedness is restored, not assumed"
+(§0).
+
+**Combinators.** `Compose(h_k, ..., h_1)` applies right to left, like `∘`.
+`Sum(h_1..h_n)` joins the results — the enrichment's join. `Star(h)` is the
+least fixpoint of `X ↦ d ∨ h(X)`, iterated until the root pointer stops
+changing; with hash-consing that pointer test *is* the per-run certificate
+of §8, and any fair schedule reaches the same fixpoint by monotonicity.
+
+---
+
+## 5. Measurement
+
+- `size(d)` — per-node prime counts, summed: the §13 measure. Reported per
+  level so the congruence tower is visible.
+- `count(d)` — number of words denoted.
+- `bill()` — leaf-call counters since the last reset. The three-factor cost
+  claim of §9 is something the prototype must *measure*; the counters are
+  the invoice, and they exist from the first commit so that no later claim
+  is made without one.
+
+---
+
+## 6. `split_equiv` — the next milestone, designed here
+
+The one primitive the elementary layer is still missing, and the same one
+`Θ` needs:
+
+```
+split_equiv(shape, d, expr) -> {value : piece}
+```
+
+Partition the diagram `d` into the pieces on which `expr` takes each
+realised value; zero pieces are absent, so the returned map's key set *is*
+the discovered alphabet `Λ(d, expr)` of §9.
+
+Traversal, per Mechanism 9.3: travel to the first frontier position in
+`expr`'s support. At the leaf, ask the leaf module to split its code by the
+expression — this is where a leaf gets to be clever (an interval leaf
+returning `{0,3,6,9}` as one periodic code rather than four intervals) and
+where §9's third cost factor lives. For each class, substitute and
+renormalise the expression: the residual is ground and mentions only
+positions not yet consumed, so a consumed coordinate can never be
+re-queried. Group head-classes by residual code — deduplication *is* cache
+sharing — recurse once per distinct residual on the tails actually
+demanded, merge returned partitions with equal kernels on the way back
+(the retroactive repair for weak leaf normalisation), and reassemble by
+(F)-compression.
+
+Everything above is then a caller of this one function, distinguished only
+by the codomain of `expr` and by what it does with the pieces:
+
+| caller | codomain | tail action |
+|---|---|---|
+| single-variable `filter` | binary | keep the accepting piece; does not travel |
+| multi-variable `filter` | binary | keep the accepting piece |
+| `assign(x := e)` | value sort | rewrite `x` per piece |
+| `Θ` | any declared sort | keep all pieces, labelled |
+| `case` | any declared sort | apply the per-letter branch |
+
+Consequence for the theory: Theorem 7.2 merges adjacent filters by meets,
+which is canonical but anti-optimal — merging two single-variable guards
+produces a two-variable guard that must now travel. The implementation
+keeps guards *factored* by support and ordered by frontier position. The
+theory does not care (the two are semantically equal); §14(v) should note
+that the executable presentation factors where the canonical one merges.
+
+**Not on the plate:** inverse images. Undoing a destructive assignment
+needs a reachable set to move within, which is a different problem (CTL);
+the interface has no absolute or relative preimage and is not expected to
+grow one.
