@@ -247,8 +247,56 @@ own local term. Nothing is declared; the split falls out of the supports.
   adequate only while every footprint is static, which is true of everything
   in this prototype today and will not stay true.
 - **Non-Kronecker crossing events.** A `g` that does not factor as `l o f`
-  cannot be thrown in two directions. That is exactly and only where
-  `split_equiv` fires.
+  cannot be thrown in two directions; it has to quotient. See §6.
 
 Groundwork present: `Hom.support()` and `Hom.rerooted(bit)` on every hom.
 The procedure above is not implemented yet.
+
+---
+
+## 6. The general case: a crossing event that does not factor
+
+When `g` in `G` is not Kronecker, its two ends are *correlated* -- which
+value the tail end applies depends on what the edge end saw, or the reverse.
+The level can no longer relink blindly, so it quotients. This is
+`case` at a cut, with the branch table not declared but *discovered*: the
+branches are the curried residuals of `g` itself.
+
+Three dispositions, and choosing between them is a cost decision.
+
+**Split the edge, specialise the tail.** Grab the value the operation needs
+from a coordinate in the head, `split_equiv` the edge on it to build the
+equivalence classes, and for each class apply the correspondingly curried
+operation to the tail. Then relink each edge class to the tail that received
+*its* class's operation:
+
+```
+for (p, s) in d.pairs:
+    for residual, p_class in split_equiv(head, p, classifier of g):
+        s_class = apply(g curried by residual, tail, s)
+        emit (p_class, s_class)
+normalize
+```
+
+The edge classes are disjoint, so (D) survives for free; two classes whose
+specialised operations happen to agree produce equal tails and (F) merges
+them. Canonisation does the rest -- nothing here maintains the invariants by
+hand.
+
+**Split the tail, specialise the edge.** The mirror image: quotient the tail
+to determine the classes, apply a different treatment to the edge per class,
+relink, canonise. Here the resulting edge parts may *overlap* rather than
+partition, which `normalize` also absorbs, unioning the subs of the pieces
+that coincide.
+
+**Split both, congruently.** When both ends read as well as write -- a guard
+relating a head coordinate to a tail coordinate is the archetype -- both
+sides are quotiented and the classes are matched by residual, only the
+agreeing pairs surviving.
+
+The two directions are the two congruence directions of the decomposition
+theorem, seen from the operator side: the node materialises one of them and
+defers the other, and which one it materialises is exactly the choice above.
+Neither is canonical; the cost model decides, by the same three factors that
+price any other query -- how fast the residuals separate, how far they
+travel, and how cheaply the classes can be named.
