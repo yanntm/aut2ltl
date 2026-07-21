@@ -1,12 +1,15 @@
 # HSC — Implementation Direction
 
-*Companion to `hierarchical-shape-calculus` (draft 1). Despite the filename,
-this is not a specification: it is a line of implementation — architecture,
-concrete representations, an interchange syntax, and ordered milestones with
-acceptance gates. Section references (§) point into the calculus document.
-Target language: Python. Performance is explicitly not a goal of the
-prototype; the products are the API, the measured cost model, and the
+*Companion to `hsc_core.md`. Despite the filename this is not a
+specification: it is a line of implementation — architecture, concrete
+representations, and ordered milestones with acceptance gates. Section marks
+`§` point into the calculus document. Target language: Python. Performance
+is not a goal; the products are the API, the measured cost model, and the
 falsification of the document's claims.*
+
+*Revised after the bootstrap iteration. What that iteration established is
+recorded in `hsc/` — `algorithm.md` at the root for the invariants, one per
+package for the algorithms — and is not restated here.*
 
 ---
 
@@ -16,323 +19,281 @@ The three disciplines are implementation decisions already:
 
 | discipline | in code |
 |---|---|
-| `0` adjoined, never a citizen (§0.1) | the null child is `None`; no node stores, iterates, or hashes it |
-| `id` free (§0.1) | the no-op is not an object; empty compositions vanish at construction |
-| naming window (§0.2) | hash-consing; equality is a pointer test |
-| partition window (§0.2) | partition refinement over leaf codes |
-| per-run certificates (§0.3) | memo tables, residual-novelty checks, step counters |
+| `0` adjoined, never a citizen | the null child is `None`; no node stores, iterates or hashes it |
+| `id` free | the no-op is not an object; empty compositions vanish at construction |
+| naming window | hash-consing; equality is a pointer test |
+| partition window | `split_equiv` over leaf codes |
+| per-run certificates | memo tables, residual-novelty checks, step counters |
 
-The kernel is standard hash-consed decision-diagram engineering. The one
-genuinely new component is Θ's curried residual transport (§9); it is also
-the only research contribution, so it is the right place for the risk and
-the instrumentation to live.
+**The backbone is `split_equiv`.** This is the central revision to this
+document. The bootstrap iteration was written expecting a classical
+decision-diagram kernel with the quotient constructor added on top as the
+research contribution; that ordering is wrong. Every construct that inspects
+data — a guard over more than one coordinate, a computed assign, `case`, `Θ`
+itself, and the default classification — is one traversal with a different
+classifier codomain and a different action on the returned pieces. Build the
+traversal first and derive the rest; anything else duplicates it.
+
+That is not an engineering convenience. §9 states that the structural normal
+form is the special case of the quotient operator whose classifier is the
+tautological one. Making the quotient operator the primitive is that
+sentence, in code.
 
 ---
 
 ## 1. Core representations
 
-**Shapes.** Interned binary trees over leaf-module references:
-`Shape = LeafRef(module) | Pair(Shape, Shape) | Unit`. Positions are
-frontier paths (bit strings). Two structurally equal shapes are one object.
+**Shapes.** Interned trees, `1 | ⟨A⟩ | (V_h,V_t)`. Positions are frontier
+paths.
 
-**Diagrams.** A node is a frozen, canonically sorted tuple of
-`(prime_code, sub_id)` pairs, unique-tabled (a weak dict keyed on that
-tuple plus the shape id). Consequences, by construction:
+**Diagrams.** One type, not two. A node is a frozen, canonically sorted
+tuple of `(prime, sub)` pairs, unique-tabled. A prime over a composite head
+is *a diagram over that head*: internalization (§6.4) is the class
+hierarchy, available from the first line, not a milestone. Equality is `is`;
+zero is absence.
 
-- equality is `is`; zero is *absence* (Python `None`), never a node;
-- (F)-compression at build time is "group pairs by sub pointer, join their
-  primes";
-- (D) and zero-freeness are constructor preconditions, checked in debug
-  mode, assumed in release mode — Prop 6.3 says positive coefficients keep
-  them true without semantic tests, and the debug assertion is the test of
-  that proposition.
+**The unit sort** carries three roles as one object: the terminal value, the
+default classification (acceptance), and the base case of the default
+classifier (the continuation). Nothing richer lives there — see §5.
 
-**Leaf codes.** Whatever the leaf module says, but hashable and canonical:
-the kernel only ever compares them (naming window) or hands them back to
-their module (partition window).
-
-**Coefficients.** A `Semiring` protocol: `zero, one, add, mul, eq`,
-plus declared flags `zerosumfree`, `entire`. The kernel refuses instances
-without both flags (§1); `Bool` is the default; `Nat` is the second
-instance and exists to prove nothing outside the leaves changes (§14 (vi)).
-Weights live on subs per Theorem 5.1's gauge: primes Boolean, values
-quantitative.
-
-**The one central function.**
-
-```
-normalize(pairs: list[(prime, sub)]) -> Node | None
-```
-
-Theorem 5.1 operationally. Implementation note, against a naive reading of
-Construction 5.3: do **not** enumerate sign-pattern cells (exponential);
-insert rectangles incrementally into a maintained disjoint partition —
-split via leaf `meet`/`diff` (tier G), then merge equal subs by pointer.
-Same canonical result, apply-style complexity. Everything else in the
-kernel is the classical apply/cache architecture around this function:
-`meet`, `join` (recursive, memoized on node-id pairs), `filter` as
-meet-with-recanonicalization, `+` on data as `join`, `apply(term, data)`
-memoized on `(term_id, data_id)`, `star` as a fixpoint loop whose per-run
-certificate is a residual-novelty check.
+**The one central function.** `normalize(rectangles) -> node | None`,
+Theorem 5.1 operationally. Against a naive reading of Construction 5.3: do
+**not** enumerate sign-pattern cells; insert rectangles incrementally into a
+maintained disjoint partition, splitting via leaf meet/relative difference
+and merging equal subs by pointer. Same canonical result, apply-style
+complexity. `normalize`, `join` and `diff` are mutually recursive; the memo
+tables hang off that recursion.
 
 ---
 
-## 2. The Leaf interface
+## 2. The leaf interface
 
-One ABC; its methods are the tier ledger of §2 verbatim. A leaf declares
-its tier and implements up to it; the kernel calls only what the operation
-at hand consumes (the interface ledgers of §5/§6 say which).
+One ABC per tier ledger; a leaf declares its tier and implements up to it.
+Tier G — meets and **relative** differences, **no top** — is the working
+tier. Rules of the house:
 
-```
-class Leaf:
-    # tier E
-    def code(self, raw) -> Code
-    def eq(self, a, b) -> bool            # on codes
-    def is_empty(self, a) -> bool
-    # tier J
-    def join(self, a, b) -> Code
-    # tier G
-    def meet(self, a, b) -> Code
-    def diff(self, a, b) -> Code          # relative difference, no top
-    # tier B (optional)
-    def top(self) -> Code
-    def complement(self, a) -> Code
-    # maps (§2.3), per exported map f
-    def pushforward(self, f, a) -> Code                   # image-computable
-    def weighted_pushforward(self, f, a) -> WeightedCode  # fiber-computable (optional)
-    def rel_preimage(self, f, a, b) -> Code   # f⁻¹(a) ∩ b (optional, per map)
-    # terms (§2.4)
-    def normalize_term(self, expr) -> Expr    # canonical codes for curried classifiers
-```
+- unimplemented tiers raise, so the interface ledger is a runtime discipline
+  and the exception names the theorem being violated;
+- **there is no preimage, absolute or relative, and none is planned.** The
+  earlier draft of this document priced a relative preimage at tier B and
+  made `Θ` optionally depend on it. Both are withdrawn. `split_equiv`
+  supersedes it, and backward reasoning needs a reachable set to move
+  within, which is a different problem for a different document;
+- every leaf method is call-counted; the bill is a product, not telemetry.
 
-Rules of the house:
+**`split_equiv(code, expr)` is the leaf's real interface.** Partition a code
+by the residual of a classifier after substituting this coordinate.
+Enumerating the carrier is legal and is what a finite enum leaf does; a leaf
+earns its keep by returning few structured codes where enumeration would
+return many singletons. That ratio is the third cost factor and it is the
+one factor decided entirely by the leaf.
 
-- Unimplemented tiers raise `TierError`. This turns the interface ledger
-  into a runtime discipline: if an operation demands a tier the leaf did
-  not declare, the exception names the theorem being violated.
-- There is **no absolute preimage** in the interface. `rel_preimage` is the
-  operation (§2.3, §7.2); tier-B leaves may implement it with `b = top()`
-  internally, but the signature carries the relativizer always.
-- `normalize_term` strength is a declared property, and a *cost* property
-  only (§2.4): under-normalization causes redundant Θ subqueries, cleaned
-  by the semantic merge; it never causes wrong answers.
-- Every leaf method is call-counted. The three-factor bill of §9
-  (residuals × distance × class-code size) is a claim the prototype must
-  *measure*, not assume; the counters are the invoice.
+Classifier normalisation is a **cost parameter, never a soundness one**: an
+equality a leaf misses costs redundant subqueries, which the kernel merge
+recovers on the way back up. This is now measured, not assumed.
 
 ---
 
-## 3. Interchange syntax
+## 3. `split_equiv` — the traversal
 
-SMT-flavored s-expressions. The analogy is architectural, not cosmetic:
-leaves are theories. `declare-leaf` is `declare-sort` plus a tier
-signature; each leaf module registers the function symbols legal in its
-guards, assigns, and classifiers, plus its rewrite rules — exactly an SMT
-theory plugin. The reader is ~40 lines; the evaluator dispatches head
-symbols to leaf modules.
+Three movements.
 
-Indicative surface (frozen only by the first implementation, not by this
-document):
+**Down.** Travel to the first coordinate the classifier mentions; a
+classifier mentioning nothing in a subtree returns there in one entry
+without descending. Locality is the distance-zero case and it is free.
 
-```
-(declare-leaf Fork (enum free tk))
-(declare-leaf St   (enum T HL E))
-(declare-leaf Nat  (intervals))
-(declare-shape Ph1 (pair (F1 Fork) (S1 St)))
-(declare-shape V   (pair (pair Ph1 Ph2) (pair Ph3 Ph4)))
+**Across.** Meeting a coordinate substitutes its class and renormalises, so
+the travelling classifier stays ground and mentions only coordinates not yet
+consumed. Because expressions are interned, grouping head-classes by
+residual code and keying the memo table on that code are the same act.
 
-(define-op takeL1
-  (seq (assign (S1 HL) (F1 tk))
-       (filter (and (= S1 T) (= F1 free)))))
+Normalisation must apply *while a residual curries*, not only when a client
+writes an expression. An applied operation therefore carries the builder
+that made it. Rebuilding through a generic constructor normalises at the
+wrong time, which is to say never — this cost the bootstrap iteration a
+silent factor of ten and is the single easiest thing to get wrong here.
 
-(define-op step (sum takeL1 takeR1 drop1 ...))
-(define-data X0 (word (T free) (T free) (T free) (T free)))
-(define-data X  (star step X0))
+**Up.** Results federate. A partition is a **kernel** — the canonical,
+interned tuple of pieces — plus a **labelling** from residuals into it.
+Subqueries whose residual codes differ but whose realised partitions agree
+share one kernel and differ only by a finite table.
 
-(theta X (mod (+ b c) 3))
-(case X (mod (+ b c) 3) ((0 opA) (1 opB) (2 opC)))
-(check-empty (apply (filter (deadlocked)) X))
-(size X)          ; per-node prime counts — the §13 measure
-(bill)            ; leaf-call counters since last reset — the §9 invoice
-```
+Every partition federates, including those that did not descend and those
+with a single class. Not descending is a locality optimisation; not
+federating is an error, since it would let equal partitions carry different
+kernels and the merge would stop being an equivalence. One-class partitions
+come in two kinds — labelled by a *value* (the terminal case; with value
+`1`, acceptance) or by a *residual expression* (a suspended computation) —
+and the kernel/labelling split is exactly what represents both without
+conflating them.
 
-Design intents: `seq` composes right-to-left like the document's `∘`;
-`assign` is the parallel form natively (the vector primitive of §7.1);
-guards are leaf-registered expressions, so the guard language grows with
-the leaf catalog and the core never learns arithmetic; everything is
-generatable by programs, which matters if clients include them.
+Anticipated redesign: the classifier/leaf seam will be renegotiated. Plan
+for it to change twice; keep it thin.
 
 ---
 
-## 4. The shadow oracle — build it first
+## 4. The shadow oracle
 
-Definition 4.2 is the test architecture. Over tiny carriers (2–4 element
-leaves), a behavior is a brute-force dict from words to values: ~30 lines.
-Then **every** kernel operation, every leaf, every Θ is property-tested
-against brute force on randomized small instances (`hypothesis` is the
-right tool). The shadow-vs-mechanism split of §4 becomes literal: the
-shadow is the referee, the calculus is the contestant, and the scary
-components — Θ's semantic merge, `rel_preimage`, weighted pushforward —
-ship with an independent judge. No kernel code is merged before its oracle
-test exists.
+Definition 4.2 is the test architecture. Over tiny carriers a behaviour is a
+brute-force dict from words to values, and every kernel operation is
+property-tested against it. The scary components ship with an independent
+judge.
 
-Properties worth encoding beyond raw agreement: canonicity (normalize is
-idempotent and order-insensitive), the degeneracy ledger (no zero subs, no
-zero primes, (D), (F) hold on every constructed node), Prop 6.3
-(zero-freeness never needs a semantic test over positive semirings — run
-with the debug assertions on), 9.2 (Θ's alphabet is minimal: refining any
-returned letter changes nothing, merging any two changes the answer).
+An oracle nobody has falsified is not an oracle: a mutation gate that
+deliberately breaks `normalize` — dropping (F), dropping (D) — must fail the
+suite for every mutant. Beyond raw agreement, encode canonicity (order
+insensitivity, so equal denotation gives pointer equality), the degeneracy
+ledger on every constructed node, and minimality of `Θ`'s alphabet.
 
 ---
 
-## 5. Leaf modules, in build order
+## 5. What is deliberately not built
 
-1. **EnumLeaf** — explicit finite sets. Tier B trivially; absolute
-   preimages free; `normalize_term` is evaluation. Alone, it runs Ex1 end
-   to end and exercises the entire kernel. First, because it isolates
-   kernel bugs from leaf bugs.
-2. **IntervalLeaf** — finite unions of intervals over ℕ/ℤ, plus a small
-   linear-arithmetic rewriter (enough to send `(mod (+ 3 c) 3)` to
-   `(mod c 3)`). Runs Ex2. First leaf where relative-vs-absolute preimage
-   and class-naming cost (§9's third factor) actually bite; the measured
-   bill on Ex2 is this milestone's deliverable.
-3. **RegularLeaf** — recognizable languages, minimal DFAs as canonical
-   codes; product/union/difference; concatenation and left-quotient as
-   exported maps (push/pop). The paradigm infinite case (§2); yields
-   queues. Hopcroft minimization is ~150 lines, or wrap an existing
-   library.
-4. **BddLeaf** — wrapped `dd` package or a minimal ROBDD. Deliberately
-   fourth, and not as the workhorse (internal nodes already generalize
-   BDDs): its purpose is the **internalization test** — pack a subtree's
-   Boolean diagrams into an imported leaf per Theorem 6.4 and verify the
-   calculus eats its own output, i.e. that a re-boxed white box is
-   indistinguishable from a black one.
-5. **Nat semiring pass** — not a leaf: switch the coefficient instance
-   under Ex1/Ex2 and confirm nothing changes outside the leaves and the
-   weighted pushforward (§14 (vi) as a regression suite; Θ over Ex2 counts
-   representations).
+Each of these was in the earlier draft as a milestone and is withdrawn, with
+the reason, so that no later iteration re-adopts it by inertia.
+
+**Weights and terminal algebras.** A coefficient semiring at the terminal is
+off the line. The classifier is already the more abstract view of what
+multi-terminal and edge-valued diagram families express with terminal and
+edge decorations: counting, weighting and provenance are *classifier
+codomains*, discovered per query. Do not grow a terminal algebra to express
+what a classifier already expresses. (This also retires obligation §14(vi)
+as stated; the qualitative/quantitative split it wanted to confirm shows up
+instead as the value/residual split in labellings.)
+
+**A parade of leaf theories.** Enum and integer domains are plenty for
+everything this line needs to demonstrate. Interval, regular and BDD leaves
+were sequenced as milestones on the strength of the theory document's
+examples; they are not what the prototype is short of. One further theory
+whose codes are *structured* rather than enumerated would make the third
+cost factor real instead of nominal — that is the only leaf-side gap that
+matters.
+
+**The tautological Θ as an acceptance gate.** Checking that `Θ` against the
+continuation reproduces `normalize` is an internal probe. It is also
+vacuous unless the continuation classifier is computed rather than read off
+the node, which makes it more expensive than it is informative.
+
+**Inverse images.** See §2. Committed.
 
 ---
 
-## 6. Θ — the hard 20%
+## 6. Open questions, both theory-first
 
-Mechanism 9.3, as code. The traveling classifier is a normalized ground
-term, suffix-supported by construction (meeting a coordinate substitutes
-its class and calls `normalize_term`; a consumed coordinate cannot recur).
-Per node:
+These are the two places the implementation is currently blocked on the
+theory, and neither is discussed in `hsc_core.md`.
 
-1. group head-primes by normalized residual code — the residual cache is
-   keyed on that code, so dedup *is* cache sharing across contexts;
-2. one recursive subquery per distinct code, on demanded tails only
-   (demand-driven; nothing is computed bottom-up on spec);
-3. on return, merge partitions with equal underlying kernels, recording
-   finite relabeling tables (the retroactive semantic merge — the
-   completeness backstop for weak `normalize_term`);
-4. assemble by (F)-compression at the cut.
+**(a) The term normal form.** §7.2 canonicalises an elementary term to a
+strictly alternating guarded word, merging adjacent filters by meets. That
+merging is canonical and *anti-optimal* — two single-coordinate guards that
+never travel become one two-coordinate guard that must — and the document's
+framing over-assumes in ways it does not need to. The shape of the right
+answer is a **confluent rewriting system** whose rules consult commutativity
+and the *relative support* of operands to decide reordering. Independence of
+supports is the notion partial-order reduction uses to justify not exploring
+both interleavings of independent events; here it justifies commuting,
+merging, or declining to merge two terms. Obligation §14(v) should be
+restated in those terms.
 
-Expectations to hold the implementation to: the equivariant collapse is
-**not a code path** — it is what the merge discovers (Ex2 must come out as
-one kernel plus three relabel tables without any mod-specific logic in the
-kernel); `case` invokes each branch once per congruence class (9.2(ii)),
-observable in the call counters; the tautological instance (classifier =
-continuation) reproduces `normalize` bit-for-bit — a mandatory test, since
-§9 claims the normal form is a special case of Θ.
+**(b) The schedule.** Iterating a fixpoint by rounds rebuilds a fresh
+diagram each time, so every round misses the caches and the cost is
+rounds x events x |X| in freshly built nodes — measured, and it dominates
+everything. Saturation is the known answer, and a shape tree admits an
+a-priori grouping per cut that a flat variable order cannot express. Two
+things must be settled first: the footprint notion (a *static* support
+over-approximates as soon as an operation reads an index it computes,
+whereas `skip` is minimal and may be dynamic), and the order within a cut
+(tail before local level; guards before moves; termination of
+re-saturation after a crossing event fires).
 
-Anticipated redesign: `normalize_term`'s signature will be renegotiated
-between the traversal and the leaf rewriter (context argument or not) —
-plan for it to change twice; keep the seam thin.
+The two are one problem seen twice: the reordering a confluent rewriting
+system enacts is the reordering a schedule needs.
 
 ---
 
 ## 7. Milestones, with gates
 
-Ordered checkpoints; each gate is an executable fact, not a date.
+Ordered checkpoints; each gate is an executable fact.
 
-- **M0 — shadow.** Brute-force behaviors over enum leaves; the property
-  harness runs. *Gate:* a deliberately wrong `normalize` is caught.
-- **M1 — kernel.** Shapes, unique table, `normalize`, meet/join/filter,
-  apply, star-with-certificate; EnumLeaf. *Gate:* Ex1 end to end — four
-  primes at every cut, deadlock reachable with filter provenance, sizes
-  linear when scaled to 8/16 philosophers.
-- **M2 — syntax.** Reader + evaluator + `size`/`bill` introspection.
-  *Gate:* Ex1 expressed entirely in the s-expr surface, no Python.
-- **M3 — Θ.** Curried transport per §6 above. *Gate:* `#eaters` discovers
-  `{0,1,2}` from `⟨ℕ⟩`; tautological Θ ≡ `normalize`.
-- **M4 — intervals.** IntervalLeaf + rewriter. *Gate:* Ex2 — three
-  residuals independent of range, merge finds one kernel + three tables,
-  measured bill matches the three-factor prediction; `rel_preimage`
-  passes the mod-2 representability test that the absolute form fails.
-- **M5 — regular.** RegularLeaf; a bounded producer/consumer over an
-  unbounded queue. *Gate:* per-element certificates observable — an
-  infinite leaf algebra, every touched class finitely coded.
-- **M6 — closure & weights.** Internalization test (BddLeaf); Nat pass.
-  *Gate:* Theorem 6.4 exercised; Ex2 counts representations with no kernel
-  change.
-- **M7 — a stranger's leaf.** Someone (or some session) not holding this
-  document's context adds a leaf from the ABC docstring alone. *Gate:*
-  they succeed without reading the kernel. This is the real test of
-  "algebra agnostic."
+- **M0 — shadow.** Brute-force behaviours over enum leaves; the property
+  harness runs. *Gate:* a deliberately wrong `normalize` is caught. **Done.**
+- **M1 — kernel.** Shapes, unique table, `normalize`, the support algebra,
+  local homs, star; enum leaf. *Gate:* Ex1 end to end — four primes at every
+  cut, deadlock reachable, size linear at 8/16 philosophers. **Done.**
+- **M2 — backbone.** `split_equiv`, the kernel merge, and its callers.
+  *Gate:* `#eaters` discovers `{0,1,2}` from an unbounded codomain; the
+  residue classifier's bill is independent of the carrier's range. **Done.**
+- **M3 — the schedule.** Saturation, after (b) is settled on paper. *Gate:*
+  Ex1's fixpoint cost becomes a function of the representation rather than
+  of the round count; two schedules agree on the value.
+- **M4 — a structured leaf.** One theory whose `split_equiv` returns
+  structured codes. *Gate:* the third cost factor separates from the
+  enumeration baseline on a measured bill.
+- **M5 — terms.** A confluent rewriting system per (a). *Gate:* terms that
+  differ only by independent reordering normalise together, and the schedule
+  of M3 is expressible as its rules.
+- **M6 — syntax.** Reader, evaluator, `size`/`bill` introspection. *Gate:*
+  a model expressed entirely in the surface, no Python.
+- **M7 — a stranger's theory.** Someone not holding this document's context
+  adds a leaf from the ABC docstring alone. *Gate:* they succeed without
+  reading the kernel. The real test of algebra-agnosticism.
 
-Sequencing over scheduling: M1 before M3 (kernel bugs must not be
-attributable to Θ), M4 before any claim about the bill (enum leaves make
-every cost trivially cheap), M0 before everything.
+Sequencing: M3 before any further cost claim about fixpoints; (a) and (b)
+resolved on paper before M3 and M5 respectively; M0 before everything.
 
 ---
 
-## 8. Design decisions taken here (so the code need not relitigate)
+## 8. Decisions taken here, so the code need not relitigate
 
-- **Cross-coordinate assigns are compiled, not primitive.** An assign
-  reading here and writing there goes through structural maps to co-locate
-  or a `case` on the read-classifier — which is what the calculus says
-  anyway (§7's assigns are leaf-local plus structural maps). The prototype
-  restriction is principled.
-- **No term-level canonical forms yet.** Obligation §14 (v) is open;
-  operation *terms* therefore do not perfectly dedupe — only their
-  applications do, and the `(term_id, data_id)` cache does not care.
-- **Scheduling of `∗` is out of scope** (§8): any fair worklist; the
-  certificate is the residual-novelty check, and two schedules agreeing on
-  Ex1 is a test, not a feature.
-- **Debug/release split carries the theory.** Debug mode asserts the
-  degeneracy ledger and zero-freeness on every constructor; release mode
-  assumes them, which is exactly Prop 6.3's promise. A failure in release
-  mode that debug mode would have caught is, by construction, a
-  coefficient-discipline violation — the diagnosis is free.
+- **Cross-coordinate assigns are compiled, not primitive.** They go through
+  structural maps to co-locate, or a `case` on the read-classifier — which
+  is what the calculus says anyway. Constant writes across a cut need
+  neither and are a plain rebuild along paths.
+- **Terms are not canonicalised, applications are.** §14(v) is open, and the
+  `(term, data)` cache does not care.
+- **Debug/release carries the theory.** Debug asserts the degeneracy ledger
+  on every constructor; release assumes it, which is exactly Prop. 6.3's
+  promise. A release failure debug would have caught is a
+  coefficient-discipline violation, so the diagnosis is free.
+- **A local hom at a cut is the same hom one level down.** It recurses by
+  re-invoking itself, so the application cache is hit at every level. A hom
+  recursing through a plain helper walks the diagram's tree unfolding rather
+  than its DAG and discards the sharing that is the whole point of the
+  representation.
 
 ---
 
 ## 9. Use cases this should grow toward
 
 Ordered by how specifically they need *this* framework rather than a flat
-BDD/SDD:
+decision diagram.
 
-- **Compositional reachability / model checking.** Hierarchical systems —
-  components, protocol stacks — where the shape mirrors the architecture
-  and no global variable order exists. Ex1 writ large; the native habitat.
-- **Parameterized & infinite-state verification.** Queues, channels,
-  token-passing via RegularLeaf: regular-model-checking territory, with
-  the hierarchy supplying the system decomposition flat approaches lack.
-- **Knowledge compilation over mixed domains.** Weighted counting on
-  Boolean-plus-arithmetic structure, past where bit-blasting stops.
-- **Provenance & factorized query results.** Provenance semirings
-  (`ℕ[X]`) are positive in exactly §1's sense, so the algebra-agnostic
-  layer yields why-provenance for free; the congruence tower is a
-  factorized representation of a relation, with per-query Θ as its
-  interface.
-- **Program analysis.** Abstract domains (intervals first) as leaves; the
-  diagram is the disjunctive completion; `rel_preimage` is backward
-  analysis, billed in the same currency as Θ.
-- **Configuration / product lines.** Feature bits plus numeric attributes;
-  "discovered, not declared" is the difference between a configurator and
-  a combinatorial declaration nobody maintains.
+- **Compositional reachability and model checking.** Hierarchical systems
+  where the shape mirrors the architecture and no global variable order
+  exists. The native habitat.
+- **Parameterised and infinite-state verification.** Queues, channels,
+  token passing, with the hierarchy supplying the decomposition flat
+  approaches lack.
+- **Knowledge compilation over mixed domains**, past where bit-blasting
+  stops.
+- **Provenance and factorised query results.** The congruence tower is a
+  factorised representation of a relation, with per-query `Θ` as its
+  interface — and provenance is a classifier codomain, not a terminal
+  algebra.
+- **Program analysis.** Abstract domains as leaves; the diagram is the
+  disjunctive completion.
+- **Configuration and product lines.** "Discovered, not declared" is the
+  difference between a configurator and a combinatorial declaration nobody
+  maintains.
 
 ---
 
 ## 10. What the prototype is for
 
-Three products, in order: an API a stranger can extend (M7 is the proof);
-a measured cost model (the §9 bill as printed invoices on Ex1/Ex2, either
-confirming the three factors or handing §14 (iii) a counterexample, both
-outcomes valuable); and pressure on the open obligations — Θ's
-implementation is a draft of the transport lemma's induction, and wherever
-the code needs a case the lemma statement lacks, the document iterates.
-The prototype is an instrument pointed at the theory, not a delivery.
+Three products, in order: an API a stranger can extend (M7 is the proof); a
+measured cost model — the §9 bill as printed invoices, either confirming the
+three factors or handing §14(iii) a counterexample, both outcomes valuable;
+and pressure on the open obligations. `split_equiv`'s implementation is a
+draft of the transport lemma's induction, and wherever the code needs a case
+the lemma lacks, the document iterates. The prototype is an instrument
+pointed at the theory, not a delivery.
