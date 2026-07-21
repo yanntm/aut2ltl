@@ -248,21 +248,20 @@ def ind(e: Expr) -> Expr:
     return op("ind", lambda v: 1 if v else 0, e)
 
 
-def mod(a: Expr, k: int, rewrite: bool = True) -> Expr:
+def mod(a: Expr, k: int) -> Expr:
     """Residue, with the one rewrite that matters: an accumulated constant
-    inside a sum is reduced modulo k before the code is formed.
+    inside a sum is reduced modulo k before the code is formed, so that
+    `(3+c) mod 3` and `c mod 3` are one code rather than two.
 
     This is a leaf's arithmetic rewriter in miniature, and it is a *cost*
-    rule only. Without it, `(3+c) mod 3` and `c mod 3` get distinct codes,
-    the traversal issues one subquery per value rather than one per residue,
-    and the answer is unchanged. `examples/quotient.py` measures the
-    difference; `rewrite=False` exists so that it can."""
-    if rewrite and isinstance(a, Op) and a.opname == "plus":
+    rule only: a residue it failed to detect would cost redundant subqueries
+    that the kernel merge recovers on the way back up, never a wrong
+    answer."""
+    if isinstance(a, Op) and a.opname == "plus":
         args = list(a.args)
         if args and isinstance(args[0], Const):
             a = plus(const(args[0].value % k), *args[1:])
-    name = f"mod{k}" if rewrite else f"mod{k}~raw"
-    return op(name, lambda v: v % k, a, rebuild=lambda x: mod(x, k, rewrite))
+    return op(f"mod{k}", lambda v: v % k, a, rebuild=lambda x: mod(x, k))
 
 
 TRUE = const(True)

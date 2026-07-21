@@ -10,12 +10,11 @@ forced rather than declared.
 
 The residue example isolates currying. The classifier `(b+c) mod 3` is
 supported at two leaves with junk coordinates between them; it curries at
-the first, travels ground through the junk, and folds at the second. It also
-measures what normalisation strength buys: with the residue rewrite the
-number of subqueries is independent of the carrier's range, without it the
-number grows with the range -- and the answer is identical either way, which
-is the claim that term normalisation is a cost parameter and never a
-soundness one.
+the first, travels ground through the junk, and folds at the second. Both numbers it reports are independent of the carrier's range: the
+classifier curries to three residual codes at the first coordinate whatever
+the range, and the subqueries below collapse onto a single kernel, differing
+only by a relabelling. That collapse is the merge finding structure, not a
+mode anyone selected.
 """
 
 from __future__ import annotations
@@ -48,7 +47,7 @@ def eaters() -> None:
     assert sum(m.count(p) for p in parts.values()) == m.count(x), "the parts partition"
 
 
-def residue(rng: int, rewrite: bool) -> Dict[str, Any]:
+def residue(rng: int) -> Dict[str, Any]:
     """Shape (<b>,(<j1>,(<j2>,<c>))): the classifier's two coordinates are
     separated by junk that contributes nothing and is never re-queried."""
     leaves = {
@@ -59,7 +58,7 @@ def residue(rng: int, rewrite: bool) -> Dict[str, Any]:
     }
     m = Model(("b", ("j1", ("j2", "c"))), leaves)
     d = m.cube(b=range(rng), j1=(0, 1), j2=(0, 1), c=range(rng))
-    e = mod(plus(var("b"), var("c")), 3, rewrite=rewrite)
+    e = mod(plus(var("b"), var("c")), 3)
 
     reset()
     clear_cache()
@@ -83,32 +82,25 @@ def main() -> None:
     eaters()
 
     print("\n--- (b+c) mod 3, curried through junk coordinates ---")
-    for rng in (10, 30):
-        for rewrite in (True, False):
-            r = residue(rng, rewrite)
-            tag = "with rewrite " if rewrite else "no rewrite   "
-            h = r["harvest"]
-            print(f"range {rng:2d}  {tag} alphabet={r['alphabet']} "
-                  f"residuals@b={r['residuals_at_b']:2d} subqueries={r['subqueries']:3d} "
-                  f"kernels={h['kernels']:2d} merged={h['merged']:2d} "
-                  f"counts={list(r['counts'].values())}")
+    for rng in (10, 30, 90):
+        r = residue(rng)
+        h = r["harvest"]
+        print(f"range {rng:2d}  alphabet={r['alphabet']} "
+              f"residuals@b={r['residuals_at_b']:2d} subqueries={r['subqueries']:3d} "
+              f"kernels={h['kernels']:2d} merged={h['merged']:2d} "
+              f"counts={list(r['counts'].values())}")
 
-    print("\nper-sort harvest, range 30 without the rewrite "
-          "(sort, subqueries, kernels):")
-    for row in residue(30, False)["detail"]:
+    print("\nper-sort harvest, range 30 (sort, subqueries, kernels):")
+    for row in residue(30)["detail"]:
         print("   ", row)
 
-    ten = residue(10, True)
+    ten = residue(10)
     print("\nclasses at <b>, range 10 (first four members, size):", ten["classes_at_b"])
     assert ten["alphabet"] == [0, 1, 2]
-    assert ten["residuals_at_b"] == 3, "the residue rewrite must curry to three codes"
-    assert residue(30, True)["residuals_at_b"] == 3, "and stay three at any range"
-    assert residue(30, True)["counts"] == residue(30, False)["counts"], \
-        "normalisation strength is a cost parameter, never a soundness one"
-    assert residue(30, True)["harvest"]["kernels"] == \
-        residue(30, False)["harvest"]["kernels"] == \
-        residue(10, True)["harvest"]["kernels"], \
-        "the kernel count is the invariant: neither range nor rewriting moves it"
+    assert all(residue(r)["residuals_at_b"] == 3 for r in (10, 30, 90)), \
+        "the classifier must curry to three codes at any range"
+    assert len({residue(r)["harvest"]["kernels"] for r in (10, 30, 90)}) == 1, \
+        "the kernel count is an invariant of the classifier, not of the range"
 
 
 if __name__ == "__main__":

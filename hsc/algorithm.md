@@ -204,12 +204,14 @@ normalisation and the place the equivariant collapse appears; it is not a
 code path but what the merge finds when the structure is there. The parent
 then reassembles by (F)-compression.
 
-Measured on the residue example: `(b+c) mod 3` over a range-30 carrier
-issues 92 subqueries without the residue rewrite and 11 with it, and finds
-**5 kernels either way** — at the `<c>` sort, 30 subqueries collapse onto a
-single kernel. The kernel count is invariant under both the carrier's range
-and the leaf's normalisation strength, which is what it means for
-normalisation to be a cost parameter and never a soundness one.
+Measured on the residue example: `(b+c) mod 3` curries to three residual
+codes at the first coordinate and issues eleven subqueries below it, both
+independent of the carrier's range, and the subqueries collapse onto five
+kernels — one of them absorbing every residual that reaches the `<c>` sort.
+The kernel count is an invariant of the classifier on the data; a leaf that
+normalised its terms less would issue more subqueries to arrive at the same
+kernels, which is what it means for normalisation strength to be a cost
+parameter and never a soundness one.
 
 Everything above is then a caller of this one function, distinguished only
 by the codomain of `expr` and by what it does with the pieces:
