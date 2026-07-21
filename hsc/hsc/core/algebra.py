@@ -13,9 +13,9 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-from .diagram import DEBUG, Diagram, Node, Rect, duid, mk
+from .diagram import DEBUG, ONE, Diagram, Node, Rect, duid, mk
 from .stats import tick
-from .shape import LeafShape, Pair, Shape
+from .shape import LeafShape, Pair, Shape, Unit
 
 _MEET: Dict[Tuple[int, int, int], Diagram] = {}
 _JOIN: Dict[Tuple[int, int, int], Diagram] = {}
@@ -36,6 +36,8 @@ def meet(shape: Shape, a: Diagram, b: Diagram) -> Diagram:
         return None
     if a is b:
         return a
+    if isinstance(shape, Unit):
+        return ONE
     if isinstance(shape, LeafShape):
         r = shape.leaf.meet(a, b)
         return None if shape.leaf.is_empty(r) else r
@@ -70,6 +72,8 @@ def join(shape: Shape, a: Diagram, b: Diagram) -> Diagram:
         return a
     if a is b:
         return a
+    if isinstance(shape, Unit):
+        return ONE
     if isinstance(shape, LeafShape):
         return shape.leaf.join(a, b)
     tick("node.join")
@@ -94,6 +98,8 @@ def diff(shape: Shape, a: Diagram, b: Diagram) -> Diagram:
         return a
     if a is b:
         return None
+    if isinstance(shape, Unit):
+        return None  # 1 \ 1 = 0; there is nothing else there
     if isinstance(shape, LeafShape):
         r = shape.leaf.diff(a, b)
         return None if shape.leaf.is_empty(r) else r
@@ -198,7 +204,7 @@ def size(shape: Shape, d: Diagram) -> Dict[int, int]:
     seen: set = set()
 
     def walk(sh: Shape, x: Diagram, depth: int) -> None:
-        if x is None or isinstance(sh, LeafShape):
+        if x is None or isinstance(sh, (LeafShape, Unit)):
             return
         assert isinstance(sh, Pair) and isinstance(x, Node)
         if x.uid in seen:
@@ -218,6 +224,8 @@ def count(shape: Shape, d: Diagram) -> int:
     that can enumerate; it is a shadow operation, not a kernel one."""
     if d is None:
         return 0
+    if isinstance(shape, Unit):
+        return 1
     if isinstance(shape, LeafShape):
         return sum(1 for _ in shape.leaf.elements(d))
     assert isinstance(shape, Pair) and isinstance(d, Node)

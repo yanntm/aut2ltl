@@ -12,15 +12,18 @@ from .core import expr as E
 from .core.algebra import count, join, size
 from .core.branch import Case, Guard, Put
 from .core.combinators import ID, compose, star, sum_of
-from .core.diagram import Diagram, Node
+from .core.diagram import ONE, Diagram, Node
 from .core.hom import Hom
 from .core.expr import Expr
 from .core.local import Assign, Filter
 from .core.query import split_equiv, theta
-from .core.shape import LeafShape, Pair, Path, Shape, leaf_shape, pair, paths_of
+from .core.shape import (
+    UNIT, LeafShape, Pair, Path, Shape, Unit, leaf_shape, pair, paths_of,
+)
 from .leaves.enum import EnumLeaf
 
-Spec = Union[str, Tuple["Spec", "Spec"], List["Spec"]]
+Spec = Union[str, int, Tuple["Spec", "Spec"], List["Spec"]]
+"""A leaf name, the literal `1` for the unit sort, or a pair of specs."""
 
 
 class Model:
@@ -32,6 +35,8 @@ class Model:
         self.paths: Dict[str, Path] = paths_of(self.shape)
 
     def _build(self, spec: Spec) -> Shape:
+        if spec == 1:
+            return UNIT
         if isinstance(spec, str):
             return leaf_shape(spec, self.leaves[spec])
         head, tail = spec
@@ -50,6 +55,8 @@ class Model:
         return self._cube(self.shape, sets)
 
     def _cube(self, shape: Shape, sets: Dict[str, Any]) -> Diagram:
+        if isinstance(shape, Unit):
+            return ONE
         if isinstance(shape, LeafShape):
             code = frozenset(sets[shape.name])
             return None if not code else code
@@ -132,6 +139,9 @@ class Model:
 
     def _words(self, shape: Shape, d: Diagram) -> Iterable[Tuple[Tuple[str, Any], ...]]:
         if d is None:
+            return
+        if isinstance(shape, Unit):
+            yield ()
             return
         if isinstance(shape, LeafShape):
             for v in shape.leaf.elements(d):

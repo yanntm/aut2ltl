@@ -87,7 +87,8 @@ def main() -> None:
         h = r["harvest"]
         print(f"range {rng:2d}  alphabet={r['alphabet']} "
               f"residuals@b={r['residuals_at_b']:2d} subqueries={r['subqueries']:3d} "
-              f"kernels={h['kernels']:2d} merged={h['merged']:2d} "
+              f"parts={h['partitions']:3d} kernels={h['kernels']:2d} "
+              f"separating={h['separating']:2d} merged={h['merged']:3d} "
               f"counts={list(r['counts'].values())}")
 
     print("\nper-sort harvest, range 30 (sort, subqueries, kernels):")

@@ -40,6 +40,31 @@ class Shape:
         raise NotImplementedError
 
 
+class Unit(Shape):
+    """The unit sort `1`, at one shape only.
+
+    It has no frontier, so no position addresses it and no leaf backs it.
+    It is where classification values live: the codomain of the default
+    classifier, which is acceptance -- the value a word earns by reaching
+    the terminal."""
+
+    __slots__ = ()
+
+    def __init__(self) -> None:
+        self._init_uid()
+
+    def leaves(self):
+        return iter(())
+
+    def at(self, path: Path) -> Shape:
+        if path:
+            raise KeyError("path runs past the unit sort")
+        return self
+
+    def __repr__(self) -> str:
+        return "1"
+
+
 class LeafShape(Shape):
     """An imported support algebra, under a name unique within a shape."""
 
@@ -86,6 +111,9 @@ class Pair(Shape):
 
     def __repr__(self) -> str:
         return f"({self.head!r},{self.tail!r})"
+
+
+UNIT = Unit()
 
 
 def leaf_shape(name: str, leaf: "Leaf") -> LeafShape:

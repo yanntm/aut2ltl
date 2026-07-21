@@ -33,8 +33,8 @@ Deliberate simplifying assumptions, each one a named place to grow:
 
 | assumption | where it bites | lifted by |
 |---|---|---|
-| Boolean coefficients only | subs are diagrams, never weighted maps | a `Semiring` instance on the sub position |
-| no `Unit` shape | shapes are `Leaf \| Pair`; no data at the point | adding `Unit` to `shape.py` |
+| Boolean coefficients only | the terminal is a singleton, not a coefficient | a `Semiring` instance at the unit sort |
+| no tautological Θ | the claim that `normalize` is a special case of `Θ` is untested | a continuation classifier with diagram-valued labels |
 | `Star` is plain BFS | fixpoint cost is rounds x events x |X|, not O(representation) | saturation, using `Hom.support()` |
 | `support()` is static | over-approximates for indexed access (`tab[x]`) | a dynamic, minimal `skip` |
 | no term-level normal form | operation terms do not dedupe; their applications do | obligation (v) |

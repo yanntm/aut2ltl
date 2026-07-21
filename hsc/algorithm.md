@@ -8,11 +8,19 @@ meant to read as its transcription. Section marks `§` refer to
 
 ## 1. Objects
 
-A **shape** is `V ::= ⟨A⟩ | (V_h , V_t)` — a leaf importing a support
-algebra, or an ordered pair. (The unit sort `1` of §3 is omitted in this
-iteration; nothing below depends on its absence except that every shape
-bottoms out in a leaf.) Shapes are interned: structurally equal shapes are
-one object with one `uid`.
+A **shape** is `V ::= 1 | ⟨A⟩ | (V_h , V_t)` — the unit sort, a leaf
+importing a support algebra, or an ordered pair. Shapes are interned:
+structurally equal shapes are one object with one `uid`.
+
+The unit sort exists at one shape only and has no frontier, so no position
+addresses it. It is where classification values live, and it carries three
+roles that are one object: the **terminal value** `1`; the **default
+classification**, acceptance — the value a word earns by reaching it; and
+the base case of the **default classifier**, the continuation, whose
+residual once every coordinate is consumed *is* that value. That last
+identity is why classifying against the continuation reproduces the normal
+form: the normal form is the special case of the quotient operator whose
+classifier is the tautological one.
 
 A **position** is a path: a tuple of bits, `0` = head, `1` = tail, read
 from the root. The frontier of a shape is its leaves in path order.
@@ -21,6 +29,9 @@ A **diagram** over a shape is, by cases on the shape:
 
 - `None` — the adjoined zero, at every shape. Never stored inside a node,
   never traversed, never a letter (§0, discipline 1).
+- at `1` — the terminal `ONE`, a singleton. Over the Boolean coefficients
+  it is the only nonzero value at that sort; a weighted pass replaces it by
+  a coefficient without touching anything that refers to it.
 - at `⟨A⟩` — a canonical, nonempty leaf code, whatever the leaf module
   says it is.
 - at `(V_h,V_t)` — a `Node`: a nonempty tuple of pairs `(prime, sub)` with
@@ -92,12 +103,12 @@ the kernel's central recursion; the memo tables hang off it.
 
 Four operations, defined at every shape, each dispatching on the shape:
 
-| op | at `⟨A⟩` | at `(V_h,V_t)` |
-|---|---|---|
-| `is_zero` | code is empty (leaf decides) | the diagram is `None` — a pointer test (§6, Prop. 6.3) |
-| `meet(a,b)` | leaf meet | rectangles `(p∧q, s∧t)` over all pairs, dropping zeros, then `normalize` |
-| `join(a,b)` | leaf join | `normalize(a.pairs + b.pairs)` |
-| `diff(a,b)` | leaf relative difference | see below |
+| op | at `1` | at `⟨A⟩` | at `(V_h,V_t)` |
+|---|---|---|---|
+| `is_zero` | the diagram is `None` | code is empty (leaf decides) | the diagram is `None` — a pointer test (§6, Prop. 6.3) |
+| `meet(a,b)` | `1` | leaf meet | rectangles `(p∧q, s∧t)` over all pairs, dropping zeros, then `normalize` |
+| `join(a,b)` | `1` | leaf join | `normalize(a.pairs + b.pairs)` |
+| `diff(a,b)` | `0` | leaf relative difference | see below |
 
 `diff(a, b)` at a pair, per `(p,s)` of `a`: carve `p` against each `(q,t)`
 of `b`, emitting `(p∧q, s∖t)` for the overlaps and `(p ∖ ⋃q, s)` for what
@@ -194,6 +205,15 @@ client writes an expression. An applied operation therefore carries the
 builder that made it, and substitution rebuilds through that builder;
 rebuilding through a generic constructor normalises at the wrong time,
 which is to say never.
+
+A level whose classifier mentions nothing below it does not descend, but it
+still *federates*: one class is a partition too, and its kernel must be
+comparable with everyone else's. Two one-class partitions arise for
+different reasons and must not be conflated — one labelled by a **value**
+(the terminal case; with the value `1`, acceptance) and one labelled by a
+**residual expression** (a suspended computation: nothing here separates
+anything, ask below). Same kernel, different labelling, which is exactly
+what splitting kernel from labelling is for.
 
 **Up.** Results federate. A partition is stored as its *kernel* — the
 canonical, interned tuple of pieces — plus a labelling from residuals into

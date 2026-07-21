@@ -23,14 +23,32 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from .shape import LeafShape, Pair, Shape
+from .shape import LeafShape, Pair, Shape, Unit
 
-Diagram = Any  # None | leaf code | Node
+Diagram = Any  # None | Terminal | leaf code | Node
 Rect = Tuple[Diagram, Diagram]
 
 DEBUG: bool = True
 
 ZERO_UID = 0
+
+
+class Terminal:
+    """The value `1` at the unit sort: acceptance, reached.
+
+    A singleton, so equality is `is` like every other diagram. Over the
+    Boolean coefficients it is the only nonzero value there is at that sort;
+    a weighted pass replaces it by a coefficient without touching anything
+    that refers to it."""
+
+    __slots__ = ()
+
+    def __repr__(self) -> str:
+        return "1"
+
+
+ONE = Terminal()
+ONE_UID = 1
 
 
 class Node:
@@ -66,6 +84,8 @@ def duid(shape: Shape, d: Diagram) -> int:
     """Total-order key for a diagram at `shape`. Zero is 0; nodes carry theirs."""
     if d is None:
         return ZERO_UID
+    if d is ONE:
+        return ONE_UID
     if isinstance(d, Node):
         return d.uid
     key = (shape.uid, d)

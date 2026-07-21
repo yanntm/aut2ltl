@@ -126,22 +126,27 @@ def federate(shape: Shape, mapping: Dict[Expr, Diagram]) -> Partition:
 def split_equiv(shape: Shape, d: Diagram, expr: Expr) -> Partition:
     if d is None:
         return EMPTY
-    if expr.is_ground() or not (expr.vars & _names(shape)):
-        # Distance zero: the classifier does not live here, so there is one
-        # piece and nothing to federate. Kernels of trivial partitions are
-        # named after their single piece and never interned -- registering
-        # them would drown the merge statistics in splits that never split.
-        return Partition(shape, (d,), {expr: 0}, -duid(shape, d))
 
     key = (shape.uid, duid(shape, d), expr.uid)
     got = _SPLIT.get(key)
     if got is not None:
         return got
-    tick("node.split_equiv")
 
-    if isinstance(shape, LeafShape):
+    if expr.is_ground() or not (expr.vars & _names(shape)):
+        # Distance zero: nothing here can separate anything, so do not
+        # descend -- locality is free. But *do* federate. A level that
+        # splits into one piece has still produced a partition, and it must
+        # carry the same kernel as any other partition with that piece,
+        # whether that one came from a skipped level or from a leaf on which
+        # the classifier turned out to be constant. Declining to register it
+        # would make equal partitions carry different kernels, and the merge
+        # would stop being an equivalence.
+        out = federate(shape, {expr: d})
+    elif isinstance(shape, LeafShape):
+        tick("node.split_equiv")
         out = federate(shape, dict(shape.leaf.split_equiv(d, expr)))
     else:
+        tick("node.split_equiv")
         assert isinstance(shape, Pair) and isinstance(d, Node)
         rects: Dict[Expr, List[Rect]] = {}
         for p, s in d.pairs:
@@ -185,18 +190,27 @@ def kernel_report() -> Dict[str, int]:
     """The equivariant harvest, made countable, over everything computed
     since the last `clear_cache`.
 
-    `partitions` counts the non-trivial subqueries that were issued;
-    `kernels` counts the distinct splits they turned out to induce. The
-    difference is what the merge recovered — residuals whose codes never
-    coincided but whose partitions did, now sharing one kernel and differing
-    only by a finite relabelling."""
+    `partitions` counts every partition built; `kernels` counts the distinct
+    ones they turned out to be, and their difference is what the merge
+    recovered — residuals whose codes never coincided but whose partitions
+    did, now sharing one kernel and differing only by a finite relabelling.
+    `separating` counts the kernels with more than one piece, since a level
+    that split into one piece federates like any other but did not, in the
+    end, separate anything."""
     seen: Dict[int, int] = {}
+    sizes: Dict[int, int] = {}
     for part in _SPLIT.values():
-        if part is EMPTY or part.kernel <= 0:
+        if part is EMPTY:
             continue
         seen[part.kernel] = seen.get(part.kernel, 0) + 1
+        sizes[part.kernel] = len(part.pieces)
     total = sum(seen.values())
-    return {"partitions": total, "kernels": len(seen), "merged": total - len(seen)}
+    return {
+        "partitions": total,
+        "kernels": len(seen),
+        "merged": total - len(seen),
+        "separating": sum(1 for k in seen if sizes[k] > 1),
+    }
 
 
 def kernel_detail() -> List[Tuple[str, int, int]]:
@@ -206,7 +220,7 @@ def kernel_detail() -> List[Tuple[str, int, int]]:
     separate and where they only appeared to."""
     per: Dict[int, Tuple[Shape, set, int]] = {}
     for part in _SPLIT.values():
-        if part is EMPTY or part.kernel <= 0:
+        if part is EMPTY:
             continue
         sh = part.shape
         prev = per.get(sh.uid)
