@@ -87,11 +87,28 @@ at exactly one place and therefore no two positions can share a code.
 Measured: dining philosophers over BDD leaves keeps the BuDDy manager at 32
 nodes for 2, 4 and 8 philosophers, while the shape's own tower grows.
 
-## 6. Exported maps
+## 6. Exported maps, and local terms
 
-Beyond the support-algebra tiers, a leaf may export *maps* -- the raw
-material for assigns. A structured carrier needs them: writing one bit of a
-block is not a constant, it is `exists bit . code` conjoined with the new
-value, which is the pushforward of a partial assignment and is
-memory-destructive exactly as an assign should be. `ops.local.Act` applies
-one at a position; `Write` is the special case whose map is a constant.
+Beyond the support-algebra tiers, a leaf exports *maps* -- the raw material
+for assigns. A structured carrier needs them: writing one bit of a block is
+not a constant, it is `exists bit . code` conjoined with the new value, the
+pushforward of a partial assignment, memory-destructive exactly as an assign
+should be.
+
+The interface a theory should ultimately be asked for is not one map at a
+time but a **maximal local term**: the whole term -- guards, assigns,
+composition, sum, star closure -- whose support lies in this leaf, handed
+over for the theory to interpret as it likes. A BDD theory reads all of it
+natively: composition is relational composition, sum is disjunction of
+relations, star is transitive closure, and the result is one relation over
+interleaved current/next variables applied with a single relational product.
+A finite enumerated theory just executes the parts. **The normal form for a
+local term is per theory; the framework delivers the term and does not
+prescribe the fusion.** Splitting a code, acting per piece and re-joining is
+what a theory with a native operation must never be made to do.
+
+Relational products are also why `split_equiv` is *not* the mechanism for
+operations. It is the mechanism for **classifiers** -- queries whose value
+accumulates across leaves, and guards or assigns that genuinely relate
+coordinates in different leaves. Where an event is a tensor of local
+actions, no classifier travels and none should.

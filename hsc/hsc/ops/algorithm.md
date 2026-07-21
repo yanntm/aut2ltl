@@ -71,11 +71,17 @@ re-implements the traversal.
 currently applies its parts one after another, which is n full traversals of
 the diagram where this design is one.*
 
-**`skip` is compositional.** A composition skips a level exactly when every
-part does, so a block's footprint is derivable from its parts' and a block
-of operations descends **as one object** for as long as it skips. Support is
-not primarily a hint for a schedule; it is what decides how far a
-composition travels before it has to act.
+**A block is a whole term, not a chain.** What travels is a term over
+filters, assigns, composition, **sum**, and **star closure** — not merely a
+`∘`-chain. That matters at the leaf, which is handed the entire local term
+and may fuse all of it: for a BDD theory, `∘` is relational composition, `+`
+is disjunction of relations and `*` is transitive closure, all native.
+
+**`skip` is compositional, uniformly.** A block skips a level exactly when
+every part does, and that rule is the same for `∘`, `+` and `*`. So a
+block's footprint is derivable from its parts' and the block descends **as
+one object** for as long as it skips. Support is not primarily a hint for a
+schedule; it is what decides how far a term travels before it has to act.
 
 **A block parenthesises at the level it cannot skip**, splitting along the
 two congruence directions: the part acting on the head goes to the *edge*,
@@ -97,6 +103,20 @@ apply(block, shape, d):
 Memoised on `(block, shape, diagram)`; the split is cached per
 `(block, shape)`. Single-position homs are the degenerate case, a block of
 one.
+
+**Only `∘` splits across a cut.** A composition of parts with disjoint
+supports is a tensor and factors into edge and tail. A **sum does not**:
+`(h_e ∘ h_t) + (g_e ∘ g_t)` is not `(h_e + g_e) ∘ (h_t + g_t)`. A sum
+therefore travels intact only while its summands skip *together*, and splits
+into separate applications joined at the level where they part company.
+
+**A star travels to the lowest cut its support touches, and is applied there
+as a local fixpoint, memoised per node — which is the kernel of
+saturation.** So saturation is not wholly a separate scheduling question
+bolted on afterwards: putting `*` in the block algebra and letting blocks
+travel delivers its core, and what remains genuinely open (§5) is the order
+between local and crossing events and the footprint notion, not the idea
+itself.
 
 **A leaf is handed a maximal local block, not an opcode.** The framework's
 obligation stops at delivering the whole composition whose support lies in
