@@ -37,7 +37,6 @@ Deliberate simplifying assumptions, each one a named place to grow:
 | no `Unit` shape | shapes are `Leaf \| Pair`; no data at the point | adding `Unit` to `shape.py` |
 | `Star` is plain BFS | fixpoint cost is rounds x events x |X|, not O(representation) | saturation, using `Hom.support()` |
 | `support()` is static | over-approximates for indexed access (`tab[x]`) | a dynamic, minimal `skip` |
-| no semantic merge in `split_equiv` | weak leaf normalisation costs subqueries it could recover | Mechanism 9.3 step 3 |
 | no term-level normal form | operation terms do not dedupe; their applications do | obligation (v) |
 | no s-expression surface | models are built in Python | later, once the classifier seam settles |
 

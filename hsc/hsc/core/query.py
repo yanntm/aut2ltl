@@ -1,36 +1,38 @@
 """`split_equiv`: the partition primitive, and `theta` on top of it.
 
-    split_equiv(shape, d, expr) -> {residual expression : piece of d}
+    split_equiv(shape, d, expr) -> Partition of d
 
 Partition `d` into the pieces on which `expr` has each realised residual.
-Zero pieces are absent, so the key set *is* the discovered alphabet: empty
-classes are never represented, and pieces that agree are merged before any
-client sees them. When a key is ground, that residual is a discovered
-letter; when it is not, the caller is looking at a cut the expression has
-not finished crossing.
+Zero pieces are absent, so the label set *is* the discovered alphabet: empty
+classes are never represented and pieces that agree are merged before any
+client sees them. When a label is ground it is a discovered letter; when it
+is not, the caller is looking at a cut the expression has not finished
+crossing.
 
-The traversal is the curried residual transport. The invariant it maintains:
-the travelling classifier is ground and mentions only coordinates not yet
-consumed, because meeting a coordinate substitutes its value and
-renormalises. Consequently a consumed coordinate can never be re-queried.
+The traversal is the curried residual transport, in three movements.
 
-Three structural properties fall out of the code rather than being arranged:
+**Down.** Travel to the first coordinate the classifier mentions. If it
+mentions nothing here, return in one entry without descending: locality is
+the distance-zero case and costs nothing.
 
-- **locality is free.** If `expr` mentions nothing in the head, the head
-  split returns the expression unchanged in one entry and no work is done
-  there; a classifier supported in one subtree costs nothing outside it.
-- **deduplication is cache sharing.** Expressions are interned, so grouping
-  head-classes by residual code and keying the memo table on that code are
-  the same act; every context whose classifier curries to the same code
-  hits the same entry.
-- **the equivariant collapse is not a code path.** Where residuals differ
-  but the induced partitions agree, they meet again in the returned map,
-  merged by the same (F)-compression that merges anything else.
+**Across.** Meeting a coordinate substitutes its class and renormalises, so
+the travelling classifier stays ground and mentions only coordinates not yet
+consumed; a consumed coordinate can never be re-queried. Expressions are
+interned, so grouping head-classes by residual code and keying the memo
+table on that code are the same act — deduplication *is* cache sharing.
+
+**Up.** Results federate as they return. A partition is stored as its
+*kernel* — the canonical tuple of pieces — plus a labelling from residuals
+into it. Two subqueries whose residuals differ but whose realised partitions
+agree are recognised at this point and share one kernel object, keeping only
+their two labellings apart. This is the retroactive repair for weak leaf
+normalisation, and it is also where the equivariant collapse appears: it is
+not a code path but what the merge finds when the structure is there.
 """
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from .algebra import normalize
 from .diagram import Diagram, Node, Rect, duid
@@ -38,29 +40,107 @@ from .expr import Expr
 from .shape import LeafShape, Pair, Shape
 from .stats import tick
 
-_SPLIT: Dict[Tuple[int, int, int], Dict[Expr, Diagram]] = {}
+# kernel identity: (shape, canonical tuple of piece uids) -> kernel id
+_KERNELS: Dict[Tuple[int, Tuple[int, ...]], int] = {}
+# the representative piece tuple for a kernel, shared by every partition on it
+_KERNEL_PIECES: Dict[int, Tuple[Diagram, ...]] = {}
+_SPLIT: Dict[Tuple[int, int, int], "Partition"] = {}
 
 
 def clear_cache() -> None:
     _SPLIT.clear()
+    _KERNELS.clear()
+    _KERNEL_PIECES.clear()
 
 
-def split_equiv(shape: Shape, d: Diagram, expr: Expr) -> Dict[Expr, Diagram]:
+class Partition:
+    """A kernel plus a labelling of it.
+
+    The kernel is the partition itself — the pieces, canonically ordered and
+    interned. The labelling says which residual names which piece. Splitting
+    the two is what lets partitions federate: agreeing on the kernel is a
+    pointer test, and disagreeing on the labelling costs a finite table."""
+
+    __slots__ = ("shape", "pieces", "labels", "kernel")
+
+    def __init__(
+        self,
+        shape: Shape,
+        pieces: Tuple[Diagram, ...],
+        labels: Dict[Expr, int],
+        kernel: int,
+    ) -> None:
+        self.shape = shape
+        self.pieces = pieces
+        self.labels = labels
+        self.kernel = kernel
+
+    def get(self, residual: Expr) -> Diagram:
+        idx = self.labels.get(residual)
+        return None if idx is None else self.pieces[idx]
+
+    def items(self) -> Iterator[Tuple[Expr, Diagram]]:
+        for residual, idx in self.labels.items():
+            yield residual, self.pieces[idx]
+
+    def keys(self) -> Iterator[Expr]:
+        return iter(self.labels)
+
+    def __len__(self) -> int:
+        return len(self.pieces)
+
+    def __repr__(self) -> str:
+        return f"Partition(kernel={self.kernel}, {len(self.pieces)} pieces)"
+
+
+EMPTY = Partition(None, (), {}, 0)  # type: ignore[arg-type]
+
+
+def federate(shape: Shape, mapping: Dict[Expr, Diagram]) -> Partition:
+    """Build a partition, sharing its kernel with any partition already seen
+    that has the same pieces.
+
+    Two residuals that induce the same split of the same data meet here even
+    though their codes never coincided; the labelling tables are what remains
+    of their difference."""
+    items = [(e, d) for e, d in mapping.items() if d is not None]
+    if not items:
+        return EMPTY
+    order = sorted(range(len(items)), key=lambda i: duid(shape, items[i][1]))
+    pieces = tuple(items[i][1] for i in order)
+
+    key = (shape.uid, tuple(duid(shape, p) for p in pieces))
+    kernel = _KERNELS.get(key)
+    if kernel is None:
+        kernel = _KERNELS[key] = len(_KERNELS) + 1
+        _KERNEL_PIECES[kernel] = pieces
+        tick("node.kernel_new")
+    else:
+        pieces = _KERNEL_PIECES[kernel]  # federate: one kernel object, shared
+        tick("node.kernel_merged")
+
+    labels = {items[i][0]: pos for pos, i in enumerate(order)}
+    return Partition(shape, pieces, labels, kernel)
+
+
+def split_equiv(shape: Shape, d: Diagram, expr: Expr) -> Partition:
     if d is None:
-        return {}
-    if expr.is_ground():
-        return {expr: d}
-    if not (expr.vars & _names(shape)):
-        return {expr: d}  # distance zero: the classifier does not live here
+        return EMPTY
+    if expr.is_ground() or not (expr.vars & _names(shape)):
+        # Distance zero: the classifier does not live here, so there is one
+        # piece and nothing to federate. Kernels of trivial partitions are
+        # named after their single piece and never interned -- registering
+        # them would drown the merge statistics in splits that never split.
+        return Partition(shape, (d,), {expr: 0}, -duid(shape, d))
 
-    tick("node.split_equiv")
     key = (shape.uid, duid(shape, d), expr.uid)
     got = _SPLIT.get(key)
     if got is not None:
         return got
+    tick("node.split_equiv")
 
     if isinstance(shape, LeafShape):
-        out = shape.leaf.split_equiv(d, expr)
+        out = federate(shape, dict(shape.leaf.split_equiv(d, expr)))
     else:
         assert isinstance(shape, Pair) and isinstance(d, Node)
         rects: Dict[Expr, List[Rect]] = {}
@@ -68,8 +148,7 @@ def split_equiv(shape: Shape, d: Diagram, expr: Expr) -> Dict[Expr, Diagram]:
             for residual, piece in split_equiv(shape.head, p, expr).items():
                 for final, tail_piece in split_equiv(shape.tail, s, residual).items():
                     rects.setdefault(final, []).append((piece, tail_piece))
-        out = {e: normalize(shape, rs) for e, rs in rects.items()}
-        out = {e: v for e, v in out.items() if v is not None}
+        out = federate(shape, {e: normalize(shape, rs) for e, rs in rects.items()})
 
     _SPLIT[key] = out
     return out
@@ -88,16 +167,51 @@ def _names(shape: Shape) -> frozenset:
 def theta(shape: Shape, d: Diagram, expr: Expr) -> Dict[Any, Diagram]:
     """The quotient constructor: discovered letter -> the part it classifies.
 
-    Every returned class is nonempty, and no two classify the same part, so
+    Every returned class is nonempty and no two classify the same part, so
     the alphabet is the coarsest refinement compatible with `expr` on `d` —
-    minimal and forced, inherited wholesale from the decomposition theorem
-    rather than arranged here."""
-    parts = split_equiv(shape, d, expr)
+    minimal and forced, inherited from the decomposition theorem rather than
+    arranged here."""
     out: Dict[Any, Diagram] = {}
-    for residual, piece in parts.items():
+    for residual, piece in split_equiv(shape, d, expr).items():
         if not residual.is_ground():
             raise ValueError(
                 f"classifier mentions coordinates outside the shape: {residual!r}"
             )
         out[residual.value] = piece  # type: ignore[attr-defined]
     return out
+
+
+def kernel_report() -> Dict[str, int]:
+    """The equivariant harvest, made countable, over everything computed
+    since the last `clear_cache`.
+
+    `partitions` counts the non-trivial subqueries that were issued;
+    `kernels` counts the distinct splits they turned out to induce. The
+    difference is what the merge recovered — residuals whose codes never
+    coincided but whose partitions did, now sharing one kernel and differing
+    only by a finite relabelling."""
+    seen: Dict[int, int] = {}
+    for part in _SPLIT.values():
+        if part is EMPTY or part.kernel <= 0:
+            continue
+        seen[part.kernel] = seen.get(part.kernel, 0) + 1
+    total = sum(seen.values())
+    return {"partitions": total, "kernels": len(seen), "merged": total - len(seen)}
+
+
+def kernel_detail() -> List[Tuple[str, int, int]]:
+    """The same harvest, per sort: (shape, subqueries issued, kernels found).
+
+    Read down the list to see where a classifier's residuals genuinely
+    separate and where they only appeared to."""
+    per: Dict[int, Tuple[Shape, set, int]] = {}
+    for part in _SPLIT.values():
+        if part is EMPTY or part.kernel <= 0:
+            continue
+        sh = part.shape
+        prev = per.get(sh.uid)
+        if prev is None:
+            per[sh.uid] = (sh, {part.kernel}, 1)
+        else:
+            per[sh.uid] = (sh, prev[1] | {part.kernel}, prev[2] + 1)
+    return [(repr(sh), n, len(ks)) for sh, ks, n in per.values()]

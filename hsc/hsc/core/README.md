@@ -13,7 +13,7 @@ be its transcription.
 | `local.py` | position-addressed homs: `Filter`, parallel constant `Assign` |
 | `combinators.py` | `Identity`, `Compose`, `Sum`, `Star` |
 | `expr.py` | classifiers: an interned expression language over coordinates |
-| `query.py` | `split_equiv`, the partition primitive, and `theta` on top of it |
+| `query.py` | `split_equiv`, `Partition`, the kernel merge, and `theta` |
 | `branch.py` | classifier-driven homs: `Guard`, `Put`, `Case` |
 | `stats.py` | the invoice: call counters, split by side of the leaf interface |
 

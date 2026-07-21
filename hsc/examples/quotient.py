@@ -23,6 +23,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from hsc import Model, const, enum, eq, ind, mod, plus, star, sum_of, var
+from hsc.core.query import clear_cache, kernel_detail, kernel_report
 from hsc.core.stats import bill, reset
 
 from examples import philosophers as ph
@@ -61,8 +62,10 @@ def residue(rng: int, rewrite: bool) -> Dict[str, Any]:
     e = mod(plus(var("b"), var("c")), 3, rewrite=rewrite)
 
     reset()
+    clear_cache()
     parts = m.theta(d, e)
     invoice = bill()
+    harvest = kernel_report()
     groups = leaves["b"].split_equiv(frozenset(range(rng)), e)
 
     return {
@@ -71,6 +74,8 @@ def residue(rng: int, rewrite: bool) -> Dict[str, Any]:
         "residuals_at_b": len(groups),
         "classes_at_b": sorted((sorted(v)[:4], len(v)) for v in groups.values()),
         "subqueries": invoice.get("node.split_equiv", 0),
+        "harvest": harvest,
+        "detail": kernel_detail(),
     }
 
 
@@ -82,9 +87,16 @@ def main() -> None:
         for rewrite in (True, False):
             r = residue(rng, rewrite)
             tag = "with rewrite " if rewrite else "no rewrite   "
+            h = r["harvest"]
             print(f"range {rng:2d}  {tag} alphabet={r['alphabet']} "
-                  f"residuals@b={r['residuals_at_b']:2d} subqueries={r['subqueries']:5d} "
+                  f"residuals@b={r['residuals_at_b']:2d} subqueries={r['subqueries']:3d} "
+                  f"kernels={h['kernels']:2d} merged={h['merged']:2d} "
                   f"counts={list(r['counts'].values())}")
+
+    print("\nper-sort harvest, range 30 without the rewrite "
+          "(sort, subqueries, kernels):")
+    for row in residue(30, False)["detail"]:
+        print("   ", row)
 
     ten = residue(10, True)
     print("\nclasses at <b>, range 10 (first four members, size):", ten["classes_at_b"])
@@ -93,6 +105,10 @@ def main() -> None:
     assert residue(30, True)["residuals_at_b"] == 3, "and stay three at any range"
     assert residue(30, True)["counts"] == residue(30, False)["counts"], \
         "normalisation strength is a cost parameter, never a soundness one"
+    assert residue(30, True)["harvest"]["kernels"] == \
+        residue(30, False)["harvest"]["kernels"] == \
+        residue(10, True)["harvest"]["kernels"], \
+        "the kernel count is the invariant: neither range nor rewriting moves it"
 
 
 if __name__ == "__main__":

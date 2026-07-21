@@ -162,31 +162,54 @@ of §8, and any fair schedule reaches the same fixpoint by monotonicity.
 
 ---
 
-## 6. `split_equiv` — the next milestone, designed here
+## 6. `split_equiv` — the partition primitive
 
-The one primitive the elementary layer is still missing, and the same one
-`Θ` needs:
+The one primitive the elementary layer and the quotient constructor share:
 
 ```
-split_equiv(shape, d, expr) -> {value : piece}
+split_equiv(shape, d, expr) -> Partition of d
 ```
 
 Partition the diagram `d` into the pieces on which `expr` takes each
 realised value; zero pieces are absent, so the returned map's key set *is*
 the discovered alphabet `Λ(d, expr)` of §9.
 
-Traversal, per Mechanism 9.3: travel to the first frontier position in
-`expr`'s support. At the leaf, ask the leaf module to split its code by the
+Traversal, in three movements.
+
+**Down.** Travel to the first frontier position in `expr`'s support. A
+classifier that mentions nothing in a subtree returns there in one entry
+without descending: locality is the distance-zero case, and it is free.
+
+**Across.** At a leaf, ask the leaf module to split its code by the
 expression — this is where a leaf gets to be clever (an interval leaf
 returning `{0,3,6,9}` as one periodic code rather than four intervals) and
-where §9's third cost factor lives. For each class, substitute and
-renormalise the expression: the residual is ground and mentions only
-positions not yet consumed, so a consumed coordinate can never be
-re-queried. Group head-classes by residual code — deduplication *is* cache
-sharing — recurse once per distinct residual on the tails actually
-demanded, merge returned partitions with equal kernels on the way back
-(the retroactive repair for weak leaf normalisation), and reassemble by
-(F)-compression.
+where the third cost factor lives. Meeting a coordinate substitutes its
+class and renormalises, so the residual stays ground and mentions only
+positions not yet consumed; a consumed coordinate can never be re-queried.
+Because expressions are interned, grouping head-classes by residual code
+and keying the memo table on that code are the same act.
+
+Normalisation must happen *while a residual curries*, not only when a
+client writes an expression. An applied operation therefore carries the
+builder that made it, and substitution rebuilds through that builder;
+rebuilding through a generic constructor normalises at the wrong time,
+which is to say never.
+
+**Up.** Results federate. A partition is stored as its *kernel* — the
+canonical, interned tuple of pieces — plus a labelling from residuals into
+it. Two subqueries whose residual codes differ but whose realised
+partitions agree are recognised here and share one kernel object, keeping
+only their labellings apart. This is the retroactive repair for weak leaf
+normalisation and the place the equivariant collapse appears; it is not a
+code path but what the merge finds when the structure is there. The parent
+then reassembles by (F)-compression.
+
+Measured on the residue example: `(b+c) mod 3` over a range-30 carrier
+issues 92 subqueries without the residue rewrite and 11 with it, and finds
+**5 kernels either way** — at the `<c>` sort, 30 subqueries collapse onto a
+single kernel. The kernel count is invariant under both the carrier's range
+and the leaf's normalisation strength, which is what it means for
+normalisation to be a cost parameter and never a soundness one.
 
 Everything above is then a caller of this one function, distinguished only
 by the codomain of `expr` and by what it does with the pieces:
