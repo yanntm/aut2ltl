@@ -165,32 +165,90 @@ before it is a coding one.
 
 ---
 
-## 5. Open: the schedule
+## 5. Saturation
 
-`Star(h)` is the least fixpoint of `X ↦ d ∨ h(X)`, iterated until the root
-pointer stops changing. With hash-consing that pointer test is the per-run
-certificate, and monotonicity makes every fair schedule agree on the value —
-so scheduling lives strictly below the semantics.
+`Star(h)` is the least fixpoint of `X -> d + h(X)`. Monotonicity makes every
+fair schedule agree on the value, so scheduling lives strictly below the
+semantics -- but not below the *cost*: iterating by rounds rebuilds a fresh
+diagram each time, so every round misses the caches and the cost is
+rounds x events x |X| in freshly built nodes. Saturation is the answer, and
+with a shape tree it needs no declaration: the split below is **derived from
+supports**.
 
-It does not live below the *cost*. Plain BFS rebuilds a fresh diagram every
-round, so every round misses the caches: cost is rounds x events x |X| in
-freshly built nodes. Saturation — applying each event at the lowest cut its
-support touches, taking a local fixpoint there, memoised per node — is the
-known answer, and with a shape tree an a-priori grouping per cut is
-available that a flat variable order cannot express.
+### The decomposition at a cut
 
-Two things must be settled first, and neither is settled in the calculus
-document, which does not discuss schedules at all:
+Write the term being saturated as
 
-- **`support()` is a static over-approximation.** It is the complement of
-  libDDD's `skip`, but `skip` is *minimal* and may be *dynamic*: an
-  operation reading `tab[x]` has a static support covering all of `tab`,
-  while its actual footprint depends on the data. Static support is adequate
-  only while every footprint is static, which is true of everything in this
-  prototype today and will not stay true.
-- **Order within a cut is subtle.** Saturating the tail before the local
-  level is required; filters want to be applied before moves; and the
-  re-saturation of children after a crossing event fires has to terminate.
+```
+H = (L + G + F + id)*
+```
+
+split by where each summand's support lies relative to this cut:
+
+| part | support | disposition |
+|---|---|---|
+| `F` | tail only | skips this level; belongs downstream |
+| `L` | head only | local to this level's edge |
+| `G` | crosses the cut | anchored here -- an operation's top is the highest level its support reaches |
+
+`L`, `G` and `F` are each sums of compositions, and `id` sits in the sum so
+each closure is reflexive.
+
+### Throwing a crossing event in two directions
+
+A `g` in `G` that is Kronecker factors as `g = l o f`, a local part and a
+tail part. It then does **not** have to act at this level. Instead it is
+thrown both ways, with the re-saturation fused into its own application so
+that nothing is left unsaturated behind it:
+
+```
+down the tail:   (F + id)* o f
+on the edge:     (L + id)* o l
+```
+
+**Selections first, on both sides.** `g` fires only if both members find
+friends. Launching `(F + id)*` -- an unbounded fixpoint -- before testing
+that `l` has a match is speculative at best and disrupts the semantics at
+worst, since the other member may return the empty set. Apply the guards of
+both members, drop the pair if either is empty, and only then apply the
+updates and re-saturate.
+
+### The schedule at a node
+
+```
+saturate(H, shape, d):
+    if shape is a leaf:                       # the theory closes its own term
+        return leaf.apply_local(d, H)
+    d := (F + id)*  on the subs                          # downstream first
+    d := (L + id)*  on the primes                        # then local
+    repeat until d stops changing:
+        for g in G:                                      # chaining, not a joint fixpoint
+            d := (g + id)(d)                             # thrown both ways, as above
+```
+
+`(F + id)*` runs before the first `g` is ever touched, and the local
+saturation runs too. The `G` loop then **chains**: each `g` is applied to
+the accumulated `d` in turn, rather than the whole sum being iterated
+jointly.
+
+`g(d)` at a node with pairs `(p, s)` is the tensor: `((L+id)* o l)` on `p`
+and `((F+id)* o f)` on `s`, rebuilt through `normalize`.
+
+The recursion is what makes it hierarchical -- the two child saturations are
+this same procedure one level in, bottoming out where a theory closes its
+own local term. Nothing is declared; the split falls out of the supports.
+
+### What remains genuinely open
+
+- **The footprint notion.** `support()` is a static over-approximation, the
+  complement of libDDD's `skip`, but `skip` is *minimal* and may be
+  *dynamic*: an operation reading `tab[x]` has a static support covering all
+  of `tab` while its actual footprint depends on the data. Static support is
+  adequate only while every footprint is static, which is true of everything
+  in this prototype today and will not stay true.
+- **Non-Kronecker crossing events.** A `g` that does not factor as `l o f`
+  cannot be thrown in two directions. That is exactly and only where
+  `split_equiv` fires.
 
 Groundwork present: `Hom.support()` and `Hom.rerooted(bit)` on every hom.
-No saturation is implemented, deliberately.
+The procedure above is not implemented yet.

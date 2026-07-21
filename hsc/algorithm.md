@@ -93,11 +93,14 @@ cost is made in this repository without citing them.
 ## What is deliberately absent
 
 - **A schedule.** `Star` is plain BFS; its cost is rounds x events x |X| in
-  freshly built nodes. Saturation is the known answer, and it is *not in the
-  calculus document at all* — it needs a theory round before it needs code.
-  `Hom.support()` exists as groundwork and is a **static
-  over-approximation**: adequate while every operation's footprint is
-  static, wrong as soon as an operation reads an index it computes.
+  freshly built nodes. Hierarchical saturation is now *specified* in
+  `hsc/ops/algorithm.md` §5 and not implemented: the split of a term into
+  local, crossing and skipping parts is derived from supports, a Kronecker
+  crossing event is thrown both ways with its re-saturation fused in, and
+  the rest is chained. What stays open there is the footprint notion — a
+  static support over-approximates as soon as an operation reads an index it
+  computes — and the non-Kronecker crossing case, which is exactly where
+  `split_equiv` fires.
 - **A term normal form.** The shape of the answer is a confluent rewriting
   system, not a canonical guarded word; see `hsc/ops/algorithm.md`.
 - **An interchange syntax.** Models are built in Python until the classifier
