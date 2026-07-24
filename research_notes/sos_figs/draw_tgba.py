@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Draw one deterministic automaton for Figure 3, relabelled to the paper's
-two-letter alphabet.
+"""Draw one deterministic automaton, relabelled to the paper's two-letter
+alphabet — the common renderer for every drawing in `img/`.
 
 The construction's alphabet is `Σ = 2^{a}`, a single atomic proposition, so
 Spot draws its two letters as the boolean labels `a` (the letter `{a}`) and

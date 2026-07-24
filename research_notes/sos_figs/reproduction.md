@@ -112,14 +112,17 @@ row, and `EvenBlocks` shows a single residual class (prefix-independence).
 
 ## 4. Render the automata (Figure 1)
 
-Spot draws the SVG; `rsvg-convert` rasterizes to a page-safe PNG (fixed width,
-aspect preserved).
+[`draw_tgba.py`](draw_tgba.py) — the one renderer for **every** `img/` drawing:
+Spot's SVG relabelled to the paper's two-letter alphabet (`!a → b`, `1 → a,b`),
+then `rsvg-convert` to a page-safe PNG (fixed width, aspect preserved). Do not
+substitute `render_svg` here — it draws Spot's boolean labels raw and the
+figures fall out of the paper convention.
 
 ```sh
-python3 -m tests.sos.render_svg --verbatim research_notes/sos_figs/sources/gf_aa_parity.hoa research_notes/sos_figs/img/gf_aa.png
-python3 -m tests.sos.render_svg --verbatim research_notes/sos_figs/sources/gf_aa_reset.hoa  research_notes/sos_figs/img/gf_aa_reset.png
-python3 -m tests.sos.render_svg --verbatim research_notes/sos_figs/sources/even.hoa        research_notes/sos_figs/img/even.png
-python3 -m tests.sos.render_svg --verbatim research_notes/sos_figs/sources/evenblocks.hoa  research_notes/sos_figs/img/evenblocks.png
+python3 research_notes/sos_figs/draw_tgba.py --verbatim research_notes/sos_figs/sources/gf_aa_parity.hoa research_notes/sos_figs/img/gf_aa.png
+python3 research_notes/sos_figs/draw_tgba.py --verbatim research_notes/sos_figs/sources/gf_aa_reset.hoa  research_notes/sos_figs/img/gf_aa_reset.png
+python3 research_notes/sos_figs/draw_tgba.py --verbatim research_notes/sos_figs/sources/even.hoa        research_notes/sos_figs/img/even.png
+python3 research_notes/sos_figs/draw_tgba.py --verbatim research_notes/sos_figs/sources/evenblocks.hoa  research_notes/sos_figs/img/evenblocks.png
 ```
 
 `--verbatim` everywhere: the sources are canonical fixpoints (§1) and the
@@ -163,7 +166,7 @@ autfilt -q --equivalent-to=<(ltl2tgba 'a U G!a') research_notes/sos_figs/sources
 
 python3 -m tests.sos.build_sos research_notes/sos_figs/sources/aUGb.hoa \
         --sos research_notes/sos_figs/sources/aUGb.sos --residuals
-python3 -m tests.sos.render_svg --verbatim \
+python3 research_notes/sos_figs/draw_tgba.py --verbatim \
         research_notes/sos_figs/sources/aUGb.hoa research_notes/sos_figs/img/aUGb.png
 python3 -m tests.sos.assemble research_notes/sos_figs/sources/aUGb.md \
   'aUGb=research_notes/sos_figs/sources/aUGb.hoa'
@@ -223,7 +226,7 @@ Reports and `.sos` exports are `make reports` / `make sos` in this directory
 (the exports land in `../sos_core_figs/sources/`, where the invariant
 drawings consume them — regenerate those with `make one-a_implies_xa` /
 `make one-a_once` there). The automaton drawings go through
-[`draw_tgba.py`](draw_tgba.py) — the Figure 3 renderer, which relabels
+[`draw_tgba.py`](draw_tgba.py), the common renderer of §4, which relabels
 `!a → b` to the paper's two-letter alphabet (its pydoc states the convention):
 
 ```sh
