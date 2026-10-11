@@ -176,6 +176,11 @@ class Table:
         """The number of classes (the adjoined identity included)."""
         return self.algebra.n
 
+    @property
+    def class_count(self) -> int:
+        """The word-class count |C|, excluding the fresh identity."""
+        return self.algebra.class_count
+
     def loops(self) -> List[int]:
         """The classes usable as a loop: every class but the identity (an empty
         loop is not a lasso)."""
