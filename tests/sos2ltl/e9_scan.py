@@ -60,7 +60,7 @@ def record(path: str) -> Dict[str, object]:
     with open(path) as f:
         inv: Invariant = load_invariant(f.read())
     key = os.path.basename(path)[:-4]
-    row: Dict[str, object] = {"id": key, "classes": inv.n,
+    row: Dict[str, object] = {"id": key, "classes": inv.class_count,
                               "aps": len(inv.alphabet.aps)}
     if first_group(inv) is not None:
         row["status"] = "group"

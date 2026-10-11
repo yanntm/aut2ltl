@@ -46,7 +46,7 @@ def main(argv: List[str]) -> int:
     ideals = two_sided_ideals(inv)
     zeros = [c for c in range(inv.n) if j_minimal(c, ideals)]
     print(f"# {lang_id} layer {layer_id} R={{{','.join(map(str,sorted(R)))}}} "
-          f"k={k} aperiodic={ap} nC={inv.n}")
+          f"k={k} aperiodic={ap} nC={inv.class_count}")
     print(f"  𝒥-minimal (zero) classes: {zeros}   accept P={sorted(inv.accept)}")
 
     dec = decide(inv, R, k, budget=150000, assert_sc=False)

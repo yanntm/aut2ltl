@@ -51,7 +51,7 @@ def _drive(teacher: HoaTeacher) -> Tuple[Partition, Partition, object]:
 
 def _dump_partition(title: str, teacher: HoaTeacher, p: Partition) -> None:
     ab = teacher.alphabet
-    print(f"{title} ({p.n} classes):")
+    print(f"{title} ({p.class_count} classes):")
     for c in range(p.n):
         words = sorted(p.members[c], key=lambda w: (len(w), w))
         rendered = ", ".join(render_word(ab, w) for w in words)
@@ -84,11 +84,11 @@ def run(path: str) -> int:
     print(f"=== {path} ===\n")
     print("Canonical form D (deterministic, complete, transition-based, generic):")
     print(import_hoa(path).to_str("hoa"))
-    print(f"Reference invariant I(L)  ({ref.n} classes):")
+    print(f"Reference invariant I(L)  ({ref.class_count} classes):")
     print(dump_invariant(ref))
     _dump_partition("\nStall partition (pre-equivalence fixpoint)", teacher, stall)
     _dump_partition("\nLearned fixpoint", teacher, final)
-    print(f"\nlearned classes: {final.n}   reference classes: {ref.n}   "
+    print(f"\nlearned classes: {final.class_count}   reference classes: {ref.class_count}   "
           f"byte-equal: {dump_invariant(ref) == dump_invariant(inv)}")
     print("\nLearned (exported) invariant — the non-canonical .sos:")
     print(dump_invariant(inv))

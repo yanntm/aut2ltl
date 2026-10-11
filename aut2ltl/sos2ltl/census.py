@@ -50,7 +50,7 @@ def census_line(inv: "Invariant", aperiodic: bool) -> str:
     """A one-line JSON census record of `inv`: the per-layer (A)/(B) statistics
     plus top-level aperiodicity and prefix-independence. Self-contained and
     exception-safe — a build failure yields an `error` record, never a raise."""
-    rec: Dict[str, Any] = {"n": inv.n, "aperiodic": aperiodic}
+    rec: Dict[str, Any] = {"n": inv.class_count, "aperiodic": aperiodic}
     try:
         from . import anchoring, windows
         from .cayley import build

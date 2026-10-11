@@ -172,7 +172,7 @@ def _one(corpus: _Corpus, a: str, b: str, det: Path, budget: int) -> List[Dict]:
 
     rows: List[Dict] = []
     for i, (name, inv, build) in enumerate(calc):
-        row: Dict = {"pair": pair, "stage": name, "calc_n": inv.n,
+        row: Dict = {"pair": pair, "stage": name, "calc_n": inv.class_count,
                      "calc_ms": _median_ms(build), "note": spot_note}
         # re-check = the COMPARISON only: the freshly recomputed form is built
         # once outside the timer (the recompute is the stage build, already

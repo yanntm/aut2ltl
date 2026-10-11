@@ -61,7 +61,7 @@ def run(formula: str) -> int:
                     if iv != te:
                         n_inv_vs_teacher += 1
 
-    print(f"formula: {formula!r}  classes={p.n}")
+    print(f"formula: {formula!r}  classes={p.class_count}")
     print(f"hyp vs teacher disagreements: {n_hyp_vs_teacher}  "
           f"(0 => equiv correctly certified the hypothesis)")
     print(f"exported-inv vs hyp disagreements: {n_inv_vs_hyp}  "

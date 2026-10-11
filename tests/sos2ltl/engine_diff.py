@@ -98,7 +98,7 @@ def main(argv: List[str]) -> int:
 
     cay = build(inv)
     anch = anchoring.analyze(cay)
-    print(f"{path}: |C| = {inv.n}, {len(cay.layers)} layers")
+    print(f"{path}: |C| = {inv.class_count}, {len(cay.layers)} layers")
     for i, la in enumerate(anch):
         comm = [c for c in la.layer if engine._committed(cay, c)]
         print(f"  layer {i}: classes {la.layer} width {la.width}"

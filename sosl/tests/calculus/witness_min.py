@@ -115,7 +115,7 @@ def main(argv: List[str]) -> int:
     table = Table.of(inv)
     pairs = inv.accept
     comp = complement(table, pairs)
-    print(f"{path.name}: |C| = {table.n}, brute-force bound {bound}")
+    print(f"{path.name}: |C| = {table.class_count}, brute-force bound {bound}")
 
     _, w = is_empty(table, pairs)
     compare("is_empty", w, brute_first(table.alphabet, bound,
@@ -137,7 +137,7 @@ def main(argv: List[str]) -> int:
     if other is not None:
         rhs = load_invariant(other.read_text())
         assert rhs.alphabet == inv.alphabet, "different alphabets: substitute first"
-        print(f"  vs {other.name} (|C| = {rhs.n})")
+        print(f"  vs {other.name} (|C| = {rhs.class_count})")
         check_pair(table, pairs, Table.of(rhs), rhs.accept, bound)
 
     print("SUCCESS")

@@ -44,11 +44,18 @@ import glob
 import os
 import re
 import shutil
+import sys
 from collections import defaultdict
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.abspath(os.path.join(_HERE, os.pardir))
+_SOSL = os.path.join(_REPO, "sosl")
+if _SOSL not in sys.path:
+    sys.path.insert(0, _SOSL)
+
+from sosl.sos.io import load_invariant  # noqa: E402
+
 _TAG_RE = re.compile(r"^(\d+)state(\d+)ap(\d+)acc(_parity)?_[0-9]+$")
 
 # Ordinal degree rank, for "higher degree first" in Tier B and for the frontier
@@ -108,10 +115,8 @@ def _states(hoa_path: str) -> int:
 
 
 def _algebra(sos_text: str) -> int:
-    for line in sos_text.splitlines():
-        if line.startswith("classes:"):
-            return int(line.split(":", 1)[1])
-    return 0
+    """The word-class count |C|, excluding the implicit identity."""
+    return load_invariant(sos_text).class_count
 
 
 def load_new(measure: str, corpus: str) -> List[Lang]:

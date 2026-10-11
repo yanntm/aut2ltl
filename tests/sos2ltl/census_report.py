@@ -47,7 +47,7 @@ def _pct(num: int, den: int) -> str:
 
 def _stats(recs: List[Dict[str, Any]]) -> Dict[str, Any]:
     """E1/E2 aggregates over a bucket of non-degenerate LTL records."""
-    single = sum(r["n"] <= 2 for r in recs)  # one non-ε word class
+    single = sum(r["n"] <= 1 for r in recs)  # one non-ε word class
 
     layers = [la for r in recs for la in r["layers"]]
     awid: Counter = Counter(

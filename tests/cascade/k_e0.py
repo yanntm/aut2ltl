@@ -66,7 +66,7 @@ def run(case: str) -> int:
     cay, fid = final_layer(inv)
     R = frozenset(cay.layers[fid])
     print(f"# {case}: {formula}")
-    print(f"  {inv.n} classes, {len(cay.layers)} layers; "
+    print(f"  {inv.class_count} classes, {len(cay.layers)} layers; "
           f"Σ_λ = {{{', '.join(name[d] for d in sigma)}}}")
     print(f"  layers: " + " | ".join(
         "{" + ",".join(map(str, l)) + "}" for l in cay.layers))

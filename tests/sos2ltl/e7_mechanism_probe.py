@@ -73,7 +73,7 @@ def main(argv: List[str]) -> int:
     seen: set = set()
     any_sep: Optional[Family] = None
     worst = "right-ideal"
-    print(f"{path}: |𝒞|={inv.n}  letters={list(inv.letter_class)}")
+    print(f"{path}: |𝒞|={inv.class_count}  letters={list(inv.letter_class)}")
     for c in range(inv.n):
         o = orbit(inv, c)
         if o.period <= 1:

@@ -44,7 +44,7 @@ def draw(src: str) -> str:
 def report(src: str) -> None:
     inv = load_invariant(open(src).read())
     x = value_vector(inv)
-    print(f"F-E: {inv.n} classes, keys {[' '.join(str(m) for m in k) or 'eps' for k in inv.keys]}")
+    print(f"F-E: {inv.class_count} classes, keys {[' '.join(str(m) for m in k) or 'eps' for k in inv.keys]}")
     print(f"  bottom SCCs {[sorted(s) for s in bottom_sccs(inv)]}, "
           f"kernel {sorted(kernel(inv))}")
     print(f"  theta {theta_profile(inv).entries}")

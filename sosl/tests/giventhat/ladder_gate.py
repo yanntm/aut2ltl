@@ -124,7 +124,7 @@ def _one_rung(basename: str, sos_dir: Path) -> Dict:
     cat = parse_cat((sos_dir / f"{basename}.cat").read_text())
     m_plus, m_minus = cat["coords"][0], cat["coords"][1]
     inv = load_invariant((sos_dir / f"{basename}.sos").read_text())
-    row: Dict = {"case": basename, "aps": len(inv.alphabet.aps), "classes": inv.n,
+    row: Dict = {"case": basename, "aps": len(inv.alphabet.aps), "classes": inv.class_count,
                  "m_plus": m_plus, "m_minus": m_minus, "note": ""}
     signal.setitimer(signal.ITIMER_REAL, _BUDGET_S)
     try:
@@ -466,17 +466,17 @@ def run_fixture(argv: List[str]) -> int:
         emit(f"| {c} | `{render_w(np.keys[c])}` "
              f"| {'yes' if np.mult[c][c] == c else ''} | {loops} | {acc} |")
     emit()
-    emit(f"{np.n} classes, {len(t_np.linked)} linked pairs, "
+    emit(f"{np.class_count} classes, {len(t_np.linked)} linked pairs, "
          f"accept = {sorted(np.accept)}.")
     emit()
     emit("## §4.6 predictions vs the machine")
     emit()
     emit("| item | paper | machine | verdict |")
     emit("|---|---|---|---|")
-    expect("|C(neg_phi)|", inv["negphi"].n, 7)
-    expect("|C(K)|", inv["k"].n, 4)
+    expect("|C(neg_phi)|", inv["negphi"].class_count, 6)
+    expect("|C(K)|", inv["k"].class_count, 3)
     iv = given_that(inv["negphi"], inv["k"])
-    expect("product table classes", iv.table.n, 13)
+    expect("product table classes", iv.table.class_count, 12)
 
     settles, w1 = k_settles_phi(iv)
     refutes, w2 = k_refutes_phi(iv)

@@ -4,7 +4,7 @@
 
 Builds the reference invariant of each fingerprint language through the full
 pipeline (LTL/PSL -> deterministic form -> sos.build -> sos.core) and asserts
-the canonical class count ``|S(L)+1|`` against the recorded value. These are
+the canonical class count ``|S(L)+|`` against the recorded value. These are
 the regression guards of the fresh-identity convention (see
 ``sosl/sos/core/algorithm.md``): the counts must not move under any change to
 the core, and the triptych rows are the paper's Table 1.
@@ -32,8 +32,8 @@ def main() -> None:
         inv = reference_of_ltl(formula)
         tag = f" ({note})" if note else ""
         assert inv.n == expected, (
-            f"{formula}: {inv.n} classes, expected {expected}{tag}")
-        print(f"OK {formula!r:45} |S(L)+1| = {inv.n}{tag}")
+            f"{formula}: {inv.class_count} classes, expected {expected - 1}{tag}")
+        print(f"OK {formula!r:45} |S(L)+| = {inv.class_count}{tag}")
     print("ALL OK")
 
 

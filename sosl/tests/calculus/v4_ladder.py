@@ -206,7 +206,7 @@ def _one(basename: str, sos_dir: Path, det_dir: Path, budget: int) -> Dict:
     inv = load_invariant((sos_dir / f"{basename}.sos").read_text())
     table = Table.of(inv)
     pairs = inv.accept
-    row: Dict = {"case": basename, "aps": len(inv.alphabet.aps), "classes": inv.n,
+    row: Dict = {"case": basename, "aps": len(inv.alphabet.aps), "classes": inv.class_count,
                  "ltl": "yes" if cat["ltl"] else "no", "note": ""}
 
     o_saf, row["ours_safety_ms"] = _median_of_7(lambda: is_safety(table, pairs))

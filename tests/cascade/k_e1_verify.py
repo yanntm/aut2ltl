@@ -55,7 +55,7 @@ def main(argv: List[str]) -> int:
     cay = build(inv)
     R = frozenset(cay.layers[layer_id])
     print(f"# {lang_id} layer {layer_id} R={{{','.join(map(str, sorted(R)))}}} "
-          f"k={k} aperiodic={ap} nC={inv.n}")
+          f"k={k} aperiodic={ap} nC={inv.class_count}")
     t0 = time.time()
     con = find_c_conflict(inv, R, k, budget=budget)
     print(f"  find_c_conflict: {con.status} (states={con.states})")
@@ -64,7 +64,7 @@ def main(argv: List[str]) -> int:
         print(f"  shared recurring edge set |F|={len(con.F)}")
         v = verify_conflict(inv, con)
     if out:
-        row = [lang_id, layer_id, k, inv.n, len(R), len(quotient_letters(inv)),
+        row = [lang_id, layer_id, k, inv.class_count, len(R), len(quotient_letters(inv)),
                int(ap), con.status, con.states,
                len(con.F) if con.F is not None else "",
                "" if v["m1"] == "" else int(v["m1"] != v["m2"]),

@@ -68,7 +68,7 @@ def main(argv: List[str]) -> int:
         inv2 = _t("invariant_of(canonical(det_generic_minimal))",
                   lambda: invariant_of(canonical(dm), 20000))
         print(f"    𝓘 classes (from det_generic_minimal): "
-              f"{inv2.n if inv2 else 'DECLINE'}", flush=True)
+              f"{inv2.class_count if inv2 else 'DECLINE'}", flush=True)
     except _Cap:
         print(f"  BLEW CAP at {cap}s (see last stage above)", flush=True)
     finally:

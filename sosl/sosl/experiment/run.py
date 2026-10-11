@@ -129,7 +129,8 @@ def _reference(hoa_path: str, reference_sos: Optional[str]) -> Tuple[str, Invari
     if reference_sos is not None:
         with open(reference_sos, encoding="utf-8") as fh:
             text = fh.read()
-        return text, load_invariant(text)
+        ref = load_invariant(text)
+        return dump_invariant(ref), ref
     ref = reference_of_hoa(hoa_path)
     return dump_invariant(ref), ref
 
@@ -223,12 +224,12 @@ def run_case(case_id: str, hoa_path: str, config: Config,
         teacher.eq_bound = config.eq_bound
         teacher.cex_policy = config.cex_policy
         stats.ap_count = len(teacher.alphabet.aps)
-        stats.ref_classes = ref_inv.n
+        stats.ref_classes = ref_inv.class_count
 
         result = _drive(teacher, config, stats)
         table, p, inv, ledger, eq_cert = result
 
-        stats.learned_classes = inv.n
+        stats.learned_classes = inv.class_count
         stats.eq_certification = eq_cert
         n_lin = sum(isinstance(c, LinCol) for c in table.columns)
         stats.n_columns_lin = n_lin
@@ -257,7 +258,9 @@ def run_case(case_id: str, hoa_path: str, config: Config,
         stats.wall_seconds = time.perf_counter() - start
 
 
-def _drive(teacher: HoaTeacher, config: Config, stats: RunStats):
+def _drive(
+    teacher: HoaTeacher, config: Config, stats: RunStats,
+) -> Tuple[Table, Partition, Invariant, List[LedgerRow], str]:
     """The instrumented main loop; fills ``stats`` counters in place and
     returns ``(table, partition, invariant, ledger, eq_certification)``. The
     hypothesis shipped to every equivalence query is the belief: the table's
@@ -291,11 +294,11 @@ def _drive(teacher: HoaTeacher, config: Config, stats: RunStats):
         phase[0] = "fill"
         p = _stabilize(table)
         if n_initial is None:
-            n_initial = p.n
+            n_initial = p.class_count
         if pending is not None:
             trig, chain, col, before = pending
             ledger.append(LedgerRow(trig, chain, _render_col(ab, col),
-                                    before.n, p.n, _describe_split(ab, before, p)))
+                                    before.class_count, p.class_count, _describe_split(ab, before, p)))
             pending = None
 
         phase[0] = "saturation"

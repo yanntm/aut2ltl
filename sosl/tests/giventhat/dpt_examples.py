@@ -101,11 +101,11 @@ def report(tag: str, neg_phi_ltl: str, k_ltl: str) -> None:
     print(f"\n=== [DPT25] {tag} ===")
     print(f"  ¬φ = {neg_phi_ltl}")
     print(f"  K  = {k_ltl}")
-    print(f"  |𝒞(¬φ)| = {neg_phi.n}   linked {len(t_phi.linked)}   "
+    print(f"  |𝒞(¬φ)| = {neg_phi.class_count}   linked {len(t_phi.linked)}   "
           f"rung {rung_of(t_phi, neg_phi.accept)}   "
           f"stutter-invariant {is_stutter_invariant(neg_phi)}")
-    print(f"  |𝒞(K)|  = {k.n}   stutter-invariant {is_stutter_invariant(k)}")
-    print(f"  |𝒞(T)|  = {iv.table.n}   linked {len(iv.table.linked)}   "
+    print(f"  |𝒞(K)|  = {k.class_count}   stutter-invariant {is_stutter_invariant(k)}")
+    print(f"  |𝒞(T)|  = {iv.table.class_count}   linked {len(iv.table.linked)}   "
           f"bits |F| = {iv.bits}")
     print(f"  K settles φ: {settles}"
           + (f"   witness {w_settles.stem!r}.{w_settles.loop!r}^ω" if w_settles else ""))

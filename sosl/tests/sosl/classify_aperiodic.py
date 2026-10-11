@@ -39,7 +39,7 @@ def main(argv: list) -> int:
         inv = load_invariant(f.read())
     g = first_group(inv)
     if g is None:
-        print(f"{path}: APERIODIC (LTL) — {inv.n} classes")
+        print(f"{path}: APERIODIC (LTL) — {inv.class_count} classes")
         got = "ltl"
     else:
         key = render_key(inv, g.cls)

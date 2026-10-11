@@ -197,8 +197,8 @@ def check_pair(inv_phi: Invariant, inv_k: Invariant,
     _gate_choice(iv, rng)
 
     return {
-        "aps": len(inv_phi.alphabet.aps), "n_phi": inv_phi.n, "n_k": inv_k.n,
-        "prod_n": iv.table.n, "linked": len(iv.table.linked), "bits": iv.bits,
+        "aps": len(inv_phi.alphabet.aps), "n_phi": inv_phi.class_count, "n_k": inv_k.class_count,
+        "prod_n": iv.table.class_count, "linked": len(iv.table.linked), "bits": iv.bits,
         "settles": int(settles), "refutes": int(refutes),
         "ms": round(1000 * (time.perf_counter() - t0), 1), "note": "",
         "_iv": iv, "_w_settle": w_settle, "_w_refute": w_refute,
@@ -227,8 +227,8 @@ def run_fixture(argv: List[str]) -> int:
     assert w2 is not None
     assert iv.bits >= 1, "fixture: the free band must be nonempty"
 
-    print(f"|C(D_ab)| = {inv_ab.n} (asserted 6, paper §5.2)")
-    print(f"|C(D_K)|  = {inv_k.n} (datum)")
+    print(f"|C(D_ab)| = {inv_ab.class_count} (5 word classes; internal table size 6)")
+    print(f"|C(D_K)|  = {inv_k.class_count} (datum)")
     print(f"product: n = {row['prod_n']}, linked = {row['linked']}")
     print(f"iv.bits  = {iv.bits} (datum; paper predicts >= 1)")
     print(f"k_settles_phi = False, witness: {w1.render()}  [in D_ab, in D_K]")

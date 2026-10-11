@@ -78,7 +78,7 @@ def run_case(path: Path) -> int:
     if apr and not ltl:
         laws_ok = 0  # LTL outright but not LTL up to null sets: impossible
     ms = int((perf_counter() - t0) * 1000 + 0.5)
-    row = f"{name},{inv.n},{sh.n},{es.n},{laws_ok},{pfree_ok},{apr},{ltl},{ms}"
+    row = f"{name},{inv.class_count},{sh.class_count},{es.class_count},{laws_ok},{pfree_ok},{apr},{ltl},{ms}"
     append_row(LOGS / "m3_cases.csv", CASE_HEADER, row)
     print(row)
     return 0 if laws_ok and pfree_ok else 1

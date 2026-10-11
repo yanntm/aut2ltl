@@ -128,7 +128,7 @@ def _split_translate(plan: "SplitPlan", tag: str) -> LTLResult:
         if got is None:
             return LTLResult.decline(
                 f"{tag}: pairsplit piece declined by engine and dg "
-                f"(|C|={piece.n})", tag, TAG_PAIRS)
+                f"(|C|={piece.class_count})", tag, TAG_PAIRS)
         fs.append(got[0])
         tags.add(got[1])
     f = _simp_f(_Or(*fs))

@@ -6,7 +6,8 @@
 Reads a survey CSV (a `--use sos2ltl` run over `flat_canon/det`), keeps the
 rows whose `validation` is `FAIL` (Spot verified the emitted formula is *not*
 equivalent to the input language), and joins each to its language: `|𝒞|` (the
-`.sos` class count), the canonical `D`'s state count, the Wagner degree (the
+word-class count, excluding the identity), the canonical `D`'s state count,
+the Wagner degree (the
 `.cat` sidecar), the producing technique, and the formula. Rows are ordered by
 `(|𝒞|, states, formula size)` so the first line is the **smallest** language on
 which the engine is unsound — the exhibit to describe in the report. Prints a
@@ -21,18 +22,21 @@ from typing import Dict, List, Tuple
 
 from tests.sos2ltl.cat_sidecar import cat_for
 
+_SOSL = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "sosl"))
+if _SOSL not in sys.path:
+    sys.path.insert(0, _SOSL)
+
+from sosl.sos.io import load_invariant  # noqa: E402
+
 DEFAULT_SOS_DIR = "genaut/corpus/flat_canon/sos"
 
 
 def _classes(sos_path: str) -> int:
-    """The `|𝒞|` (class count) from a `.sos`'s `classes:` header, or -1."""
+    """The word-class count |C|, excluding the identity, or -1 if absent."""
     if not os.path.exists(sos_path):
         return -1
     with open(sos_path) as f:
-        for line in f:
-            if line.startswith("classes:"):
-                return int(line.split(":", 1)[1])
-    return -1
+        return load_invariant(f.read()).class_count
 
 
 def _states(hoa_path: str) -> int:

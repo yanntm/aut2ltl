@@ -6,7 +6,7 @@ CPython simply skips the branch:
 
     from sosl.trace import TRACE_ON, trace
     if TRACE_ON:
-        trace("learn", f"round {r}: classes={p.n} cols={len(table.columns)}")
+        trace("learn", f"round {r}: classes={p.class_count} cols={len(table.columns)}")
 
 `TRACE_ON` is set once from the environment at import:
 

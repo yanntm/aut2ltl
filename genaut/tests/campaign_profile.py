@@ -6,7 +6,7 @@ to the corpus** (canonical `.sos` bytes not already tracked; complements `_c`
 excluded, they are derived duals) — the pool a selection draws from:
 
   * per origin shape: how many new, and the canonical automaton size (HOA
-    `States:`) and algebra size (`.sos classes:`) min/median/max;
+    `States:`) and word-class count |C| (excluding the identity) min/median/max;
   * the Wagner-degree profile (from each `.cat` sidecar), overall and per shape;
   * the LTL / stutter-invariant split.
 
@@ -28,6 +28,11 @@ from typing import Dict, List, Optional, Tuple
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.abspath(os.path.join(_HERE, os.pardir, os.pardir))
+_SOSL = os.path.join(_REPO, "sosl")
+if _SOSL not in sys.path:
+    sys.path.insert(0, _SOSL)
+
+from sosl.sos.io import load_invariant  # noqa: E402
 
 _TAG_RE = re.compile(r"^(\d+state\d+ap\d+acc(?:_parity)?)_[0-9]+$")
 
@@ -60,12 +65,9 @@ def _states(hoa_path: str) -> Optional[int]:
     return None
 
 
-def _algebra_size(sos_text: str) -> Optional[int]:
-    """The `classes: N` count of a `.sos` dump."""
-    for line in sos_text.splitlines():
-        if line.startswith("classes:"):
-            return int(line.split(":", 1)[1])
-    return None
+def _algebra_size(sos_text: str) -> int:
+    """The word-class count |C|, excluding the implicit identity."""
+    return load_invariant(sos_text).class_count
 
 
 def main(argv: List[str]) -> int:

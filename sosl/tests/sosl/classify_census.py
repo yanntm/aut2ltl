@@ -194,7 +194,7 @@ def _one(tag: str, path: str, budget: int) -> Dict:
         g, s = r.phi
         rec.update(
             acceptance_family=acc_family, gate_gba=_yn(gate_gba),
-            ihash=_ihash(inv), classes=inv.n,
+            ihash=_ihash(inv), classes=inv.class_count,
             n_idempotents=len(idempotents(inv)),
             n_linked_pairs=len(inv.linked_pairs()),
             ltl=_yn(r.aperiodic),

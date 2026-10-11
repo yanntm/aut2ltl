@@ -106,7 +106,7 @@ def roles_of(inv: Invariant) -> Roles:
 def check_algebra(inv: Invariant, roles: Roles) -> None:
     """Check 1: five classes, the multiplication table of the word model, the
     six linked pairs, and ``P = {(B,B), (C,B)}``."""
-    assert len(inv.keys) == 5, f"I(a*.b^w): {len(inv.keys)} classes, expected 5"
+    assert len(inv.keys) == 5, f"I(a*.b^w): {inv.class_count} word classes, expected 4"
     assert len(set(roles.values())) == 5, f"roles collide: {roles}"
 
     for x, cx in roles.items():
@@ -234,7 +234,7 @@ def check_gfa(inv2: Invariant) -> Tuple[Table, PairSet, int]:
     """Check 6: three classes (identity counted in), and ``P2 = {(alpha, alpha)}``
     where ``alpha`` is the class of the words containing an ``a`` — every cell
     whose loop class is ``alpha`` accepts, and no other."""
-    assert len(inv2.keys) == 3, f"I(GF a): {len(inv2.keys)} classes, expected 3"
+    assert len(inv2.keys) == 3, f"I(GF a): {inv2.class_count} word classes, expected 2"
     alpha = inv2.letter_class[A_MASK]
     assert inv2.accept == frozenset({(alpha, alpha)}), (
         f"P2 = {sorted(inv2.accept)}, expected {{(alpha, alpha)}}")
@@ -242,7 +242,7 @@ def check_gfa(inv2: Invariant) -> Tuple[Table, PairSet, int]:
     for c, d in table2.cells():
         assert table2.val(inv2.accept, c, d) == (d == alpha), (
             f"cell ({c},{d}): verdict disagrees with 'the loop contains an a'")
-    print("  6. I(GF a): 3 classes, P2 = {(alpha, alpha)}, every a-loop cell accepts")
+    print("  6. I(GF a): 2 word classes, P2 = {(alpha, alpha)}, every a-loop cell accepts")
     return table2, inv2.accept, alpha
 
 

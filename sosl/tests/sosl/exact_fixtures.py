@@ -28,7 +28,7 @@ def check_gfa_exact() -> None:
     t = HoaTeacher.of_ltl("GF a", eq_mode="exact")
     learned = learn(t, t.alphabet)
     assert learned.n == 3, learned.n  # [eps] [!a] [a] under the fresh-identity convention
-    print(f"OK GF a exact: {learned.n} classes (canonical)")
+    print(f"OK GF a exact: {learned.class_count} classes (canonical)")
 
 
 def check_canonical_exact(name: str, ref_n: int) -> None:
@@ -43,7 +43,7 @@ def check_canonical_exact(name: str, ref_n: int) -> None:
         f"{name}: exact did not reach the canonical reference\n"
         + dump_invariant(learned)
     )
-    print(f"OK {name} exact/no-sat: reached canonical {ref_n} classes (byte-equal)")
+    print(f"OK {name} exact/no-sat: reached canonical {ref.class_count} classes (byte-equal)")
 
 
 def check_stall_certified(name: str, ref_n: int, stall_n: int) -> None:
@@ -56,15 +56,15 @@ def check_stall_certified(name: str, ref_n: int, stall_n: int) -> None:
     learned = learn(t, t.alphabet, saturation=False, unchecked_export=True)
     assert learned.n == stall_n, (
         f"{name}: exact returned a counterexample and drove past the stall "
-        f"(got {learned.n} classes, expected the {stall_n}-class stall) — "
+        f"(got {learned.class_count} classes, expected the {stall_n - 1}-class stall) — "
         "exact-mode bug (spec P4: Prop 4.4 proves none exists)"
     )
     assert dump_invariant(learned) != dump_invariant(ref), (
         f"{name}: exported stall is byte-equal to the reference (F5 says it must "
         "not be)"
     )
-    print(f"OK {name} exact/no-sat: certified {stall_n}-class stall "
-          f"(reference {ref_n}), byte-different")
+    print(f"OK {name} exact/no-sat: certified {learned.class_count}-class stall "
+          f"(reference {ref.class_count}), byte-different")
 
     # with saturation AND exact, the same specimen reaches canonical byte-equal.
     ts = HoaTeacher.of_hoa(path, eq_mode="exact")
@@ -73,7 +73,7 @@ def check_stall_certified(name: str, ref_n: int, stall_n: int) -> None:
         f"{name}: saturation+exact did not reach the canonical reference\n"
         + dump_invariant(sat)
     )
-    print(f"OK {name} exact+sat: reached canonical {ref_n} classes (byte-equal)")
+    print(f"OK {name} exact+sat: reached canonical {ref.class_count} classes (byte-equal)")
 
 
 def main() -> int:

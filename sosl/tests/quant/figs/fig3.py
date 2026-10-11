@@ -107,7 +107,7 @@ def report(src: str) -> None:
     tab = Table.of(inv)
     b, bb = tab.fold((0,)), tab.fold((0, 0))
     ba, aa = tab.fold((0, 1)), tab.fold((1, 1))
-    print(f"F-D: {inv.n} classes; kernel {sorted(kernel(inv))}, "
+    print(f"F-D: {inv.class_count} classes; kernel {sorted(kernel(inv))}, "
           f"k = {kernel_idempotent(inv)} = fold(aa) = {aa}")
     print(f"  theta {theta_profile(inv).entries}")
     print(f"  e' = fold(ba) = class {ba} (idempotent: {tab.idem(ba) == ba})")

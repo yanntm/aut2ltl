@@ -35,7 +35,7 @@ def main(path: str) -> int:
     pairs = inv.accept
     comp = complement(table, pairs)
 
-    print(f"{Path(path).name}: |C| = {table.n}, |linked| = {len(table.linked)}, "
+    print(f"{Path(path).name}: |C| = {table.class_count}, |linked| = {len(table.linked)}, "
           f"|P| = {len(pairs)}")
     print(f"  saturated: P {is_saturated(table, pairs)}, "
           f"Pc {is_saturated(table, comp)}")
@@ -57,7 +57,7 @@ def main(path: str) -> int:
 
     red = reduce(table, pairs)
     red_c = reduce(table, comp)
-    print(f"  reduce: |C| {table.n} -> {red.n} (complement -> {red_c.n})")
+    print(f"  reduce: |C| {table.class_count} -> {red.class_count} (complement -> {red_c.class_count})")
 
     cross = align(Table.of(red).language(red.accept), table.language(pairs))
     eq2, w2 = equivalent(cross)

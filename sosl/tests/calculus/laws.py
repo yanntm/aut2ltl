@@ -196,7 +196,7 @@ def main(argv: List[str]) -> int:
     langs = random_languages(table, rng) + [inv.accept]
     classes = sample_classes(table, rng)
     scope = "all" if len(classes) == table.n else f"{len(classes)} sampled"
-    print(f"{path.name}: |C| = {table.n}, |linked| = {len(table.linked)}, "
+    print(f"{path.name}: |C| = {table.class_count}, |linked| = {len(table.linked)}, "
           f"seed {seed}, classes {scope}")
 
     check_boolean(table, langs)

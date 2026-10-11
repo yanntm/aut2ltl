@@ -150,7 +150,7 @@ def run_case(path: Path) -> int:
                     oblig = "0"
     ms = int((perf_counter() - t0) * 1000 + 0.5)
     ok = trich_ok == 1 and oblig != "0"
-    row = f"{name},{inv.n},{trich_ok},{oblig},{ms}"
+    row = f"{name},{inv.class_count},{trich_ok},{oblig},{ms}"
     append_row(LOGS / "law_cases.csv", CASE_HEADER, row)
     print(row)
     return 0 if ok else 1

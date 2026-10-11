@@ -113,7 +113,7 @@ def profile(src: str, is_ltl: bool, want_stack: bool = True
 
     row: Dict[str, object] = {
         "id": name,
-        "classes": inv.n,
+        "classes": inv.class_count,
         "aps": list(inv.alphabet.aps),
         "aperiodic": rec.aperiodic,
         "phi": f"({rec.phi[0]}, {rec.phi[1]})",

@@ -81,7 +81,7 @@ def day1_invariant(hoa_path: str) -> Invariant:
 def _write(out: Path, name: str, inv: Invariant) -> None:
     path = out / f"{name}.sos"
     path.write_text(dump_invariant(inv), encoding="utf-8")
-    print(f"wrote {path} ({inv.n} classes, {len(inv.accept)} accepting pairs)")
+    print(f"wrote {path} ({inv.class_count} classes, {len(inv.accept)} accepting pairs)")
 
 
 def main(argv: List[str]) -> int:
@@ -93,7 +93,7 @@ def main(argv: List[str]) -> int:
         case = case_by_id(case_id)
         assert case is not None, case_id
         inv = day1_invariant(case.hoa)
-        assert inv.n == expect_n, f"{case_id} day-one: {inv.n} classes, expected {expect_n}"
+        assert inv.n == expect_n, f"{case_id} day-one: {inv.class_count} classes, expected {expect_n - 1}"
         assert is_saturated(CalcTable.of(inv), frozenset(inv.accept)), \
             f"{case_id} day-one pair set is not conjugacy-closed"
         _write(out, f"sosl_{case_id}_day1", inv)

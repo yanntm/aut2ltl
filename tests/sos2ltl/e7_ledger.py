@@ -122,7 +122,7 @@ def main(argv: List[str]) -> int:
 
         canon = extract_family(inv)
         rows.append({
-            "id": stem, "classes": inv.n,
+            "id": stem, "classes": inv.class_count,
             "linear": _family_row(ds.linear),
             "omega": _family_row(ds.omega),
             "h5_hit": ds.h5_hit,

@@ -138,7 +138,7 @@ def _cardinality(aut: object, budget: int) -> Tuple[Optional[int], Optional[floa
         ms = round(1000 * (time.perf_counter() - t0), 2)
         if inv is None:
             return None, ms, "CAPPED"
-        return inv.n, ms, ""
+        return inv.class_count, ms, ""
     except _Budget:
         return None, None, "TIMEOUT"
     finally:

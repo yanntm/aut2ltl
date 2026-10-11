@@ -4,7 +4,7 @@ Self-contained. Run from the `sosl/` subtree root:
 
     python3 -m tests.sosl.serialize_roundtrip
 
-Dumps the GF(a) invariant and hypothesis to text and parses them back, checks
+Dumps the GF(a) invariant to text and parses it back, checks
 structural equality, byte-idempotence of a second dump, and that the parsed
 invariant still decides membership the same way. Prints OK lines / the dumped
 `.sos` for eyeballing, or raises on the first failure.
@@ -14,14 +14,31 @@ from __future__ import annotations
 from sosl.sos import (
     EMPTY,
     Alphabet,
-    Hypothesis,
     Invariant,
     Lasso,
-    dump_hypothesis,
     dump_invariant,
-    load_hypothesis,
     load_invariant,
 )
+from sosl.sos.residuals import Residuals
+
+
+TARGET = """SOS v1
+ap: a
+classes: 4
+1 !a
+2 a
+3 !a;a
+4 a;!a
+letters: !a->1 a->2
+mult:
+1: 1 3 3 3
+2: 4 2 3 4
+3: 3 3 3 3
+4: 4 3 3 3
+accept:
+1 1
+4 1
+"""
 
 
 def gfa_invariant() -> Invariant:
@@ -33,17 +50,6 @@ def gfa_invariant() -> Invariant:
         mult=((0, 1, 2), (1, 1, 2), (2, 2, 2)),
         accept=frozenset({(2, 2)}),
         identity=0,
-    )
-
-
-def gfa_hypothesis() -> Hypothesis:
-    ab = Alphabet.of(["a"])
-    return Hypothesis(
-        alphabet=ab,
-        keys=(EMPTY, (0,), (1,)),
-        step=((1, 2), (1, 2), (2, 2)),
-        accept={(2, 2): True, (1, 1): False, (2, 1): False},
-        start=0,
     )
 
 
@@ -77,19 +83,53 @@ def check_multi_ap_letters() -> None:
     print("OK multi-AP letter rendering round-trip")
 
 
-def check_hypothesis_roundtrip() -> None:
-    h = gfa_hypothesis()
-    text = dump_hypothesis(h)
-    back = load_hypothesis(text)
-    assert back == h, "hypothesis did not round-trip"
-    assert dump_hypothesis(back) == text, "second dump is not byte-identical"
-    print("OK hypothesis round-trip + byte-stability")
+def check_target() -> None:
+    inv = load_invariant(TARGET)
+    inv.validate()
+    assert inv.n == 5 and inv.identity == 0 and inv.keys[0] == EMPTY
+    assert inv.class_count == 4
+    assert inv.letter_class == (1, 2)
+    assert dump_invariant(inv) == TARGET
+    assert inv.member(Lasso(EMPTY, (0,))) is True
+    assert inv.member(Lasso(EMPTY, (1,))) is False
+    assert inv.member(Lasso((1,), (0,))) is True
+    assert inv.member(Lasso((0,), (1,))) is False
+    assert inv.complement().complement() == inv
+    print("OK four-class target + membership + complement")
+
+
+def check_zero_ap() -> None:
+    inv = Invariant(
+        alphabet=Alphabet.of([]),
+        keys=(EMPTY, (0,)),
+        letter_class=(1,),
+        mult=((0, 1), (1, 1)),
+        accept=frozenset({(1, 1)}),
+        identity=0,
+    )
+    text = dump_invariant(inv)
+    assert "classes: 1\n1 t\n" in text
+    assert inv.class_count == 1
+    assert load_invariant(text) == inv
+    assert inv.member(Lasso(EMPTY, (0,))) is True
+    print("OK zero-AP round-trip")
+
+
+def check_residuals() -> None:
+    inv = gfa_invariant()
+    res = Residuals(keys=(EMPTY,), delta=((0, 0),))
+    trailer = "residuals: 1\n0 eps\nres-step:\n0: 0 0\n"
+    assert dump_invariant(inv, residuals=res) == dump_invariant(inv) + trailer
+    assert load_invariant(dump_invariant(inv, residuals=res)) == inv
+    print("OK residual trailer unchanged")
 
 
 def main() -> int:
     check_invariant_roundtrip()
     check_multi_ap_letters()
-    check_hypothesis_roundtrip()
+    check_target()
+    check_zero_ap()
+    check_residuals()
     print("ALL OK")
     return 0
 

@@ -278,7 +278,7 @@ def _campaign_row(inv: Invariant, case: str) -> str:
         [
             case,
             str(n),
-            str(inv.n),
+            str(inv.class_count),
             str(m),
             str(len(invisible_letters(inv))),
             "1" if stutter_rung(inv, 1) else "0",

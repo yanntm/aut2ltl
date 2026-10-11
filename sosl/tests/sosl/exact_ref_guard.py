@@ -57,7 +57,7 @@ def main(argv: List[str]) -> int:
     leg = "default" if saturation else "no-saturation"
     fired = teacher.guard_firings
     byte_equal = dump_invariant(learned) == dump_invariant(ref)
-    print(f"{case_id} [{leg}]: reference {ref.n} classes, learned {learned.n}")
+    print(f"{case_id} [{leg}]: reference {ref.class_count} classes, learned {learned.class_count}")
     print(f"  byte-equal to reference: {byte_equal}")
     print(f"  functionality guard fired on {len(fired)} equivalence "
           f"{'query' if len(fired) == 1 else 'queries'}"

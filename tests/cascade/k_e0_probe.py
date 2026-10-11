@@ -33,7 +33,7 @@ def main(argv: List[str]) -> int:
     cay = build(inv)
 
     print(f"# {case}: {CASES[case]}")
-    print(f"  {inv.n} classes; Σ_λ={{{', '.join(name[d] for d in sigma)}}}; "
+    print(f"  {inv.class_count} classes; Σ_λ={{{', '.join(name[d] for d in sigma)}}}; "
           f"prefix-independent={is_prefix_independent(inv)}")
     print(f"  identity class={inv.identity}; accept P={sorted(inv.accept)}")
     print(f"  layers: " + " | ".join(

@@ -108,7 +108,7 @@ def main(argv: List[str]) -> int:
             r = sweep_layer(inv, R, ap)
             dt = time.time() - t0
             m = r["mech"]
-            row = [lang_id, layer_id, inv.n, len(R), len(quotient_letters(inv)),
+            row = [lang_id, layer_id, inv.class_count, len(R), len(quotient_letters(inv)),
                    int(ap), "UNDECIDED", r["result"], r["pass_k"],
                    *r["per_k"], r["collectedF"], r["max_states"],
                    m["absorption"], m["group"], m["other"], r["other_split"],

@@ -93,7 +93,7 @@ def main(argv: List[str]) -> int:
     ap = is_aperiodic(inv)
     cay = build(inv)
     print(f"# transfer specimen: {FORMULA}")
-    print(f"  {inv.n} classes; aperiodic={ap}; "
+    print(f"  {inv.class_count} classes; aperiodic={ap}; "
           f"prefix-independent={is_prefix_independent(inv)}; "
           f"|Σ_λ|={len(quotient_letters(inv))}; layers={len(cay.layers)}")
     for i, layer in enumerate(cay.layers):

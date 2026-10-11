@@ -37,7 +37,7 @@ def main(argv: List[str]) -> int:
     cay = build(inv)
     committed = [c for c in range(inv.n) if _committed(cay, c)]
 
-    print(f"{path}: {inv.n} classes, {len(cay.layers)} layers")
+    print(f"{path}: {inv.class_count} classes, {len(cay.layers)} layers")
     print(f"  accepting linked pairs: {sorted(inv.accept)}")
     print(f"  committed classes (T_c = Sigma^w): {committed}")
     for i, layer in enumerate(cay.layers):

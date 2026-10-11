@@ -36,7 +36,7 @@ class ThetaProfile:
 
 def _ident(inv: Invariant) -> str:
     """A short identifying tag for assertion messages."""
-    return f"n={inv.n}, ap={' '.join(inv.alphabet.aps) or '-'}"
+    return f"n={inv.class_count}, ap={' '.join(inv.alphabet.aps) or '-'}"
 
 
 def theta_profile(inv: Invariant) -> ThetaProfile:

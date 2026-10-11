@@ -133,9 +133,9 @@ def main() -> int:
     assert inv.n == 8 and dump_invariant(inv) == dump_invariant(ref), (
         f"export not byte-equal to reference (learned {inv.n}, ref {ref.n})")
 
-    print("OK EvenBlocks conformance: 3 classes, clean day-one sweep; one cex "
+    print("OK EvenBlocks conformance: 2 word classes, clean day-one sweep; one cex "
           "(eps, !a;a;a) via the loop chain -> (a, a); two frozen escalations "
-          "-> (a, !a;a), (eps, !a); 3->4->6->8; ledger 67/4/14/14; byte-equal")
+          "-> (a, !a;a), (eps, !a); 2->3->5->7; ledger 67/4/14/14; byte-equal")
     print("ALL OK")
     return 0
 

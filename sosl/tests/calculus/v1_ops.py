@@ -185,14 +185,14 @@ def _unary_rows(corpus: _Corpus, name: str, det: Path, budget: int) -> List[Dict
         return reduce(table, complement(table, inv.accept), check=False)
     calc = _median_ms(calc_complement)
     sp, note = _spot_ms(lambda: spot.dualize(aut), budget)
-    rows.append(_row("complement", name, calc, sp, "", inv.n, "", lk, note))
+    rows.append(_row("complement", name, calc, sp, "", inv.class_count, "", lk, note))
 
     # membership: member on a canonical witness lasso  vs teacher HOA replay
     lasso = table.cell_lasso(next(table.cells()))
     calc = _median_ms(lambda: member(table, inv.accept, lasso))
     teacher = HoaTeacher.of_hoa(str(det / f"{name}.hoa"))
     sp, note = _spot_ms(lambda: teacher.member(lasso), budget)
-    rows.append(_row("membership", name, calc, sp, "", inv.n, "", lk, note))
+    rows.append(_row("membership", name, calc, sp, "", inv.class_count, "", lk, note))
     return rows
 
 

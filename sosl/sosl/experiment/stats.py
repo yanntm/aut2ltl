@@ -32,8 +32,8 @@ class RunStats:
     seed: int = 0
 
     ap_count: int = -1
-    ref_classes: int = -1
-    learned_classes: int = -1
+    ref_classes: int = -1           # |C|, excluding the fresh identity
+    learned_classes: int = -1       # |C|, excluding the fresh identity
 
     n_member_total: int = -1
     n_member_fill: int = -1
@@ -49,7 +49,7 @@ class RunStats:
     n_saturation_checks: int = -1
     n_saturation_escalations: int = -1
 
-    n_classes_initial: int = -1
+    n_classes_initial: int = -1     # observed word classes, excluding identity
     stall_class: str = ""            # none | transient | permanent
 
     # Equivalence queries whose aligned graph failed the functionality guard, so

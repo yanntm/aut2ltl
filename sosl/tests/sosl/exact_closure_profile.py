@@ -91,7 +91,7 @@ def main(argv: List[str]) -> int:
     learn(proxy, teacher.alphabet, saturation=saturation)
 
     leg = "default" if saturation else "no-saturation"
-    print(f"{case_id} [{leg}]: reference {ref.n} classes, "
+    print(f"{case_id} [{leg}]: reference {ref.class_count} classes, "
           f"{len(proxy.rows)} fired non-capped queries profiled")
     if not proxy.rows:
         print("  nothing to profile")

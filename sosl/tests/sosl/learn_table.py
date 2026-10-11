@@ -39,7 +39,7 @@ def check_gfa_partition() -> None:
     # fold coherence on the domain: psi(w) == class(w).
     for w in table.domain():
         assert p.fold(w) == p.class_of[w], (w, p.fold(w), p.class_of[w])
-    print(f"OK GF a table: {p.n} classes, closed, consistent, folds coherent")
+    print(f"OK GF a table: {p.class_count} classes, closed, consistent, folds coherent")
 
 
 def check_query_counting() -> None:

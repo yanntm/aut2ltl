@@ -56,7 +56,7 @@ def _analyse(p: Partition) -> None:
                 frontier.append(d)
 
     missing = sorted(set(range(n)) - seen)
-    print(f"classes: {n} | reached from eps via mult: {len(seen)} | "
+    print(f"word classes: {n - 1} | reached from eps via mult: {len(seen) - 1} | "
           f"UNREACHABLE: {len(missing)} {missing}")
 
     # Where the algebraic product and the learner's transition disagree.

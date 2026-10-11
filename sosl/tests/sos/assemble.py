@@ -99,7 +99,7 @@ def section(label: str, inp: str, data: SosData, inv: Invariant,
     out.append("### Enriched monoid `EM(D)` → `S(L)₊`")
     out.append("")
     out.append(f"`|EM¹| = {len(data.mon)}` elements folding onto "
-               f"`|S(L)₊¹| = {k}` classes. `rmul` is right-multiplication by "
+               f"`|S(L)₊| = {inv.class_count}` word classes. `rmul` is right-multiplication by "
                f"each letter ({', '.join('`'+n+'`' for n in letter_names(ab))}), as "
                "`EM` element ids. The identity element hosts two classes "
                "(`[eps]` and any neutral non-empty class).")
@@ -108,7 +108,7 @@ def section(label: str, inp: str, data: SosData, inv: Invariant,
                     em_rows(data, inv, surj))
     out.append("")
 
-    out.append("### Canonical algebra `S(L)₊¹`")
+    out.append("### Canonical algebra with adjoined identity `S(L)₊¹`")
     out.append("")
     cls_rows = [[str(i), f"`{render_word(ab, inv.keys[i])}`",
                  "✓" if inv.mult[i][i] == i else ""] for i in range(k)]
@@ -190,11 +190,11 @@ def main(argv: List[str]) -> int:
             label,
             str(data.aut.num_states()),
             str(len(data.mon)),
-            str(inv.n),
+            str(inv.class_count),
             "yes" if transition_monoid_has_group(data) else "no",
         ])
     doc += md_table(
-        ["input", "\\|Q\\|", "\\|EM¹\\|", "\\|S(L)₊¹\\|", "grp TM"],
+        ["input", "\\|Q\\|", "\\|EM¹\\|", "\\|S(L)₊\\|", "grp TM"],
         fp_rows)
     doc.append("")
 

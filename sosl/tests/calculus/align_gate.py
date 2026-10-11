@@ -42,7 +42,7 @@ def check_self(inv: Invariant, name: str) -> Invariant:
     assert dump_invariant(reduced) == dump_invariant(inv), (
         f"{name}: reduce moved an already-reduced invariant"
     )
-    print(f"  reduce(I) == I byte for byte ({inv.n} classes)")
+    print(f"  reduce(I) == I byte for byte ({inv.class_count} classes)")
 
     twin = load_invariant(dump_invariant(inv))  # a distinct Table object
     product = align(language(inv), language(twin))
@@ -82,7 +82,7 @@ def check_pair(left: Invariant, right: Invariant, lname: str, rname: str) -> Non
 def main(argv: List[str]) -> int:
     left_path = Path(argv[1])
     left = load_invariant(left_path.read_text())
-    print(f"{left_path.name}: |C| = {left.n}")
+    print(f"{left_path.name}: |C| = {left.class_count}")
     check_self(left, left_path.name)
 
     if len(argv) > 2:

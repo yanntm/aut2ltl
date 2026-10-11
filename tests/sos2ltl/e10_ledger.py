@@ -110,7 +110,7 @@ def record(path: str) -> Dict[str, object]:
         f"{key}: residuals trailer says {trailer}, P says {blocks}")
     row: Dict[str, object] = {
         "id": key,
-        "classes": inv.n,
+        "classes": inv.class_count,
         "aps": len(inv.alphabet.aps),
         "residuals": blocks,
         "prefix_independent": is_prefix_independent(inv),

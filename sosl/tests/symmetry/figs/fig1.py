@@ -260,10 +260,10 @@ def _facts(A: Invariant, B: Invariant) -> List[str]:
     rho_a = _forced_rho(B, SignedPerm.polarity_flip(2, 0))
     fail = _failure_cell(B, rho_swap, rho_a)
     return [
-        f"FIX_A |C|={A.n} P={sorted(A.accept)} inert={sorted(inert_aps(A))}",
+        f"FIX_A |C|={A.class_count} P={sorted(A.accept)} inert={sorted(inert_aps(A))}",
         f"  σ_b in_kernel={in_kernel(A, sb)} is_symmetry={is_symmetry(A, sb)}",
         f"  σ_a is_symmetry={is_symmetry(A, sa)}",
-        f"FIX_B |C|={B.n} P={sorted(B.accept)} inert={sorted(inert_aps(B))}",
+        f"FIX_B |C|={B.class_count} P={sorted(B.accept)} inert={sorted(inert_aps(B))}",
         f"  swap is_symmetry={is_symmetry(B, swap)}",
         f"  σ_a is_symmetry={is_symmetry(B, sa)} first_mult_failure={fail}",
     ]

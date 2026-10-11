@@ -192,8 +192,8 @@ def main(argv: List[str]) -> int:
 
     inv_ab = load_invariant(pair.sos_ab.read_text())
     inv_k = load_invariant(pair.sos_k.read_text())
-    print(f"D_ab: |C| = {inv_ab.n}  ({pair.sos_ab})")
-    print(f"D_K : |C| = {inv_k.n}  ({pair.sos_k})")
+    print(f"D_ab: |C| = {inv_ab.class_count}  ({pair.sos_ab})")
+    print(f"D_K : |C| = {inv_k.class_count}  ({pair.sos_k})")
     assert inv_ab.n == 6, (
         f"|C(D_ab)| = {inv_ab.n} != 6 — spec §8/E1: suspect the HOA encoding, "
         "then canonize, then the paper's §5.2 hand count; report, do not patch")

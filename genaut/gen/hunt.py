@@ -123,7 +123,7 @@ def hunt(shape: Shape, sample_draws: int, target_hits: Optional[int],
             fh.write(cat_text(rec))
         coords = (rec.m_plus, rec.m_minus, rec.n_plus, rec.n_minus)
         print(f"HIT {ident}: coords {coords}, mu = {rec.mu}, |C| = "
-              f"{len(inv.keys)}, LTL = {rec.aperiodic}", flush=True)
+              f"{inv.class_count}, LTL = {rec.aperiodic}", flush=True)
 
     return {"tag": tag, "seed": seed, "draws": draws, "hits": len(hits),
             "capped": capped, "seconds": round(time.time() - t0, 1),

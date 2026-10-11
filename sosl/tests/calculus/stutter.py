@@ -90,7 +90,7 @@ def main(argv: List[str]) -> int:
     )
 
     verdict = "invariant" if readoff else "sensitive"
-    print(f"{path.name}: |C| = {table.n}, stutter-{verdict} (read-off == semantic)")
+    print(f"{path.name}: |C| = {table.class_count}, stutter-{verdict} (read-off == semantic)")
 
     if div is not None:
         w, wd = div

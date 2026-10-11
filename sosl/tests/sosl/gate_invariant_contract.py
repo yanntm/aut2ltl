@@ -30,7 +30,7 @@ def main() -> None:
         inv = learn(teacher, teacher.alphabet, stats=stats)
         assert dump_invariant(inv) == dump_invariant(ref), \
             f"{name}: learned invariant byte-differs from reference"
-        print(f"OK {name}: N={inv.n} member={stats['n_member']} "
+        print(f"OK {name}: N={inv.class_count} member={stats['n_member']} "
               f"equiv={stats['n_equiv']} cex={stats['n_cex']} "
               f"sat={stats['n_saturation']}")
 

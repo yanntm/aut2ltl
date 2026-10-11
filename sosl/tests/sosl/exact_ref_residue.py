@@ -89,7 +89,7 @@ def main(argv: List[str]) -> int:
 
     leg = "default" if saturation else "no-saturation"
     fired = teacher.guard_firings
-    print(f"{case_id} [{leg}]: reference {ref.n} classes, "
+    print(f"{case_id} [{leg}]: reference {ref.class_count} classes, "
           f"{len(fired)} fired {'query' if len(fired) == 1 else 'queries'}")
     if not fired:
         print("  guard green throughout: no residue to measure")

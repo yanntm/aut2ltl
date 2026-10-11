@@ -85,7 +85,7 @@ def run(formula: str) -> int:
     ref_sos = dump_invariant(ref)
     learned_sos = dump_invariant(learned)
     print(f"formula: {formula!r}")
-    print(f"reference classes: {ref.n}   learned: {stats}")
+    print(f"reference classes: {ref.class_count}   learned: {stats}")
 
     ok, n_checked, mode = acceptor_check(learned, teacher)
     verdict = "acceptance-correct" if ok else "ACCEPTANCE-WRONG"

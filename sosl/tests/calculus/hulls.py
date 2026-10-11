@@ -182,7 +182,7 @@ def main(argv: List[str]) -> int:
     inv = load_invariant(path.read_text())
     table = Table.of(inv)
     langs = random_languages(table, rng) + [inv.accept]
-    print(f"{path.name}: |C| = {table.n}, |linked| = {len(table.linked)}, seed {seed}")
+    print(f"{path.name}: |C| = {table.class_count}, |linked| = {len(table.linked)}, seed {seed}")
 
     check_closure_laws(table, langs)
     check_duality(table, langs)

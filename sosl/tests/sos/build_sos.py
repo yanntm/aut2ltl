@@ -6,7 +6,7 @@ the canonical deterministic form and run through the SoS construction
 (`sosl.sos.core`). The script prints, for that one language:
 
   * the Figure-1 line     — |Q|, letters, acceptance of the deterministic form;
-  * the Table-1 row       — |Q|, |EM1|, |S(L)+1|, and whether the transition
+  * the Table-1 row       — |Q|, |EM1|, |S(L)+|, and whether the transition
                             monoid carries a group (a presentation property of
                             the state maps, marks forgotten);
   * the Table-2 block     — every EM element as its (st, mk) vector, the
@@ -129,7 +129,7 @@ def print_table1(data: SosData, inv: Invariant) -> None:
     print("\n# Table 1 — fingerprint row")
     print(f"  |Q|          = {data.aut.num_states()}")
     print(f"  |EM1|        = {len(data.mon)}")
-    print(f"  |S(L)+1|     = {inv.n}")
+    print(f"  |S(L)+|     = {inv.class_count}")
     print(f"  group in TM? = {transition_monoid_has_group(data)}")
 
 

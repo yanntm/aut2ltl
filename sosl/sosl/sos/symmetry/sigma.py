@@ -110,7 +110,7 @@ def apply_perm(inv: Invariant, sigma: SignedPerm) -> Invariant:
     red = reduce(rewired, moved)
     if red.n != inv.n:
         raise AssertionError(
-            f"apply_perm merged classes ({inv.n} -> {red.n}): input not "
+            f"apply_perm merged classes ({inv.class_count} -> {red.class_count}): input not "
             "syntactic, or reduce is broken — report, do not continue"
         )
     return red

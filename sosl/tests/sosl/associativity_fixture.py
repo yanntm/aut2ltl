@@ -46,7 +46,7 @@ def _key_index(inv: Invariant, rendered: str) -> int:
 def check_f8_display() -> None:
     t = HoaTeacher.of_hoa("samples/a_implies_xa.hoa", eq_mode="exact")
     inv = learn(t, t.alphabet, saturation=False, unchecked_export=True)
-    assert inv.n == 4, f"stall expected 4 classes, got {inv.n}"
+    assert inv.n == 4, f"stall expected 3 word classes, got {inv.class_count}"
 
     keys = [render_word(inv.alphabet, inv.keys[c]) for c in range(inv.n)]
     assert sorted(keys) == sorted(DISPLAY_KEYS), (keys, DISPLAY_KEYS)

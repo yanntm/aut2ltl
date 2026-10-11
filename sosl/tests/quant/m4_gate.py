@@ -68,7 +68,7 @@ def run_case(path: Path) -> int:
     )
     ms = int((perf_counter() - t0) * 1000 + 0.5)
     row = (
-        f"{name},{inv.n},{len(r.live)},{len(r.blocks)},{int(r.converged)},"
+        f"{name},{inv.class_count},{len(r.live)},{len(r.blocks)},{int(r.converged)},"
         f"{rng_ok},{cl_ok},{r.h_lo!r},{r.h_hi!r},{ms}"
     )
     append_row(LOGS / "m4_cases.csv", CASE_HEADER, row)

@@ -111,7 +111,7 @@ def _one(basename: str, sos_dir: Path, det_dir: Path, budget: int) -> Dict:
     cat = parse_cat((sos_dir / f"{basename}.cat").read_text())
     ours_inv = cat["stutter_invariant"]
     inv = load_invariant((sos_dir / f"{basename}.sos").read_text())
-    row: Dict = {"case": basename, "aps": len(inv.alphabet.aps), "classes": inv.n,
+    row: Dict = {"case": basename, "aps": len(inv.alphabet.aps), "classes": inv.class_count,
                  "ltl": "yes" if cat["ltl"] else "no", "note": ""}
     signal.setitimer(signal.ITIMER_REAL, budget)
     try:

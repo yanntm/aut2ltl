@@ -38,7 +38,7 @@ def main() -> int:
     inv = invariant_of_language(lang)
     cay = build(inv)
     fid = len(cay.layers) - 1
-    print(f"  classes={inv.n} layers={len(cay.layers)} "
+    print(f"  classes={inv.class_count} layers={len(cay.layers)} "
           f"final layer {fid} = {cay.layers[fid]}")
 
     t0 = time.monotonic()

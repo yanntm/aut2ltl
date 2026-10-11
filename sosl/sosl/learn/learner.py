@@ -87,18 +87,18 @@ def _stabilize(table: Table) -> Partition:
         if unclosed:
             if TRACE_ON:
                 trace("STAB", f"close: +{len(unclosed)} rows "
-                      f"(rows={len(table.rows)} cols={len(table.columns)} classes={p.n})")
+                      f"(rows={len(table.rows)} cols={len(table.columns)} classes={p.class_count})")
             for w in unclosed:
                 table.add_row(w)
             continue
         if _make_consistent(table, p):
             if TRACE_ON:
                 trace("STAB", f"consist: mint col -> {len(table.columns)} "
-                      f"(rows={len(table.rows)} classes={p.n})")
+                      f"(rows={len(table.rows)} classes={p.class_count})")
             continue
         if TRACE_ON:
             trace("STAB", f"stable: rows={len(table.rows)} "
-                  f"cols={len(table.columns)} classes={p.n}")
+                  f"cols={len(table.columns)} classes={p.class_count}")
         return p
 
 
@@ -126,7 +126,7 @@ def learn(
             assert n_sat <= 1000, "saturation not converging (non-splitting mint?)"
             if TRACE_ON:
                 trace("LEARN", f"saturation escalation {n_sat}: "
-                      f"cols={len(table.columns)} classes(pre-split)={p.n}")
+                      f"cols={len(table.columns)} classes(pre-split)={p.class_count}")
             continue
         # Pair legality: P saturated under conjugacy; a violation is a
         # refereed discordance, chained like any other.
@@ -149,15 +149,15 @@ def learn(
             continue
         n_equiv += 1
         if TRACE_ON:
-            trace("LEARN", f"round {n_equiv}: classes={p.n} "
+            trace("LEARN", f"round {n_equiv}: classes={p.class_count} "
                   f"rows={len(table.rows)} cols={len(table.columns)} cex_so_far={n_cex}")
         result = teacher.equiv(belief)
         if isinstance(result, Equivalent):
             if TRACE_ON:
-                trace("LEARN", f"EQUIVALENT ({result.strategy}) classes={p.n}")
+                trace("LEARN", f"EQUIVALENT ({result.strategy}) classes={p.class_count}")
             if stats is not None:
                 stats.update(
-                    learned_classes=belief.n,
+                    learned_classes=belief.class_count,
                     n_member=table.n_member,
                     n_equiv=n_equiv,
                     n_cex=n_cex,

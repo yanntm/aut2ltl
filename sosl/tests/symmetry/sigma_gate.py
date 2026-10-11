@@ -133,7 +133,7 @@ def gate_fixtures() -> None:
         t0 = time.monotonic()
         inv = fixtures.load(name)
         n = len(inv.alphabet.aps)
-        _check(inv.n == nc, f"{name}: |C| {inv.n} != {nc}")
+        _check(inv.n == nc, f"{name}: |C| {inv.class_count} != {nc - 1}")
         _check(len(inv.accept) == np_, f"{name}: |P| {len(inv.accept)} != {np_}")
         _check(len(inv.linked_pairs()) == nl, f"{name}: |linked| != {nl}")
         _check(anti_possible(inv) == ap_exp, f"{name}: anti_possible != {ap_exp}")
@@ -288,7 +288,7 @@ def _case_row(path: str) -> Tuple[str, str]:
         [
             case,
             str(n),
-            str(inv.n),
+            str(inv.class_count),
             ";".join(str(i) for i in sorted(inert)),
             ";".join(sym_hits),
             ";".join(anti_hits),

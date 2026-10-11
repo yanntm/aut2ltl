@@ -223,12 +223,12 @@ def simplify(iv: Interval, opts: Options = Options()) -> Simplification:
 
     from ..classify.stutter import is_stutter_invariant
     classes = {
-        "neg_phi": reduce(iv.table, iv.p_neg_phi, check=False).n,
-        "k": reduce(iv.table, iv.p_k, check=False).n,
-        "table": iv.table.n,
-        "p_min": reduce(iv.table, iv.p_min, check=False).n,
-        "p_max": reduce(iv.table, iv.p_max, check=False).n,
-        "b": inv_b.n,
+        "neg_phi": reduce(iv.table, iv.p_neg_phi, check=False).class_count,
+        "k": reduce(iv.table, iv.p_k, check=False).class_count,
+        "table": iv.table.class_count,
+        "p_min": reduce(iv.table, iv.p_min, check=False).class_count,
+        "p_max": reduce(iv.table, iv.p_max, check=False).class_count,
+        "b": inv_b.class_count,
     }
     return Simplification(
         verdict="SIMPLIFIED", b=b, invariant=inv_b, side=side, seed=seed,

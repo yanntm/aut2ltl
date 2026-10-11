@@ -27,7 +27,7 @@ def main(phi: str) -> int:
     table = Table.of(inv)
     p_atoms = atoms_of(table, inv.accept)
     n_atoms = atoms_of(table, complement(table, inv.accept))
-    print(f"{phi}: |C|={inv.n} |P atoms|={len(p_atoms)} "
+    print(f"{phi}: |C|={inv.class_count} |P atoms|={len(p_atoms)} "
           f"|P̄ atoms|={len(n_atoms)}", flush=True)
     plan = split_plan(inv)
     if plan is None:
@@ -36,7 +36,7 @@ def main(phi: str) -> int:
     print(f"  side={'P̄ (negated)' if plan.negate else 'P'} "
           f"pieces={len(plan.pieces)}", flush=True)
     for i, piece in enumerate(plan.pieces):
-        print(f"  piece {i}: |C|={piece.n} aps={list(piece.alphabet.aps)}",
+        print(f"  piece {i}: |C|={piece.class_count} aps={list(piece.alphabet.aps)}",
               flush=True)
         t0 = time.monotonic()
         phi_f = transcribe(piece, fallback=None)

@@ -41,7 +41,7 @@ def main(argv: List[str]) -> int:
         inv = load_invariant(f.read())
     cay = build(inv)
 
-    print(f"{path}: {inv.n} classes, {len(cay.layers)} layers")
+    print(f"{path}: {inv.class_count} classes, {len(cay.layers)} layers")
     for c in range(inv.n):
         steps = "  ".join(
             f"{machine.letter_txt(inv, a)} -> {cay.step(c, a)}"

@@ -35,17 +35,15 @@ from sosl.sos.minimize import free_aps, remove_free_aps            # noqa: E402
 # free: every minterm and its `a`-toggle map to the same class in `letters`.
 FREE_A = """SOS v1
 ap: a b c
-classes: 4
-0 eps
+classes: 3
 1 !a&!b&!c
 2 !a&!b&c
 3 !a&b&!c
 letters: !a&!b&!c->1 !a&!b&c->2 !a&b&!c->3 !a&b&c->1 a&!b&!c->1 a&!b&c->2 a&b&!c->3 a&b&c->1
 mult:
-0: 0 1 2 3
-1: 1 1 1 1
-2: 2 1 2 2
-3: 3 1 2 3
+1: 1 1 1
+2: 1 2 2
+3: 1 2 3
 accept:
 1 1
 1 2

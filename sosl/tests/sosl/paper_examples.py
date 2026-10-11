@@ -32,7 +32,7 @@ _SRC = os.path.join(
     "samples",
 )
 
-# (name, hoa file, canonical |S(L)+1| from the paper's fingerprint tables)
+# (name, hoa file, canonical |C| from the paper's fingerprint tables)
 CASES: List[Tuple[str, str, int]] = [
     ("GF(aa)", "gf_aa_parity.hoa", 6),
     ("Even", "even.hoa", 5),
@@ -80,15 +80,15 @@ def run() -> int:
         acc_ok, n_checked = _acceptor_ok(learned, teacher)
         byte_eq = dump_invariant(ref) == dump_invariant(learned)
 
-        print(f"canonical |S(L)+1|: reference={ref.n}  paper={canonical}  "
+        print(f"canonical |C|: reference={ref.class_count}  paper={canonical - 1}  "
               f"{'OK' if ref.n == canonical else 'MISMATCH'}")
-        print(f"learned: classes={learned.n}  {stats}")
+        print(f"learned: classes={learned.class_count}  {stats}")
         print(f"acceptor: {'acceptance-correct' if acc_ok else 'ACCEPTANCE-WRONG'} "
               f"({n_checked} lassos)")
         print(f"vs reference: {'BYTE-EQUAL (canonical)' if byte_eq else 'DIFFER (M2 stall)'}")
 
         _p, stall = _stall_partition(teacher)
-        print(f"M2 stall partition ({len(stall)} classes):")
+        print(f"M2 stall partition ({len(stall) - 1} word classes):")
         for key, words in stall:
             print(f"  [{key}] = {{{', '.join(words)}}}")
 

@@ -87,7 +87,7 @@ class _Corpus:
         self.meta: Dict[str, Tuple[Tuple[str, ...], int]] = {}
         for name in self.names:
             inv = self.inv(name)
-            self.meta[name] = (tuple(inv.alphabet.aps), inv.n)
+            self.meta[name] = (tuple(inv.alphabet.aps), inv.class_count)
         self._partner: Optional[Dict[str, str]] = None
 
     def inv(self, name: str) -> Invariant:

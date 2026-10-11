@@ -110,7 +110,7 @@ def check(case: str, saturation: bool) -> None:
     assert dump_invariant(ref_inv) == dump_invariant(cl_inv), (
         f"{tag}: exported invariants differ\n" + dump_invariant(ref_inv)
     )
-    print(f"OK {tag}: {len(ref_cex)} cex, {ref_inv.n} classes, "
+    print(f"OK {tag}: {len(ref_cex)} cex, {ref_inv.class_count} classes, "
           f"ledger {ref_stats}")
 
 

@@ -101,7 +101,7 @@ def build_ledger(path: str) -> None:
         phase[0] = "fill"
         p = _stabilize(table)
         if pending is not None:
-            ledger.append((pending, p.n, _describe_split(ab, pending.before, p)))
+            ledger.append((pending, p.class_count, _describe_split(ab, pending.before, p)))
             pending = None
 
         phase[0] = "saturation"
@@ -128,13 +128,13 @@ def build_ledger(path: str) -> None:
     n_om = len(table.columns) - n_lin
 
     print(f"=== {path} ===")
-    print(f"final classes: {inv.n}   (initial stabilized: "
-          f"{ledger[0][0].before.n if ledger else p.n})")
+    print(f"final classes: {inv.class_count}   (initial stabilized: "
+          f"{ledger[0][0].before.class_count if ledger else p.class_count})")
     print("\nsplit ledger:")
     print(f"  {'#':>2}  {'trigger':<22} {'chain':<8} {'n':<7} {'split':<20} column")
     for i, (row, after_n, split) in enumerate(ledger, 1):
         print(f"  {i:>2}  {row.trigger:<22} {row.chain:<8} "
-              f"{row.before.n}->{after_n:<4} {split:<20} {_render_col(ab, row.column)}")
+              f"{row.before.class_count}->{after_n:<4} {split:<20} {_render_col(ab, row.column)}")
 
     print("\nquery ledger:")
     for ph in ("fill", "harvest", "saturation", "pcache"):

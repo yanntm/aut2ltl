@@ -32,7 +32,7 @@ def main(argv: List[str]) -> int:
                           for p in inv.alphabet.aps)
                  for a in inv.alphabet.letters()]
         outs.append(ast.to_spot(phi, cubes))
-        print(f"{path}: {inv.n} classes, {n} nodes, formula {len(outs[-1])} chars")
+        print(f"{path}: {inv.class_count} classes, {n} nodes, formula {len(outs[-1])} chars")
 
     assert dumps[0] == dumps[1], "invariants differ: not one language"
     assert outs[0] == outs[1], "same invariant, different formulas: canonicity broken"

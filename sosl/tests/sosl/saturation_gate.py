@@ -29,10 +29,10 @@ def check(name: str) -> None:
     ref = reference_of_hoa(path)
     t = HoaTeacher.of_hoa(path)
     stats: dict = {}
-    learned = learn(t, t.alphabet, stats=stats, saturation=True)
+    learned = learn(t, t.alphabet, stats=stats)
     ok = dump_invariant(learned) == dump_invariant(ref)
     tag = "byte-equal" if ok else "MISMATCH"
-    print(f"{name:14s} ref={ref.n} learned={learned.n} "
+    print(f"{name:14s} ref={ref.class_count} learned={learned.class_count} "
           f"cex={stats['n_cex']} sat={stats['n_saturation']}  {tag}")
     assert ok, (f"{name}: saturated export not byte-equal to reference\n"
                 f"--- learned ---\n{dump_invariant(learned)}\n"

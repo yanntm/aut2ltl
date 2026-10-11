@@ -48,7 +48,7 @@ def main(argv: List[str]) -> int:
     assert dump_invariant(back) == dump_invariant(reduce(table, inv.accept)), (
         "reduce(complement(complement(P))) != reduce(P)"
     )
-    print(f"{path.name}: |C| = {table.n} -> complement |C| = {reduced.n}; "
+    print(f"{path.name}: |C| = {table.class_count} -> complement |C| = {reduced.class_count}; "
           f"involution holds")
 
     other = Path(argv[2]) if len(argv) > 2 else companion(path)

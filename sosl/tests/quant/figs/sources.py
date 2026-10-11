@@ -148,7 +148,7 @@ def _check_fe(fe: Invariant) -> None:
     mu_13 = measure(fe, P13).value
     assert mu_u == Fraction(2, 3), mu_u
     assert mu_13 == Fraction(3, 4), mu_13
-    print(f"F-E ok: {fe.n} classes, theta {prof.entries}, "
+    print(f"F-E ok: {fe.class_count} classes, theta {prof.entries}, "
           f"mu = {mu_u} (uniform), {mu_13} (p_a=1/3)")
 
 
@@ -170,7 +170,7 @@ def _check_fd(fd: Invariant) -> None:
     assert tab.val(fd.accept, bb, e_prime) is False    # split verdict, e' non-kernel
     assert tab.val(fd.accept, b, k) is True
     assert tab.val(fd.accept, bb, k) is True           # kernel forgets the phase
-    print(f"F-D ok: {fd.n} classes, theta {prof.entries}, mu = 1 for every p; "
+    print(f"F-D ok: {fd.class_count} classes, theta {prof.entries}, mu = 1 for every p; "
           f"e'=fold(ba) splits (1/0), kernel k=fold(aa) merges (1/1)")
 
 

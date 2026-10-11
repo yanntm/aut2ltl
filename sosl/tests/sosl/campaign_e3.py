@@ -57,10 +57,10 @@ def main(argv: List[str]) -> int:
             else:
                 cells.append(f"— ({r.detail if r else 'n/a'})")
         lines.append(
-            f"| {case.case_id} | {ref.n} ({ours.n_member_total}/{ours.n_equiv}) "
+            f"| {case.case_id} | {ref.class_count} ({ours.n_member_total}/{ours.n_equiv}) "
             f"| {cells[0]} | {cells[1]} | {cells[2]} "
             f"| ours: yes · FDFA: N/A |")
-        print(f"{case.case_id}: ours N={ref.n} | "
+        print(f"{case.case_id}: ours N={ref.class_count} | "
               + " | ".join(f"{m}={c}" for m, c in zip(MODES, cells)))
 
     lines.append("")

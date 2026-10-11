@@ -185,7 +185,7 @@ def main() -> None:
     for name, path in fixture_paths().items():
         inv = load_invariant(open(path).read())
         print(
-            f"{name}: |C| = {inv.n}  APs = {inv.alphabet.aps}  "
+            f"{name}: |C| = {inv.class_count}  APs = {inv.alphabet.aps}  "
             f"|P| = {len(inv.accept)}  |linked| = {len(inv.linked_pairs())}  "
             f"({os.path.relpath(path, _REPO)})"
         )
