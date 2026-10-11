@@ -16,9 +16,7 @@ Canonical keying mirrors `sosl.sos.core.canonical.shortlex_bfs`: ids and
 keys come from a BFS over the small quotient algebra itself
 (`step(c, a) = mult[c][letter_class[a]]` from `[eps]`, letters in mask
 order) — the first word reaching a class is its shortlex-least key. The
-serialized layout is owned by `sosl.sos.io.dump_invariant`
-(core sections only; the optional residuals trailer does not participate
-in language identity).
+serialized layout is owned by `sosl.sos.io.dump_invariant`.
 
 Scope: single `Automaton` digests with canonically ordered APs (sorted
 by name — the `.sos` spine); anything else is refused loudly."""
