@@ -6,7 +6,7 @@ syntactic ω-semigroup `S(L)₊` and emits a renderable Markdown section: the
 deterministic form as an HOA block, the enriched monoid `EM(D)` with the
 surjection onto `S(L)₊`, the canonical algebra (keyed classes, class
 multiplication matrix, letter map, accepting linked pairs), and the `.sos`
-serialization of the invariant `𝓘(L)` (with its optional residual trailer). A
+serialization of the invariant `𝓘(L)`, and a residual-automaton table. A
 leading fingerprint table compares all inputs at a glance. Nothing here is
 example-specific — it summarizes whatever algebra the input automaton holds.
 
@@ -134,8 +134,16 @@ def section(label: str, inp: str, data: SosData, inv: Invariant,
     out.append("### Invariant `𝓘(L)` — `.sos` serialization")
     out.append("")
     out.append("```")
-    out.append(dump_invariant(inv, residuals=res).rstrip())
+    out.append(dump_invariant(inv).rstrip())
     out.append("```")
+    out.append("")
+    out.append("### Residual automaton (right congruence)")
+    out.append("")
+    out += md_table(
+        ["residual", "key"] + letter_names(ab),
+        [[str(r), f"`{render_word(ab, res.keys[r])}`"]
+         + [str(dst) for dst in res.delta[r]] for r in range(res.n)],
+    )
     out.append("")
     return out
 
