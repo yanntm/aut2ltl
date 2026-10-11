@@ -11,6 +11,8 @@ invariant still decides membership the same way. Prints OK lines / the dumped
 """
 from __future__ import annotations
 
+from dataclasses import replace
+
 from sosl.sos import (
     EMPTY,
     Alphabet,
@@ -19,7 +21,6 @@ from sosl.sos import (
     dump_invariant,
     load_invariant,
 )
-from sosl.sos.residuals import Residuals
 
 
 TARGET = """SOS v1
@@ -115,13 +116,17 @@ def check_zero_ap() -> None:
     print("OK zero-AP round-trip")
 
 
-def check_residuals() -> None:
-    inv = gfa_invariant()
-    res = Residuals(keys=(EMPTY,), delta=((0, 0),))
-    trailer = "residuals: 1\n0 eps\nres-step:\n0: 0 0\n"
-    assert dump_invariant(inv, residuals=res) == dump_invariant(inv) + trailer
-    assert load_invariant(dump_invariant(inv, residuals=res)) == inv
-    print("OK residual trailer unchanged")
+def check_trailing_sections_rejected() -> None:
+    for suffix in ("residuals: 1\n0 eps\nres-step:\n0: 0 0\n", "extra:\n"):
+        try:
+            load_invariant(TARGET + suffix)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("loader accepted an extra section")
+    empty = replace(gfa_invariant(), accept=frozenset())
+    assert load_invariant(dump_invariant(empty)) == empty
+    print("OK extra sections rejected + empty acceptance round-trip")
 
 
 def main() -> int:
@@ -129,7 +134,7 @@ def main() -> int:
     check_multi_ap_letters()
     check_target()
     check_zero_ap()
-    check_residuals()
+    check_trailing_sections_rejected()
     print("ALL OK")
     return 0
 
