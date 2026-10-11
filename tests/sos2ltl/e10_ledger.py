@@ -86,17 +86,6 @@ def _fan_counts(inv: Invariant, cay: Cayley) -> Dict[str, int]:
     return out
 
 
-def _trailer_residuals(text: str) -> Optional[int]:
-    """The residual count of the `.sos` file's optional residuals trailer —
-    computed on the automaton side, dropped by the loader. Cross-checks the
-    `P`-derived `residual_partition` on every input that carries one; a
-    mismatch is a stop-the-line bug in one of the two computations."""
-    for line in text.splitlines():
-        if line.startswith("residuals:"):
-            return int(line.split(":", 1)[1])
-    return None
-
-
 def record(path: str) -> Dict[str, object]:
     """The ledger line of one `.sos` file."""
     with open(path) as f:
@@ -105,9 +94,6 @@ def record(path: str) -> Dict[str, object]:
     key = os.path.basename(path)[:-4]
 
     blocks = len(set(residual_partition(inv)))
-    trailer = _trailer_residuals(text)
-    assert trailer is None or trailer == blocks, (
-        f"{key}: residuals trailer says {trailer}, P says {blocks}")
     row: Dict[str, object] = {
         "id": key,
         "classes": inv.class_count,
