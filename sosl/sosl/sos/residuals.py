@@ -1,4 +1,4 @@
-"""The residual (right-congruence) automaton — an optional companion to `.sos`.
+"""The residual (right-congruence) automaton.
 
 Pure data. The right congruence ``u ~ v  <=>  u^{-1}L = v^{-1}L`` of an
 omega-regular language quotients to a finite deterministic automaton (the
@@ -8,10 +8,8 @@ keyed by their shortlex-least reaching word (``id 0`` = ``eps``, the residual
 
 This is strictly weaker than the invariant `I(L)` — a right congruence, not the
 two-sided syntactic one — so it is never part of an invariant's identity. It
-rides along a `.sos` serialization only as an optional diagnostic trailer (see
-`serialize.dump_invariant`'s ``residuals`` parameter), useful for figures; it is
-computed on the automaton side (`sos.build.residuals_of_hoa`) and is absent
-from a learner's export.
+is computed on the automaton side (`sos.build.residuals_of_hoa`) and can be
+displayed independently in reports. It is not serialized in `.sos`.
 """
 from __future__ import annotations
 
