@@ -15,7 +15,3 @@ mult:
 5: 5 5 5 5 5
 accept:
 5 5
-residuals: 1
-0 eps
-res-step:
-0: 0 0
