@@ -58,8 +58,13 @@ class Partition:
 
     @property
     def n(self) -> int:
-        """The number of classes."""
+        """The internal class-slot count, including the fresh identity."""
         return len(self.members)
+
+    @property
+    def class_count(self) -> int:
+        """The observed word-class count, excluding the fresh identity."""
+        return self.n - 1
 
     def unclosed(self) -> List[Word]:
         """One shortlex-least frontier witness per class lacking a row (each
