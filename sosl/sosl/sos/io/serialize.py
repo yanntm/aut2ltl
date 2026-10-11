@@ -100,7 +100,7 @@ def dump_invariant(inv: Invariant, residuals: Optional[Residuals] = None) -> str
     ignored on parse."""
     ab = inv.alphabet
     assert inv.identity == 0 and inv.keys[0] == EMPTY
-    out: List[str] = [SOS_MAGIC, "ap: " + " ".join(ab.aps), f"classes: {inv.n - 1}"]
+    out: List[str] = [SOS_MAGIC, "ap: " + " ".join(ab.aps), f"classes: {inv.class_count}"]
     for c in range(1, inv.n):
         out.append(f"{c} {render_word(ab, inv.keys[c])}")
     out.append(
