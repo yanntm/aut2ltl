@@ -120,6 +120,5 @@ def canonical_invariant(inv: Invariant) -> Invariant:
 
 def canonical_sos(text: str) -> str:
     """Load a `.sos` dump, fold its AP-relabeling symmetry, and re-dump. Byte-equal
-    outputs ⟺ equal languages **up to AP relabeling**. The residuals trailer, if
-    any, is dropped (not part of the language identity)."""
+    outputs ⟺ equal languages **up to AP relabeling**."""
     return dump_invariant(canonical_invariant(load_invariant(text)))
