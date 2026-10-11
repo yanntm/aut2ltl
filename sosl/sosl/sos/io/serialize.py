@@ -18,11 +18,10 @@ unambiguous over a multi-AP alphabet (``a&!b``, not ``{a}``).
 """
 from __future__ import annotations
 
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 from ..alphabet import EMPTY, Alphabet, Letter, Word
 from ..invariant import Invariant
-from ..residuals import Residuals
 
 SOS_MAGIC = "SOS v1"
 
@@ -91,13 +90,8 @@ def _read_keys(ab: Alphabet, lines: List[str], i: int, n: int) -> Tuple[List[Wor
 
 # --- invariant (.sos) ------------------------------------------------------
 
-def dump_invariant(inv: Invariant, residuals: Optional[Residuals] = None) -> str:
-    """The canonical `.sos` text for ``inv`` (trailing newline included).
-
-    With ``residuals`` given, append the optional residual-automaton trailer
-    (a diagnostic; not part of the language identity — two `.sos` texts that
-    differ only in their trailer denote the same language). The trailer is
-    ignored on parse."""
+def dump_invariant(inv: Invariant) -> str:
+    """The canonical `.sos` text for ``inv`` (trailing newline included)."""
     ab = inv.alphabet
     assert inv.identity == 0 and inv.keys[0] == EMPTY
     out: List[str] = [SOS_MAGIC, "ap: " + " ".join(ab.aps), f"classes: {inv.class_count}"]
@@ -114,25 +108,14 @@ def dump_invariant(inv: Invariant, residuals: Optional[Residuals] = None) -> str
     out.append("accept:")
     for s, e in sorted(inv.accept):
         out.append(f"{s} {e}")
-    if residuals is not None:
-        out += _residual_lines(ab, residuals)
     return "\n".join(out) + "\n"
 
 
-def _residual_lines(ab: Alphabet, res: Residuals) -> List[str]:
-    """The residual-automaton trailer: ``residuals:`` count, one keyed class per
-    line, then a ``res-step:`` derivative table (columns in alphabet order)."""
-    lines: List[str] = [f"residuals: {res.n}"]
-    for r in range(res.n):
-        lines.append(f"{r} {render_word(ab, res.keys[r])}")
-    lines.append("res-step:")
-    for r in range(res.n):
-        lines.append(f"{r}: " + " ".join(str(v) for v in res.delta[r]))
-    return lines
-
-
 def load_invariant(text: str) -> Invariant:
-    """Parse `.sos`, adjoining the implicit identity at internal class 0."""
+    """Parse `.sos`, adjoining the implicit identity at internal class 0.
+
+    Every nonblank line after ``accept:`` must be an accepting pair.
+    """
     lines = _nonblank(text)
     ab, n, i = _read_header(lines, SOS_MAGIC)
     keys, i = _read_keys(ab, lines, i, n)
@@ -161,8 +144,8 @@ def load_invariant(text: str) -> Invariant:
     accept = set()
     while i < len(lines):
         parts = lines[i].split()
-        if len(parts) != 2 or not all(p.lstrip("-").isdigit() for p in parts):
-            break  # end of the accept block (e.g. an optional residuals trailer)
+        if len(parts) != 2 or not all(p.isdigit() for p in parts):
+            raise ValueError(f"Expected accepting pair, got {lines[i]!r}")
         pair = (int(parts[0]), int(parts[1]))
         assert all(1 <= c <= n for c in pair), lines[i]
         accept.add(pair)
