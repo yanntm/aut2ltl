@@ -19,6 +19,8 @@ defined here.
   membership read-off (decide any lasso from `I(L)` alone). The classes are
   those of the non-empty words plus a **fresh** adjoined identity `[ε]`, never
   merged with any word's class (see `algorithm.md`, "the identity convention").
+  `class_count` reports `|C|`, excluding that identity; `n` is the internal
+  table size including it. Reporting clients use `class_count`.
 - **The Cayley hypothesis.** The *mid-learning* object exchanged during an
   equivalence query. It is deliberately weaker than an invariant (no
   multiplication table is trusted before the end): a step table plus a cache of
@@ -28,6 +30,9 @@ defined here.
   form (`.sos`) and the Cayley form. Two languages over the same `AP` are equal
   iff their serialized invariants are byte-equal — this equality *is* the
   soundness criterion of the whole tool.
+  The `.sos` core stores only non-empty-word classes, retaining their IDs `1…N`;
+  the fresh identity at internal ID `0` is restored on load. Residual trailers
+  keep their own numbering from `0`. See `io/sos_format.md` for the layout.
 - **Alphabet minimality** (`minimize`). A proposition can be **free** — one the
   language does not depend on, yet whose literal survives in a presentation
   (`spot`'s `remove_unused_ap` drops only edge-absent APs). The invariant records
@@ -49,7 +54,7 @@ defined here.
     invariant   Invariant(C, key, λ, M, P) + membership read-off
     minimize    drop free APs -> the invariant at its minimal alphabet
     cayley      the Hypothesis (step table + pair-cache) and its prediction
-    serialize   .sos (invariant) and Cayley (hypothesis) canonical text I/O
+    io/         .sos canonical text I/O; implicit identity on disk
     calculus/   align / operate / reduce over invariants, witness-carrying
 
 ## See also

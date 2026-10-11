@@ -27,10 +27,13 @@ The class set is the congruence classes of the **non-empty** words, plus a
 already acts neutrally. The identity is adjoined as a fresh element; it is never
 the image of any word. Consequences, all mandatory:
 
-- The class count is `(number of non-empty-word classes) + 1`, and it comes out
+- The internal class count is `(number of non-empty-word classes) + 1`, and it comes out
   the same from every automaton presenting the same language. This
   presentation-independence is exactly what makes `.sos` byte-equality a sound
   language test; drop it and byte-equality stops meaning language equality.
+  On disk, `.sos` stores only the non-empty-word classes and their positive IDs;
+  its `classes:` count excludes the fresh identity. Loading restores class `0`
+  and its identity row and column, preserving the internal convention.
 - `[ε]` is never merged with the class of any non-empty word — even a word `w`
   that acts neutrally (`w·u ~ u` and `u·w ~ u` for every non-empty `u`). Such
   neutral classes exist and stay ordinary classes of their own, keyed by their

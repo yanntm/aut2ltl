@@ -1431,8 +1431,7 @@ a file that *is* the language. `𝓘(GFaa)`, in full:
 ```
 SOS v1
 ap: a
-classes: 6
-0 eps
+classes: 5
 1 !a
 2 a
 3 !a;a
@@ -1440,12 +1439,11 @@ classes: 6
 5 a;a
 letters: !a->1 a->2
 mult:
-0: 0 1 2 3 4 5
-1: 1 1 3 3 1 5
-2: 2 4 5 2 5 5
-3: 3 1 5 3 5 5
-4: 4 4 2 2 4 5
-5: 5 5 5 5 5 5
+1: 1 3 3 1 5
+2: 4 5 2 5 5
+3: 1 5 3 5 5
+4: 4 2 2 4 5
+5: 5 5 5 5 5
 accept:
 5 5
 residuals: 1
@@ -1457,9 +1455,9 @@ res-step:
 The file is the tool's export, verbatim — the one place the paper keeps the
 raw letters: the alphabet is the single atom and its negation, `ap: a` with
 `!a` for the paper's `b`, and keys read `x;y` for `x·y`. Classes are listed
-by shortlex key, monoid convention: class `0 eps` is the adjoined `[ε]`, so
-`classes: 6` counts `|𝒞| = 5` plus the basepoint. The row `c: …` of `mult`
-gives `c·d` for `d` in id order; `accept` lists `P` — here the single pair
+by shortlex key, with `classes: 5` counting `|𝒞| = 5`. The fresh `[ε]` at
+internal id `0` is implicit and restored on load. The row `c: …` of `mult`
+gives `c·d` for `d` in positive id order; `accept` lists `P` — here the single pair
 `([a·a], [a·a])`, ids `5 5`. The trailing `residuals:` block is derived
 data — the right congruence, recomputable from the core, so byte equality is
 unaffected; its single class exhibits `GFaa`'s prefix-independence.

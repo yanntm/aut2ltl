@@ -1,4 +1,4 @@
-# SoS serialization format — proposition (v1)
+# SoS serialization format (v1)
 
 A canonical, complete, text serialization of the syntactic ω-semigroup of a regular
 ω-language `L`, together with the acceptance data that recovers `L` from it. The core
@@ -7,9 +7,9 @@ two languages over the same `AP` are equal iff their cores are byte-identical af
 canonical keying below. An optional residuals section carries the right-congruence for
 consumers that want an FDFA-shaped object; it does not participate in the equality test.
 
-This is a *proposition* — contents and semantic constraints, one worked example. No
-concrete grammar is fixed here; the token layout of the example is illustrative, the
-constraints are normative.
+The core stores only the classes of non-empty words. The fresh identity at internal
+id `0` is implicit: readers restore its empty key and its two-sided identity row and
+column. The `SOS v1` magic tag is retained; the explicit class-0 layout is unsupported.
 
 ## The canonical ordering (the spine everything references)
 
@@ -26,9 +26,9 @@ rest:
    `absent (0) < present (1)`. (For a single `a`: `!a < a`.)
 3. **Shortlex on words.** Finite words are ordered shortest-first, ties broken
    left-to-right by letter order. The empty word `ε` is least.
-4. **Class keys and ids.** Each `S(L)₊¹`-class is keyed by its **shortlex-least
-   representative word**. Classes are listed, and given ids `0,1,…`, in the shortlex
-   order of their keys — so id `0` is always `[ε]`, the identity.
+4. **Class keys and ids.** Each `S(L)₊`-class is keyed by its **shortlex-least
+   non-empty representative word**. Classes are listed, and given ids `1,…,N`, in
+   the shortlex order of their keys. Internal id `0` is the implicit fresh `[ε]`.
 5. **Linked-pair order.** A linked pair is a pair of class ids `(s, e)`; pairs are
    ordered lexicographically by `(s, e)`.
 
@@ -42,14 +42,16 @@ Membership of any ultimately-periodic word, hence `L`, is determined by these al
 - **Header.** Format tag and version.
 - **`ap`.** The atomic propositions in their declared order (constraint 1). Fixes the
   whole ordering.
-- **`classes`.** Count, then one line per class: `id  key`, where `key` is the
-  shortlex-least word (`;`-joined letters, `ε` = empty). Listed in id order = key order
+- **`classes`.** The non-empty-word class count `N`, then one line per class:
+  `id key`, where `key` is the shortlex-least non-empty word (`;`-joined letters).
+  Listed in id order = key order
   (constraint 4). *(No idempotency flag: `e` is idempotent iff `mult(e,e)=e`, derived.)*
 - **`letters`.** For each letter `σ` in letter order (constraint 2), the class id of the
   one-letter word `σ`. This is the generator action; it need not be the class whose key
   is `σ`.
-- **`mult`.** The `|classes|×|classes|` multiplication table of `S(L)₊¹`, rows and
-  columns in id order; entry `(i,j)` is the class of `rep_i·rep_j`. This is the full
+- **`mult`.** The `N×N` multiplication table of `S(L)₊`, rows written as `id:`
+  followed by values, with rows and columns in id order `1,…,N`; entry `(i,j)` is
+  the class of `rep_i·rep_j`. This is the full
   semigroup — the ω-structure (infinite power, mixed product) is *not* stored, being the
   standard linked-pair completion: `π(s)` is `s` iterated to idempotence in this table,
   and a linked pair `(s,e)` addresses `u·z^ω` with reps `⟦u⟧∈s`, `⟦z⟧∈e`.
@@ -95,8 +97,7 @@ or present residuals block.
 ```
 SOS v1
 ap: a
-classes: 6
-0  eps
+classes: 5
 1  !a
 2  a
 3  !a;a
@@ -104,13 +105,11 @@ classes: 6
 5  a;a
 letters: !a->1  a->2
 mult:
-     0 1 2 3 4 5
-  0  0 1 2 3 4 5
-  1  1 1 3 3 1 5
-  2  2 4 5 2 5 5
-  3  3 1 5 3 5 5
-  4  4 4 2 2 4 5
-  5  5 5 5 5 5 5
+1: 1 3 3 1 5
+2: 4 5 2 5 5
+3: 1 5 3 5 5
+4: 4 2 2 4 5
+5: 5 5 5 5 5
 accept:
   5 5
 ```
@@ -122,7 +121,8 @@ has period `1`, so `S(L)₊¹` is aperiodic — `L` is LTL. The one accepting li
 idempotent, `e = 4`; `s = ε·4 = 4`; `(4,4) ∉ accept`, so rejected (correct — isolated
 `a`'s, no `aa`).
 
-`GF(aa)` is prefix-independent, so its optional residuals section is a single state:
+`GF(aa)` is prefix-independent, so its optional residuals section is a single state.
+Residual IDs still start at `0`, independently of the core class IDs:
 
 ```
 residuals: 1

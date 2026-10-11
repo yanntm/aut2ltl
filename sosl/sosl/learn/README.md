@@ -13,6 +13,8 @@ deliverable behind `sos_learn`.
   byte-equal to the reference construction. `stats`, when given, receives the
   run counters (class count, membership/equivalence queries, counterexamples,
   legality escalations).
+  Reported class counts exclude the fresh identity: `Partition.class_count`
+  and `Invariant.class_count` give `|C|`; internal `n` keeps the identity slot.
 - **Determinism.** Given the teacher's answers, a run is reproducible
   bit-for-bit: every scan order is pinned (shortlex / id / first-query order)
   and counterexamples arrive minimized.

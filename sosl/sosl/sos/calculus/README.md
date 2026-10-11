@@ -17,6 +17,8 @@ return to canonical form).
 - **A table and its languages.** `Table` is one algebra `(𝒞, λ, M)`; a
   `PairSet` (an immutable set of its linked pairs) is one language over it. One
   table hosts many languages; nothing is ever mutated.
+  `table.class_count` reports `|C|` without the fresh identity; `table.n`
+  retains the internal table size for indexing and scans.
 - **The membership oracle `Val`.** `table.val(P, c, d)` decides
   `key(c)·key(d)^ω ∈ L(P)` and, by the factoring theorem, the membership of
   *every* lasso whose stem folds to `c` and loop folds to `d`. Every decision

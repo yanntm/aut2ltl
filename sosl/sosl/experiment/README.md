@@ -14,6 +14,9 @@ and figures. This is what turns a working learner into reported science.
   verdict). **A CSV row is its only carrier**: `csv_row` writes it, `parse_row`
   reads it back, so one field order serves the campaign CSV, the cluster shards,
   and the row a bounded child hands its parent.
+  Newly generated class-count fields and split-ledger endpoints report `|C|`,
+  excluding the fresh identity. Existing CSVs and paper tables retain their
+  recorded values; updating them requires rerunning their generating experiments.
 - **The budget, and the two runners.** `run_case` bounds itself with
   `signal.alarm` — which Python delivers only at a bytecode boundary, so a run
   inside a native call (Spot / BuDDy) does not see it. That budget is therefore

@@ -800,8 +800,7 @@ separates them — the reason `P` is part of the invariant.
 ```
 SOS v1
 ap: a
-classes: 6
-0 eps
+classes: 5
 1 !a
 2 a
 3 !a;a
@@ -809,12 +808,11 @@ classes: 6
 5 a;a
 letters: !a->1 a->2
 mult:
-0: 0 1 2 3 4 5
-1: 1 1 3 3 1 5
-2: 2 4 5 2 5 5
-3: 3 1 5 3 5 5
-4: 4 4 2 2 4 5
-5: 5 5 5 5 5 5
+1: 1 3 3 1 5
+2: 4 5 2 5 5
+3: 1 5 3 5 5
+4: 4 2 2 4 5
+5: 5 5 5 5 5
 accept:
 5 5
 residuals: 1
