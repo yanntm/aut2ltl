@@ -1,11 +1,11 @@
 # SoS serialization format (v1)
 
 A canonical, complete, text serialization of the syntactic ω-semigroup of a regular
-ω-language `L`, together with the acceptance data that recovers `L` from it. The core
-sections are a **complete language invariant** (Theorem 5.1 of `sos_constructed.md`):
-two languages over the same `AP` are equal iff their cores are byte-identical after the
-canonical keying below. An optional residuals section carries the right-congruence for
-consumers that want an FDFA-shaped object; it does not participate in the equality test.
+ω-language `L`, together with the acceptance data that recovers `L` from it. The file
+is a **complete language invariant** (Theorem 5.1 of `sos_constructed.md`):
+two languages over the same `AP` are equal iff their files are byte-identical after the
+canonical keying below. The file ends with the accepting pairs; extra sections are
+rejected. Residual automata are computed separately and are not part of `.sos` IO.
 
 The core stores only the classes of non-empty words. The fresh identity at internal
 id `0` is implicit: readers restore its empty key and its two-sided identity row and
@@ -66,28 +66,6 @@ compute `e = z` iterated to idempotence; set `s = u·e`; accept iff `(s,e) ∈ a
 Regular ω-languages agree iff they agree on ultimately-periodic words, so the core
 decides `L`.
 
-## Optional section — `residuals`
-
-The core determines membership but not, cheaply, the **right congruence**
-`u ∼ v ⟺ u⁻¹L = v⁻¹L` — the leading (derivative) automaton an FDFA consumer wants. When
-present, `residuals` supplies it as a deterministic automaton over `Σ`:
-
-- **Contents.** A count; one line per residual class `id  key`, keyed by the
-  shortlex-least prefix word reaching that residual (so id `0` is `ε`, the residual `L`
-  itself); and a derivative table `residual × Σ → residual`, rows in residual-id order,
-  columns in letter order.
-- **Constraint.** It is the minimal DFA of `∼` (Myhill–Nerode for residuals), so it is
-  itself canonical when produced — no free choice beyond the `AP` order already fixed.
-  It is a standalone derivative automaton; a consumer builds an FDFA by pairing it as the
-  leading automaton with progress read off the core.
-
-**Byte-identity semantics.** Language equality is decided on the **core only** (header
-through `accept`). The `residuals` section is optional: a file with it and a file without
-it both faithfully represent the same `L` and are *not* required to be byte-equal to each
-other. When two files both carry `residuals`, those sections are byte-equal iff the cores
-are (both being functions of `L`). Equality tooling compares cores and ignores an absent
-or present residuals block.
-
 ## Worked example — `𝓘(GF(aa))`
 
 `L = GF(a ∧ Xa)` over `AP = {a}`, so letters `!a < a`. Computed from a run-parity
@@ -121,22 +99,11 @@ has period `1`, so `S(L)₊¹` is aperiodic — `L` is LTL. The one accepting li
 idempotent, `e = 4`; `s = ε·4 = 4`; `(4,4) ∉ accept`, so rejected (correct — isolated
 `a`'s, no `aa`).
 
-`GF(aa)` is prefix-independent, so its optional residuals section is a single state.
-Residual IDs still start at `0`, independently of the core class IDs:
-
-```
-residuals: 1
-0  eps
-res-mult:
-     !a a
-  0  0  0
-```
-
-For contrast, a language with structure on the finitary side — `Even` — would carry a
-four-residual derivative automaton here (the parity pair, the accepting and rejecting
-sinks), while its core `accept` block would list the three accepting pairs into its
-absorbing accept class. The residuals block never changes the equality verdict; it only
-hands the finite-word/learning consumer the leading automaton for free.
+The right congruence `u ∼ v ⟺ u⁻¹L = v⁻¹L` can be computed independently.
+`GF(aa)` is prefix-independent, so its residual automaton has one state. For contrast,
+`Even` has four residuals (the parity pair, the accepting and rejecting sinks).
+`sosl.sos.build.residuals_of_hoa` returns their shortlex keys and derivative table;
+reports may display these alongside the invariant.
 
 ## Dropped / derived (recorded, not stored)
 
