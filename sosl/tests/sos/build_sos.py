@@ -20,9 +20,7 @@ the canonical deterministic form and run through the SoS construction
   * the .sos export       — the canonical serialization of the invariant
                             I(L), produced by the sole SoS exporter
                             (`sosl.sos.dump_invariant`), written to
-                            `--sos PATH`; with `--residuals` the export carries
-                            the optional right-congruence trailer (on for
-                            figures, off elsewhere).
+                            `--sos PATH`.
 
 Everything — the EM(D) element dump, the fingerprint sizes, the algebra and the
 export — is sourced from `sosl.sos` (the core construction and its fresh-identity
@@ -31,7 +29,7 @@ certificate are NOT computed here: that decision belongs to the definability
 engine (`aut2ltl`), and the paper's fingerprint table curates it by hand.
 
 Usage (module run from `sosl/` subtree root):
-  python3 -m tests.sos.build_sos <file.hoa | 'LTL/PSL formula'> [--sos OUT] [--residuals]
+  python3 -m tests.sos.build_sos <file.hoa | 'LTL/PSL formula'> [--sos OUT]
 
 Single input, self-bound; a closure that blows the cap is reported and exits 2.
 No verdict logic of its own beyond what the pipeline returns.
@@ -48,7 +46,7 @@ import spot
 from sosl.sos import Invariant, dump_invariant
 from sosl.sos.alphabet import Alphabet, Letter
 from sosl.sos.io.serialize import render_letter, render_word
-from sosl.sos.build import import_hoa, residuals_of_hoa
+from sosl.sos.build import import_hoa
 from sosl.sos.core import SosData, pipeline, freeze
 
 
@@ -188,9 +186,11 @@ def main(argv: List[str]) -> int:
         return 1
     inp = argv[1]
     sos_out: Optional[str] = None
-    if "--sos" in argv:
-        sos_out = argv[argv.index("--sos") + 1]
-    with_residuals = "--residuals" in argv
+    if len(argv) == 4 and argv[2] == "--sos":
+        sos_out = argv[3]
+    elif len(argv) != 2:
+        print(__doc__)
+        return 1
 
     scratch = os.path.join(os.path.dirname(__file__), "logs")
     path = to_hoa_path(inp, scratch)
@@ -207,8 +207,7 @@ def main(argv: List[str]) -> int:
     print_table2(data, inv, surj)
     print_table3(inv)
     print("\n# .sos export")
-    res = residuals_of_hoa(path) if with_residuals else None
-    text = dump_invariant(inv, residuals=res)
+    text = dump_invariant(inv)
     print(text, end="")
     if sos_out is not None:
         with open(sos_out, "w") as fh:
