@@ -284,37 +284,29 @@ Canonical `D`:
     [0] 1
     --END--
 
-Syntactic invariant `𝓘(L₄)` (with the residual trailer — a two-state parity
-residual DFA):
+Syntactic invariant `𝓘(L₄)` (current `.sos` layout):
 
     SOS v1
     ap: a
-    classes: 4
-    0 eps
+    classes: 3
     1 !a
     2 a
     3 !a;!a
     letters: !a->1 a->2
     mult:
-    0: 0 1 2 3
-    1: 1 3 1 1
-    2: 2 1 2 3
-    3: 3 1 3 3
+    1: 3 1 1
+    2: 1 2 3
+    3: 1 3 3
     accept:
     1 3
     2 2
     3 2
     3 3
-    residuals: 2
-    0 eps
-    1 !a
-    res-step:
-    0: 1 0
-    1: 0 1
 
 The group is `{[!a], [!a·!a]}` (order 2, idempotent `[!a·!a]` = class 3); the
-idempotents are `[a]`, `[!a·!a]`, `[ε]`. `res-step` is the parity toggle on
-`!a` — the residual DFA the aperiodic reading cannot see is periodic.
+idempotents are `[a]`, `[!a·!a]`, `[ε]`. The independently computed residual
+DFA has two states and toggles on `!a` — the residual DFA the aperiodic
+reading cannot see is periodic.
 
 ### F4 — the two shapes are an asymmetry, not a duality
 
@@ -437,13 +429,12 @@ Canonical `D` (weak Büchi):
     [0] 3
     --END--
 
-Syntactic invariant `𝓘(L)` (12 classes, 15 accepting linked pairs — the
+Syntactic invariant `𝓘(L)` (11 word classes, 15 accepting linked pairs — the
 multi-layer structure the bricks assemble across):
 
     SOS v1
     ap: a
-    classes: 12
-    0 eps
+    classes: 11
     1 !a
     2 a
     3 !a;!a
@@ -457,18 +448,17 @@ multi-layer structure the bricks assemble across):
     11 !a;a;!a;!a
     letters: !a->1 a->2
     mult:
-    0: 0 1 2 3 4 5 6 7 8 9 10 11
-    1: 1 3 4 3 6 7 6 10 11 9 10 3
-    2: 2 5 2 8 9 5 2 9 8 9 5 9
-    3: 3 3 6 3 6 10 6 10 3 9 10 3
-    4: 4 7 4 11 9 7 4 9 11 9 7 9
-    5: 5 8 9 8 2 9 2 5 9 9 5 8
-    6: 6 10 6 3 9 10 6 9 3 9 10 9
-    7: 7 11 9 11 4 9 4 7 9 9 7 11
-    8: 8 8 2 8 2 5 2 5 8 9 5 8
-    9: 9 9 9 9 9 9 9 9 9 9 9 9
-    10: 10 3 9 3 6 9 6 10 9 9 10 3
-    11: 11 11 4 11 4 7 4 7 11 9 7 11
+    1: 3 4 3 6 7 6 10 11 9 10 3
+    2: 5 2 8 9 5 2 9 8 9 5 9
+    3: 3 6 3 6 10 6 10 3 9 10 3
+    4: 7 4 11 9 7 4 9 11 9 7 9
+    5: 8 9 8 2 9 2 5 9 9 5 8
+    6: 10 6 3 9 10 6 9 3 9 10 9
+    7: 11 9 11 4 9 4 7 9 9 7 11
+    8: 8 2 8 2 5 2 5 8 9 5 8
+    9: 9 9 9 9 9 9 9 9 9 9 9
+    10: 3 9 3 6 9 6 10 9 9 10 3
+    11: 11 4 11 4 7 4 7 11 9 7 11
     accept:
     2 2
     2 6
@@ -680,9 +670,11 @@ one language still render byte-identically (E0's canonicity case, green).
 `readoffs.residual_partition` (new) reads the right congruence off `P` alone:
 `T_c = T_d ⟺ ∀ (s,e) ∈ linked : (c·s, e) ∈ P ⟺ (d·s, e) ∈ P`, since every tail
 `z·y^ω` from `c` lands on the linked pair `(c·[z]·[y]^π, [y]^π)`. This does not
-consume the `.sos` residuals trailer — optional, and absent from a learner's
-export — and the ledger cross-checks the two computations on every catalogue
-language that carries one (0 mismatches).
+require stored residual data. The recorded campaign cross-checked this against
+the automaton-side residual counts then carried by some catalogue files
+(0 mismatches). Current `.sos` files contain no residual trailers, and the
+ledger computes residual counts directly. The campaign measurements above
+have not been rerun or adjusted.
 
 Acyclicity (the spec's care point) is discharged structurally rather than by an
 R-minimality argument: a residual's representative is registered only once its

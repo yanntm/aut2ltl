@@ -76,10 +76,6 @@ mult:
 5: 5 5 5 5 5
 accept:
 5 5
-residuals: 1
-0 eps
-res-step:
-0: 0 0
 ```
 
 The file is the tool's export, verbatim — the one place the paper keeps the
@@ -88,9 +84,9 @@ raw letters: the alphabet is the single atom and its negation, `ap: a` with
 by shortlex key, with `classes: 5` counting `|𝒞| = 5`. The fresh `[ε]` at
 internal id `0` is implicit and restored on load. The row `c: …` of `mult`
 gives `c·d` for `d` in positive id order; `accept` lists `P` — here the single pair
-`([a·a], [a·a])`, ids `5 5`. The trailing `residuals:` block is derived
-data — the right congruence, recomputable from the core, so byte equality is
-unaffected; its single class exhibits `GFaa`'s prefix-independence.
+`([a·a], [a·a])`, ids `5 5`. The file ends here. The right congruence is
+computed separately from the invariant; its single residual exhibits
+`GFaa`'s prefix-independence.
 
 The file decides lasso membership (Definition 3.4) with no further
 apparatus. For

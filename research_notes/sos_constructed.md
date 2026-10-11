@@ -815,18 +815,13 @@ mult:
 5: 5 5 5 5 5
 accept:
 5 5
-residuals: 1
-0 eps
-res-step:
-0: 0 0
 ```
 
 **Figure 2.** The exportable artifact `𝓘(GF(aa))` — a "semantic HOA" listing the keyed
-classes, letter map, multiplication table, and saturated accepting-pair set (this core
-is the complete language invariant), plus an optional residuals block (here a single
-state, `GF(aa)` being prefix-independent) that does not enter the equality test —
-derived data, recomputable from the core (Proposition 5.3);
-reproduced byte-for-byte from the tool's export. To test
+classes, letter map, multiplication table, and saturated accepting-pair set.
+The complete file is the language invariant, reproduced byte-for-byte from the
+tool's export. Residuals are computed separately (Proposition 5.3); `GF(aa)`
+has one residual, being prefix-independent. To test
 membership of `u·z^ω`: fold `u, z` to class ids, iterate `z` to an idempotent `e`, set
 `s = u·e`, and accept iff `(s, e)` is listed under `accept`. For `(a·!a)^ω`: `z = a·!a`
 folds to class `4`, already idempotent, `s = 4`; `4 4` is not in `accept`, so it is

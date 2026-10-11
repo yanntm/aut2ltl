@@ -138,13 +138,13 @@ reached (class `[¬a]`), every loop accepts.
 
 The serialized SoS (format v1, [`sos_format.md`](../../sosl/sosl/sos/io/sos_format.md)): the
 keyed classes, the letter map, the multiplication table of `S(L)₊`, and the
-saturated set of accepting linked pairs. These core sections are a **complete
-language invariant** — two languages are equal iff their cores are
+saturated set of accepting linked pairs. The file is a **complete
+language invariant** — two languages are equal iff their files are
 byte-identical after canonical keying — and `𝓘(GF(aa))` computed from the
 run-parity form (Figure 1a, `|EM¹| = 10`) is identical to the one computed from
-a minimal reset form (`|EM¹| = 7`), though the automata are not isomorphic. The
-optional `residuals` block carries the right-congruence automaton (here a single
-state — `GF(aa)` is prefix-independent) and does not enter the equality test.
+a minimal reset form (`|EM¹| = 7`), though the automata are not isomorphic.
+The right congruence is computed separately (here a single state — `GF(aa)`
+is prefix-independent).
 The core omits the fresh identity; a reader restores it at internal class `0`.
 
 ```
@@ -165,11 +165,6 @@ mult:
 5: 5 5 5 5 5
 accept:
   5 5
-residuals: 1
-0  eps
-res-mult:
-     !a a
-  0  0 0
 ```
 
 To test membership of `u·z^ω`: fold `u`, `z` to class ids through

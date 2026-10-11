@@ -4,9 +4,9 @@ Canonical syntactic ω-semigroup `S(L)₊` read off each input automaton. `TM` =
 
 ## Fingerprints
 
-| input | \|Q\| | \|EM¹\| | \|S(L)₊¹\| | grp TM |
+| input | \|Q\| | \|EM¹\| | \|S(L)₊\| | grp TM |
 |---|---|---|---|---|
-| Even | 4 | 7 | 5 | yes |
+| Even | 4 | 7 | 4 | yes |
 
 ## Even
 
@@ -39,7 +39,7 @@ State: 3
 
 ### Enriched monoid `EM(D)` → `S(L)₊`
 
-`|EM¹| = 7` elements folding onto `|S(L)₊¹| = 5` classes. `rmul` is right-multiplication by each letter (`!a`, `a`), as `EM` element ids. The identity element hosts two classes (`[eps]` and any neutral non-empty class).
+`|EM¹| = 7` elements folding onto `|S(L)₊| = 4` word classes. `rmul` is right-multiplication by each letter (`!a`, `a`), as `EM` element ids. The identity element hosts two classes (`[eps]` and any neutral non-empty class).
 
 | id | word | st | mk | rmul | → class |
 |---|---|---|---|---|---|
@@ -51,7 +51,7 @@ State: 3
 | 5 | `a;a` | [0 1 2 3] | [{} {0} {} {}] | 1 2 | 4 `a;a` |
 | 6 | `a;!a;!a` | [3 1 1 3] | [{} {0} {0} {}] | 6 6 | 3 `a;!a` |
 
-### Canonical algebra `S(L)₊¹`
+### Canonical algebra with adjoined identity `S(L)₊¹`
 
 | class | key (shortlex-least word) | idem |
 |---|---|---|
@@ -96,15 +96,14 @@ accept:
 1 1
 1 3
 1 4
-residuals: 4
-0 eps
-1 !a
-2 a
-3 a;!a
-res-step:
-0: 1 2
-1: 1 1
-2: 3 0
-3: 3 3
 ```
+
+### Residual automaton (right congruence)
+
+| residual | key | !a | a |
+|---|---|---|---|
+| 0 | `eps` | 1 | 2 |
+| 1 | `!a` | 1 | 1 |
+| 2 | `a` | 3 | 0 |
+| 3 | `a;!a` | 3 | 3 |
 

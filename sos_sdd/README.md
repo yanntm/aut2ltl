@@ -241,9 +241,8 @@ stream.
   representative values (never `Comp`); ids/keys by shortlex BFS over
   the small quotient algebra itself (mirroring
   `sosl.sos.core.canonical.shortlex_bfs`); verdicts off the Phase 3
-  profile rows at the initial state. `to_sos()` emits the core sections
-  only (the optional residuals trailer does not participate in language
-  identity). Recorded limits: single `Automaton` digests with sorted
+  profile rows at the initial state. `to_sos()` emits the complete canonical
+  `.sos` file. Recorded limits: single `Automaton` digests with sorted
   APs (products refused); languages whose reference import drops unused
   APs (Spot postprocess, e.g. the empty language) sit outside the
   same-AP byte-parity instance set.

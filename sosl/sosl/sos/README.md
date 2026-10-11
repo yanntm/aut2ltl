@@ -30,9 +30,12 @@ defined here.
   form (`.sos`) and the Cayley form. Two languages over the same `AP` are equal
   iff their serialized invariants are byte-equal — this equality *is* the
   soundness criterion of the whole tool.
-  The `.sos` core stores only non-empty-word classes, retaining their IDs `1…N`;
-  the fresh identity at internal ID `0` is restored on load. Residual trailers
-  keep their own numbering from `0`. See `io/sos_format.md` for the layout.
+  The `.sos` file stores only non-empty-word classes, retaining their IDs `1…N`;
+  the fresh identity at internal ID `0` is restored on load. The file ends with
+  `accept`; extra sections are rejected. See `io/sos_format.md` for the layout.
+- **Residual automata** (`Residuals`). The right-congruence states and derivative
+  table, computed by `build.residuals_of_hoa` and displayed independently in
+  reports. Residuals are not part of `.sos` IO.
 - **Alphabet minimality** (`minimize`). A proposition can be **free** — one the
   language does not depend on, yet whose literal survives in a presentation
   (`spot`'s `remove_unused_ap` drops only edge-absent APs). The invariant records

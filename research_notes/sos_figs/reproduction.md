@@ -78,18 +78,18 @@ autfilt -q --equivalent-to=<(ltl2tgba 'GF(!a) & FG( !a -> X{ {a[*2]}[*] ; !a }! 
 Figure-1 line, the Table-1 fingerprint row, the full `EM(D)` dump with the
 surjection onto `S(L)₊`, the canonical algebra, and the `.sos` invariant. The
 algebra and the serialization come from `sosl` (the sole SoS exporter, fixed to
-the fresh-identity convention); `--sos PATH` writes the serialization, and
-`--residuals` appends the right-congruence trailer (used for these figures).
+the fresh-identity convention); `--sos PATH` writes the canonical serialization.
+`assemble.py` displays the computed right congruence in a separate Markdown table.
 
 ```sh
 python3 -m tests.sos.build_sos research_notes/sos_figs/sources/gf_aa_parity.hoa \
-        --sos samples/fixtures/hoa/sos/gf_aa.sos --residuals
+        --sos samples/fixtures/hoa/sos/gf_aa.sos
 python3 -m tests.sos.build_sos research_notes/sos_figs/sources/gf_aa_reset.hoa \
-        --sos samples/fixtures/hoa/sos/gf_aa_reset.sos --residuals
+        --sos samples/fixtures/hoa/sos/gf_aa_reset.sos
 python3 -m tests.sos.build_sos research_notes/sos_figs/sources/even.hoa \
-        --sos samples/fixtures/hoa/sos/even.sos --residuals
+        --sos samples/fixtures/hoa/sos/even.sos
 python3 -m tests.sos.build_sos research_notes/sos_figs/sources/evenblocks.hoa \
-        --sos samples/fixtures/hoa/sos/evenblocks.sos --residuals
+        --sos samples/fixtures/hoa/sos/evenblocks.sos
 ```
 
 ## 3. Cross-checks (headline results)
@@ -99,7 +99,7 @@ python3 -m tests.sos.build_sos research_notes/sos_figs/sources/evenblocks.hoa \
 diff samples/fixtures/hoa/sos/gf_aa.sos samples/fixtures/hoa/sos/gf_aa_reset.sos && echo IDENTICAL
 
 # Presentation-independence: building from the FORMULA reproduces the same .sos.
-python3 -m tests.sos.build_sos 'G F (a & X a)' --sos sosl/tests/sos/logs/gf_from_formula.sos --residuals >/dev/null
+python3 -m tests.sos.build_sos 'G F (a & X a)' --sos sosl/tests/sos/logs/gf_from_formula.sos >/dev/null
 diff samples/fixtures/hoa/sos/gf_aa.sos sosl/tests/sos/logs/gf_from_formula.sos && echo IDENTICAL
 
 # GF(aa) is LTL: the synthesized formula is verified Spot-equivalent.
@@ -165,7 +165,7 @@ ltl2tgba -D -C --name='aUGb = a*.b^w  [b := !a]' 'a U G!a' -H \
 autfilt -q --equivalent-to=<(ltl2tgba 'a U G!a') research_notes/sos_figs/sources/aUGb.hoa && echo EQUIV
 
 python3 -m tests.sos.build_sos research_notes/sos_figs/sources/aUGb.hoa \
-        --sos research_notes/sos_figs/sources/aUGb.sos --residuals
+        --sos research_notes/sos_figs/sources/aUGb.sos
 python3 research_notes/sos_figs/draw_tgba.py --verbatim \
         research_notes/sos_figs/sources/aUGb.hoa research_notes/sos_figs/img/aUGb.png
 python3 -m tests.sos.assemble research_notes/sos_figs/sources/aUGb.md \
@@ -240,6 +240,6 @@ and the drawing must not re-parse them through it.
 
 Expected: `a_implies_xa` — 4-state D, `|S(L)₊¹| = 5`, LTL, six accepting
 pairs; `a_once` — 3-state D, `|S(L)₊¹| = 4`, LTL, the single pair
-`([a],[!a])`. Both invariants byte-identical (modulo the `residuals:`
-trailer) to what the original census emission produced: the specimens'
-algebra is presentation-independent, as it must be.
+`([a],[!a])`. Both invariants agree with the original census emission after
+normalizing its historical IO layout: the specimens' algebra is
+presentation-independent, as it must be.

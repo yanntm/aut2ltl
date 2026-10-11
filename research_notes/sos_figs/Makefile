@@ -42,11 +42,11 @@ tables:
 	$(call emtable,evenblocks)
 
 sos:
-	$(BUILDSOS) $(HERE)/sources/gf_aa_parity.hoa --sos ../samples/fixtures/hoa/sos/gf_aa.sos --residuals > /dev/null
-	$(BUILDSOS) $(HERE)/sources/gf_aa_reset.hoa  --sos ../samples/fixtures/hoa/sos/gf_aa_reset.sos --residuals > /dev/null
-	$(BUILDSOS) $(HERE)/sources/even.hoa         --sos ../samples/fixtures/hoa/sos/even.sos --residuals > /dev/null
-	$(BUILDSOS) $(HERE)/sources/evenblocks.hoa   --sos ../samples/fixtures/hoa/sos/evenblocks.sos --residuals > /dev/null
-	$(BUILDSOS) $(HERE)/sources/aUGb.hoa         --sos $(HERE)/sources/aUGb.sos --residuals > /dev/null
-	$(BUILDSOS) $(HERE)/sources/a_implies_xa.hoa --sos $(HERE)/../sos_core_figs/sources/a_implies_xa.sos --residuals > /dev/null
-	$(BUILDSOS) $(HERE)/sources/a_once.hoa       --sos $(HERE)/../sos_core_figs/sources/a_once.sos --residuals > /dev/null
+	$(BUILDSOS) $(HERE)/sources/gf_aa_parity.hoa --sos ../samples/fixtures/hoa/sos/gf_aa.sos > /dev/null
+	$(BUILDSOS) $(HERE)/sources/gf_aa_reset.hoa  --sos ../samples/fixtures/hoa/sos/gf_aa_reset.sos > /dev/null
+	$(BUILDSOS) $(HERE)/sources/even.hoa         --sos ../samples/fixtures/hoa/sos/even.sos > /dev/null
+	$(BUILDSOS) $(HERE)/sources/evenblocks.hoa   --sos ../samples/fixtures/hoa/sos/evenblocks.sos > /dev/null
+	$(BUILDSOS) $(HERE)/sources/aUGb.hoa         --sos $(HERE)/sources/aUGb.sos > /dev/null
+	$(BUILDSOS) $(HERE)/sources/a_implies_xa.hoa --sos $(HERE)/../sos_core_figs/sources/a_implies_xa.sos > /dev/null
+	$(BUILDSOS) $(HERE)/sources/a_once.hoa       --sos $(HERE)/../sos_core_figs/sources/a_once.sos > /dev/null
 	diff ../../samples/fixtures/hoa/sos/gf_aa.sos ../../samples/fixtures/hoa/sos/gf_aa_reset.sos && echo CANONICITY-OK
