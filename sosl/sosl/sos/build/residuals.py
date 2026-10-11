@@ -7,8 +7,7 @@ alphabet's mask order (so the numbering is presentation-independent, like an
 invariant's), ``id 0`` = ``eps``.
 
 Automaton-side and core-backed, like `builder`; the learner never calls it.
-Its output is the optional trailer of a `.sos` figure export (see
-`sos.io.serialize.dump_invariant`'s ``residuals`` parameter).
+Returns a `Residuals` object for computation and independent report tables.
 """
 from __future__ import annotations
 
