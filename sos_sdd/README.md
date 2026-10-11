@@ -10,8 +10,10 @@ contract is `research_notes/sos_symbolic_spec.md` (C1–C10, E0–E9).
 The engine changes *representation, never mathematics*: on every instance
 where the explicit reference construction (`sosl.sos.build`) terminates, the
 emitted `.sos` must be byte-identical to the reference's (the conformance
-gate, spec §3). The serializer therefore mirrors
-`sosl/sosl/sos/io/serialize.py` exactly.
+gate, spec §3). The export calls the shared `sosl.sos.io.dump_invariant` serializer.
+The sibling `sosl/` project is added to the import path when exporting. Reported
+class counts exclude the fresh identity; `.sos` stores only positive word-class
+IDs and restores the identity on load. Internal table indexing includes it.
 
 This document is the IO contract — the Python API surface, the
 instrumentation stream, the failure taxonomy. It is written before the code;
@@ -121,7 +123,7 @@ S.congruence_count()    # |EM¹/~| — the syntactic class count (Phase 5)
 S.congruence_classes()  # every ~-class as explicit element tuples — a
                    # test/debug reading; Phase 6 consumes the blocks
                    # symbolically
-S.n_classes()      # invariant classes incl. the fresh [eps] (Phase 6)
+S.n_classes()      # word classes |C|, excluding the fresh [eps] (Phase 6)
 ```
 
 **Calculus operators (C10)** — each names its paper anchor; built-in
@@ -312,9 +314,9 @@ stream.
   `sosl/sosl/sos/io/sos_format.md` — AP order lexicographic by name,
   letter order = characteristic tuple over the APs with `0 < 1`
   (`!a < a`), shortlex keys, class ids in key order, linked pairs lex by
-  `(s, e)`, `accept` **saturated**. The doc fixes constraints, not bytes:
-  byte-level parity is against `sosl/sosl/sos/io/serialize.py`'s actual
-  layout (the fixtures' `0 eps` / `N: row` shape). The least-letter
+  `(s, e)`, `accept` **saturated**. Word classes keep IDs `1…N`; the fresh
+  identity is implicit on disk. Byte-level layout is owned by the shared
+  `sosl.sos.io.dump_invariant` serializer. The least-letter
   choice in extraction walks is therefore lex on the α-bit vector in AP
   order — exactly the α-carrying diagram read top-down.
 

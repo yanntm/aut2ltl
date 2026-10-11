@@ -16,7 +16,7 @@ Canonical keying mirrors `sosl.sos.core.canonical.shortlex_bfs`: ids and
 keys come from a BFS over the small quotient algebra itself
 (`step(c, a) = mult[c][letter_class[a]]` from `[eps]`, letters in mask
 order) — the first word reaching a class is its shortlex-least key. The
-serialized layout mirrors `sosl/sosl/sos/io/serialize.py` line for line
+serialized layout is owned by `sosl.sos.io.dump_invariant`
 (core sections only; the optional residuals trailer does not participate
 in language identity).
 
@@ -48,10 +48,6 @@ def _mask_bits(mask: int, k: int) -> Bits:
     """Letter rank -> characteristic tuple (ap 0 on the most significant
     bit — the canonical letter order of sos_format.md)."""
     return tuple((mask >> (k - 1 - i)) & 1 for i in range(k))
-
-
-def _render_letter(bits: Bits, ap: Tuple[str, ...]) -> str:
-    return "&".join(n if b else f"!{n}" for n, b in zip(ap, bits)) if ap else "t"
 
 
 def same_table(a: Automaton, b: Automaton) -> bool:
@@ -272,27 +268,27 @@ class QuotientSoS:
     # -- readings ----------------------------------------------------------
 
     def n_classes(self) -> int:
-        return len(self._assemble()["keys"])
+        """The word-class count |C|, excluding the fresh identity."""
+        return len(self._assemble()["keys"]) - 1
 
     def to_sos(self) -> str:
-        """The canonical `.sos` core text — the byte-level layout of the
-        reference serializer (`sosl.sos.io.serialize.dump_invariant`)."""
+        """The canonical `.sos` core text, through the shared serializer."""
+        import sys
+        from pathlib import Path
+
+        # The sibling project contains the importable sosl package one level down.
+        package_root = str(Path(__file__).resolve().parents[1] / "sosl")
+        if package_root not in sys.path:
+            sys.path.insert(0, package_root)
+        from sosl.sos import Alphabet, Invariant, Letter
+        from sosl.sos.io import dump_invariant
+
         t = self._assemble()
-        ap = self._aut.ap
-        n_ap = len(ap)
-        out: List[str] = ["SOS v1", "ap: " + " ".join(ap),
-                          f"classes: {len(t['keys'])}"]
-        for cid, word in enumerate(t["keys"]):
-            text = ";".join(_render_letter(_mask_bits(a, n_ap), ap)
-                            for a in word) or "eps"
-            out.append(f"{cid} {text}")
-        out.append("letters: " + " ".join(
-            f"{_render_letter(_mask_bits(m, n_ap), ap)}->{c}"
-            for m, c in enumerate(t["letter_class"])))
-        out.append("mult:")
-        for cid, row in enumerate(t["mult"]):
-            out.append(f"{cid}: " + " ".join(str(v) for v in row))
-        out.append("accept:")
-        for s, e in t["accept"]:
-            out.append(f"{s} {e}")
-        return "\n".join(out) + "\n"
+        return dump_invariant(Invariant(
+            alphabet=Alphabet.of(self._aut.ap),
+            keys=tuple(tuple(Letter(a) for a in word) for word in t["keys"]),
+            letter_class=tuple(t["letter_class"]),
+            mult=tuple(tuple(row) for row in t["mult"]),
+            accept=frozenset(t["accept"]),
+            identity=0,
+        ))
