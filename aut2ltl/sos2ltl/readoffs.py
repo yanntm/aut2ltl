@@ -48,8 +48,7 @@ def residual_partition(inv: Invariant) -> Tuple[int, ...]:
     arises this way, so `T_c = T_d ⟺ ∀ (s,e) ∈ linked : (c·s, e) ∈ P ⟺
     (d·s, e) ∈ P`. The syntactic congruence refines the right congruence, so
     this is exactly the Myhill–Nerode residual of `c`'s words — read off `P`
-    alone, with no dependence on the `.sos` residuals trailer (optional, and
-    absent from a learner's export)."""
+    alone."""
     pairs = sorted(inv.linked_pairs())
     accept = inv.accept
     signature: Dict[int, Tuple[bool, ...]] = {
