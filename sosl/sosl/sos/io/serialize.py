@@ -6,6 +6,9 @@ soundness criterion of the whole tool). Canonicity is inherited from the
 invariant — classes in id order, letters in mask order, accept pairs sorted — so
 `dump` only has to be deterministic; it does not re-key.
 
+Only non-empty-word classes are stored, with IDs ``1..n``. The fresh identity
+at internal ID 0 is implicit; loading restores its key, row and column.
+
 A letter is written as a Boolean cube over *all* the propositions in canonical
 order — each proposition, or its negation, joined by ``&`` (``a&!b``); the
 0-proposition alphabet's one letter is ``t``. A word is its letters joined by
@@ -75,10 +78,13 @@ def _read_header(lines: List[str], magic: str) -> Tuple[Alphabet, int, int]:
 
 
 def _read_keys(ab: Alphabet, lines: List[str], i: int, n: int) -> Tuple[List[Word], int]:
-    keys: List[Word] = [EMPTY] * n
-    for _ in range(n):
+    keys: List[Word] = [EMPTY] * (n + 1)
+    for cid in range(1, n + 1):
         cid_str, _, key_str = lines[i].partition(" ")
-        keys[int(cid_str)] = parse_word(ab, key_str)
+        assert int(cid_str) == cid, lines[i]
+        key = parse_word(ab, key_str)
+        assert key != EMPTY, lines[i]
+        keys[cid] = key
         i += 1
     return keys, i
 
@@ -93,8 +99,9 @@ def dump_invariant(inv: Invariant, residuals: Optional[Residuals] = None) -> str
     differ only in their trailer denote the same language). The trailer is
     ignored on parse."""
     ab = inv.alphabet
-    out: List[str] = [SOS_MAGIC, "ap: " + " ".join(ab.aps), f"classes: {inv.n}"]
-    for c in range(inv.n):
+    assert inv.identity == 0 and inv.keys[0] == EMPTY
+    out: List[str] = [SOS_MAGIC, "ap: " + " ".join(ab.aps), f"classes: {inv.n - 1}"]
+    for c in range(1, inv.n):
         out.append(f"{c} {render_word(ab, inv.keys[c])}")
     out.append(
         "letters: "
@@ -102,8 +109,8 @@ def dump_invariant(inv: Invariant, residuals: Optional[Residuals] = None) -> str
                    for a in range(ab.size))
     )
     out.append("mult:")
-    for c in range(inv.n):
-        out.append(f"{c}: " + " ".join(str(v) for v in inv.mult[c]))
+    for c in range(1, inv.n):
+        out.append(f"{c}: " + " ".join(str(v) for v in inv.mult[c][1:]))
     out.append("accept:")
     for s, e in sorted(inv.accept):
         out.append(f"{s} {e}")
@@ -125,7 +132,7 @@ def _residual_lines(ab: Alphabet, res: Residuals) -> List[str]:
 
 
 def load_invariant(text: str) -> Invariant:
-    """Parse the `.sos` text back into an `Invariant`."""
+    """Parse `.sos`, adjoining the implicit identity at internal class 0."""
     lines = _nonblank(text)
     ab, n, i = _read_header(lines, SOS_MAGIC)
     keys, i = _read_keys(ab, lines, i, n)
@@ -135,14 +142,18 @@ def load_invariant(text: str) -> Invariant:
     for tok in lines[i][len("letters:"):].split():
         lhs, _, rhs = tok.partition("->")
         letter_class[parse_letter(ab, lhs)] = int(rhs)
+    assert all(1 <= c <= n for c in letter_class), letter_class
     i += 1
 
     assert lines[i] == "mult:", lines[i]
     i += 1
-    mult: List[Tuple[int, ...]] = []
-    for _ in range(n):
-        _cid, _, rest = lines[i].partition(":")
-        mult.append(tuple(int(x) for x in rest.split()))
+    mult: List[Tuple[int, ...]] = [tuple(range(n + 1))]
+    for cid in range(1, n + 1):
+        cid_str, _, rest = lines[i].partition(":")
+        assert int(cid_str) == cid, lines[i]
+        row = tuple(int(x) for x in rest.split())
+        assert len(row) == n and all(1 <= c <= n for c in row), lines[i]
+        mult.append((cid,) + row)
         i += 1
 
     assert lines[i] == "accept:", lines[i]
@@ -152,7 +163,9 @@ def load_invariant(text: str) -> Invariant:
         parts = lines[i].split()
         if len(parts) != 2 or not all(p.lstrip("-").isdigit() for p in parts):
             break  # end of the accept block (e.g. an optional residuals trailer)
-        accept.add((int(parts[0]), int(parts[1])))
+        pair = (int(parts[0]), int(parts[1]))
+        assert all(1 <= c <= n for c in pair), lines[i]
+        accept.add(pair)
         i += 1
 
     return Invariant(
@@ -161,5 +174,5 @@ def load_invariant(text: str) -> Invariant:
         letter_class=tuple(letter_class),
         mult=tuple(mult),
         accept=frozenset(accept),
-        identity=keys.index(EMPTY),
+        identity=0,
     )
