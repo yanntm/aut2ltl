@@ -39,8 +39,13 @@ class Invariant:
 
     @property
     def n(self) -> int:
-        """The number of classes."""
+        """The internal table size, including the fresh identity."""
         return len(self.keys)
+
+    @property
+    def class_count(self) -> int:
+        """The word-class count |C|, excluding the fresh identity."""
+        return self.n - 1
 
     def fold(self, word: Word) -> int:
         """The class of ``word``: the left-to-right product of its letters'
