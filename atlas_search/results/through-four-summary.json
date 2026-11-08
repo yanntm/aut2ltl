@@ -1,0 +1,13 @@
+{
+  "schema": "atlas.historical-campaign.v1",
+  "attempted_runs": 62,
+  "selected_runs": 62,
+  "completed_selection": true,
+  "selection_is_full": true,
+  "verdicts": {
+    "CANONICAL": 62
+  },
+  "first_stall": null,
+  "coverage_status": "COMPLETE",
+  "elapsed_seconds": 7.136223744601011
+}

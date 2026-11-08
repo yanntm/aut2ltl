@@ -53,8 +53,8 @@ counterexample sequence, columns and final step table, not only class counts:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 timeout 15s ../../../dev.sh -m atlas_search.tests.control \
-  ../full-psl/languages/sos1_s2_c9_t234522062175862526_p150/referent.sos \
-  /home/ythierry/git/BuchiToLTL/genaut/corpus/flat_canon/det/2state1ap2acc_parity_0088836118.hoa \
+  atlas_search/results/nine-class-control.sos \
+  atlas_search/results/nine-class-control.hoa \
   --output atlas_search/tests/logs/control-comparison.json
 ```
 
@@ -75,4 +75,5 @@ letter order separately. No legacy coarse SOS is loaded as a valid algebra.
 
 Source map: `adapter.py` (finite alphabet, reference transfer, exact teacher),
 `one.py` (one run and its JSON result), `campaign.py` (saved-data selection and
-bounded execution), `tests/` (controls and experiment receipts).
+bounded execution), `tests/` (controls and experiment receipts),
+`report.md` and `results/` (scientific outcomes and preserved evidence).

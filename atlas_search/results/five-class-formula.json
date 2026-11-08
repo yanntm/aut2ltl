@@ -1,0 +1,5 @@
+{
+  "formula": "GF(a & !b) & (GF(a & b) | FG a)",
+  "canonical_id": "sos1_s3_c5_t030314042333344_p2a4",
+  "exact_counterexample": null
+}

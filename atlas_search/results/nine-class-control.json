@@ -1,0 +1,340 @@
+{
+  "schema": "atlas.historical-control.v1",
+  "matched": true,
+  "reference_classes": 9,
+  "learned_classes": 7,
+  "certification": "exact",
+  "comparisons": [
+    "native-vs-stamp",
+    "guarded-vs-closure-only"
+  ],
+  "native_counterexamples": [
+    {
+      "stem": [],
+      "loop": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "stem": [],
+      "loop": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "stem": [],
+      "loop": [
+        1,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "stem": [],
+      "loop": [
+        0,
+        0,
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "stem": [],
+      "loop": [
+        1,
+        0,
+        1,
+        0,
+        0
+      ]
+    }
+  ],
+  "guard_firings": 6,
+  "adapter": {
+    "schema": "atlas.historical-stall.v1",
+    "input": "/home/ythierry/git/synomega/atlas/work/legacy-learning/atlas_search/results/nine-class-control.sos",
+    "key": "sos1_s2_c9_t234522062175862526_p150",
+    "symbol_order": [
+      "b",
+      "a"
+    ],
+    "mode": "relaxed",
+    "closure_only": false,
+    "reference_classes": 9,
+    "learned_classes": 7,
+    "residual_states": 1,
+    "certification": "exact",
+    "congruent": false,
+    "verdict": "STALL",
+    "first_divergence": {
+      "subject": [
+        0,
+        0,
+        0
+      ],
+      "key": [
+        0,
+        0
+      ],
+      "left": [
+        1
+      ],
+      "subject_result": [
+        0,
+        0
+      ],
+      "key_result": [
+        0
+      ]
+    },
+    "reference_key_collisions": [
+      {
+        "learned_key": [
+          0
+        ],
+        "reference_keys": [
+          [
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "learned_key": [
+          0,
+          1
+        ],
+        "reference_keys": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            1
+          ]
+        ]
+      }
+    ],
+    "counterexamples": [
+      {
+        "stem": [],
+        "loop": [
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "stem": [],
+        "loop": [
+          0,
+          1,
+          0
+        ]
+      },
+      {
+        "stem": [],
+        "loop": [
+          1,
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "stem": [],
+        "loop": [
+          0,
+          0,
+          1,
+          1,
+          0
+        ]
+      },
+      {
+        "stem": [],
+        "loop": [
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      }
+    ],
+    "n_equiv": 6,
+    "member_calls_including_oracle": 3729,
+    "guard_firings": 6,
+    "final_guard_fired": true,
+    "closure_calls": 6,
+    "rounds": [
+      {
+        "classes": 2,
+        "rows": 3,
+        "columns": 1
+      },
+      {
+        "classes": 3,
+        "rows": 4,
+        "columns": 2
+      },
+      {
+        "classes": 4,
+        "rows": 5,
+        "columns": 3
+      },
+      {
+        "classes": 5,
+        "rows": 6,
+        "columns": 4
+      },
+      {
+        "classes": 6,
+        "rows": 7,
+        "columns": 5
+      },
+      {
+        "classes": 7,
+        "rows": 8,
+        "columns": 6
+      }
+    ],
+    "hypothesis": {
+      "keys": [
+        [],
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "step": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "start": 0
+    },
+    "columns": [
+      {
+        "kind": "OmCol",
+        "x": [],
+        "y": []
+      },
+      {
+        "kind": "OmCol",
+        "x": [
+          1
+        ],
+        "y": [
+          1
+        ]
+      },
+      {
+        "kind": "OmCol",
+        "x": [
+          1
+        ],
+        "y": [
+          0
+        ]
+      },
+      {
+        "kind": "OmCol",
+        "x": [
+          0
+        ],
+        "y": [
+          0,
+          0
+        ]
+      },
+      {
+        "kind": "OmCol",
+        "x": [
+          0
+        ],
+        "y": [
+          1,
+          0
+        ]
+      },
+      {
+        "kind": "OmCol",
+        "x": [
+          1,
+          1
+        ],
+        "y": [
+          1,
+          0,
+          0
+        ]
+      }
+    ]
+  }
+}

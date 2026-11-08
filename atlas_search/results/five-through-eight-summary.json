@@ -1,0 +1,26 @@
+{
+  "schema": "atlas.historical-campaign.v1",
+  "attempted_runs": 9,
+  "selected_runs": 204,
+  "completed_selection": false,
+  "selection_is_full": true,
+  "verdicts": {
+    "CANONICAL": 8,
+    "STALL": 1
+  },
+  "first_stall": {
+    "key": "sos1_s3_c5_t030314042333344_p2a4",
+    "classes": 5,
+    "symbols": 3,
+    "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c5_t030314042333344_p2a4/referent.sos",
+    "order": "forward",
+    "verdict": "STALL",
+    "learned_classes": 4,
+    "certification": "exact",
+    "detail": "",
+    "elapsed_seconds": 0.1144564151763916,
+    "output": "0004-forward.json"
+  },
+  "coverage_status": "PARTIAL",
+  "elapsed_seconds": 1.037097429856658
+}
