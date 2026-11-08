@@ -9,6 +9,11 @@ the experimental scope.
 - `through-four-selection.json`, `through-four-summary.json`,
   `through-four-results.jsonl`: complete atlas stamp-scope assessment, selected
   one-state residual population and every tested order's outcome.
+- `through-four-permutations-selection.json`,
+  `through-four-permutations-summary.json`,
+  `through-four-permutations-results.jsonl`: exhaustive letter-order search on
+  all 32 one-state languages through four positive classes. All 382 distinct
+  language/permutation runs are exactly canonical; no limits or failures.
 - `five-through-eight-selection.json`, `five-through-eight-summary.json`,
   `five-through-eight-results.jsonl`: observed larger population; stopped at the
   first stall. This is not a completed negative search.

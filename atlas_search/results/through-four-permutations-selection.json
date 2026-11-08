@@ -1,0 +1,459 @@
+{
+  "schema": "atlas.historical-selection.v1",
+  "collection": "/home/ythierry/git/synomega/atlas/work/full-psl",
+  "scope": {
+    "classification": "stamp",
+    "revision": 1,
+    "bounds": {
+      "classes": {
+        "lower": 1,
+        "upper": 4
+      }
+    },
+    "parameters": {}
+  },
+  "coverage": {
+    "slice": {
+      "classification": "stamp",
+      "revision": 1,
+      "bounds": {
+        "classes": {
+          "lower": 1,
+          "upper": 4
+        }
+      },
+      "parameters": {}
+    },
+    "status": "COMPLETE",
+    "complete": true,
+    "unbounded": false,
+    "known_languages": 9462,
+    "expected_languages": 9462,
+    "present_expected_languages": 9462,
+    "covered_cells": [
+      {
+        "symbols": 1,
+        "classes": 1,
+        "expected": 2,
+        "present": 2,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 1,
+        "classes": 2,
+        "expected": 0,
+        "present": 0,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 2,
+        "classes": 2,
+        "expected": 7,
+        "present": 7,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 1,
+        "classes": 3,
+        "expected": 0,
+        "present": 0,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 2,
+        "classes": 3,
+        "expected": 58,
+        "present": 58,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 3,
+        "classes": 3,
+        "expected": 128,
+        "present": 128,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 1,
+        "classes": 4,
+        "expected": 0,
+        "present": 0,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/s1-c4.json"
+        ]
+      },
+      {
+        "symbols": 2,
+        "classes": 4,
+        "expected": 241,
+        "present": 241,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/s2-c4-pruned.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/s2-c4.json"
+        ]
+      },
+      {
+        "symbols": 3,
+        "classes": 4,
+        "expected": 3976,
+        "present": 3976,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/s3-c4-pruned.json"
+        ]
+      },
+      {
+        "symbols": 4,
+        "classes": 4,
+        "expected": 5050,
+        "present": 5050,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/s4-c4-complete.json"
+        ]
+      }
+    ],
+    "uncovered_cells": [],
+    "conflicts": [],
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "unusable_evidence": [
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 1,
+        "classes": 1,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 1,
+        "classes": 2,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 2,
+        "classes": 2,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 1,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 2,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 3,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/s3-c4-initial.json",
+        "symbols": 3,
+        "classes": 4,
+        "source_status": "TIMEOUT",
+        "reason": "Source stratum did not complete"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/s4-c4-pruned.json",
+        "symbols": 4,
+        "classes": 4,
+        "source_status": "TIMEOUT",
+        "reason": "Source stratum did not complete"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 1,
+        "classes": 1,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 1,
+        "classes": 2,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 2,
+        "classes": 2,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 1,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 2,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 3,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      }
+    ],
+    "evidence": "/home/ythierry/git/synomega/atlas/work/full-psl/classifications/stamp/gensos.csv"
+  },
+  "filter": "one residual state, using saved recurrent FDFA leading size",
+  "eligible_languages": 32,
+  "missing_leading_descriptors": 0,
+  "selected_languages": 32,
+  "both_orders": false,
+  "all_orders": true,
+  "timeout_per_input": 15,
+  "candidates": [
+    {
+      "key": "sos1_s1_c1_t0_p0",
+      "classes": 1,
+      "symbols": 1,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s1_c1_t0_p0/referent.sos"
+    },
+    {
+      "key": "sos1_s1_c1_t0_p1",
+      "classes": 1,
+      "symbols": 1,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s1_c1_t0_p1/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p1",
+      "classes": 2,
+      "symbols": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c2_t0001_p1/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p6",
+      "classes": 2,
+      "symbols": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c2_t0001_p6/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c3_t022122_p10",
+      "classes": 3,
+      "symbols": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c3_t022122_p10/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c3_t022122_pf",
+      "classes": 3,
+      "symbols": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c3_t022122_pf/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t000010002_p1",
+      "classes": 3,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t000010002_p1/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t000010002_p1e",
+      "classes": 3,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t000010002_p1e/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t000011012_p35",
+      "classes": 3,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t000011012_p35/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t000011012_pa",
+      "classes": 3,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t000011012_pa/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t000013032033_p108",
+      "classes": 4,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t000013032033_p108/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t000013032033_pf7",
+      "classes": 4,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t000013032033_pf7/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030311012333_p100",
+      "classes": 4,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030311012333_p100/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030311012333_p19a",
+      "classes": 4,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030311012333_p19a/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030311012333_p65",
+      "classes": 4,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030311012333_p65/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030311012333_pff",
+      "classes": 4,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030311012333_pff/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t033311312333_p33",
+      "classes": 4,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t033311312333_p33/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t033311312333_pcc",
+      "classes": 4,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t033311312333_pcc/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t033313332333_p3f",
+      "classes": 4,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t033313332333_p3f/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t033313332333_p40",
+      "classes": 4,
+      "symbols": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t033313332333_p40/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000010000200003_p1",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000010000200003_p1/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000010000200003_p7e",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000010000200003_p7e/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000010000220023_p36",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000010000220023_p36/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000010000220023_pc9",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000010000220023_pc9/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000010100220123_p1",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000010100220123_p1/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000010100220123_p1a9",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000010100220123_p1a9/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000010100220123_p1fe",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000010100220123_p1fe/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000010100220123_p56",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000010100220123_p56/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000011101210113_p12",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000011101210113_p12/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000011101210113_p1ed",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000011101210113_p1ed/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000011101220123_p35a",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000011101220123_p35a/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0000011101220123_pa5",
+      "classes": 4,
+      "symbols": 4,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0000011101220123_pa5/referent.sos"
+    }
+  ]
+}

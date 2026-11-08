@@ -30,19 +30,30 @@ The current `atlas/work/full-psl` collection certifies complete stamp coverage
 through four classes: 9,462 languages modulo effective-symbol permutation.
 Saved recurrent FDFA descriptors select 32 languages with one residual state;
 no descriptors are missing in this scope. All effective alphabet sizes are
-included. Canonical and reversed symbol orders give 62 runs (one order for the
-two unary languages). Every run reaches the canonical reference algebra, with
-no timeout, crash or oracle limit.
+included. Exhausting every letter permutation gives 382 runs, all reaching
+the canonical reference algebra, with no timeout, crash or oracle limit.
+Execution takes 44.297 seconds. The result receipts were independently checked
+against the full set of language/permutation pairs: all 382 are present exactly
+once.
 
-This is a negative result for those two orders under the historical seeded
-learner and its shortest-counterexample policy. For three and four symbols,
-forward and reverse do not exhaust all permutations. No universal minimality
-claim over letter orders, other policies or other learners follows.
+| Positive classes | Exact canonical runs |
+|---|---:|
+| 1 | 2 |
+| 2 | 4 |
+| 3 | 28 |
+| 4 | 348 |
+
+Thus the five-class witness below is minimal in positive reference-class count
+among prefix-independent languages for this historical seeded learner with
+its fixed shortest-counterexample policy, allowing every effective-letter
+order. This does not exclude smaller cyclic stalls with several residual
+states, or stalls under other counterexample policies or other learners. The
+earlier 62-run forward/reverse subset is also retained as scientific evidence.
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 ../../../dev.sh -m atlas_search.campaign \
-  --collection ../full-psl --max-classes 4 --both-orders \
-  --output atlas_search/tests/logs/atlas-through-four
+  --collection ../full-psl --max-classes 4 --all-orders --keep-going \
+  --output atlas_search/tests/logs/atlas-through-four-permutations
 ```
 
 ## Five-class cyclic stall
