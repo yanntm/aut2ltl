@@ -1,0 +1,56 @@
+{
+  "schema": "atlas.historical-campaign.v1",
+  "attempted_runs": 13,
+  "selected_runs": 2132,
+  "completed_selection": false,
+  "selection_is_full": true,
+  "verdicts": {
+    "CANONICAL": 12,
+    "STALL": 1
+  },
+  "first_stall": {
+    "key": "sos1_s3_c3_t010011012_p4",
+    "classes": 3,
+    "symbols": 3,
+    "residual_states": 2,
+    "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t010011012_p4/referent.sos",
+    "order": "2,0,1",
+    "symbol_indices": [
+      2,
+      0,
+      1
+    ],
+    "verdict": "STALL",
+    "learned_classes": 2,
+    "certification": "exact",
+    "cyclic_stall": true,
+    "strongly_connected": true,
+    "detail": "",
+    "elapsed_seconds": 0.114449143409729,
+    "output": "0004-2,0,1.json"
+  },
+  "cyclic_stalls": 1,
+  "first_cyclic_stall": {
+    "key": "sos1_s3_c3_t010011012_p4",
+    "classes": 3,
+    "symbols": 3,
+    "residual_states": 2,
+    "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t010011012_p4/referent.sos",
+    "order": "2,0,1",
+    "symbol_indices": [
+      2,
+      0,
+      1
+    ],
+    "verdict": "STALL",
+    "learned_classes": 2,
+    "certification": "exact",
+    "cyclic_stall": true,
+    "strongly_connected": true,
+    "detail": "",
+    "elapsed_seconds": 0.114449143409729,
+    "output": "0004-2,0,1.json"
+  },
+  "coverage_status": "COMPLETE",
+  "elapsed_seconds": 1.4960241820663214
+}

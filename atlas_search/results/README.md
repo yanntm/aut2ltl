@@ -26,6 +26,21 @@ the experimental scope.
 - `five-class-orders.json`: full exact results for all six effective-letter
   orders of the five-class witness. It stalls in precisely three orders, those
   placing `a` before `b`.
+- `multiple-strong-selection.json`, `multiple-strong-summary.json`,
+  `multiple-strong-results.jsonl`: multi-state single-SCC pilot; stops at the
+  three-class cyclic witness after thirteen runs, rather than exhausting its
+  larger population.
+- `all-through-two-selection.json`, `all-through-two-results.json`: complete
+  nine-language scope below three positive classes and all sixteen exact
+  canonical ordered outcomes, combining six earlier prefix-independent runs
+  with ten new multi-state runs. The aggregation checks full permutation
+  coverage and no duplicate outcomes.
+- `three-class.sos`, `three-class-orders.json`, `three-class-closure.json`,
+  `three-class-saturated.json`, `three-class-formula.json`: minimal witness,
+  every letter order, exact-oracle/saturation controls and formula verification.
+- `five-class-cyclic-audit.json`, `transient-control.sos`,
+  `transient-control.json`: positive and negative boundaries of the post-run
+  cyclic distinction audit; the negative input is `a -> Xa`.
 
 The nine-class HOA is copied from the recovered revision's tracked input; SOS
 referents are copied from the current atlas. Result files are copied unchanged

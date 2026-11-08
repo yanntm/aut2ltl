@@ -1,0 +1,1362 @@
+{
+  "schema": "atlas.historical-selection.v1",
+  "collection": "/home/ythierry/git/synomega/atlas/work/full-psl",
+  "scope": {
+    "classification": "stamp",
+    "revision": 1,
+    "bounds": {
+      "classes": {
+        "lower": 1,
+        "upper": 4
+      }
+    },
+    "parameters": {}
+  },
+  "coverage": {
+    "slice": {
+      "classification": "stamp",
+      "revision": 1,
+      "bounds": {
+        "classes": {
+          "lower": 1,
+          "upper": 4
+        }
+      },
+      "parameters": {}
+    },
+    "status": "COMPLETE",
+    "complete": true,
+    "unbounded": false,
+    "known_languages": 9462,
+    "expected_languages": 9462,
+    "present_expected_languages": 9462,
+    "covered_cells": [
+      {
+        "symbols": 1,
+        "classes": 1,
+        "expected": 2,
+        "present": 2,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 1,
+        "classes": 2,
+        "expected": 0,
+        "present": 0,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 2,
+        "classes": 2,
+        "expected": 7,
+        "present": 7,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 1,
+        "classes": 3,
+        "expected": 0,
+        "present": 0,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 2,
+        "classes": 3,
+        "expected": 58,
+        "present": 58,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 3,
+        "classes": 3,
+        "expected": 128,
+        "present": 128,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/census.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/small-pruned.json"
+        ]
+      },
+      {
+        "symbols": 1,
+        "classes": 4,
+        "expected": 0,
+        "present": 0,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/s1-c4.json"
+        ]
+      },
+      {
+        "symbols": 2,
+        "classes": 4,
+        "expected": 241,
+        "present": 241,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/s2-c4-pruned.json",
+          "/home/ythierry/git/synomega/gensos/corpus/runs/s2-c4.json"
+        ]
+      },
+      {
+        "symbols": 3,
+        "classes": 4,
+        "expected": 3976,
+        "present": 3976,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/s3-c4-pruned.json"
+        ]
+      },
+      {
+        "symbols": 4,
+        "classes": 4,
+        "expected": 5050,
+        "present": 5050,
+        "missing": 0,
+        "unexpected": 0,
+        "reports": [
+          "/home/ythierry/git/synomega/gensos/corpus/runs/s4-c4-complete.json"
+        ]
+      }
+    ],
+    "uncovered_cells": [],
+    "conflicts": [],
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "unusable_evidence": [
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 1,
+        "classes": 1,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 1,
+        "classes": 2,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 2,
+        "classes": 2,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 1,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 2,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/repeat.json",
+        "symbols": 3,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/s3-c4-initial.json",
+        "symbols": 3,
+        "classes": 4,
+        "source_status": "TIMEOUT",
+        "reason": "Source stratum did not complete"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/s4-c4-pruned.json",
+        "symbols": 4,
+        "classes": 4,
+        "source_status": "TIMEOUT",
+        "reason": "Source stratum did not complete"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 1,
+        "classes": 1,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 1,
+        "classes": 2,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 2,
+        "classes": 2,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 1,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 2,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      },
+      {
+        "report": "/home/ythierry/git/synomega/gensos/corpus/runs/small.json",
+        "symbols": 3,
+        "classes": 3,
+        "source_status": "COMPLETE",
+        "reason": "Report lacks per-language populations or complete accounting"
+      }
+    ],
+    "evidence": "/home/ythierry/git/synomega/atlas/work/full-psl/classifications/stamp/gensos.csv"
+  },
+  "filter": {
+    "residuals": "multiple",
+    "strongly_connected": true
+  },
+  "eligible_languages": 156,
+  "missing_leading_descriptors": 0,
+  "selected_languages": 156,
+  "both_orders": false,
+  "all_orders": true,
+  "timeout_per_input": 15,
+  "candidates": [
+    {
+      "key": "sos1_s2_c3_t200102_p1",
+      "classes": 3,
+      "symbols": 2,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c3_t200102_p1/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c3_t200102_p3",
+      "classes": 3,
+      "symbols": 2,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c3_t200102_p3/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c3_t200102_pc",
+      "classes": 3,
+      "symbols": 2,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c3_t200102_pc/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c3_t200102_pe",
+      "classes": 3,
+      "symbols": 2,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c3_t200102_pe/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t010011012_p4",
+      "classes": 3,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t010011012_p4/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t010011012_p5",
+      "classes": 3,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t010011012_p5/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t010011012_pc",
+      "classes": 3,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t010011012_pc/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t010011012_pd",
+      "classes": 3,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t010011012_pd/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t100011012_p2",
+      "classes": 3,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t100011012_p2/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t100011012_p3",
+      "classes": 3,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t100011012_p3/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t100011012_pc",
+      "classes": 3,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t100011012_pc/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c3_t100011012_pd",
+      "classes": 3,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c3_t100011012_pd/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_p1",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_p1/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_p14",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_p14/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_p15",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_p15/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_p16",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_p16/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_p17",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_p17/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_p1c",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_p1c/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_p1e",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_p1e/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_p3",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_p3/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_p8",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_p8/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_p9",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_p9/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_pa",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_pa/referent.sos"
+    },
+    {
+      "key": "sos1_s2_c4_t20013203_pb",
+      "classes": 4,
+      "symbols": 2,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s2_c4_t20013203_pb/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030011012033_p13",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030011012033_p13/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030011012033_p26",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030011012033_p26/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030011012033_p3",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030011012033_p3/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030011012033_p36",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030011012033_p36/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030011012033_p49",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030011012033_p49/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030011012033_p59",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030011012033_p59/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030011012033_p6c",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030011012033_p6c/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030011012033_p7c",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030011012033_p7c/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030013032033_p16",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030013032033_p16/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030013032033_p1e",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030013032033_p1e/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030013032033_p21",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030013032033_p21/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030013032033_p29",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030013032033_p29/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030013032033_p3",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030013032033_p3/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030013032033_p34",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030013032033_p34/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030013032033_p3c",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030013032033_p3c/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t030013032033_pb",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t030013032033_pb/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t130301012013_p18",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t130301012013_p18/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t130301012013_p1a",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t130301012013_p1a/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t130301012013_p1c",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t130301012013_p1c/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t130301012013_p1e",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t130301012013_p1e/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t130301012013_p4",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t130301012013_p4/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t130301012013_p5",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t130301012013_p5/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t130301012013_p6",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t130301012013_p6/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t130301012013_p7",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t130301012013_p7/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_p1",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_p1/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_p48",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_p48/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_p4a",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_p4a/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_p4b",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_p4b/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_p4c",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_p4c/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_p4e",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_p4e/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_p5",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_p5/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_p6",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_p6/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_pb1",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_pb1/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_pb3",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_pb3/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_pb4",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_pb4/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_pb5",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_pb5/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_pb7",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_pb7/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_pf9",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_pf9/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_pfa",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_pfa/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012033_pfe",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012033_pfe/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_p10",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_p10/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_p11",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_p11/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_p12",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_p12/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_p13",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_p13/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_p1c",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_p1c/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_p1d",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_p1d/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_p2",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_p2/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_p3",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_p3/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_pc",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_pc/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_pd",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_pd/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_pe",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_pe/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300011012133_pf",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300011012133_pf/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300013032033_p3",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300013032033_p3/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300013032033_p51",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300013032033_p51/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300013032033_p53",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300013032033_p53/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300013032033_p54",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300013032033_p54/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300013032033_p55",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300013032033_p55/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300013032033_p6",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300013032033_p6/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300013032033_p7",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300013032033_p7/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300013032033_p78",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300013032033_p78/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300013032033_p7a",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300013032033_p7a/referent.sos"
+    },
+    {
+      "key": "sos1_s3_c4_t300013032033_p7c",
+      "classes": 4,
+      "symbols": 3,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s3_c4_t300013032033_p7c/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_p10",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_p10/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_p11",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_p11/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_p28",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_p28/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_p29",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_p29/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_p32",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_p32/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_p33",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_p33/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_p3a",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_p3a/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_p3b",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_p3b/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_p8",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_p8/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_p9",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_p9/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_pd0",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_pd0/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_pd1",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_pd1/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_pd2",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_pd2/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_pd3",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_pd3/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_pdc",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_pdc/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_pdd",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_pdd/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_pfa",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_pfa/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_pfb",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_pfb/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_pfc",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_pfc/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0100011101220123_pfd",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0100011101220123_pfd/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101210113_p16",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101210113_p16/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101210113_p1c",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101210113_p1c/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101210113_p23",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101210113_p23/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101210113_p29",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101210113_p29/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101210113_p3",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101210113_p3/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101210113_p36",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101210113_p36/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101210113_p3c",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101210113_p3c/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101210113_p9",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101210113_p9/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101220123_p16",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101220123_p16/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101220123_p29",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101220123_p29/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101220123_p3",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101220123_p3/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101220123_p3c",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101220123_p3c/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101220123_p43",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101220123_p43/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101220123_p56",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101220123_p56/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101220123_p69",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101220123_p69/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t0110011101220123_p7c",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t0110011101220123_p7c/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101210113_p5",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101210113_p5/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101210113_p51",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101210113_p51/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101210113_p52",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101210113_p52/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101210113_p53",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101210113_p53/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101210113_p56",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101210113_p56/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101210113_p6",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101210113_p6/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101210113_p7",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101210113_p7/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101210113_p78",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101210113_p78/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101210113_p79",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101210113_p79/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101210113_p7c",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101210113_p7c/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_p2",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_p2/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_p28",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_p28/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_p29",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_p29/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_p2c",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_p2c/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_p2d",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_p2d/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_p2e",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_p2e/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_p3",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_p3/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_p5",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_p5/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_pd1",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_pd1/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_pd2",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_pd2/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_pd3",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_pd3/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_pd6",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_pd6/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_pd7",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_pd7/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_pfa",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_pfa/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_pfc",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_pfc/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1000011101220123_pfd",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 2,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1000011101220123_pfd/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1200201101220123_p18",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1200201101220123_p18/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1200201101220123_p19",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1200201101220123_p19/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1200201101220123_p1c",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1200201101220123_p1c/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1200201101220123_p1d",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1200201101220123_p1d/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1200201101220123_p4",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1200201101220123_p4/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1200201101220123_p5",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1200201101220123_p5/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1200201101220123_p6",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1200201101220123_p6/referent.sos"
+    },
+    {
+      "key": "sos1_s4_c4_t1200201101220123_p7",
+      "classes": 4,
+      "symbols": 4,
+      "residual_states": 3,
+      "input": "/home/ythierry/git/synomega/atlas/work/full-psl/languages/sos1_s4_c4_t1200201101220123_p7/referent.sos"
+    }
+  ]
+}

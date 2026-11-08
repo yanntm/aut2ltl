@@ -1,0 +1,5 @@
+{
+  "formula": "F(a & !b & XG !a)",
+  "canonical_id": "sos1_s3_c3_t010011012_p4",
+  "exact_counterexample": null
+}

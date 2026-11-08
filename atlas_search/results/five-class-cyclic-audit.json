@@ -1,0 +1,191 @@
+{
+  "schema": "atlas.historical-stall.v1",
+  "input": "/home/ythierry/git/synomega/atlas/work/legacy-learning/atlas_search/results/five-class.sos",
+  "key": "sos1_s3_c5_t030314042333344_p2a4",
+  "symbol_order": [
+    "a",
+    "b",
+    "c"
+  ],
+  "mode": "relaxed",
+  "closure_only": false,
+  "reference_classes": 5,
+  "learned_classes": 4,
+  "residual_states": 1,
+  "residual_sccs": [
+    [
+      0
+    ]
+  ],
+  "strongly_connected": true,
+  "cyclic_stall": true,
+  "cyclic_witness": {
+    "block_vertices": [
+      0
+    ],
+    "block_classes": 5,
+    "hypothesis_class": 3,
+    "words": [
+      [
+        2
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "reference_classes": [
+      3,
+      5
+    ],
+    "local_classes": [
+      3,
+      5
+    ],
+    "local_keys": [
+      [
+        2
+      ],
+      [
+        1,
+        2
+      ]
+    ]
+  },
+  "certification": "exact",
+  "congruent": false,
+  "verdict": "STALL",
+  "first_divergence": {
+    "subject": [
+      1,
+      0
+    ],
+    "key": [
+      0,
+      1
+    ],
+    "left": [
+      2
+    ],
+    "subject_result": [
+      0
+    ],
+    "key_result": [
+      0,
+      1
+    ]
+  },
+  "reference_key_collisions": [
+    {
+      "learned_key": [
+        2
+      ],
+      "reference_keys": [
+        [
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ]
+    }
+  ],
+  "counterexamples": [
+    {
+      "stem": [],
+      "loop": [
+        0,
+        1,
+        2
+      ]
+    }
+  ],
+  "n_equiv": 2,
+  "member_calls_including_oracle": 611,
+  "guard_firings": 2,
+  "final_guard_fired": true,
+  "closure_calls": 2,
+  "rounds": [
+    {
+      "classes": 3,
+      "rows": 4,
+      "columns": 2
+    },
+    {
+      "classes": 4,
+      "rows": 5,
+      "columns": 3
+    }
+  ],
+  "hypothesis": {
+    "keys": [
+      [],
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "step": [
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        1,
+        4,
+        1
+      ],
+      [
+        4,
+        2,
+        3
+      ],
+      [
+        1,
+        3,
+        3
+      ],
+      [
+        4,
+        4,
+        4
+      ]
+    ],
+    "start": 0
+  },
+  "columns": [
+    {
+      "kind": "OmCol",
+      "x": [],
+      "y": []
+    },
+    {
+      "kind": "OmCol",
+      "x": [],
+      "y": [
+        1
+      ]
+    },
+    {
+      "kind": "OmCol",
+      "x": [
+        2
+      ],
+      "y": [
+        2
+      ]
+    }
+  ],
+  "elapsed_seconds": 0.0018785540014505386
+}

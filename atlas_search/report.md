@@ -24,6 +24,105 @@ PYTHONDONTWRITEBYTECODE=1 timeout 15s ../../../dev.sh -m atlas_search.tests.cont
   --output atlas_search/tests/logs/control-comparison.json
 ```
 
+## Minimal three-class cyclic stall with multiple residual states
+
+The complete through-four stamp population has 9,430 languages with multiple
+residual states, requiring 146,056 letter permutations for a full scan. A
+single-SCC filter selects 156 languages and 2,132 permutations. The ordered
+pilot stops after thirteen runs: twelve canonical outcomes followed by the
+three-class witness `sos1_s3_c3_t010011012_p4`, in order `c < a < b`. Its two
+residual states form a single SCC; its canonical local algebra is the whole
+three-class syntactic algebra. The pilot does not exhaust the four-class scope.
+
+Over exclusive symbols `a,b,c`, the language is `Sigma* b c^omega`, equivalently
+`F(b & XG c)`: some `b` is followed only by `c` forever. The residual graph
+remembers whether the last non-`c` letter was `b`. Letter `a` resets it to the
+rejecting residual, `b` to the accepting residual, and `c` acts as identity.
+Both residuals are mutually reachable via these reset letters.
+
+The algebra has three idempotents, named `a,b,c`, with
+`x*a=a`, `x*b=b`, and `x*c=x`. Its only accepting pair is `(b,c)`.
+The relaxed learner identifies `a` with `c`, keeping only the keys `c,b`.
+From the initial residual these letters agree, but left prefix `b` separates
+them: `b c^omega` is accepted, while `b a c^omega` is rejected. This is a
+missing distinction inside the single cyclic block, not transient information.
+The concrete alignment witness is retained in the one-input result.
+
+All six letter orders are exactly certified. The two orders beginning with
+`c`, namely `c<a<b` and `c<b<a`, stall at two classes; the remaining four
+orders recover all three. Each stalled run uses one counterexample, with
+order `c<a<b` returning `(b,c)`. Closure-only comparison produces the same
+counterexamples, columns, final step table and cyclic witness. Original
+saturation recovers all three classes.
+
+The AP encoding `a=(p&q)`, `b=(p&!q)`, `c=!p` gives
+`F(p & !q & XG !p)`. Public formula construction yields the same canonical ID;
+exact comparison with the realized referent returns no counterexample.
+
+### Complete exclusion below three classes
+
+Saved atlas coverage through two positive classes is COMPLETE: nine languages
+across all effective alphabets and residual graphs. Their sixteen distinct
+language/permutation pairs all reach the canonical reference algebra, exactly,
+with no timeout, crash or oracle limit. Six outcomes come from the completed
+prefix-independent search; the ten remaining multi-state outcomes were run
+separately. The combined receipts were checked against every permutation of
+every language in the full nine-language selection, with no omissions or
+duplicates.
+
+The three-class witness is therefore minimal in positive syntactic-class count
+for the historical seeded learner with its fixed shortest-counterexample
+policy, allowing arbitrary residual graphs and every effective-letter order.
+This is stronger than the earlier prefix-independent five-class minimum.
+Other learner bootstraps, refinement schedules and counterexample policies
+remain outside the claim.
+
+The ten smaller cases, six three-class orders and two witness controls were
+coordinated as eighteen independent invocations with at most fifteen concurrent
+processes. Each invocation kept its own fifteen-second outer bound. The larger
+146,056-run sweep was not launched because the minimality question was already
+settled.
+
+The cyclic audit was checked against two boundaries: it marks the five-class
+one-state witness cyclic, but marks the four-class `a -> Xa` global stall as
+having no missed cyclic-block distinction. Those controls and their inputs
+are saved with the results.
+
+Reproduce the discovery:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 ../../../dev.sh -m atlas_search.campaign \
+  --collection ../full-psl --max-classes 4 --residuals multiple \
+  --strongly-connected --all-orders --stop-on cyclic-stall \
+  --output atlas_search/tests/logs/multiple-strong-through-four
+```
+
+Reproduce the lower multi-state scope (a serial equivalent of the ten parallel
+one-input invocations), or independently repeat all sixteen smaller runs:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 ../../../dev.sh -m atlas_search.campaign \
+  --collection ../full-psl --max-classes 2 --residuals multiple \
+  --all-orders --keep-going --output atlas_search/tests/logs/multiple-through-two-parallel
+PYTHONDONTWRITEBYTECODE=1 ../../../dev.sh -m atlas_search.campaign \
+  --collection ../full-psl --max-classes 2 --residuals any \
+  --all-orders --keep-going --output atlas_search/tests/logs/all-through-two
+PYTHONDONTWRITEBYTECODE=1 timeout 15s ../../../dev.sh -m atlas_search.one \
+  atlas_search/results/three-class.sos --order 2,0,1 --closure-only \
+  --output atlas_search/tests/logs/three-class-closure.json
+PYTHONDONTWRITEBYTECODE=1 timeout 15s ../../../dev.sh -m atlas_search.one \
+  atlas_search/results/three-class.sos --order 2,0,1 --saturated \
+  --output atlas_search/tests/logs/three-class-saturated.json
+```
+
+For the six-order control, use separate `one.py` invocations with the six
+`--order` values listed for the five-class witness below. Formula verification
+uses that same recorded formula command with input `three-class.sos` and
+formula `F(a & !b & XG !a)` (AP names `a,b` stand for `p,q`).
+After saving those six order results under `tests/logs/three-class-orders/`,
+`python3 -m atlas_search.tests.summarize_minimum` checks coverage and regenerates
+the two aggregate result files without running the learner again.
+
 ## Search through four positive classes
 
 The current `atlas/work/full-psl` collection certifies complete stamp coverage

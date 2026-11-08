@@ -1,0 +1,200 @@
+{
+  "schema": "atlas.historical-lower-bound.v1",
+  "coverage_status": "COMPLETE",
+  "languages": 9,
+  "ordered_runs": 16,
+  "all_pairs_present_once": true,
+  "canonical_runs": 16,
+  "rows": [
+    {
+      "key": "sos1_s1_c1_t0_p0",
+      "order": [
+        0
+      ],
+      "reference_classes": 1,
+      "learned_classes": 1,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "through-four-permutations-results.jsonl"
+    },
+    {
+      "key": "sos1_s1_c1_t0_p1",
+      "order": [
+        0
+      ],
+      "reference_classes": 1,
+      "learned_classes": 1,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "through-four-permutations-results.jsonl"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p1",
+      "order": [
+        0,
+        1
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "through-four-permutations-results.jsonl"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p1",
+      "order": [
+        1,
+        0
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "through-four-permutations-results.jsonl"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p2",
+      "order": [
+        0,
+        1
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "multiple-through-two-parallel/0000-0-1.json"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p2",
+      "order": [
+        1,
+        0
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "multiple-through-two-parallel/0000-1-0.json"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p3",
+      "order": [
+        0,
+        1
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "multiple-through-two-parallel/0001-0-1.json"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p3",
+      "order": [
+        1,
+        0
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "multiple-through-two-parallel/0001-1-0.json"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p4",
+      "order": [
+        0,
+        1
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "multiple-through-two-parallel/0002-0-1.json"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p4",
+      "order": [
+        1,
+        0
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "multiple-through-two-parallel/0002-1-0.json"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p5",
+      "order": [
+        0,
+        1
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "multiple-through-two-parallel/0003-0-1.json"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p5",
+      "order": [
+        1,
+        0
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "multiple-through-two-parallel/0003-1-0.json"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p6",
+      "order": [
+        0,
+        1
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "through-four-permutations-results.jsonl"
+    },
+    {
+      "key": "sos1_s2_c2_t0001_p6",
+      "order": [
+        1,
+        0
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "through-four-permutations-results.jsonl"
+    },
+    {
+      "key": "sos1_s2_c2_t0011_p2",
+      "order": [
+        0,
+        1
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "multiple-through-two-parallel/0004-0-1.json"
+    },
+    {
+      "key": "sos1_s2_c2_t0011_p2",
+      "order": [
+        1,
+        0
+      ],
+      "reference_classes": 2,
+      "learned_classes": 2,
+      "verdict": "CANONICAL",
+      "certification": "exact",
+      "source": "multiple-through-two-parallel/0004-1-0.json"
+    }
+  ]
+}

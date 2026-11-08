@@ -1,0 +1,123 @@
+{
+  "schema": "atlas.historical-stall.v1",
+  "input": "/home/ythierry/git/synomega/atlas/work/legacy-learning/atlas_search/results/three-class.sos",
+  "key": "sos1_s3_c3_t010011012_p4",
+  "symbol_order": [
+    "c",
+    "a",
+    "b"
+  ],
+  "mode": "saturated",
+  "closure_only": false,
+  "reference_classes": 3,
+  "learned_classes": 3,
+  "residual_states": 2,
+  "residual_sccs": [
+    [
+      0,
+      1
+    ]
+  ],
+  "strongly_connected": true,
+  "cyclic_stall": false,
+  "cyclic_witness": null,
+  "certification": "exact",
+  "congruent": true,
+  "verdict": "CANONICAL",
+  "first_divergence": null,
+  "reference_key_collisions": [],
+  "counterexamples": [
+    {
+      "stem": [
+        2
+      ],
+      "loop": [
+        0
+      ]
+    }
+  ],
+  "n_equiv": 2,
+  "member_calls_including_oracle": 70,
+  "guard_firings": 0,
+  "final_guard_fired": false,
+  "closure_calls": 0,
+  "rounds": [
+    {
+      "classes": 1,
+      "rows": 4,
+      "columns": 1
+    },
+    {
+      "classes": 3,
+      "rows": 4,
+      "columns": 3
+    }
+  ],
+  "hypothesis": {
+    "keys": [
+      [],
+      [
+        0
+      ],
+      [
+        1
+      ],
+      [
+        2
+      ]
+    ],
+    "step": [
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        2,
+        2,
+        3
+      ],
+      [
+        3,
+        2,
+        3
+      ]
+    ],
+    "start": 0
+  },
+  "columns": [
+    {
+      "kind": "OmCol",
+      "x": [],
+      "y": []
+    },
+    {
+      "kind": "LinCol",
+      "x": [],
+      "y": [
+        0
+      ],
+      "t": [
+        0
+      ]
+    },
+    {
+      "kind": "LinCol",
+      "x": [
+        2
+      ],
+      "y": [
+        0
+      ],
+      "t": [
+        0
+      ]
+    }
+  ],
+  "elapsed_seconds": 0.0008098650723695755
+}
