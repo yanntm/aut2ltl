@@ -45,25 +45,31 @@ class EffectiveAlphabet(Alphabet):
         return Letter(self.aps.index(names[0]))
 
 
-def transfer(obj: OStamp, *, reverse: bool = False) -> Invariant:
+def transfer(obj: OStamp, *, reverse: bool = False,
+             order: tuple[int, ...] | None = None) -> Invariant:
     """Re-key the same reference algebra under an explicit symbol order."""
     if not isinstance(obj.stamp.alphabet, SymbolAlphabet):
         raise ValueError("Atlas input must use its effective symbolic alphabet")
-    order = tuple(obj.stamp.alphabet.letters())
+    if reverse and order is not None:
+        raise ValueError("Choose an explicit order or reversal, not both")
+    indices = tuple(obj.stamp.alphabet.letters()) if order is None else order
+    if sorted(indices) != list(range(obj.stamp.alphabet.size)):
+        raise ValueError("Order must permute every effective symbol exactly once")
     if reverse:
-        order = order[::-1]
-    alphabet = EffectiveAlphabet(tuple(obj.stamp.alphabet.symbols[a] for a in order))
+        indices = indices[::-1]
+    alphabet = EffectiveAlphabet(tuple(obj.stamp.alphabet.symbols[a] for a in indices))
     return canonicalize(
         alphabet, obj.stamp.identity,
-        tuple(obj.stamp.letter_map.class_of(a) for a in order),
+        tuple(obj.stamp.letter_map.class_of(a) for a in indices),
         obj.stamp.mult, obj.accept,
     )
 
 
-def read_reference(path: Path, *, reverse: bool = False) -> tuple[OStamp, Invariant]:
+def read_reference(path: Path, *, reverse: bool = False,
+                   order: tuple[int, ...] | None = None) -> tuple[OStamp, Invariant]:
     """Read current SOS using its owner, then transfer through public data APIs."""
     obj = load_sos(path.read_text())
-    return obj, transfer(obj, reverse=reverse)
+    return obj, transfer(obj, reverse=reverse, order=order)
 
 
 class EmptyMark:

@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from collections.abc import Iterator
+from itertools import permutations
 import json
+from math import factorial
 from pathlib import Path
 import sys
 import time
@@ -33,6 +36,18 @@ def selection(collection: Collection, scope: Slice) -> tuple[list[dict[str, Any]
     return selected, unavailable
 
 
+def letter_orders(symbols: int, *, all_orders: bool,
+                  both_orders: bool) -> Iterator[tuple[int, ...]]:
+    """Enumerate explicit orders without materializing a factorial pool."""
+    forward = tuple(range(symbols))
+    if all_orders:
+        yield from permutations(forward)
+    else:
+        yield forward
+        if both_orders and symbols > 1:
+            yield forward[::-1]
+
+
 def main() -> int:
     """Save scope before execution, preserve each outcome, and stop on a witness."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -40,7 +55,9 @@ def main() -> int:
     parser.add_argument("--min-classes", type=int, default=1)
     parser.add_argument("--max-classes", type=int, default=4)
     parser.add_argument("--symbols", type=int, help="omit to include every effective alphabet")
-    parser.add_argument("--both-orders", action="store_true")
+    order_options = parser.add_mutually_exclusive_group()
+    order_options.add_argument("--both-orders", action="store_true")
+    order_options.add_argument("--all-orders", action="store_true")
     parser.add_argument("--keep-going", action="store_true")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--timeout", type=float, default=15)
@@ -69,6 +86,7 @@ def main() -> int:
         filter="one residual state, using saved recurrent FDFA leading size",
         eligible_languages=full_selection, missing_leading_descriptors=unavailable,
         selected_languages=len(candidates), both_orders=args.both_orders,
+        all_orders=args.all_orders,
         timeout_per_input=args.timeout, candidates=candidates,
     )
     (args.output / "selection.json").write_text(json.dumps(saved_scope, indent=2) + "\n")
@@ -78,14 +96,16 @@ def main() -> int:
     interrupted = False
     with (args.output / "results.jsonl").open("w") as stream:
         for number, candidate in enumerate(candidates):
-            orders = (False, True) if args.both_orders and candidate["symbols"] > 1 else (False,)
-            for reverse in orders:
-                name = f"{number:04d}-{'reverse' if reverse else 'forward'}"
+            orders = letter_orders(candidate["symbols"], all_orders=args.all_orders,
+                                   both_orders=args.both_orders)
+            for order in orders:
+                label = ",".join(map(str, order))
+                if not args.all_orders:
+                    label = "forward" if order == tuple(range(candidate["symbols"])) else "reverse"
+                name = f"{number:04d}-{label}"
                 payload = (args.output / (name + ".json")).resolve()
                 command = [sys.executable, "-m", "atlas_search.one", candidate["input"],
-                           "--output", str(payload)]
-                if reverse:
-                    command.append("--reverse")
+                           "--output", str(payload), "--order", ",".join(map(str, order))]
                 bounded = run(command, timeout=args.timeout,
                     cwd=Path(__file__).resolve().parents[1],
                     stdout=args.output / (name + ".stdout"),
@@ -97,7 +117,7 @@ def main() -> int:
                     outcome = json.loads(payload.read_text())
                 else:
                     outcome = dict(verdict="CRASH", detail=f"No result; exit code {bounded.rc}")
-                row = dict(**candidate, order="reverse" if reverse else "forward",
+                row = dict(**candidate, order=label, symbol_indices=order,
                     verdict=outcome["verdict"], learned_classes=outcome.get("learned_classes"),
                     certification=outcome.get("certification"),
                     detail=outcome.get("detail", ""), elapsed_seconds=bounded.wall_s,
@@ -114,7 +134,8 @@ def main() -> int:
                     break
             if interrupted:
                 break
-    expected_runs = sum(2 if args.both_orders and row["symbols"] > 1 else 1
+    expected_runs = sum(factorial(row["symbols"]) if args.all_orders else
+                        2 if args.both_orders and row["symbols"] > 1 else 1
                         for row in candidates)
     counts = dict(Counter(row["verdict"] for row in rows))
     summary = dict(schema="atlas.historical-campaign.v1",

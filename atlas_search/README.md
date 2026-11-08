@@ -40,7 +40,11 @@ the published query-cost measure.
 Run from this clone with the enclosing SynOmega `dev.sh`, so both public
 SynOmega services and historical sources are available. `one.py` selects this
 clone's historical `sosl` import path. Each invocation handles one input; use
-an outer fifteen-second bound. `--reverse` reverses effective symbol order.
+an outer fifteen-second bound. `--reverse` reverses effective symbol order;
+`--order 2,0,1` explicitly lists current symbol indices in learning order.
+These options are mutually exclusive, and an explicit order must be a complete
+permutation of the input alphabet. Transfer re-keys the reference under that
+order before any learner query.
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 timeout 15s ../../../dev.sh -m atlas_search.one \
@@ -67,6 +71,13 @@ class count, symbols, key and letter order. Child output and errors go under
 can stop the search; negative results state the exact population and orders
 examined. Complement entries are not silently omitted. Scope coverage does not
 turn a partial run into a complete negative search.
+
+`--all-orders` lazily enumerates every symbol permutation in lexicographic
+index order, independently for every selected language. It is mutually
+exclusive with `--both-orders`. The selection records its order policy, and
+each result records the actual index permutation. With `--keep-going`, all
+selected permutations run even if a stall is found. This exhausts letter
+orders, not alternative counterexample policies or refinement schedules.
 
 Scientific controls: reproduce the archived nine-to-seven stall with the native
 historical teacher, then obtain the same counterexamples and final step table

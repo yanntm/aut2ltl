@@ -26,9 +26,10 @@ from .adapter import StampTeacher, read_reference
 
 
 def experiment(path: Path, *, reverse: bool = False,
-               closure_only: bool = False, saturation: bool = False) -> dict[str, Any]:
+               closure_only: bool = False, saturation: bool = False,
+               order: tuple[int, ...] | None = None) -> dict[str, Any]:
     """Keep historical refinement and bootstrap; return a replayable outcome."""
-    obj, reference = read_reference(path, reverse=reverse)
+    obj, reference = read_reference(path, reverse=reverse, order=order)
     teacher = StampTeacher(reference, closure_only=closure_only)
     table = Table(reference.alphabet, teacher.member)
     rounds: list[dict[str, int]] = []
@@ -84,11 +85,21 @@ def experiment(path: Path, *, reverse: bool = False,
     )
 
 
+def parse_order(text: str) -> tuple[int, ...]:
+    """Parse CLI symbol indices; transfer validates them against the alphabet."""
+    try:
+        return tuple(int(index) for index in text.split(","))
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("Expected comma-separated symbol indices") from exc
+
+
 def main() -> int:
     """Run one input; the invoking campaign owns its hard wall-clock bound."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=Path)
-    parser.add_argument("--reverse", action="store_true")
+    order_options = parser.add_mutually_exclusive_group()
+    order_options.add_argument("--reverse", action="store_true")
+    order_options.add_argument("--order", type=parse_order)
     parser.add_argument("--closure-only", action="store_true")
     parser.add_argument("--saturated", action="store_true")
     parser.add_argument("--output", type=Path)
@@ -96,7 +107,8 @@ def main() -> int:
     started = time.monotonic()
     try:
         result = experiment(args.input, reverse=args.reverse,
-                            closure_only=args.closure_only, saturation=args.saturated)
+                            closure_only=args.closure_only, saturation=args.saturated,
+                            order=args.order)
         code = 0
     except ExactTooLarge as exc:
         result = dict(verdict="ORACLE_LIMIT", detail=str(exc))
