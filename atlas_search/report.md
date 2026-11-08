@@ -71,7 +71,32 @@ the functionality guard and are decided by transformation closure. A run forced
 through closure on every query produces the same transcript and table.
 Enabling the original saturation repair recovers the exact five-class algebra.
 Reversing the alphabet order also recovers all five classes, using two
-counterexamples. This witness is explicitly order-sensitive.
+counterexamples. All six orders have now been run, with exact certification:
+
+| Letter order | Outcome | Learned positive classes |
+|---|---|---:|
+| a < b < c | stall | 4 |
+| a < c < b | stall | 4 |
+| b < a < c | canonical | 5 |
+| b < c < a | canonical | 5 |
+| c < a < b | stall | 4 |
+| c < b < a | canonical | 5 |
+
+The witness stalls exactly when `a` precedes `b`; the position of `c` does not
+change the outcome. All three stalls identify the reference keys `bc` and `c`
+(possibly named `cb` under the chosen order). Each stall uses one
+counterexample and each canonical run two. These statements concern the fixed
+historical shortest-counterexample policy. Full results are preserved in
+`results/five-class-orders.json`.
+
+Each row is a separate invocation with a fifteen-second bound. Use the respective
+`--order` argument `0,1,2`, `0,2,1`, `1,0,2`, `1,2,0`, `2,0,1` or `2,1,0`:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 timeout 15s ../../../dev.sh -m atlas_search.one \
+  atlas_search/results/five-class.sos --order 0,2,1 \
+  --output atlas_search/tests/logs/five-class-orders/0-2-1.json
+```
 
 The target is the commutative idempotent algebra with keys `a,b,c,ab,bc`;
 `ab` is zero, `ac=a`, and `bc` is distinct from `c`. The relaxed fold identifies

@@ -23,6 +23,9 @@ the experimental scope.
   algebra. Full action tables and counterexamples are retained.
 - `five-class-formula.json`: formula, canonical identifier and exact comparison
   outcome from the public formula-construction and stamp-comparison services.
+- `five-class-orders.json`: full exact results for all six effective-letter
+  orders of the five-class witness. It stalls in precisely three orders, those
+  placing `a` before `b`.
 
 The nine-class HOA is copied from the recovered revision's tracked input; SOS
 referents are copied from the current atlas. Result files are copied unchanged
