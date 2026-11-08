@@ -14,10 +14,16 @@ from typing import Any
 
 from synomega.atlas import Bound, Collection, Query, Slice
 from synomega.runner import run, setup_signals
+from synomega.sosio import load_sos
+
+# Select the historical import path only for graph audit interface imports.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "sosl"))
+from .graphs import graph_structure
 
 
-def selection(collection: Collection, scope: Slice) -> tuple[list[dict[str, Any]], int]:
-    """Select one-state residual graphs from saved canonical FDFA descriptors."""
+def selection(collection: Collection, scope: Slice, *, residual_mode: str = "one",
+              strongly_connected: bool = False) -> tuple[list[dict[str, Any]], int]:
+    """Select saved residual sizes, optionally checking the actual SCC graph."""
     selected: list[dict[str, Any]] = []
     unavailable = 0
     for key, record in collection.languages.items():
@@ -29,9 +35,18 @@ def selection(collection: Collection, scope: Slice) -> tuple[list[dict[str, Any]
         if not recurrent:
             unavailable += 1
             continue
-        if recurrent[0].measurements["leading_states"] == 1:
-            selected.append(dict(key=key, **dimensions,
-                input=str((collection.folder(key) / record["payload"]).resolve())))
+        states = recurrent[0].measurements["leading_states"]
+        if (residual_mode == "one" and states != 1 or
+                residual_mode == "multiple" and states <= 1):
+            continue
+        path = (collection.folder(key) / record["payload"]).resolve()
+        if strongly_connected:
+            graph = graph_structure(load_sos(path.read_text()))
+            if graph["residual_states"] != states:
+                raise ValueError(f"Saved leading size disagrees with residual graph: {key}")
+            if not graph["strongly_connected"]:
+                continue
+        selected.append(dict(key=key, **dimensions, residual_states=states, input=str(path)))
     selected.sort(key=lambda row: (row["classes"], row["symbols"], row["key"]))
     return selected, unavailable
 
@@ -55,6 +70,10 @@ def main() -> int:
     parser.add_argument("--min-classes", type=int, default=1)
     parser.add_argument("--max-classes", type=int, default=4)
     parser.add_argument("--symbols", type=int, help="omit to include every effective alphabet")
+    parser.add_argument("--residuals", choices=("one", "multiple", "any"), default="one")
+    parser.add_argument("--strongly-connected", action="store_true")
+    parser.add_argument("--plan-only", action="store_true")
+    parser.add_argument("--stop-on", choices=("stall", "cyclic-stall"), default="stall")
     order_options = parser.add_mutually_exclusive_group()
     order_options.add_argument("--both-orders", action="store_true")
     order_options.add_argument("--all-orders", action="store_true")
@@ -75,7 +94,8 @@ def main() -> int:
         bounds["symbols"] = Bound(lower=args.symbols, upper=args.symbols)
     scope = Slice("stamp", bounds=bounds)
     collection = Collection(args.collection.resolve())
-    candidates, unavailable = selection(collection, scope)
+    candidates, unavailable = selection(collection, scope, residual_mode=args.residuals,
+                                       strongly_connected=args.strongly_connected)
     full_selection = len(candidates)
     if args.limit is not None:
         candidates = candidates[:args.limit]
@@ -83,16 +103,24 @@ def main() -> int:
     saved_scope = dict(
         schema="atlas.historical-selection.v1", collection=str(collection.root),
         scope=scope.to_dict(), coverage=Query(collection).slices.coverage(scope),
-        filter="one residual state, using saved recurrent FDFA leading size",
+        filter=dict(residuals=args.residuals, strongly_connected=args.strongly_connected),
         eligible_languages=full_selection, missing_leading_descriptors=unavailable,
         selected_languages=len(candidates), both_orders=args.both_orders,
         all_orders=args.all_orders,
         timeout_per_input=args.timeout, candidates=candidates,
     )
     (args.output / "selection.json").write_text(json.dumps(saved_scope, indent=2) + "\n")
+    expected_runs = sum(factorial(row["symbols"]) if args.all_orders else
+                        2 if args.both_orders and row["symbols"] > 1 else 1
+                        for row in candidates)
+    if args.plan_only:
+        print(json.dumps(dict(selected_languages=len(candidates), selected_runs=expected_runs,
+            coverage_status=saved_scope["coverage"]["status"], missing_descriptors=unavailable)))
+        return 0
     rows: list[dict[str, Any]] = []
     started = time.monotonic()
     found = None
+    first_cyclic = None
     interrupted = False
     with (args.output / "results.jsonl").open("w") as stream:
         for number, candidate in enumerate(candidates):
@@ -120,6 +148,8 @@ def main() -> int:
                 row = dict(**candidate, order=label, symbol_indices=order,
                     verdict=outcome["verdict"], learned_classes=outcome.get("learned_classes"),
                     certification=outcome.get("certification"),
+                    cyclic_stall=outcome.get("cyclic_stall"),
+                    strongly_connected=outcome.get("strongly_connected"),
                     detail=outcome.get("detail", ""), elapsed_seconds=bounded.wall_s,
                     output=payload.name)
                 rows.append(row)
@@ -129,20 +159,22 @@ def main() -> int:
                       f"{row['verdict']} {row['learned_classes']} {candidate['key']}", flush=True)
                 if row["verdict"] == "STALL" and found is None:
                     found = row
-                if found is not None and not args.keep_going:
+                if row["cyclic_stall"] and first_cyclic is None:
+                    first_cyclic = row
+                stopping_witness = first_cyclic if args.stop_on == "cyclic-stall" else found
+                if stopping_witness is not None and not args.keep_going:
                     interrupted = True
                     break
             if interrupted:
                 break
-    expected_runs = sum(factorial(row["symbols"]) if args.all_orders else
-                        2 if args.both_orders and row["symbols"] > 1 else 1
-                        for row in candidates)
     counts = dict(Counter(row["verdict"] for row in rows))
     summary = dict(schema="atlas.historical-campaign.v1",
         attempted_runs=len(rows), selected_runs=expected_runs,
         completed_selection=len(rows) == expected_runs,
         selection_is_full=args.limit is None and unavailable == 0,
         verdicts=counts, first_stall=found,
+        cyclic_stalls=sum(row["cyclic_stall"] is True for row in rows),
+        first_cyclic_stall=first_cyclic,
         coverage_status=saved_scope["coverage"]["status"],
         elapsed_seconds=time.monotonic() - started)
     (args.output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")

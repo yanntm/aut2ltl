@@ -19,10 +19,10 @@ from sosl.learn.chains import process_counterexample
 from sosl.learn.saturate import find_left_divergence
 from sosl.learn.table import Table
 from sosl.teacher.exact import ExactTooLarge
-from synomega.calculus import residual_count
 from synomega.sosio import dump_sos_id
 
 from .adapter import StampTeacher, read_reference
+from .graphs import cyclic_distinction, graph_structure
 
 
 def experiment(path: Path, *, reverse: bool = False,
@@ -63,12 +63,14 @@ def experiment(path: Path, *, reverse: bool = False,
         first_divergence = dict(subject=subject, key=key,
             left=partition.rep[left], subject_result=partition.rep[before],
             key_result=partition.rep[after])
+    graph = graph_structure(obj)
+    cyclic_witness = None if congruent else cyclic_distinction(obj, hypothesis, teacher)
     return dict(
         schema="atlas.historical-stall.v1", input=str(path.resolve()),
         key=dump_sos_id(obj), symbol_order=reference.alphabet.aps,
         mode="saturated" if saturation else "relaxed", closure_only=closure_only,
         reference_classes=reference.n - 1, learned_classes=partition.n - 1,
-        residual_states=residual_count(obj),
+        **graph, cyclic_stall=cyclic_witness is not None, cyclic_witness=cyclic_witness,
         certification=decision.strategy, congruent=congruent,
         verdict="CANONICAL" if congruent else "STALL",
         first_divergence=first_divergence,

@@ -72,6 +72,31 @@ can stop the search; negative results state the exact population and orders
 examined. Complement entries are not silently omitted. Scope coverage does not
 turn a partial run into a complete negative search.
 
+`--residuals multiple` selects saved leading sizes greater than one;
+`--residuals any` removes the leading-size restriction. `--strongly-connected`
+additionally requires a single SCC, computed from the current public residual
+graph service and `block.strong_components`. `--plan-only` saves the selected
+population, coverage and number of ordered runs without starting learning.
+
+`graphs.py` also audits certified stalls against canonical cyclic block stamps.
+It constructs the public SCC-local presentation from the reference and aligns
+the hypothesis right action with the reference action. This finite alignment
+enumerates all reachable (hypothesis fold, reference class) pairs, not merely
+the reference's canonical keys. Within each hypothesis class it compares the
+local stamp values of the alignment's concrete key words. A disagreement
+witnesses two words identified by the relaxed fold but distinguished by a
+cyclic block; JSON retains both words, the block and its two class values.
+Witness `words` use the result's learning order; `local_keys` use the original
+input SOS symbol indices.
+If none exists, the fold loses no canonical cyclic-block distinction, although
+the global stamp check may still fail. This is a diagnostic of the historical
+global classifier, not a run of the draft's local learner.
+
+`--stop-on cyclic-stall` ignores purely global stalls as stopping conditions,
+while retaining their outcomes. Every successful one-input result reports its
+residual SCCs and whether such a cyclic witness exists. All post-run graph and
+block work remains inside the same per-input deadline.
+
 `--all-orders` lazily enumerates every symbol permutation in lexicographic
 index order, independently for every selected language. It is mutually
 exclusive with `--both-orders`. The selection records its order policy, and
@@ -86,5 +111,6 @@ letter order separately. No legacy coarse SOS is loaded as a valid algebra.
 
 Source map: `adapter.py` (finite alphabet, reference transfer, exact teacher),
 `one.py` (one run and its JSON result), `campaign.py` (saved-data selection and
-bounded execution), `tests/` (controls and experiment receipts),
+bounded execution), `graphs.py` (residual graph and cyclic distinction audit),
+`tests/` (controls and experiment receipts),
 `report.md` and `results/` (scientific outcomes and preserved evidence).
