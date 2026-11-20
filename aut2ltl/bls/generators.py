@@ -35,7 +35,7 @@ class ExtractionError(RuntimeError):
 
 
 def is_deterministic(aut: spot.twa_graph) -> bool:
-    return bool(aut.prop_deterministic())
+    return bool(aut.prop_universal())
 
 
 def _valuation_to_bdd(aut: spot.twa_graph, mask: int, aps: List[spot.formula]) -> "buddy.bdd":
@@ -69,7 +69,7 @@ def extract_generators(
     if not is_deterministic(aut):
         raise ExtractionError(
             "extract_generators requires a deterministic automaton "
-            "(aut.prop_deterministic() must be true). "
+            "(aut.prop_universal() must be true). "
             "The higher-level API (decompose_aut) normalizes using Spot."
         )
 

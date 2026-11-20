@@ -272,7 +272,7 @@ def build_canon(corpus: str, out_root: str, exclude: Tuple[str, ...]) -> Dict:
             # Quantifying merges the AP's two branches, so the automaton is now
             # nondeterministic; clear the stale determinism/completeness flags or
             # `canonical` (spot.postprocess) trusts them and skips re-determinizing.
-            D.prop_deterministic(False)
+            D.prop_universal(False)
             D.prop_universal(False)
             D.prop_complete(spot.trival_maybe())
             D = canonical(D)
